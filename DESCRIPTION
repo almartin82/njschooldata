@@ -1,0 +1,8 @@
+Package: njschooldata2
+Type: Package
+Title: a simple interface for accessing NJ DOE school data in R
+Version: 0.1
+Date: 2015-04-21
+Author: Andrew Martin
+Maintainer: Andrew Martin <almartin@gmail.com>
+License: GPLv3
