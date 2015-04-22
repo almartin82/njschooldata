@@ -66,7 +66,6 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
   
   #return df
   return(df)
-  
 }
 
 
@@ -75,7 +74,7 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
 #' 
 #' @description
 #' \code{fetch_njask} is a wrapper around \code{get_raw_njask} and
-#' \code{process_njask} that passes the correct file layout data to each function,
+#' \code{process_nj_assess} that passes the correct file layout data to each function,
 #' given a year and grade.   
 #' @param year a school year.  year is the end of the academic year - eg 2013-14
 #' school year is year '2014'.  valid values are 2004-2014.
