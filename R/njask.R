@@ -70,3 +70,43 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
   return(df)
   
 }
+
+
+
+#' @title process a raw njask file 
+#' 
+#' @description
+#' \code{process_njask} does cleanup of the raw njask file, primarily ensuring that 
+#' columns tagged as 'one implied' are displayed correctly#' 
+#' @param df a NJASK data frame (output of \code{get_raw_njask})
+#' school year is year '2014'.  valid values are 2004-2014.
+#' @param mask a vector indicating which columns are one implied decimal?  
+#' uses a layout file.  default is layout_njask
+#' @export
+
+process_njask <- function(df, mask=layout_njask$comments) {
+  #keep the names to put back in the same order
+  all_names <- names(df)
+  
+  #replace any line breaks in last column
+  df$Grade <- gsub('\n', '', df$Grade, fixed = TRUE)
+  
+  mask_boolean <- mask == 'One implied decimal'
+  #put some columns aside
+  ignore <- df[, !mask_boolean]
+  
+  #process the columns that have an implied decimal
+  processed <- df[, mask_boolean] %>%
+    dplyr::mutate_each(
+      dplyr::funs(implied_decimal = . / 10)  
+    )
+  
+  #put back together 
+  final <- cbind(ignore, processed)
+  
+  #reorder and return
+  final %>%
+    select(
+      one_of(names(df))
+    )
+}
