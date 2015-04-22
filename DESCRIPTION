@@ -1,8 +1,18 @@
-Package: njschooldata2
+Package: njschooldata
 Type: Package
 Title: a simple interface for accessing NJ DOE school data in R
+Description: bindings to the NJASK (gr 3-8), HSPA (gr 11), and GEPA (old gr 8) data that lives at http://www.state.nj.us/education/schools/achievement/
 Version: 0.1
 Date: 2015-04-21
-Author: Andrew Martin
-Maintainer: Andrew Martin <almartin@gmail.com>
-License: GPLv3
+Authors@R: person("Andrew", "Martin", role = c("aut","cre"), email = "almartin@gmail.com")
+License: GPL-3 | file LICENSE
+Depends:
+  ensurer,
+  dplyr,
+  readr,
+  R(>= 2.10.0)
+Suggests:
+  knitr,
+  testthat
+LazyData: true
+VignetteBuilder: knitr
