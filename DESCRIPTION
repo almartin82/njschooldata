@@ -7,12 +7,12 @@ Date: 2015-04-21
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"), email = "almartin@gmail.com")
 License: GPL-3 | file LICENSE
 Depends:
-  ensurer,
-  dplyr,
-  readr,
   R(>= 2.10.0)
 Suggests:
+  ensurer,
+  dplyr,
   knitr,
+  readr,
   testthat
 LazyData: true
 VignetteBuilder: knitr

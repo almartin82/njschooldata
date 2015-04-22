@@ -3,7 +3,7 @@
 \docType{data}
 \name{layout_njask05}
 \alias{layout_njask05}
-\title{njask layout metadata, 2005 test}
+\title{NJASK layout metadata, 2005 test}
 \format{\describe{
 \item{field_start_position}{field_start_position}
 \item{field_end_position}{field_end_position}

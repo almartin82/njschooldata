@@ -2,4 +2,4 @@
 
 export(fetch_njask)
 export(get_raw_njask)
-export(process_njask)
+export(process_nj_assess)

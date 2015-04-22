@@ -71,45 +71,6 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
 
 
 
-#' @title process a raw njask file 
-#' 
-#' @description
-#' \code{process_njask} does cleanup of the raw njask file, primarily ensuring that 
-#' columns tagged as 'one implied' are displayed correctly#' 
-#' @param df a NJASK data frame (output of \code{get_raw_njask})
-#' school year is year '2014'.  valid values are 2004-2014.
-#' @param mask a vector indicating which columns are one implied decimal?  
-#' uses a layout file.  default is layout_njask
-#' @export
-
-process_njask <- function(df, mask=layout_njask$comments) {
-  #keep the names to put back in the same order
-  all_names <- names(df)
-  
-  #replace any line breaks in last column
-  df$Grade <- gsub('\n', '', df$Grade, fixed = TRUE)
-  
-  mask_boolean <- mask == 'One implied decimal'
-  #put some columns aside
-  ignore <- df[, !mask_boolean]
-  
-  #process the columns that have an implied decimal
-  processed <- df[, mask_boolean] %>%
-    dplyr::mutate_each(
-      dplyr::funs(implied_decimal = . / 10)  
-    )
-  
-  #put back together 
-  final <- cbind(ignore, processed)
-  
-  #reorder and return
-  final %>%
-    select(
-      one_of(names(df))
-    )
-}
-
-
 #' @title gets and processes a NJASK file
 #' 
 #' @description
@@ -123,28 +84,31 @@ process_njask <- function(df, mask=layout_njask$comments) {
 
 fetch_njask <- function(year, grade) {
   if (year == 2004) {
-    df <- get_raw_njask(year, grade, layout=layout_njask04)  %>% 
-      process_njask(mask=layout_njask04$comments)
-  }
-  else if (year == 2005) {
-    df <- get_raw_njask(year, grade, layout=layout_njask05)  %>% 
-      process_njask(mask=layout_njask05$comments) 
+    df <- get_raw_njask(year, grade, layout = layout_njask04)  %>% 
+      process_nj_assess(layout = layout_njask04)
+    
+  } else if (year == 2005) {
+    df <- get_raw_njask(year, grade, layout = layout_njask05)  %>% 
+      process_nj_assess(layout = layout_njask05) 
+    
   } else if (year %in% c(2007, 2008) & grade %in% c(3, 4)) {
-    df <- get_raw_njask(year, grade, layout=layout_njask07gr3)  %>% 
-      process_njask(mask=layout_njask07gr3$comments) 
-  }
-  else if (year == 2006 & grade %in% c(3, 4)) {
-    df <- get_raw_njask(year, grade, layout=layout_njask06gr3)  %>% 
-      process_njask(mask=layout_njask06gr3$comments)
+    df <- get_raw_njask(year, grade, layout = layout_njask07gr3)  %>% 
+      process_nj_assess(layout = layout_njask07gr3) 
+    
+  } else if (year == 2006 & grade %in% c(3, 4)) {
+    df <- get_raw_njask(year, grade, layout = layout_njask06gr3)  %>% 
+      process_nj_assess(layout = layout_njask06gr3)
+    
   } else if (year == 2006 & grade >= 5) {
-    #fetch
-    df <- get_raw_njask(year, grade, layout=layout_njask06gr5)  
-    #inexplicably 2006 data has no Grade column
+    df <- get_raw_njask(year, grade, layout = layout_njask06gr5)  
+    #inexplicably, 2006 data has no Grade column
     df$Grade <- grade
-    df <- df %>% process_njask(mask=layout_njask06gr5$comments)    
-  }
-  else {
-    df <- get_raw_njask(year, grade) %>% process_njask()    
+    df <- df %>% 
+      process_nj_assess(layout = layout_njask06gr5) 
+    
+  } else {
+    df <- get_raw_njask(year, grade) %>% 
+      process_nj_assess(layout = layout_njask)    
   }
 
   return(df)
