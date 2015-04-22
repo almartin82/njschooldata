@@ -3,9 +3,7 @@
 #' @description
 #' \code{get_raw_njask} builds a url and uses readr's \code{read_fwf} to get the fixed 
 #' width text file into a R data frame
-#' @param year a school year.  year is the end of the academic year - eg 2013-14
-#' school year is year '2014'.  valid values are 2004-2014.
-#' @param grade a grade level.  valid values are 3,4,5,6,7,8
+#' @inheritParams fetch_njask
 #' @param layout what layout dataframe to use.  default is layout_njask.
 #' @export
 
@@ -109,4 +107,45 @@ process_njask <- function(df, mask=layout_njask$comments) {
     select(
       one_of(names(df))
     )
+}
+
+
+#' @title gets and processes a NJASK file
+#' 
+#' @description
+#' \code{fetch_njask} is a wrapper around \code{get_raw_njask} and
+#' \code{process_njask} that passes the correct file layout data to each function,
+#' given a year and grade.   
+#' @param year a school year.  year is the end of the academic year - eg 2013-14
+#' school year is year '2014'.  valid values are 2004-2014.
+#' @param grade a grade level.  valid values are 3,4,5,6,7,8
+#' @export
+
+fetch_njask <- function(year, grade) {
+  if (year == 2004) {
+    df <- get_raw_njask(year, grade, layout=layout_njask04)  %>% 
+      process_njask(mask=layout_njask04$comments)
+  }
+  else if (year == 2005) {
+    df <- get_raw_njask(year, grade, layout=layout_njask05)  %>% 
+      process_njask(mask=layout_njask05$comments) 
+  } else if (year %in% c(2007, 2008) & grade %in% c(3, 4)) {
+    df <- get_raw_njask(year, grade, layout=layout_njask07gr3)  %>% 
+      process_njask(mask=layout_njask07gr3$comments) 
+  }
+  else if (year == 2006 & grade %in% c(3, 4)) {
+    df <- get_raw_njask(year, grade, layout=layout_njask06gr3)  %>% 
+      process_njask(mask=layout_njask06gr3$comments)
+  } else if (year == 2006 & grade >= 5) {
+    #fetch
+    df <- get_raw_njask(year, grade, layout=layout_njask06gr5)  
+    #inexplicably 2006 data has no Grade column
+    df$Grade <- grade
+    df <- df %>% process_njask(mask=layout_njask06gr5$comments)    
+  }
+  else {
+    df <- get_raw_njask(year, grade) %>% process_njask()    
+  }
+
+  return(df)
 }
