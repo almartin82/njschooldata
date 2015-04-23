@@ -34,8 +34,8 @@ test_that("get_raw_enr correctly grabs the 2010 enrollment file", {
 test_that("get_raw_enr correctly grabs the 2001 enrollment file", {
   ex_2001 <- get_raw_enr(2001)
   
-  expect_equal(nrow(ex_2001), 29599)
-  expect_equal(ncol(ex_2001), 28)
-  expect_equal(sum(ex_2001$ROW_TOTAL, na.rm = TRUE), 11084504)
+  expect_equal(nrow(ex_2001), 28447)
+  expect_equal(ncol(ex_2001), 19)
+  expect_equal(sum(ex_2001$ROWTOTAL, na.rm = TRUE), 10522596)
   
 })
