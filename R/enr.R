@@ -9,7 +9,7 @@
 
 get_raw_enr <- function(end_year) {
   #build url
-  url <- paste0(
+  enr_url <- paste0(
     "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
   )
     
@@ -17,13 +17,18 @@ get_raw_enr <- function(end_year) {
   tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
   tdir <- tempdir()
   
-  downloader::download(url, dest=tname, mode="wb") 
+  downloader::download(enr_url, dest=tname, mode="wb") 
 
   utils::unzip(tname, exdir = tdir)
   
-  #read excel
+  #read file
   enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
-  enr <- readxl::read_excel(paste0(tdir,'\\',enr_files$Name[1]))
+  
+  if (grepl('.xls', enr_files$Name[1])) {
+    enr <- readxl::read_excel(paste0(tdir,'\\',enr_files$Name[1]))
+  } else if (grepl('.csv', enr_files$Name[1])) {
+    enr <- readr::read_csv(paste0(tdir,'\\',enr_files$Name[1]))
+  }
   
   return(enr)
 }
