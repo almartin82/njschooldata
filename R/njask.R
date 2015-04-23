@@ -61,7 +61,8 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
       end = layout$field_end_position,
       col_names = layout$final_name
     ),
-    na = "*"
+    na = "*",
+    progress = TRUE
   )
   
   #return df
