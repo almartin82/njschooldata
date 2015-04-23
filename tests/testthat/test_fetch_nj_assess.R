@@ -1,5 +1,6 @@
 context("functions in fetch_nj_assess.R")
 
+cat("in test_fetch_nj_assess.R")
 
 test_that("valid_call correctly identifies status of years/grade pairs", {
 
@@ -10,10 +11,11 @@ test_that("valid_call correctly identifies status of years/grade pairs", {
   expect_false(valid_call(2005, 5))  
 })
 
-
 test_that("standard_assess correctly calls data for 2014",{
   
-  hspa_ex <-standard_assess(2014, 11)
+  hspa_ex <- standard_assess(2014, 11)
+  cat("made a call to standard_assess")
+
   expect_equal(nrow(hspa_ex), 371)
   expect_equal(ncol(hspa_ex), 559)
   expect_equal(
@@ -42,6 +44,8 @@ test_that("fetch_nj_assess returns correct output for a variety of calls", {
   
   #2014 njask
   njask_14 <- fetch_nj_assess(2014, 6)
+  cat("made a call to fetch_nj_assess")
+
   expect_equal(nrow(njask_14), 881)
   expect_equal(ncol(njask_14), 551)
   expect_equal(

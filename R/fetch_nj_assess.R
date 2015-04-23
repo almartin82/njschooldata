@@ -58,7 +58,7 @@ standard_assess <- function(year, grade) {
 fetch_nj_assess <- function(year, grade) {
   #only allow valid calls
   valid_call(year, grade) %>%
-    ensurer::ensure_that(
+    ensure_that(
       all(.) ~ "invalid grade/year parameter passed")
   
   #everything post 2008 has the same grade coverage

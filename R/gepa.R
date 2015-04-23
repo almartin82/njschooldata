@@ -9,7 +9,6 @@
 #' @export
 
 get_raw_gepa <- function(year, layout=layout_gepa) {
-  require(readr)
     
   #url paths changed in 2012
   years <- list(
@@ -56,5 +55,6 @@ get_raw_gepa <- function(year, layout=layout_gepa) {
 #' @export
 
 fetch_gepa <- function(year) {
-  get_raw_gepa(year) %>% process_nj_assess(layout=layout_gepa) 
+  get_raw_gepa(year) %>% 
+    process_nj_assess(layout=layout_gepa) 
 }

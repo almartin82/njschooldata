@@ -5,8 +5,8 @@
 #' columns tagged as 'one implied' are displayed correctly#' 
 #' @param df a raw NJASK, HSPA, or GEPA data frame (eg output of \code{get_raw_njask})
 #' school year is year '2014'.  valid values are 2004-2014.
-#' @param mask a vector indicating which columns are one implied decimal?  
-#' uses a layout file.
+#' @param layout which layout file to use to determine which columns are one implied 
+#' decimal.
 #' @export
 
 process_nj_assess <- function(df, layout) {
@@ -43,7 +43,7 @@ process_nj_assess <- function(df, layout) {
   
   #reorder and return
   final %>%
-    select(
+    dplyr::select(
       one_of(names(df))
     )
 }
