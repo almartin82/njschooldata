@@ -4,17 +4,17 @@
 \alias{fetch_njask}
 \title{gets and processes a NJASK file}
 \usage{
-fetch_njask(year, grade)
+fetch_njask(end_year, grade)
 }
 \arguments{
-\item{year}{a school year.  year is the end of the academic year - eg 2013-14
-school year is year '2014'.  valid values are 2004-2014.}
+\item{end_year}{a school year.  end_year is the end of the academic year - eg 2013-14
+school year is end_year '2014'.  valid values are 2004-2014.}
 
 \item{grade}{a grade level.  valid values are 3,4,5,6,7,8}
 }
 \description{
 \code{fetch_njask} is a wrapper around \code{get_raw_njask} and
 \code{process_nj_assess} that passes the correct file layout data to each function,
-given a year and grade.
+given an end_year and grade.
 }
 

@@ -3,14 +3,14 @@
 #' @description
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
-#' @param start_year a school year.  year is the start of the academic year - eg 2006-07
-#' school year is year '2006'.  valid values are 1998-2015.
+#' @param end_year a school year.  year is the end of the academic year - eg 2006-07
+#' school year is year '2007'.  valid values are 1999-2015.
 #' @export
 
-get_raw_enr <- function(start_year) {
+get_raw_enr <- function(end_year) {
   #build url
   url <- paste0(
-    "http://www.nj.gov/education/data/enr/enr", substr(start_year, 3, 4), "/enr.zip"
+    "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
   )
     
   #download and unzip

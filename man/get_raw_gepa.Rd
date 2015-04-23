@@ -4,11 +4,11 @@
 \alias{get_raw_gepa}
 \title{read a fixed width, raw GEPA data file from the NJ state website}
 \usage{
-get_raw_gepa(year, layout = layout_gepa)
+get_raw_gepa(end_year, layout = layout_gepa)
 }
 \arguments{
-\item{year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 2004-2007.}
+\item{end_year}{a school year.  end_year is the end of the academic year - eg 2006-07
+school year is end_year '2007'.  valid values are 2004-2007.}
 
 \item{layout}{what layout dataframe to use.  default is layout_gepa.}
 }

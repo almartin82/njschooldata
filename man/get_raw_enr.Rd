@@ -4,11 +4,11 @@
 \alias{get_raw_enr}
 \title{read a zipped excel fall enrollment file from the NJ state website}
 \usage{
-get_raw_enr(start_year)
+get_raw_enr(end_year)
 }
 \arguments{
-\item{start_year}{a school year.  year is the start of the academic year - eg 2006-07
-school year is year '2006'.  valid values are 1998-2015.}
+\item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
+school year is year '2007'.  valid values are 1999-2015.}
 }
 \description{
 \code{get_raw_enr} returns a data frame with a year's worth of fall school and

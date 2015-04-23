@@ -4,16 +4,16 @@
 \alias{fetch_nj_assess}
 \title{a simplified interface into NJ assessment data}
 \usage{
-fetch_nj_assess(year, grade)
+fetch_nj_assess(end_year, grade)
 }
 \arguments{
-\item{year}{a school year.  year is the end of the academic year - eg 2013-14
-school year is year '2014'.  valid values are 2004-2014.}
+\item{end_year}{a school year.  end_year is the end of the academic year - eg 2013-14
+school year is end_year '2014'.  valid values are 2004-2014.}
 
 \item{grade}{a grade level.  valid values are 3,4,5,6,7,8}
 }
 \description{
-this is the workhorse function.  given a year and a grade (valid years are 2004-present),
+this is the workhorse function.  given a end_year and a grade (valid years are 2004-present),
 \code{fetch_nj_assess} will call the appropriate function, process the raw
 text file, and return a data frame.  \code{fetch_nj_assess} is a wrapper around
 all the individual subject functions (NJASK, HSPA, etc.), abstracting away the

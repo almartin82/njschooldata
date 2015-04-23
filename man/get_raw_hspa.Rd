@@ -4,11 +4,11 @@
 \alias{get_raw_hspa}
 \title{read a fixed width, raw HSPA data file from the NJ state website}
 \usage{
-get_raw_hspa(year, layout = layout_hspa)
+get_raw_hspa(end_year, layout = layout_hspa)
 }
 \arguments{
-\item{year}{a school year.  year is the end of the academic year - eg 2013-14
-school year is year '2014'.  valid values are 2004-2014.}
+\item{end_year}{a school end_year.  end_year is the end of the academic year - eg 2013-14
+school year is end_year '2014'.  valid values are 2004-2014.}
 
 \item{layout}{what layout dataframe to use.  default is layout_hspa.}
 }
