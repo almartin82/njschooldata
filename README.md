@@ -15,6 +15,14 @@ Fortunately, there's a new R library, [`readr`] (https://github.com/hadley/readr
 
 Comments?  Questions?  Problem?  Want to contribute to development?  File an [issue](https://github.com/almartin82/njschooldata/issues) or send me an [email]('mailto:almartin@gmail.com'). 
 
+# Installation
+
+```R
+library("devtools")
+devtools::install_github("almartin82/njschooldata")
+library(njschooldata)
+```
+
 # Usage
 
 read in the 2010 grade 5 NJASK data file:
