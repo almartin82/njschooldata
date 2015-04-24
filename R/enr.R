@@ -56,6 +56,7 @@ process_enr <- function(df) {
     "COUNTY NAME" = "county_name",
     "County Name" = "county_name",
     "CO" = "county_name",
+    "COUNTY" = "county_name",
     
     #district ids
     "DIST_ID" = "district_id",
@@ -70,6 +71,7 @@ process_enr <- function(df) {
     "District Name" = "district_name",
     "DISTRICT_NAME" = "district_name",
     "DIST" = "district_name",
+    "DISTRICT" = "district_name",
     
     #schoolids
     "SCHOOL_ID" = "school_id",
@@ -81,6 +83,7 @@ process_enr <- function(df) {
     "SCHOOL NAME" = "school_name",
     "School Name" = "school_name",
     "SCH" = "school_name",
+    "SCHOOL" = "school_name",
     
     #programcode
     "PRGCODE" = "program_code",
@@ -92,6 +95,10 @@ process_enr <- function(df) {
     "PROGRAM_NAME" = "program_name",
     "PROGRAM" = "program_name",
     "PROG_NAME" = "program_name",
+    
+    #grade level
+    "GRADE_LEVEL" = "grade_level",
+    
     
     #racial categories -----------------------------
     
@@ -170,6 +177,7 @@ process_enr <- function(df) {
     "REDUCED_LUNCH" = "reduced_lunch",
     "RED_LUNCH" = "reduced_lunch",
     "REDUCE" = "reduced_lunch",
+    "REDUCED" = "reduced_lunch",
     
     #lep
     "LEP" = "lep",
@@ -194,7 +202,7 @@ process_enr <- function(df) {
   clean_enr_name <- function(x) {
     z = clean[[x]] 
     
-    ifelse(is.na(z), print(x), '')
+    ifelse(is.null(z), print(x), '')
     
     return(z)
   }
