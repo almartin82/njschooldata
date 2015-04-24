@@ -2,7 +2,7 @@
 #' 
 #' @description
 #' \code{process_njask} does cleanup of the raw assessment file, primarily ensuring that 
-#' columns tagged as 'one implied' are displayed correctly#' 
+#' columns tagged as 'one implied' are displayed correctly
 #' @param df a raw NJASK, HSPA, or GEPA data frame (eg output of \code{get_raw_njask})
 #' @param layout which layout file to use to determine which columns are one implied 
 #' decimal.

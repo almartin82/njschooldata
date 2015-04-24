@@ -20,8 +20,8 @@ test_that("get_raw_enr correctly grabs the 2011 enrollment file", {
   
 })
 
-#pre-NJSMART
 
+#pre-NJSMART
 test_that("get_raw_enr correctly grabs the 2010 enrollment file", {
   ex_2010 <- get_raw_enr(2010)
   
@@ -31,11 +31,22 @@ test_that("get_raw_enr correctly grabs the 2010 enrollment file", {
   
 })
 
+
 test_that("get_raw_enr correctly grabs the 2001 enrollment file", {
   ex_2001 <- get_raw_enr(2001)
   
   expect_equal(nrow(ex_2001), 28447)
   expect_equal(ncol(ex_2001), 19)
   expect_equal(sum(ex_2001$ROWTOTAL, na.rm = TRUE), 10522596)
+  
+})
+
+
+test_that("fetch_enr correctly grabs the 2012 enrollment file", {
+  fetch_2009 <- fetch_enr(2009)
+  
+  expect_equal(nrow(fetch_2009), 29491)
+  expect_equal(ncol(fetch_2009), 24)
+  expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
   
 })
