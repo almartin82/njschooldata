@@ -45,7 +45,7 @@ test_that("get_raw_enr correctly grabs the 2001 enrollment file", {
 test_that("fetch_enr correctly grabs the 2012 enrollment file", {
   fetch_2009 <- fetch_enr(2009)
   
-  expect_equal(nrow(fetch_2009), 29491)
+  feexpect_equal(nrow(fetch_2009), 29491)
   expect_equal(ncol(fetch_2009), 24)
   expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
   

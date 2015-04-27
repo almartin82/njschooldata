@@ -27,22 +27,25 @@ get_raw_enr <- function(end_year) {
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     enr <- readxl::read_excel(paste0(tdir,'\\',enr_files$Name[1]))
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
-    enr <- readr::read_csv(paste0(tdir,'\\',enr_files$Name[1]))
+    enr <- readr::read_csv(
+      file = paste0(tdir,'\\',enr_files$Name[1]),
+      na = "     . "
+    )
   }
   
   return(enr)
 }
 
 
-#' @title process a nj enrollment file 
+
+#' @title clean enrollment names
 #' 
-#' @description
-#' \code{process_enr} does cleanup of dataframes returned by \code{get_raw_enr} 
+#' @description give consistent names to the enrollment files
 #' @param df a enr data frame (eg output of \code{get_raw_enr})
 #' @export
 
-process_enr <- function(df) {
-
+clean_enr_names <- function(df) {
+  
   #data
   clean <- list(
     #county ids
@@ -101,7 +104,6 @@ process_enr <- function(df) {
     
     
     #racial categories -----------------------------
-    
     #white male
     "WH_M" = "white_m",
     "WHITE_M" = "white_m",
@@ -199,7 +201,7 @@ process_enr <- function(df) {
     "CHPT1" = "title_1"
   )
 
-  clean_enr_name <- function(x) {
+  clean_name <- function(x) {
     z = clean[[x]] 
     
     ifelse(is.null(z), print(x), '')
@@ -207,10 +209,86 @@ process_enr <- function(df) {
     return(z)
   }
   
-  names(df) <- sapply(X = names(df), FUN = clean_enr_name)
-
+  names(df) <- sapply(X = names(df), FUN = clean_name)
+  
   return(df)
 }
+
+
+
+#' @title clean enrollment data types 
+#' 
+#' @description all columns come back char; coerce some back to numeric
+#' @inheritParams clean_enr_names
+#' @export
+
+clean_enr_data <- function(df) {
+  
+  enr_types <- list(
+    'county_id' = 'character',
+    'county_name' = 'character',
+    'district_id' = 'character',
+    'district_name' = 'character',
+    'school_id' = 'character',
+    'school_name' = 'character',
+    'program_code' = 'character',
+    'program_name' = 'character',
+    'grade_level' = 'character',
+    'white_m' = 'numeric',
+    'white_f' = 'numeric',
+    'black_m' = 'numeric',
+    'black_f' = 'numeric',
+    'hispanic_m' = 'numeric',
+    'hispanic_f' = 'numeric',
+    'asian_m' = 'numeric',
+    'asian_f' = 'numeric',
+    'native_american_m' = 'numeric',
+    'native_american_f' = 'numeric',
+    'pacific_islander_m' = 'numeric',
+    'pacific_islander_f' = 'numeric',
+    'multiracial_m' = 'numeric',
+    'multiracial_f' = 'numeric',
+    'free_lunch' = 'numeric',
+    'reduced_lunch' = 'numeric',
+    'lep' = 'numeric',
+    'migrant' = 'numeric',
+    'row_total' = 'numeric',
+    'homeless' = 'numeric',
+    'special_ed' = 'numeric',
+    'title_1' = 'numeric'
+  )
+  
+  
+  for (i in 1:ncol(df)) {
+    z = enr_types[[names(df)[i]]]
+    if (z=='numeric') {
+      df[, i] <- as.numeric(df[, i])
+    }
+    
+  }
+  
+  
+  return(df)  
+}
+
+
+
+#' @title process a nj enrollment file 
+#' 
+#' @description
+#' \code{process_enr} does cleanup of dataframes returned by \code{get_raw_enr} 
+#' @inheritParams clean_enr_names
+#' @export
+
+process_enr <- function(df) {
+
+  final <- clean_enr_names(df) %>%
+    clean_enr_data()  
+  
+  return(final)
+}
+
+
 
 
 
