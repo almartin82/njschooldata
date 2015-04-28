@@ -33,6 +33,8 @@ get_raw_enr <- function(end_year) {
     )
   }
   
+  enr$end_year <- end_year
+  
   return(enr)
 }
 
@@ -48,6 +50,9 @@ clean_enr_names <- function(df) {
   
   #data
   clean <- list(
+    #preserve these
+    "end_year" = "end_year",
+    
     #county ids
     "COUNTY_ID" = "county_id",
     "COUNTY CODE" = "county_id",
@@ -255,21 +260,55 @@ clean_enr_data <- function(df) {
     'row_total' = 'numeric',
     'homeless' = 'numeric',
     'special_ed' = 'numeric',
-    'title_1' = 'numeric'
+    'title_1' = 'numeric',
+    'end_year' = 'numeric'
   )
   
+  df <- as.data.frame(df)
   
   for (i in 1:ncol(df)) {
     z = enr_types[[names(df)[i]]]
     if (z=='numeric') {
       df[, i] <- as.numeric(df[, i])
+    } else if (z=='character') {
+      df[, i] <- as.character(df[, i])
     }
     
   }
   
-  
   return(df)  
 }
+
+
+
+#' @title arrange enrollment file
+#' 
+#' @description put an enrollment file in the correct order
+#' @param df cleaned enrollment file
+#' @export
+
+arrange_enr <- function(df) {
+
+  clean_names <- c('end_year', 'county_id', 'county_name', 'district_id', 'district_name', 'school_id',
+    'school_name', 'program_code', 'program_name', 'white_m', 'white_f', 'black_m',
+    'black_f', 'hispanic_m', 'hispanic_f', 'asian_m', 'asian_f', 'native_american_m',
+    'native_american_f', 'pacific_islander_m', 'pacific_islander_f', 'multiracial_m',
+    'multiracial_f', 'row_total', 'free_lunch', 'reduced_lunch', 'lep', 'migrant',
+    'homeless', 'special_ed', 'title_1', 'grade_level'
+  )
+  
+  mask <- names(df) %in% clean_names
+    
+  df <- df %>% 
+    dplyr::ungroup() %>%
+    dplyr::arrange_(
+      clean_names[mask]  
+    )
+  
+  return(df)
+
+}
+
 
 
 
@@ -282,8 +321,17 @@ clean_enr_data <- function(df) {
 
 process_enr <- function(df) {
 
-  final <- clean_enr_names(df) %>%
+  cleaned <- clean_enr_names(df) %>%
     clean_enr_data()  
+  
+  #join to program code
+  final <- cleaned %>% 
+    dplyr::select(
+      -program_name
+    ) %>%
+    dplyr::left_join(prog_codes, by = c("end_year", "program_code"))
+    
+  final <- final %>% arrange_enr()
   
   return(final)
 }
