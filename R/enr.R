@@ -40,6 +40,35 @@ get_raw_enr <- function(end_year) {
 
 
 
+#' @title split enr columns
+#' 
+#' @description splits enrollment columns that combine IDs and names (pre '09-10)
+#' @param df a enr data frame (eg output of \code{get_raw_enr})
+#' @export
+
+split_enr_cols <- function(df) {
+  if (unique(df$end_year)[1] <= 2009) {
+    #county_id and county_name
+    int_matrix <- stringr::str_split_fixed(df$county_name, "-", 2)    
+    df$county_id <- int_matrix[, 1]
+    df$county_name <- int_matrix[, 2]
+    
+    #district_id and district_name
+    int_matrix <- stringr::str_split_fixed(df$district_name, "-", 2)    
+    df$district_id <- int_matrix[, 1]
+    df$district_name <- int_matrix[, 2]
+
+    #school_id and school_name
+    int_matrix <- stringr::str_split_fixed(df$school_name, "-", 2)    
+    df$school_id <- int_matrix[, 1]
+    df$school_name <- int_matrix[, 2]
+  }
+  
+  return(df)
+}
+
+
+
 #' @title clean enrollment names
 #' 
 #' @description give consistent names to the enrollment files
@@ -69,9 +98,9 @@ clean_enr_names <- function(df) {
     #district ids
     "DIST_ID" = "district_id",
     "DISTRICT CODE" = "district_id",
-    "District Name" = "district_id",
-    "DISTRICT_NAME" = "district_id",
-    "DIST" = "district_id",
+    "District Id" = "district_id",
+    "District ID" = "district_id",
+    "DISTRICT_ID" = "district_id",
     
     #district names
     "LEA_NAME" = "district_name",
@@ -342,6 +371,7 @@ process_enr_program <- function(df) {
 process_enr <- function(df) {
 
   cleaned <- clean_enr_names(df) %>%
+    split_enr_cols() %>%
     clean_enr_data()  
   
   #join to program code

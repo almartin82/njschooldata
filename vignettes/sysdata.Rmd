@@ -1,0 +1,59 @@
+---
+title: "sysdata generation"
+author: "Andrew Martin"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{fetching all NJ data}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+just some documentation of what I've saved to `sysdata.R`
+
+```{r sys1}
+
+enr_files <- list()
+
+for(i in c(2015:1999)) {
+  enr <- fetch_enr(i) 
+  
+  enr_files[[paste0('enr',i)]] <- enr
+}
+
+```
+
+## rbind enr together
+
+```{r enr2}
+
+enr_all <- enr_files[["enr2015"]]
+
+for (i in names(enr_files)[2:17]) {
+  print(i)
+  enr_all <- rbind_all(list(enr_all, enr_files[[i]]))
+
+  print(nrow(enr_all))
+} 
+
+```
+
+```{r sys2}
+
+save(enr_files, enr_all, file='data\\sysdata.Rda')
+
+```
+
+# for debugging; step through fetch_enr steps
+
+```{r debugging}
+foo1 <-  get_raw_enr(2008) 
+foo2 <- foo1 %>% clean_enr_names()
+foo3 <- foo2 %>% split_enr_cols()
+foo4 <- foo3 %>% clean_enr_data()
+foo5 <- foo4 %>% process_enr_program()
+foo6 <- foo5 %>% arrange_enr()
+  
+```  
+
+```
