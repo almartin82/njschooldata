@@ -297,12 +297,12 @@ arrange_enr <- function(df) {
     'homeless', 'special_ed', 'title_1', 'grade_level'
   )
   
-  mask <- names(df) %in% clean_names
+  mask <- clean_names %in% names(df) 
     
   df <- df %>% 
     dplyr::ungroup() %>%
-    dplyr::arrange_(
-      clean_names[mask]  
+    dplyr::select_(
+      ~one_of(clean_names[mask])
     )
   
   return(df)
@@ -329,9 +329,8 @@ process_enr <- function(df) {
     dplyr::select(
       -program_name
     ) %>%
-    dplyr::left_join(prog_codes, by = c("end_year", "program_code"))
-    
-  final <- final %>% arrange_enr()
+    dplyr::left_join(prog_codes, by = c("end_year", "program_code")) %>% 
+    arrange_enr()
   
   return(final)
 }
