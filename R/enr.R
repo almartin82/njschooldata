@@ -273,7 +273,6 @@ clean_enr_data <- function(df) {
     } else if (z=='character') {
       df[, i] <- as.character(df[, i])
     }
-    
   }
   
   return(df)  
@@ -306,11 +305,32 @@ arrange_enr <- function(df) {
     )
   
   return(df)
-
 }
 
 
 
+#' @title join program code to program name
+#' 
+#' @description decode the program name
+#' @inheritParams arrange_enr
+#' @export
+
+process_enr_program <- function(df) {
+  #program name is messy; drop.
+  if ('program_name' %in% names(df)) {
+    df <- df %>%
+      dplyr::select(
+        -program_name  
+      )
+  }
+  
+  #join
+  df <- df %>%
+    dplyr::left_join(prog_codes, by = c("end_year", "program_code")) 
+
+  return(df)
+}
+  
 
 #' @title process a nj enrollment file 
 #' 
@@ -325,13 +345,10 @@ process_enr <- function(df) {
     clean_enr_data()  
   
   #join to program code
-  final <- cleaned %>% 
-    dplyr::select(
-      -program_name
-    ) %>%
-    dplyr::left_join(prog_codes, by = c("end_year", "program_code")) %>% 
+  final <- cleaned %>%
+    process_enr_program() %>%
     arrange_enr()
-  
+    
   return(final)
 }
 
