@@ -11,11 +11,11 @@ end_year,program_code,program_name
 2015,10,Grade 10
 2015,11,Grade 11
 2015,12,Grade 12
+2015,55,Total
 2015,KF,Kindergarten Full Day
 2015,KH,Kindergarten Half Day
 2015,PF,Preschool Full Day
 2015,PH,Preschool Half Day
-2015,55,Total
 2015,UG,Ungraded
 2014,1,Grade 1
 2014,2,Grade 2
@@ -29,11 +29,11 @@ end_year,program_code,program_name
 2014,10,Grade 10
 2014,11,Grade 11
 2014,12,Grade 12
+2014,55,Total
 2014,KF,Kindergarten Full Day
 2014,KH,Kindergarten Half Day
 2014,PF,Preschool Full Day
 2014,PH,Preschool Half Day
-2014,55,Total
 2014,UG,Ungraded
 2013,1,Grade 1
 2013,2,Grade 2
@@ -47,11 +47,11 @@ end_year,program_code,program_name
 2013,10,Grade 10
 2013,11,Grade 11
 2013,12,Grade 12
+2013,55,Total
 2013,KF,Kindergarten Full Day
 2013,KH,Kindergarten Half Day
 2013,PF,Preschool Full Day
 2013,PH,Preschool Half Day
-2013,55,Total
 2013,UG,Ungraded
 2012,1,Grade 1
 2012,2,Grade 2
@@ -65,11 +65,11 @@ end_year,program_code,program_name
 2012,10,Grade 10
 2012,11,Grade 11
 2012,12,Grade 12
+2012,55,Total
 2012,KF,Kindergarten Full Day
 2012,KH,Kindergarten Half Day
 2012,PF,Preschool Full Day
 2012,PH,Preschool Half Day
-2012,55,Total
 2012,UG,Ungraded
 2011,1,Grade 1
 2011,2,Grade 2
@@ -83,11 +83,11 @@ end_year,program_code,program_name
 2011,10,Grade 10
 2011,11,Grade 11
 2011,12,Grade 12
+2011,55,Total
 2011,KF,Kindergarten Full Day
 2011,KH,Kindergarten Half Day
 2011,PF,Preschool Full Day
 2011,PH,Preschool Half Day
-2011,55,Total
 2011,UG,Ungraded
 2010,1,Full-Day Pre-Kindergarten
 2010,2,Half-Day Pre-Kindergarten
@@ -119,10 +119,10 @@ end_year,program_code,program_name
 2010,32,Full-Day Preschool Disabled
 2010,32,Half-Day Preschool Disabled
 2010,33,Half-Day Preschool Disabled
-2010,34,Grade 9 Voc
-2010,35,Grade 10 Voc
-2010,36,Grade 11 Voc
-2010,37,Grade 12 Voc
+2010,34,Grade 9 Vocational
+2010,35,Grade 10 Vocational
+2010,36,Grade 11 Vocational
+2010,37,Grade 12 Vocational
 2010,38,Special Education Vocational
 2010,55,Total
 2010,56,FT Post Secondary
@@ -156,10 +156,10 @@ end_year,program_code,program_name
 2009,31,Cognitive - Severe
 2009,32,Full-Day Preschool Disabled
 2009,33,Half-Day Preschool Disabled
-2009,34,Grade 9 Voc
-2009,35,Grade 10 Voc
-2009,36,Grade 11 Voc
-2009,37,Grade 12 Voc
+2009,34,Grade 9 Vocational
+2009,35,Grade 10 Vocational
+2009,36,Grade 11 Vocational
+2009,37,Grade 12 Vocational
 2009,38,Special Education Vocational
 2009,55,Total
 2009,56,FT Post Secondary
@@ -193,10 +193,10 @@ end_year,program_code,program_name
 2008,31,Cognitive - Severe
 2008,32,Full-Day Preschool Disabled
 2008,33,Half-Day Preschool Disabled
-2008,34,Grade 9 Voc
-2008,35,Grade 10 Voc
-2008,36,Grade 11 Voc
-2008,37,Grade 12 Voc
+2008,34,Grade 9 Vocational
+2008,35,Grade 10 Vocational
+2008,36,Grade 11 Vocational
+2008,37,Grade 12 Vocational
 2008,38,Special Education Vocational
 2008,55,Total
 2008,56,FT Post Secondary
@@ -230,10 +230,10 @@ end_year,program_code,program_name
 2007,31,Cognitive - Severe
 2007,32,Full-Day Preschool Disabled
 2007,33,Half-Day Preschool Disabled
-2007,34,Grade 9 Voc
-2007,35,Grade 10 Voc
-2007,36,Grade 11 Voc
-2007,37,Grade 12 Voc
+2007,34,Grade 9 Vocational
+2007,35,Grade 10 Vocational
+2007,36,Grade 11 Vocational
+2007,37,Grade 12 Vocational
 2007,38,Special Education Vocational
 2007,55,Total
 2007,56,FT Post Secondary
@@ -501,12 +501,20 @@ end_year,program_code,program_name
 2000,22,Behavioral Disabilities
 2000,23,Multiple Disabilities
 2000,24,Auditory Impairments
+2000,25,Auditory Impairments
+2000,26,Orthopedic Handicap
 2000,27,Visual Impairments
 2000,28,Learning and/or Language Disability
 2000,29,Full-Day Preschool Disabled
 2000,30,Half-Day Preschool Disabled
 2000,31,Autism
 2000,32,Cognitive - Severe
+2000,34,Grade 9 Vocational
+2000,35,Grade 10 Vocational
+2000,36,Grade 11 Vocational
+2000,37,Grade 12 Vocational
+2000,38,Special Education Vocational
+2000,39,Special Programs - High
 2000,55,Total
 2000,56,FT Post Secondary
 1999,1,Full-Day Pre-Kindergarten
@@ -550,11 +558,3 @@ end_year,program_code,program_name
 1999,39,Special Programs - High
 1999,55,Total
 1999,56,FT Post Secondary
-2000,26,Orthopedic Handicap
-2000,25,Auditory Impairments
-2000,34,Regular Programs - Low
-2000,35,Regular Programs - Moderate
-2000,36,Regular Programs - High
-2000,37,Special Programs - Low
-2000,38,Special Programs - Moderate
-2000,39,Special Programs - High

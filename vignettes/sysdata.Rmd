@@ -15,7 +15,7 @@ just some documentation of what I've saved to `sysdata.R`
 
 enr_files <- list()
 
-for(i in c(2012:1999)) {
+for(i in c(2015:1999)) {
   enr <- fetch_enr(i) 
   
   enr_files[[paste0('enr', i)]] <- enr
@@ -31,7 +31,7 @@ enr_all <- enr_files[["enr2015"]]
 
 for (i in names(enr_files)[2:length(enr_files)]) {
   print(i)
-  enr_all <- rbind_all(list(enr_all, enr_files[[i]]))
+  enr_all <- dplyr::rbind_all(list(enr_all, enr_files[[i]]))
 
   print(nrow(enr_all))
 } 
