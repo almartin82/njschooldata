@@ -295,6 +295,9 @@ clean_enr_data <- function(df) {
   
   df <- as.data.frame(df)
   
+  #some old files (eg 02-03) have random, unlabeled rows.  kill those.
+  df <- df[nchar(df$county_name) >0, ]
+  
   for (i in 1:ncol(df)) {
     z = enr_types[[names(df)[i]]]
     if (z=='numeric') {
