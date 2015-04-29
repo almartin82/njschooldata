@@ -1,77 +1,459 @@
 end_year,program_code,program_name
-1998,1,Full-Day Pre-Kindergarten
-1998,2,Half-Day Pre-Kindergarten
-1998,3,Full-Day Kindergarten
-1998,4,Half-Day Kindergarten
-1998,5,Grade 1
-1998,6,Grade 2
-1998,7,Grade 3
-1998,8,Grade 4
-1998,9,Grade 5
-1998,10,Grade 6
-1998,11,Grade 7
-1998,12,Grade 8
-1998,13,Grade 9
-1998,14,Grade 10
-1998,15,Grade 11
-1998,16,Grade 12
-1998,17,Post-Graduate
-1998,18,Educable
-1998,19,Trainable
-1998,20,Neurologically Impaired
-1998,21,Perceptually Impaired
-1998,22,Emotionally Disturbed
-1998,23,Multiple Disabilities
-1998,24,Socially Maladjusted
-1998,25,Auditory Impairments
-1998,26,Orthopedic Handicap
-1998,27,Chronically Ill
-1998,28,Visual Impairments
-1998,29,Communication Handicap
-1998,30,Autism
-1998,31,Day Training Eligible
-1998,32,Full-Day Preschool Disabled
-1998,33,Half-Day Preschool Disabled
-1998,34,Regular Programs - Low
-1998,35,Regular Programs - Moderate
-1998,36,Regular Programs - High
-1998,37,Special Programs - Low
-1998,38,Special Programs - Moderate
-1998,39,Special Programs - High
-1998,55,Total
-1998,56,FT Post Secondary
-1999,1,Full-Day Pre-Kindergarten
-1999,2,Half-Day Pre-Kindergarten
-1999,3,Full-Day Kindergarten
-1999,4,Half-Day Kindergarten
-1999,5,Grade 1
-1999,6,Grade 2
-1999,7,Grade 3
-1999,8,Grade 4
-1999,9,Grade 5
-1999,10,Grade 6
-1999,11,Grade 7
-1999,12,Grade 8
-1999,13,Grade 9
-1999,14,Grade 10
-1999,15,Grade 11
-1999,16,Grade 12
-1999,17,Post-Graduate
-1999,18,Cognitive - Mid
-1999,19,Cognitive - Mild
-1999,20,Learning and/or Language Disability
-1999,21,Learning and/or Language Disability
-1999,22,Behavioral Disabilities
-1999,23,Multiple Disabilities
-1999,24,Auditory Impairments
-1999,27,Visual Impairments
-1999,28,Learning and/or Language Disability
-1999,29,Full-Day Preschool Disabled
-1999,30,Half-Day Preschool Disabled
-1999,31,Autism
-1999,32,Cognitive - Severe
-1999,55,Total
-1999,56,FT Post Secondary
+2015,PF,Preschool Full Day
+2015,PH,Preschool Half Day
+2015,KF,Kindergarten Full Day
+2015,KH,Kindergarten Half Day
+2015,1,Grade 1
+2015,2,Grade 2
+2015,3,Grade 3
+2015,4,Grade 4
+2015,5,Grade 5
+2015,6,Grade 6
+2015,7,Grade 7
+2015,8,Grade 8
+2015,9,Grade 9
+2015,10,Grade 10
+2015,11,Grade 11
+2015,12,Grade 12
+2015,UG,Ungraded
+2015,55,Total
+2014,1,Grade 1
+2014,2,Grade 2
+2014,3,Grade 3
+2014,4,Grade 4
+2014,5,Grade 5
+2014,6,Grade 6
+2014,7,Grade 7
+2014,8,Grade 8
+2014,9,Grade 9
+2014,10,Grade 10
+2014,11,Grade 11
+2014,12,Grade 12
+2014,KF,Kindergarten Full Day
+2014,KH,Kindergarten Half Day
+2014,PF,Preschool Full Day
+2014,PH,Preschool Half Day
+2014,55,Total
+2014,UG,Ungraded
+2013,1,Grade 1
+2013,2,Grade 2
+2013,3,Grade 3
+2013,4,Grade 4
+2013,5,Grade 5
+2013,6,Grade 6
+2013,7,Grade 7
+2013,8,Grade 8
+2013,9,Grade 9
+2013,10,Grade 10
+2013,11,Grade 11
+2013,12,Grade 12
+2013,KF,Kindergarten Full Day
+2013,KH,Kindergarten Half Day
+2013,PF,Preschool Full Day
+2013,PH,Preschool Half Day
+2013,55,Total
+2013,UG,Ungraded
+2012,1,Grade 1
+2012,2,Grade 2
+2012,3,Grade 3
+2012,4,Grade 4
+2012,5,Grade 5
+2012,6,Grade 6
+2012,7,Grade 7
+2012,8,Grade 8
+2012,9,Grade 9
+2012,10,Grade 10
+2012,11,Grade 11
+2012,12,Grade 12
+2012,KF,Kindergarten Full Day
+2012,KH,Kindergarten Half Day
+2012,PF,Preschool Full Day
+2012,PH,Preschool Half Day
+2012,55,Total
+2012,UG,Ungraded
+2011,1,Grade 1
+2011,2,Grade 2
+2011,3,Grade 3
+2011,4,Grade 4
+2011,5,Grade 5
+2011,6,Grade 6
+2011,7,Grade 7
+2011,8,Grade 8
+2011,9,Grade 9
+2011,10,Grade 10
+2011,11,Grade 11
+2011,12,Grade 12
+2011,KF,Kindergarten Full Day
+2011,KH,Kindergarten Half Day
+2011,PF,Preschool Full Day
+2011,PH,Preschool Half Day
+2011,55,Total
+2011,UG,Ungraded
+2010,1,Grade 1
+2010,2,Grade 2
+2010,3,Grade 3
+2010,4,Grade 4
+2010,5,Grade 5
+2010,6,Grade 6
+2010,7,Grade 7
+2010,8,Grade 8
+2010,9,Grade 9
+2010,10,Grade 10
+2010,11,Grade 11
+2010,12,Grade 12
+2010,KF,Kindergarten Full Day
+2010,KH,Kindergarten Half Day
+2010,PF,Preschool Full Day
+2010,PH,Preschool Half Day
+2010,55,Total
+2010,UG,Ungraded
+2009,1,Full-Day Pre-Kindergarten
+2009,2,Half-Day Pre-Kindergarten
+2009,3,Full-Day Kindergarten
+2009,4,Half-Day Kindergarten
+2009,5,Grade 1
+2009,6,Grade 2
+2009,7,Grade 3
+2009,8,Grade 4
+2009,9,Grade 5
+2009,10,Grade 6
+2009,11,Grade 7
+2009,12,Grade 8
+2009,13,Grade 9
+2009,14,Grade 10
+2009,15,Grade 11
+2009,16,Grade 12
+2009,18,Cognitive - Mild
+2009,19,Cognitive - Moderate
+2009,20,Learning and/or Lang Disability - Mild/Mod
+2009,21,Behavioral Disabilities
+2009,22,Behavioral Disabilities
+2009,23,Multiple Disabilities
+2009,24,Learning and/or Lang Disability - Severe
+2009,25,Auditory Impairments
+2009,28,Visual Impairments
+2009,30,Autism
+2009,31,Cognitive - Severe
+2009,32,Full-Day Preschool Disabled
+2009,32,Half-Day Preschool Disabled
+2009,33,Half-Day Preschool Disabled
+2009,34,Grade 9 Voc
+2009,35,Grade 10 Voc
+2009,36,Grade 11 Voc
+2009,37,Grade 12 Voc
+2009,38,Special Education Vocational
+2009,55,Total
+2009,56,FT Post Secondary
+2009,57,PT Post Secondary
+2008,1,Full-Day Pre-Kindergarten
+2008,2,Half-Day Pre-Kindergarten
+2008,3,Full-Day Kindergarten
+2008,4,Half-Day Kindergarten
+2008,5,Grade 1
+2008,6,Grade 2
+2008,7,Grade 3
+2008,8,Grade 4
+2008,9,Grade 5
+2008,10,Grade 6
+2008,11,Grade 7
+2008,12,Grade 8
+2008,13,Grade 9
+2008,14,Grade 10
+2008,15,Grade 11
+2008,16,Grade 12
+2008,17,Post-Graduate
+2008,18,Cognitive - Mild
+2008,19,Cognitive - Moderate
+2008,20,Learning and/or Lang Disability - Mild/Mod
+2008,22,Behavioral Disabilities
+2008,23,Multiple Disabilities
+2008,24,Learning and/or Lang Disability - Severe
+2008,25,Auditory Impairments
+2008,28,Visual Impairments
+2008,30,Autism
+2008,31,Cognitive - Severe
+2008,32,Full-Day Preschool Disabled
+2008,33,Half-Day Preschool Disabled
+2008,34,Grade 9 Voc
+2008,35,Grade 10 Voc
+2008,36,Grade 11 Voc
+2008,37,Grade 12 Voc
+2008,38,Special Education Vocational
+2008,55,Total
+2008,56,FT Post Secondary
+2008,57,PT Post Secondary
+2007,1,Full-Day Pre-Kindergarten
+2007,2,Half-Day Pre-Kindergarten
+2007,3,Full-Day Kindergarten
+2007,4,Half-Day Kindergarten
+2007,5,Grade 1
+2007,6,Grade 2
+2007,7,Grade 3
+2007,8,Grade 4
+2007,9,Grade 5
+2007,10,Grade 6
+2007,11,Grade 7
+2007,12,Grade 8
+2007,13,Grade 9
+2007,14,Grade 10
+2007,15,Grade 11
+2007,16,Grade 12
+2007,17,Post-Graduate
+2007,18,Cognitive - Mild
+2007,19,Cognitive - Moderate
+2007,20,Learning and/or Lang Disability - Mild/Mod
+2007,22,Behavioral Disabilities
+2007,23,Multiple Disabilities
+2007,24,Learning and/or Lang Disability - Severe
+2007,25,Auditory Impairments
+2007,28,Visual Impairments
+2007,30,Autism
+2007,31,Cognitive - Severe
+2007,32,Full-Day Preschool Disabled
+2007,33,Half-Day Preschool Disabled
+2007,34,Grade 9 Voc
+2007,35,Grade 10 Voc
+2007,36,Grade 11 Voc
+2007,37,Grade 12 Voc
+2007,38,Special Education Vocational
+2007,55,Total
+2007,56,FT Post Secondary
+2007,57,PT Post Secondary
+2006,1,Full-Day Pre-Kindergarten
+2006,2,Half-Day Pre-Kindergarten
+2006,3,Full-Day Kindergarten
+2006,4,Half-Day Kindergarten
+2006,5,Grade 1
+2006,6,Grade 2
+2006,7,Grade 3
+2006,8,Grade 4
+2006,9,Grade 5
+2006,10,Grade 6
+2006,11,Grade 7
+2006,12,Grade 8
+2006,13,Grade 9
+2006,14,Grade 10
+2006,15,Grade 11
+2006,16,Grade 12
+2006,17,Post-Graduate
+2006,18,Cognitive - Mild
+2006,19,Cognitive - Moderate
+2006,20,Learning and/or Lang Disability - Mild/Mod
+2006,22,Behavioral Disabilities
+2006,23,Multiple Disabilities
+2006,24,Learning and/or Lang Disability - Severe
+2006,25,Auditory Impairments
+2006,28,Visual Impairments
+2006,30,Autism
+2006,31,Cognitive - Severe
+2006,32,Full-Day Preschool Disabled
+2006,33,Half-Day Preschool Disabled
+2006,34,Grade 9 Voc
+2006,35,Grade 10 Voc
+2006,36,Grade 11 Voc
+2006,37,Grade 12 Voc
+2006,38,Special Education Vocational
+2006,55,Total
+2006,56,FT Post Secondary
+2006,57,PT Post Secondary
+2005,1,Full-Day Pre-Kindergarten
+2005,2,Half-Day Pre-Kindergarten
+2005,3,Full-Day Kindergarten
+2005,4,Half-Day Kindergarten
+2005,5,Grade 1
+2005,6,Grade 2
+2005,7,Grade 3
+2005,8,Grade 4
+2005,9,Grade 5
+2005,10,Grade 6
+2005,11,Grade 7
+2005,12,Grade 8
+2005,13,Grade 9
+2005,14,Grade 10
+2005,15,Grade 11
+2005,16,Grade 12
+2005,17,Post-Graduate
+2005,18,Cognitive - Mild
+2005,19,Cognitive - Moderate
+2005,20,Learning and/or Lang Disability - Mild
+2005,21,Learning and/or Lang Disability - Moderate
+2005,22,Behavioral Disabilities
+2005,23,Multiple Disabilities
+2005,24,Learning and/or Lang Disability - Severe
+2005,25,Auditory Impairments
+2005,28,Visual Impairments
+2005,30,Autism
+2005,31,Cognitive - Severe
+2005,32,Full-Day Preschool Disabled
+2005,33,Half-Day Preschool Disabled
+2005,34,Grade 9
+2005,35,Grade 10
+2005,36,Grade 11
+2005,37,Grade 12
+2005,38,Special Education
+2005,55,Total
+2005,56,FT Post Secondary
+2005,57,PT Post Secondary
+2004,1,Full-Day Pre-Kindergarten
+2004,2,Half-Day Pre-Kindergarten
+2004,3,Full-Day Kindergarten
+2004,4,Half-Day Kindergarten
+2004,5,Grade 1
+2004,6,Grade 2
+2004,7,Grade 3
+2004,8,Grade 4
+2004,9,Grade 5
+2004,10,Grade 6
+2004,11,Grade 7
+2004,12,Grade 8
+2004,13,Grade 9
+2004,14,Grade 10
+2004,15,Grade 11
+2004,16,Grade 12
+2004,17,Post-Graduate
+2004,18,Educable
+2004,19,Trainable
+2004,20,Neurologically Impaired
+2004,21,Perceptually Impaired
+2004,22,Emotionally Disturbed
+2004,23,Multiple Disabilities
+2004,24,Socially Maladjusted
+2004,25,Auditory Impairments
+2004,26,Orthopedic Handicap
+2004,27,Chronically Ill
+2004,28,Visual Impairments
+2004,29,Communication Handicap
+2004,30,Autism
+2004,31,Day Training Eligible
+2004,32,Full-Day Preschool Disabled
+2004,33,Half-Day Preschool Disabled
+2004,34,Grade 9
+2004,35,Grade 10
+2004,36,Grade 11
+2004,37,Grade 12
+2004,38,Special Education
+2004,55,Total
+2004,56,FT Post Secondary
+2003,1,Full-Day Pre-Kindergarten
+2003,2,Half-Day Pre-Kindergarten
+2003,3,Full-Day Kindergarten
+2003,4,Half-Day Kindergarten
+2003,5,Grade 1
+2003,6,Grade 2
+2003,7,Grade 3
+2003,8,Grade 4
+2003,9,Grade 5
+2003,10,Grade 6
+2003,11,Grade 7
+2003,12,Grade 8
+2003,13,Grade 9
+2003,14,Grade 10
+2003,15,Grade 11
+2003,16,Grade 12
+2003,17,Post-Graduate
+2003,18,Educable
+2003,19,Trainable
+2003,20,Neurologically Impaired
+2003,21,Perceptually Impaired
+2003,22,Emotionally Disturbed
+2003,23,Multiple Disabilities
+2003,24,Socially Maladjusted
+2003,25,Auditory Impairments
+2003,26,Orthopedic Handicap
+2003,27,Chronically Ill
+2003,28,Visual Impairments
+2003,29,Communication Handicap
+2003,30,Autism
+2003,31,Day Training Eligible
+2003,32,Full-Day Preschool Disabled
+2003,33,Half-Day Preschool Disabled
+2003,34,Grade 9
+2003,35,Grade 10
+2003,36,Grade 11
+2003,37,Grade 12
+2003,38,Special Education
+2003,55,Total
+2003,56,FT Post Secondary
+2002,1,Full-Day Pre-Kindergarten
+2002,2,Half-Day Pre-Kindergarten
+2002,3,Full-Day Kindergarten
+2002,4,Half-Day Kindergarten
+2002,5,Grade 1
+2002,6,Grade 2
+2002,7,Grade 3
+2002,8,Grade 4
+2002,9,Grade 5
+2002,10,Grade 6
+2002,11,Grade 7
+2002,12,Grade 8
+2002,13,Grade 9
+2002,14,Grade 10
+2002,15,Grade 11
+2002,16,Grade 12
+2002,17,Post-Graduate
+2002,18,Educable
+2002,19,Trainable
+2002,20,Neurologically Impaired
+2002,21,Perceptually Impaired
+2002,22,Emotionally Disturbed
+2002,23,Multiple Disabilities
+2002,24,Socially Maladjusted
+2002,25,Auditory Impairments
+2002,26,Orthopedic Handicap
+2002,27,Chronically Ill
+2002,28,Visual Impairments
+2002,29,Communication Handicap
+2002,30,Autism
+2002,31,Day Training Eligible
+2002,32,Full-Day Preschool Disabled
+2002,33,Half-Day Preschool Disabled
+2002,34,Grade 9
+2002,35,Grade 10
+2002,36,Grade 11
+2002,37,Grade 12
+2002,38,Special Education
+2002,55,Total
+2002,56,FT Post Secondary
+2001,1,Full-Day Pre-Kindergarten
+2001,2,Half-Day Pre-Kindergarten
+2001,3,Full-Day Kindergarten
+2001,4,Half-Day Kindergarten
+2001,5,Grade 1
+2001,6,Grade 2
+2001,7,Grade 3
+2001,8,Grade 4
+2001,9,Grade 5
+2001,10,Grade 6
+2001,11,Grade 7
+2001,12,Grade 8
+2001,13,Grade 9
+2001,14,Grade 10
+2001,15,Grade 11
+2001,16,Grade 12
+2001,17,Post-Graduate
+2001,18,Educable
+2001,19,Trainable
+2001,20,Neurologically Impaired
+2001,21,Perceptually Impaired
+2001,22,Emotionally Disturbed
+2001,23,Multiple Disabilities
+2001,24,Socially Maladjusted
+2001,25,Auditory Impairments
+2001,26,Orthopedic Handicap
+2001,27,Chronically Ill
+2001,28,Visual Impairments
+2001,29,Communication Handicap
+2001,30,Autism
+2001,31,Day Training Eligible
+2001,32,Full-Day Preschool Disabled
+2001,33,Half-Day Preschool Disabled
+2001,34,Grade 9
+2001,35,Grade 10
+2001,36,Grade 11
+2001,37,Grade 12
+2001,38,Special Education
+2001,55,Total
+2001,56,FT Post Secondary
 2000,1,Full-Day Pre-Kindergarten
 2000,2,Half-Day Pre-Kindergarten
 2000,3,Full-Day Kindergarten
@@ -113,440 +495,76 @@ end_year,program_code,program_name
 2000,39,Special Programs - High
 2000,55,Total
 2000,56,FT Post Secondary
-2001,1,Full-Day Pre-Kindergarten
-2001,2,Half-Day Pre-Kindergarten
-2001,3,Full-Day Kindergarten
-2001,4,Half-Day Kindergarten
-2001,5,Grade 1
-2001,6,Grade 2
-2001,7,Grade 3
-2001,8,Grade 4
-2001,9,Grade 5
-2001,10,Grade 6
-2001,11,Grade 7
-2001,12,Grade 8
-2001,13,Grade 9
-2001,14,Grade 10
-2001,15,Grade 11
-2001,16,Grade 12
-2001,17,Post-Graduate
-2001,18,Educable
-2001,19,Trainable
-2001,20,Neurologically Impaired
-2001,21,Perceptually Impaired
-2001,22,Emotionally Disturbed
-2001,23,Multiple Disabilities
-2001,24,Socially Maladjusted
-2001,25,Auditory Impairments
-2001,26,Orthopedic Handicap
-2001,27,Chronically Ill
-2001,28,Visual Impairments
-2001,29,Communication Handicap
-2001,30,Autism
-2001,31,Day Training Eligible
-2001,32,Full-Day Preschool Disabled
-2001,33,Half-Day Preschool Disabled
-2001,34,Grade 9
-2001,35,Grade 10
-2001,36,Grade 11
-2001,37,Grade 12
-2001,38,Special Education
-2001,55,Total
-2001,56,FT Post Secondary
-2002,1,Full-Day Pre-Kindergarten
-2002,2,Half-Day Pre-Kindergarten
-2002,3,Full-Day Kindergarten
-2002,4,Half-Day Kindergarten
-2002,5,Grade 1
-2002,6,Grade 2
-2002,7,Grade 3
-2002,8,Grade 4
-2002,9,Grade 5
-2002,10,Grade 6
-2002,11,Grade 7
-2002,12,Grade 8
-2002,13,Grade 9
-2002,14,Grade 10
-2002,15,Grade 11
-2002,16,Grade 12
-2002,17,Post-Graduate
-2002,18,Educable
-2002,19,Trainable
-2002,20,Neurologically Impaired
-2002,21,Perceptually Impaired
-2002,22,Emotionally Disturbed
-2002,23,Multiple Disabilities
-2002,24,Socially Maladjusted
-2002,25,Auditory Impairments
-2002,26,Orthopedic Handicap
-2002,27,Chronically Ill
-2002,28,Visual Impairments
-2002,29,Communication Handicap
-2002,30,Autism
-2002,31,Day Training Eligible
-2002,32,Full-Day Preschool Disabled
-2002,33,Half-Day Preschool Disabled
-2002,34,Grade 9
-2002,35,Grade 10
-2002,36,Grade 11
-2002,37,Grade 12
-2002,38,Special Education
-2002,55,Total
-2002,56,FT Post Secondary
-2003,1,Full-Day Pre-Kindergarten
-2003,2,Half-Day Pre-Kindergarten
-2003,3,Full-Day Kindergarten
-2003,4,Half-Day Kindergarten
-2003,5,Grade 1
-2003,6,Grade 2
-2003,7,Grade 3
-2003,8,Grade 4
-2003,9,Grade 5
-2003,10,Grade 6
-2003,11,Grade 7
-2003,12,Grade 8
-2003,13,Grade 9
-2003,14,Grade 10
-2003,15,Grade 11
-2003,16,Grade 12
-2003,17,Post-Graduate
-2003,18,Educable
-2003,19,Trainable
-2003,20,Neurologically Impaired
-2003,21,Perceptually Impaired
-2003,22,Emotionally Disturbed
-2003,23,Multiple Disabilities
-2003,24,Socially Maladjusted
-2003,25,Auditory Impairments
-2003,26,Orthopedic Handicap
-2003,27,Chronically Ill
-2003,28,Visual Impairments
-2003,29,Communication Handicap
-2003,30,Autism
-2003,31,Day Training Eligible
-2003,32,Full-Day Preschool Disabled
-2003,33,Half-Day Preschool Disabled
-2003,34,Grade 9
-2003,35,Grade 10
-2003,36,Grade 11
-2003,37,Grade 12
-2003,38,Special Education
-2003,55,Total
-2003,56,FT Post Secondary
-2004,1,Full-Day Pre-Kindergarten
-2004,2,Half-Day Pre-Kindergarten
-2004,3,Full-Day Kindergarten
-2004,4,Half-Day Kindergarten
-2004,5,Grade 1
-2004,6,Grade 2
-2004,7,Grade 3
-2004,8,Grade 4
-2004,9,Grade 5
-2004,10,Grade 6
-2004,11,Grade 7
-2004,12,Grade 8
-2004,13,Grade 9
-2004,14,Grade 10
-2004,15,Grade 11
-2004,16,Grade 12
-2004,17,Post-Graduate
-2004,18,Educable
-2004,19,Trainable
-2004,20,Neurologically Impaired
-2004,21,Perceptually Impaired
-2004,22,Emotionally Disturbed
-2004,23,Multiple Disabilities
-2004,24,Socially Maladjusted
-2004,25,Auditory Impairments
-2004,26,Orthopedic Handicap
-2004,27,Chronically Ill
-2004,28,Visual Impairments
-2004,29,Communication Handicap
-2004,30,Autism
-2004,31,Day Training Eligible
-2004,32,Full-Day Preschool Disabled
-2004,33,Half-Day Preschool Disabled
-2004,34,Grade 9
-2004,35,Grade 10
-2004,36,Grade 11
-2004,37,Grade 12
-2004,38,Special Education
-2004,55,Total
-2004,56,FT Post Secondary
-2005,1,Full-Day Pre-Kindergarten
-2005,2,Half-Day Pre-Kindergarten
-2005,3,Full-Day Kindergarten
-2005,4,Half-Day Kindergarten
-2005,5,Grade 1
-2005,6,Grade 2
-2005,7,Grade 3
-2005,8,Grade 4
-2005,9,Grade 5
-2005,10,Grade 6
-2005,11,Grade 7
-2005,12,Grade 8
-2005,13,Grade 9
-2005,14,Grade 10
-2005,15,Grade 11
-2005,16,Grade 12
-2005,17,Post-Graduate
-2005,18,Cognitive - Mild
-2005,19,Cognitive - Moderate
-2005,20,Learning and/or Lang Disability - Mild
-2005,21,Learning and/or Lang Disability - Moderate
-2005,22,Behavioral Disabilities
-2005,23,Multiple Disabilities
-2005,24,Learning and/or Lang Disability - Severe
-2005,25,Auditory Impairments
-2005,28,Visual Impairments
-2005,30,Autism
-2005,31,Cognitive - Severe
-2005,32,Full-Day Preschool Disabled
-2005,33,Half-Day Preschool Disabled
-2005,34,Grade 9
-2005,35,Grade 10
-2005,36,Grade 11
-2005,37,Grade 12
-2005,38,Special Education
-2005,55,Total
-2005,56,FT Post Secondary
-2005,57,PT Post Secondary
-2006,1,Full-Day Pre-Kindergarten
-2006,2,Half-Day Pre-Kindergarten
-2006,3,Full-Day Kindergarten
-2006,4,Half-Day Kindergarten
-2006,5,Grade 1
-2006,6,Grade 2
-2006,7,Grade 3
-2006,8,Grade 4
-2006,9,Grade 5
-2006,10,Grade 6
-2006,11,Grade 7
-2006,12,Grade 8
-2006,13,Grade 9
-2006,14,Grade 10
-2006,15,Grade 11
-2006,16,Grade 12
-2006,17,Post-Graduate
-2006,18,Cognitive - Mild
-2006,19,Cognitive - Moderate
-2006,20,Learning and/or Lang Disability - Mild/Mod
-2006,22,Behavioral Disabilities
-2006,23,Multiple Disabilities
-2006,24,Learning and/or Lang Disability - Severe
-2006,25,Auditory Impairments
-2006,28,Visual Impairments
-2006,30,Autism
-2006,31,Cognitive - Severe
-2006,32,Full-Day Preschool Disabled
-2006,33,Half-Day Preschool Disabled
-2006,34,Grade 9 Voc
-2006,35,Grade 10 Voc
-2006,36,Grade 11 Voc
-2006,37,Grade 12 Voc
-2006,38,Special Education Vocational
-2006,55,Total
-2006,56,FT Post Secondary
-2006,57,PT Post Secondary
-2007,1,Full-Day Pre-Kindergarten
-2007,2,Half-Day Pre-Kindergarten
-2007,3,Full-Day Kindergarten
-2007,4,Half-Day Kindergarten
-2007,5,Grade 1
-2007,6,Grade 2
-2007,7,Grade 3
-2007,8,Grade 4
-2007,9,Grade 5
-2007,10,Grade 6
-2007,11,Grade 7
-2007,12,Grade 8
-2007,13,Grade 9
-2007,14,Grade 10
-2007,15,Grade 11
-2007,16,Grade 12
-2007,17,Post-Graduate
-2007,18,Cognitive - Mild
-2007,19,Cognitive - Moderate
-2007,20,Learning and/or Lang Disability - Mild/Mod
-2007,22,Behavioral Disabilities
-2007,23,Multiple Disabilities
-2007,24,Learning and/or Lang Disability - Severe
-2007,25,Auditory Impairments
-2007,28,Visual Impairments
-2007,30,Autism
-2007,31,Cognitive - Severe
-2007,32,Full-Day Preschool Disabled
-2007,33,Half-Day Preschool Disabled
-2007,34,Grade 9 Voc
-2007,35,Grade 10 Voc
-2007,36,Grade 11 Voc
-2007,37,Grade 12 Voc
-2007,38,Special Education Vocational
-2007,55,Total
-2007,56,FT Post Secondary
-2007,57,PT Post Secondary
-2008,1,Full-Day Pre-Kindergarten
-2008,2,Half-Day Pre-Kindergarten
-2008,3,Full-Day Kindergarten
-2008,4,Half-Day Kindergarten
-2008,5,Grade 1
-2008,6,Grade 2
-2008,7,Grade 3
-2008,8,Grade 4
-2008,9,Grade 5
-2008,10,Grade 6
-2008,11,Grade 7
-2008,12,Grade 8
-2008,13,Grade 9
-2008,14,Grade 10
-2008,15,Grade 11
-2008,16,Grade 12
-2008,17,Post-Graduate
-2008,18,Cognitive - Mild
-2008,19,Cognitive - Moderate
-2008,20,Learning and/or Lang Disability - Mild/Mod
-2008,22,Behavioral Disabilities
-2008,23,Multiple Disabilities
-2008,24,Learning and/or Lang Disability - Severe
-2008,25,Auditory Impairments
-2008,28,Visual Impairments
-2008,30,Autism
-2008,31,Cognitive - Severe
-2008,32,Full-Day Preschool Disabled
-2008,33,Half-Day Preschool Disabled
-2008,34,Grade 9 Voc
-2008,35,Grade 10 Voc
-2008,36,Grade 11 Voc
-2008,37,Grade 12 Voc
-2008,38,Special Education Vocational
-2008,55,Total
-2008,56,FT Post Secondary
-2008,57,PT Post Secondary
-2009,1,Full-Day Pre-Kindergarten
-2009,2,Half-Day Pre-Kindergarten
-2009,3,Full-Day Kindergarten
-2009,4,Half-Day Kindergarten
-2009,5,Grade 1
-2009,6,Grade 2
-2009,7,Grade 3
-2009,8,Grade 4
-2009,9,Grade 5
-2009,10,Grade 6
-2009,11,Grade 7
-2009,12,Grade 8
-2009,13,Grade 9
-2009,14,Grade 10
-2009,15,Grade 11
-2009,16,Grade 12
-2009,18,Cognitive - Mild
-2009,19,Cognitive - Moderate
-2009,20,Learning and/or Lang Disability - Mild/Mod
-2009,21,Behavioral Disabilities
-2009,22,Behavioral Disabilities
-2009,23,Multiple Disabilities
-2009,24,Learning and/or Lang Disability - Severe
-2009,25,Auditory Impairments
-2009,28,Visual Impairments
-2009,30,Autism
-2009,31,Cognitive - Severe
-2009,32,Full-Day Preschool Disabled
-2009,32,Half-Day Preschool Disabled
-2009,33,Half-Day Preschool Disabled
-2009,34,Grade 9 Voc
-2009,35,Grade 10 Voc
-2009,36,Grade 11 Voc
-2009,37,Grade 12 Voc
-2009,38,Special Education Vocational
-2009,55,Total
-2009,56,FT Post Secondary
-2009,57,PT Post Secondary
-2010,1,Grade 1
-2010,2,Grade 2
-2010,3,Grade 3
-2010,4,Grade 4
-2010,5,Grade 5
-2010,6,Grade 6
-2010,7,Grade 7
-2010,8,Grade 8
-2010,9,Grade 9
-2010,10,Grade 10
-2010,11,Grade 11
-2010,12,Grade 12
-2010,KF,Kindergarten Full Day
-2010,KH,Kindergarten Half Day
-2010,PF,Preschool Full Day
-2010,PH,Preschool Half Day
-2010,TOTAL,Total
-2010,UG,Ungraded
-2011,1,Grade 1
-2011,2,Grade 2
-2011,3,Grade 3
-2011,4,Grade 4
-2011,5,Grade 5
-2011,6,Grade 6
-2011,7,Grade 7
-2011,8,Grade 8
-2011,9,Grade 9
-2011,10,Grade 10
-2011,11,Grade 11
-2011,12,Grade 12
-2011,KF,Kindergarten Full Day
-2011,KH,Kindergarten Half Day
-2011,PF,Preschool Full Day
-2011,PH,Preschool Half Day
-2011,TOTAL,Total
-2011,UG,Ungraded
-2012,1,Grade 1
-2012,2,Grade 2
-2012,3,Grade 3
-2012,4,Grade 4
-2012,5,Grade 5
-2012,6,Grade 6
-2012,7,Grade 7
-2012,8,Grade 8
-2012,9,Grade 9
-2012,10,Grade 10
-2012,11,Grade 11
-2012,12,Grade 12
-2012,KF,Kindergarten Full Day
-2012,KH,Kindergarten Half Day
-2012,PF,Preschool Full Day
-2012,PH,Preschool Half Day
-2012,TOTAL,Total
-2012,UG,Ungraded
-2013,1,Grade 1
-2013,2,Grade 2
-2013,3,Grade 3
-2013,4,Grade 4
-2013,5,Grade 5
-2013,6,Grade 6
-2013,7,Grade 7
-2013,8,Grade 8
-2013,9,Grade 9
-2013,10,Grade 10
-2013,11,Grade 11
-2013,12,Grade 12
-2013,KF,Kindergarten Full Day
-2013,KH,Kindergarten Half Day
-2013,PF,Preschool Full Day
-2013,PH,Preschool Half Day
-2013,TOTAL,Total
-2013,UG,Ungraded
-2014,1,Grade 1
-2014,2,Grade 2
-2014,3,Grade 3
-2014,4,Grade 4
-2014,5,Grade 5
-2014,6,Grade 6
-2014,7,Grade 7
-2014,8,Grade 8
-2014,9,Grade 9
-2014,10,Grade 10
-2014,11,Grade 11
-2014,12,Grade 12
-2014,KF,Kindergarten Full Day
-2014,KH,Kindergarten Half Day
-2014,PF,Preschool Full Day
-2014,PH,Preschool Half Day
-2014,TOTAL,Total
-2014,UG,Ungraded
+1999,1,Full-Day Pre-Kindergarten
+1999,2,Half-Day Pre-Kindergarten
+1999,3,Full-Day Kindergarten
+1999,4,Half-Day Kindergarten
+1999,5,Grade 1
+1999,6,Grade 2
+1999,7,Grade 3
+1999,8,Grade 4
+1999,9,Grade 5
+1999,10,Grade 6
+1999,11,Grade 7
+1999,12,Grade 8
+1999,13,Grade 9
+1999,14,Grade 10
+1999,15,Grade 11
+1999,16,Grade 12
+1999,17,Post-Graduate
+1999,18,Cognitive - Mid
+1999,19,Cognitive - Mild
+1999,20,Learning and/or Language Disability
+1999,21,Learning and/or Language Disability
+1999,22,Behavioral Disabilities
+1999,23,Multiple Disabilities
+1999,24,Auditory Impairments
+1999,27,Visual Impairments
+1999,28,Learning and/or Language Disability
+1999,29,Full-Day Preschool Disabled
+1999,30,Half-Day Preschool Disabled
+1999,31,Autism
+1999,32,Cognitive - Severe
+1999,55,Total
+1999,56,FT Post Secondary
+1998,1,Full-Day Pre-Kindergarten
+1998,2,Half-Day Pre-Kindergarten
+1998,3,Full-Day Kindergarten
+1998,4,Half-Day Kindergarten
+1998,5,Grade 1
+1998,6,Grade 2
+1998,7,Grade 3
+1998,8,Grade 4
+1998,9,Grade 5
+1998,10,Grade 6
+1998,11,Grade 7
+1998,12,Grade 8
+1998,13,Grade 9
+1998,14,Grade 10
+1998,15,Grade 11
+1998,16,Grade 12
+1998,17,Post-Graduate
+1998,18,Educable
+1998,19,Trainable
+1998,20,Neurologically Impaired
+1998,21,Perceptually Impaired
+1998,22,Emotionally Disturbed
+1998,23,Multiple Disabilities
+1998,24,Socially Maladjusted
+1998,25,Auditory Impairments
+1998,26,Orthopedic Handicap
+1998,27,Chronically Ill
+1998,28,Visual Impairments
+1998,29,Communication Handicap
+1998,30,Autism
+1998,31,Day Training Eligible
+1998,32,Full-Day Preschool Disabled
+1998,33,Half-Day Preschool Disabled
+1998,34,Regular Programs - Low
+1998,35,Regular Programs - Moderate
+1998,36,Regular Programs - High
+1998,37,Special Programs - Low
+1998,38,Special Programs - Moderate
+1998,39,Special Programs - High
+1998,55,Total
+1998,56,FT Post Secondary

@@ -53,7 +53,7 @@ split_enr_cols <- function(df) {
     df$county_id <- int_matrix[, 1]
     df$county_name <- int_matrix[, 2]
     
-    #district_id and district_name
+    #district_id and ditrict_name
     int_matrix <- stringr::str_split_fixed(df$district_name, "-", 2)    
     df$district_id <- int_matrix[, 1]
     df$district_name <- int_matrix[, 2]
@@ -300,7 +300,8 @@ clean_enr_data <- function(df) {
     if (z=='numeric') {
       df[, i] <- as.numeric(df[, i])
     } else if (z=='character') {
-      df[, i] <- as.character(df[, i])
+      df[, i] <- trim_whitespace(as.character(df[, i]))
+      
     }
   }
   
