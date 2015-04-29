@@ -18,7 +18,7 @@ enr_files <- list()
 for(i in c(2015:1999)) {
   enr <- fetch_enr(i) 
   
-  enr_files[[paste0('enr',i)]] <- enr
+  enr_files[[paste0('enr', i)]] <- enr
 }
 
 ```
@@ -29,7 +29,7 @@ for(i in c(2015:1999)) {
 
 enr_all <- enr_files[["enr2015"]]
 
-for (i in names(enr_files)[2:17]) {
+for (i in names(enr_files)[2:length(enr_files)]) {
   print(i)
   enr_all <- rbind_all(list(enr_all, enr_files[[i]]))
 
@@ -44,9 +44,30 @@ save(enr_files, enr_all, file='data\\sysdata.Rda')
 
 ```
 
+#prog codes need padded zeros
+
+```{r}
+
+library(stringr)
+
+prog_codes <- readr::read_csv('data-raw\\program_codes_clean.csv')
+
+prog1 <- prog_codes[prog_codes$end_year >= 2009, ]
+prog2 <- prog_codes[prog_codes$end_year < 2009, ]
+prog2$program_code <- as.numeric(prog2$program_code) * 1
+
+prog1$program_code <- stringr::str_pad(prog1$program_code, width=2, side='left', pad='0')
+
+prog_codes <- rbind(prog1, prog2)
+
+save(prog_codes, file='data\\program_codes.Rda')
+
+```
+
 # for debugging; step through fetch_enr steps
 
 ```{r debugging}
+
 foo1 <-  get_raw_enr(2008) 
 foo2 <- foo1 %>% clean_enr_names()
 foo3 <- foo2 %>% split_enr_cols()
@@ -56,4 +77,4 @@ foo6 <- foo5 %>% arrange_enr()
   
 ```  
 
-```
+
