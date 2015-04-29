@@ -34,7 +34,7 @@ get_raw_enr <- function(end_year) {
   }
   
   enr$end_year <- end_year
-  
+    
   return(enr)
 }
 
@@ -308,6 +308,14 @@ clean_enr_data <- function(df) {
     }
   }
   
+  #make CDS_code
+  #make cds code
+  df$CDS_Code <- paste0(
+    stringr::str_pad(df$county_id, width=2, side='left', pad='0'),
+    stringr::str_pad(df$district_id, width=4, side='left', pad='0'),
+    stringr::str_pad(df$school_id, width=3, side='left', pad='0')
+  )
+  
   return(df)  
 }
 
@@ -321,7 +329,7 @@ clean_enr_data <- function(df) {
 
 arrange_enr <- function(df) {
 
-  clean_names <- c('end_year', 'county_id', 'county_name', 'district_id', 'district_name', 'school_id',
+  clean_names <- c('end_year', 'CDS_Code', 'county_id', 'county_name', 'district_id', 'district_name', 'school_id',
     'school_name', 'program_code', 'program_name', 'white_m', 'white_f', 'black_m',
     'black_f', 'hispanic_m', 'hispanic_f', 'asian_m', 'asian_f', 'native_american_m',
     'native_american_f', 'pacific_islander_m', 'pacific_islander_f', 'multiracial_m',
