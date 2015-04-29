@@ -15,7 +15,7 @@ just some documentation of what I've saved to `sysdata.R`
 
 enr_files <- list()
 
-for(i in c(2015:1999)) {
+for(i in c(2012:1999)) {
   enr <- fetch_enr(i) 
   
   enr_files[[paste0('enr', i)]] <- enr
@@ -52,8 +52,8 @@ library(stringr)
 
 prog_codes <- readr::read_csv('data-raw\\program_codes_clean.csv')
 
-prog1 <- prog_codes[prog_codes$end_year >= 2009, ]
-prog2 <- prog_codes[prog_codes$end_year < 2009, ]
+prog1 <- prog_codes[prog_codes$end_year >= 2010, ]
+prog2 <- prog_codes[prog_codes$end_year < 2010, ]
 prog2$program_code <- as.numeric(prog2$program_code) * 1
 
 prog1$program_code <- stringr::str_pad(prog1$program_code, width=2, side='left', pad='0')
@@ -68,7 +68,7 @@ save(prog_codes, file='data\\program_codes.Rda')
 
 ```{r debugging}
 
-foo1 <-  get_raw_enr(2008) 
+foo1 <-  get_raw_enr(2009) 
 foo2 <- foo1 %>% clean_enr_names()
 foo3 <- foo2 %>% split_enr_cols()
 foo4 <- foo3 %>% clean_enr_data()
