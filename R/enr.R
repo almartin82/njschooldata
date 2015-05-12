@@ -309,7 +309,6 @@ clean_enr_data <- function(df) {
   }
   
   #make CDS_code
-  #make cds code
   df$CDS_Code <- paste0(
     stringr::str_pad(df$county_id, width=2, side='left', pad='0'),
     stringr::str_pad(df$district_id, width=4, side='left', pad='0'),
