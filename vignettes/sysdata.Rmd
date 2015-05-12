@@ -11,6 +11,11 @@ vignette: >
 
 just some documentation of what I've saved to `sysdata.R`
 
+#ASSESSMENT
+(run everything in all_assess.Rmd)
+
+#ENROLLMENT
+
 ```{r sys1}
 
 enr_files <- list()
@@ -38,15 +43,16 @@ for (i in names(enr_files)[2:length(enr_files)]) {
 
 ```
 
+
 ```{r sys2}
 
-save(enr_files, enr_all, file='data\\sysdata.Rda')
+save(enr_files, enr_all, all_nj, file='data\\sysdata.Rda')
 
 ```
 
 #prog codes need padded zeros
 
-```{r}
+```{r prog}
 
 library(stringr)
 
@@ -64,7 +70,7 @@ save(prog_codes, file='data\\program_codes.Rda')
 
 ```
 
-# for debugging; step through fetch_enr steps
+### for debugging; step through fetch_enr steps
 
 ```{r debugging}
 
@@ -77,4 +83,5 @@ foo6 <- foo5 %>% arrange_enr()
   
 ```  
 
+# ASSESSMENT
 
