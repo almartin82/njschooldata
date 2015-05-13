@@ -27,7 +27,7 @@ require(njschooldata)
 fetch_all_nj <- function() {
   
   #make the df of years and grades to iterate over  
-  post2006_years <- c(2006:2013)
+  post2006_years <- c(2006:2014)
   post2006_grades <- c(3:8, 11)
   
   pre2006_years <- c(2004, 2005)
@@ -100,3 +100,31 @@ all_nj[[4]][1:10, 1:15] %>% as.data.frame()
 ```
 
 You can see that you have a data frame of NJASK assessment results.
+
+# cleaning the data
+
+```{r}
+
+metadata <- data.frame(
+  year = numeric(length(all_nj)), 
+  grade = numeric(length(all_nj)), 
+  ncol = numeric(length(all_nj))
+)
+
+assess_names <- ''
+for (i in 1:length(all_nj)) {
+  print(i)
+  print(names(all_nj)[i])
+  #match? 
+  print(all(names(all_nj[[i]]) == assess_names))
+  #set
+  assess_names <- names(all_nj[[i]])
+}
+
+njask_2014 <- rbind_list(
+  all_nj[[1]], all_nj[[2]], all_nj[[3]], all_nj[[4]], all_nj[[5]], all_nj[[6]]
+)
+
+
+```
+
