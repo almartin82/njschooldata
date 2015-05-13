@@ -14,7 +14,7 @@ test_that("standard_assess correctly calls data for 2014",{
   hspa_ex <- standard_assess(2014, 11)
   
   expect_equal(nrow(hspa_ex), 371)
-  expect_equal(ncol(hspa_ex), 559)
+  expect_equal(ncol(hspa_ex), 560)
   expect_equal(
     sum(hspa_ex$GENERAL_EDUCATION_Number_Enrolled_LAL, na.rm = TRUE), 211258
   )
@@ -51,7 +51,7 @@ test_that("fetch_nj_assess returns correct output for a variety of calls", {
   #2014 hspa
   hspa_14 <- fetch_nj_assess(2014, 11)
   expect_equal(nrow(hspa_14), 371)
-  expect_equal(ncol(hspa_14), 559)
+  expect_equal(ncol(hspa_14), 560)
   expect_equal(
     sum(hspa_14$GENERAL_EDUCATION_Number_Enrolled_LAL, na.rm = TRUE), 211258
   )
