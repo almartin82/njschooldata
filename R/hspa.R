@@ -67,5 +67,7 @@ fetch_hspa <- function(end_year) {
       process_nj_assess(layout=layout_hspa2010) 
   }
   
+  hspa_df$Grade <- 11
+  
   return(hspa_df)
 }
