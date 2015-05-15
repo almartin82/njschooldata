@@ -141,6 +141,29 @@
 "layout_njask07gr3"
 
 
+#' NJASK layout metadata, 2009 test
+#'
+#' A processed R version of the 'File Layout' for the 2009 NJASK   
+#' Original file is in .xls format on NJDOE website
+#'
+#' @format
+#' \describe{
+#' \item{field_start_position}{field_start_position}
+#' \item{field_end_position}{field_end_position}
+#' \item{field_length}{field_length}
+#' \item{data_type}{data_type}
+#' \item{description}{description}
+#' \item{comments}{comments}
+#' \item{valid_values}{valid_values}
+#' \item{spanner1}{spanner1}
+#' \item{spanner2}{spanner2}
+#' \item{final_name}{final_name}
+#' #' }
+#' @source NJDOE website - eg the 'File Layout' link on
+#' http://www.state.nj.us/education/schools/achievement/2009/njask3/
+"layout_njask09"
+
+
 #' GEPA layout metadata, 2004 - 2007 assessment
 #'
 #' A processed R version of the 'File Layout' for the 2004-2007
