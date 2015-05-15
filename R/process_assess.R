@@ -37,6 +37,11 @@ process_nj_assess <- function(df, layout) {
       dplyr::funs(implied_decimal_fix)  
     )
   
+  #grade should be numeric
+  if (c("Grade") %in% names(df)) {
+    df$Grade <- as.numeric(df$Grade)
+  }
+  
   #put back together 
   final <- cbind(ignore, processed)
   
