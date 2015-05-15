@@ -62,6 +62,7 @@ fetch_nj_assess <- function(end_year, grade) {
       all(.) ~ "invalid grade/end_year parameter passed")
   
   #everything post 2008 has the same grade coverage
+  #some of the layouts are funky, but the fetch_njask function covers that.
   if (end_year >= 2008) {
     assess_data <- standard_assess(end_year, grade)
     

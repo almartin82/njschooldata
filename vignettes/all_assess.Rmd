@@ -141,7 +141,7 @@ njask_2010 <- dplyr::rbind_list(
   all_nj[[29]], all_nj[[30]], all_nj[[31]], all_nj[[32]], all_nj[[33]], all_nj[[34]]
 )
 
-#problems with 2009
+#problems with 2009?
 njask_2009 <- dplyr::rbind_list(
   all_nj[[36]], all_nj[[37]], all_nj[[38]]
 )

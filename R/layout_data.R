@@ -141,7 +141,7 @@
 "layout_njask07gr3"
 
 
-#' NJASK layout metadata, 2009 test
+#' NJASK layout metadata, 2009 test, 2007-8 gr 5+ test
 #'
 #' A processed R version of the 'File Layout' for the 2009 NJASK   
 #' Original file is in .xls format on NJDOE website
