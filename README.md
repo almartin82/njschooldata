@@ -35,8 +35,14 @@ fetch_nj_assess(end_year = 2007, grade = 11)
 
 read in the 2005 state enrollment data file:
 ```R
-fetch_enr(2005)
+fetch_enr(end_year = 2005)
 ```
+
+# Coverage
+Anytime a year is passed as a parameter for assessment data, it referrs to the 'end_year' -- ie, the `2014-15` school year is `2015`.
+
+NJASK data runs from 2004-2014, roughly (there were a number of revisions to the assessment program, so grade coverage depends on the year.  Look at [valid call](https://github.com/almartin82/njschooldata/blob/928992aebb7ab0c4fa0012079611de2a26f73d6a/R/fetch_nj_assess.R#L9) for the gory details.)
+
 
 # Contributing
 
