@@ -83,5 +83,3 @@ foo6 <- foo5 %>% arrange_enr()
   
 ```  
 
-# ASSESSMENT
-
