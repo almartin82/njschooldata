@@ -66,24 +66,36 @@ fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
   if (end_year >= 2008) {
     assess_data <- standard_assess(end_year, grade)
     
+    if (grade == 11) {
+      assess_name <- 'HSPA'
+    } else {
+      assess_name <- 'NJASK'
+    }
+    
   #2006 and 2007: NJASK 3rd-7th, GEPA 8th, HSPA 11th
   } else if (end_year %in% c(2006, 2007)) {
     if (grade %in% c(3:7)) {
-      assess_data <- standard_assess(end_year, grade)  
+      assess_data <- standard_assess(end_year, grade)
+      assess_name <- 'NJASK'
     } else if (grade == 8) {
       assess_data <- fetch_gepa(end_year)
+      assess_name <- 'GEPA'
     } else if (grade == 11) {
       assess_data <- fetch_hspa(end_year)
+      assess_name <- 'HSPA'
     }
     
   #2004 and 2005:  NJASK 3rd & 4th, GEPA 8th, HSPA 11th
   } else if (end_year %in% c(2004, 2005)) {
     if (grade %in% c(3:4)) {
       assess_data <- standard_assess(end_year, grade)  
+      assess_name <- 'NJASK'
     } else if (grade == 8) {
       assess_data <- fetch_gepa(end_year)
+      assess_name <- 'GEPA'
     } else if (grade == 11) {
       assess_data <- fetch_hspa(end_year)
+      assess_name <- 'HSPA'
     }
   
   } else {
@@ -92,4 +104,126 @@ fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
   }
  
   return(assess_data)
+}
+
+
+
+#' @title tidies NJ assessment data
+#' 
+#' @description
+#' \code{tidy_nj_assess} is a utility/internal function that takes the somewhat messy/inconsistent 
+#' assessment headers and returns a tidy data frame.
+#' @param assess_name NJASK, GEPA, HSPA
+#' @param df a processed data frame (eg, output of process_njask)
+#' @export
+
+tidy_nj_assess <- function(assess_name, df) {
+  
+  logistical_columns <- c("CDS_Code", "County_Code/DFG/Aggregation_Code", "District_Code", 
+    "School_Code", "County_Name", "District_Name", "School_Name", 
+    "DFG", "Special_Needs", "Testing_Year", "Grade", "RECORD_KEY", "County_Code", 
+    "DFG_Flag", "Special_Needs_(Abbott)_district_flag", "Grade_Level", "Test_Year"
+  )
+  
+  #by population
+  logistical_mask <- names(df) %in% logistical_columns
+  total_population_mask <- grepl('TOTAL_POPULATION', names(df))
+  general_education_mask <- grepl('GENERAL_EDUCATION', names(df))
+  special_education_mask <- grepl('SPECIAL_EDUCATION(?!_WITH_ACCOMMODATIONS)', names(df), perl = TRUE)
+  
+  lep_current_former_mask <- grepl('LIMITED_ENGLISH_PROFICIENT_current_and_former', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Current_and_Former_LEP', names(df)) | 
+    grepl('LIMITED_ENGLISH_PROFICIENT_Current_and_', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Current_+', names(df), fixed = TRUE) |
+    #weirdly, unmarked LEP means 'current and former'
+    grepl('(?<!CURRENT_|FORMER_)LIMITED_ENGLISH_PROFICIENT(?!_Current|_current|_Former)', names(df), perl = TRUE)
+
+  
+  lep_current_mask <- grepl('CURRENT_LIMITED_ENGLISH_PROFICIENT', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Current_LEPC', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Current(?!_and|_\\+)', names(df), perl = TRUE)
+
+  lep_former_mask <- grepl('FORMER_LIMITED_ENGLISH_PROFICIENT', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Former_LEPF', names(df)) |
+    grepl('LIMITED_ENGLISH_PROFICIENT_Former', names(df))
+  
+  female_mask <- grepl('FEMALE', names(df))
+  male_mask <- grepl('(?<!FE)MALE', names(df), perl = TRUE)
+  migrant_mask <- grepl('(?<!NON-)MIGRANT', names(df), perl = TRUE)
+  nonmigrant_mask <- grepl('NON-MIGRANT', names(df))
+  white_mask <- grepl('WHITE', names(df))
+  black_mask <- grepl('BLACK', names(df))
+  asian_mask <- grepl('ASIAN', names(df))
+  pacific_islander_mask <- grepl('PACIFIC_ISLANDER', names(df))
+  hispanic_mask <- grepl('HISPANIC', names(df))
+  american_indian_mask <- grepl('AMERICAN_INDIAN', names(df))
+  other_mask <- grepl('OTHER', names(df))
+  ed_mask <- grepl('(?<!NON-)ECONOMICALLY_DISADVANTAGED', names(df), perl = TRUE)
+  non_ed_mask <- grepl('NON-ECONOMICALLY_DISADVANTAGED', names(df))
+  sped_accomodations_mask <- grepl('SPECIAL_EDUCATION_WITH_ACCOMMODATIONS', names(df))
+  #irregular
+  not_exempt_from_passing_mask <- grepl('NOT_EXEMPT_FROM_PASSING', names(df))
+  iep_exempt_from_passing_mask <- grepl('IEP_EXEMPT_FROM_PASSING', names(df))
+  iep_exempt_from_taking_mask <- grepl('IEP_EXEMPT_FROM_TAKING', names(df))
+  lep_exempt_lal_only_mask <- grepl('LEP_EXEMPT_(LAL_Only)', names(df), fixed = TRUE) |
+    grepl('LEP_EXEMPT_LAL_Only', names(df), fixed = TRUE)
+
+  demog_masks <- rbind(logistical_mask, total_population_mask, general_education_mask, 
+    special_education_mask, lep_current_former_mask, lep_current_mask, lep_former_mask, 
+    female_mask, male_mask, migrant_mask, nonmigrant_mask, white_mask, black_mask, 
+    asian_mask, pacific_islander_mask, hispanic_mask, american_indian_mask, other_mask, 
+    ed_mask, non_ed_mask, sped_accomodations_mask, not_exempt_from_passing_mask, 
+    iep_exempt_from_passing_mask, iep_exempt_from_taking_mask, lep_exempt_lal_only_mask
+  ) %>% 
+    as.data.frame()
+  
+  demog_test <- demog_masks %>%
+    dplyr::summarise_each(funs(sum)) %>% 
+    unname() %>% unlist()
+  
+  if (!all(demog_test == 1)) {
+    print(names(df)[!demog_test == 1])
+    print(demog_test)
+  }
+  
+  #by subject
+  language_arts_mask <- grepl('LANGUAGE_ARTS', names(df), fixed = TRUE) | grepl('_ELA$', names(df)) |
+    grepl('_LAL_', names(df)) | grepl('_LAL$', names(df))
+  mathematics_mask <- grepl('MATHEMATICS', names(df), fixed = TRUE)
+  science_mask <- grepl('SCIENCE', names(df), fixed = TRUE)
+  #only number enrolled without subject
+  number_enrolled_mask <- grepl('Number_Enrolled', names(df), fixed = TRUE) & 
+    !language_arts_mask & !mathematics_mask & !science_mask
+  
+  subj_masks <- rbind(logistical_mask, language_arts_mask, mathematics_mask, 
+    science_mask, number_enrolled_mask) %>% 
+    as.data.frame()
+  
+  subj_test <- subj_masks %>%
+    dplyr::summarise_each(funs(sum)) %>% 
+    unname() %>% unlist()
+
+  if (!all(subj_test == 1)) {
+    print(names(df)[!subj_test == 1])  
+    names(subj_masks) <- names(df)
+    print(subj_masks[, !subj_test == 1])
+  }
+
+  subgroups <- c('total_population', 'general_education', 'special_education', 
+    'lep_current_former', 'lep_current', 'lep_former', 'female', 'male', 'migrant', 
+    'nonmigrant', 'white', 'black', 'asian', 'pacific_islander', 'hispanic', 
+    'american_indian', 'other', 'ed', 'non_ed', 'sped_accomodations', 'not_exempt_from_passing',
+    'iep_exempt_from_passing', 'iep_exempt_from_taking', 'lep_exempt_lal_only')
+  
+  #print(names(df[logistical_mask]))
+  for (i in subgroups) {
+    #print(i)
+    for (j in c('language_arts', 'mathematics', 'science')) {
+      #print(j)
+        subgroup_mask <- paste0(i, '_mask') %>% get()
+        subj_mask <- paste0(j, '_mask') %>% get()
+  
+    }
+  }
+  
 }
