@@ -55,7 +55,7 @@ standard_assess <- function(end_year, grade) {
 #' @inheritParams fetch_njask
 #' @export
 
-fetch_nj_assess <- function(end_year, grade) {
+fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
   #only allow valid calls
   valid_call(end_year, grade) %>%
     ensure_that(
