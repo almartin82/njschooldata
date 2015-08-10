@@ -191,7 +191,7 @@ tidy_nj_assess <- function(assess_name, df) {
     grepl('_LAL_', names(df)) | grepl('_LAL$', names(df))
   mathematics_mask <- grepl('MATHEMATICS', names(df), fixed = TRUE)
   science_mask <- grepl('SCIENCE', names(df), fixed = TRUE)
-  #only number enrolled without subject
+  #only number enrolled without subject (some years they did not specify)
   number_enrolled_mask <- grepl('Number_Enrolled', names(df), fixed = TRUE) & 
     !language_arts_mask & !mathematics_mask & !science_mask
   
@@ -215,14 +215,67 @@ tidy_nj_assess <- function(assess_name, df) {
     'american_indian', 'other', 'ed', 'non_ed', 'sped_accomodations', 'not_exempt_from_passing',
     'iep_exempt_from_passing', 'iep_exempt_from_taking', 'lep_exempt_lal_only')
   
-  #print(names(df[logistical_mask]))
+  tidy_df <- data.frame(
+    testing_year = integer(0),
+    grade = integer(0),
+    district_code = character(0),
+    school_code = character(0),
+    district_name = character(0),
+    school_name = character(0),
+    
+    number_enrolled = numeric(0),
+    number_not_present = numeric(0),
+    number_of_voids = numeric(0),
+    number_apa = numeric(0),
+    number_valid_scale_scores = numeric(0),
+    partially_proficient = numeric(0),
+    proficient = numeric(0),
+    advanced_proficient = numeric(0),
+    scale_score_mean = numeric(0)
+  )
+  
+  testing_year <- grepl('(Test_Year|Testing_Year)', names(df))
+  grade <- grepl('(Grade|Grade_Level)', names(df))
+  district_code <- grepl('District_Code', names(df), fixed = TRUE)
+  school_code <- grepl('School_Code', names(df), fixed = TRUE)
+  district_name <- grepl('District_Name', names(df), fixed = TRUE)
+  school_name <- grepl('School_Name', names(df), fixed = TRUE)
+  
+  constant_df <- data.frame(
+    testing_year = df[, testing_year],
+    grade = df[, grade],
+    district_code = df[, district_code],
+    school_code = df[, school_code],
+    district_name = df[, district_name],
+    school_name = df[, school_name],
+    stringsAsFactors = FALSE
+  )
+  
   for (i in subgroups) {
-    #print(i)
+    print(i)
     for (j in c('language_arts', 'mathematics', 'science')) {
-      #print(j)
+      print(j)
         subgroup_mask <- paste0(i, '_mask') %>% get()
         subj_mask <- paste0(j, '_mask') %>% get()
+        
+        names(df)[subgroup_mask & subj_mask]
+        this_df <- df[, subgroup_mask & subj_mask]
   
+        this_tidy <- cbind(
+          constant_df,
+          data.frame(
+            number_enrolled = this_df[, grepl('Number_Enrolled', names(this_df))],
+            number_not_present = this_df[, grepl('Number_Not_Present', names(this_df))],
+            number_of_voids = this_df[, grepl('Number_Enrolled', names(this_df))],
+            number_apa = this_df[, grepl('Number_APA', names(this_df))],
+            number_valid_scale_scores = this_df[, grepl('Number_of_Valid_Scale_Scores', names(this_df))],
+            partially_proficient = this_df[, grepl('Partially_Proficient_Percentage', names(this_df))],
+            proficient = this_df[, grepl('Proficient_Percentage', names(this_df))],
+            advanced_proficient = this_df[, grepl('Advanced_Proficient_Percentage', names(this_df))],
+            scale_score_mean = this_df[, grepl('Scale_Score_Mean', names(this_df))],
+            stringsAsFactors = FALSE
+          )
+        )
     }
   }
   
