@@ -37,8 +37,8 @@ fetch_all_nj <- function() {
   pre2006_grades <- c(3, 4, 8, 11)
 
   df <- data.frame(
-    year = vector(mode="numeric", length=0),
-    grade = vector(mode="numeric", length=0)
+    year = vector(mode = "numeric", length = 0),
+    grade = vector(mode = "numeric", length = 0)
   )
   
   for (i in post2006_years) {
@@ -86,11 +86,11 @@ fetch_all_nj <- function() {
 calling this code gives us a list of 71 data frames:
 ```{r run_it}
 
-all_nj <- fetch_all_nj()
+all_nj_raw <- fetch_all_nj()
 
-length(all_nj)
+length(all_nj_raw)
 
-names(all_nj)
+names(all_nj_raw)
 
 ```
 
@@ -98,7 +98,7 @@ and if you look at, say, position number 4 (`r names(all_nj)[4]`):
 
 ```{r examine_one}
 
-all_nj[[4]][1:10, 1:15] %>% as.data.frame()
+all_nj_raw[[4]][1:10, 1:15] %>% as.data.frame()
 
 ```
 
@@ -119,37 +119,37 @@ for (i in 1:length(all_nj)) {
   print(i)
   print(names(all_nj)[i])
   #match? 
-  print(all(names(all_nj[[i]]) == assess_names))
+  print(all(names(all_nj_raw[[i]]) == assess_names))
   #set
-  assess_names <- names(all_nj[[i]])
+  assess_names <- names(all_nj_raw[[i]])
 }
 
 njask_2014 <- dplyr::rbind_list(
-  all_nj[[1]], all_nj[[2]], all_nj[[3]], all_nj[[4]], all_nj[[5]], all_nj[[6]]
+  all_nj_raw[[1]], all_nj_raw[[2]], all_nj_raw[[3]], all_nj_raw[[4]], all_nj_raw[[5]], all_nj_raw[[6]]
 )
 
 njask_2013 <- dplyr::rbind_list(
-  all_nj[[8]], all_nj[[9]], all_nj[[10]], all_nj[[11]], all_nj[[12]], all_nj[[13]]
+  all_nj_raw[[8]], all_nj_raw[[9]], all_nj_raw[[10]], all_nj_raw[[11]], all_nj_raw[[12]], all_nj_raw[[13]]
 )
 
 njask_2012 <- dplyr::rbind_list(
-  all_nj[[15]], all_nj[[16]], all_nj[[17]], all_nj[[18]], all_nj[[19]], all_nj[[20]]
+  all_nj_raw[[15]], all_nj_raw[[16]], all_nj_raw[[17]], all_nj_raw[[18]], all_nj_raw[[19]], all_nj_raw[[20]]
 )
 
 njask_2011 <- dplyr::rbind_list(
-  all_nj[[22]], all_nj[[23]], all_nj[[24]], all_nj[[25]], all_nj[[26]], all_nj[[27]]
+  all_nj_raw[[22]], all_nj_raw[[23]], all_nj_raw[[24]], all_nj_raw[[25]], all_nj_raw[[26]], all_nj_raw[[27]]
 )
 
 njask_2010 <- dplyr::rbind_list(
-  all_nj[[29]], all_nj[[30]], all_nj[[31]], all_nj[[32]], all_nj[[33]], all_nj[[34]]
+  all_nj_raw[[29]], all_nj_raw[[30]], all_nj_raw[[31]], all_nj_raw[[32]], all_nj_raw[[33]], all_nj_raw[[34]]
 )
 
 njask_2009 <- dplyr::rbind_list(
-  all_nj[[36]], all_nj[[37]], all_nj[[38]], all_nj[[39]], all_nj[[40]], all_nj[[41]]
+  all_nj_raw[[36]], all_nj_raw[[37]], all_nj_raw[[38]], all_nj_raw[[39]], all_nj_raw[[40]], all_nj_raw[[41]]
 )
 
 njask_2008 <- dplyr::rbind_list(
-  all_nj[[43]], all_nj[[44]], all_nj[[45]], all_nj[[46]], all_nj[[47]], all_nj[[48]]
+  all_nj_raw[[43]], all_nj_raw[[44]], all_nj_raw[[45]], all_nj_raw[[46]], all_nj_raw[[47]], all_nj_raw[[48]]
 )
 
 ```
