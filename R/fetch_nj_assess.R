@@ -34,7 +34,7 @@ valid_call <- function(end_year, grade) {
 #' @export
 
 standard_assess <- function(end_year, grade) {
-  if(grade %in% c(3:8)) {
+  if (grade %in% c(3:8)) {
     assess_data <- fetch_njask(end_year, grade)
   } else if (grade == 11) {
     assess_data <- fetch_hspa(end_year) 
@@ -52,7 +52,16 @@ standard_assess <- function(end_year, grade) {
 #' text file, and return a data frame.  \code{fetch_nj_assess} is a wrapper around 
 #' all the individual subject functions (NJASK, HSPA, etc.), abstracting away the 
 #' complexity of finding the right location/file layout.
-#' @inheritParams fetch_njask
+#' @param end_year a school year.  end_year is the end of the academic year - eg 2013-14
+#' school year is end_year '2014'.  valid values are 2004-2014.
+#' @param grade a grade level.  valid values are 3,4,5,6,7,8,11
+#' @param tidy if TRUE, takes the unwieldy, inconsistent wide data and normalizes into a 
+#' long, tidy data frame with 17 headers:
+#' c("testing_year", "grade", "county_code", "district_code", "school_code", "district_name", 
+#' "school_name", "subgroup", "assessment", "number_enrolled", "number_not_present", 
+#' "number_of_voids", "number_of_valid_classifications", "number_apa", 
+#' "number_valid_scale_scores", "partially_proficient", "proficient", "advanced_proficient", 
+#' "scale_score_mean")
 #' @export
 
 fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
@@ -97,12 +106,14 @@ fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
       assess_data <- fetch_hspa(end_year)
       assess_name <- 'HSPA'
     }
-  
+    
   } else {
     #if we ever reached this block, there's a problem with our `valid_call()` function
     stop("unable to match your grade/end_year parameters to the appropriate function.")
   }
  
+  if (tidy) assess_data <- tidy_nj_assess(assess_name, assess_data)
+  
   return(assess_data)
 }
 
@@ -178,7 +189,7 @@ tidy_nj_assess <- function(assess_name, df) {
     as.data.frame()
   
   demog_test <- demog_masks %>%
-    dplyr::summarise_each(funs(sum)) %>% 
+    dplyr::summarise_each(dplyr::funs(sum)) %>% 
     unname() %>% unlist()
   
   if (!all(demog_test == 1)) {
@@ -216,16 +227,25 @@ tidy_nj_assess <- function(assess_name, df) {
     'iep_exempt_from_passing', 'iep_exempt_from_taking', 'lep_exempt_lal_only')
   
   tidy_df <- data.frame(
+    #these are constant across subgroups
+    assess_name = character(0),
     testing_year = integer(0),
     grade = integer(0),
+    county_code = character(0),
     district_code = character(0),
     school_code = character(0),
     district_name = character(0),
     school_name = character(0),
     
+    #these are set by the loops below
+    subgroup = character(0),
+    assessment = character(0),
+    
+    #and these are the measures per subgroup/assessment
     number_enrolled = numeric(0),
     number_not_present = numeric(0),
     number_of_voids = numeric(0),
+    number_of_valid_classifications = numeric(0),
     number_apa = numeric(0),
     number_valid_scale_scores = numeric(0),
     partially_proficient = numeric(0),
@@ -234,16 +254,29 @@ tidy_nj_assess <- function(assess_name, df) {
     scale_score_mean = numeric(0)
   )
   
+  tidy_col <- function(mask, nj_df) {
+    if (sum(mask) > 1) stop("tidying assessment data matched more than one column")
+    if (all(mask == FALSE)) {
+      out <- rep(NA, nrow(nj_df))
+    } else {
+      out <- nj_df[, mask]
+    }
+    return(out)
+  }
+  
   testing_year <- grepl('(Test_Year|Testing_Year)', names(df))
   grade <- grepl('(Grade|Grade_Level)', names(df))
+  county_code <- grepl('County_Code', names(df), fixed = TRUE)
   district_code <- grepl('District_Code', names(df), fixed = TRUE)
   school_code <- grepl('School_Code', names(df), fixed = TRUE)
   district_name <- grepl('District_Name', names(df), fixed = TRUE)
   school_name <- grepl('School_Name', names(df), fixed = TRUE)
   
   constant_df <- data.frame(
+    assess_name = assess_name,
     testing_year = df[, testing_year],
     grade = df[, grade],
+    county_code = df[, county_code],
     district_code = df[, district_code],
     school_code = df[, school_code],
     district_name = df[, district_name],
@@ -252,31 +285,40 @@ tidy_nj_assess <- function(assess_name, df) {
   )
   
   for (i in subgroups) {
-    print(i)
+    subgroup_mask <- paste0(i, '_mask') %>% get()
+    if (!any(subgroup_mask)) next
+    
     for (j in c('language_arts', 'mathematics', 'science')) {
-      print(j)
-        subgroup_mask <- paste0(i, '_mask') %>% get()
-        subj_mask <- paste0(j, '_mask') %>% get()
-        
-        names(df)[subgroup_mask & subj_mask]
-        this_df <- df[, subgroup_mask & subj_mask]
-  
-        this_tidy <- cbind(
-          constant_df,
-          data.frame(
-            number_enrolled = this_df[, grepl('Number_Enrolled', names(this_df))],
-            number_not_present = this_df[, grepl('Number_Not_Present', names(this_df))],
-            number_of_voids = this_df[, grepl('Number_Enrolled', names(this_df))],
-            number_apa = this_df[, grepl('Number_APA', names(this_df))],
-            number_valid_scale_scores = this_df[, grepl('Number_of_Valid_Scale_Scores', names(this_df))],
-            partially_proficient = this_df[, grepl('Partially_Proficient_Percentage', names(this_df))],
-            proficient = this_df[, grepl('Proficient_Percentage', names(this_df))],
-            advanced_proficient = this_df[, grepl('Advanced_Proficient_Percentage', names(this_df))],
-            scale_score_mean = this_df[, grepl('Scale_Score_Mean', names(this_df))],
-            stringsAsFactors = FALSE
-          )
+      subj_mask <- paste0(j, '_mask') %>% get()
+      
+      #skip when no data
+      if (!any(subj_mask)) next
+      
+      this_df <- df[, subgroup_mask & subj_mask]
+
+      this_tidy <- cbind(
+        constant_df,
+        data.frame(
+          subgroup = i,
+          assessment = j,
+
+          number_enrolled = tidy_col(grepl('Number_Enrolled', names(this_df)), this_df),
+          number_not_present = tidy_col(grepl('Number_Not_Present', names(this_df)), this_df),
+          number_of_voids = tidy_col(grepl('Number_Enrolled', names(this_df)), this_df),
+          number_of_valid_classifications = tidy_col(grepl('Number_of_Valid_Classifications', names(this_df)), this_df),
+          number_apa = tidy_col(grepl('Number_APA', names(this_df)), this_df),
+          number_valid_scale_scores = tidy_col(grepl('Number_of_Valid_Scale_Scores', names(this_df)), this_df),
+          partially_proficient = tidy_col(grepl('Partially_Proficient_Percentage', names(this_df)), this_df),
+          proficient = tidy_col(grepl('(?<!Partially_|Advanced_)Proficient_Percentage', names(this_df), perl = TRUE), this_df),
+          advanced_proficient = tidy_col(grepl('Advanced_Proficient_Percentage', names(this_df)), this_df),
+          scale_score_mean = tidy_col(grepl('Scale_Score_Mean', names(this_df)), this_df),
+          stringsAsFactors = FALSE
         )
+      )
+      
+      tidy_df <- rbind(tidy_df, this_tidy)
     }
   }
   
+  return(tidy_df)
 }
