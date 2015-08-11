@@ -1,0 +1,65 @@
+---
+title: "new_all_assess"
+author: "Andrew Martin"
+date: "August 11, 2015"
+output: html_document
+---
+
+
+```{r}
+assess_years <- structure(list(year = c(2014, 2014, 2014, 2014, 2014, 2014, 2014, 
+2013, 2013, 2013, 2013, 2013, 2013, 2013, 2012, 2012, 2012, 2012, 
+2012, 2012, 2012, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2010, 
+2010, 2010, 2010, 2010, 2010, 2010, 2009, 2009, 2009, 2009, 2009, 
+2009, 2009, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2007, 2007, 
+2007, 2007, 2007, 2007, 2007, 2006, 2006, 2006, 2006, 2006, 2006, 
+2006, 2005, 2005, 2005, 2005, 2004, 2004, 2004, 2004), grade = c(3, 
+4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 8, 11, 
+3, 4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 8, 
+11, 3, 4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 8, 11, 3, 4, 5, 6, 7, 
+8, 11, 3, 4, 8, 11, 3, 4, 8, 11), finished = c("NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", 
+"NO", "NO")), .Names = c("year", "grade", "finished"), row.names = c(NA, 
+-71L), class = "data.frame")
+
+results <- list()
+
+save(assess_years, file = 'assess_years.Rda')
+saveRDS(results, file="results.Rds")
+
+
+
+```
+
+it keeps crashing.  sigh.
+```{r}
+
+load(file = 'assess_years.Rda')
+results <- readRDS("results.Rds")
+
+for (i in 1:nrow(assess_years)) {
+  if (assess_years[i, 'finished'] == 'YES') {
+    next()
+  }
+
+  this_row <- assess_years[i, ]
+  #be verbose
+  row_key <- paste0('nj', this_row$year, 'gr', this_row$grade)
+  print(row_key)
+  
+  #call this grade/year and attach to results list
+  results[[row_key]] <-  fetch_nj_assess(this_row$year, this_row$grade)
+
+  assess_years[i, 'finished'] <- 'YES'
+  
+  save(assess_years, file = 'assess_years.Rda')
+  saveRDS(results, file="results.Rds")
+
+}
+
+```
