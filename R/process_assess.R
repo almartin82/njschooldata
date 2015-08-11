@@ -12,9 +12,6 @@ process_nj_assess <- function(df, layout) {
   #build a mask
   mask <- layout$comments == 'One implied decimal'
     
-  #keep the names to put back in the same order
-  all_names <- names(df)
-  
   #make sure df is data frame (not dplyr data frame) so that normal subsetting
   df <- as.data.frame(df)
 
@@ -45,6 +42,10 @@ process_nj_assess <- function(df, layout) {
     grade_mask <- grepl('(Grade|Grade_Level)', names(final))
     names(final)[grade_mask] <- "Grade"
     final$Grade <- as.integer(final$Grade)
+    
+    #also change in the original
+    grade_orig <- grepl('(Grade|Grade_Level)', names(df))
+    names(df)[grade_orig] <- "Grade"
   }
 
   #reorder and return
