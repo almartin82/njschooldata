@@ -37,14 +37,16 @@ process_nj_assess <- function(df, layout) {
       dplyr::funs(implied_decimal_fix)  
     )
   
-  #grade should be numeric
-  if (c("Grade") %in% names(df)) {
-    df$Grade <- as.numeric(df$Grade)
-  }
-  
   #put back together 
   final <- cbind(ignore, processed)
   
+  #grade should be numeric
+  if (c('Grade', 'Grade_Level') %in% names(final) %>% any()) {
+    grade_mask <- grepl('(Grade|Grade_Level)', names(final))
+    names(final)[grade_mask] <- "Grade"
+    final$Grade <- as.integer(final$Grade)
+  }
+
   #reorder and return
   final %>%
     dplyr::select(
