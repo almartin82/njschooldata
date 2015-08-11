@@ -16,3 +16,8 @@ vignettes/*.pdf
 
 .Rproj.user
 .Rdata
+
+#one off
+all_assess.RData
+assess_years.Rda
+results.Rds
