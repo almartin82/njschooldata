@@ -13,12 +13,8 @@ school year is end_year '2014'.  valid values are 2004-2014.}
 \item{grade}{a grade level.  valid values are 3,4,5,6,7,8,11}
 
 \item{tidy}{if TRUE, takes the unwieldy, inconsistent wide data and normalizes into a
-long, tidy data frame with 17 headers:
-c("testing_year", "grade", "district_code", "school_code", "district_name",
-"school_name", "subgroup", "assessment", "number_enrolled", "number_not_present",
-"number_of_voids", "number_of_valid_classifications", "number_apa", "number_valid_scale_scores",
-"partially_proficient", "proficient", "advanced_proficient",
-"scale_score_mean")}
+long, tidy data frame with ~20 headers - constants(school/district name and code),
+subgroup (all the NCLB subgroups) and test_name (LAL, math, etc).}
 }
 \description{
 this is the workhorse function.  given a end_year and a grade (valid years are 2004-present),
