@@ -13,6 +13,9 @@ vignette: >
 #libraries and functions etc
 require(dplyr)
 require(ensurer)
+require(knitr)
+#switch this to run the vignette
+knitr::opts_knit$set(eval = FALSE)
 ```
 
 ## grab everything!

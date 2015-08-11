@@ -62,6 +62,7 @@ get_raw_njask <- function(end_year, grade, layout=layout_njask) {
       end = layout$field_end_position,
       col_names = layout$final_name
     ),
+    #col_types = rep('c', nrow(layout)) %>% paste(collapse = ''),
     na = "*",
     progress = TRUE
   )
@@ -81,10 +82,9 @@ get_raw_njask <- function(end_year, grade, layout=layout_njask) {
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2013-14
 #' school year is end_year '2014'.  valid values are 2004-2014.
 #' @param grade a grade level.  valid values are 3,4,5,6,7,8
-#' @param tidy if TRUE, returns a tidy data frame
 #' @export
 
-fetch_njask <- function(end_year, grade, tidy = FALSE) {
+fetch_njask <- function(end_year, grade) {
   if (end_year == 2004) {
     df <- get_raw_njask(end_year, grade, layout = layout_njask04) %>% 
       process_nj_assess(layout = layout_njask04)
@@ -121,8 +121,9 @@ fetch_njask <- function(end_year, grade, tidy = FALSE) {
     df <- get_raw_njask(end_year, grade) %>% 
       process_nj_assess(layout = layout_njask)    
   }
-
-  if (tidy) df <- tidy_njask(end_year, grade, df)
   
+  #some flat files don't include the test year
+  if (!any(grepl('(Test_Year|Testing_Year)', names(df)))) df$Testing_Year <- end_year
+
   return(df)
 }
