@@ -56,12 +56,8 @@ standard_assess <- function(end_year, grade) {
 #' school year is end_year '2014'.  valid values are 2004-2014.
 #' @param grade a grade level.  valid values are 3,4,5,6,7,8,11
 #' @param tidy if TRUE, takes the unwieldy, inconsistent wide data and normalizes into a 
-#' long, tidy data frame with 17 headers:
-#' c("testing_year", "grade", "county_code", "district_code", "school_code", "district_name", 
-#' "school_name", "subgroup", "assessment", "number_enrolled", "number_not_present", 
-#' "number_of_voids", "number_of_valid_classifications", "number_apa", 
-#' "number_valid_scale_scores", "partially_proficient", "proficient", "advanced_proficient", 
-#' "scale_score_mean")
+#' long, tidy data frame with ~20 headers - constants(school/district name and code),
+#' subgroup (all the NCLB subgroups) and test_name (LAL, math, etc).  
 #' @export
 
 fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
@@ -211,7 +207,7 @@ tidy_nj_assess <- function(assess_name, df) {
     as.data.frame()
   
   subj_test <- subj_masks %>%
-    dplyr::summarise_each(funs(sum)) %>% 
+    dplyr::summarise_each(dplyr::funs(sum)) %>% 
     unname() %>% unlist()
 
   if (!all(subj_test == 1)) {
@@ -236,10 +232,12 @@ tidy_nj_assess <- function(assess_name, df) {
     school_code = character(0),
     district_name = character(0),
     school_name = character(0),
+    dfg = character(0),
+    special_needs = character(0),
     
     #these are set by the loops below
     subgroup = character(0),
-    assessment = character(0),
+    test_name = character(0),
     
     #and these are the measures per subgroup/assessment
     number_enrolled = numeric(0),
@@ -271,16 +269,20 @@ tidy_nj_assess <- function(assess_name, df) {
   school_code <- grepl('School_Code', names(df), fixed = TRUE)
   district_name <- grepl('District_Name', names(df), fixed = TRUE)
   school_name <- grepl('School_Name', names(df), fixed = TRUE)
+  dfg <- grepl('^DFG', names(df), fixed = TRUE)
+  special_needs <- grepl('^Special_Needs', names(df), fixed = TRUE)
   
   constant_df <- data.frame(
     assess_name = assess_name,
-    testing_year = df[, testing_year],
-    grade = df[, grade],
-    county_code = df[, county_code],
-    district_code = df[, district_code],
-    school_code = df[, school_code],
-    district_name = df[, district_name],
-    school_name = df[, school_name],
+    testing_year = tidy_col(testing_year, df),
+    grade = tidy_col(grade, df),
+    county_code = tidy_col(county_code, df),
+    district_code = tidy_col(district_code, df),
+    school_code = tidy_col(school_code, df),
+    district_name = tidy_col(district_name, df),
+    school_name = tidy_col(school_name, df),
+    dfg = tidy_col(dfg, df),
+    special_needs = tidy_col(special_needs, df),
     stringsAsFactors = FALSE
   )
   
@@ -300,7 +302,7 @@ tidy_nj_assess <- function(assess_name, df) {
         constant_df,
         data.frame(
           subgroup = i,
-          assessment = j,
+          test_name = j,
 
           number_enrolled = tidy_col(grepl('Number_Enrolled', names(this_df)), this_df),
           number_not_present = tidy_col(grepl('Number_Not_Present', names(this_df)), this_df),
