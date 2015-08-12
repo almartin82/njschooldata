@@ -24,6 +24,12 @@ library("devtools")
 devtools::install_github("almartin82/njschooldata")
 library(njschooldata)
 ```
+# tl;dr
+
+```R
+head(all_assess_tidy)
+```
+A copy of all the cleaned data files (2004-2014) has been saved to all_assess_tidy.  4.5 million rows!
 
 # Usage
 
