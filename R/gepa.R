@@ -55,6 +55,18 @@ get_raw_gepa <- function(end_year, layout=layout_gepa) {
 #' @export
 
 fetch_gepa <- function(end_year) {
-  get_raw_gepa(end_year) %>% 
-    process_nj_assess(layout=layout_gepa) 
+  if (end_year == 2007) {
+    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa) %>% 
+      process_nj_assess(layout = layout_gepa) 
+  } else if (end_year == 2006) {
+    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa06) %>% 
+      process_nj_assess(layout = layout_gepa06)
+  } else if (end_year == 2005) {
+    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa05) %>% 
+      process_nj_assess(layout = layout_gepa05) 
+  } else if (end_year == 2004) {
+    gepa_df <- get_raw_gepa(end_year, layout = layout_njask04) %>% 
+      process_nj_assess(layout = layout_njask04) 
+  }  
+  return(gepa_df)
 }
