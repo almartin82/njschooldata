@@ -20,7 +20,7 @@ knitr::opts_knit$set(eval = FALSE)
 
 
 #ASSESSMENT
-(run everything in all_assess.Rmd)
+(run everything in new_all_assess.Rmd)
 
 #ENROLLMENT
 
@@ -54,7 +54,7 @@ for (i in names(enr_files)[2:length(enr_files)]) {
 
 ```{r sys2}
 
-save(enr_files, enr_all, all_nj, file = 'data\\sysdata.Rda')
+save(enr_files, enr_all, all_assess_raw, all_assess_tidy, file = 'data\\sysdata.Rda')
 
 ```
 
