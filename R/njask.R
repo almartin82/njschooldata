@@ -116,6 +116,10 @@ fetch_njask <- function(end_year, grade) {
   } else if (end_year == 2009) {
     df <- get_raw_njask(end_year, grade, layout = layout_njask09) %>% 
       process_nj_assess(layout = layout_njask09) 
+
+  } else if (end_year == 2010) {
+    df <- get_raw_njask(end_year, grade, layout = layout_njask10) %>% 
+      process_nj_assess(layout = layout_njask10) 
     
   } else {
     df <- get_raw_njask(end_year, grade) %>% 
