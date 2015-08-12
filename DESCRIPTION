@@ -9,11 +9,11 @@ License: GPL-3 | file LICENSE
 Depends:
   ensurer,
   magrittr,
+  dplyr,
   R(>= 2.10.0)
 Suggests:
   downloader,
   ensurer,
-  dplyr,
   knitr,
   readr,
   readxl,
