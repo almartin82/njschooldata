@@ -8,7 +8,7 @@
 #' @param layout what layout dataframe to use.  default is layout_hspa.
 #' @export
 
-get_raw_hspa <- function(end_year, layout=layout_hspa) {    
+get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {    
   #url paths changed in 2012
   years <- list(
     "2014"="14", "2013"="13", "2012"="2013", "2011"="2012", "2010"="2011", "2009"="2010", 
@@ -59,12 +59,22 @@ get_raw_hspa <- function(end_year, layout=layout_hspa) {
 #' @export
 
 fetch_hspa <- function(end_year) {
-  if (end_year >= 2011) {
+  if (end_year > 2011) {
     hspa_df <- get_raw_hspa(end_year) %>% 
-      process_nj_assess(layout=layout_hspa)
-  } else if (end_year >= 2004) {
-    hspa_df <- get_raw_hspa(end_year, layout=layout_hspa2010) %>% 
-      process_nj_assess(layout=layout_hspa2010) 
+      #posted hspa layout has an error
+      process_nj_assess(layout = layout_hspa[c(1:558), ])
+  } else if (end_year > 2006) {
+    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa10) %>% 
+      process_nj_assess(layout = layout_hspa10) 
+  } else if (end_year == 2006) {
+    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa06) %>% 
+      process_nj_assess(layout = layout_hspa06)     
+  } else if (end_year == 2005) {
+    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa05) %>% 
+      process_nj_assess(layout = layout_hspa05)     
+  } else if (end_year == 2004) {
+    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa04) %>% 
+      process_nj_assess(layout = layout_hspa04)     
   }
   
   hspa_df$Grade <- 11

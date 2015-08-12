@@ -222,35 +222,7 @@ tidy_nj_assess <- function(assess_name, df) {
     'american_indian', 'other', 'ed', 'non_ed', 'sped_accomodations', 'not_exempt_from_passing',
     'iep_exempt_from_passing', 'iep_exempt_from_taking', 'lep_exempt_lal_only')
   
-  tidy_df <- data.frame(
-    #these are constant across subgroups
-    assess_name = character(0),
-    testing_year = integer(0),
-    grade = integer(0),
-    county_code = character(0),
-    district_code = character(0),
-    school_code = character(0),
-    district_name = character(0),
-    school_name = character(0),
-    dfg = character(0),
-    special_needs = character(0),
-    
-    #these are set by the loops below
-    subgroup = character(0),
-    test_name = character(0),
-    
-    #and these are the measures per subgroup/assessment
-    number_enrolled = numeric(0),
-    number_not_present = numeric(0),
-    number_of_voids = numeric(0),
-    number_of_valid_classifications = numeric(0),
-    number_apa = numeric(0),
-    number_valid_scale_scores = numeric(0),
-    partially_proficient = numeric(0),
-    proficient = numeric(0),
-    advanced_proficient = numeric(0),
-    scale_score_mean = numeric(0)
-  )
+  result_list <- list()
   
   tidy_col <- function(mask, nj_df) {
     if (sum(mask) > 1) stop("tidying assessment data matched more than one column")
@@ -274,9 +246,9 @@ tidy_nj_assess <- function(assess_name, df) {
   
   constant_df <- data.frame(
     assess_name = assess_name,
-    testing_year = tidy_col(testing_year, df),
+    testing_year = tidy_col(testing_year, df) %>% as.integer(),
     grade = tidy_col(grade, df),
-    county_code = tidy_col(county_code, df),
+    county_code = tidy_col(county_code, df) %>% as.character(),
     district_code = tidy_col(district_code, df),
     school_code = tidy_col(school_code, df),
     district_name = tidy_col(district_name, df),
@@ -285,6 +257,8 @@ tidy_nj_assess <- function(assess_name, df) {
     special_needs = tidy_col(special_needs, df),
     stringsAsFactors = FALSE
   )
+  
+  iters <- 1
   
   for (i in subgroups) {
     subgroup_mask <- paste0(i, '_mask') %>% get()
@@ -318,9 +292,10 @@ tidy_nj_assess <- function(assess_name, df) {
         )
       )
       
-      tidy_df <- rbind(tidy_df, this_tidy)
+      result_list[[iters]] <- this_tidy      
+      iters <- iters + 1
     }
   }
   
-  return(tidy_df)
+  return(dplyr::rbind_all(result_list))
 }
