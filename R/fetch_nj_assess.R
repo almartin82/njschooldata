@@ -241,7 +241,7 @@ tidy_nj_assess <- function(assess_name, df) {
   school_code <- grepl('School_Code', names(df), fixed = TRUE)
   district_name <- grepl('District_Name', names(df), fixed = TRUE)
   school_name <- grepl('School_Name', names(df), fixed = TRUE)
-  dfg <- grepl('^DFG', names(df), fixed = TRUE)
+  dfg <- grepl('^DFG', names(df), perl = TRUE)
   special_needs <- grepl('^Special_Needs', names(df), fixed = TRUE)
   
   constant_df <- data.frame(
