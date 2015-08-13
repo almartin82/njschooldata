@@ -98,11 +98,9 @@ fetch_njask <- function(end_year, grade) {
       process_nj_assess(layout = layout_njask06gr3)
     
   } else if (end_year == 2006 & grade >= 5) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask06gr5)  
-    #inexplicably, 2006 data has no Grade column
-    df$Grade <- grade
-    df <- df %>% 
+    df <- get_raw_njask(end_year, grade, layout = layout_njask06gr5) %>% 
       process_nj_assess(layout = layout_njask06gr5) 
+    
   #nb - 2007 is weird, generally
   } else if (end_year %in% c(2007, 2008) & grade %in% c(3, 4)) {
     print('wheee')
@@ -134,5 +132,10 @@ fetch_njask <- function(end_year, grade) {
   #some flat files don't include the test year
   if (!any(grepl('(Test_Year|Testing_Year)', names(df)))) df$Testing_Year <- end_year
 
+  #inexplicably some of the flat files don't have grade level
+  if (!c('Grade', 'Grade_Level') %in% names(df) %>% any()) {
+    df$Grade <- grade
+  }  
+  
   return(df)
 }
