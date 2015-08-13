@@ -73,6 +73,10 @@ fetch_gepa <- function(end_year) {
   if (!c('Test_Year', 'Testing_Year') %in% names(gepa_df) %>% any()) {
     gepa_df$Testing_Year <- end_year
   }  
-  
+  #or grade level...
+  if (!c('Grade', 'Grade_Level') %in% names(gepa_df) %>% any()) {
+    gepa_df$Grade <- 8
+  }  
+    
   return(gepa_df)
 }
