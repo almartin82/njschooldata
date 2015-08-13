@@ -62,7 +62,7 @@ get_raw_njask <- function(end_year, grade, layout=layout_njask) {
       end = layout$field_end_position,
       col_names = layout$final_name
     ),
-    #col_types = rep('c', nrow(layout)) %>% paste(collapse = ''),
+    col_types = nj_coltype_parser(layout$data_type),
     na = "*",
     progress = TRUE
   )
