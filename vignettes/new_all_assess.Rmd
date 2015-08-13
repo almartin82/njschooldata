@@ -55,13 +55,13 @@ for (i in 1:nrow(assess_years)) {
   }
 
 # these were for fixing parse problems on a one-off basis  
-#   if (assess_years[i, 'year'] != 2004) {
-#     next()
-#   }
-# 
-#   if (assess_years[i, 'grade'] != 11) {
-#     next()
-#   }
+  if (!assess_years[i, 'year'] == 2011) {
+    next()
+  }
+
+  if (assess_years[i, 'grade'] != 11) {
+    next()
+  }
   
   this_row <- assess_years[i, ]
   #be verbose

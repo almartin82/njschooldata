@@ -65,7 +65,7 @@ fetch_hspa <- function(end_year) {
       process_nj_assess(layout = layout_hspa[c(1:558), ])
   } else if (end_year > 2006) {
     hspa_df <- get_raw_hspa(end_year, layout = layout_hspa10) %>% 
-      process_nj_assess(layout = layout_hspa10) 
+      process_nj_assess(layout = layout_hspa10)
   } else if (end_year == 2006) {
     hspa_df <- get_raw_hspa(end_year, layout = layout_hspa06) %>% 
       process_nj_assess(layout = layout_hspa06)     
@@ -78,6 +78,11 @@ fetch_hspa <- function(end_year) {
   }
   
   hspa_df$Grade <- 11
+  
+  #some hspa files dont have test year.
+  if (!c('Test_Year', 'Testing_Year') %in% names(hspa_df) %>% any()) {
+    hspa_df$Testing_Year <- end_year
+  }
   
   return(hspa_df)
 }
