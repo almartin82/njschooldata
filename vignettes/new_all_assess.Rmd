@@ -55,11 +55,11 @@ for (i in 1:nrow(assess_years)) {
   }
 
 # these were for fixing parse problems on a one-off basis  
-  if (!assess_years[i, 'year'] == 2011) {
+  if (!assess_years[i, 'year'] %in% c(2005, 2004)) {
     next()
   }
 
-  if (assess_years[i, 'grade'] != 11) {
+  if (!assess_years[i, 'grade'] %in% c(8)) {
     next()
   }
   
