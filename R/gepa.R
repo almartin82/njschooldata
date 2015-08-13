@@ -65,8 +65,8 @@ fetch_gepa <- function(end_year) {
     gepa_df <- get_raw_gepa(end_year, layout = layout_gepa05) %>% 
       process_nj_assess(layout = layout_gepa05) 
   } else if (end_year == 2004) {
-    gepa_df <- get_raw_gepa(end_year, layout = layout_njask04) %>% 
-      process_nj_assess(layout = layout_njask04) 
+    gepa_df <- get_raw_gepa(end_year, layout = layout_njask04[1:361,]) %>% 
+      process_nj_assess(layout = layout_njask04[1:361,]) 
   }  
   
   #some gepa files dont list test year.

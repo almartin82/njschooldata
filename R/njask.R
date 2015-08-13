@@ -103,7 +103,6 @@ fetch_njask <- function(end_year, grade) {
     
   #nb - 2007 is weird, generally
   } else if (end_year %in% c(2007, 2008) & grade %in% c(3, 4)) {
-    print('wheee')
     df <- get_raw_njask(end_year, grade, layout = layout_njask07gr3) %>% 
       process_nj_assess(layout = layout_njask07gr3) 
 
