@@ -103,13 +103,18 @@ fetch_njask <- function(end_year, grade) {
     df$Grade <- grade
     df <- df %>% 
       process_nj_assess(layout = layout_njask06gr5) 
-    
+  #nb - 2007 is weird, generally
   } else if (end_year %in% c(2007, 2008) & grade %in% c(3, 4)) {
+    print('wheee')
     df <- get_raw_njask(end_year, grade, layout = layout_njask07gr3) %>% 
       process_nj_assess(layout = layout_njask07gr3) 
+
+  } else if (end_year == 2007 & grade %in% c(5, 6, 7)) {
+    df <- get_raw_njask(end_year, grade, layout = layout_njask07gr5) %>% 
+      process_nj_assess(layout = layout_njask07gr5) 
     
   #nb - 2007 is the end of the GEPA; 2007 gr 8 does not exist for NJASK.
-  } else if (end_year %in% c(2007, 2008) & grade >= 5) {
+  } else if (end_year == 2008 & grade >= 5) {
     df <- get_raw_njask(end_year, grade, layout = layout_njask09) %>% 
       process_nj_assess(layout = layout_njask09) 
     
