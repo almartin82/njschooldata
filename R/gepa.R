@@ -36,6 +36,7 @@ get_raw_gepa <- function(end_year, layout=layout_gepa) {
       end = layout$field_end_position,
       col_names = layout$final_name
     ),
+    col_types = nj_coltype_parser(layout$data_type),
     na = "*"
   )
   
