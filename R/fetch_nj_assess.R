@@ -299,3 +299,20 @@ tidy_nj_assess <- function(assess_name, df) {
   
   return(dplyr::rbind_all(result_list))
 }
+
+
+#' @title nj_coltype_parser
+#' 
+#' @description turns layout datatypes into compact string required by read_fwf
+#' @param datatypes vector of datatypes (from a layout df)
+#' @return a character string of the types, for read_fwf
+#' @export
+
+nj_coltype_parser <- function(datatypes) {
+  datatypes <- ifelse(datatypes == "Text", 'c', datatypes)
+  datatypes <- ifelse(datatypes == "Integer", 'i', datatypes)
+  datatypes <- ifelse(datatypes == "Decimal", 'd', datatypes)
+  datatypes <- datatypes %>% unlist() %>% unname()
+ 
+  paste(datatypes, collapse = '')
+}
