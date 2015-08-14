@@ -50,12 +50,15 @@ it keeps crashing.  sigh.
 load(file = 'assess_years.Rda')
 
 for (i in 1:nrow(assess_years)) {
+#for (i in nrow(assess_years):1) {
+  load(file = 'assess_years.Rda')
+  
   if (assess_years[i, 'finished'] == 'YES') {
     next()
   }
 
 # these were for fixing parse problems on a one-off basis  
-  if (!assess_years[i, 'name'] == 'NJASK') {
+  if (!assess_years[i, 'name'] == 'GEPA') {
     next()
   }
 
@@ -71,11 +74,10 @@ for (i in 1:nrow(assess_years)) {
   #call this grade/year and attach to results list
   result <-  fetch_nj_assess(this_row$year, this_row$grade)
 
-  save(assess_years, file = 'assess_years.Rda')
   try(saveRDS(result, file = paste0('nj-raw/', row_key, ".Rds")))
-
+  
   assess_years[i, 'finished'] <- 'YES'
-
+  save(assess_years, file = 'assess_years.Rda')
 }
 
 ```

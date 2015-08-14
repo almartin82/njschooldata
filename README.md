@@ -29,7 +29,7 @@ library(njschooldata)
 ```R
 head(all_assess_tidy)
 ```
-A copy of all the cleaned data files (2004-2014) has been saved to all_assess_tidy.  4.5 million rows!
+A copy of all the cleaned data files (2004-2014) has been saved to all_assess_tidy.  6.1 million rows!
 
 # Usage
 
