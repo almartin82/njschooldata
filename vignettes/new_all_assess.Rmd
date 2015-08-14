@@ -55,10 +55,10 @@ for (i in 1:nrow(assess_years)) {
   }
 
 # these were for fixing parse problems on a one-off basis  
-#   if (!assess_years[i, 'year'] %in% c(2005, 2004)) {
-#     next()
-#   }
-# 
+  if (!assess_years[i, 'name'] == 'NJASK') {
+    next()
+  }
+
 #   if (!assess_years[i, 'grade'] %in% c(8)) {
 #     next()
 #   }
@@ -83,12 +83,6 @@ for (i in 1:nrow(assess_years)) {
 when finished, parse
 
 ```{r}
-
-assess_years$name <- c(
-  rep(c(rep('NJASK', 6), 'HSPA'), 7), 
-  rep(c(rep('NJASK', 5),'GEPA', 'HSPA'), 2), 
-  rep(c('NJASK', 'NJASK', 'GEPA', 'HSPA'), 2)
-)
 
 all_assess_raw <- list()
 
