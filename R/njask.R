@@ -47,25 +47,14 @@ get_raw_njask <- function(end_year, grade, layout=layout_njask) {
     "2004" = paste0("njask", grade, "04state_summary.txt")   
   )
   parsed_filename <- filename[[as.character(end_year)]]
-    
+
   #build url
   target_url <- paste0(
     "http://www.state.nj.us/education/schools/achievement/", parsed_year, 
     "/njask", grade_str, "/", parsed_filename
   )
-      
-  #read_fwf
-  df <- readr::read_fwf(
-    file = target_url,
-    col_positions = readr::fwf_positions(
-      start = layout$field_start_position,
-      end = layout$field_end_position,
-      col_names = layout$final_name
-    ),
-    col_types = nj_coltype_parser(layout$data_type),
-    na = "*",
-    progress = TRUE
-  )
+
+  df <- common_fwf_req(target_url, layout)
   
   #return df
   return(df)

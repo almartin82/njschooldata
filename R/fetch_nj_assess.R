@@ -316,3 +316,51 @@ nj_coltype_parser <- function(datatypes) {
  
   paste(datatypes, collapse = '')
 }
+
+
+#' @title common_fwf_req
+#' 
+#' @description common fwf logic across various assessment types.  DRY.
+#' @param url file location
+#' @return layout layout to use
+#' @export
+
+common_fwf_req <- function(url, layout) {
+  #got burned by bad layouts.  read in the raw file
+  #this will take extra time, but it is worth it.
+  raw_fwf <- readLines(url)  %>% gsub("[[:space:]]*$","", .)
+  
+  #ensure that the incoming response (when cleaned) is of consistent length.
+  if (!nchar(raw_fwf) %>% unique() %>% length()==1){
+    stop("input file has inconsistent lengths.  check the source")
+  }
+  
+  #set the size of the last field equal to the consistent, cleaned length
+  last_row <- nrow(layout)
+  layout[last_row, 'field_end_position'] <- min(nchar(raw_fwf))
+  if (layout[last_row, 'field_start_position'] > layout[last_row, 'field_end_position']) {
+    stop("uncle.  you got me.  this terrible hack that attempts to solve for the fact that the state of NJ can't be bothered to post accurate file layouts gave up the ghost.  time to rewrite it!")
+  }
+  
+  #read_fwf
+  df <- readr::read_fwf(
+    file = raw_fwf %>% gsub("[[:space:]]*$","", .) %>% paste(collapse = '\n'),
+    col_positions = readr::fwf_positions(
+      start = layout$field_start_position,
+      end = layout$field_end_position,
+      col_names = layout$final_name
+    ),
+    col_types = nj_coltype_parser(layout$data_type),
+    na = "*",
+    progress = TRUE
+  )
+  
+  if (!nrow(df) == length(raw_fwf)) {
+    paste('read_fwf is', nrow(df), 'lines') %>% print()
+    paste('raw response', length(raw_fwf), 'lines') %>% print()
+    stop("read_fwf and readlines don't agree on size of df.  probably a layout error.")
+  }
+
+  df
+}
+  

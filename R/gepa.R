@@ -12,13 +12,13 @@ get_raw_gepa <- function(end_year, layout=layout_gepa) {
     
   #url paths changed in 2012
   years <- list(
-    "2007"="2008", "2006"="2007", "2005"="2006", "2004"="2005"
+    "2007" = "2008", "2006" = "2007", "2005" = "2006", "2004" = "2005"
   )
   parsed_year <- years[[as.character(end_year)]]
   
   filename <- list(
-    "2007"="state_summary.txt", "2006"="state_summary.txt",
-    "2005"="2005njgepa_state_summary.txt", "2004"="gepa04state_summary.txt"   
+    "2007" = "state_summary.txt", "2006" = "state_summary.txt",
+    "2005" = "2005njgepa_state_summary.txt", "2004" = "gepa04state_summary.txt"   
   )
   parsed_filename <- filename[[as.character(end_year)]]
 
@@ -27,19 +27,9 @@ get_raw_gepa <- function(end_year, layout=layout_gepa) {
     "http://www.state.nj.us/education/schools/achievement/", parsed_year, 
     "/gepa/", parsed_filename
   )
-      
-  #read_fwf
-  df <- readr::read_fwf(
-    file = target_url,
-    col_positions = readr::fwf_positions(
-      start = layout$field_start_position,
-      end = layout$field_end_position,
-      col_names = layout$final_name
-    ),
-    col_types = nj_coltype_parser(layout$data_type),
-    na = "*"
-  )
   
+  df <- common_fwf_req(target_url, layout)
+
   #return df
   return(df)
 }
