@@ -328,23 +328,24 @@ nj_coltype_parser <- function(datatypes) {
 common_fwf_req <- function(url, layout) {
   #got burned by bad layouts.  read in the raw file
   #this will take extra time, but it is worth it.
-  raw_fwf <- readLines(url)  %>% gsub("[[:space:]]*$","", .)
+  raw_fwf <- readLines(url) %>% gsub("[[:space:]]*$","", .)
   
-  #ensure that the incoming response (when cleaned) is of consistent length.
-  if (!nchar(raw_fwf) %>% unique() %>% length()==1){
-    stop("input file has inconsistent lengths.  check the source")
+  #check that incoming response (when cleaned) is of consistent length.
+  if (!nchar(raw_fwf) %>% unique() %>% length() == 1) {
+    warning("the fixed width input file is not fixed - rows are of different length.")
+    warning("truncating rows that are too wide, and padding rows that are too short...")    
   }
   
-  #set the size of the last field equal to the consistent, cleaned length
-  last_row <- nrow(layout)
-  layout[last_row, 'field_end_position'] <- min(nchar(raw_fwf))
-  if (layout[last_row, 'field_start_position'] > layout[last_row, 'field_end_position']) {
-    stop("uncle.  you got me.  this terrible hack that attempts to solve for the fact that the state of NJ can't be bothered to post accurate file layouts gave up the ghost.  time to rewrite it!")
-  }
+  #sometimes the raw response is too short.  that wrecks havoc with read_fwf
+  #additionally, some layouts call for data that there is data that really isnt there.  
+  #(aka science).      
+  #right pad them to the full extent of the array OR layout
+  max_extent <- max(nchar(raw_fwf), max(layout$field_end_position))
+  raw_fwf <- sprintf(paste0('%-', max_extent, 's'), raw_fwf)
   
   #read_fwf
   df <- readr::read_fwf(
-    file = raw_fwf %>% gsub("[[:space:]]*$","", .) %>% paste(collapse = '\n'),
+    file = raw_fwf %>% paste(collapse = '\n'),
     col_positions = readr::fwf_positions(
       start = layout$field_start_position,
       end = layout$field_end_position,
