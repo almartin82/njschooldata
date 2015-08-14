@@ -31,18 +31,8 @@ get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {
     "/hspa/", parsed_filename
   )
   
-  #read_fwf
-  df <- readr::read_fwf(
-    file = target_url,
-    col_positions = readr::fwf_positions(
-      start = layout$field_start_position,
-      end = layout$field_end_position,
-      col_names = layout$final_name
-    ),
-    col_types = nj_coltype_parser(layout$data_type),
-    na = "*"
-  )
-  
+  df <- common_fwf_req(target_url, layout)
+
   #return df
   return(df)
 }
