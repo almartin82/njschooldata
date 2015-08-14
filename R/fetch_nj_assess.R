@@ -280,7 +280,7 @@ tidy_nj_assess <- function(assess_name, df) {
 
           number_enrolled = tidy_col(grepl('Number_Enrolled', names(this_df)), this_df),
           number_not_present = tidy_col(grepl('Number_Not_Present', names(this_df)), this_df),
-          number_of_voids = tidy_col(grepl('Number_Enrolled', names(this_df)), this_df),
+          number_of_voids = tidy_col(grepl('Number_of_Voids', names(this_df)), this_df),
           number_of_valid_classifications = tidy_col(grepl('Number_of_Valid_Classifications', names(this_df)), this_df),
           number_apa = tidy_col(grepl('Number_APA', names(this_df)), this_df),
           number_valid_scale_scores = tidy_col(grepl('Number_of_Valid_Scale_Scores', names(this_df)), this_df),
