@@ -15,7 +15,7 @@ There are also Excel files posted with all the data, but they aren't much better
 
 Fortunately, there's a new R library, [`readr`] (https://github.com/hadley/readr) (written by [Hadley Wickham](https://github.com/hadley)) for working with fixed width files that makes this process much, much easier.
 
-`njschooldata` attempts to simplify the task of working with NJ education data by providing a simple, consistent interface for reading state files into R. For any year/grade combination from 2004-onward, a simple call to `fetch_nj_assess(end_year, grade)` will return the desired data frame.
+`njschooldata` attempts to simplify the task of working with NJ education data by providing a concise and consistent interface for reading state files into R. For any year/grade combination from 2004-onward, a call to `fetch_nj_assess(end_year, grade)` will return the desired data frame as it appears on the state site, and `fetch_nj_assess(end_year, grade, tidy=TRUE)` will return a cleaned up version suitable for longitudinal data analysis. 
 
 # Installation
 
