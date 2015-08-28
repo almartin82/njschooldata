@@ -9,11 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-<<<<<<< HEAD
 just some documentation of what I've saved to ~~`sysdata.Rda`~~ various `.Rda` files
-=======
-just some documentation of what I've saved to `sysdata.R`
->>>>>>> eacce8f4612b49d538f888392e490b8b4540c405
 
 ```{r silent1, echo=F, results='hide', message=F}
 #libraries and functions etc
@@ -55,7 +51,6 @@ for (i in names(enr_files)[2:length(enr_files)]) {
 
 ```
 
-<<<<<<< HEAD
 # HS GRAD
 ```{r hs_grad}
 
@@ -77,13 +72,6 @@ save(enr_all, file = 'data\\enr_all.Rda')
 save(hs_grad, file = 'data\\hs_grad.Rda')
 save(all_assess_raw, file = 'data\\all_assess_raw.Rda')
 save(all_assess_tidy, file = 'data\\all_assess_tidy.Rda')
-
-=======
-
-```{r sys2}
-
-save(enr_files, enr_all, all_assess_raw, all_assess_tidy, file = 'data\\sysdata.Rda')
->>>>>>> eacce8f4612b49d538f888392e490b8b4540c405
 
 ```
 
