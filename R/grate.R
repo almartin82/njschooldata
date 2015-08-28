@@ -198,9 +198,24 @@ process_grate <- function(df, end_year) {
   }
   
   #missing program names
-  #TO-DO
-  
-  
+  if (end_year %in% c(1998, 1999)) {
+    old_codes <- data.frame(
+      program_code = c('1', '2', '3', '4', '5', '6', '7', '8', '9'),
+      program_name = c(
+        '4 Year College', '2 Year College', 'Other College', 'Post-Secondary',
+        'Employment', 'Unemployment', 'Other', 'Status Unknown', 'Total'),
+      stringsAsFactors = FALSE
+    )
+    #ugh
+    df$program_code <- df$program_code %>% as.character()
+    df <- df %>% dplyr::left_join(old_codes, by = 'program_code')
+  }
+
+  #clean up values
+  if ('program_name' %in% names(df)) {
+    df$program_name <- ifelse(df$program_name %in% c('Total', 'TOTAL'), 'Total', df$program_name)    
+  }
+
 
   return(df)
 }
@@ -313,14 +328,29 @@ tidy_grate <- function(df, end_year) {
     row_mask <- sch_subset$program_name == 'Total'
     
     sch_to_tidy <- sch_subset[, col_mask]
+    #reorder
     sch_to_tidy <- sch_to_tidy[to_tidy]
     
     sch_programs <- sch_to_tidy[!row_mask,]
     sch_total <- sch_to_tidy[row_mask, ]
+    #sometimes (thanks MCVS HEALTH OCCUP CENT) there is no TOTAL field
+    if (nrow(sch_total) == 0) {
+      print('no TOTAL row for:')
+      paste(constant_df$district_name, constant_df$school_name) %>% print()
+      sch_total <- colSums(sch_programs[, 3:26]) %>%
+        t() %>% 
+        as.data.frame(stringsAsFactors = FALSE)
+      sch_total$program_name <- 'Total'
+      sch_total$program_code <- NA
+      sch_total$instate <- NA
+      sch_total$outstate <- NA
+      #reorder
+      sch_total <- sch_total[to_tidy]
+      sch_to_tidy <- rbind(sch_to_tidy, sch_total)
+    }
     
     old_tidy_list <- list()
   
-
     #all the subgroups
     for (j in to_tidy[3:26]) {
       to_pivot <- sch_to_tidy[ , c(to_tidy[1:2], j)]
@@ -328,6 +358,7 @@ tidy_grate <- function(df, end_year) {
       sub_long$variable <- as.character(sub_long$variable)
       names(sub_long)[names(sub_long) == 'variable'] <- 'group'
       names(sub_long)[names(sub_long) == 'value'] <- 'outcome_count'
+      
       sub_long$num_grad <- sub_long[sub_long$program_name == 'Total', 'outcome_count']
       sub_long$postgrad_grad <- ifelse(sub_long$program_name == 'Total', 'grad', 'postgrad')
       sub_long$grad_rate <- NA
@@ -360,8 +391,17 @@ tidy_grate <- function(df, end_year) {
 
 
 
+
 scratch <- function() {
   
+#[1] "MERCER C0UNTY VOCATIONAL | MCVS HEALTH OCCUP CENT"
+#[1] "NEW BRUNSWICK CITY | NEW BRUNSWICK HIGH"
+#[1] "NEW BRUNSWICK CITY | DISTRICT TOTAL"
+#[1] "SUSSEX COUNTY VOCATIONAL | SUSSEX CTY TECH EVE"  
+  
+  #testing 
+  foo <- hs_list[[2013]] %>% process_grate(., 2013) %>% tidy_grate(., 2013)
+  foo <- hs_list[[1999]] %>% process_grate(., 1999) %>% tidy_grate(., 1999)
   
   
   sch_subset <- process_grate(hs_list[[2003]], 2003) %>% filter(school_name == 'ATLANTIC CITY HIGH') %>% as.data.frame()
