@@ -1,4 +1,4 @@
-#' @title read a zipped excel HS graduate rate file from the NJ state website
+#' @title read a zipped excel HS graduate outcome/rate file from the NJ state website
 #' 
 #' @description
 #' \code{get_raw_grate} returns a data frame with NJ HS grad rate
@@ -157,6 +157,8 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('HAW_NTV_F(NON_HISP)')] <- 'hwn_nat_f'
   names(df)[names(df) %in% c('2/MORE_RACES_M(NON_HISP)')] <- '2_more_m'
   names(df)[names(df) %in% c('2/MORE_RACES_F(NON_HISP)')] <- '2_more_f'
+
+  names(df)[names(df) %in% c('SUBGROUP')] <- 'group'
   
   names(df) <- names(df) %>% tolower()
 
@@ -168,7 +170,8 @@ process_grate <- function(df, end_year) {
     "hisp_m", "hisp_f", "nat_am_m", "nat_am_f", 
     "asian_m", "asian_f", "hwn_nat_m", "hwn_nat_f", 
     "multiracial_m", "multiracial_f", 
-    "instate", "outstate"
+    "instate", "outstate",
+    "grad_rate", "cohort_count", "graduated_count"
   )
   
   for (i in numeric_cols) {
@@ -178,7 +181,7 @@ process_grate <- function(df, end_year) {
   }
   
   #county distr sch codes
-  if (end_year <= 2010) {
+  if (end_year <= 2008) {
     
     #county_id and county_name
     int_matrix <- stringr::str_split_fixed(df$county_name, "-", 2)
@@ -224,21 +227,26 @@ process_grate <- function(df, end_year) {
     df$program_name <- ifelse(df$program_name %in% c('Total', 'TOTAL'), 'Total', df$program_name)    
   }
 
+  if ('grad_rate' %in% names(df)) {
+    if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {
+      df$grad_rate <- df$grad_rate * 100
+    }
+    df$grad_rate <- df$grad_rate / 100 %>% round(2)
+  }
 
   return(df)
 }
 
 
 
-
-
-
-
-
-
-
-
-
+#' @title tidy grate
+#' 
+#' @description tidies a processed grate data frame, producing a data frame with consistent
+#' headers and values, suitable for longitudinal analysis
+#' @param df the output of process_grate
+#' @param end_year a school year.  year is the end of the academic year - eg 2006-07
+#' school year is year '2007'.  valid values are 1998-2014.
+#' @export
 
 tidy_grate <- function(df, end_year) {
   
@@ -369,7 +377,9 @@ tidy_grate <- function(df, end_year) {
       
       sub_long$num_grad <- sub_long[sub_long$program_name == 'Total', 'outcome_count']
       sub_long$postgrad_grad <- ifelse(sub_long$program_name == 'Total', 'grad', 'postgrad')
+      sub_long$level <- ifelse(constant_df$school_id == '999', 'D', 'S')
       sub_long$grad_rate <- NA
+      sub_long$cohort_count <- NA
      
       old_tidy_list[[j]] <- cbind(constant_df, sub_long) 
     }
@@ -379,7 +389,40 @@ tidy_grate <- function(df, end_year) {
     return(out)
   }
 
+  
+  tidy_new_format <- function(df) {
+    df$program_name <- 'Total'
+    df$program_code <- NA
+    df$group <- 'total_population'
+    df$outcome_count <- NA
+    df$postgrad_grad <- 'grad'
+    
+    if ('graduated_count' %in% names(df)) {
+      names(df)[names(df) == 'graduated_count'] <- 'num_grad'
+    } else {
+      df$num_grad <- NA
+    }
+    
+    if ('group' %in% names(df)) {
+      df$group <- tolower(df$group)
 
+      df$group <- ifelse(df$group == 'American Indian', 'american_indian', df$group)   
+      df$group <- ifelse(df$group == 'Native Hawaiian', 'pacific_islander', df$group)      
+      df$group <- ifelse(df$group == 'Two or More Races', 'multiracial', df$group)      
+      df$group <- ifelse(df$group == 'Limited English Proficiency', 'lep', df$group)      
+      df$group <- ifelse(
+        df$group == 'Economically Disadvantaged', 'economically_disadvantaged', df$group
+      )
+      df$group <- ifelse(df$group == 'Students with Disability', 'iep', df$group)
+      df$group <- ifelse(df$group == 'Schoolwide', 'total_population', df$group)    
+      df$group <- ifelse(df$group == 'Districtwide', 'total_population', df$group)
+      df$group <- ifelse(df$group == 'Statewide Total', 'total_population', df$group)
+    }
+    
+    return(df)
+  }
+  
+  #old method (pre-cohort)
   if (end_year < 2011) {
     #iterate over the sch/district totals
     df$iter_key <- paste0(df$county_id, '@', df$district_id, '@', df$school_id)
@@ -391,6 +434,9 @@ tidy_grate <- function(df, end_year) {
     }
       
     out <- dplyr::rbind_all(sch_list)
+  #cohort 2011-2012 didn't report subgroups method (different file structure)    
+  } else if (end_year >= 2011) {
+    out <- tidy_new_format(df)
   }
   
   return(out)
@@ -398,67 +444,22 @@ tidy_grate <- function(df, end_year) {
 
 
 
+#' @title fetch grate
+#' 
+#' @description a consistent interface into the NJ HS graduates data. 
+#' @param end_year a school year.  year is the end of the academic year - eg 2006-07
+#' school year is year '2007'.  valid values are 1998-2014.
+#' @param tidy tidy the response into a data frame with consistent headers?
+#' @return a 
+#' 
+#' @export
 
-
-scratch <- function() {
+fetch_grate <- function(end_year, tidy = TRUE) {
+  out <- get_raw_grate(end_year) %>%
+    process_grate(., end_year)
   
-#[1] "MERCER C0UNTY VOCATIONAL | MCVS HEALTH OCCUP CENT"
-#[1] "NEW BRUNSWICK CITY | NEW BRUNSWICK HIGH"
-#[1] "NEW BRUNSWICK CITY | DISTRICT TOTAL"
-#[1] "SUSSEX COUNTY VOCATIONAL | SUSSEX CTY TECH EVE"  
+  if (tidy) out <- out %>% tidy_grate(., end_year)
   
-  #testing 
-  foo <- hs_list[[2013]] %>% process_grate(., 2013) %>% tidy_grate(., 2013)
-  foo <- hs_list[[1999]] %>% process_grate(., 1999) %>% tidy_grate(., 1999)
-  
-  
-  sch_subset <- process_grate(hs_list[[2003]], 2003) %>% filter(school_name == 'ATLANTIC CITY HIGH') %>% as.data.frame()
-
-    
-  hs_list <- list()
-  for (i in c(1998:2014)) {
-    hs_list[[i]] <- get_raw_grate(i)
-  }
-
-  
-  clean_hs_list <- list()
-  for (i in c(1998:2014)) {
-    print(i)
-    clean_hs_list[[i]] <- process_grate(hs_list[[i]], i) %>% tidy_grate(., i)
-  }
-
-    
-  for (i in c(1998:2014)) {
-    print(i)
-    foo <- process_grate(hs_list[[i]], i) 
-    
-    all_names <- names(foo)
-    
-    #print(names(hs_list[[i]]))
-    clean_names <- c(
-      "county_id", "county_name", 
-      "district_id", "district_name", 
-      "school_id", "school_name", 
-      "level", 
-      "grad_cohort", "year_reported", "methodology", "time_window",
-      "program_name", "program_code", 
-      "white_m", "white_f", 
-      "black_m", "black_f", 
-      "hisp_m", "hisp_f", 
-      "nat_am_m", "nat_am_f", 
-      "asian_m", "asian_f", 
-      "hwn_nat_m", "hwn_nat_f",
-      "2_more_m", "2_more_f", 
-      "rowtotal", 
-      "instate", "outstate", 
-      "subgroup",
-      "grad_rate", "cohort_count", "graduated_count"
-    )
-
-    all_names[!all_names %in% clean_names] %>% print()
-  }
-
-
+  return(out)
 }
-
 
