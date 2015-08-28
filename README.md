@@ -48,6 +48,18 @@ read in the 2005 state enrollment data file:
 fetch_enr(end_year = 2005)
 ```
 
+
+read in the 2002 HS graduate data file (charmingly named 'grate'):
+```R
+fetch_grate(end_year = 2002, tidy = TRUE)
+```
+
+read in the 2014 HS cohort graduation rate data file:
+```R
+fetch_grate(end_year = 2014, tidy = TRUE)
+```
+
+
 # Coverage
 Anytime a year is passed as a parameter for assessment data, it referrs to the 'end_year' -- ie, the `2014-15` school year is `2015`.
 
