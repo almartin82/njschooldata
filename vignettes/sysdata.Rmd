@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-just some documentation of what I've saved to `sysdata.R`
+just some documentation of what I've saved to ~~`sysdata.Rda`~~ various `.Rda` files
 
 ```{r silent1, echo=F, results='hide', message=F}
 #libraries and functions etc
@@ -67,7 +67,12 @@ hs_grad <- dplyr::rbind_all(hs_list)
 
 ```{r sys2}
 
-save(enr_files, enr_all, hs_grad, all_assess_raw, all_assess_tidy, file = 'data\\sysdata.Rda')
+save(enr_files, file = 'data\\enr_files.Rda')
+save(enr_all, file = 'data\\enr_all.Rda')
+save(hs_grad, file = 'data\\hs_grad.Rda')
+save(all_assess_raw, file = 'data\\all_assess_raw.Rda')
+save(all_assess_tidy, file = 'data\\all_assess_tidy.Rda')
+
 
 ```
 
