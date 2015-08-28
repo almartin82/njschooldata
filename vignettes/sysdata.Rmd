@@ -51,10 +51,23 @@ for (i in names(enr_files)[2:length(enr_files)]) {
 
 ```
 
+# HS GRAD
+```{r hs_grad}
+
+hs_list <- list()
+for (i in c(1998:2014)) {
+  print(i)
+  hs_list[[i]] <- fetch_grate(i)
+}
+
+hs_grad <- dplyr::rbind_all(hs_list)
+
+```
+
 
 ```{r sys2}
 
-save(enr_files, enr_all, all_assess_raw, all_assess_tidy, file = 'data\\sysdata.Rda')
+save(enr_files, enr_all, hs_grad, all_assess_raw, all_assess_tidy, file = 'data\\sysdata.Rda')
 
 ```
 
