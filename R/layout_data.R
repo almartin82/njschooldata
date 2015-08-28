@@ -208,7 +208,7 @@
 #' #' }
 #' @source NJDOE website - eg the 'File Layout' link on
 #' http://www.nj.gov/education/schools/achievement/2005/hspa/
-"layout_hspa2010"
+"layout_hspa10"
 
 
 #' HSPA layout metadata, 2011 - present
