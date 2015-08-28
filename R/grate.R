@@ -125,7 +125,15 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('COUNTY', 'CO', 'CO NAME', 'CO_NAME')] <- 'county_name'
   names(df)[names(df) %in% c('DISTRICT', 'DIST', 'DIST NAME', 'DIS_NAME')] <- 'district_name'
   names(df)[names(df) %in% c('SCHOOL', 'SCH', 'SCH NAME', 'SCH_NAME')] <- 'school_name'
-  names(df)[names(df) %in% c('PROG_CODE', 'PROG CODE')] <- 'program_code'
+  
+  #oh, man.  in 1998 and 1999 PROG_CODE is program code.  in 2008 PROG_CODE is...
+  #actually PROG_NAME
+  #guys, seriously.
+  if (end_year == 2008) {
+    names(df)[names(df) %in% c('PROG_CODE')] <- 'program_name'
+  } else {
+    names(df)[names(df) %in% c('PROG CODE', 'PROG_CODE')] <- 'program_code'
+  }
   names(df)[names(df) %in% c('PROGNAME', 'PROG', 'PROG NAME')] <- 'program_name'
   
   names(df)[names(df) %in% c('COUNTY_CODE', 'CO CODE', 'County')] <- 'county_id'
@@ -384,7 +392,7 @@ tidy_grate <- function(df, end_year) {
       
     out <- dplyr::rbind_all(sch_list)
   }
-    
+  
   return(out)
 }
 
