@@ -17,7 +17,7 @@ get_raw_enr <- function(end_year) {
   tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
   tdir <- tempdir()
   
-  downloader::download(enr_url, dest=tname, mode="wb") 
+  downloader::download(enr_url, dest = tname, mode = "wb") 
 
   utils::unzip(tname, exdir = tdir)
   
