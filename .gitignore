@@ -21,3 +21,6 @@ vignettes/*.pdf
 all_assess.RData
 assess_years.Rda
 results.Rds
+
+#mac
+*.DS_Store
