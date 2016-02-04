@@ -18,10 +18,10 @@ get_raw_parcc <- function(end_year, grade, subj) {
       parse_parcc_subj(subj), pad_grade(grade), '.xlsx' 
   )
   
-  tname <- tempfile(pattern = "parcc", tmpdir = tempdir(), fileext = ".xlsx")
+  tname <- tempfile(pattern = 'parcc', tmpdir = tempdir(), fileext = '.xlsx')
   tdir <- tempdir()
-  downloader::download(target_url, destfile = tname, mode = "wb") 
-  parcc <- readxl::read_excel(path = tname, skip = 2)
+  downloader::download(target_url, destfile = tname, mode = 'wb') 
+  parcc <- readxl::read_excel(path = tname, skip = 2, na = '*')
   
   #last two rows are notes
   parcc <- parcc[1:(nrow(parcc)-2), ]
@@ -29,14 +29,24 @@ get_raw_parcc <- function(end_year, grade, subj) {
 }
 
 
+#' Process a raw PARCC data file
+#' 
+#' @description all the logic needed to clean up the raw PARCC files
+#'
+#' @param parcc_file output of get_raw_parcc
+#' @inheritParams get_raw_parcc
+#'
+#' @return a tbl_df / data rame
+#' @export
+
 process_parcc <- function(parcc_file, end_year, grade, subj) {
   
   names(parcc_file) <- c(
-    "county_code", "county_name", "district_code", "district_name", 
-    "school_code", "school_name", "dfg", "subgroup", "subgroup_type", 
-    "number_enrolled", "number_not_tested", "number_of_valid_scale_scores", 
-    "scale_score_mean", "pct_l1", "pct_l2", "pct_l3", 
-    "pct_l4", "pct_l5"
+    'county_code', 'county_name', 'district_code', 'district_name', 
+    'school_code', 'school_name', 'dfg', 'subgroup', 'subgroup_type', 
+    'number_enrolled', 'number_not_tested', 'number_of_valid_scale_scores', 
+    'scale_score_mean', 'pct_l1', 'pct_l2', 'pct_l3', 
+    'pct_l4', 'pct_l5'
   )
   
   parcc_file$testing_year <- end_year
