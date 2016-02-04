@@ -23,6 +23,8 @@ get_raw_parcc <- function(end_year, grade, subj) {
   downloader::download(target_url, destfile = tname, mode = "wb") 
   parcc <- readxl::read_excel(path = tname, skip = 2)
   
+  #last two rows are notes
+  parcc <- parcc[1:(nrow(parcc)-2), ]
   parcc
 }
 
@@ -40,7 +42,7 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$testing_year <- end_year
   parcc_file$assess_name <- 'PARCC'
   parcc_file$grade <- grade
-  parc_file$test_name <- subj
+  parcc_file$test_name <- subj
   
   parcc_file
 }
@@ -57,4 +59,6 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
 fetch_parcc <- function(end_year, grade, subj) {
   p <- get_raw_parcc(end_year, grade, subj)
   p <- process_parcc(p, end_year, grade, subj)
+  
+  p
 }
