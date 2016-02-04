@@ -12,4 +12,8 @@ testthat("fetch_parcc gets and processes data file", {
   p <- fetch_parcc(2015, 4, 'math')
   
   expect_equal(dim(p), c(22324, 22))
+  
+  p <- fetch_parcc(2015, 4, 'math', tidy = TRUE)
+  
+  expect_equal(dim(p), c(22324, 22))
 })

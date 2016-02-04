@@ -48,6 +48,11 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
     'scale_score_mean', 'pct_l1', 'pct_l2', 'pct_l3', 
     'pct_l4', 'pct_l5'
   )
+  #subgroup and subgroup type appear to be flipped
+  orig_subgroup_type <- parcc_file$subgroup_type
+  orig_subgroup <- parcc_file$subgroup
+  parcc_file$subgroup <- orig_subgroup_type
+  parcc_file$subgroup_type <- orig_subgroup_type
   
   parcc_file$testing_year <- end_year
   parcc_file$assess_name <- 'PARCC'
@@ -62,13 +67,44 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
 #' 
 #' @description
 #' \code{fetch_parcc} is a wrapper around \code{get_raw_parcc} and
-#' \code{process_parcc} that gets a parcc file and performs any celanup.  
+#' \code{process_parcc} that gets a parcc file and performs any cleanup.
+#' @param tidy clean up the data frame to make it more compatible with 
+#' NJASK naming conventions?  default is FALSE.
 #' @inheritParams get_raw_parcc
 #' @export
 
-fetch_parcc <- function(end_year, grade, subj) {
+fetch_parcc <- function(end_year, grade, subj, tidy = FALSE) {
   p <- get_raw_parcc(end_year, grade, subj)
   p <- process_parcc(p, end_year, grade, subj)
   
+  if (tidy) {
+    p$subgroup <- gsub("ALL STUDENTS", 'total_population', p$subgroup, fixed = TRUE)
+
+    p$subgroup <- gsub('WHITE', 'white', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('AFRICAN AMERICAN', 'black', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('ASIAN', 'asian', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('HISPANIC', 'hispanic', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub(
+      'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER', 'pacific_islander', 
+      p$subgroup, fixed = TRUE
+    )
+    p$subgroup <- gsub('AMERICAN INDIAN', 'american_indian', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('OTHER', 'other', p$subgroup, fixed = TRUE)
+
+    p$subgroup <- gsub('FEMALE', 'female', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('MALE', 'male', p$subgroup, fixed = TRUE)
+    
+    p$subgroup <- gsub("STUDENTS WITH DISABLITIES", 'special_education', p$subgroup, fixed = TRUE)
+
+    p$subgroup <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('NON ECON. DISADVANTAGED', 'non_ed', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('CURRENT - ELL', 'lep_current', p$subgroup, fixed = TRUE)
+    p$subgroup <- gsub('FORMER - ELL', 'lep_former', p$subgroup, fixed = TRUE)
+  }
+  
   p
 }
+
+
+
