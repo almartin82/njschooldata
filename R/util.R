@@ -10,7 +10,6 @@ trim_whitespace <- function (x) gsub("^\\s+|\\s+$", "", x)
 #' Parse PARCC subject
 #'
 #' @param x a subject (function parameter subj)
-#'
 #' @return the subject coded as ELA or MAT.
 #' @export
 
@@ -28,6 +27,12 @@ parse_parcc_subj <- function(x) {
   }
 }
 
+
+#' Pad grade level
+#'
+#' @param x a grade level argument, length 1
+#' @return a string, length 2, with appropriate padding for PARCC naming conventions
+#' @export
 
 pad_grade <- function(x) {
   x <- as.character(x)
