@@ -1,22 +1,24 @@
 Package: njschooldata
 Type: Package
 Title: a simple interface for accessing NJ DOE school data in R
-Description: R functions to import NJ school data, including the following assessments: NJASK (gr 3-8), HSPA (gr 11), and GEPA (old gr 8).
+Description: R functions to import NJ school data, including the following
+    assessments: NJASK (gr 3-8), HSPA (gr 11), and GEPA (old gr 8).
 Version: 0.4
 Date: 2015-04-21
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"), email = "almartin@gmail.com")
 License: GPL-3 | file LICENSE
 Depends:
-  ensurer,
-  magrittr,
-  dplyr,
-  R(>= 2.10.0)
+    ensurer,
+    magrittr,
+    dplyr,
+    R(>= 2.10.0)
 Suggests:
-  downloader,
-  ensurer,
-  knitr,
-  readr,
-  readxl,
-  testthat
+    downloader,
+    ensurer,
+    knitr,
+    readr,
+    readxl,
+    testthat
 LazyData: true
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
