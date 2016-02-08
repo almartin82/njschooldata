@@ -1,8 +1,6 @@
 # njschooldata
 a simple interface for accessing NJ DOE school data in R
 
-[![Build Status](https://travis-ci.org/almartin82/njschooldata.png?branch=master)](https://travis-ci.org/almartin82/njschooldata) [![Coverage Status](https://coveralls.io/repos/almartin82/njschooldata/badge.svg?branch=master)](https://coveralls.io/r/almartin82/njschooldata?branch=master)
-
 > It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data (Dasu and Johnson 2003). Data preparation is not just a first step, but must be
 repeated many over the course of analysis as new problems come to light or new data is
 collected. -[@hadley](http://vita.had.co.nz/papers/tidy-data.pdf)
