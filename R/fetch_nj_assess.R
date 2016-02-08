@@ -144,7 +144,6 @@ tidy_nj_assess <- function(assess_name, df) {
     grepl('LIMITED_ENGLISH_PROFICIENT_Current_+', names(df), fixed = TRUE) |
     #weirdly, unmarked LEP means 'current and former'
     grepl('(?<!CURRENT_|FORMER_)LIMITED_ENGLISH_PROFICIENT(?!_Current|_current|_Former)', names(df), perl = TRUE)
-
   
   lep_current_mask <- grepl('CURRENT_LIMITED_ENGLISH_PROFICIENT', names(df)) |
     grepl('LIMITED_ENGLISH_PROFICIENT_Current_LEPC', names(df)) |
