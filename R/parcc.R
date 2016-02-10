@@ -107,4 +107,20 @@ fetch_parcc <- function(end_year, grade, subj, tidy = FALSE) {
 }
 
 
-
+fetch_all_parcc <- function() {
+  parcc_results <- list()
+  
+  for (i in c(2015)) {
+    for (j in c(3:8)) {
+      for (k in c('ela', 'math')) {
+      
+        p <- fetch_parcc(end_year = i, grade = j, subj = k, tidy = TRUE)
+        
+        parcc_results[[paste(i, j, k, sep = '_')]] <- p
+        
+      }
+    }
+  }
+  
+  dplyr::bind_rows(parcc_results)
+}

@@ -3,7 +3,7 @@
 #' @description
 #' \code{get_raw_grate} returns a data frame with NJ HS grad rate
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1998-2014.
+#' school year is year '2007'.  valid values are 1998-2015.
 #' @param calc_type c('4 year', '5 year').  5 year only available for 2012 and 2013 
 #' as of 8/26/15
 #' @export
@@ -90,9 +90,9 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     
     #extensions changed
     if (end_year >= 2009) {
-      grate <- readxl::read_excel(paste0(unzip_loc, '\\', grate_files$Name[1]))
+      grate <- readxl::read_excel(paste0(unzip_loc, '/', grate_files$Name[1]))
     } else {
-      grate <- readr::read_csv(file = paste0(unzip_loc, '\\', grate_files$Name[1]))
+      grate <- readr::read_csv(file = paste0(unzip_loc, '/', grate_files$Name[1]))
     }
    
     grate$methodology <- 'grad_count'
@@ -161,7 +161,6 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('SUBGROUP')] <- 'group'
   
   names(df) <- names(df) %>% tolower()
-
 
   numeric_cols <- c("rowtotal", "female", "male",
     "white", "black", "hispanic", "american_indian", 
@@ -393,6 +392,24 @@ tidy_grate <- function(df, end_year) {
   }
 
   
+  clean_grate_names <- function(name_vector) {
+    
+    name_vector <- ifelse(name_vector == 'American Indian', 'american_indian', name_vector)   
+    name_vector <- ifelse(name_vector == 'Native Hawaiian', 'pacific_islander', name_vector)      
+    name_vector <- ifelse(name_vector == 'Two or More Races', 'multiracial', name_vector)      
+    name_vector <- ifelse(name_vector == 'Limited English Proficiency', 'lep', name_vector)      
+    name_vector <- ifelse(
+      name_vector == 'Economically Disadvantaged', 'economically_disadvantaged', name_vector
+    )
+    name_vector <- ifelse(name_vector == 'Students with Disability', 'iep', name_vector)
+    name_vector <- ifelse(name_vector == 'Schoolwide', 'total_population', name_vector)    
+    name_vector <- ifelse(name_vector == 'Districtwide', 'total_population', name_vector)
+    name_vector <- ifelse(name_vector == 'Statewide Total', 'total_population', name_vector)
+    
+    name_vector
+  }
+  
+    
   tidy_new_format <- function(df) {
     df$program_name <- 'Total'
     df$program_code <- NA
@@ -408,18 +425,7 @@ tidy_grate <- function(df, end_year) {
     
     if ('group' %in% names(df)) {
       df$group <- tolower(df$group)
-
-      df$group <- ifelse(df$group == 'American Indian', 'american_indian', df$group)   
-      df$group <- ifelse(df$group == 'Native Hawaiian', 'pacific_islander', df$group)      
-      df$group <- ifelse(df$group == 'Two or More Races', 'multiracial', df$group)      
-      df$group <- ifelse(df$group == 'Limited English Proficiency', 'lep', df$group)      
-      df$group <- ifelse(
-        df$group == 'Economically Disadvantaged', 'economically_disadvantaged', df$group
-      )
-      df$group <- ifelse(df$group == 'Students with Disability', 'iep', df$group)
-      df$group <- ifelse(df$group == 'Schoolwide', 'total_population', df$group)    
-      df$group <- ifelse(df$group == 'Districtwide', 'total_population', df$group)
-      df$group <- ifelse(df$group == 'Statewide Total', 'total_population', df$group)
+      df$group <- clean_grate_names(df$group)
     }
     
     return(df)
@@ -438,8 +444,11 @@ tidy_grate <- function(df, end_year) {
       
     out <- dplyr::rbind_all(sch_list)
   #cohort 2011-2012 didn't report subgroups method (different file structure)    
-  } else if (end_year >= 2011) {
+  } else if (end_year %in%  c(2011, 2012)) {
     out <- tidy_new_format(df)
+  #2013 shifted to long format
+  } else if (end_year >= 2013) {
+    df$subgroup <- clean_grate_names(df$subgroup) 
   }
   
   return(out)
