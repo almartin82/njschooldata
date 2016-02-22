@@ -8,7 +8,7 @@ get_raw_grate(end_year, calc_type = "4 year")
 }
 \arguments{
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1998-2014.}
+school year is year '2007'.  valid values are 1998-2015.}
 
 \item{calc_type}{c('4 year', '5 year').  5 year only available for 2012 and 2013 
 as of 8/26/15}

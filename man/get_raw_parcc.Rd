@@ -4,13 +4,13 @@
 \alias{get_raw_parcc}
 \title{reads the raw PARCC excel files from the state website}
 \usage{
-get_raw_parcc(end_year, grade, subj)
+get_raw_parcc(end_year, grade_or_subj, subj)
 }
 \arguments{
 \item{end_year}{a school year.  end_year is the end of the academic year - eg 2014-15
 school year is end_year '2015'.  valid values are 2015}
 
-\item{grade}{grade level}
+\item{grade_or_subj}{grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)}
 
 \item{subj}{PARCC subject. c('ela' or 'math')}
 

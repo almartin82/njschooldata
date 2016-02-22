@@ -5,17 +5,24 @@
 #' 
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
 #' school year is end_year '2015'.  valid values are 2015
-#' @param grade grade level
+#' @param grade_or_subj grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)
 #' @param subj PARCC subject. c('ela' or 'math')
 #' @param layout what layout dataframe to use.  default is layout_njask.
 #' @export
 
-get_raw_parcc <- function(end_year, grade, subj) {  
+get_raw_parcc <- function(end_year, grade_or_subj, subj) {  
   
+  if (is.numeric(grade_or_subj)) {
+    parcc_grade <- pad_grade(grade_or_subj)
+  } else {
+    parcc_grade <- grade_or_subj
+  }
+  
+  #'http://www.nj.gov/education/schools/achievement/15/parcc/MATALG1.xlsx'
   stem <- 'http://www.nj.gov/education/schools/achievement/' 
   target_url <- paste0(
     stem, substr(end_year, 3, 4), '/parcc/', 
-      parse_parcc_subj(subj), pad_grade(grade), '.xlsx' 
+      parse_parcc_subj(subj), parcc_grade, '.xlsx' 
   )
   
   tname <- tempfile(pattern = 'parcc', tmpdir = tempdir(), fileext = '.xlsx')
@@ -109,9 +116,10 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
 #' @inheritParams get_raw_parcc
 #' @export
 
-fetch_parcc <- function(end_year, grade, subj, tidy = FALSE) {
-  p <- get_raw_parcc(end_year, grade, subj)
-  p <- process_parcc(p, end_year, grade, subj)
+fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
+
+  p <- get_raw_parcc(end_year, grade_or_subj, subj)
+  p <- process_parcc(p, end_year, grade_or_subj, subj)
   
   if (tidy) {
     p$subgroup <- tidy_parcc_subgroup(p$subgroup)
@@ -121,18 +129,35 @@ fetch_parcc <- function(end_year, grade, subj, tidy = FALSE) {
 }
 
 
+#' Fetch all PARCC results
+#'
+#' @description convenience function to download and combine all PARCC results
+#' into single data frame
+#' 
+#' @return a data frame with all PARCC results
+#' @export
+
 fetch_all_parcc <- function() {
+  
   parcc_results <- list()
   
   for (i in c(2015)) {
+    #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
       
-        p <- fetch_parcc(end_year = i, grade = j, subj = k, tidy = TRUE)
+        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = k, tidy = TRUE)
         
         parcc_results[[paste(i, j, k, sep = '_')]] <- p
         
       }
+    }
+    
+    #specific math tests
+    for (j in c('ALG1', 'GEO', 'ALG2')) {
+      p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'math', tidy = TRUE)
+      
+      parcc_results[[paste(i, j, 'math', sep = '_')]] <- p
     }
   }
   
