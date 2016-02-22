@@ -296,7 +296,7 @@ tidy_nj_assess <- function(assess_name, df) {
     }
   }
   
-  return(dplyr::rbind_all(result_list))
+  return(dplyr::bind_rows(result_list))
 }
 
 

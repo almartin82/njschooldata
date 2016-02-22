@@ -63,6 +63,42 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
 }
 
 
+#' tidy parcc subgroup
+#'
+#' @param subgroup_vector subgroup column from parcc data file
+#'
+#' @return character vector with consistent subgroup names
+#' @export
+
+tidy_parcc_subgroup <- function(subgroup_vector) {
+  
+  subgroup_vector <- gsub("ALL STUDENTS", 'total_population', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector <- gsub('WHITE', 'white', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('AFRICAN AMERICAN', 'black', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('ASIAN', 'asian', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('HISPANIC', 'hispanic', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub(
+    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER', 'pacific_islander', 
+    subgroup_vector, fixed = TRUE
+  )
+  subgroup_vector <- gsub('AMERICAN INDIAN', 'american_indian', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('OTHER', 'other', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector <- gsub('FEMALE', 'female', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('MALE', 'male', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector <- gsub("STUDENTS WITH DISABLITIES", 'special_education', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('NON ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('CURRENT - ELL', 'lep_current', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('FORMER - ELL', 'lep_former', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector
+}
+
 #' @title gets and cleans up a PARCC data file file
 #' 
 #' @description
@@ -78,29 +114,7 @@ fetch_parcc <- function(end_year, grade, subj, tidy = FALSE) {
   p <- process_parcc(p, end_year, grade, subj)
   
   if (tidy) {
-    p$subgroup <- gsub("ALL STUDENTS", 'total_population', p$subgroup, fixed = TRUE)
-
-    p$subgroup <- gsub('WHITE', 'white', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('AFRICAN AMERICAN', 'black', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('ASIAN', 'asian', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('HISPANIC', 'hispanic', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub(
-      'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER', 'pacific_islander', 
-      p$subgroup, fixed = TRUE
-    )
-    p$subgroup <- gsub('AMERICAN INDIAN', 'american_indian', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('OTHER', 'other', p$subgroup, fixed = TRUE)
-
-    p$subgroup <- gsub('FEMALE', 'female', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('MALE', 'male', p$subgroup, fixed = TRUE)
-    
-    p$subgroup <- gsub("STUDENTS WITH DISABLITIES", 'special_education', p$subgroup, fixed = TRUE)
-
-    p$subgroup <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('NON ECON. DISADVANTAGED', 'non_ed', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('CURRENT - ELL', 'lep_current', p$subgroup, fixed = TRUE)
-    p$subgroup <- gsub('FORMER - ELL', 'lep_former', p$subgroup, fixed = TRUE)
+    p$subgroup <- tidy_parcc_subgroup(p$subgroup)
   }
   
   p
