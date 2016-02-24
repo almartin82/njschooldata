@@ -327,7 +327,14 @@ nj_coltype_parser <- function(datatypes) {
 common_fwf_req <- function(url, layout) {
   #got burned by bad layouts.  read in the raw file
   #this will take extra time, but it is worth it.
-  raw_fwf <- readLines(url) %>% gsub("[[:space:]]*$","", .)
+
+  raw_fwf <- readLines(url)
+  num_lines <- lapply(raw_fwf, nchar) %>% unlist()
+
+  #if everything is consistent, great.  if the fwf is ragged, trim whitespace.  
+  if (any(num_lines < max(num_lines))) {
+    raw_fwf <- raw_fwf %>% gsub("[[:space:]]*$","", .)
+  }
   
   #check that incoming response (when cleaned) is of consistent length.
   if (!nchar(raw_fwf) %>% unique() %>% length() == 1) {
