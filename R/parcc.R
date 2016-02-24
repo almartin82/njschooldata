@@ -62,7 +62,7 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   
   parcc_file$testing_year <- end_year
   parcc_file$assess_name <- 'PARCC'
-  parcc_file$grade <- grade
+  parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
   
   parcc_file
@@ -98,9 +98,20 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
   
   subgroup_vector <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('NON ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = TRUE)
+  
   subgroup_vector <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('CURRENT - ELL', 'lep_current', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('FORMER - ELL', 'lep_former', subgroup_vector, fixed = TRUE)
+  
+  subgroup_vector <- gsub('GRADE - other', 'grade_other', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 06', 'grade_06', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 07', 'grade_07', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 08', 'grade_08', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 09', 'grade_09', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 10', 'grade_10', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 11', 'grade_11', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub('GRADE - 12', 'grade_12', subgroup_vector, fixed = TRUE)
+  
   
   subgroup_vector
 }
