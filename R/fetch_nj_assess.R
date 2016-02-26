@@ -329,6 +329,7 @@ common_fwf_req <- function(url, layout) {
   #this will take extra time, but it is worth it.
 
   raw_fwf <- readLines(url)
+  raw_fwf <- iconv(raw_fwf, "LATIN2", "UTF-8")
   num_lines <- lapply(raw_fwf, nchar) %>% unlist()
 
   #if everything is consistent, great.  if the fwf is ragged, trim whitespace.  
