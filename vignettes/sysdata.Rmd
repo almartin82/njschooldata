@@ -81,7 +81,7 @@ save(all_assess_tidy, file = 'data\\all_assess_tidy.Rda')
 
 library(stringr)
 
-prog_codes <- readr::read_csv('data-raw\\program_codes_clean.csv')
+prog_codes <- readr::read_csv(file.path('data-raw', 'program_codes_clean.csv'))
 
 prog1 <- prog_codes[prog_codes$end_year >= 2010, ]
 prog2 <- prog_codes[prog_codes$end_year < 2010, ]
@@ -99,7 +99,7 @@ save(prog_codes, file = 'data\\program_codes.Rda')
 
 ### for debugging; step through fetch_enr steps
 
-```{r debugging}
+```{r debugging, eval = FALSE}
 
 foo1 <-  get_raw_enr(2009) 
 foo2 <- foo1 %>% clean_enr_names()
