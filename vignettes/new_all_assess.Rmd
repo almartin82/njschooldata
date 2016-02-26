@@ -7,7 +7,8 @@ output: html_document
 
 ```{r}
 library(devtools)
-devtools::load_all(pkg = "C:\\Users\\AMartin\\Dropbox\\repositories\\njschooldata")
+devtools::load_all(pkg = "/Users/almartin/Google\ Drive/repositories/njschooldata")
+
 ```
 
 ```{r}
@@ -58,9 +59,9 @@ for (i in 1:nrow(assess_years)) {
   }
 
 # these were for fixing parse problems on a one-off basis  
-  if (!assess_years[i, 'name'] == 'GEPA') {
-    next()
-  }
+#   if (!assess_years[i, 'name'] == 'GEPA') {
+#     next()
+#   }
 
 #   if (!assess_years[i, 'grade'] %in% c(8)) {
 #     next()
