@@ -24,10 +24,11 @@ get_raw_enr <- function(end_year) {
   enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
   
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
-    enr <- readxl::read_excel(paste0(tdir,'\\',enr_files$Name[1]))
+    this_file <- file.path(tdir, enr_files$Name[1])
+    enr <- readxl::read_excel(this_file)
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
-      file = paste0(tdir,'\\',enr_files$Name[1]),
+      file = file.path(tdir, enr_files$Name[1]),
       na = "     . "
     )
   }
