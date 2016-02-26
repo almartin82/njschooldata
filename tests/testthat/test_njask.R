@@ -7,9 +7,9 @@ fetch_07g3 <- fetch_njask(2007, 3)
 
 test_that("get_raw_njask correctly grabs the 2014 6th grade NJASK", {
 
-  expect_equal(nrow(ex_2014), 881)
+  expect_equal(nrow(ex_2014), 1505)
   expect_equal(ncol(ex_2014), 551)
-  expect_equal(sum(ex_2014$TOTAL_POPULATION_Number_Enrolled_ELA, na.rm = TRUE), 307136)
+  expect_equal(sum(ex_2014$TOTAL_POPULATION_Number_Enrolled_ELA, na.rm = TRUE), 511500)
   
 })
 
