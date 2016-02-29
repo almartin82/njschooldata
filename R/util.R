@@ -43,3 +43,16 @@ pad_grade <- function(x) {
     x
   }
 }
+
+
+#' clean_id
+#'
+#' @description cleans district id columns(mixed numeric/character) of leading zeros
+#' @param x id vector
+#'
+#' @return cleaned id vector
+#' @export
+
+clean_id <- function(x) {
+  gsub("(^|[^0-9])0+", "\\1", x, perl = TRUE)
+}
