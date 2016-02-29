@@ -60,6 +60,12 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$subgroup <- orig_subgroup_type
   parcc_file$subgroup_type <- orig_subgroup_type
   
+  #clean columns
+  parcc_file$county_code <- clean_id(parcc_file$county_code)
+  parcc_file$district_code <- clean_id(parcc_file$district_code)
+  parcc_file$school_code <- clean_id(parcc_file$school_code)
+  
+  #new columns
   parcc_file$testing_year <- end_year
   parcc_file$assess_name <- 'PARCC'
   parcc_file$grade <- as.character(grade)

@@ -3,6 +3,7 @@
 export(arrange_enr)
 export(clean_enr_data)
 export(clean_enr_names)
+export(clean_id)
 export(common_fwf_req)
 export(fetch_all_parcc)
 export(fetch_enr)
