@@ -65,6 +65,16 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$district_code <- clean_id(parcc_file$district_code)
   parcc_file$school_code <- clean_id(parcc_file$school_code)
   
+  #make some numeric
+  parcc_file$number_enrolled <- as.numeric(parcc_file$number_enrolled)
+  parcc_file$number_not_tested <- as.numeric(parcc_file$number_not_tested)
+  parcc_file$number_of_valid_scale_scores <- as.numeric(parcc_file$number_of_valid_scale_scores)
+  parcc_file$pct_l1 <- as.numeric(parcc_file$pct_l1)
+  parcc_file$pct_l2 <- as.numeric(parcc_file$pct_l2)
+  parcc_file$pct_l3 <- as.numeric(parcc_file$pct_l3)
+  parcc_file$pct_l4 <- as.numeric(parcc_file$pct_l4)
+  parcc_file$pct_l5 <- as.numeric(parcc_file$pct_l5)
+  
   #new columns
   parcc_file$testing_year <- end_year
   parcc_file$assess_name <- 'PARCC'
