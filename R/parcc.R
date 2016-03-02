@@ -81,6 +81,17 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
   
+  #tag district or school
+  parcc_file$district_school <- NA
+  parcc_file$district_school <- ifelse(
+    is.na(parcc_file$school_code) & !is.na(parcc_file$district_code),
+    'district', parcc_file$district_school
+  )
+  parcc_file$district_school <- ifelse(
+    !is.na(parcc_file$school_code) & !is.na(parcc_file$district_code),
+    'school', parcc_file$district_school
+  )
+  
   parcc_file
 }
 
