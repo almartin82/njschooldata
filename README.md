@@ -27,7 +27,7 @@ library(njschooldata)
 ```R
 head(all_assess_tidy)
 ```
-A copy of all the cleaned data files (2004-2014) has been saved to all_assess_tidy.  6.1 million rows!
+A copy of the cleaned data files from 2004-2014 (NJASK-era, before PARCC switch-over) has been saved to all_assess_tidy.  6.1 million rows!
 
 # Usage
 
@@ -56,6 +56,13 @@ read in the 2002 HS graduate data file :
 fetch_grate(end_year = 2002, tidy = TRUE)
 ```
 
+# Contributing
+
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+Contributions are welcome!
+
+Comments?  Questions?  Problem?  Want to contribute to development?  File an [issue](https://github.com/almartin82/njschooldata/issues) or send me an [email](mailto:almartin@gmail.com). 
 
 
 # Coverage
@@ -163,7 +170,3 @@ Here's an example of a tidied NJASK data file:
 5            180.8
 6            190.9
 ```
-
-# Contributing
-
-Comments?  Questions?  Problem?  Want to contribute to development?  File an [issue](https://github.com/almartin82/njschooldata/issues) or send me an [email](mailto:almartin@gmail.com). 
