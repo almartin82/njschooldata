@@ -20,33 +20,6 @@ peer_percentile_pipe <- . %>%
     scale_score_percentile = scale_numerator_asc / scale_denominator
   )
   
-peer_percentile_pipe <- . %>%
-  dplyr::mutate(
-    count_proficient_dummy = ifelse(is.finite(l3_l4_pct), 1, 0),
-    count_scale_dummy = ifelse(is.finite(mean_scale_score), 1, 0)
-  ) %>%
-  dplyr::group_by(
-    test_year,
-    test_subject,
-    test_grade_string,
-    subgroup_code,
-    is_school, is_district,
-    is_multigrade_aggregate
-  ) %>%
-  dplyr::mutate(
-    proficient_numerator_asc = dplyr::dense_rank(l3_l4_pct),
-    proficient_numerator_desc = dplyr::dense_rank(dplyr::desc(l3_l4_pct)),
-    proficient_denominator = sum(count_proficient_dummy),
-    
-    scale_numerator_asc = dplyr::dense_rank(mean_scale_score),
-    scale_numerator_desc = dplyr::dense_rank(dplyr::desc(mean_scale_score)),
-    scale_denominator = sum(count_scale_dummy),
-    
-    proficiency_percentile = proficient_numerator_asc / proficient_denominator,
-    scale_score_percentile = scale_numerator_asc / scale_denominator
-  ) %>%
-  dplyr::select(-count_proficient_dummy, -count_scale_dummy)
-
 
 calc_nj_percentiles <- function(tidy_df) {
   
@@ -71,19 +44,34 @@ calc_nj_percentiles <- function(tidy_df) {
     dplyr::filter(is_dist == TRUE) %>%
     dplyr::select(-is_sch, -is_dist)
   
-  #split out: the leftovers
-  leftover_df <- tidy_df %>%
+  #split out: leftovers statewide & DFG aggregates
+  `leftover_df - Sad!`  <- tidy_df %>%
     dplyr::filter(
       !temp_rn %in% c(sch_df$temp_rn, dist_df$temp_rn)
-    )
-  
-  #calc scale and prof peer percentiles, districts
+    ) %>%
+    dplyr::select(-is_sch, -is_dist)
   
   #calc scale and prof peer percentiles, schools
+  sch_df <- sch_df %>%
+    peer_percentile_pipe() 
+  
+  #calc scale and prof peer percentiles, districts
+  dist_df <- dist_df %>%
+    peer_percentile_pipe() 
   
   #put everything back together and return
+  out <- dplyr::bind_rows(
+    sch_df, dist_df, `leftover_df - Sad!`
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(temp_rn) %>%
+  dplyr::select(
+    -temp_rn, -count_proficient_dummy, -count_scale_dummy,
+    -proficient_numerator_asc, -proficient_denominator,
+    -scale_numerator_asc, -scale_denominator
+  )
   
-  
+  out
 }
 
 #scratch, for testing (needs to sit inside a closure or devtools gets mad)
