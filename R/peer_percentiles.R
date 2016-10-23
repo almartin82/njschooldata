@@ -7,7 +7,7 @@ peer_percentile_pipe <- . %>%
     count_scale_dummy = ifelse(is.finite(scale_score_mean), 1, 0)
   ) %>%
   dplyr::group_by(
-    assess_name, testing_year, grade, subgroup, test_name
+    assess_name, test_name, testing_year, grade, subgroup
   ) %>%
   dplyr::mutate(
     proficient_numerator_asc = dplyr::dense_rank(proficient_above),
@@ -20,6 +20,17 @@ peer_percentile_pipe <- . %>%
     scale_score_percentile = scale_numerator_asc / scale_denominator
   )
   
+
+#' Calculate NJ Percentiles
+#'
+#' @param tidy_df a tidy data frame, eg output of `tidy_nj_assess()`.
+#'
+#' @return the tidy data frame with two new columns - proficiency_percentile
+#' and scale_score_percentile - describing the school/district's position
+#' in the distribution of NJ schools/districts for that:
+#' assessment program (eg NJASK), test name (eg ELA, Math), testing year,
+#' grade, and testing subgroup
+#' @export
 
 calc_nj_percentiles <- function(tidy_df) {
   
