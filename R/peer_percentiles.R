@@ -1,14 +1,3 @@
-foo <- all_assess_tidy %>%
-  dplyr::filter(testing_year == 2014)
-
-# peer_percentile_scale_pipe <- . %>%
-#   dplyr::ungroup() %>%
-#   dplyr::mutate(
-#     num_proficient = ((100 - partially_proficient) / 100) * 
-#       number_valid_scale_scores,
-#     num_proficient = round(num_proficient, 0)
-#   ) 
-
 peer_percentile_pipe <- . %>%
   dplyr::ungroup() %>%
 #  dplyr::rowwise() %>%
@@ -31,13 +20,6 @@ peer_percentile_pipe <- . %>%
     scale_score_percentile = scale_numerator_asc / scale_denominator
   )
   
-
-bizz <- foo %>%
-  peer_percentile_pipe()
-
-head(bizz) %>% print.AsIs()
-
-
 peer_percentile_pipe <- . %>%
   dplyr::mutate(
     count_proficient_dummy = ifelse(is.finite(l3_l4_pct), 1, 0),
@@ -67,7 +49,7 @@ peer_percentile_pipe <- . %>%
 
 
 
-calc_nj_percentiles(tidy_df, test_year) {
+calc_nj_percentiles <- function(tidy_df) {
   
   #split out: districts
   
@@ -81,3 +63,19 @@ calc_nj_percentiles(tidy_df, test_year) {
   
   #put everything back together and return
 }
+
+#scratch, for testing (needs to sit inside a closure or devtools gets mad)
+fake_func <- function() {
+  
+  foo <- all_assess_tidy %>%
+    dplyr::filter(testing_year == 2014)
+  
+  bizz <- foo %>%
+    peer_percentile_pipe()
+  
+  head(bizz) %>% print.AsIs()
+  
+  
+  
+}
+
