@@ -178,7 +178,7 @@ fetch_all_parcc <- function() {
   
   parcc_results <- list()
   
-  for (i in c(2015)) {
+  for (i in c(2015:2017)) {
     #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
