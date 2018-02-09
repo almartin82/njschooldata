@@ -1,0 +1,120 @@
+---
+title: "pr"
+author: "Andrew Martin"
+date: "1/24/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(tidyverse)
+library(readxl)
+```
+
+manually read one PR
+
+```{r}
+
+tmp = tempfile(fileext = ".xlsx")
+
+download.file(url = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx", destfile = tmp, mode = "wb")
+
+sheets17 <- excel_sheets(tmp) %>%
+  clean_name_vector()
+
+pr17 <- map(
+  .x = c(1:length(sheets17)),
+  .f = function(.x) {
+    read_xlsx(tmp, sheet = .x) %>%
+      janitor::clean_names()
+  }
+)
+  
+names(pr17) <- sheets17
+
+```
+
+function-ify it
+
+```{r}
+
+clean_name_vector <- . %>%
+  gsub("'", "", .) %>% 
+  gsub("\"", "", .) %>% 
+  gsub("%", ".percent_", .) %>% 
+  gsub("#", ".number_", .) %>% 
+  gsub('-', '_', .) %>%
+  gsub("^[[:space:][:punct:]]+", "", .) %>% 
+  make.names(.) %>% 
+  snakecase::to_any_case(
+    case = 'snake', 
+    preprocess = "\\.", 
+    replace_special_characters = c("Latin-ASCII")
+  )
+
+pr_database <- function(end_year) {
+  
+  pr_urls <- list(
+    "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
+    "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
+    "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
+    "2014" = "http://www.nj.gov/education/pr/1314/database/2014%20performance%20report%20database.xlsx",
+    "2013" = "http://www.nj.gov/education/pr/1213/database/nj%20pr13%20database.xlsx",
+    "2012" = "http://www.nj.gov/education/pr/2013/database/nj%20pr12%20database.xlsx",
+    "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
+    "2010" = "http://www.nj.gov/education/reportcard/2010/database/RC10%20database.xls",
+    "2009" = "http://www.nj.gov/education/reportcard/2009/database/RC09%20database.xls",
+    "2008" = "http://www.nj.gov/education/reportcard/2008/database/nj_rc08.xls",
+    "2007" = "http://www.nj.gov/education/reportcard/2007/database/nj_rc07.xls",
+    "2006" = "http://www.nj.gov/education/reportcard/2006/database/nj_rc06_data.xls",
+    "2005" = "http://www.nj.gov/education/reportcard/2005/database/NJ_RC05_DATA.XLS",
+    "2004" = "http://www.nj.gov/education/reportcard/2004/database/nj_rc04_data.xls",
+    "2003" = "http://www.nj.gov/education/reportcard/2003/database/nj_rc03_data.xls"
+  )
+  
+  #temp file for downloading
+  tmp_pr = tempfile(fileext = ".xlsx")
+
+  #download to temp
+  download.file(url = pr_urls[[as.character(end_year)]], destfile = tmp_pr, mode = "wb")
+  
+  #get the sheet names
+  sheets_pr <- excel_sheets(tmp_pr) %>%
+    clean_name_vector()
+  
+  #get all the data.frames as list
+  pr_list <- map(
+    .x = c(1:length(sheets_pr)),
+    .f = function(.x) {
+      read_xlsx(tmp_pr, sheet = .x) %>%
+        mutate(end_year = )
+    }
+  )
+  
+  #rename each pr
+  names(pr_list) <- sheets_pr
+  
+  pr_list
+}
+
+```
+
+read many PRs
+
+```{r}
+
+all_prs <- map(
+  .x = c(2013:2017),
+  .f = function(.x) {
+    print(.x)
+    pr_database(.x)
+  }
+)
+
+```
+
+Extract SAT info
