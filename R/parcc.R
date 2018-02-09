@@ -123,8 +123,8 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
   subgroup_vector <- gsub('ASIAN', 'asian', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('HISPANIC', 'hispanic', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub(
-    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER', 'pacific_islander', 
-    subgroup_vector, fixed = TRUE
+    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER|NATIVE HAWAIIAN', 'pacific_islander', 
+    subgroup_vector, fixed = FALSE
   )
   subgroup_vector <- gsub('AMERICAN INDIAN', 'american_indian', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('OTHER', 'other', subgroup_vector, fixed = TRUE)
@@ -132,10 +132,16 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
   subgroup_vector <- gsub('FEMALE', 'female', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('MALE', 'male', subgroup_vector, fixed = TRUE)
   
-  subgroup_vector <- gsub("STUDENTS WITH DISABLITIES", 'special_education', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub(
+    "STUDENTS WITH DISABLITIES|STUDENTS WITH DISABILITIES", 'special_education', 
+    subgroup_vector, fixed = FALSE
+  )
+  subgroup_vector <- gsub("SE ACCOMMODATION", 'sped_accomodations', subgroup_vector, fixed = TRUE)
   
   subgroup_vector <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('NON ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub(
+    'NON ECON. DISADVANTAGED|NON-ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = FALSE
+  )
   
   subgroup_vector <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('CURRENT - ELL', 'lep_current', subgroup_vector, fixed = TRUE)
@@ -199,6 +205,12 @@ fetch_all_parcc <- function() {
         parcc_results[[paste(i, j, k, sep = '_')]] <- p
         
       }
+    }
+    #hs ela
+    for (j in c(9:11)) {
+      p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+      
+      parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
     }
     
     #specific math tests
