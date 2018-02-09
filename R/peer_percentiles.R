@@ -17,7 +17,13 @@ peer_percentile_pipe <- . %>%
     scale_denominator = sum(count_scale_dummy),
 
     proficiency_percentile = proficient_numerator_asc / proficient_denominator,
-    scale_score_percentile = scale_numerator_asc / scale_denominator
+    proficiency_percentile2 = dplyr::percent_rank(proficient_above),
+    proficiency_percentile3 = dplyr::cume_dist(proficient_above),
+    
+    scale_score_percentile = scale_numerator_asc / scale_denominator,
+    scale_score_percentile2 = dplyr::percent_rank(scale_score_mean),
+    scale_score_percentile3 = dplyr::cume_dist(scale_score_mean)
+  
   )
   
 
@@ -100,6 +106,9 @@ fake_func <- function() {
   
   tidy_df <- all_assess_tidy %>%
     dplyr::filter(testing_year %in% c(2014, 2013, 2012))
+  
+  
+  all_assess_tidy$testing_year %>% table()
   
 }
 
