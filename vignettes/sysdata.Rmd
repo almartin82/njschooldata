@@ -28,7 +28,7 @@ knitr::opts_knit$set(eval = FALSE)
 
 enr_files <- list()
 
-for (i in c(2015:1999)) {
+for (i in c(2017:1999)) {
   enr <- fetch_enr(i) 
   
   enr_files[[paste0('enr', i)]] <- enr
@@ -80,8 +80,11 @@ save(all_assess_tidy, file = 'data\\all_assess_tidy.Rda')
 ```{r prog}
 
 library(stringr)
+library(rprojroot)
 
-prog_codes <- readr::read_csv(file.path('data-raw', 'program_codes_clean.csv'))
+root <- rprojroot::find_rstudio_root_file()
+
+prog_codes <- readr::read_csv(file.path(root, 'data-raw', 'program_codes_clean.csv'))
 
 prog1 <- prog_codes[prog_codes$end_year >= 2010, ]
 prog2 <- prog_codes[prog_codes$end_year < 2010, ]
