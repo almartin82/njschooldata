@@ -14,6 +14,11 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   
   if (is.numeric(grade_or_subj)) {
     parcc_grade <- pad_grade(grade_or_subj)
+    
+    #in 2017 they forgot how grade levels work
+    if (end_year == 2017 & grade_or_subj >= 10) {
+      parcc_grade <- paste0('0', parcc_grade)
+    }
   } else {
     parcc_grade <- grade_or_subj
   }
@@ -25,10 +30,11 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   #eg http://www.nj.gov/education/schools/achievement/16/parcc/spring/ELA03.xlsx
   #we're pulling spring only (for now)
   season_variant <- if (end_year >= 2016) {
-    '/spring/'
+    'spring/'
   } else {
     ''
   }
+  
   
   target_url <- paste0(
     stem, substr(end_year, 3, 4), '/parcc/', season_variant,
@@ -195,7 +201,7 @@ fetch_all_parcc <- function() {
   
   parcc_results <- list()
   
-  for (i in c(2015:2016)) {
+  for (i in c(2015:2017)) {
     #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
