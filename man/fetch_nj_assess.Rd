@@ -23,4 +23,3 @@ text file, and return a data frame.  \code{fetch_nj_assess} is a wrapper around
 all the individual subject functions (NJASK, HSPA, etc.), abstracting away the 
 complexity of finding the right location/file layout.
 }
-

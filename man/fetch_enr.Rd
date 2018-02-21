@@ -15,4 +15,3 @@ school year is year '2007'.  valid values are 1999-2015.}
 \code{process_enr} that passes the correct file layout data to each function,
 given an end_year
 }
-

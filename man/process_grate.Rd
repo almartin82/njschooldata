@@ -15,4 +15,3 @@ school year is year '2007'.  valid values are 1998-2014.}
 \description{
 does cleanup of the grad rate ('grate') file
 }
-
