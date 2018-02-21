@@ -16,4 +16,3 @@ decimal.}
 \code{process_njask} does cleanup of the raw assessment file, primarily ensuring that 
 columns tagged as 'one implied' are displayed correctly
 }
-

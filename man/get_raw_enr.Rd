@@ -14,4 +14,3 @@ school year is year '2007'.  valid values are 1999-2015.}
 \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 grade level enrollment data.
 }
-

@@ -12,4 +12,3 @@ clean_enr_data(df)
 \description{
 all columns come back char; coerce some back to numeric
 }
-

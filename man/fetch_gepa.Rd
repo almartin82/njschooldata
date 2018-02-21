@@ -15,4 +15,3 @@ school year is end_year '2007'.  valid values are 2004-2007.}
 \code{process_nj_assess} that passes the correct file layout data to each function,
 given a end_year and grade.
 }
-

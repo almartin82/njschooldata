@@ -15,4 +15,3 @@ tidy_nj_assess(assess_name, df)
 \code{tidy_nj_assess} is a utility/internal function that takes the somewhat messy/inconsistent 
 assessment headers and returns a tidy data frame.
 }
-
