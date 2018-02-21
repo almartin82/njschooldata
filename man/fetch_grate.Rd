@@ -18,4 +18,3 @@ a
 \description{
 a consistent interface into the NJ HS graduates data.
 }
-

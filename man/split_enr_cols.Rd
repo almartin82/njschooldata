@@ -12,4 +12,3 @@ split_enr_cols(df)
 \description{
 splits enrollment columns that combine IDs and names (pre '09-10)
 }
-

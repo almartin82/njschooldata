@@ -16,4 +16,3 @@ as of 8/26/15}
 \description{
 \code{get_raw_grate} returns a data frame with NJ HS grad rate
 }
-

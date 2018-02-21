@@ -12,4 +12,3 @@ arrange_enr(df)
 \description{
 put an enrollment file in the correct order
 }
-

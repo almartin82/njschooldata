@@ -15,4 +15,3 @@ the subject coded as ELA or MAT.
 \description{
 Parse PARCC subject
 }
-

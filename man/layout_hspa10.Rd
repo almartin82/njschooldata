@@ -28,4 +28,3 @@ A processed R version of the 'File Layout' for the 2004-2010 HSPA.
 Original file is in .xls format on NJDOE website
 }
 \keyword{datasets}
-

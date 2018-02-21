@@ -12,4 +12,3 @@ clean_enr_names(df)
 \description{
 give consistent names to the enrollment files
 }
-
