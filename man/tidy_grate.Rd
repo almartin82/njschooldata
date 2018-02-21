@@ -16,4 +16,3 @@ school year is year '2007'.  valid values are 1998-2014.}
 tidies a processed grate data frame, producing a data frame with consistent
 headers and values, suitable for longitudinal analysis
 }
-

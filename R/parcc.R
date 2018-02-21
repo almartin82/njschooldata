@@ -14,13 +14,30 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   
   if (is.numeric(grade_or_subj)) {
     parcc_grade <- pad_grade(grade_or_subj)
+    
+    #in 2017 they forgot how grade levels work
+    if (end_year == 2017 & grade_or_subj >= 10) {
+      parcc_grade <- paste0('0', parcc_grade)
+    }
   } else {
     parcc_grade <- grade_or_subj
   }
   
-  stem <- 'http://www.nj.gov/education/schools/achievement/' 
+  stem <- 'http://www.nj.gov/education/schools/achievement/'
+  
+  #after 2016 they
+  #added a spring / fall element
+  #eg http://www.nj.gov/education/schools/achievement/16/parcc/spring/ELA03.xlsx
+  #we're pulling spring only (for now)
+  season_variant <- if (end_year >= 2016) {
+    'spring/'
+  } else {
+    ''
+  }
+  
+  
   target_url <- paste0(
-    stem, substr(end_year, 3, 4), '/parcc/', 
+    stem, substr(end_year, 3, 4), '/parcc/', season_variant,
       parse_parcc_subj(subj), parcc_grade, '.xlsx' 
   )
   
@@ -112,8 +129,8 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
   subgroup_vector <- gsub('ASIAN', 'asian', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('HISPANIC', 'hispanic', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub(
-    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER', 'pacific_islander', 
-    subgroup_vector, fixed = TRUE
+    'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER|NATIVE HAWAIIAN', 'pacific_islander', 
+    subgroup_vector, fixed = FALSE
   )
   subgroup_vector <- gsub('AMERICAN INDIAN', 'american_indian', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('OTHER', 'other', subgroup_vector, fixed = TRUE)
@@ -121,10 +138,16 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
   subgroup_vector <- gsub('FEMALE', 'female', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('MALE', 'male', subgroup_vector, fixed = TRUE)
   
-  subgroup_vector <- gsub("STUDENTS WITH DISABLITIES", 'special_education', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub(
+    "STUDENTS WITH DISABLITIES|STUDENTS WITH DISABILITIES", 'special_education', 
+    subgroup_vector, fixed = FALSE
+  )
+  subgroup_vector <- gsub("SE ACCOMMODATION", 'sped_accomodations', subgroup_vector, fixed = TRUE)
   
   subgroup_vector <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('NON ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = TRUE)
+  subgroup_vector <- gsub(
+    'NON ECON. DISADVANTAGED|NON-ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = FALSE
+  )
   
   subgroup_vector <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', subgroup_vector, fixed = TRUE)
   subgroup_vector <- gsub('CURRENT - ELL', 'lep_current', subgroup_vector, fixed = TRUE)
@@ -189,6 +212,12 @@ fetch_all_parcc <- function() {
         
       }
     }
+    #hs ela
+    for (j in c(9:11)) {
+      p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+      
+      parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+    }
     
     #specific math tests
     for (j in c('ALG1', 'GEO', 'ALG2')) {
@@ -200,3 +229,30 @@ fetch_all_parcc <- function() {
   
   dplyr::bind_rows(parcc_results)
 }
+
+
+stu_counts <- . %>%
+  dplyr::mutate(
+    num_l1 = round((pct_l1/100) * number_of_valid_scale_scores, 0),
+    num_l2 = round((pct_l2/100) * number_of_valid_scale_scores, 0),
+    num_l3 = round((pct_l3/100) * number_of_valid_scale_scores, 0),
+    num_l4 = round((pct_l4/100) * number_of_valid_scale_scores, 0),
+    num_l5 = round((pct_l5/100) * number_of_valid_scale_scores, 0)
+  )
+
+summary_pipe <- . %>%
+  dplyr::summarize(
+    valid_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
+    num_l1 = sum(num_l1, na.rm = TRUE),
+    num_l2 = sum(num_l2, na.rm = TRUE),
+    num_l3 = sum(num_l3, na.rm = TRUE),
+    num_l4 = sum(num_l4, na.rm = TRUE),
+    num_l5 = sum(num_l5, na.rm = TRUE),
+    districts = toString(district_name),
+    schools = toString(school_name)
+  ) %>%
+  dplyr::mutate(
+    pct_proficient = round(((num_l4 + num_l5) / valid_scores) * 100, 2),
+    districts = districts,
+    schools = schools
+  )

@@ -15,4 +15,3 @@ a string or vector of strings, with whitespace removed.
 \description{
 Trim whitespace
 }
-

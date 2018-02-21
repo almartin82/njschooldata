@@ -12,4 +12,3 @@ process_enr(df)
 \description{
 \code{process_enr} does cleanup of dataframes returned by \code{get_raw_enr}
 }
-
