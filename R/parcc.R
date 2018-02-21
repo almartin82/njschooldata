@@ -229,3 +229,30 @@ fetch_all_parcc <- function() {
   
   dplyr::bind_rows(parcc_results)
 }
+
+
+stu_counts <- . %>%
+  dplyr::mutate(
+    num_l1 = round((pct_l1/100) * number_of_valid_scale_scores, 0),
+    num_l2 = round((pct_l2/100) * number_of_valid_scale_scores, 0),
+    num_l3 = round((pct_l3/100) * number_of_valid_scale_scores, 0),
+    num_l4 = round((pct_l4/100) * number_of_valid_scale_scores, 0),
+    num_l5 = round((pct_l5/100) * number_of_valid_scale_scores, 0)
+  )
+
+summary_pipe <- . %>%
+  dplyr::summarize(
+    valid_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
+    num_l1 = sum(num_l1, na.rm = TRUE),
+    num_l2 = sum(num_l2, na.rm = TRUE),
+    num_l3 = sum(num_l3, na.rm = TRUE),
+    num_l4 = sum(num_l4, na.rm = TRUE),
+    num_l5 = sum(num_l5, na.rm = TRUE),
+    districts = toString(district_name),
+    schools = toString(school_name)
+  ) %>%
+  dplyr::mutate(
+    pct_proficient = round(((num_l4 + num_l5) / valid_scores) * 100, 2),
+    districts = districts,
+    schools = schools
+  )
