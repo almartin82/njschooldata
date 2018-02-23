@@ -7,7 +7,7 @@
 extract_pr_SAT(list_of_prs)
 }
 \arguments{
-\item{list_of_prs}{output of get_raw_rc_database (ie, a list where each element is)
+\item{list_of_prs}{output of get_rc_databases (ie, a list where each element is)
 a list of data.frames}
 }
 \value{
