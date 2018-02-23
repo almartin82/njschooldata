@@ -81,15 +81,17 @@ get_rc_databases <- function(end_year_vector = c(2003:2017)) {
 }
 
 
-#' Extract Progress Report SAT School Averages
+#' Extract Report Car SAT School Averages
 #'
 #' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
 #' a list of data.frames
+#' @param school_only some years have district average results, not just school-level. 
+#' if school_only, return only school data.  default is TRUE
 #'
 #' @return data frame with all years of SAT School Averages present in the input
 #' @export
 
-extract_pr_SAT <- function(list_of_prs) {
+extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
   
   all_sat <- map(
     .x = list_of_prs,
@@ -131,7 +133,7 @@ extract_pr_SAT <- function(list_of_prs) {
       }
       
       #filters out district results and only returns schools
-      if ('level' %in% names(df)) {
+      if ('level' %in% names(df) & school_only) {
         df <- df %>% filter(level == 'S')  
       }
       
@@ -161,4 +163,94 @@ extract_pr_SAT <- function(list_of_prs) {
   bind_rows(all_sat)
 }
 
+
+#' Extract Report Card Matriculation Rates
+#'
+#' @inheritParams extract_pr_SAT
+#' 
+#' @return data frame with all the years of 4 year and 2 year college matriculation data
+#' present in in the input
+#' @export
+
+extract_rc_college_matric <- function(list_of_prs, school_only = TRUE) {
+  
+  all_matric <- map(
+    list_of_prs,
+    function(.x) {
+      matric_tables <- grep('postgrad|post_sec|postsecondary', names(.x), value = TRUE)
+      matric_tables <- matric_tables[!grepl("16mos", matric_tables)] 
+      
+      #2011 didn't include postsec because :shrug:
+      if (!is_empty(matric_tables)) {
+        df <- .x %>% extract2(matric_tables)
+      } else {
+        return(NULL)
+      }
+      
+      #pre-2010 they included longitudinal data in the table
+      #filter to just the matching year
+      if ('year' %in% names(df)) {
+        df <- rc_year_matcher(df)
+      }
+      #they also reported school and district together
+      if ('level' %in% names(df) & school_only) {
+        df <- df %>% filter(level == 'S')  
+      }
+      
+      df <- clean_cds_fields(df)
+      
+      #specific field cleaning for college matric
+      names(df) <- gsub(
+        'colleg4|enroll_4yr_percent|postsec_enrolled_4yr|percent_in4years|post_sec_pct|enrolled4yr|postsec_enrolled_4year|enrolled4year', 
+        'enroll_4yr', names(df)
+      )
+      names(df) <- gsub(
+        'colleg2|enroll_2yr_percent|postsec_enrolled_2yr|percent_in2years|enrolled2yr|postsec_enrolled_2year|enrolled2year',
+        'enroll_2yr', names(df)
+      )
+      names(df) <- gsub(
+        'post_sec_enrolled_percent|percent_enrolled|postsec_enrolled_percent|enrolled_percent', 
+        'enroll_any', names(df)
+      )
+      names(df) <- gsub('sub_group|student_group', 'subgroup', names(df))
+      
+      #clean up messy data vectors, suppression codes, etc
+      if ('enroll_any' %in% names(df)) {
+        df$enroll_any <- rc_numeric_cleaner(df$enroll_any)
+      }
+      if ('enroll_2yr' %in% names(df)) {
+        df$enroll_2yr <- rc_numeric_cleaner(df$enroll_2yr)
+      }
+      if ('enroll_4yr' %in% names(df)){
+        df$enroll_4yr <- rc_numeric_cleaner(df$enroll_4yr)
+      }
+      
+      #from 2015 onward enroll_4yr, enroll_2yr pct of college-going, not pct of grade
+      this_year <- df$end_year %>% unique()
+      if (this_year >= 2015) {
+        df <- df %>%
+          mutate(enroll_4yr = enroll_4yr * (enroll_any/100))
+      }
+      
+      #if there's no subgroup field, implicitly assume that means Schoolwide
+      if (!'subgroup' %in% names(df)) {
+        df <- df %>%
+          mutate(subgroup = 'Schoolwide')
+      }
+      
+      #make subgroups consistent
+      df$subgroup <- gsub('African American', 'Black', df$subgroup)
+      
+      df <- df %>%
+        select(
+          one_of('county_code', 'district_code', 'school_code', 
+                 'end_year', 'subgroup', 'enroll_any', 'enroll_2yr', 'enroll_4yr')
+        )
+      
+      df
+    }
+  )
+  
+  bind_rows(all_matric)
+}
 
