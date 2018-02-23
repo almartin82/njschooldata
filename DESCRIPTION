@@ -11,7 +11,8 @@ Depends:
     ensurer,
     magrittr,
     dplyr,
-    R(>= 2.10.0)
+    R(>= 2.10.0),
+    reshape2
 Suggests:
     downloader,
     ensurer,
