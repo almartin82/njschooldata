@@ -21,8 +21,17 @@ test_that("get_raw_rc_database returns list of data frames", {
 
 
 test_that("get_raw_rc_database returns list of data frames", {
-  
   expect_is(many_rc, 'list')
   expect_equal(length(many_rc), 6)
-  
+})
+
+test_that("extract_rc_SAT pulls longitudinal SAT data", {
+  df <- extract_rc_SAT(many_rc)
+  expect_is(df, 'tbl_df')
+})
+
+
+test_that("extract_rc_college_matric pulls longitudinal matriculation data", {
+  df <- extract_rc_college_matric(many_rc)
+  expect_is(df, 'tbl_df')
 })
