@@ -7,7 +7,7 @@
 #' @return list of data frames
 #' @export
 
-get_raw_rc_database <- function(end_year) {
+get_one_rc_database <- function(end_year) {
   
   pr_urls <- list(
     "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
@@ -57,9 +57,33 @@ get_raw_rc_database <- function(end_year) {
   pr_list
 }
 
+
+#' Get multiple RC databases
+#'
+#' @param end_year_vector vector of years.  Current valid values are 2003 to 2017. 
+#'
+#' @return a list of dataframes
+#' @export
+
+get_rc_databases <- function(end_year_vector = c(2003:2017)) {
+
+  all_prs <- map(
+    .x = end_year_vector,
+    .f = function(.x) {
+      print(.x)
+      get_one_rc_database(.x)
+    }
+  )
+  
+  names(all_prs) <- pr_years
+  
+  all_prs
+}
+
+
 #' Extract Progress Report SAT School Averages
 #'
-#' @param list_of_prs output of get_raw_rc_database (ie, a list where each element is)
+#' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
 #' a list of data.frames
 #'
 #' @return data frame with all years of SAT School Averages present in the input
