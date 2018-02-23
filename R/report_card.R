@@ -56,3 +56,85 @@ get_raw_rc_database <- function(end_year) {
   
   pr_list
 }
+
+#' Extract Progress Report SAT School Averages
+#'
+#' @param list_of_prs output of get_raw_rc_database (ie, a list where each element is)
+#' a list of data.frames
+#'
+#' @return data frame with all years of SAT School Averages present in the input
+#' @export
+
+extract_pr_SAT <- function(list_of_prs) {
+  
+  all_sat <- map(
+    .x = list_of_prs,
+    .f = function(.x) {
+      #finds tables that have SAT data
+      sat_tables <- grep('sat', names(.x), value = TRUE) 
+      #excludes some tables in years where multiple tables match 'sat'
+      sat_tables <- sat_tables[!grepl("participation|1550", sat_tables)]
+      df <- .x %>% extract2(sat_tables)
+      
+      #reshapes the data for some years where it was reported in 'long' format
+      if ('test' %in% names(df)) {
+        
+        names(df) <- gsub('school_avg', 'school_mean', names(df))
+        names(df) <- gsub('bt_pct|schoolwide_benchmark', 'school_benchmark', names(df))
+        
+        df <- df %>%
+          filter(test == 'SAT')
+        
+        df$subject <- gsub('Math', 'math', df$subject)
+        df$subject <- gsub('Reading and Writing', 'reading', df$subject)
+        
+        df <- df %>%
+          select(county_code, district_code, school_code, 
+                 end_year, test, subject, school_mean)
+        
+        df <- reshape2::dcast(
+          df, 
+          county_code + district_code + school_code + end_year + test ~ subject,
+          value.var = 'school_mean'
+        )
+      }
+      
+      df <- clean_cds_fields(df)
+      
+      #2 digit years to 4 digit YYYY years
+      if ('year' %in% names(df)) {
+        df <- rc_year_matcher(df)
+      }
+      
+      #filters out district results and only returns schools
+      if ('level' %in% names(df)) {
+        df <- df %>% filter(level == 'S')  
+      }
+      
+      #cleans variable names
+      names(df) <- gsub('mmean|mathematics', 'math', names(df))
+      names(df) <- gsub('vmean|critical_reading', 'reading', names(df))
+      
+      df <- df %>%
+        select(county_code, district_code, school_code, end_year, math,
+               reading)
+      
+      #cleans up suppression and NA codes
+      df$math <- gsub('N', NA_character_, df$math, fixed = TRUE) 
+      df$math <- gsub('N/A', NA_character_, df$math, fixed = TRUE) 
+      df$math <- gsub('*', NA_character_, df$math, fixed = TRUE) 
+      df$math <- df$math %>% as.numeric()
+      
+      df$reading <- gsub('N', NA_character_, df$reading, fixed = TRUE)
+      df$reading <- gsub('N/A', NA_character_, df$reading, fixed = TRUE)
+      df$reading <- gsub('*', NA_character_, df$reading, fixed = TRUE)
+      df$reading <- df$reading %>% as.numeric()
+      
+      df
+    }
+  ) 
+  
+  bind_rows(all_sat)
+}
+
+
