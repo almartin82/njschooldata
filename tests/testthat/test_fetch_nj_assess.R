@@ -37,10 +37,10 @@ test_that("standard_assess correctly calls data for 2014",{
 })
 
 
-test_that("fetch_nj_assess returns correct output for a variety of calls", {
+test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
   
   #2014 njask
-  njask_14 <- fetch_nj_assess(2014, 6)
+  njask_14 <- fetch_old_nj_assess(2014, 6)
 
   expect_equal(nrow(njask_14), 1505)
   expect_equal(ncol(njask_14), 551)
@@ -49,7 +49,7 @@ test_that("fetch_nj_assess returns correct output for a variety of calls", {
   )
   
   #2014 hspa
-  hspa_14 <- fetch_nj_assess(2014, 11)
+  hspa_14 <- fetch_old_nj_assess(2014, 11)
   expect_equal(nrow(hspa_14), 742)
   expect_equal(ncol(hspa_14), 560)
   expect_equal(
@@ -57,7 +57,7 @@ test_that("fetch_nj_assess returns correct output for a variety of calls", {
   )
   
   #2007 gepa
-  gepa_07 <- fetch_nj_assess(2007, 11)
+  gepa_07 <- fetch_old_nj_assess(2007, 11)
   expect_equal(nrow(gepa_07), 681)
   expect_equal(ncol(gepa_07), 529)
   expect_equal(
@@ -65,7 +65,7 @@ test_that("fetch_nj_assess returns correct output for a variety of calls", {
   )
   
   #2004 gr3
-  njask_04 <- fetch_nj_assess(2004, 3)
+  njask_04 <- fetch_old_nj_assess(2004, 3)
   expect_equal(nrow(njask_04), 1956)
   expect_equal(ncol(njask_04), 363)
   expect_equal(

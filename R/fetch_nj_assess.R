@@ -48,8 +48,8 @@ standard_assess <- function(end_year, grade) {
 #' @title a simplified interface into NJ assessment data
 #' 
 #' @description this is the workhorse function.  given a end_year and a grade (valid years are 2004-present), 
-#' \code{fetch_nj_assess} will call the appropriate function, process the raw 
-#' text file, and return a data frame.  \code{fetch_nj_assess} is a wrapper around 
+#' \code{fetch_old_nj_assess} will call the appropriate function, process the raw 
+#' text file, and return a data frame.  \code{fetch_old_nj_assess} is a wrapper around 
 #' all the individual subject functions (NJASK, HSPA, etc.), abstracting away the 
 #' complexity of finding the right location/file layout.
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2013-14
@@ -60,7 +60,7 @@ standard_assess <- function(end_year, grade) {
 #' subgroup (all the NCLB subgroups) and test_name (LAL, math, etc).  
 #' @export
 
-fetch_nj_assess <- function(end_year, grade, tidy = FALSE) {
+fetch_old_nj_assess <- function(end_year, grade, tidy = FALSE) {
   #only allow valid calls
   valid_call(end_year, grade) %>%
     ensure_that(
