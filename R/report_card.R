@@ -75,7 +75,7 @@ get_rc_databases <- function(end_year_vector = c(2003:2017)) {
     }
   )
   
-  names(all_prs) <- pr_years
+  names(all_prs) <- end_year_vector
   
   all_prs
 }
