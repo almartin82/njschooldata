@@ -109,3 +109,20 @@ clean_name_vector <- . %>%
     transliterations = c("Latin-ASCII"), parsing_option = 4
   )
 
+
+#' Report Card Numeric Data Cleaner
+#'
+#' @param data_vector vector of data that has percent signs, supression codes, or 
+#' a variety of representations of N/A
+#'
+#' @return numeric vector
+#' @export
+
+rc_numeric_cleaner <- function(data_vector) {
+  data_vector <- gsub('%', '', data_vector, fixed = TRUE)
+  data_vector <- gsub('*', NA_character_, data_vector, fixed = TRUE)
+  data_vector <- gsub('N', NA_character_, data_vector, fixed = TRUE)
+  data_vector <- gsub('N/A', NA_character_, data_vector, fixed = TRUE)
+  
+  data_vector %>% as.numeric()
+}
