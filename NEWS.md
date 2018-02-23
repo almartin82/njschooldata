@@ -1,3 +1,13 @@
+# njschooldata 0.5
+
+## New features
+
+* support for for PARCC data via the `fetch_parcc()` family of functions.
+* support for NJ School Report Card / Performance Report data via the `get_rc_databases()` function
+* ability to read longitudinal NJ Report Card SAT data via `extract_pr_SAT()`
+
+
+
 # njschooldata 0.4
 
 ## New features
