@@ -98,7 +98,8 @@ Make a numeric column
 charter_city_old_new <- charter_city_old_new %>%
   mutate(
     charter_city_code_numeric = as.integer(charter_city_code)
-  )
+  ) %>% 
+  arrange(charter_city, school)
 
 ```
 
