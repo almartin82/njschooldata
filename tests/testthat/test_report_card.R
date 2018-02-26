@@ -29,6 +29,8 @@ test_that("get_raw_rc_database returns list of data frames", {
 test_that("extract_rc_SAT pulls longitudinal SAT data", {
   df <- extract_rc_SAT(many_rc)
   expect_is(df, 'tbl_df')
+  
+  df <- extract_rc_SAT(all_rc)
 })
 
 
