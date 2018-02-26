@@ -81,7 +81,7 @@ get_rc_databases <- function(end_year_vector = c(2003:2017)) {
 }
 
 
-#' Extract Report Car SAT School Averages
+#' Extract Report Card SAT School Averages
 #'
 #' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
 #' a list of data.frames
@@ -97,10 +97,13 @@ extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
     .x = list_of_prs,
     .f = function(.x) {
       #finds tables that have SAT data
-      sat_tables <- grep('sat', names(.x), value = TRUE) 
+      sat_tables <- grep('sat', names(.x), value = TRUE)
       #excludes some tables in years where multiple tables match 'sat'
       sat_tables <- sat_tables[!grepl("participation|1550", sat_tables)]
       df <- .x %>% extract2(sat_tables)
+      
+      print(df$end_year %>% unique())
+      print(sat_tables)
       
       #reshapes the data for some years where it was reported in 'long' format
       if ('test' %in% names(df)) {

@@ -2,6 +2,7 @@ context("report_card functions")
 
 rc <- get_one_rc_database(2015)
 many_rc <- get_rc_databases(2012:2017)
+all_rc <- get_rc_databases(2003:2017)
 
 test_that("get_raw_rc_database returns list of data frames", {
   
