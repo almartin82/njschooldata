@@ -2,7 +2,7 @@
 % Please edit documentation in R/report_card.R
 \name{extract_rc_SAT}
 \alias{extract_rc_SAT}
-\title{Extract Report Car SAT School Averages}
+\title{Extract Report Card SAT School Averages}
 \usage{
 extract_rc_SAT(list_of_prs, school_only = TRUE)
 }
@@ -17,5 +17,5 @@ if school_only, return only school data.  default is TRUE}
 data frame with all years of SAT School Averages present in the input
 }
 \description{
-Extract Report Car SAT School Averages
+Extract Report Card SAT School Averages
 }
