@@ -1,0 +1,137 @@
+---
+title: "Charter City"
+author: "Andrew Martin"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Existing Charter City Data
+
+```{r}
+
+library(rprojroot)
+
+root <- rprojroot::find_rstudio_root_file()
+
+```
+
+```{r}
+
+old_ch_city <- readr::read_csv(
+  file = file.path(root, 'data-raw', 'charter_city.csv')
+)
+
+```
+
+Force zero pad out to 4 digits on charter_city_code
+
+```{r}
+
+
+old_ch_city$school_district_code <- sprintf("%04d", old_ch_city$school_district_code)
+old_ch_city$charter_city_code <- sprintf("%04d", old_ch_city$charter_city_code)
+
+head(old_ch_city)
+```
+
+New schools
+
+```{r}
+
+new_fall_2017 <- tibble(
+  school = c(
+    "PATERSON ARTS AND SCIENCE CS",                      
+    "CAMDENS PROMISE CHARTER SCHOOL",             
+    "TRENTON STEM-TO-CIVICS CS",                      
+    "GREAT FUTURES CHARTER SCHOOL",                         
+    "ATLANTIC CITY COMMUNITY CHARTER SCHOOL",               
+    "COLLEGE ACHIEVE CENTRAL CHARTER SCHOOL",              
+    "INTERNATIONAL ACADEMY OF ATLANTIC CITY CHARTER SCHOOL",
+    "HUDSON ARTS AND SCIENCE  CHARTER SCHOOL",      
+    "INTERNATIONAL ACADEMY OF TRENTON CHARTER SCHOOL",
+    "LINK COMMUNITY CHARTER SCHOOL"
+  ),
+  school_district_code = c(
+    "6096", "6107", "6183", "6184", "6060", "6101", "6104", "6105", "6182", "6099"
+  ),
+  charter_city = c(
+    'Paterson', 'Camden', 'Trenton', 'Jersey City', 'Atlantic City',
+    'Plainfield', 'Atlantic City', 'Kearny', 'Trenton', 'Newark'
+  ),
+  charter_city_code = c(
+    '4010', '0680', '5210', '2390', '0110', 
+    '4160', '0110', '2410', '5210', '3570'
+  )
+)
+
+```
+
+Put together
+
+```{r}
+
+charter_city_old_new <- dplyr::bind_rows(
+  old_ch_city,
+  new_fall_2017
+)
+
+head(charter_city_old_new) %>% print.AsIs()
+```
+
+Make a numeric column
+
+```{r}
+
+charter_city_old_new <- charter_city_old_new %>%
+  mutate(
+    charter_city_code_numeric = as.integer(charter_city_code)
+  )
+
+```
+
+Check for equality
+
+```{r}
+
+identical(
+  names(charter_city),
+  names(charter_city_old_new)
+)
+
+identical(
+  map_chr(charter_city, class) %>% unname(),
+  map_chr(charter_city_old_new, class) %>% unname()
+)
+```
+
+Save to rda and data-raw
+
+```{r}
+
+readr::write_csv(
+  x = charter_city_old_new %>% select(-charter_city_code_numeric),
+  path = file.path(root, 'data-raw', 'charter_city.csv')
+)
+
+```
+
+```{r}
+
+charter_city <- charter_city_old_new
+
+save(charter_city, file = file.path(root, 'data', 'charter_city.rda'))
+
+```
