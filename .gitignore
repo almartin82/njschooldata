@@ -4,23 +4,19 @@
 
 # Example code in package build process
 *-Ex.R
-
 # RStudio files
 .Rproj.user/
 *.Rproj
 .Rbuildignore
-
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
-
 .Rproj.user
 .Rdata
-
 #one off
 all_assess.RData
 assess_years.Rda
 results.Rds
-
 #mac
 *.DS_Store
+inst/doc

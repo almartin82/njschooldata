@@ -18,6 +18,7 @@ Suggests:
     knitr,
     readr,
     readxl,
+    rmarkdown,
     testthat
 LazyData: true
 VignetteBuilder: knitr
