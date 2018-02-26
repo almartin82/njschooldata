@@ -102,9 +102,6 @@ extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
       sat_tables <- sat_tables[!grepl("participation|1550", sat_tables)]
       df <- .x %>% extract2(sat_tables)
       
-      print(df$end_year %>% unique())
-      print(sat_tables)
-      
       #reshapes the data for some years where it was reported in 'long' format
       if ('test' %in% names(df)) {
         
