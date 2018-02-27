@@ -44,6 +44,15 @@ test_that("extract_rc_college_matric pulls longitudinal matriculation data", {
 })
 
 
+test_that("extract_rc_ap pulls longitudinal Advanced Placement data", {
+  df <- extract_rc_AP(many_rc)
+  expect_is(df, 'tbl_df')
+  
+  df <- extract_rc_AP(all_rc)
+  expect_is(df, 'tbl_df')
+})
+
+
 test_that("extract_rc_cds finds the county district school name for every year", {
   
   df <- extract_rc_cds(many_rc)

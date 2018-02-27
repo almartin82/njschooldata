@@ -282,6 +282,117 @@ extract_rc_college_matric <- function(
 }
 
 
+#' Extract Report Card Advanced Placement Data
+#'
+#' @inheritParams extract_rc_SAT
+#'
+#' @return data frame with all the years of AP participation and AP achievement
+#' present in in the input
+#' @export
+
+extract_rc_AP <- function(list_of_prs, school_only = TRUE, cds_identifiers = TRUE) {
+  
+  all_ap <- map(
+    list_of_prs,
+    function(.x) {
+      ap_sum_tables <- grep(
+        'ap_sum\\b|ap_ib_sum|apib_test_performance|apib_coursework_part_perf', 
+        names(.x), 
+        value = TRUE
+      )
+      ap_tables <- grep('ap\\b|ap_ib\\b|apib_advanced_course_participation|apib_coursework_part_perf|ap03|apnew', names(.x), value = TRUE)
+      
+      #get the relevant table
+      df <- .x %>% extract2(ap_sum_tables)
+      df2 <- .x %>% extract2(ap_tables)
+      
+      #clean up cds fields
+      df <- clean_cds_fields(df)
+      
+      #pre-2010 they included longitudinal data in the table
+      if ('year' %in% names(df)) {
+        df <- rc_year_matcher(df)
+      }
+      #they also reported school and district together
+      if ('level' %in% names(df) & school_only) {
+        df <- df %>% filter(level == 'S')  
+      }
+      
+      #pct tested
+      names(df) <- gsub(
+        'pctest|perc_stud_ap_ib_score',
+        'pct_tested_ap_ib', names(df)
+      )
+      #this data looks very different across years
+      if (ap_tables == 'apib_advanced_course_participation') {
+        df2 <- df2 %>% 
+          filter(students_taking == 'One or More Test') %>%
+          select(county_code, district_code, school_code, school_participation) %>%
+          rename(
+            pct_tested_ap_ib = school_participation
+          )
+        
+        df <- df %>%
+          left_join(df2, by = c('county_code', 'district_code', 'school_code'))
+      }
+      if (ap_tables == 'apib_coursework_part_perf') {
+        df2 <- df2 %>% 
+          filter(report_category == 'StudentsTakingInOneOrMoreAPorIBExam') %>%
+          select(county_code, district_code, school_code, school_percent) %>%
+          rename(
+            pct_tested_ap_ib = school_percent
+          )
+        
+        df <- df %>%
+          left_join(df2, by = c('county_code', 'district_code', 'school_code'))
+      }    
+      
+      #pct 3 or higher
+      names(df) <- gsub(
+        'perc_stud_ap_score_3_above1|ap_ib_test_score_3|perc_stud_ap_score_3_above|ap_3_ib4_4',
+        'pct_ap_scoring_3', names(df)
+      )
+      
+      if (ap_tables == 'apib_coursework_part_perf') {
+        df <- df %>%
+          filter(report_category == 'StudentsWithOneOrMoreExamsWithAScoreOfAtLest3AP4IBExams') %>%
+          rename(
+            pct_ap_scoring_3 = school_percent
+          )
+      }  
+      
+      df <- df %>%
+        select(one_of(
+          'county_code', 'district_code', 'school_code', 
+          'pct_ap_scoring_3', 'pct_tested_ap_ib', 'end_year'
+        ))
+      
+      if ('pct_ap_scoring_3' %in% names(df)) {
+        df$pct_ap_scoring_3 <- rc_numeric_cleaner(df$pct_ap_scoring_3)
+      }
+      
+      if ('pct_tested_ap_ib' %in% names(df)) {
+        df$pct_tested_ap_ib <- rc_numeric_cleaner(df$pct_tested_ap_ib)
+      }
+      
+      df
+    }
+  )
+  
+  out <- bind_rows(all_ap)
+  
+  if (cds_identifiers) {
+    all_cds <- extract_rc_cds(list_of_prs)
+    out <- out %>%
+      left_join(
+        all_cds, 
+        by = c('county_code', 'district_code', 'school_code', 'end_year')
+      )
+  }
+  
+  out
+}
+
 
 #' Extract Report Card CDS
 #'

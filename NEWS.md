@@ -1,3 +1,11 @@
+# njschooldata 0.5.1
+
+## New features
+
+* extensions of NJ School Report Card functions with `extract_rc_college_matric()` and  `extract_rc_AP()`.
+* ability to put county/district/school names onto longitudinal report card data sets.
+
+
 # njschooldata 0.5
 
 ## New features
