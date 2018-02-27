@@ -180,7 +180,7 @@ extract_rc_SAT <- function(
 
 #' Extract Report Card Matriculation Rates
 #'
-#' @inheritParams extract_pr_SAT
+#' @inheritParams extract_rc_SAT
 #' 
 #' @return data frame with all the years of 4 year and 2 year college matriculation data
 #' present in in the input
@@ -282,6 +282,15 @@ extract_rc_college_matric <- function(
 }
 
 
+
+#' Extract Report Card CDS
+#'
+#' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
+#' a list of data.frames
+#'
+#' @return data frame with county, district and school ids and identifiers for all 
+#' years present in the input
+#' @export
 
 extract_rc_cds <- function(list_of_prs) {
   
