@@ -4,7 +4,8 @@
 \alias{extract_rc_college_matric}
 \title{Extract Report Card Matriculation Rates}
 \usage{
-extract_rc_college_matric(list_of_prs, school_only = TRUE)
+extract_rc_college_matric(list_of_prs, school_only = TRUE,
+  cds_identifiers = TRUE)
 }
 \value{
 data frame with all the years of 4 year and 2 year college matriculation data
