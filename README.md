@@ -11,7 +11,7 @@ Unfortunately, those files are a bit of a pain to work with, especially if you'r
 
 There are also Excel files posted with all the data, but they aren't much better - for every year / grade combination (~70) there are on the order of 5 worksheets/tabs per file... a copy/paste nightmare of epic proportions.
 
-Fortunately, there's a new R library, [readr] (https://github.com/hadley/readr) (written by [Hadley Wickham](https://github.com/hadley)) for working with fixed width files that makes this process much, much easier.
+Fortunately, there's a new R library, [readr](https://github.com/hadley/readr) (written by [Hadley Wickham](https://github.com/hadley)) for working with fixed width files that makes this process much, much easier.
 
 `njschooldata` attempts to simplify the task of working with NJ education data by providing a concise and consistent interface for reading state files into R. 
 
