@@ -10,6 +10,7 @@ Depends:
     dplyr,
     ensurer,
     magrittr,
+    purrr,
     R(>= 2.10.0),
     reshape2
 Suggests:

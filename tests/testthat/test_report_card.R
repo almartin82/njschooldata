@@ -31,10 +31,35 @@ test_that("extract_rc_SAT pulls longitudinal SAT data", {
   expect_is(df, 'tbl_df')
   
   df <- extract_rc_SAT(all_rc)
+  expect_is(df, 'tbl_df')
 })
 
 
 test_that("extract_rc_college_matric pulls longitudinal matriculation data", {
   df <- extract_rc_college_matric(many_rc)
   expect_is(df, 'tbl_df')
+  
+  df <- extract_rc_college_matric(all_rc)
+  expect_is(df, 'tbl_df')
+})
+
+
+test_that("extract_rc_cds finds the county district school name for every year", {
+  
+  df <- extract_rc_cds(many_rc)
+  expect_is(df, 'tbl_df')
+  expect_named(
+    df, 
+    c("county_code", "district_code", "school_code", "county_name", 
+      "district_name", "school_name", "end_year")
+  )
+  
+  df <- extract_rc_cds(all_rc)
+  expect_is(df, 'tbl_df')
+  expect_named(
+    df, 
+    c("county_code", "district_code", "school_code", "county_name", 
+      "district_name", "school_name", "end_year")
+  )
+  
 })
