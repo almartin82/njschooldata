@@ -87,11 +87,14 @@ get_rc_databases <- function(end_year_vector = c(2003:2017)) {
 #' a list of data.frames
 #' @param school_only some years have district average results, not just school-level. 
 #' if school_only, return only school data.  default is TRUE
+#' @param cds_identifiers add the county, district and school name?  default is TRUE
 #'
 #' @return data frame with all years of SAT School Averages present in the input
 #' @export
 
-extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
+extract_rc_SAT <- function(
+  list_of_prs, school_only = TRUE, cds_identifiers = TRUE
+) {
   
   all_sat <- map(
     .x = list_of_prs,
@@ -160,7 +163,18 @@ extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
     }
   ) 
   
-  bind_rows(all_sat)
+  out <- bind_rows(all_sat)
+  
+  if (cds_identifiers) {
+    all_cds <- extract_rc_cds(list_of_prs)
+    out <- out %>%
+      left_join(
+        all_cds, 
+        by = c('county_code', 'district_code', 'school_code', 'end_year')
+      )
+  }
+  
+  out
 }
 
 
@@ -172,7 +186,9 @@ extract_rc_SAT <- function(list_of_prs, school_only = TRUE) {
 #' present in in the input
 #' @export
 
-extract_rc_college_matric <- function(list_of_prs, school_only = TRUE) {
+extract_rc_college_matric <- function(
+  list_of_prs, school_only = TRUE, cds_identifiers = TRUE
+) {
   
   all_matric <- map(
     list_of_prs,
@@ -251,6 +267,41 @@ extract_rc_college_matric <- function(list_of_prs, school_only = TRUE) {
     }
   )
   
-  bind_rows(all_matric)
+  out <- bind_rows(all_matric)
+  
+  if (cds_identifiers) {
+    all_cds <- extract_rc_cds(list_of_prs)
+    out <- out %>%
+      left_join(
+        all_cds, 
+        by = c('county_code', 'district_code', 'school_code', 'end_year')
+      )
+  }
+  
+  out
 }
 
+
+
+extract_rc_cds <- function(list_of_prs) {
+  
+  all_cds <- map(
+    list_of_prs,
+    function(.x) {
+      #find the table      
+      cds_table <- grep('s_header|sch_header|school_header', names(.x), value = TRUE)
+      #extract the table
+      df <- .x %>% extract2(cds_table)
+      #make cds names consistent
+      df <- clean_cds_fields(df)
+      
+      df %>%
+        select(county_code, district_code, school_code,
+               county_name, district_name, school_name,
+               end_year)
+    }
+  )
+  
+  bind_rows(all_cds)
+}
+  
