@@ -8,7 +8,7 @@ get_raw_parcc(end_year, grade_or_subj, subj)
 }
 \arguments{
 \item{end_year}{a school year.  end_year is the end of the academic year - eg 2014-15
-school year is end_year '2015'.  valid values are 2015}
+school year is end_year 2015.  valid values are 2015-2017}
 
 \item{grade_or_subj}{grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)}
 
