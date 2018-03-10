@@ -4,7 +4,7 @@
 #' \code{get_raw_parcc} builds a url and reads the xlsx file into a dataframe
 #' 
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
-#' school year is end_year '2015'.  valid values are 2015
+#' school year is end_year 2015.  valid values are 2015-2017
 #' @param grade_or_subj grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)
 #' @param subj PARCC subject. c('ela' or 'math')
 #' @param layout what layout dataframe to use.  default is layout_njask.
