@@ -77,11 +77,6 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$subgroup <- orig_subgroup_type
   parcc_file$subgroup_type <- orig_subgroup_type
   
-  #clean columns
-  parcc_file$county_code <- clean_id(parcc_file$county_code)
-  parcc_file$district_code <- clean_id(parcc_file$district_code)
-  parcc_file$school_code <- clean_id(parcc_file$school_code)
-  
   #make some numeric
   parcc_file$number_enrolled <- as.numeric(parcc_file$number_enrolled)
   parcc_file$number_not_tested <- as.numeric(parcc_file$number_not_tested)
