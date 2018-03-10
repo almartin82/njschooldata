@@ -45,19 +45,6 @@ pad_grade <- function(x) {
 }
 
 
-#' clean_id
-#'
-#' @description cleans district id columns(mixed numeric/character) of leading zeros
-#' @param x id vector
-#'
-#' @return cleaned id vector
-#' @export
-
-clean_id <- function(x) {
-  gsub("(^|[^0-9])0+", "\\1", x, perl = TRUE)
-}
-
-
 #' Clean up CDS field names
 #'
 #' @param df 
@@ -79,6 +66,35 @@ clean_cds_fields <- function(df) {
   df
 }
 
+
+#' pad leading digits
+#'
+#' @param vector 
+#' @param digits 
+#'
+#' @return character vector
+#' @export
+
+pad_leading <- function(vector, digits) {
+  sprintf(paste0("%0", digits, "d"), vector)
+}
+
+
+#' pad cds fields
+#'
+#' @param df containing county_code, district_code, school_code
+#'
+#' @return data frame with zero padded cds columns
+#' @export
+
+pad_cds <- function(df) {
+  df %>%
+    mutate(
+      county_code = pad_leading(county_code, 2),
+      district_code = pad_leading(district_code, 4),
+      school_code = pad_leading(school_code, 3)
+    )
+}
 
 #' report card year matcher
 #'
