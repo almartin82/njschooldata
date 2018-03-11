@@ -20,7 +20,6 @@ Depends:
     tidyr
 Suggests:
     downloader,
-    ensurer,
     knitr,
     readxl,
     rmarkdown,
