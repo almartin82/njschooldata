@@ -5,15 +5,15 @@ a simple interface for accessing NJ DOE school data in R
 repeated many over the course of analysis as new problems come to light or new data is
 collected. -[@hadley](http://vita.had.co.nz/papers/tidy-data.pdf)
 
-The State of NJ has been posting raw, fixed width text files with all the assessment results for NJ schools/districts for a little over a decade now.  **That's great!**
+The State of NJ has been posting raw, fixed width text files with all the assessment results for NJ schools/districts for well over a decade now.  **That's great!**
 
 Unfortunately, those files are a bit of a pain to work with, especially if you're trying to work with multiple grades, or multiple years of data.  Layouts change; file paths aren't consistent, etc.
 
-There are also Excel files posted with all the data, but they aren't much better - for every year / grade combination (~70) there are on the order of 5 worksheets/tabs per file... a copy/paste nightmare of epic proportions.
+There are also Excel files posted with all the data, but they aren't much better - for instance, for NJASK data (the assessment used until the transition to PARCC), for every year / grade combination there are on the order of 5 worksheets/tabs per file... a copy/paste nightmare of epic proportions.
 
-Fortunately, there's a new R library, [readr](https://github.com/hadley/readr) (written by [Hadley Wickham](https://github.com/hadley)) for working with fixed width files that makes this process much, much easier.
+`njschooldata` attempts to simplify the task of working with NJ education data by providing a concise and consistent interface for reading state files into R.  We make heavy use of the [tidyverse](https://www.tidyverse.org/) and aim to create a consistent, pipeable interface into NJ state education data.
 
-`njschooldata` attempts to simplify the task of working with NJ education data by providing a concise and consistent interface for reading state files into R. 
+# Points of Interest
 
 * For any year/grade combination from 2015-2017, a call to `fetch_parcc(end_year, grade_or_subj, subj)` will return relevant statewide PARCC data.  `fetch_all_parcc()` will return data for all years, all grades, all subjects.
 
@@ -26,12 +26,6 @@ library("devtools")
 devtools::install_github("almartin82/njschooldata")
 library(njschooldata)
 ```
-# tl;dr
-
-```R
-head(all_assess_tidy)
-```
-A copy of the cleaned data files from 2004-2014 (NJASK-era, before PARCC switch-over) has been saved to all_assess_tidy.  6.1 million rows!
 
 # Usage
 
@@ -149,7 +143,7 @@ The flat files provided by the state are a bit painful to work with.  The layout
  [46] "GENERAL_EDUCATION_MATHEMATICS_Number_Enrolled_Math"                                    
  [47] "GENERAL_EDUCATION_MATHEMATICS_Number_Not_Present"                                      
  [48] "GENERAL_EDUCATION_MATHEMATICS_Number_of_Voids"                                         
- [49] "GENERAL_EDUCATION_MATHEMATICS_Number_APA"                                              
+ [49] "GENERAL_EDUCATION_MATHEMATICS_Number_APA"                                          
  [50] "GENERAL_EDUCATION_MATHEMATICS_Number_of_Valid_Scale_Scores"    
 ```
 (and on and on and on, for a grand total of 551 columns.)  Aside from the virtue of one row per school, there's not a lot to be said about this format - it violates multiple [tidy data](http://vita.had.co.nz/papers/tidy-data.pdf) principles.
