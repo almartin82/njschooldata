@@ -7,7 +7,7 @@
 clean_cds_fields(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{data frame with county, district and school variables}
 }
 \value{
 df, with consistent county_code, district_code, school_code fields

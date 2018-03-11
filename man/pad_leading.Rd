@@ -7,9 +7,9 @@
 pad_leading(vector, digits)
 }
 \arguments{
-\item{vector}{}
+\item{vector}{character vector}
 
-\item{digits}{}
+\item{digits}{ensure exactly this many digits by leading zero-padding}
 }
 \value{
 character vector

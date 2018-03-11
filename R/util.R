@@ -47,7 +47,7 @@ pad_grade <- function(x) {
 
 #' Clean up CDS field names
 #'
-#' @param df 
+#' @param df data frame with county, district and school variables
 #'
 #' @return df, with consistent county_code, district_code, school_code fields
 #' @export
@@ -69,8 +69,8 @@ clean_cds_fields <- function(df) {
 
 #' pad leading digits
 #'
-#' @param vector 
-#' @param digits 
+#' @param vector character vector
+#' @param digits ensure exactly this many digits by leading zero-padding
 #'
 #' @return character vector
 #' @export
