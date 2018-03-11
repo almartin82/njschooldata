@@ -2,7 +2,7 @@
 % Please edit documentation in R/tges.R
 \name{tidy_budgeted_vs_actual_fund_balance}
 \alias{tidy_budgeted_vs_actual_fund_balance}
-\title{tidy budgeted vs actual fund balance}
+\title{Tidy Budgeted vs Actual Fund Balance}
 \usage{
 tidy_budgeted_vs_actual_fund_balance(df, end_year)
 }
@@ -16,5 +16,5 @@ output from get_raw_tges()}
 data frame
 }
 \description{
-tidy budgeted vs actual fund balance
+Tidy Budgeted vs Actual Fund Balance
 }
