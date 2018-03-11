@@ -196,9 +196,9 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   #masks to break out y1, y2, y3 data
   all_years <- !grepl('+[[:digit:]]\\>', names(df))
-  year_1 <- grepl('1+[[:digit:]]\\>', names(df)) | all_years
-  year_2 <- grepl('2+[[:digit:]]\\>', names(df)) | all_years
-  year_3 <- grepl('3+[[:digit:]]\\>', names(df)) | all_years
+  year_1 <- grepl('1+[[:digit:]]\\>|a+[[:digit:]]\\>', names(df)) | all_years
+  year_2 <- grepl('2+[[:digit:]]\\>|b+[[:digit:]]\\>', names(df)) | all_years
+  year_3 <- grepl('3+[[:digit:]]\\>|c+[[:digit:]]\\>', names(df)) | all_years
   
   #reshape wide to long
   y1_df <- df[, year_1]
@@ -209,23 +209,24 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     "pp" = "Per Pupil costs",
     "rk" = "District rank",
     "e" = "Enrollment (ADE)",
-    "pct" = "Cost as a percentage of the Total Budgetary Cost Per Pupil"
+    "pct" = "Cost as a percentage of the Total Budgetary Cost Per Pupil",
+    "sb" = "Cost as a percentage of Total Salaries and Benefits"
   )
   
   #clean up names
-  names(y1_df) <- gsub('1+[[:digit:]]\\>', '', names(y1_df))
+  names(y1_df) <- gsub('1+[[:digit:]]\\>|a+[[:digit:]]\\>', '', names(y1_df))
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
   y1_df$report_year <- end_year
   
-  names(y2_df) <- gsub('2+[[:digit:]]\\>', '', names(y2_df))
+  names(y2_df) <- gsub('2+[[:digit:]]\\>|b+[[:digit:]]\\>', '', names(y2_df))
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
   
-  names(y3_df) <- gsub('3+[[:digit:]]\\>', '', names(y3_df))
+  names(y3_df) <- gsub('3+[[:digit:]]\\>|c+[[:digit:]]\\>', '', names(y3_df))
   names(y3_df) <- tges_name_cleaner(y3_df, indicator_fields)
   y3_df$end_year <- end_year
   y3_df$calc_type <- 'Budgeted'
@@ -259,7 +260,7 @@ tidy_total_classroom_instruction <- function(df, end_year) {
 }
 
 
-#' Tidy Total Classroom Salaries and Benefits
+#' Tidy Classroom Salaries and Benefits
 #'
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
@@ -270,6 +271,53 @@ tidy_classroom_salaries_benefits <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Classroom Salaries & Benefits')
 }
 
+
+#' Tidy Classroom General Supplies and Textbooks
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_classroom_general_supplies <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Classroom General Supplies and Textbooks')
+}
+
+
+#' Tidy Classroom Purchased Services and Other
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_classroom_purchased_services <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Classroom Purchased Services and Other')
+}
+
+
+#' Tidy Total Support Services
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_total_support_services <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Total Support Services')
+}
+
+
+#' Tidy Support Services Salaries
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_support_services_salaries <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Support Services Salaries + Benefits')
+}
 
 #' Tidy list of TGES data frames
 #'
@@ -286,7 +334,11 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG1AA_AVGS" = 'tidy_total_spending_per_pupil',
     "CSG1" = "tidy_budgetary_per_pupil_cost",
     "CSG2" = "tidy_total_classroom_instruction",
-    "CSG3" = "tidy_classroom_salaries_benefits"
+    "CSG3" = "tidy_classroom_salaries_benefits",
+    "CSG4" = "tidy_classroom_general_supplies",
+    "CSG5" = "tidy_classroom_purchased_services",
+    "CSG6" = "tidy_total_support_services",
+    "CSG7" = "tidy_support_services_salaries"
   )
   
   #apply a cleaning function if known
