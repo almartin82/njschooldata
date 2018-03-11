@@ -294,7 +294,7 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
 }
 
 
-#' tidy budgeted vs actual fund balance
+#' Tidy Budgeted vs Actual Fund Balance
 #'
 #' @param df general fund vs actual used data frame, eg CSG20 
 #' output from get_raw_tges()
@@ -307,15 +307,50 @@ tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
   df$indicator <- 'Budgeted General Fund Balance vs. Actual'
   
   y1_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
-                   'de120', 'de220', 'indicator')]
+                   'de120', 'de220', 'file_name', 'indicator')]
   y2_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
-                   'de320', 'de420', 'indicator')]
+                   'de320', 'de420', 'file_name', 'indicator')]
   
   indicator_fields <- list(
     'de120' = 'Budgeted General Fund Balance',
     'de220' = 'Actual',
     'de320' = 'Budgeted General Fund Balance',
     'de420' = 'Actual'
+  )
+  
+  y1_df$end_year <- end_year - 2
+  y1_df$report_year <- end_year
+  names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
+  
+  y2_df$end_year <- end_year - 1
+  y2_df$report_year <- end_year
+  names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
+  
+  bind_rows(y1_df, y2_df)
+}
+
+
+#' Tidy Excess Unreserved General Fund 
+#'
+#' @param df excess unreserved general fund data frame, eg CSG21 
+#' output from get_raw_tges()
+#' @param end_year end year that the report was published
+#'
+#' @return data frame
+#' @export
+
+tidy_excess_unreserved_general_fund <- function(df, end_year) {
+  df$indicator <- 'Excess Unreserved General Fund Balances'
+  
+  #reshape
+  y1_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+                  'ex121', 'file_name', 'indicator')]
+  y2_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+                  'ex221', 'file_name', 'indicator')]
+  
+  indicator_fields <- list(
+    'ex121' = 'Actual Excess',
+    'ex221' = 'Actual Excess'
   )
   
   y1_df$end_year <- end_year - 2
@@ -603,7 +638,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG17" = "tidy_ratio_students_to_special_service",
     "CSG18" = "tidy_ratio_students_to_administrators",
     "CSG19" = "tidy_ratio_faculty_to_administrators",
-    "CSG20" = "tidy_budgeted_vs_actual_fund_balance"
+    "CSG20" = "tidy_budgeted_vs_actual_fund_balance",
+    "CSG21" = "tidy_excess_unreserved_general_fund"
   )
   
   #apply a cleaning function if known
