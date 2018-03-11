@@ -264,9 +264,9 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
 
   indicator_fields <- list(
     'strat' = 'Student/Teacher ratio',
-    'rk' = 'Student/Teacher ratio rank',
+    'rk' = 'Ratio rank',
     'salt' = 'Teacher Salary',
-    'rksal' = 'Teacher Salary Rank',
+    'rksal' = 'Salary Rank',
     'ssrat' = 'Student/Special Service ratio',
     'sals' = 'Special Service Salary',
     'sarat' = 'Student/Administrator ratio',
@@ -486,7 +486,7 @@ tidy_equipment <- function(df, end_year) {
 }
 
 
-#' Tidy Ratio of Student to Teachers
+#' Tidy Ratio of Students to Teachers
 #'
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
@@ -495,6 +495,42 @@ tidy_equipment <- function(df, end_year) {
 
 tidy_ratio_students_to_teachers <- function(df, end_year) {
   tidy_generic_personnel(df, end_year, 'Ratio of Students to Teachers, Median Salary')
+}
+
+
+#' Tidy Ratio of Students to Special Service
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_ratio_students_to_special_service <- function(df, end_year) {
+  tidy_generic_personnel(df, end_year, 'Ratio of Students to Special Service, Median Salary')  
+}
+
+
+#' Tidy Ratio of Students to Administrators
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_ratio_students_to_administrators <- function(df, end_year) {
+  tidy_generic_personnel(df, end_year, 'Ratio of Students to Administrators, Median Salary')
+}
+
+
+#' Tidy Ratio of Faculty to Administrators
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_ratio_faculty_to_administrators <- function(df, end_year) {
+  tidy_generic_personnel(df, end_year, 'Ratio of Faculty to Administrators')
 }
 
 
@@ -527,7 +563,10 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG13" = "tidy_extracurricular",
     "CSG14" = "tidy_personal_services_benefits",
     "CSG15" = "tidy_equipment",
-    "CSG16" = "tidy_ratio_students_to_teachers"
+    "CSG16" = "tidy_ratio_students_to_teachers",
+    "CSG17" = "tidy_ratio_students_to_special_service",
+    "CSG18" = "tidy_ratio_students_to_administrators",
+    "CSG19" = "tidy_ratio_faculty_to_administrators"
   )
   
   #apply a cleaning function if known
