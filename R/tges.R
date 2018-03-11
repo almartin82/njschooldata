@@ -319,6 +319,19 @@ tidy_support_services_salaries <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Support Services Salaries + Benefits')
 }
 
+
+#' Tidy Administrative Costs
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_administrative_costs <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Total Administrative Costs per Pupil')
+}
+
+
 #' Tidy list of TGES data frames
 #'
 #' @param list_of_dfs list of TGES data frames, eg output of get_raw_tges()
@@ -338,7 +351,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG4" = "tidy_classroom_general_supplies",
     "CSG5" = "tidy_classroom_purchased_services",
     "CSG6" = "tidy_total_support_services",
-    "CSG7" = "tidy_support_services_salaries"
+    "CSG7" = "tidy_support_services_salaries",
+    "CSG8" = "tidy_administrative_costs"
   )
   
   #apply a cleaning function if known
