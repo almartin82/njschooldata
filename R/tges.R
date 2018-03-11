@@ -308,6 +308,13 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
 }
 
 
+#' Fetch Cleaned Taxpayer's Guide to Educational Spending
+#'
+#' @inheritParams get_raw_tges
+#'
+#' @return list of data frames
+#' @export
+
 fetch_tges <- function(end_year) {
   get_raw_tges(end_year) %>%
     tidy_tges_data(end_year)
