@@ -216,6 +216,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   #clean up names
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
   names(y1_df) <- gsub('sba', 'sb', names(y1_df))
+  names(y1_df) <- gsub('a$', '', names(y1_df))
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
@@ -223,6 +224,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
+  names(y2_df) <- gsub('a$', '', names(y2_df))
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
@@ -230,6 +232,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
   names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
+  names(y3_df) <- gsub('a$', '', names(y3_df))
   names(y3_df) <- tges_name_cleaner(y3_df, indicator_fields)
   y3_df$end_year <- end_year
   y3_df$calc_type <- 'Budgeted'
