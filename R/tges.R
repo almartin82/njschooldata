@@ -195,10 +195,10 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   df$indicator <- indicator
   
   #masks to break out y1, y2, y3 data
-  all_years <- !grepl('+[[:digit:]]?a\\>', names(df))
-  year_1 <- grepl('1+[[:digit:]]?a\\>|a+[[:digit:]]\\>', names(df)) | all_years
-  year_2 <- grepl('2+[[:digit:]]?a\\>|b+[[:digit:]]\\>', names(df)) | all_years
-  year_3 <- grepl('3+[[:digit:]]?a\\>|c+[[:digit:]]\\>', names(df)) | all_years
+  all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
+  year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
+  year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
+  year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
   
   #reshape wide to long
   y1_df <- df[, year_1]
@@ -214,19 +214,22 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   )
   
   #clean up names
-  names(y1_df) <- gsub('1+[[:digit:]]?a\\>|a+[[:digit:]]\\>', '', names(y1_df))
+  names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
+  names(y1_df) <- gsub('sba', 'sb', names(y1_df))
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
   y1_df$report_year <- end_year
   
-  names(y2_df) <- gsub('2+[[:digit:]]?a\\>|b+[[:digit:]]\\>', '', names(y2_df))
+  names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
+  names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
   
-  names(y3_df) <- gsub('3+[[:digit:]]?a\\>|c+[[:digit:]]\\>', '', names(y3_df))
+  names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
+  names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
   names(y3_df) <- tges_name_cleaner(y3_df, indicator_fields)
   y3_df$end_year <- end_year
   y3_df$calc_type <- 'Budgeted'
@@ -338,11 +341,94 @@ tidy_administrative_costs <- function(df, end_year) {
 #'
 #' @return data.frame
 #' @export
-#' 
+ 
 tidy_legal_services <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Legal Services per Pupil')
 }
 
+
+#' Tidy Administrative Salaries and Benefits
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_admin_salaries <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Salaries + Benefits for Administration')
+}
+
+
+#' Tidy Plant Operations and Maintenance
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_plant_operations_maintenance <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Operations and Maintenance of Plant')
+}
+
+
+#' Tidy Plant Operations and Maintenance - Salaries and Benefits
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_plant_operations_maintenance_salaries <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Salaries + Benefits - Operations/Maintenance of Plant')
+}
+
+
+#' Tidy Food Service Costs
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_food_service <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Food Service Cost per Pupil + Benefits')
+}
+
+
+#' Tidy Extracurricular Costs
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_extracurricular <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Extracurricular Costs per Pupil + Benefits')
+}
+
+
+#' Tidy Personal Services and Benefits Costs
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_personal_services_benefits <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Personal Services - Employee Benefits')
+}
+
+
+#' Tidy Equipment Costs
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_equipment <- function(df, end_year) {
+  tidy_generic_budget_indicator(df, end_year, 'Total Equipment Cost per Pupil')
+}
 
 #' Tidy list of TGES data frames
 #'
@@ -365,7 +451,14 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG6" = "tidy_total_support_services",
     "CSG7" = "tidy_support_services_salaries",
     "CSG8" = "tidy_administrative_costs",
-    "CSG8A" = "tidy_legal_services"
+    "CSG8A" = "tidy_legal_services",
+    "CSG9" = "tidy_admin_salaries",
+    "CSG10" = "tidy_plant_operations_maintenance",
+    "CSG11" = "tidy_plant_operations_maintenance_salaries",
+    "CSG12" = "tidy_food_service",
+    "CSG13" = "tidy_extracurricular",
+    "CSG14" = "tidy_personal_services_benefits",
+    "CSG15" = "tidy_equipment"
   )
   
   #apply a cleaning function if known
@@ -375,7 +468,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     .f = function(.x, .y) {
       #look up the table name and see if we know how to clean it
       cleaning_function <- tges_cleaners %>% extract2(.y)
-      if (!is_null(cleaning_function)) {
+      print(cleaning_function)
+      if (!is.null(cleaning_function)) {
         do.call(cleaning_function, list(.x, end_year))
         #if not, just return it
       } else {
