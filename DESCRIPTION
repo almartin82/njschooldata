@@ -12,7 +12,8 @@ Depends:
     magrittr,
     purrr,
     R(>= 2.10.0),
-    reshape2
+    reshape2,
+    tidyr
 Suggests:
     downloader,
     ensurer,
