@@ -1,3 +1,17 @@
+# njschooldata 0.6
+
+## New features
+
+* ability to read in Taxpayers Guide to Educational Spending data files with `get_raw_tges(2016)` and `fetch_tges(2017)` 
+
+
+# njschooldata 0.5.2
+
+## New features
+
+* ability to read in Federal ESSA (Every Student Succeeds Act) accountability data files with `get_essa_file(2017)`.
+
+
 # njschooldata 0.5.1
 
 ## New features

@@ -1,3 +1,11 @@
+#' Get Raw Taxpayer's Guide to Educational Spending
+#'
+#' @param end_year a school year.  end_year is the end of the academic year - eg 2016-17
+#' school year is end_year 2017.  valid values are 1999-2017
+#'
+#' @return list of data frames
+#' @export
+
 get_raw_tges <- function(end_year) {
   tges_urls <- list(
     "2017" = "http://www.state.nj.us/education/guide/2017/TGES.zip",
@@ -7,7 +15,19 @@ get_raw_tges <- function(end_year) {
     "2013" = "http://www.state.nj.us/education/guide/2013/TGES.zip",
     "2012" = "http://www.state.nj.us/education/guide/2012/TGES.zip",
     "2011" = "http://www.state.nj.us/education/guide/2011/TGES.zip",
-    "2010" = "http://www.state.nj.us/education/guide/2010/csg2010.zip"
+    "2010" = "http://www.state.nj.us/education/guide/2010/csg2010.zip",
+    "2009" = "http://www.state.nj.us/education/guide/2009/csg2009.zip",
+    "2008" = "http://www.state.nj.us/education/guide/2008/csg2008.zip",
+    "2007" = "http://www.state.nj.us/education/guide/2007/csg2007.zip",
+    "2006" = "http://www.state.nj.us/education/guide/2006/csg2006.zip",
+    "2005" = "http://www.state.nj.us/education/guide/2005/csg2005.zip",
+    "2004" = "http://www.state.nj.us/education/guide/2004/csg2004.zip",
+    "2003" = "http://www.state.nj.us/education/guide/2003/csg2003.zip",
+    "2002" = "http://www.state.nj.us/education/guide/2002/csg2002.zip",
+    "2001" = "http://www.state.nj.us/education/guide/2001/csg01.zip",
+    "2000" = "http://www.state.nj.us/education/guide/2000/csg2000.zip",
+    "1999" = "http://www.state.nj.us/education/guide/1999/csg99.zip"
+
   )
   tges_url <- tges_urls[[as.character(end_year)]]
   
@@ -26,9 +46,11 @@ get_raw_tges <- function(end_year) {
     )
   
   tges_csv <- tges_files %>%
-    filter(extension == 'CSV')
+    filter(extension %in% c('CSV', 'csv'))
   tges_excel <- tges_files %>%
-    filter(extension %in% c('XLS', 'XLSX'))
+    filter(extension %in% c('XLS', 'XLSX', 'xls', 'xlsx'))
+  tges_dbf <- tges_files %>%
+    filter(extension %in% c('dbf', 'DBF'))
   
   #read csv
   csv_list <- map2(
@@ -71,11 +93,37 @@ get_raw_tges <- function(end_year) {
   )
   names(excel_list) <- tges_excel$file
   
-  all_df <- c(csv_list, excel_list)
+  #read dbf (1999-2002)
+  dbf_list <- map2(
+    .x = tges_dbf$Name,
+    .y = tges_dbf$file,
+    .f = function(.x, .y) {
+      df <- foreign::read.dbf(file = file.path(unzip_loc, .x)) %>%
+        mutate(
+          file_name = .y
+        ) %>%
+        janitor::clean_names()
+      
+      df <- clean_cds_fields(df)
+      df
+    }
+  )
+  names(dbf_list) <- tges_dbf$file
+  
+  
+  all_df <- c(csv_list, excel_list, dbf_list)
   
   all_df
 }
 
+
+#' TGES name cleaner
+#' 
+#' @description internal function for converting cryptic variable codes to full name
+#' @param x vector of names
+#' @param indicator_fields list of key/value variables to convert
+#'
+#' @return character vector of names
 
 tges_name_cleaner <- function(x, indicator_fields) {
   out <- map_chr(
@@ -87,6 +135,14 @@ tges_name_cleaner <- function(x, indicator_fields) {
   out
 }
 
+
+#' tidy total spending per pupil
+#'
+#' @param df total spending data frame, eg CSG1AA_AVGS output from get_raw_tges()
+#' @param end_year end year that the report was published
+#'
+#' @return data frame
+#' @export
 
 tidy_total_spending_per_pupil <- function(df, end_year) {
   
@@ -124,6 +180,15 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
   bind_rows(y1_df, y2_df)
 }
 
+
+#' tidy common/generic budget indicator data frame
+#'
+#' @param df indicator data frame, eg output of get_raw_tges()
+#' @param end_year end year that the report was published
+#' @param indicator character, indicator name
+#'
+#' @return long, tidy data frame
+#' @export
 
 tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
@@ -169,20 +234,50 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   bind_rows(y1_df, y2_df, y3_df)
 }
 
+
+#' Tidy Budgetary Per Pupil data frame
+#'
+#' @param df indicator data frame, eg output of get_raw_tges()
+#' @param end_year end year that the report was published
+#'
+#' @return data.frame
+
 tidy_budgetary_per_pupil_cost <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Budgetary Per Pupil Cost')
 }
 
+
+#' Tidy Total Classroom Instruction data frame
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
 
 tidy_total_classroom_instruction <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Classroom Instruction')
 }
 
 
+#' Tidy Total Classroom Salaries and Benefits
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
 tidy_classroom_salaries_benefits <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Classroom Salaries & Benefits')
 }
 
+
+#' Tidy list of TGES data frames
+#'
+#' @param list_of_dfs list of TGES data frames, eg output of get_raw_tges()
+#' @param end_year year that the report was published
+#'
+#' @return list of cleaned (wide to long, tidy) dataframes
+#' @export
 
 tidy_tges_data <- function(list_of_dfs, end_year) {
   
@@ -210,4 +305,10 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     })
   
   out
+}
+
+
+fetch_tges <- function(end_year) {
+  get_raw_tges(end_year) %>%
+    tidy_tges_data(end_year)
 }
