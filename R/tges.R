@@ -183,7 +183,8 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
 
 #' tidy common/generic budget indicator data frame
 #'
-#' @param df indicator data frame, eg output of get_raw_tges()
+#' @param df indicator data frame, eg output of get_raw_tges() 
+#' indicators 1-15
 #' @param end_year end year that the report was published
 #' @param indicator character, indicator name
 #'
@@ -239,6 +240,57 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y3_df$report_year <- end_year
   
   bind_rows(y1_df, y2_df, y3_df)
+}
+
+
+#' tidy generic personnel indicator data frame
+#'
+#' @param df personnel data frame, eg output of get_raw_tges() 
+#' indicators 16-19
+#' @param end_year end year that the report was published
+#' @param indicator character, indicator name
+#'
+#' @return long, tidy data frame
+#' @export
+
+tidy_generic_personnel <- function(df, end_year, indicator) {
+  
+  df$indicator <- indicator
+  
+  #masks to break out y1, y2, y3 data
+  all_years <- !grepl('00|01', names(df))
+  year_1 <- grepl('00', names(df)) | all_years
+  year_2 <- grepl('01', names(df)) | all_years
+
+  indicator_fields <- list(
+    'strat' = 'Student/Teacher ratio',
+    'rk' = 'Student/Teacher ratio rank',
+    'salt' = 'Teacher Salary',
+    'rksal' = 'Teacher Salary Rank',
+    'ssrat' = 'Student/Special Service ratio',
+    'sals' = 'Special Service Salary',
+    'sarat' = 'Student/Administrator ratio',
+    'salam' = 'Administrator Salary',
+    'farat' = 'Faculty/Administrator ratio'
+  )
+  
+  #reshape wide to long
+  y1_df <- df[, year_1]
+  y2_df <- df[, year_2]
+  
+  #clean up names
+  names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
+  y1_df$end_year <- end_year - 1
+  y1_df$report_year <- end_year
+  names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
+  
+  #clean up names
+  names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
+  y2_df$end_year <- end_year
+  y2_df$report_year <- end_year
+  names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
+  
+  bind_rows(y1_df, y2_df)
 }
 
 
@@ -433,6 +485,19 @@ tidy_equipment <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Equipment Cost per Pupil')
 }
 
+
+#' Tidy Ratio of Student to Teachers
+#'
+#' @inheritParams tidy_budgetary_per_pupil_cost
+#'
+#' @return data.frame
+#' @export
+
+tidy_ratio_students_to_teachers <- function(df, end_year) {
+  tidy_generic_personnel(df, end_year, 'Ratio of Students to Teachers, Median Salary')
+}
+
+
 #' Tidy list of TGES data frames
 #'
 #' @param list_of_dfs list of TGES data frames, eg output of get_raw_tges()
@@ -461,7 +526,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG12" = "tidy_food_service",
     "CSG13" = "tidy_extracurricular",
     "CSG14" = "tidy_personal_services_benefits",
-    "CSG15" = "tidy_equipment"
+    "CSG15" = "tidy_equipment",
+    "CSG16" = "tidy_ratio_students_to_teachers"
   )
   
   #apply a cleaning function if known

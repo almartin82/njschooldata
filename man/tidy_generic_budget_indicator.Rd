@@ -7,7 +7,8 @@
 tidy_generic_budget_indicator(df, end_year, indicator)
 }
 \arguments{
-\item{df}{indicator data frame, eg output of get_raw_tges()}
+\item{df}{indicator data frame, eg output of get_raw_tges() 
+indicators 1-15}
 
 \item{end_year}{end year that the report was published}
 
