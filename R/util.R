@@ -57,8 +57,8 @@ clean_cds_fields <- function(df) {
   names(df) <- gsub('dist_code|dist\\b', 'district_code', names(df))
   names(df) <- gsub('sch_code|sch\\b', 'school_code', names(df))
   
-  names(df) <- gsub('co_name|coname', 'county_name', names(df))
-  names(df) <- gsub('dist_name|dis_name|distname', 'district_name', names(df))
+  names(df) <- gsub('co_name|coname|county$', 'county_name', names(df))
+  names(df) <- gsub('dist_name|dis_name|distname|district$', 'district_name', names(df))
   names(df) <- gsub('sch_name', 'school_name', names(df))
   
   names(df) <- gsub('yr\\b', 'year', names(df))
