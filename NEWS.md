@@ -1,3 +1,9 @@
+# njschooldata 0.6.1
+
+## New features
+
+* ability to standardize / clean / label Taxpayers Guide data with `tidy_tges_data()` 
+
 # njschooldata 0.6
 
 ## New features

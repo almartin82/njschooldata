@@ -383,6 +383,38 @@ tidy_excess_unreserved_general_fund <- function(df, end_year) {
 }
 
 
+#' Tidy Vital Statistics
+#'
+#' @param df vital statistics data frame, eg VITSTAT_TOTAL 
+#' output from get_raw_tges()
+#' @param end_year end year that the report was published
+#'
+#' @return data frame
+#' @export
+
+tidy_vitstat <- function(df, end_year) {
+  
+  df$end_year <- end_year - 1
+  
+  indicator_fields <- list(
+    'pp3vv' = 'Total Spending Per Pupil',
+    'stpct01vv' = 'Revenue: State %',
+    'ltpct01vv' = 'Revenue: Local %',
+    'fdpct01vv' = 'Revenue: Federal %',
+    'tupct01vv' = 'Revenue: Tuition %',
+    'fbpct01vv' = 'Revenue: Free balance %',
+    'otpct01vv' = 'Revenue: Other %',
+    'strat01vv' = 'Student / Teacher ratio',
+    'ssrat01vv' = 'Student / Special Service ratio',
+    'sarat01vv' = 'Student / Administrator ratio',
+    'pctsevv' = 'Percent Special Education Students'
+  )
+  names(df) <- tges_name_cleaner(df, indicator_fields)
+  
+  df  
+}
+
+
 #' Tidy Budgetary Per Pupil data frame
 #'
 #' @param df indicator data frame, eg output of get_raw_tges()
@@ -658,7 +690,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG18" = "tidy_ratio_students_to_administrators",
     "CSG19" = "tidy_ratio_faculty_to_administrators",
     "CSG20" = "tidy_budgeted_vs_actual_fund_balance",
-    "CSG21" = "tidy_excess_unreserved_general_fund"
+    "CSG21" = "tidy_excess_unreserved_general_fund",
+    "VITSTAT_TOTAL" = "tidy_vitstat"
   )
   
   #apply a cleaning function if known
