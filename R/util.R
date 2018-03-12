@@ -147,3 +147,16 @@ rc_numeric_cleaner <- function(data_vector) {
   
   data_vector %>% as.numeric()
 }
+
+
+#' Percentile Rank
+#'
+#' @param x vector of values
+#' @param xo target value
+#'
+#' @return numeric percentile rank
+#' @export
+
+percentile_rank <- function(x, xo) {
+  length(x[x <= xo]) / length(x) * 100
+}
