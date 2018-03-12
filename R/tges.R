@@ -20,7 +20,7 @@ get_raw_tges <- function(end_year) {
     "2008" = "http://www.state.nj.us/education/guide/2008/csg2008.zip",
     "2007" = "http://www.state.nj.us/education/guide/2007/csg2007.zip",
     "2006" = "http://www.state.nj.us/education/guide/2006/csg2006.zip",
-    "2005" = "http://www.state.nj.us/education/guide/2005/csg2005.zip",
+    "2005" = "http://www.state.nj.us/education/guide/2005/csg05.zip",
     "2004" = "http://www.state.nj.us/education/guide/2004/csg2004.zip",
     "2003" = "http://www.state.nj.us/education/guide/2003/csg2003.zip",
     "2002" = "http://www.state.nj.us/education/guide/2002/csg2002.zip",
