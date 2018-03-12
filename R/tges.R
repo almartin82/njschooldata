@@ -57,11 +57,14 @@ get_raw_tges <- function(end_year) {
     .x = tges_csv$Name,
     .y = tges_csv$file,
     .f = function(.x, .y) {
-      df <- readr::read_csv(file.path(unzip_loc, .x)) %>%
-        mutate(
-          file_name = .y
-        ) %>%
-        janitor::clean_names()
+      df <- readr::read_csv(
+        file.path(unzip_loc, .x),
+        col_types = cols()
+      ) %>%
+      mutate(
+        file_name = .y
+      ) %>%
+      janitor::clean_names()
       
       df <- clean_cds_fields(df)
       
@@ -81,11 +84,13 @@ get_raw_tges <- function(end_year) {
     .x = tges_excel$Name,
     .y = tges_excel$file,
     .f = function(.x, .y) {
-      df <- readxl::read_excel(path = file.path(unzip_loc, .x)) %>%
-        mutate(
-          file_name = .y
-        ) %>%
-        janitor::clean_names()
+      df <- readxl::read_excel(
+        path = file.path(unzip_loc, .x)
+      ) %>%
+      mutate(
+        file_name = .y
+      ) %>%
+      janitor::clean_names()
       
       df <- clean_cds_fields(df)
       df
@@ -214,10 +219,21 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     "sb" = "Cost as a percentage of Total Salaries and Benefits"
   )
   
+  #force types to resolve bind_row conflicts when all NA
+  force_indicator_types <- function(df) {
+    if ('pp' %in% names(df)) df$pp <- as.numeric(df$pp)
+    if ('rk' %in% names(df)) df$rk <- as.integer(df$rk)
+    if ('pct' %in% names(df)) df$pct <- as.numeric(df$pct)
+    if ('sb' %in% names(df)) df$sb <- as.numeric(df$sb)
+    
+    df
+  }
+  
   #clean up names
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
   names(y1_df) <- gsub('sba', 'sb', names(y1_df))
   names(y1_df) <- gsub('a$', '', names(y1_df))
+  y1_df <- force_indicator_types(y1_df)
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
@@ -226,6 +242,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
   names(y2_df) <- gsub('a$', '', names(y2_df))
+  y2_df <- force_indicator_types(y2_df)
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
@@ -234,6 +251,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
   names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
   names(y3_df) <- gsub('a$', '', names(y3_df))
+  y3_df <- force_indicator_types(y3_df)
   names(y3_df) <- tges_name_cleaner(y3_df, indicator_fields)
   y3_df$end_year <- end_year
   y3_df$calc_type <- 'Budgeted'
@@ -607,7 +625,8 @@ tidy_ratio_faculty_to_administrators <- function(df, end_year) {
 
 #' Tidy list of TGES data frames
 #'
-#' @param list_of_dfs list of TGES data frames, eg output of get_raw_tges()
+#' @param list_of_dfs list of TGES data frames, eg output of 
+#' get_raw_tges(). Current valid values are 2011 to 2017. 
 #' @param end_year year that the report was published
 #'
 #' @return list of cleaned (wide to long, tidy) dataframes
@@ -672,4 +691,27 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
 fetch_tges <- function(end_year) {
   get_raw_tges(end_year) %>%
     tidy_tges_data(end_year)
+}
+
+
+#' Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
+#'
+#' @param end_year_vector vector of years.  Current valid values 
+#' are 2011 to 2017. 
+#'
+#' @return list of lists of data frames
+#' @export
+
+fetch_many_tges <- function(end_year_vector) {
+  all_tges <- map(
+    .x = end_year_vector,
+    .f = function(.x) {
+      print(.x)
+      fetch_tges(.x)
+    }
+  )
+  
+  names(all_tges) <- end_year_vector
+  
+  all_tges
 }
