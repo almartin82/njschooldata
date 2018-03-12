@@ -77,7 +77,7 @@ get_raw_tges <- function(end_year) {
       df
     }
   )
-  names(csv_list) <- tges_csv$file
+  names(csv_list) <- tges_csv$file %>% toupper()
   
   #read excel
   excel_list <- map2(
@@ -96,7 +96,7 @@ get_raw_tges <- function(end_year) {
       df
     }
   )
-  names(excel_list) <- tges_excel$file
+  names(excel_list) <- tges_excel$file %>% toupper()
   
   #read dbf (1999-2002)
   dbf_list <- map2(
@@ -113,7 +113,7 @@ get_raw_tges <- function(end_year) {
       df
     }
   )
-  names(dbf_list) <- tges_dbf$file
+  names(dbf_list) <- tges_dbf$file %>% toupper()
   
   
   all_df <- c(csv_list, excel_list, dbf_list)
