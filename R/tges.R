@@ -114,10 +114,19 @@ get_raw_tges <- function(end_year) {
     }
   )
   names(dbf_list) <- tges_dbf$file %>% toupper()
-  
-  
+
   all_df <- c(csv_list, excel_list, dbf_list)
   
+  #2003-2010 district_code is called district_name
+  #all the years
+  all_df <- map(all_df, function(.x) {
+    df_names <- names(.x)
+    if(df_names[3] == 'district_name' & df_names[4] == 'district_name') {
+      names(.x)[3] <- 'district_code'
+    }
+    .x
+  })
+
   all_df
 }
 
@@ -201,10 +210,18 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   df$indicator <- indicator
   
   #masks to break out y1, y2, y3 data
-  all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
-  year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
-  year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
-  year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
+  if (end_year >= 2011) {
+    all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
+    year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
+    year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
+    year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
+  #headers slightly different for comparative guide years
+  } else if (end_year < 2011) {
+    all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
+    year_1 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
+    year_2 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
+    year_3 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
+  }
   
   #reshape wide to long
   y1_df <- df[, year_1 & !grepl('sbb|sbc', names(df))]
@@ -212,6 +229,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y3_df <- df[, year_3]
   
   indicator_fields <- list(
+    #tges
     "pp" = "Per Pupil costs",
     "rk" = "District rank",
     "e" = "Enrollment (ADE)",
@@ -233,6 +251,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
   names(y1_df) <- gsub('sba', 'sb', names(y1_df))
   names(y1_df) <- gsub('a$', '', names(y1_df))
+  names(y1_df) <- gsub('rank', 'rk', names(y1_df), fixed = TRUE)
   y1_df <- force_indicator_types(y1_df)
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
@@ -242,6 +261,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
   names(y2_df) <- gsub('a$', '', names(y2_df))
+  names(y2_df) <- gsub('rank', 'rk', names(y2_df), fixed = TRUE)
   y2_df <- force_indicator_types(y2_df)
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
@@ -251,6 +271,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
   names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
   names(y3_df) <- gsub('a$', '', names(y3_df))
+  names(y3_df) <- gsub('rank', 'rk', names(y3_df), fixed = TRUE)
   y3_df <- force_indicator_types(y3_df)
   names(y3_df) <- tges_name_cleaner(y3_df, indicator_fields)
   y3_df$end_year <- end_year
