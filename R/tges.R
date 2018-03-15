@@ -207,7 +207,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
   
   #reshape wide to long
-  y1_df <- df[, year_1]
+  y1_df <- df[, year_1 & !grepl('sbb|sbc', names(df))]
   y2_df <- df[, year_2]
   y3_df <- df[, year_3]
   
