@@ -48,18 +48,26 @@ pad_grade <- function(x) {
 #' Clean up CDS field names
 #'
 #' @param df data frame with county, district and school variables
+#' @param tges if run in the taxpayers guide to ed spending (tges) mode, 
+#' 'district' resolves to district code.  defaults to FALSE.
 #'
 #' @return df, with consistent county_code, district_code, school_code fields
 #' @export
 
-clean_cds_fields <- function(df) {
+clean_cds_fields <- function(df, tges=FALSE) {
   names(df) <- gsub('co_code|co\\b', 'county_code', names(df))
   names(df) <- gsub('dist_code|dist\\b', 'district_code', names(df))
   names(df) <- gsub('sch_code|sch\\b', 'school_code', names(df))
   
   names(df) <- gsub('co_name|coname|county$', 'county_name', names(df))
-  names(df) <- gsub('dist_name|dis_name|distname|district$', 'district_name', names(df))
+  names(df) <- gsub('dist_name|dis_name|distname', 'district_name', names(df))
   names(df) <- gsub('sch_name', 'school_name', names(df))
+  
+  if (tges) {
+    names(df) <- gsub('district$', 'district_code', names(df))
+  } else {
+    names(df) <- gsub('district$', 'district_name', names(df))
+  }
   
   names(df) <- gsub('yr\\b', 'year', names(df))
   

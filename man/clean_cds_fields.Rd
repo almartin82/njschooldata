@@ -4,10 +4,13 @@
 \alias{clean_cds_fields}
 \title{Clean up CDS field names}
 \usage{
-clean_cds_fields(df)
+clean_cds_fields(df, tges = FALSE)
 }
 \arguments{
 \item{df}{data frame with county, district and school variables}
+
+\item{tges}{if run in the taxpayers guide to ed spending (tges) mode, 
+'district' resolves to district code.  defaults to FALSE.}
 }
 \value{
 df, with consistent county_code, district_code, school_code fields

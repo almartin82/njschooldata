@@ -116,16 +116,6 @@ get_raw_tges <- function(end_year) {
   names(dbf_list) <- tges_dbf$file %>% toupper()
 
   all_df <- c(csv_list, excel_list, dbf_list)
-  
-  #2003-2010 district_code is called district_name
-  #all the years
-  all_df <- map(all_df, function(.x) {
-    df_names <- names(.x)
-    if(df_names[3] == 'district_name' & df_names[4] == 'district_name') {
-      names(.x)[3] <- 'district_code'
-    }
-    .x
-  })
 
   all_df
 }
