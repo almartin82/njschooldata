@@ -103,7 +103,10 @@ get_raw_tges <- function(end_year) {
     .x = tges_dbf$Name,
     .y = tges_dbf$file,
     .f = function(.x, .y) {
-      df <- foreign::read.dbf(file = file.path(unzip_loc, .x)) %>%
+      df <- foreign::read.dbf(
+        file = file.path(unzip_loc, .x),
+        as.is = TRUE
+        ) %>%
         mutate(
           file_name = .y
         ) %>%
