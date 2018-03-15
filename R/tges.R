@@ -66,7 +66,7 @@ get_raw_tges <- function(end_year) {
       ) %>%
       janitor::clean_names()
       
-      df <- clean_cds_fields(df)
+      df <- clean_cds_fields(df, tges = TRUE)
       
       if ('county_code' %in% names(df)) {
         df$county_code <- pad_leading(df$county_code, 2)
@@ -92,7 +92,7 @@ get_raw_tges <- function(end_year) {
       ) %>%
       janitor::clean_names()
       
-      df <- clean_cds_fields(df)
+      df <- clean_cds_fields(df, tges = TRUE)
       df
     }
   )
@@ -109,7 +109,7 @@ get_raw_tges <- function(end_year) {
         ) %>%
         janitor::clean_names()
       
-      df <- clean_cds_fields(df)
+      df <- clean_cds_fields(df, tges = TRUE)
       df
     }
   )
@@ -224,7 +224,9 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     "rk" = "District rank",
     "e" = "Enrollment (ADE)",
     "pct" = "Cost as a percentage of the Total Budgetary Cost Per Pupil",
-    "sb" = "Cost as a percentage of Total Salaries and Benefits"
+    "sb" = "Cost as a percentage of Total Salaries and Benefits",
+    #CSG14 modified
+    "pctsalary" = "% of Total Salaries"
   )
   
   #force types to resolve bind_row conflicts when all NA
@@ -287,20 +289,30 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   df$indicator <- indicator
   
   #masks to break out y1, y2, y3 data
-  all_years <- !grepl('00|01', names(df))
-  year_1 <- grepl('00', names(df)) | all_years
-  year_2 <- grepl('01', names(df)) | all_years
+  if (end_year >= 2011) {
+    all_years <- !grepl('00|01', names(df))
+    year_1 <- grepl('00', names(df)) | all_years
+    year_2 <- grepl('01', names(df)) | all_years
+  } else if (end_year < 2011) {
+    all_years <- !grepl('02|03', names(df))
+    year_1 <- grepl('02', names(df)) | all_years
+    year_2 <- grepl('03', names(df)) | all_years
+  }
 
   indicator_fields <- list(
     'strat' = 'Student/Teacher ratio',
-    'rk' = 'Ratio rank',
+    'rk' = 'Ratio Rank',
     'salt' = 'Teacher Salary',
     'rksal' = 'Salary Rank',
     'ssrat' = 'Student/Special Service ratio',
     'sals' = 'Special Service Salary',
     'sarat' = 'Student/Administrator ratio',
     'salam' = 'Administrator Salary',
-    'farat' = 'Faculty/Administrator ratio'
+    'farat' = 'Faculty/Administrator ratio',
+    #cges
+    'rrk' = 'Ratio Rank',
+    'srk' = 'Salary Rank',
+    'sala' = 'Administrator Salary'
   )
   
   #reshape wide to long
@@ -333,6 +345,12 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
 #' @export
 
 tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
+
+  #goofy column names from 99-2010  
+  if (end_year <= 2010) {
+    names(df)[5:8] <- c('de120', 'de220', 'de320', 'de420')
+  }
+  
   df$indicator <- 'Budgeted General Fund Balance vs. Actual'
   
   y1_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
@@ -369,6 +387,12 @@ tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
 #' @export
 
 tidy_excess_unreserved_general_fund <- function(df, end_year) {
+  
+  #goofy column names from 99-2010  
+  if (end_year <= 2010) {
+    names(df)[5:7] <- c('ex121', 'ex221', 'ex331')
+  }
+  
   df$indicator <- 'Excess Unreserved General Fund Balances'
   
   #reshape
@@ -602,6 +626,8 @@ tidy_extracurricular <- function(df, end_year) {
 #' @export
 
 tidy_personal_services_benefits <- function(df, end_year) {
+  #CSG 14 IS DIFFERRENT
+  names(df) <- gsub('pp', 'pctsalary', names(df))
   tidy_generic_budget_indicator(df, end_year, 'Personal Services - Employee Benefits')
 }
 
