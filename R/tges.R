@@ -227,9 +227,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     "rk" = "District rank",
     "e" = "Enrollment (ADE)",
     "pct" = "Cost as a percentage of the Total Budgetary Cost Per Pupil",
-    "sb" = "Cost as a percentage of Total Salaries and Benefits",
-    #CSG14 modified
-    "pctsalary" = "% of Total Salaries"
+    "sb" = "Cost as a percentage of Total Salaries and Benefits"  
   )
   
   #force types to resolve bind_row conflicts when all NA
@@ -315,7 +313,9 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
     #cges
     'rrk' = 'Ratio Rank',
     'srk' = 'Salary Rank',
-    'sala' = 'Administrator Salary'
+    'sala' = 'Administrator Salary',
+    #CSG14 modified
+    "pctsalary" = "% of Total Salaries"
   )
   
   #reshape wide to long
@@ -629,9 +629,9 @@ tidy_extracurricular <- function(df, end_year) {
 #' @export
 
 tidy_personal_services_benefits <- function(df, end_year) {
-  #CSG 14 IS DIFFERRENT
+  #CSG 14 IS DIFFERENT
   names(df) <- gsub('pp', 'pctsalary', names(df))
-  tidy_generic_budget_indicator(df, end_year, 'Personal Services - Employee Benefits')
+  tidy_generic_personnel(df, end_year, 'Personal Services - Employee Benefits')
 }
 
 
