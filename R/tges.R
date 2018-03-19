@@ -202,6 +202,11 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   df$indicator <- indicator
   
+  #for 1999 through 2003 y1, y2, y3 changed per-year
+  if (end_year <= 2003) {
+    year_variable_converter(df, end_year)
+  }
+  
   #masks to break out y1, y2, y3 data
   if (end_year >= 2011) {
     all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
@@ -212,8 +217,8 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   } else if (end_year < 2011) {
     all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
     year_1 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
-    year_2 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
-    year_3 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
+    year_2 <- grepl('pp02|rank02|pct02|pct202', names(df)) | all_years
+    year_3 <- grepl('pp03|rank03|pct03|pct203', names(df)) | all_years
   }
   
   #reshape wide to long
@@ -274,6 +279,40 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   bind_rows(y1_df, y2_df, y3_df)
 }
 
+#' year variable converter
+#'
+#' @description for the 1999-2003 tges files, the 'year' of the data
+#' was encoded in the variable names
+#' @param df a tges indicator data frame published between 1999 and 2003
+#' @param end_year year published
+#'
+#' @return data frame that conforms to 2004-2009 style
+#' @export
+
+year_variable_converter <- function(df, end_year) {
+  old_id <- end_year - 1
+  old_ids <- c(old_id-2, old_id-1, old_id)
+  old_ids <- str_sub(old_ids, 3, 4)
+  on <- names(df)
+  on[grepl(old_ids[3], on)] <- gsub(
+    pattern = old_ids[3],
+    replacement = '03',
+    x = on[grepl(old_ids[3], on)]
+  )
+  on[grepl(old_ids[2], on)] <- gsub(
+    pattern = old_ids[2],
+    replacement = '02',
+    x = on[grepl(old_ids[2], on)]
+  )
+  on[grepl(old_ids[1], on)] <- gsub(
+    pattern = old_ids[1],
+    replacement = '01',
+    x = on[grepl(old_ids[1], on)]
+  )  
+  names(df) <- on
+
+  df
+}
 
 #' tidy generic personnel indicator data frame
 #'
@@ -288,6 +327,11 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
 tidy_generic_personnel <- function(df, end_year, indicator) {
   
   df$indicator <- indicator
+  
+  #for 1999 through 2003 y1, y2, y3 changed per-year
+  if (end_year <= 2003) {
+    year_variable_converter(df, end_year)
+  }
   
   #masks to break out y1, y2, y3 data
   if (end_year >= 2011) {
@@ -630,7 +674,7 @@ tidy_extracurricular <- function(df, end_year) {
 
 tidy_personal_services_benefits <- function(df, end_year) {
   #CSG 14 IS DIFFERENT
-  names(df) <- gsub('pp', 'pctsalary', names(df))
+  names(df) <- gsub('pp|pct', 'pctsalary', names(df))
   tidy_generic_personnel(df, end_year, 'Personal Services - Employee Benefits')
 }
 
