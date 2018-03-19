@@ -276,7 +276,11 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y3_df$calc_type <- 'Budgeted'
   y3_df$report_year <- end_year
   
-  bind_rows(y1_df, y2_df, y3_df)
+  out <- bind_rows(y1_df, y2_df, y3_df)
+  
+  #clean up rank here
+  
+  out
 }
 
 #' year variable converter
