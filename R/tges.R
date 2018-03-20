@@ -803,9 +803,6 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
               )
           }
         }
-        print(cleaning_function)
-        print.AsIs(head(out))
-        
       #if not, just return it as is
       } else {
         out <- .x
