@@ -204,7 +204,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   #for 1999 through 2003 y1, y2, y3 changed per-year
   if (end_year <= 2003) {
-    year_variable_converter(df, end_year)
+    df <- year_variable_converter(df, end_year)
   }
   
   #masks to break out y1, y2, y3 data
@@ -330,7 +330,7 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   
   #for 1999 through 2003 y1, y2, y3 changed per-year
   if (end_year <= 2003) {
-    year_variable_converter(df, end_year)
+    df <- year_variable_converter(df, end_year)
   }
   
   #masks to break out y1, y2, y3 data
@@ -785,13 +785,33 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     .f = function(.x, .y) {
       #look up the table name and see if we know how to clean it
       cleaning_function <- tges_cleaners %>% extract2(.y)
-      print(cleaning_function)
       if (!is.null(cleaning_function)) {
-        do.call(cleaning_function, list(.x, end_year))
-        #if not, just return it
+        out <- do.call(cleaning_function, list(.x, end_year))
+        
+        #1999 data has decimal issues
+        if (end_year == 1999) {
+          if ('% of Total Salaries' %in% names(out)) {
+            out <- out %>%
+              mutate(
+                `% of Total Salaries` = `% of Total Salaries` / 100
+              )
+          }
+          if ('Cost as a percentage of the Total Budgetary Cost Per Pupil' %in% names(out)) {
+            out <- out %>%
+              mutate(
+                `Cost as a percentage of the Total Budgetary Cost Per Pupil` = `Cost as a percentage of the Total Budgetary Cost Per Pupil` / 100
+              )
+          }
+        }
+        print(cleaning_function)
+        print.AsIs(head(out))
+        
+      #if not, just return it as is
       } else {
-        return(.x)
+        out <- .x
       }
+      
+      out
     })
   
   out
