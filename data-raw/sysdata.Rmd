@@ -102,7 +102,7 @@ prog1$program_code <- stringr::str_pad(
 
 prog_codes <- rbind(prog1, prog2)
 
-save(prog_codes, file = 'data\\program_codes.Rda')
+save(prog_codes, file = file.path(root, 'data', 'program_codes.Rda'))
 
 ```
 
