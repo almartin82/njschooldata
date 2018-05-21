@@ -238,7 +238,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   #force types to resolve bind_row conflicts when all NA
   force_indicator_types <- function(df) {
     if ('pp' %in% names(df)) df$pp <- as.numeric(df$pp)
-    if ('rk' %in% names(df)) df$rk <- as.integer(df$rk)
+    if ('rk' %in% names(df)) df$rk <- str_extract(df$'rk', "\\d+(?=\\|?)")
     if ('pct' %in% names(df)) df$pct <- as.numeric(df$pct)
     if ('sb' %in% names(df)) df$sb <- as.numeric(df$sb)
     
@@ -276,11 +276,14 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y3_df$calc_type <- 'Budgeted'
   y3_df$report_year <- end_year
   
-  out <- bind_rows(y1_df, y2_df, y3_df)
+  bind_rows(y1_df, y2_df, y3_df)
   
   #clean up rank here
   
-  out
+  #out$`rk` <-  str_extract(out$'rk', "\\d+(?=\\|?)")
+  # 
+  #out
+
 }
 
 #' year variable converter
@@ -366,6 +369,19 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
     "pctsalary" = "% of Total Salaries"
   )
   
+  #lu's edit
+  #force types to resolve bind_row conflicts when all NA
+  force_indicator_types <- function(df) {
+    if ('rk' %in% names(df)) df$'rk' <- str_extract(df$'rk', "\\d+(?=\\|?)")
+    if ('rksal' %in% names(df)) df$'rksal' <- str_extract(df$'rksal', "\\d+(?=\\|?)")
+    if ('rrk' %in% names(df)) df$'rrk' <- str_extract(df$'rrk', "\\d+(?=\\|?)")
+    if ('ssrat' %in% names(df)) df$'ssrat' <- str_extract(df$'ssrat', "\\d+(?=\\|?)")
+    if ('salam' %in% names(df)) df$'salam' <- str_extract(df$'salam', "\\d+(?=\\|?)")
+    if ('srk' %in% names(df)) df$'srk' <- str_extract(df$'srk', "\\d+(?=\\|?)")
+    if ('farat' %in% names(df)) df$'farat' <- str_extract(df$'farat', "\\d+(?=\\|?)")
+    df
+  #lu's edit
+  }
   #reshape wide to long
   y1_df <- df[, year_1]
   y2_df <- df[, year_2]
@@ -375,14 +391,25 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   y1_df$end_year <- end_year - 1
   y1_df$report_year <- end_year
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
+  y1_df <- force_indicator_types(y1_df)
   
   #clean up names
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   y2_df$end_year <- end_year
   y2_df$report_year <- end_year
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
+  y2_df <- force_indicator_types(y2_df)
   
   bind_rows(y1_df, y2_df)
+  
+  # out$`rk` <-  str_extract(out$'rk', "\\d+(?=\\|?)")
+  # out$`rrk` <-  str_extract(out$'rrk', "\\d+(?=\\|?)")
+  # out$`srk` <-  str_extract(out$'srk', "\\d+(?=\\|?)")
+  # out$`rksal` <-  str_extract(out$'rksal', "\\d+(?=\\|?)")
+  # 
+  # out
+  
+
 }
 
 
