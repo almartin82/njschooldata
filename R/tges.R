@@ -154,13 +154,23 @@ tges_name_cleaner <- function(x, indicator_fields) {
 tidy_total_spending_per_pupil <- function(df, end_year) {
   
   #masks to break out y1, y2 data
+  if (end_year <= 2003) {
+   df <-  year_variable_converter(df, end_year)
+   colnames(df) <- str_replace_all(colnames(df), "rank", "rk")
+  }
+  
+  if(end_year > 2003){
+    #colnames(df) <- str_replace_all(colnames(df), "\\d{2}$", "")
+    colnames(df) <- str_replace_all(colnames(df), "rank", "rk")
+  }
+  
   both_years <- !grepl('11a|21a', names(df))
   year_1 <- grepl('11a', names(df), fixed = TRUE) | both_years
   year_2 <- grepl('21a', names(df), fixed = TRUE) | both_years
-  
-  #reshape wide to long
-  y1_df <- df[, year_1]
-  y2_df <- df[, year_2]
+  # 
+  # #reshape wide to long
+   y1_df <- df[, year_1]
+   y2_df <- df[, year_2]
   
   #codes from http://www.state.nj.us/education/guide/2017/install.pdf
   indicator_fields <- list(
@@ -171,18 +181,38 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
     "boty" = "Budget / Operating type"
   )
   
+  force_indicator_types <- function(df) {
+    if ('pp' %in% names(df)) df$pp <- as.numeric(df$pp)
+    if ('rk' %in% names(df)) df$rk <- str_split(df$rk, "\\|", simplify = TRUE)[,1]
+    if ('rk' %in% names(df)) df$rk <- as.numeric(df$rk)
+    if ('pct' %in% names(df)) df$pct <- as.numeric(df$pct)
+    if ('sb' %in% names(df)) df$sb <- as.numeric(df$sb)
+    
+    df
+  }
+  
   #clean up names
+  
   names(y1_df) <- gsub('11a', '', names(y1_df), fixed = TRUE)
+  #y1_df$rk <- as.numeric(str_extract_all(y1_df$rk, "\\d+(?=\\|?)"))
+  y1_df <- force_indicator_types(y1_df)
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
   y1_df$report_year <- end_year
+
+ 
   
   names(y2_df) <- gsub('21a', '', names(y2_df), fixed = TRUE)
+  # y2_df$rk <- as.numeric(str_extract_all(y2_df$rk, "\\d+(?=\\|?)"))
+  # y2_df$rk <- as.numeric(str_split(y2_df$rk, "\\|", simplify = TRUE)[,1]
+  y2_df <- force_indicator_types(y2_df)
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
+ 
+  
   
   bind_rows(y1_df, y2_df)
 }
@@ -201,31 +231,30 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
 tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   df$indicator <- indicator
+  colnames(df) <- str_replace_all(colnames(df), "rank", "rk")
   
   #for 1999 through 2003 y1, y2, y3 changed per-year
   if (end_year <= 2003) {
-    year_variable_converter(df, end_year)
+    df <-  year_variable_converter(df, end_year)
   }
-  
   #masks to break out y1, y2, y3 data
-  if (end_year >= 2011) {
-    all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
-    year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
-    year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
-    year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
-  #headers slightly different for comparative guide years
-  } else if (end_year < 2011) {
-    all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
-    year_1 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
-    year_2 <- grepl('pp02|rank02|pct02|pct202', names(df)) | all_years
-    year_3 <- grepl('pp03|rank03|pct03|pct203', names(df)) | all_years
-  }
+   if (end_year >= 2011) {
+     all_years <- !grepl('[[:alpha:]][1,2,3]+[[:digit:]]|sb[a,b,c]+[[:digit:]]', names(df))
+     year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
+     year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
+     year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
+   #headers slightly different for comparative guide years
+   } else if (end_year < 2011) {
+     all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
+     year_1 <- grepl('pp01|rk01|pct01|pct201', names(df)) | all_years
+     year_2 <- grepl('pp02|rk02|pct02|pct202', names(df)) | all_years
+     year_3 <- grepl('pp03|rk03|pct03|pct203', names(df)) | all_years
+   }
   
   #reshape wide to long
   y1_df <- df[, year_1 & !grepl('sbb|sbc', names(df))]
   y2_df <- df[, year_2]
   y3_df <- df[, year_3]
-  
   indicator_fields <- list(
     #tges
     "pp" = "Per Pupil costs",
@@ -237,15 +266,17 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   #force types to resolve bind_row conflicts when all NA
   force_indicator_types <- function(df) {
-    if ('pp' %in% names(df)) df$pp <- as.numeric(df$pp)
-    if ('rk' %in% names(df)) df$rk <- str_extract(df$'rk', "\\d+(?=\\|?)")
-    if ('pct' %in% names(df)) df$pct <- as.numeric(df$pct)
-    if ('sb' %in% names(df)) df$sb <- as.numeric(df$sb)
+    if ('pp' %in% colnames(df)) df$pp <- as.numeric(df$pp)
+    if ('rk' %in% colnames(df)) df$rk <- str_split(df$rk, "\\|", simplify = TRUE)[,1]
+    if ('rk' %in% colnames(df)) df$rk <- as.numeric(df$rk)
+    if ('pct' %in% colnames(df)) df$pct <- as.numeric(df$pct)
+    if ('sb' %in% colnames(df)) df$sb <- as.numeric(df$sb)
     
     df
   }
   
   #clean up names
+  names(y1_df) <- gsub("pct201", "sb", names(y1_df))
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
   names(y1_df) <- gsub('sba', 'sb', names(y1_df))
   names(y1_df) <- gsub('a$', '', names(y1_df))
@@ -256,6 +287,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y1_df$calc_type <- 'Actuals'
   y1_df$report_year <- end_year
   
+  names(y2_df) <- gsub("pct202", "sb", names(y2_df))
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
   names(y2_df) <- gsub('a$', '', names(y2_df))
@@ -266,6 +298,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
   
+  names(y3_df) <- gsub("pct203", "sb", names(y3_df))
   names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
   names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
   names(y3_df) <- gsub('a$', '', names(y3_df))
@@ -277,13 +310,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y3_df$report_year <- end_year
   
   bind_rows(y1_df, y2_df, y3_df)
-  
-  #clean up rank here
-  
-  #out$`rk` <-  str_extract(out$'rk', "\\d+(?=\\|?)")
-  # 
-  #out
-
+ 
 }
 
 #' year variable converter
@@ -295,7 +322,6 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
 #'
 #' @return data frame that conforms to 2004-2009 style
 #' @export
-
 year_variable_converter <- function(df, end_year) {
   old_id <- end_year - 1
   old_ids <- c(old_id-2, old_id-1, old_id)
@@ -315,7 +341,7 @@ year_variable_converter <- function(df, end_year) {
     pattern = old_ids[1],
     replacement = '01',
     x = on[grepl(old_ids[1], on)]
-  )  
+  )
   names(df) <- on
 
   df
@@ -337,20 +363,28 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   
   #for 1999 through 2003 y1, y2, y3 changed per-year
   if (end_year <= 2003) {
-    year_variable_converter(df, end_year)
-  }
+    df <-  year_variable_converter(df, end_year)
+    colnames(df) <- str_replace_all(colnames(df), "rank", "rk")
+  } 
   
   #masks to break out y1, y2, y3 data
   if (end_year >= 2011) {
-    all_years <- !grepl('00|01', names(df))
-    year_1 <- grepl('00', names(df)) | all_years
-    year_2 <- grepl('01', names(df)) | all_years
+    all_years <- !grepl('[[:alpha:]][00,01,02]+[[:digit:]]', names(df))
+    year_1 <- str_detect(names(df), "[[:alpha:]]00+[[:digit:]]")|all_years
+    year_2 <- str_detect(names(df), "[[:alpha:]]01+[[:digit:]]")|all_years
+    # all_years <- !grepl('00|01', names(df))
+    # year_1 <- grepl('00', names(df)) | all_years
+    # year_2 <- grepl('01', names(df)) | all_years
   } else if (end_year < 2011) {
-    all_years <- !grepl('02|03', names(df))
-    year_1 <- grepl('02', names(df)) | all_years
-    year_2 <- grepl('03', names(df)) | all_years
+    all_years <- !grepl('[[:alpha:]][01,02,03]+[[:digit:]]', names(df))
+    year_1 <- str_detect(names(df), "[[:alpha:]]02+[[:digit:]]")|all_years
+    year_2 <- str_detect(names(df), "[[:alpha:]]03+[[:digit:]]")|all_years
   }
-
+  
+  #reshape wide to long
+  y1_df <- df[, year_1]
+  y2_df <- df[, year_2]
+  
   indicator_fields <- list(
     'strat' = 'Student/Teacher ratio',
     'rk' = 'Ratio Rank',
@@ -371,44 +405,54 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   
   #lu's edit
   #force types to resolve bind_row conflicts when all NA
-  force_indicator_types <- function(df) {
-    if ('rk' %in% names(df)) df$'rk' <- str_extract(df$'rk', "\\d+(?=\\|?)")
-    if ('rksal' %in% names(df)) df$'rksal' <- str_extract(df$'rksal', "\\d+(?=\\|?)")
-    if ('rrk' %in% names(df)) df$'rrk' <- str_extract(df$'rrk', "\\d+(?=\\|?)")
-    if ('ssrat' %in% names(df)) df$'ssrat' <- str_extract(df$'ssrat', "\\d+(?=\\|?)")
-    if ('salam' %in% names(df)) df$'salam' <- str_extract(df$'salam', "\\d+(?=\\|?)")
-    if ('srk' %in% names(df)) df$'srk' <- str_extract(df$'srk', "\\d+(?=\\|?)")
-    if ('farat' %in% names(df)) df$'farat' <- str_extract(df$'farat', "\\d+(?=\\|?)")
-    df
-  #lu's edit
-  }
-  #reshape wide to long
-  y1_df <- df[, year_1]
-  y2_df <- df[, year_2]
+   force_indicator_types <- function(df) {
+     if ('rk' %in% colnames(df)) df$rk <- str_split(df$rk, "\\|", simplify = TRUE)[,1]
+     if ('rksal' %in% colnames(df)) df$rksal <- str_split(df$rksal, "\\|", simplify = TRUE)[,1]
+     if ('rrk' %in% colnames(df)) df$rrk <- str_split(df$rrk, "\\|", simplify = TRUE)[,1]
+     if ('ssrat' %in% colnames(df)) df$ssrat <- str_split(df$ssrat, "\\|", simplify = TRUE)[,1]
+     if ('salam' %in% colnames(df)) df$salam <- str_split(df$salam, "\\|", simplify = TRUE)[,1]
+     if ('srk' %in% colnames(df)) df$srk <- str_split(df$srk, "\\|", simplify = TRUE)[,1]
+     if ('farat' %in% colnames(df)) df$farat <- str_split(df$farat, "\\|", simplify = TRUE)[,1]
+     # 
+      if ('rk' %in% colnames(df)) df$rk <- as.numeric(df$rk)
+      if ('rksal' %in% colnames(df)) df$rksal <- as.numeric(df$rksal)
+      if ('rrk' %in% colnames(df)) df$rrk <- as.numeric(df$rrk)
+      if ('ssrat' %in% colnames(df)) df$ssrat <- as.numeric(df$ssrat)
+      if ('salam' %in% colnames(df)) df$salam <- as.numeric(df$salam)
+      if ('srk' %in% colnames(df)) df$srk <- as.numeric(df$srk)
+      if ('farat' %in% colnames(df)) df$farat <- as.numeric(df$farat)
+     df
+   }
+
+
+  # force_indicator_types <- function(df) {
+  #   df$rk <- as.numeric(str_split(df$rk, "\\|", simplify = TRUE)[,1]
+  #   df$rksal <- as.numeric(str_split(df$rksal, "\\|", simplify = TRUE)[,1]
+  #   df$rrk <- as.numeric(str_split(df$rrk, "\\|", simplify = TRUE)[,1]
+  #   df$ssrat <- as.numeric(str_split(df$ssrat, "\\|", simplify = TRUE)[,1]
+  #   df$salam <- as.numeric(str_split(df$salam, "\\|", simplify = TRUE)[,1]
+  #   df$srk <- as.numeric(str_split(df$srk, "\\|", simplify = TRUE)[,1]
+  #   df$farat <- as.numeric(str_split(df$farat, "\\|", simplify = TRUE)[,1]
+  #   df
+  # }
   
   #clean up names
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
-  y1_df$end_year <- end_year - 1
+  y1_df$end_year <- end_year - 2
   y1_df$report_year <- end_year
-  names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
+  y1_df$calc_type <- 'Actuals'
   y1_df <- force_indicator_types(y1_df)
+  names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
   
   #clean up names
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
-  y2_df$end_year <- end_year
+  y2_df$end_year <- end_year-1
   y2_df$report_year <- end_year
-  names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
+  y2_df$calc_type <- 'Actuals'
   y2_df <- force_indicator_types(y2_df)
+  names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
   
   bind_rows(y1_df, y2_df)
-  
-  # out$`rk` <-  str_extract(out$'rk', "\\d+(?=\\|?)")
-  # out$`rrk` <-  str_extract(out$'rrk', "\\d+(?=\\|?)")
-  # out$`srk` <-  str_extract(out$'srk', "\\d+(?=\\|?)")
-  # out$`rksal` <-  str_extract(out$'rksal', "\\d+(?=\\|?)")
-  # 
-  # out
-  
 
 }
 
@@ -507,6 +551,10 @@ tidy_excess_unreserved_general_fund <- function(df, end_year) {
 
 tidy_vitstat <- function(df, end_year) {
   
+  if (end_year <= 2003) {
+    df <-  year_variable_converter(df, end_year)
+  } 
+  
   df$end_year <- end_year - 1
   
   indicator_fields <- list(
@@ -520,7 +568,18 @@ tidy_vitstat <- function(df, end_year) {
     'strat01vv' = 'Student / Teacher ratio',
     'ssrat01vv' = 'Student / Special Service ratio',
     'sarat01vv' = 'Student / Administrator ratio',
-    'pctsevv' = 'Percent Special Education Students'
+    'pctsevv' = 'Percent Special Education Students',
+    'pp03' = 'Total Spending Per Pupil',
+    'stpct03' = 'Revenue: State %',
+    'ltpct03' = 'Revenue: Local %',
+    'fdpct03' = 'Revenue: Federal %',
+    'tupct03' = 'Revenue: Tuition %',
+    'fbpct03' = 'Revenue: Free balance %',
+    'otpct03' = 'Revenue: Other %',
+    'strat03' = 'Student / Teacher ratio',
+    'ssrat03' = 'Student / Special Service ratio',
+    'sarat03' = 'Student / Administrator ratio',
+    'pctspeced' = 'Percent Special Education Students'
   )
   names(df) <- tges_name_cleaner(df, indicator_fields)
   
@@ -806,7 +865,8 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     "CSG19" = "tidy_ratio_faculty_to_administrators",
     "CSG20" = "tidy_budgeted_vs_actual_fund_balance",
     "CSG21" = "tidy_excess_unreserved_general_fund",
-    "VITSTAT_TOTAL" = "tidy_vitstat"
+    "VITSTAT_TOTAL" = "tidy_vitstat",
+    "VITSTAT" = "tidy_vitstat"
   )
   
   #apply a cleaning function if known
