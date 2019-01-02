@@ -76,3 +76,20 @@ test_that("all enrollment data can be pulled", {
 })
 
 
+test_that("enr aggs correctly calculates known 2018 data", {
+  ex_2018 <- get_raw_enr(2018) %>%
+    clean_enr_names() %>%
+    split_enr_cols() %>%
+    clean_enr_data() %>%
+    enr_aggs()
+  
+  attales <- ex_2018 %>% filter(CDS_Code == '010010050') 
+  
+  expect_equal(attales[attales$grade_level == '05', ]$row_total, 91)
+  expect_equal(attales[attales$grade_level == '06', ]$row_total, 93)
+  expect_equal(attales[attales$grade_level == '07', ]$row_total, 82)
+  expect_equal(attales[attales$grade_level == '08', ]$row_total, 107)
+  
+  expect_equal(attales[attales$program_code == 'UG', ]$row_total, 8)
+  expect_equal(attales[attales$program_code == '55', ]$row_total, 381)
+})
