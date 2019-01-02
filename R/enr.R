@@ -4,7 +4,7 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2015.
+#' school year is year '2007'.  valid values are 1999-2018.
 #' @export
 
 get_raw_enr <- function(end_year) {
@@ -135,7 +135,6 @@ clean_enr_names <- function(df) {
     
     #grade level
     "GRADE_LEVEL" = "grade_level",
-    
     
     #racial categories -----------------------------
     #white male
@@ -372,6 +371,35 @@ process_enr_program <- function(df) {
 }
   
 
+#' Calculate enrollment aggregates
+#'
+#' @param df cleaned enrollment dataframe, eg output of `clean_enr_data`
+#'
+#' @return dataframe
+#' @export
+
+enr_aggs <- function(df) {
+
+  df_agg <- df %>%
+    mutate(
+      male = white_m + black_m + hispanic_m + asian_m +
+        native_american_m + pacific_islander_m + multiracial_m,
+      female = white_f + black_f + hispanic_f + asian_f +
+        native_american_f + pacific_islander_f + multiracial_f,
+      
+      white = white_m + white_f,
+      black = black_m + black_f,
+      hispanic = hispanic_m + hispanic_f,
+      asian = asian_m + asian_f,
+      native_american = native_american_m + native_american_f,
+      pacific_islander = pacific_islander_m + pacific_islander_f,
+      multiracial = multiracial_m + multiracial_f
+    )
+  
+  return(df_agg)
+}
+
+
 #' @title process a nj enrollment file 
 #' 
 #' @description
@@ -381,18 +409,21 @@ process_enr_program <- function(df) {
 
 process_enr <- function(df) {
 
+  # basic cleaning
   cleaned <- clean_enr_names(df) %>%
     split_enr_cols() %>%
     clean_enr_data()  
   
+  # add in gender and racial aggregates
+  cleaned_agg <- enr_aggs(cleaned)
+  
   #join to program code
-  final <- cleaned %>%
+  final <- cleaned_agg %>%
     process_enr_program() %>%
     arrange_enr()
     
   return(final)
 }
-
 
 
 #' @title gets and processes a NJ enrollment file
