@@ -11,7 +11,7 @@ vignette: >
 
 ## Update, March 10 2018
 
-Pre-pulled data has been removed from `/data` to make njschooldata snappier - the size of the data files were creating a major performance for package development hit because R reloads them every time `devtools::load_all()` is called.
+Pre-pulled data has been removed from `/data` to make njschooldata snappier - the size of the data files were creating a major performance for package development because R reloads them every time `devtools::load_all()` is called.
 
 ## Archive
 
