@@ -92,4 +92,17 @@ test_that("enr aggs correctly calculates known 2018 data", {
   
   expect_equal(attales[attales$program_code == 'UG', ]$row_total, 8)
   expect_equal(attales[attales$program_code == '55', ]$row_total, 381)
+  
+  # new gender aggs
+  expect_equal(attales[attales$program_code == '05', ]$male, 43)
+  expect_equal(attales[attales$program_code == '05', ]$female, 48)
+  
+  # new race aggs
+  expect_equal(attales[attales$program_code == '05', ]$white, 51)
+  expect_equal(attales[attales$program_code == '05', ]$black, 19)
+  expect_equal(attales[attales$program_code == '05', ]$hispanic, 11)
+  expect_equal(attales[attales$program_code == '05', ]$asian, 6)
+  expect_equal(attales[attales$program_code == '05', ]$native_american, 0)
+  expect_equal(attales[attales$program_code == '05', ]$pacific_islander, 0)
+  expect_equal(attales[attales$program_code == '05', ]$multiracial, 4)
 })
