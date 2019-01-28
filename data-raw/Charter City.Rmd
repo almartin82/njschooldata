@@ -40,7 +40,6 @@ Force zero pad out to 4 digits on charter_city_code
 
 ```{r}
 
-
 old_ch_city$school_district_code <- sprintf("%04d", old_ch_city$school_district_code)
 old_ch_city$charter_city_code <- sprintf("%04d", old_ch_city$charter_city_code)
 
