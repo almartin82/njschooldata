@@ -26,7 +26,11 @@ get_raw_enr <- function(end_year) {
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
     # if 2018 skip 3 lines
-    enr <- readxl::read_excel(this_file)
+    if (end_year >= 2018) {
+      enr <- readxl::read_excel(this_file, skip = 2)
+    } else {
+      enr <- readxl::read_excel(this_file)
+    }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
       file = file.path(tdir, enr_files$Name[1]),
