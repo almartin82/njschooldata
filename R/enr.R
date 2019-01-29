@@ -25,6 +25,7 @@ get_raw_enr <- function(end_year) {
   
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
+    # if 2018 skip 3 lines
     enr <- readxl::read_excel(this_file)
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
@@ -87,6 +88,7 @@ clean_enr_names <- function(df) {
     "COUNTY CODE" = "county_id",
     "Co code" = "county_id",
     "COUNTY_CODE" = "county_id",
+    "County_ID" = "county_id",
     
     #county names
     "COUNTY_NAME" = "county_name",
@@ -94,6 +96,7 @@ clean_enr_names <- function(df) {
     "County Name" = "county_name",
     "CO" = "county_name",
     "COUNTY" = "county_name",
+    "County_Name" = "county_name",
     
     #district ids
     "DIST_ID" = "district_id",
@@ -101,6 +104,7 @@ clean_enr_names <- function(df) {
     "District Id" = "district_id",
     "District ID" = "district_id",
     "DISTRICT_ID" = "district_id",
+    "Dist_ID" = "district_id",
     
     #district names
     "LEA_NAME" = "district_name",
@@ -109,11 +113,13 @@ clean_enr_names <- function(df) {
     "DISTRICT_NAME" = "district_name",
     "DIST" = "district_name",
     "DISTRICT" = "district_name",
-    
+    "District_Name" = "district_name",
+
     #schoolids
     "SCHOOL_ID" = "school_id",
     "SCHOOL CODE" = "school_id",
     "SCH_CODE" = "school_id",
+    "School_ID" = "school_id",
     
     #school name
     "SCHOOL_NAME" = "school_name",
@@ -121,6 +127,7 @@ clean_enr_names <- function(df) {
     "School Name" = "school_name",
     "SCH" = "school_name",
     "SCHOOL" = "school_name",
+    "School_Name" = "school_name",
     
     #programcode
     "PRGCODE" = "program_code",
@@ -135,6 +142,7 @@ clean_enr_names <- function(df) {
     
     #grade level
     "GRADE_LEVEL" = "grade_level",
+    "Grade_Level" = "grade_level",
     
     #racial categories -----------------------------
     #white male
@@ -206,6 +214,7 @@ clean_enr_names <- function(df) {
     #free
     "FREE_LUNCH" = "free_lunch",
     "FREE" = "free_lunch",
+    "Free_Lunch" = "free_lunch",
     
     #reduced
     "REDUCED_PRICE_LUNCH" = "reduced_lunch",
@@ -213,6 +222,7 @@ clean_enr_names <- function(df) {
     "RED_LUNCH" = "reduced_lunch",
     "REDUCE" = "reduced_lunch",
     "REDUCED" = "reduced_lunch",
+    "Reduced_Price_Lunch" = "reduced_lunch",
     
     #lep
     "LEP" = "lep",
@@ -221,12 +231,17 @@ clean_enr_names <- function(df) {
     #migrant
     "MIGRANT" = "migrant",
     "MIG" = "migrant",
-    "MIGRNT" = "migrant",  
+    "MIGRNT" = "migrant", 
+    "Migant" = "migrant",
+    # maybe they'll fix the typo in the 2018 data?  if so:
+    "Migrant" = "migrant",
+    
     
     #row totals
     "ROW_TOTAL" = "row_total",
     "ROWTOT" = "row_total",
     "ROWTOTAL" = "row_total",
+    "Row_Total" = "row_total",
     
     #very inconsistently reported
     "HOMELESS" = "homeless",
