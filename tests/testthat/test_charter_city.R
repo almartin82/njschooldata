@@ -7,3 +7,12 @@ test_that("id_charter_hosts correctly handles enrollment data", {
   expect_is(enr_2017_host, "data.frame")
   expect_equal(nrow(enr_2017_host), 26467)
 })
+
+
+test_that("id_charter_hosts finds host cities for all charters", {
+  
+  enr_2018 <- fetch_enr(2018)
+  enr_2018_host <- id_charter_hosts(enr_2018)
+  expect_is(enr_2018_host, "data.frame")
+  expect_equal(nrow(enr_2018_host), 26485)
+})
