@@ -60,7 +60,7 @@ test_that("id_charter_hosts, 2018 parcc math 3", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_math3_18 <- parcc_math3_18 %>% 
-    filter(county_id == '80' & !district_id=='9999')
+    filter(county_code == '80' & !district_code=='9999')
   charter_parcc_math3_18_host <- id_charter_hosts(charter_parcc_math3_18)
   
   expect_equal(nrow(charter_parcc_math3_18), nrow(charter_parcc_math3_18_host))
@@ -75,7 +75,7 @@ test_that("id_charter_hosts, 2018 parcc ela 5", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_ela5_18 <- parcc_ela5_18 %>% 
-    filter(county_id == '80' & !district_id=='9999')
+    filter(county_code == '80' & !district_code=='9999')
   charter_parcc_ela5_18_host <- id_charter_hosts(charter_parcc_ela5_18)
   
   expect_equal(nrow(charter_parcc_ela5_18), nrow(charter_parcc_ela5_18_host))
@@ -90,7 +90,7 @@ test_that("id_charter_hosts, 2018 parcc ALG1 math", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_alg1_18 <- parcc_alg1_18 %>% 
-    filter(county_id == '80' & !district_id=='9999')
+    filter(county_code == '80' & !district_code=='9999')
   charter_parcc_alg1_18_host <- id_charter_hosts(charter_parcc_alg1_18)
   
   expect_equal(nrow(charter_parcc_alg1_18), nrow(charter_parcc_alg1_18_host))
