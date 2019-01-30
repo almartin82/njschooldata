@@ -9,21 +9,46 @@ test_that("id_charter_hosts correctly handles enrollment data", {
 })
 
 
-test_that("id_charter_hosts finds host cities for all charters", {
+test_that("id_charter_hosts finds host cities for all charters, 2018 enr", {
   
   enr_2018 <- fetch_enr(2018)
 
   # look at all county = charters and make sure that none have null host_district_id
-  charter_enr_2018 <- enr_2018 %>% filter(county_id == '80')
+  charter_enr_2018 <- enr_2018 %>% 
+    filter(county_id == '80' & !district_id=='9999')
   charter_enr_2018_host <- id_charter_hosts(charter_enr_2018)
   
   expect_equal(nrow(charter_enr_2018), nrow(charter_enr_2018_host))
-  expect_is(enr_2018_host, "data.frame")
+  expect_is(charter_enr_2018_host, "data.frame")
   expect_equal(charter_enr_2018_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts finds host cities for all charters, 2017 enr", {
   
-  charter_enr_2018_host %>%
-    filter(is.na(host_district_id))
+  enr_2017 <- fetch_enr(2017)
   
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_enr_2017 <- enr_2017 %>% 
+    filter(county_id == '80' & !district_id=='9999')
+  charter_enr_2017_host <- id_charter_hosts(charter_enr_2017)
   
+  expect_equal(nrow(charter_enr_2017), nrow(charter_enr_2017_host))
+  expect_is(charter_enr_2017_host, "data.frame")
+  expect_equal(charter_enr_2017_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts finds host cities for all charters, 2016 enr", {
   
+  enr_2016 <- fetch_enr(2016)
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_enr_2016 <- enr_2016 %>% 
+    filter(county_id == '80' & !district_id=='9999')
+  charter_enr_2016_host <- id_charter_hosts(charter_enr_2016)
+  
+  expect_equal(nrow(charter_enr_2016), nrow(charter_enr_2016_host))
+  expect_is(charter_enr_2016_host, "data.frame")
+  expect_equal(charter_enr_2016_host$host_district_id %>% is.na() %>% sum(), 0)
 })
