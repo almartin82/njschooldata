@@ -28,27 +28,25 @@ root <- rprojroot::find_rstudio_root_file()
 
 ```
 
-```{r}
+
+
+[OLD]
 
 old_ch_city <- readr::read_csv(
   file = file.path(root, 'data-raw', 'charter_city.csv')
 )
 
-```
-
-Force zero pad out to 4 digits on charter_city_code
-
-```{r}
+[OLD] Force zero pad out to 4 digits on charter_city_code
 
 old_ch_city$school_district_code <- sprintf("%04d", old_ch_city$school_district_code)
 old_ch_city$charter_city_code <- sprintf("%04d", old_ch_city$charter_city_code)
 
 head(old_ch_city)
-```
 
-New schools
 
-```{r}
+## Add new schools
+
+[OLD 2017]
 
 new_fall_2017 <- tibble(
   school = c(
@@ -76,23 +74,53 @@ new_fall_2017 <- tibble(
   )
 )
 
+2018
+
+```{r}
+
+new_2018 <- tibble(
+  district_name = c(
+    'Bridgeton Public Charter School',
+    'Cresthaven Academy Charter School',
+    'Empowerment Academy Charter School',
+    "Philip’S Charter School Of Paterson"
+  ),
+  district_id = c(
+    '6100',
+    '6102',
+    '6103',
+    '6106'
+  ),
+  host_district_name = c(
+    'Bridgeton',
+    'Plainfield',
+    'Jersey City',
+    'Paterson'
+  ),
+  host_district_id = c(
+    '0540',
+    '4160',
+    '2390',
+    '4010'
+  )
+)
+
 ```
+
 
 Put together
 
 ```{r}
 
 charter_city_old_new <- dplyr::bind_rows(
-  old_ch_city,
-  new_fall_2017
+  charter_city,
+  new_2018
 )
 
 head(charter_city_old_new) %>% print.AsIs()
 ```
 
-Make a numeric column
-
-```{r}
+[DEPRECATED] Make a numeric column
 
 charter_city_old_new <- charter_city_old_new %>%
   mutate(
@@ -100,7 +128,6 @@ charter_city_old_new <- charter_city_old_new %>%
   ) %>% 
   arrange(charter_city, school)
 
-```
 
 Check for equality
 
@@ -122,7 +149,7 @@ Save to rda and data-raw
 ```{r}
 
 readr::write_csv(
-  x = charter_city_old_new %>% select(-charter_city_code_numeric),
+  x = charter_city_old_new,
   path = file.path(root, 'data-raw', 'charter_city.csv')
 )
 
@@ -136,8 +163,3 @@ save(charter_city, file = file.path(root, 'data', 'charter_city.rda'))
 
 ```
 
-
-```{r}
-
-
-```
