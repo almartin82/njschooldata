@@ -1,4 +1,3 @@
-
 #' Identify charter host districts
 #'
 #' @param df dataframe of NJ school data containing `district_id` column
@@ -20,13 +19,4 @@ id_charter_hosts <- function(df) {
   )
   
   return(df_new)
-}
-
-foo <- function() {
-  
-  north_star <- ex_2018[grepl('North Star', ex_2018$district_name), ]
-  id_charter_hosts(north_star) %>%
-    head() %>%
-    print.AsIs()
-  
 }
