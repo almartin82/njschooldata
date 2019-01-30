@@ -451,10 +451,20 @@ process_enr <- function(df) {
 #' \code{fetch_enr} is a wrapper around \code{get_raw_enr} and
 #' \code{process_enr} that passes the correct file layout data to each function,
 #' given an end_year   
-#' @inheritParams get_raw_enr
+#' @param end_year a school year.  year is the end of the academic year - eg 2006-07
+#' school year is year '2007'.  valid values are 1999-2018.
+#' @param tidy if TRUE, takes the unwieldy wide data and normalizes into a 
+#' long, tidy data frame with limited headers - constants (school/district name and code),
+#' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).  
 #' @export
 
-fetch_enr <- function(end_year) {
-  get_raw_enr(end_year) %>%
+fetch_enr <- function(end_year, tidy=FALSE) {
+  out <- get_raw_enr(end_year) %>%
     process_enr()
+  
+  if (tidy) {
+    
+  }
+  
+  return(out)
 }
