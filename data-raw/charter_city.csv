@@ -1,10 +1,12 @@
 district_name,district_id,host_district_name,host_district_id
 Hope Academy Charter School,6740,Asbury Park,0100
+College Achieve Greater Asbury Park Charter School,7891,Asbury Park,0100
 ATLANTIC CITY COMMUNITY CHARTER SCHOOL,6060,Atlantic City,0110
 INTERNATIONAL ACADEMY OF ATLANTIC CITY CHARTER SCHOOL,6104,Atlantic City,0110
 Oceanside Charter School,7420,Atlantic City,0110
 Kingdom CS of Leadership,6067,Blackwood,1780
 Ridge and Valley Charter School,7727,Blairstown,0400
+Bridgeton Public Charter School,6100,Bridgeton,0540
 Camden Academy Charter High School,6212,Camden,0680
 Camden Community Charter School,6063,Camden,0680
 Camden's Pride Charter School,6024,Camden,0680
@@ -43,8 +45,10 @@ Schomburg CS,7820,Jersey City,2390
 Soaring Heights,7830,Jersey City,2390
 THE ETHICAL COMMUNITY CHARTER SCHOO,6030,Jersey City,2390
 University Academy Charter High School,8060,Jersey City,2390
+Empowerment Academy Charter School,6103,Jersey City,2390
 HUDSON ARTS AND SCIENCE  CHARTER SCHOOL,6105,Kearny,2410
 Academy Charter High School,6010,Lake Como,0270
+Ocean Academy Charter School,7893,Lakewood,2520
 Millville Public Charter School,6069,Millville,3230
 Unity Charter School,8050,Morristown,3385
 Greater Brunswick Charter School,6635,New Brunswick,3530
@@ -72,18 +76,23 @@ TEAM Academy Charter School,7325,Newark,3570
 The Gray Charter School,6665,Newark,3570
 University Heights Charter School,8065,Newark,3570
 Visions Academy Charter High School,6038,Newark,3570
+Lead Charter School,6109,Newark,3570
+Achieve Community Charter School,6110,Newark,3570
 Passaic Arts and Science Charter School,6080,Passaic,3970
 Community Charter School of Paterson,6021,Paterson,4010
 John P. Holland Charter School,6079,Paterson,4010
 PATERSON ARTS AND SCIENCE CHARTER SCHOOL,6097,Paterson,4010
 PATERSON ARTS AND SCIENCE CHARTER SCHOOL,6096,Paterson,4010
 Paterson Charter School for Science/Technology,7503,Paterson,4010
+Philip’S Charter School Of Paterson,6106,Paterson,4010
+College Achieve Paterson Charter School,7892,Paterson,4010
 Academy for Urban Leadership Charter School,6032,Perth Amboy,4090
 CENTRAL JERSEY ARTS CHARTER SCHOOL,6217,Plainfield,4160
 COLLEGE ACHIEVE CENTRAL CHARTER SCHOOL,6101,Plainfield,4160
 THE BARACK OBAMA GREEN CHARTER HIGH,6033,Plainfield,4160
 The Queen City Academy Charter School,7600,Plainfield,4160
 Union County TEAMS Charter School,8010,Plainfield,4160
+Cresthaven Academy Charter School,6102,Plainfield,4160
 PleasanTech Academy CS,7520,Pleasantville,4180
 Princeton Charter School,7540,Princeton,4255
 Red Bank Charter School,7720,Red Bank,4360
@@ -104,7 +113,3 @@ Compass Academy Charter School,6089,Vineland,5390
 Vineland Public Charter School,6028,Vineland,5390
 Benjamin Banneker Preparatory Charter School,6076,Willingboro,5805
 Renaissance Regional Leadership Charter School,6044,Wrightstown,3650
-Bridgeton Public Charter School,6100,Bridgeton,0540
-Cresthaven Academy Charter School,6102,Plainfield,4160
-Empowerment Academy Charter School,6103,Jersey City,2390
-Philip’S Charter School Of Paterson,6106,Paterson,4010
