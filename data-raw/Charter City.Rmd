@@ -78,30 +78,34 @@ new_fall_2017 <- tibble(
 
 ```{r}
 
-new_2018 <- tibble(
+more_new_2018 <- tibble(
   district_name = c(
-    'Bridgeton Public Charter School',
-    'Cresthaven Academy Charter School',
-    'Empowerment Academy Charter School',
-    "Philip’S Charter School Of Paterson"
+    'Lead Charter School',
+    'Achieve Community Charter School',
+    'College Achieve Greater Asbury Park Charter School',
+    'College Achieve Paterson Charter School',
+    'Ocean Academy Charter School'
   ),
   district_id = c(
-    '6100',
-    '6102',
-    '6103',
-    '6106'
+    '6109',
+    '6110',
+    '7891',
+    '7892',
+    '7893'
   ),
   host_district_name = c(
-    'Bridgeton',
-    'Plainfield',
-    'Jersey City',
-    'Paterson'
+    'Newark',
+    'Newark',
+    'Asbury Park',
+    'Paterson',
+    'Lakewood'
   ),
   host_district_id = c(
-    '0540',
-    '4160',
-    '2390',
-    '4010'
+    '3570',
+    '3570',
+    '0100',
+    '4010',
+    '2520'
   )
 )
 
@@ -114,8 +118,9 @@ Put together
 
 charter_city_old_new <- dplyr::bind_rows(
   charter_city,
-  new_2018
-)
+  more_new_2018
+) %>% 
+arrange(host_district_name)
 
 head(charter_city_old_new) %>% print.AsIs()
 ```
