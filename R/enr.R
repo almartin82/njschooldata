@@ -346,11 +346,24 @@ clean_enr_data <- function(df) {
 
 arrange_enr <- function(df) {
 
-  clean_names <- c('end_year', 'CDS_Code', 'county_id', 'county_name', 'district_id', 'district_name', 'school_id',
-    'school_name', 'program_code', 'program_name', 'white_m', 'white_f', 'black_m',
-    'black_f', 'hispanic_m', 'hispanic_f', 'asian_m', 'asian_f', 'native_american_m',
-    'native_american_f', 'pacific_islander_m', 'pacific_islander_f', 'multiracial_m',
-    'multiracial_f', 'row_total', 'free_lunch', 'reduced_lunch', 'lep', 'migrant',
+  clean_names <- c(
+    'end_year', 'CDS_Code', 
+    'county_id', 'county_name', 
+    'district_id', 'district_name', 
+    'school_id', 'school_name', 
+    'program_code', 'program_name', 
+    'male', 'female', 
+    'white', 'black', 'hispanic', 
+    'asian', 'native_american', 'pacific_islander', 'multiracial',
+    'white_m', 'white_f', 
+    'black_m', 'black_f', 
+    'hispanic_m', 'hispanic_f', 
+    'asian_m', 'asian_f', 
+    'native_american_m', 'native_american_f', 
+    'pacific_islander_m', 'pacific_islander_f', 
+    'multiracial_m', 'multiracial_f', 
+    'row_total', 
+    'free_lunch', 'reduced_lunch', 'lep', 'migrant',
     'homeless', 'special_ed', 'title_1', 'grade_level'
   )
   
@@ -390,7 +403,7 @@ process_enr_program <- function(df) {
 }
   
 
-#' Calculate enrollment aggregates
+#' @ title Calculate enrollment aggregates
 #'
 #' @param df cleaned enrollment dataframe, eg output of `clean_enr_data`
 #'
@@ -459,12 +472,105 @@ process_enr <- function(df) {
 #' @export
 
 fetch_enr <- function(end_year, tidy=FALSE) {
-  out <- get_raw_enr(end_year) %>%
+  enr_data <- get_raw_enr(end_year) %>%
     process_enr()
   
-  if (tidy) {
-    
-  }
+  if (tidy) enr_data <- tidy_enr(enr_data)
   
-  return(out)
+  return(enr_data)
 }
+
+
+#' @title tidy enrollment data
+#'
+#' @param df a wide data.frame of processed enrollment data - eg output of \code{fetch_enr}
+#'
+#' @return a long data.frame of tidied enrollment data
+#' @export
+
+tidy_enr <- function(df) {
+  
+  # invariant cols
+  invariants <- c(
+    'end_year', 'CDS_Code', 
+    'county_id', 'county_name', 
+    'district_id', 'district_name',
+    'school_id', 'school_name',
+    'program_code', 'program_name', 'grade_level'
+  )
+  
+  # cols to tidy
+  to_tidy <- c(
+    'male',
+    'female',
+    'white',
+    'black',
+    'hispanic',
+    'asian',
+    'native_american',
+    'pacific_islander',
+    'multiracial',
+    'white_m',
+    'white_f',
+    'black_m',
+    'black_f',
+    'hispanic_m',
+    'hispanic_f',
+    'asian_m',
+    'asian_f',
+    'native_american_m',
+    'native_american_f',
+    'pacific_islander_m',
+    'pacific_islander_f',
+    'multiracial_m',
+    'multiracial_f'
+  )
+  
+  # iterate over cols to tidy, do calculations
+  tidy_subgroups <- map_df(to_tidy, 
+    function(.x) {
+      df %>%
+        rename(n_students = .x) %>%
+        select(one_of(invariants, 'n_students', 'row_total')) %>%
+        mutate(
+          'subgroup' = .x,
+          'pct' = n_students / row_total
+        ) %>%
+        select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+    }
+  )
+  
+  # just total counts, for extracting total enr, free, reduced, migrant etc
+  total_counts <- df %>%
+    filter(program_code == '55') 
+  
+  tidy_total_enr <- total_counts %>%
+    select(one_of(invariants, 'row_total')) %>%
+    mutate(
+      'n_students' = row_total,
+      'subgroup' = 'total_enrollment',
+      'pct' = n_students / row_total
+    ) %>%
+    select(one_of(invariants, 'subgroup', 'n_students', 'pct')) 
+
+  # some subgroups are only reported for school totals
+  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
+
+  # iterate over cols to tidy, do calculations
+  tidy_total_subgroups <- map_df(total_subgroups, 
+    function(.x) {
+      total_counts %>%
+       rename(n_students = .x) %>%
+       select(one_of(invariants, 'n_students', 'row_total')) %>%
+       mutate(
+         'subgroup' = .x,
+         'pct' = n_students / row_total
+       ) %>%
+       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+    }
+  )
+  
+  # put it all together in a long data frame
+  bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups)
+}
+
