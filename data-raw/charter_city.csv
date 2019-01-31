@@ -1,10 +1,12 @@
-district_name,district_id,charter_host_district,charter_district_id
+district_name,district_id,host_district_name,host_district_id
 Hope Academy Charter School,6740,Asbury Park,0100
+College Achieve Greater Asbury Park Charter School,7891,Asbury Park,0100
 ATLANTIC CITY COMMUNITY CHARTER SCHOOL,6060,Atlantic City,0110
 INTERNATIONAL ACADEMY OF ATLANTIC CITY CHARTER SCHOOL,6104,Atlantic City,0110
 Oceanside Charter School,7420,Atlantic City,0110
 Kingdom CS of Leadership,6067,Blackwood,1780
 Ridge and Valley Charter School,7727,Blairstown,0400
+Bridgeton Public Charter School,6100,Bridgeton,0540
 Camden Academy Charter High School,6212,Camden,0680
 Camden Community Charter School,6063,Camden,0680
 Camden's Pride Charter School,6024,Camden,0680
@@ -33,7 +35,6 @@ Burch Charter School of Excellence,6022,Irvington,2330
 BelovED Community Charter School,6082,Jersey City,2390
 Dr Lena Edwards Academic Charter School,6064,Jersey City,2390
 Great Futures Charter HS for the Health Sciences,6184,Jersey City,2390
-GREAT FUTURES CHARTER SCHOOL,6184,Jersey City,2390
 Jersey City Community Charter School,6910,Jersey City,2390
 Jersey City Global CS,6093,Jersey City,2390
 Jersey City Golden Door Charter School,6915,Jersey City,2390
@@ -44,8 +45,10 @@ Schomburg CS,7820,Jersey City,2390
 Soaring Heights,7830,Jersey City,2390
 THE ETHICAL COMMUNITY CHARTER SCHOO,6030,Jersey City,2390
 University Academy Charter High School,8060,Jersey City,2390
+Empowerment Academy Charter School,6103,Jersey City,2390
 HUDSON ARTS AND SCIENCE  CHARTER SCHOOL,6105,Kearny,2410
 Academy Charter High School,6010,Lake Como,0270
+Ocean Academy Charter School,7893,Lakewood,2520
 Millville Public Charter School,6069,Millville,3230
 Unity Charter School,8050,Morristown,3385
 Greater Brunswick Charter School,6635,New Brunswick,3530
@@ -56,7 +59,6 @@ Great Oaks Charter School,6053,Newark,3570
 Greater Newark Charter School,7280,Newark,3570
 Lady Liberty Academy Charter School,7100,Newark,3570
 Link Community Charter School,6099,Newark,3570
-LINK COMMUNITY CHARTER SCHOOL,6099,Newark,3570
 Maria Varisco Rogers Charter School,7735,Newark,3570
 Marion P. Thomas Charter School,7210,Newark,3570
 Merit Preparatory Charter School of Newark,6091,Newark,3570
@@ -74,19 +76,23 @@ TEAM Academy Charter School,7325,Newark,3570
 The Gray Charter School,6665,Newark,3570
 University Heights Charter School,8065,Newark,3570
 Visions Academy Charter High School,6038,Newark,3570
+Lead Charter School,6109,Newark,3570
+Achieve Community Charter School,6110,Newark,3570
 Passaic Arts and Science Charter School,6080,Passaic,3970
 Community Charter School of Paterson,6021,Paterson,4010
 John P. Holland Charter School,6079,Paterson,4010
 PATERSON ARTS AND SCIENCE CHARTER SCHOOL,6097,Paterson,4010
 PATERSON ARTS AND SCIENCE CHARTER SCHOOL,6096,Paterson,4010
-PATERSON ARTS AND SCIENCE CS,6096,Paterson,4010
 Paterson Charter School for Science/Technology,7503,Paterson,4010
+Philip’S Charter School Of Paterson,6106,Paterson,4010
+College Achieve Paterson Charter School,7892,Paterson,4010
 Academy for Urban Leadership Charter School,6032,Perth Amboy,4090
 CENTRAL JERSEY ARTS CHARTER SCHOOL,6217,Plainfield,4160
 COLLEGE ACHIEVE CENTRAL CHARTER SCHOOL,6101,Plainfield,4160
 THE BARACK OBAMA GREEN CHARTER HIGH,6033,Plainfield,4160
 The Queen City Academy Charter School,7600,Plainfield,4160
 Union County TEAMS Charter School,8010,Plainfield,4160
+Cresthaven Academy Charter School,6102,Plainfield,4160
 PleasanTech Academy CS,7520,Pleasantville,4180
 Princeton Charter School,7540,Princeton,4255
 Red Bank Charter School,7720,Red Bank,4360
@@ -98,13 +104,11 @@ Teaneck Community Charter School,7890,Teaneck,5150
 Capital Prep Charter School,6230,Trenton,5210
 Emily Fisher CS,6425,Trenton,5210
 Foundation Academy Charter School,6017,Trenton,5210
-INTERNATIONAL ACADEMY OF TRENTON CHARTER SCHOOL,6182,Trenton,5210
 International Academy of Trenton CS,6182,Trenton,5210
 International Charter School of Trenton,6810,Trenton,5210
 Paul Robeson Charter School for the Humanities,6025,Trenton,5210
 The Village Charter School,8140,Trenton,5210
 Trenton STEM-to-Civics CS,6183,Trenton,5210
-TRENTON STEM-TO-CIVICS CS,6183,Trenton,5210
 Compass Academy Charter School,6089,Vineland,5390
 Vineland Public Charter School,6028,Vineland,5390
 Benjamin Banneker Preparatory Charter School,6076,Willingboro,5805

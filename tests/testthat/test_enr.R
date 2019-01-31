@@ -106,3 +106,10 @@ test_that("enr aggs correctly calculates known 2018 data", {
   expect_equal(attales[attales$program_code == '05', ]$pacific_islander, 0)
   expect_equal(attales[attales$program_code == '05', ]$multiracial, 4)
 })
+
+
+test_that("fetch_enr works with tidy=TRUE argument", {
+  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
+  expect_is(enr_2018_tidy, 'data.frame')
+  # sample_n(enr_2018_tidy, 10) %>% print.AsIs()
+})

@@ -28,28 +28,25 @@ root <- rprojroot::find_rstudio_root_file()
 
 ```
 
-```{r}
+
+
+[OLD]
 
 old_ch_city <- readr::read_csv(
   file = file.path(root, 'data-raw', 'charter_city.csv')
 )
 
-```
-
-Force zero pad out to 4 digits on charter_city_code
-
-```{r}
-
+[OLD] Force zero pad out to 4 digits on charter_city_code
 
 old_ch_city$school_district_code <- sprintf("%04d", old_ch_city$school_district_code)
 old_ch_city$charter_city_code <- sprintf("%04d", old_ch_city$charter_city_code)
 
 head(old_ch_city)
-```
 
-New schools
 
-```{r}
+## Add new schools
+
+[OLD 2017]
 
 new_fall_2017 <- tibble(
   school = c(
@@ -77,23 +74,58 @@ new_fall_2017 <- tibble(
   )
 )
 
+2018
+
+```{r}
+
+more_new_2018 <- tibble(
+  district_name = c(
+    'Lead Charter School',
+    'Achieve Community Charter School',
+    'College Achieve Greater Asbury Park Charter School',
+    'College Achieve Paterson Charter School',
+    'Ocean Academy Charter School'
+  ),
+  district_id = c(
+    '6109',
+    '6110',
+    '7891',
+    '7892',
+    '7893'
+  ),
+  host_district_name = c(
+    'Newark',
+    'Newark',
+    'Asbury Park',
+    'Paterson',
+    'Lakewood'
+  ),
+  host_district_id = c(
+    '3570',
+    '3570',
+    '0100',
+    '4010',
+    '2520'
+  )
+)
+
 ```
+
 
 Put together
 
 ```{r}
 
 charter_city_old_new <- dplyr::bind_rows(
-  old_ch_city,
-  new_fall_2017
-)
+  charter_city,
+  more_new_2018
+) %>% 
+arrange(host_district_name)
 
 head(charter_city_old_new) %>% print.AsIs()
 ```
 
-Make a numeric column
-
-```{r}
+[DEPRECATED] Make a numeric column
 
 charter_city_old_new <- charter_city_old_new %>%
   mutate(
@@ -101,7 +133,6 @@ charter_city_old_new <- charter_city_old_new %>%
   ) %>% 
   arrange(charter_city, school)
 
-```
 
 Check for equality
 
@@ -123,7 +154,7 @@ Save to rda and data-raw
 ```{r}
 
 readr::write_csv(
-  x = charter_city_old_new %>% select(-charter_city_code_numeric),
+  x = charter_city_old_new,
   path = file.path(root, 'data-raw', 'charter_city.csv')
 )
 
@@ -136,3 +167,4 @@ charter_city <- charter_city_old_new
 save(charter_city, file = file.path(root, 'data', 'charter_city.rda'))
 
 ```
+

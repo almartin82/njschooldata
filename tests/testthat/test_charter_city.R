@@ -1,0 +1,99 @@
+context("functions in charter.R")
+
+test_that("id_charter_hosts correctly handles enrollment data", {
+  
+  enr_2017 <- fetch_enr(2017)
+  enr_2017_host <- id_charter_hosts(enr_2017)
+  expect_is(enr_2017_host, "data.frame")
+  expect_equal(nrow(enr_2017), nrow(enr_2017_host))
+})
+
+
+test_that("id_charter_hosts finds host cities for all charters, 2018 enr", {
+  
+  enr_2018 <- fetch_enr(2018)
+
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_enr_2018 <- enr_2018 %>% 
+    filter(county_id == '80' & !district_id=='9999')
+  charter_enr_2018_host <- id_charter_hosts(charter_enr_2018)
+  
+  expect_equal(nrow(charter_enr_2018), nrow(charter_enr_2018_host))
+  expect_is(charter_enr_2018_host, "data.frame")
+  expect_equal(charter_enr_2018_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts finds host cities for all charters, 2017 enr", {
+  
+  enr_2017 <- fetch_enr(2017)
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_enr_2017 <- enr_2017 %>% 
+    filter(county_id == '80' & !district_id=='9999')
+  charter_enr_2017_host <- id_charter_hosts(charter_enr_2017)
+  
+  expect_equal(nrow(charter_enr_2017), nrow(charter_enr_2017_host))
+  expect_is(charter_enr_2017_host, "data.frame")
+  expect_equal(charter_enr_2017_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts finds host cities for all charters, 2016 enr", {
+  
+  enr_2016 <- fetch_enr(2016)
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_enr_2016 <- enr_2016 %>% 
+    filter(county_id == '80' & !district_id=='9999')
+  charter_enr_2016_host <- id_charter_hosts(charter_enr_2016)
+  
+  expect_equal(nrow(charter_enr_2016), nrow(charter_enr_2016_host))
+  expect_is(charter_enr_2016_host, "data.frame")
+  expect_equal(charter_enr_2016_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts, 2018 parcc math 3", {
+  
+  parcc_math3_18 <- fetch_parcc(end_year = 2018, grade = 3, subj = 'math')
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_parcc_math3_18 <- parcc_math3_18 %>% 
+    filter(county_code == '80' & !district_code=='9999')
+  charter_parcc_math3_18_host <- id_charter_hosts(charter_parcc_math3_18)
+  
+  expect_equal(nrow(charter_parcc_math3_18), nrow(charter_parcc_math3_18_host))
+  expect_is(charter_parcc_math3_18_host, "data.frame")
+  expect_equal(charter_parcc_math3_18_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts, 2018 parcc ela 5", {
+  
+  parcc_ela5_18 <- fetch_parcc(end_year = 2018, grade = 5, subj = 'ela')
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_parcc_ela5_18 <- parcc_ela5_18 %>% 
+    filter(county_code == '80' & !district_code=='9999')
+  charter_parcc_ela5_18_host <- id_charter_hosts(charter_parcc_ela5_18)
+  
+  expect_equal(nrow(charter_parcc_ela5_18), nrow(charter_parcc_ela5_18_host))
+  expect_is(charter_parcc_ela5_18_host, "data.frame")
+  expect_equal(charter_parcc_ela5_18_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("id_charter_hosts, 2018 parcc ALG1 math", {
+  
+  parcc_alg1_18 <- fetch_parcc(end_year = 2018, grade = 'ALG1', subj = 'math')
+  
+  # look at all county = charters and make sure that none have null host_district_id
+  charter_parcc_alg1_18 <- parcc_alg1_18 %>% 
+    filter(county_code == '80' & !district_code=='9999')
+  charter_parcc_alg1_18_host <- id_charter_hosts(charter_parcc_alg1_18)
+  
+  expect_equal(nrow(charter_parcc_alg1_18), nrow(charter_parcc_alg1_18_host))
+  expect_is(charter_parcc_alg1_18_host, "data.frame")
+  expect_equal(charter_parcc_alg1_18_host$host_district_id %>% is.na() %>% sum(), 0)
+})

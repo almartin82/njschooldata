@@ -25,7 +25,12 @@ get_raw_enr <- function(end_year) {
   
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
-    enr <- readxl::read_excel(this_file)
+    # if 2018 skip 3 lines
+    if (end_year >= 2018) {
+      enr <- readxl::read_excel(this_file, skip = 2)
+    } else {
+      enr <- readxl::read_excel(this_file)
+    }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
       file = file.path(tdir, enr_files$Name[1]),
@@ -87,6 +92,7 @@ clean_enr_names <- function(df) {
     "COUNTY CODE" = "county_id",
     "Co code" = "county_id",
     "COUNTY_CODE" = "county_id",
+    "County_ID" = "county_id",
     
     #county names
     "COUNTY_NAME" = "county_name",
@@ -94,6 +100,7 @@ clean_enr_names <- function(df) {
     "County Name" = "county_name",
     "CO" = "county_name",
     "COUNTY" = "county_name",
+    "County_Name" = "county_name",
     
     #district ids
     "DIST_ID" = "district_id",
@@ -101,6 +108,7 @@ clean_enr_names <- function(df) {
     "District Id" = "district_id",
     "District ID" = "district_id",
     "DISTRICT_ID" = "district_id",
+    "Dist_ID" = "district_id",
     
     #district names
     "LEA_NAME" = "district_name",
@@ -109,11 +117,13 @@ clean_enr_names <- function(df) {
     "DISTRICT_NAME" = "district_name",
     "DIST" = "district_name",
     "DISTRICT" = "district_name",
-    
+    "District_Name" = "district_name",
+
     #schoolids
     "SCHOOL_ID" = "school_id",
     "SCHOOL CODE" = "school_id",
     "SCH_CODE" = "school_id",
+    "School_ID" = "school_id",
     
     #school name
     "SCHOOL_NAME" = "school_name",
@@ -121,6 +131,7 @@ clean_enr_names <- function(df) {
     "School Name" = "school_name",
     "SCH" = "school_name",
     "SCHOOL" = "school_name",
+    "School_Name" = "school_name",
     
     #programcode
     "PRGCODE" = "program_code",
@@ -135,6 +146,7 @@ clean_enr_names <- function(df) {
     
     #grade level
     "GRADE_LEVEL" = "grade_level",
+    "Grade_Level" = "grade_level",
     
     #racial categories -----------------------------
     #white male
@@ -206,6 +218,7 @@ clean_enr_names <- function(df) {
     #free
     "FREE_LUNCH" = "free_lunch",
     "FREE" = "free_lunch",
+    "Free_Lunch" = "free_lunch",
     
     #reduced
     "REDUCED_PRICE_LUNCH" = "reduced_lunch",
@@ -213,6 +226,7 @@ clean_enr_names <- function(df) {
     "RED_LUNCH" = "reduced_lunch",
     "REDUCE" = "reduced_lunch",
     "REDUCED" = "reduced_lunch",
+    "Reduced_Price_Lunch" = "reduced_lunch",
     
     #lep
     "LEP" = "lep",
@@ -221,12 +235,17 @@ clean_enr_names <- function(df) {
     #migrant
     "MIGRANT" = "migrant",
     "MIG" = "migrant",
-    "MIGRNT" = "migrant",  
+    "MIGRNT" = "migrant", 
+    "Migant" = "migrant",
+    # maybe they'll fix the typo in the 2018 data?  if so:
+    "Migrant" = "migrant",
+    
     
     #row totals
     "ROW_TOTAL" = "row_total",
     "ROWTOT" = "row_total",
     "ROWTOTAL" = "row_total",
+    "Row_Total" = "row_total",
     
     #very inconsistently reported
     "HOMELESS" = "homeless",
@@ -327,11 +346,24 @@ clean_enr_data <- function(df) {
 
 arrange_enr <- function(df) {
 
-  clean_names <- c('end_year', 'CDS_Code', 'county_id', 'county_name', 'district_id', 'district_name', 'school_id',
-    'school_name', 'program_code', 'program_name', 'white_m', 'white_f', 'black_m',
-    'black_f', 'hispanic_m', 'hispanic_f', 'asian_m', 'asian_f', 'native_american_m',
-    'native_american_f', 'pacific_islander_m', 'pacific_islander_f', 'multiracial_m',
-    'multiracial_f', 'row_total', 'free_lunch', 'reduced_lunch', 'lep', 'migrant',
+  clean_names <- c(
+    'end_year', 'CDS_Code', 
+    'county_id', 'county_name', 
+    'district_id', 'district_name', 
+    'school_id', 'school_name', 
+    'program_code', 'program_name', 
+    'male', 'female', 
+    'white', 'black', 'hispanic', 
+    'asian', 'native_american', 'pacific_islander', 'multiracial',
+    'white_m', 'white_f', 
+    'black_m', 'black_f', 
+    'hispanic_m', 'hispanic_f', 
+    'asian_m', 'asian_f', 
+    'native_american_m', 'native_american_f', 
+    'pacific_islander_m', 'pacific_islander_f', 
+    'multiracial_m', 'multiracial_f', 
+    'row_total', 
+    'free_lunch', 'reduced_lunch', 'lep', 'migrant',
     'homeless', 'special_ed', 'title_1', 'grade_level'
   )
   
@@ -371,7 +403,7 @@ process_enr_program <- function(df) {
 }
   
 
-#' Calculate enrollment aggregates
+#' @ title Calculate enrollment aggregates
 #'
 #' @param df cleaned enrollment dataframe, eg output of `clean_enr_data`
 #'
@@ -432,10 +464,113 @@ process_enr <- function(df) {
 #' \code{fetch_enr} is a wrapper around \code{get_raw_enr} and
 #' \code{process_enr} that passes the correct file layout data to each function,
 #' given an end_year   
-#' @inheritParams get_raw_enr
+#' @param end_year a school year.  year is the end of the academic year - eg 2006-07
+#' school year is year '2007'.  valid values are 1999-2018.
+#' @param tidy if TRUE, takes the unwieldy wide data and normalizes into a 
+#' long, tidy data frame with limited headers - constants (school/district name and code),
+#' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).  
 #' @export
 
-fetch_enr <- function(end_year) {
-  get_raw_enr(end_year) %>%
+fetch_enr <- function(end_year, tidy=FALSE) {
+  enr_data <- get_raw_enr(end_year) %>%
     process_enr()
+  
+  if (tidy) enr_data <- tidy_enr(enr_data)
+  
+  return(enr_data)
 }
+
+
+#' @title tidy enrollment data
+#'
+#' @param df a wide data.frame of processed enrollment data - eg output of \code{fetch_enr}
+#'
+#' @return a long data.frame of tidied enrollment data
+#' @export
+
+tidy_enr <- function(df) {
+  
+  # invariant cols
+  invariants <- c(
+    'end_year', 'CDS_Code', 
+    'county_id', 'county_name', 
+    'district_id', 'district_name',
+    'school_id', 'school_name',
+    'program_code', 'program_name', 'grade_level'
+  )
+  
+  # cols to tidy
+  to_tidy <- c(
+    'male',
+    'female',
+    'white',
+    'black',
+    'hispanic',
+    'asian',
+    'native_american',
+    'pacific_islander',
+    'multiracial',
+    'white_m',
+    'white_f',
+    'black_m',
+    'black_f',
+    'hispanic_m',
+    'hispanic_f',
+    'asian_m',
+    'asian_f',
+    'native_american_m',
+    'native_american_f',
+    'pacific_islander_m',
+    'pacific_islander_f',
+    'multiracial_m',
+    'multiracial_f'
+  )
+  
+  # iterate over cols to tidy, do calculations
+  tidy_subgroups <- map_df(to_tidy, 
+    function(.x) {
+      df %>%
+        rename(n_students = .x) %>%
+        select(one_of(invariants, 'n_students', 'row_total')) %>%
+        mutate(
+          'subgroup' = .x,
+          'pct' = n_students / row_total
+        ) %>%
+        select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+    }
+  )
+  
+  # just total counts, for extracting total enr, free, reduced, migrant etc
+  total_counts <- df %>%
+    filter(program_code == '55') 
+  
+  tidy_total_enr <- total_counts %>%
+    select(one_of(invariants, 'row_total')) %>%
+    mutate(
+      'n_students' = row_total,
+      'subgroup' = 'total_enrollment',
+      'pct' = n_students / row_total
+    ) %>%
+    select(one_of(invariants, 'subgroup', 'n_students', 'pct')) 
+
+  # some subgroups are only reported for school totals
+  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
+
+  # iterate over cols to tidy, do calculations
+  tidy_total_subgroups <- map_df(total_subgroups, 
+    function(.x) {
+      total_counts %>%
+       rename(n_students = .x) %>%
+       select(one_of(invariants, 'n_students', 'row_total')) %>%
+       mutate(
+         'subgroup' = .x,
+         'pct' = n_students / row_total
+       ) %>%
+       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+    }
+  )
+  
+  # put it all together in a long data frame
+  bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups)
+}
+
