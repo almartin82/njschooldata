@@ -26,7 +26,9 @@ get_raw_enr <- function(end_year) {
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
     if (end_year == 2010) {
-      enr <- gdata::read.xls(this_file, sheet = 1, header = TRUE)
+      enr <- gdata::read.xls(
+        this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
+      )
     # if 2018 skip 3 lines
     } else if (end_year >= 2018) {
       enr <- readxl::read_excel(this_file, skip = 2)
