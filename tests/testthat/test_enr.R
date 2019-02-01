@@ -109,7 +109,34 @@ test_that("enr aggs correctly calculates known 2018 data", {
 
 
 test_that("fetch_enr works with tidy=TRUE argument", {
+  enr_2018_untidy <- fetch_enr(2018, tidy=FALSE)
+  sample_n(enr_2018_untidy, 5) %>% print.AsIs()
+
   enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
+  sample_n(enr_2018_tidy, 5) %>% print.AsIs()
+  
   expect_is(enr_2018_tidy, 'data.frame')
   # sample_n(enr_2018_tidy, 10) %>% print.AsIs()
+})
+
+
+test_that("fetch_enr tidy FALSE works across many years", {
+  enr_years <- c(1999:2009, 2011:2018)
+  enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=FALSE))
+  expect_iss(enr_df, 'data.frame')
+})
+
+
+test_that("fetch_enr tidy TRUE works across many years", {
+  enr_years <- c(1999:2009, 2011:2018)
+  enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
+  expect_is(enr_df, 'data.frame')
+})
+
+
+test_that("enr data for 2010", {
+  
+  foo <- fetch_enr(2010)
+  foo <- get_raw_enr(2010) 
+  
 })

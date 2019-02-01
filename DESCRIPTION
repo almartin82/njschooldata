@@ -10,12 +10,14 @@ Depends:
     dplyr,
     ensurer,
     foreign,
+    gdata,
     janitor,
     magrittr,
     purrr,
     R(>= 2.10.0),
     readr,
     reshape2,
+    rlang,
     stringr,
     tidyr
 Suggests:

@@ -25,8 +25,10 @@ get_raw_enr <- function(end_year) {
   
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
+    if (end_year == 2010) {
+      enr <- gdata::read.xls(this_file, sheet = 1, header = TRUE)
     # if 2018 skip 3 lines
-    if (end_year >= 2018) {
+    } else if (end_year >= 2018) {
       enr <- readxl::read_excel(this_file, skip = 2)
     } else {
       enr <- readxl::read_excel(this_file)
@@ -412,20 +414,47 @@ process_enr_program <- function(df) {
 
 enr_aggs <- function(df) {
 
+  possible_m <- c(
+    'white_m', 'black_m', 'hispanic_m', 
+    'asian_m', 'native_american_m', 'pacific_islander_m', 'multiracial_m'
+  )
+  valid_m <- possible_m[possible_m %in% names(df)]
+  valid_m <- paste(valid_m, collapse = '+')
+  
+  possible_f <- c(
+    'white_f', 'black_f', 'hispanic_f', 
+    'asian_f', 'native_american_f', 'pacific_islander_f', 'multiracial_f'
+  )
+  valid_f <- possible_f[possible_f %in% names(df)]
+  valid_f <- paste(valid_f, collapse = '+')
+  
+  # old
+  valid_pi <- ifelse(
+    'pacific_islander_m' %in% names(df),
+    'pacific_islander_m + pacific_islander_f',
+    'NA'
+  )
+
+  # new
+  sg <- function(cols) {
+    cols_exist <- map_lgl(cols, ~.x %in% names(df)) %>% all()
+    ifelse(cols_exist, paste(cols, collapse = ' + '), 'NA')
+  }
+  # valid_subgroup(c('pacific_islander_m', 'pacific_islander_f'))
+  # valid_subgroup(c('black_m', 'black_f'))
+  
   df_agg <- df %>%
     mutate(
-      male = white_m + black_m + hispanic_m + asian_m +
-        native_american_m + pacific_islander_m + multiracial_m,
-      female = white_f + black_f + hispanic_f + asian_f +
-        native_american_f + pacific_islander_f + multiracial_f,
+      male = !!rlang::parse_expr(valid_m),
+      female = !!rlang::parse_expr(valid_f),
       
-      white = white_m + white_f,
-      black = black_m + black_f,
-      hispanic = hispanic_m + hispanic_f,
-      asian = asian_m + asian_f,
-      native_american = native_american_m + native_american_f,
-      pacific_islander = pacific_islander_m + pacific_islander_f,
-      multiracial = multiracial_m + multiracial_f
+      white =  !!rlang::parse_expr(sg(c('white_m', 'white_f'))),
+      black =  !!rlang::parse_expr(sg(c('black_m', 'black_f'))),
+      hispanic =  !!rlang::parse_expr(sg(c('hispanic_m', 'hispanic_f'))),
+      asian =  !!rlang::parse_expr(sg(c('asian_m', 'asian_f'))),
+      native_american = !!rlang::parse_expr(sg(c('native_american_m', 'native_american_f'))),
+      pacific_islander = !!rlang::parse_expr(sg(c('pacific_islander_m', 'pacific_islander_f'))),
+      multiracial =  !!rlang::parse_expr(sg(c('multiracial_m', 'multiracial_f')))
     )
   
   return(df_agg)
@@ -526,6 +555,9 @@ tidy_enr <- function(df) {
     'multiracial_f'
   )
   
+  # limit to cols in df
+  to_tidy <- to_tidy[to_tidy %in% names(df)]
+  
   # iterate over cols to tidy, do calculations
   tidy_subgroups <- map_df(to_tidy, 
     function(.x) {
@@ -555,7 +587,8 @@ tidy_enr <- function(df) {
 
   # some subgroups are only reported for school totals
   total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
-
+  total_subgroups <- total_subgroups[total_subgroups %in% names(df)]
+  
   # iterate over cols to tidy, do calculations
   tidy_total_subgroups <- map_df(total_subgroups, 
     function(.x) {
