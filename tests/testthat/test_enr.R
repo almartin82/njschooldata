@@ -121,22 +121,14 @@ test_that("fetch_enr works with tidy=TRUE argument", {
 
 
 test_that("fetch_enr tidy FALSE works across many years", {
-  enr_years <- c(1999:2009, 2011:2018)
+  enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=FALSE))
   expect_iss(enr_df, 'data.frame')
 })
 
 
 test_that("fetch_enr tidy TRUE works across many years", {
-  enr_years <- c(1999:2009, 2011:2018)
+  enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
   expect_is(enr_df, 'data.frame')
-})
-
-
-test_that("enr data for 2010", {
-  
-  foo <- fetch_enr(2010)
-  foo <- get_raw_enr(2010) 
-  
 })
