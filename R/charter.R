@@ -28,14 +28,45 @@ id_charter_hosts <- function(df) {
 }
 
 
-citywide_charter_aggs <- function(df) {
+#' Calculate Charter Sector Enrollment Aggregates
+#'
+#' @param df a tidied enrollment dataframe, eg output of `fetch_enr`
+#'
+#' @return dataframe with charter sector aggregates per host city
+#' @export
+
+charter_sector_enr_aggs <- function(df) {
+
+  df <- enr_2018 %>% filter(county_id == '80' & !district_id=='9999')
+  
   # id hosts 
+  df <- id_charter_hosts(df)
   
-  # group by - host city
+  # charters are reported twice, one per school one per district
+  # take the district level only, in the hopes that NJ will 
+  # someday fix this and report charter campuses
+  df <- df %>% filter(school_id == '999')
   
-  # sum
+  # group by - host city and summarize
+  df <- df %>% 
+    ungroup() %>%
+    group_by(
+      end_year, 
+      county_id, county_name,
+      host_district_id, host_district_name,
+      program_code, program_name, grade_level,
+      subgroup
+    ) %>%
+    summarize(
+      n_students = sum(n_students),
+      n_schools = n()
+    ) %>%
+    ungroup()
+  
+  # calculate percent
   
   # give psuedo district names and codes
+  sample_n(df, 5) %>% print.AsIs()
   
   # create appropriate boolean flag
   
@@ -44,7 +75,7 @@ citywide_charter_aggs <- function(df) {
 }
 
 
-citywide_all_public_aggs <- function(df) {
+citywide_enr_aggs <- function(df) {
   # id hosts 
   
   # group by - host city
