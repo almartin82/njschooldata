@@ -42,7 +42,7 @@ test_that("fetch_enr correctly grabs the 2012 enrollment file", {
   fetch_2009 <- fetch_enr(2009)
 
   expect_equal(nrow(fetch_2009), 29491)
-  expect_equal(ncol(fetch_2009), 29)
+  expect_equal(ncol(fetch_2009), 38)
   expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
 })
 
@@ -62,6 +62,15 @@ test_that("fetch_enr handles the 2017-18 enrollment file", {
   expect_is(fetch_2018, 'data.frame')
   expect_equal(nrow(fetch_2018), 26485)
   expect_equal(ncol(fetch_2018), 39)
+})
+
+
+test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
+  fetch_2018 <- fetch_enr(2018, TRUE)
+  
+  expect_is(fetch_2018, 'data.frame')
+  expect_equal(nrow(fetch_2018), 625240)
+  expect_equal(ncol(fetch_2018), 19)
 })
 
 
