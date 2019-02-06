@@ -26,3 +26,35 @@ id_charter_hosts <- function(df) {
   
   return(df_new)
 }
+
+
+citywide_charter_aggs <- function(df) {
+  # id hosts 
+  
+  # group by - host city
+  
+  # sum
+  
+  # give psuedo district names and codes
+  
+  # create appropriate boolean flag
+  
+  # column order and return
+
+}
+
+
+citywide_all_public_aggs <- function(df) {
+  # id hosts 
+  
+  # group by - host city
+  
+  # sum
+  
+  # give psuedo district names and codes
+  
+  # create appropriate boolean flag
+  
+  # column order and return
+  
+}
