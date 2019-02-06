@@ -506,9 +506,12 @@ fetch_enr <- function(end_year, tidy=FALSE) {
   enr_data <- get_raw_enr(end_year) %>%
     process_enr()
   
-  if (tidy) enr_data <- tidy_enr(enr_data)
+  if (tidy) {
+    enr_data <- tidy_enr(enr_data) %>% 
+      id_enr_aggs()
+  }
   
-  return(enr_data)
+  enr_data
 }
 
 
@@ -607,5 +610,25 @@ tidy_enr <- function(df) {
   
   # put it all together in a long data frame
   bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups)
+}
+
+
+#' Identify enrollment aggregation levels
+#'
+#' @param df enrollment dataframe, output of tidy_enr
+#'
+#' @return data.frame
+#' @export
+
+id_enr_aggs <- function(df) {
+  df %>%
+    mutate(
+      is_state = district_id == '9999',
+      is_district = school_id == '999' & !is_state,
+      is_school = !school_id == '999' & !is_state,
+      
+      is_program = !program_code == '55',
+      is_allprogram = program_code == '55'
+    )
 }
 
