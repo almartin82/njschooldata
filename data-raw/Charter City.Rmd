@@ -93,6 +93,13 @@ more_new_2018 <- tibble(
     '7892',
     '7893'
   ),
+  # these are now needed
+  host_county_id = c(
+    
+  ),
+  host_county_name = c(
+    
+  ),
   host_district_name = c(
     'Newark',
     'Newark',
@@ -168,3 +175,30 @@ save(charter_city, file = file.path(root, 'data', 'charter_city.rda'))
 
 ```
 
+# one time fixes
+
+Put host county onto charter city
+
+```{r eval=FALSE}
+county_join_df <- enr_2018[, c('district_id', 'county_id', 'county_name')] %>%
+  unique() %>%
+  rename(host_district_id = district_id)
+
+head(county_join_df)
+
+charter_city <- charter_city %>%
+  left_join(county_join_df, by = 'host_district_id') %>%
+  rename(
+    host_county_id = county_id,
+    host_county_name = county_name
+  ) %>%
+  select(
+    district_id,
+    district_name,
+    host_county_id,
+    host_county_name,
+    host_district_id,
+    host_district_name
+  )
+
+```
