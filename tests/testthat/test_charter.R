@@ -11,7 +11,7 @@ test_that("id_charter_hosts correctly handles enrollment data", {
 
 test_that("id_charter_hosts finds host cities for all charters, 2018 enr", {
   
-  enr_2018 <- fetch_enr(2018)
+  enr_2018 <- fetch_enr(2018, tidy=TRUE)
 
   # look at all county = charters and make sure that none have null host_district_id
   charter_enr_2018 <- enr_2018 %>% 
@@ -96,4 +96,30 @@ test_that("id_charter_hosts, 2018 parcc ALG1 math", {
   expect_equal(nrow(charter_parcc_alg1_18), nrow(charter_parcc_alg1_18_host))
   expect_is(charter_parcc_alg1_18_host, "data.frame")
   expect_equal(charter_parcc_alg1_18_host$host_district_id %>% is.na() %>% sum(), 0)
+})
+
+
+test_that("charter sector aggs, 2018 enrollment data", {
+  
+  enr_2018 <- fetch_enr(2018, tidy=TRUE)
+  ch_aggs_2018 <- charter_sector_enr_aggs(enr_2018)
+  expect_is(ch_aggs_2018, "data.frame")
+  expect_equal(nrow(ch_aggs_2018), 8640)
+})
+
+
+test_that("charter sector aggs, 2017-18 enrollment data", {
+  
+  enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
+  ch_aggs_1718 <- charter_sector_enr_aggs(enr_1718)
+  expect_is(ch_aggs_1718, "data.frame")
+  expect_equal(nrow(ch_aggs_1718), 16892)
+})
+
+
+test_that("charter sector aggs, ALL enrollment data", {
+  enr_all <- c(1999:2018)
+  enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
+  ch_aggs_ <- charter_sector_enr_aggs(enr_df)
+  expect_is(enr_df, 'data.frame')
 })
