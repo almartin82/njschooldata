@@ -577,8 +577,6 @@ tidy_enr <- function(df) {
   )
 
   # also extract row total as a "subgroup"
-  tidy_grade_enr <- df %>%
-    select()
   tidy_total_enr <- df %>%
     select(one_of(invariants, 'row_total')) %>%
     mutate(
