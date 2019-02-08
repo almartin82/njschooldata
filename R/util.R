@@ -168,3 +168,6 @@ rc_numeric_cleaner <- function(data_vector) {
 percentile_rank <- function(x, xo) {
   length(x[x <= xo]) / length(x) * 100
 }
+
+
+peek <- function(df) sample_n(df, 5) %>% print.AsIs()
