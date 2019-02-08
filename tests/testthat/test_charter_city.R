@@ -11,7 +11,7 @@ test_that("id_charter_hosts correctly handles enrollment data", {
 
 test_that("id_charter_hosts finds host cities for all charters, 2018 enr", {
   
-  enr_2018 <- fetch_enr(2018)
+  enr_2018 <- fetch_enr(2018, tidy=TRUE)
 
   # look at all county = charters and make sure that none have null host_district_id
   charter_enr_2018 <- enr_2018 %>% 
