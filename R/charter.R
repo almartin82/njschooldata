@@ -37,7 +37,10 @@ id_charter_hosts <- function(df) {
 
 charter_sector_enr_aggs <- function(df) {
 
-  df <- enr_2018 %>% filter(county_id == '80' & !district_id=='9999')
+  foo <- fetch_enr(2018, tidy = TRUE)
+  
+  df <- foo %>% filter(county_id == '80' & !district_id=='9999')
+  # df <- enr_2018 %>% filter(county_id == '80' & !district_id=='9999')
   
   # id hosts 
   df <- id_charter_hosts(df)
@@ -52,7 +55,7 @@ charter_sector_enr_aggs <- function(df) {
     ungroup() %>%
     group_by(
       end_year, 
-      county_id, county_name,
+      host_county_id, host_county_name,
       host_district_id, host_district_name,
       program_code, program_name, grade_level,
       subgroup
@@ -62,10 +65,76 @@ charter_sector_enr_aggs <- function(df) {
       n_schools = n()
     ) %>%
     ungroup()
+
+  # give psuedo district names and codes
+  df <- df %>%
+    rename(
+      county_id = host_county_id,
+      county_name = host_county_name
+    ) %>%
+    mutate(
+      CDS_Code = NA_character_,
+      district_id = paste0(host_district_id, 'C'),
+      district_name = paste0(host_district_name, ' Charters'),
+      school_id = '999C',
+      school_name = 'Charter Sector Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_citywide = FALSE,
+      is_district = FALSE,
+      is_charter_sector = TRUE,
+      is_allpublic = FALSE,
+      is_school = FALSE,
+      is_subprogram = !program_code == '55'
+    ) %>%
+    select(-host_district_id, -host_district_name)
   
   # calculate percent
+  df_totals <- df %>% 
+    filter(subgroup == 'total_enrollment') %>%
+    select(end_year, district_id, program_code, n_students) %>%
+    rename(row_total = n_students)
   
-  # give psuedo district names and codes
+  df_totals %>%
+    filter(district_id == '3570C') %>%
+    sample_n(10) %>%
+    print.AsIs()
+  
+  nrow_before = nrow(df)
+  df <- df %>%
+    left_join(df_totals, by = c('end_year', 'district_id', 'program_code')) %>%
+    mutate(
+      'pct_total_enr' = n_students / row_total
+    ) %>%
+    select(-row_total)
+  
+  df %>% 
+    filter(district_id == '3570C') %>% 
+    sample_n(8) %>%
+    print.AsIs()
+  
+  ensure_that(
+    df, nrow(.) == nrow_before ~ 'calculating percent of total changed the size of the sector_aggs dataframe. this suggests duplicate district_id/subgroup/year rows'
+  )
+  
+  
+  # arrange
+  df <- df %>%
+    select(
+      end_year, CDS_Code,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      program_code, program_name, grade_level,
+      subgroup,
+      n_students,
+      # pct, 
+      n_schools,
+      is_state, is_county, is_district, is_charter_sector, is_school, 
+      is_subprogram
+    )
+  
+  sample_n(df, 5) %>% names
   sample_n(df, 5) %>% print.AsIs()
   
   # create appropriate boolean flag
@@ -74,6 +143,7 @@ charter_sector_enr_aggs <- function(df) {
 
 }
 
+#615pm
 
 citywide_enr_aggs <- function(df) {
   # id hosts 
