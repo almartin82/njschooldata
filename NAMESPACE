@@ -2,6 +2,7 @@
 
 export(arrange_enr)
 export(calc_nj_percentiles)
+export(charter_sector_enr_aggs)
 export(clean_cds_fields)
 export(clean_enr_data)
 export(clean_enr_names)
