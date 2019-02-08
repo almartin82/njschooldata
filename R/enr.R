@@ -481,7 +481,8 @@ process_enr <- function(df) {
   #join to program code
   final <- cleaned_agg %>%
     process_enr_program() %>%
-    arrange_enr() 
+    arrange_enr() %>%
+    filter(!is.na(county_id))
   
   return(final)
 }
