@@ -394,9 +394,7 @@ process_enr_program <- function(df) {
   #program name is messy; drop.
   if ('program_name' %in% names(df)) {
     df <- df %>%
-      dplyr::select(
-        -program_name  
-      )
+      dplyr::select(-program_name)
   }
   
   #join
@@ -483,8 +481,8 @@ process_enr <- function(df) {
   #join to program code
   final <- cleaned_agg %>%
     process_enr_program() %>%
-    arrange_enr()
-    
+    arrange_enr() 
+  
   return(final)
 }
 
@@ -576,12 +574,11 @@ tidy_enr <- function(df) {
         select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
     }
   )
-  
-  # just total counts, for extracting total enr, free, reduced, migrant etc
-  total_counts <- df %>%
-    filter(program_code == '55') 
-  
-  tidy_total_enr <- total_counts %>%
+
+  # also extract row total as a "subgroup"
+  tidy_grade_enr <- df %>%
+    select()
+  tidy_total_enr <- df %>%
     select(one_of(invariants, 'row_total')) %>%
     mutate(
       'n_students' = row_total,
@@ -591,6 +588,9 @@ tidy_enr <- function(df) {
     select(one_of(invariants, 'subgroup', 'n_students', 'pct')) 
 
   # some subgroups are only reported for school totals
+  # just total counts, for extracting total enr, free, reduced, migrant etc
+  total_counts <- df %>% filter(program_code == '55') 
+
   total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
   total_subgroups <- total_subgroups[total_subgroups %in% names(df)]
   
@@ -602,9 +602,9 @@ tidy_enr <- function(df) {
        select(one_of(invariants, 'n_students', 'row_total')) %>%
        mutate(
          'subgroup' = .x,
-         'pct' = n_students / row_total
+         'pct_total_enr' = n_students / row_total
        ) %>%
-       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+       select(one_of(invariants, 'subgroup', 'n_students', 'pct_total_enr'))
     }
   )
   
@@ -617,18 +617,20 @@ tidy_enr <- function(df) {
 #'
 #' @param df enrollment dataframe, output of tidy_enr
 #'
-#' @return data.frame
+#' @return data.frame with boolean aggregation flags
 #' @export
 
 id_enr_aggs <- function(df) {
   df %>%
     mutate(
-      is_state = district_id == '9999',
+      is_state = district_id == '9999' & county_id == '99',
+      is_county = district_id == '9999' & !county_id =='99',
       is_district = school_id == '999' & !is_state,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
       is_school = !school_id == '999' & !is_state,
       
-      is_program = !program_code == '55',
-      is_allprogram = program_code == '55'
+      is_subprogram = !program_code == '55'
     )
 }
 
