@@ -37,22 +37,16 @@ id_charter_hosts <- function(df) {
 
 charter_sector_enr_aggs <- function(df) {
 
-  foo <- fetch_enr(2018, tidy = TRUE)
-  
-  df <- foo %>% filter(county_id == '80' & !district_id=='9999')
-  # df <- enr_2018 %>% filter(county_id == '80' & !district_id=='9999')
-  
   # id hosts 
   df <- id_charter_hosts(df)
   
   # charters are reported twice, one per school one per district
   # take the district level only, in the hopes that NJ will 
   # someday fix this and report charter campuses
-  df <- df %>% filter(school_id == '999')
+  df <- df %>% filter(county_id == 80 & !district_id=='9999' & school_id == '999')
   
   # group by - host city and summarize
   df <- df %>% 
-    ungroup() %>%
     group_by(
       end_year, 
       host_county_id, host_county_name,
@@ -66,7 +60,7 @@ charter_sector_enr_aggs <- function(df) {
     ) %>%
     ungroup()
 
-  # give psuedo district names and codes
+  # give psuedo district names and codes and create appropriate boolean flags
   df <- df %>%
     rename(
       county_id = host_county_id,
@@ -94,12 +88,7 @@ charter_sector_enr_aggs <- function(df) {
     filter(subgroup == 'total_enrollment') %>%
     select(end_year, district_id, program_code, n_students) %>%
     rename(row_total = n_students)
-  
-  df_totals %>%
-    filter(district_id == '3570C') %>%
-    sample_n(10) %>%
-    print.AsIs()
-  
+
   nrow_before = nrow(df)
   df <- df %>%
     left_join(df_totals, by = c('end_year', 'district_id', 'program_code')) %>%
@@ -108,18 +97,12 @@ charter_sector_enr_aggs <- function(df) {
     ) %>%
     select(-row_total)
   
-  df %>% 
-    filter(district_id == '3570C') %>% 
-    sample_n(8) %>%
-    print.AsIs()
-  
   ensure_that(
     df, nrow(.) == nrow_before ~ 'calculating percent of total changed the size of the sector_aggs dataframe. this suggests duplicate district_id/subgroup/year rows'
   )
   
-  
-  # arrange
-  df <- df %>%
+  # column order and return
+  df %>%
     select(
       end_year, CDS_Code,
       county_id, county_name,
@@ -128,22 +111,15 @@ charter_sector_enr_aggs <- function(df) {
       program_code, program_name, grade_level,
       subgroup,
       n_students,
-      # pct, 
+      pct_total_enr, 
       n_schools,
-      is_state, is_county, is_district, is_charter_sector, is_school, 
+      is_state, is_county, 
+      is_district, is_charter_sector, is_allpublic,
+      is_school, 
       is_subprogram
     )
-  
-  sample_n(df, 5) %>% names
-  sample_n(df, 5) %>% print.AsIs()
-  
-  # create appropriate boolean flag
-  
-  # column order and return
-
 }
 
-#615pm
 
 citywide_enr_aggs <- function(df) {
   # id hosts 
