@@ -10,7 +10,7 @@ id_enr_aggs(df)
 \item{df}{enrollment dataframe, output of tidy_enr}
 }
 \value{
-data.frame
+data.frame with boolean aggregation flags
 }
 \description{
 Identify enrollment aggregation levels

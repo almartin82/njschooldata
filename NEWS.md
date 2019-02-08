@@ -1,3 +1,18 @@
+# njschooldata 0.7.1
+
+## New features
+
+* can calculate charter sector (eg, charters in Jersey City) enrollment stats using `charter_sector_enr_aggs()`
+
+
+# njschooldata 0.7.0
+
+## New features
+
+* can pass `tidy = TRUE` argument to `fetch_enr()` to get subgroups tidied
+* fetch enr aggregates gender subgroups into racial subgroups (white_m + white_f = white)
+
+
 # njschooldata 0.6.1
 
 ## New features
