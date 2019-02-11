@@ -4,6 +4,8 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 6060,ATLANTIC CITY COMMUNITY CHARTER SCHOOL,01,Atlantic,0110,Atlantic City
 6104,INTERNATIONAL ACADEMY OF ATLANTIC CITY CHARTER SCHOOL,01,Atlantic,0110,Atlantic City
 7420,Oceanside Charter School,01,Atlantic,0110,Atlantic City
+6040,LEARNING CENTER CS,01,Atlantic,0110,Atlantic City
+6040,LEARNING CENTER CS,01,Atlantic,0110,Atlantic City
 6067,Kingdom CS of Leadership,07,Camden,1780,Blackwood
 7727,Ridge and Valley Charter School,41,Warren,0400,Blairstown
 6100,Bridgeton Public Charter School,11,Cumberland,0540,Bridgeton
@@ -19,12 +21,23 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 6086,Hope Community CS,07,Camden,0680,Camden
 6083,Knowledge A to Z Charter School,07,Camden,0680,Camden
 7109,LEAP ACADEMY UNIVERSITY CHARTER SCHOOL,07,Camden,0680,Camden
+7110,LEAP ACADEMY CS,07,Camden,0680,Camden
+7110,LEAP ACADEMY CS,07,Camden,0680,Camden
 6041,HATIKVAH INTERNATIONAL CHARTER SCHOOL,23,Middlesex,1170,East Brunswick
 6410,EAST ORANGE COMMUNITY CHARTER SCHOOL,13,Essex,1210,East Orange
 6020,Pride Academy Charter School,13,Essex,1210,East Orange
+7750,RUSSELL ACADEMY CS,13,Essex,1210,East Orange
+7750,RUSSELL ACADEMY CS,13,Essex,1210,East Orange
 6430,Englewood on the Palisades Charter School,03,Bergen,1370,Englewood
+7815,SAMUEL DEWITT PROCTOR ACA,21,Mercer,1430,Ewing Township
+7815,SAMUEL DEWITT PROCTOR ACA,21,Mercer,1430,Ewing Township
 6081,Thomas Edison EnergySmart Charter School,15,Gloucester,1590,Franklin Township
-6612,Galloway Community Charter School,01,Atlantic,1690,Galloway
+6018,Central Jersey College Prep CS,41,1590,1620,Franklin Township
+6520,FRANKLIN CS,35,Somerset,1590,Franklin Township
+6520,FRANKLIN CS,35,Somerset,1590,Franklin Township
+6612,Galloway Community Charter School,01,Atlantic,1690,Galloway Township
+6610,GALLOWAY CHARTER SCHOOL,01,Atlantic,1690,Galloway Township
+6610,GALLOWAY CHARTER SCHOOL,01,Atlantic,1690,Galloway Township
 6013,BERGEN ARTS AND SCIENCES CS,03,Bergen,1700,Garfield
 7500,Pace Charter SChool of Hamilton,01,Atlantic,1940,Hamilton Twp.
 6027,The Institute for Excellence Charter School,01,Atlantic,1960,Hammonton
@@ -46,6 +59,12 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 6030,THE ETHICAL COMMUNITY CHARTER SCHOO,17,Hudson,2390,Jersey City
 8060,University Academy Charter High School,17,Hudson,2390,Jersey City
 6103,Empowerment Academy Charter School,17,Hudson,2390,Jersey City
+6220,C.R.E.A.T.E. CS,17,Hudson,2390,Jersey City
+6615,GATEWAY CHARTER SCHOOL,17,Hudson,2390,Jersey City
+6660,Greenville Community CS,17,Hudson,2390,Jersey City
+6220,C.R.E.A.T.E. CS,17,Hudson,2390,Jersey City
+6615,GATEWAY CHARTER SCHOOL,17,Hudson,2390,Jersey City
+6660,Greenville Community CS,17,Hudson,2390,Jersey City
 6105,HUDSON ARTS AND SCIENCE  CHARTER SCHOOL,17,Hudson,2410,Kearny
 6010,Academy Charter High School,25,Monmouth,0270,Lake Como
 7893,Ocean Academy Charter School,29,Ocean,2520,Lakewood
@@ -78,6 +97,8 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 6038,Visions Academy Charter High School,13,Essex,3570,Newark
 6109,Lead Charter School,13,Essex,3570,Newark
 6110,Achieve Community Charter School,13,Essex,3570,Newark
+7825,Simon Bolivar CS,13,Essex,3570,Newark
+7825,Simon Bolivar CS,13,Essex,3570,Newark
 6080,Passaic Arts and Science Charter School,31,Passaic,3970,Passaic
 6021,Community Charter School of Paterson,31,Passaic,4010,Paterson
 6079,John P. Holland Charter School,31,Passaic,4010,Paterson
@@ -86,6 +107,10 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 7503,Paterson Charter School for Science/Technology,31,Passaic,4010,Paterson
 6106,Philip’S Charter School Of Paterson,31,Passaic,4010,Paterson
 7892,College Achieve Paterson Charter School,31,Passaic,4010,Paterson
+6700,Alexander Hamilton CS,31,Passaic,4010,Paterson
+7505,PATERSON CS FOR URBAN LEA,31,Passaic,4010,Paterson
+6700,Alexander Hamilton CS,31,Passaic,4010,Paterson
+7505,PATERSON CS FOR URBAN LEA,31,Passaic,4010,Paterson
 6032,Academy for Urban Leadership Charter School,23,Middlesex,4090,Perth Amboy
 6217,CENTRAL JERSEY ARTS CHARTER SCHOOL,39,Union,4160,Plainfield
 6101,COLLEGE ACHIEVE CENTRAL CHARTER SCHOOL,39,Union,4160,Plainfield
@@ -93,12 +118,15 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 7600,The Queen City Academy Charter School,39,Union,4160,Plainfield
 8010,Union County TEAMS Charter School,39,Union,4160,Plainfield
 6102,Cresthaven Academy Charter School,39,Union,4160,Plainfield
+6210,CALLA CS,39,Union,4160,Plainfield
+6210,CALLA CS,39,Union,4160,Plainfield
 7520,PleasanTech Academy CS,01,Atlantic,4180,Pleasantville
+7525,PLEASANTVILLE CS FOR AC.,01,Atlantic,4180,Pleasantville
+7525,PLEASANTVILLE CS FOR AC.,01,Atlantic,4180,Pleasantville
 7540,Princeton Charter School,21,Mercer,4255,Princeton
 7720,Red Bank Charter School,25,Monmouth,4360,Red Bank
 6026,Riverbank Charter SChool of Excellence,05,Burlington,1520,Roebling
 7410,chARTer~TECH High School for the Performing Arts,01,Atlantic,4800,Somers Point
-6018,Central Jersey College Prep CS,41,Warren,1620,Somerset
 7850,Sussex County Charter School for Technology,37,Sussex,4960,Sparta
 7890,Teaneck Community Charter School,03,Bergen,5150,Teaneck
 6230,Capital Prep Charter School,21,Mercer,5210,Trenton
@@ -109,7 +137,25 @@ district_id,district_name,host_county_id,host_county_name,host_district_id,host_
 6025,Paul Robeson Charter School for the Humanities,21,Mercer,5210,Trenton
 8140,The Village Charter School,21,Mercer,5210,Trenton
 6183,Trenton STEM-to-Civics CS,21,Mercer,5210,Trenton
+6023,CAPITAL PREP CHARTER SCHO,21,Mercer,5210,Trenton
+6629,GRANVILLE CS,21,Mercer,5210,Trenton
+6630,GRANVILLE CHARTER SCHOOL,21,Mercer,5210,Trenton
+6631,GRANVILLE CHARTER HS,21,Mercer,5210,Trenton
+6632,Granville Middle CS,21,Mercer,5210,Trenton
+6645,GREATER TRENTON AREA AC.,21,Mercer,5210,Trenton
+7901,TRENTON COMMUNITY CS,21,Mercer,5210,Trenton
+7940,TRENTON COMMUNITY CS,21,Mercer,5210,Trenton
+6023,CAPITAL PREP CHARTER SCHO,21,Mercer,5210,Trenton
+6629,GRANVILLE CS,21,Mercer,5210,Trenton
+6630,GRANVILLE CHARTER SCHOOL,21,Mercer,5210,Trenton
+6631,GRANVILLE CHARTER HS,21,Mercer,5210,Trenton
+6632,Granville Middle CS,21,Mercer,5210,Trenton
+6645,GREATER TRENTON AREA AC.,21,Mercer,5210,Trenton
+7901,TRENTON COMMUNITY CS,21,Mercer,5210,Trenton
+7940,TRENTON COMMUNITY CS,21,Mercer,5210,Trenton
 6089,Compass Academy Charter School,11,Cumberland,5390,Vineland
 6028,Vineland Public Charter School,11,Cumberland,5390,Vineland
 6076,Benjamin Banneker Preparatory Charter School,05,Burlington,5805,Willingboro
+6510,FAMILY ALLIANCE CS,05,Burlington,5805,Willingboro
+6510,FAMILY ALLIANCE CS,05,Burlington,5805,Willingboro
 6044,Renaissance Regional Leadership Charter School,05,Burlington,3650,Wrightstown
