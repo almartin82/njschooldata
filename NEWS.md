@@ -1,8 +1,17 @@
+# njschooldata 0.7.2
+
+## New features
+
+* older (largely closed) charter schools added to `charter_city` table to allow for accurate calculations of longitudinal charter sector statistics.
+
+
+
 # njschooldata 0.7.1
 
 ## New features
 
 * can calculate charter sector (eg, charters in Jersey City) enrollment stats using `charter_sector_enr_aggs()`
+
 
 
 # njschooldata 0.7.0
@@ -13,17 +22,21 @@
 * fetch enr aggregates gender subgroups into racial subgroups (white_m + white_f = white)
 
 
+
 # njschooldata 0.6.1
 
 ## New features
 
 * ability to standardize / clean / label Taxpayers Guide data with `tidy_tges_data()` 
 
+
+
 # njschooldata 0.6
 
 ## New features
 
 * ability to read in Taxpayers Guide to Educational Spending data files with `get_raw_tges(2016)` and `fetch_tges(2017)` 
+
 
 
 # njschooldata 0.5.2
@@ -33,12 +46,14 @@
 * ability to read in Federal ESSA (Every Student Succeeds Act) accountability data files with `get_essa_file(2017)`.
 
 
+
 # njschooldata 0.5.1
 
 ## New features
 
 * extensions of NJ School Report Card functions with `extract_rc_college_matric()` and  `extract_rc_AP()`.
 * ability to put county/district/school names onto longitudinal report card data sets.
+
 
 
 # njschooldata 0.5
@@ -59,7 +74,6 @@
 
 
 
-
 # njschooldata 0.3
 
 ## New features
@@ -72,13 +86,11 @@
 
 
 
-
 # njschooldata 0.2
 
 ## New features
 
 * support for enrollment data
-
 
 
 
