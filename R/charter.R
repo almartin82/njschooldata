@@ -43,8 +43,20 @@ charter_sector_enr_aggs <- function(df) {
   # charters are reported twice, one per school one per district
   # take the district level only, in the hopes that NJ will 
   # someday fix this and report charter campuses
-  df <- df %>% filter(county_id == 80 & !district_id=='9999' & school_id == '999')
+  df_modern <- df %>% 
+    filter(
+      end_year >= 2010 & 
+      county_id == 80 & 
+      !district_id=='9999' & 
+      school_id == '999'
+    )
+  df_old <- df %>%
+    filter(
+      end_year < 2010 &
+      !district_id == '9999'
+    )
   
+  df <- bind_rows(df_modern, df_old)
   # group by - host city and summarize
   df <- df %>% 
     group_by(
