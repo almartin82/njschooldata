@@ -76,7 +76,6 @@ new_fall_2017 <- tibble(
 
 2018
 
-```{r}
 
 more_new_2018 <- tibble(
   district_name = c(
@@ -116,8 +115,239 @@ more_new_2018 <- tibble(
   )
 )
 
-```
 
+
+historic
+
+   district_id county_name             district_name
+1                
+2                     
+3                                  
+4
+5                          
+6         
+7                
+8                   
+9         
+10        
+11               
+12        
+13                  
+14        
+15        
+16                            
+17        
+18       
+19        
+20                    
+21                     
+22       
+23                
+24        
+25                 
+26       
+27                  
+28        
+29        
+30        
+31                       
+32              
+33              
+34              
+35                       
+36               
+37               
+38        
+39                        
+40                    
+41              MERCER TRENTON COMMUNITY CHARTER
+42        7940      Mercer      Trenton Community CS
+43        7940      MERCER      TRENTON COMMUNITY CS
+
+```{r}
+
+historic_pre2010 <- tibble(
+  district_name = c(
+    'CAPITAL PREP CHARTER SCHO',
+    'LEARNING CENTER CS',
+    'CALLA CS',
+    'C.R.E.A.T.E. CS',
+    'FAMILY ALLIANCE CS',
+    
+    'FRANKLIN CS',
+    'GALLOWAY CHARTER SCHOOL',
+    'GATEWAY CHARTER SCHOOL',
+    'GRANVILLE CS',
+    'GRANVILLE CHARTER SCHOOL',
+    
+    'GRANVILLE CHARTER HS',
+    'Granville Middle CS',
+    'GREATER TRENTON AREA AC.',
+    'Greenville Community CS',
+    'Alexander Hamilton CS',
+    
+    'LEAP ACADEMY CS',
+    'PATERSON CS FOR URBAN LEA',
+    'PLEASANTVILLE CS FOR AC.',
+    'RUSSELL ACADEMY CS',
+    'SAMUEL DEWITT PROCTOR ACA',
+    
+    'Simon Bolivar CS',
+    'TRENTON COMMUNITY CS',
+    'TRENTON COMMUNITY CS'
+  ),
+  district_id = c(
+    '6023',
+    '6040',
+    '6210',
+    '6220',
+    '6510',
+    
+    '6520',
+    '6610',
+    '6615',
+    '6629',
+    '6630',
+    
+    '6631',
+    '6632',
+    '6645',
+    '6660',
+    '6700',
+    
+    '7110',
+    '7505',
+    '7525',
+    '7750',
+    '7815',
+    
+    '7825',
+    '7901',
+    '7940'
+  ),
+
+  host_county_id = c(
+    '21',
+    '01',
+    '39',
+    '17',
+    '05',
+    
+    '35', 
+    '01',
+    '17',
+    '21',
+    '21',
+    
+    '21',
+    '21',
+    '21',
+    '17',
+    '31',
+    
+    '07',
+    '31',
+    '01',
+    '13',
+    '21',
+    
+    '13',
+    '21',
+    '21'
+  ),
+  host_county_name = c(
+    'Mercer',
+    'Atlantic',
+    'Union',
+    'Hudson',
+    'Burlington',
+    
+    'Somerset',
+    'Atlantic',
+    'Hudson',
+    'Mercer',
+    'Mercer',
+    
+    'Mercer',
+    'Mercer',
+    'Mercer',
+    'Hudson',
+    'Passaic',
+    
+    'Camden',
+    'Passaic',
+    'Atlantic',
+    'Essex',
+    'Mercer',
+    
+    'Essex',
+    'Mercer',
+    'Mercer'
+  ),
+  
+  host_district_name = c(
+    'Trenton',
+    'Atlantic City',
+    'Plainfield',
+    'Jersey City',
+    'Willingboro',
+    
+    'Franklin Township',
+    'Galloway Township',
+    'Jersey City',
+    'Trenton',
+    'Trenton',
+    
+    'Trenton',
+    'Trenton',
+    'Trenton',
+    'Jersey City',
+    'Paterson',
+    
+    'Camden', # LEAP Academy CS
+    'Paterson',
+    'Pleasantville', # PLEASANTVILLE CS FOR AC.
+    'East Orange', # RUSSELL ACADEMY CS
+    'Ewing Township', # SAMUEL DEWITT PROCTOR ACA,
+    
+    'Newark', # Simon Bolivar CS
+    'Trenton',
+    'Trenton'
+  ),
+  host_district_id = c(
+    '5210',
+    '0110',
+    '4160',
+    '2390',
+    '5805',
+    
+    '1590', 
+    '1690',
+    '2390',
+    '5210', 
+    '5210',
+    
+    '5210',
+    '5210',
+    '5210',
+    '2390',
+    '4010',
+    
+    
+    '0680', # LEAP Academy CS
+    '4010',
+    '4180', # PLEASANTVILLE CS FOR AC.
+    '1210', # RUSSELL ACADEMY CS
+    '1430', # SAMUEL DEWITT PROCTOR ACA
+    
+    '3570', # Simon Bolivar CS
+    '5210',
+    '5210'
+  )
+)
+
+
+```
 
 Put together
 
@@ -125,7 +355,7 @@ Put together
 
 charter_city_old_new <- dplyr::bind_rows(
   charter_city,
-  more_new_2018
+  historic_pre2010
 ) %>% 
 arrange(host_district_name)
 
@@ -153,6 +383,11 @@ identical(
 identical(
   map_chr(charter_city, class) %>% unname(),
   map_chr(charter_city_old_new, class) %>% unname()
+)
+
+identical(
+  nrow(charter_city) + nrow(historic_pre2010),
+  nrow(charter_city_old_new)
 )
 ```
 
