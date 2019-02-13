@@ -28,6 +28,61 @@ id_charter_hosts <- function(df) {
 }
 
 
+#' Helper function to return aggregate enrollment columns in correct order
+#'
+#' @param df aggregate enrollment dataframe
+#'
+#' @return data.frame
+#' @export
+
+agg_enr_column_order <- function(df) {
+  df %>%
+    select(
+      end_year, CDS_Code,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      program_code, program_name, grade_level,
+      subgroup,
+      n_students,
+      pct_total_enr, 
+      n_schools,
+      is_state, is_county, 
+      is_district, is_charter_sector, is_allpublic,
+      is_school, 
+      is_subprogram
+    )
+}
+
+#' Helper function to support calculating pct_total on aggregate enr dataframes
+#'
+#' @param df aggregate enrollment dataframe
+#'
+#' @return data.frame
+#' @export
+
+agg_enr_pct_total <- function(df) {
+  df_totals <- df %>% 
+    filter(subgroup == 'total_enrollment') %>%
+    select(end_year, district_id, program_code, n_students) %>%
+    rename(row_total = n_students)
+  
+  nrow_before = nrow(df)
+  df <- df %>%
+    left_join(df_totals, by = c('end_year', 'district_id', 'program_code')) %>%
+    mutate(
+      'pct_total_enr' = n_students / row_total
+    ) %>%
+    select(-row_total)
+  
+  ensure_that(
+    df, nrow(.) == nrow_before ~ 'calculating percent of total changed the size of the sector_aggs dataframe. this suggests duplicate district_id/subgroup/year rows'
+  )
+  
+  df
+}
+
+
 #' Calculate Charter Sector Enrollment Aggregates
 #'
 #' @param df a tidied enrollment dataframe, eg output of `fetch_enr`
@@ -53,10 +108,13 @@ charter_sector_enr_aggs <- function(df) {
   df_old <- df %>%
     filter(
       end_year < 2010 &
-      !district_id == '9999'
+        !district_id == '9999' &
+        school_id == '999' &
+        as.numeric(district_id) >= 6000
     )
   
   df <- bind_rows(df_modern, df_old)
+  
   # group by - host city and summarize
   df <- df %>% 
     group_by(
@@ -96,54 +154,88 @@ charter_sector_enr_aggs <- function(df) {
     select(-host_district_id, -host_district_name)
   
   # calculate percent
-  df_totals <- df %>% 
-    filter(subgroup == 'total_enrollment') %>%
-    select(end_year, district_id, program_code, n_students) %>%
-    rename(row_total = n_students)
+  df <- agg_enr_pct_total(df)
 
-  nrow_before = nrow(df)
-  df <- df %>%
-    left_join(df_totals, by = c('end_year', 'district_id', 'program_code')) %>%
-    mutate(
-      'pct_total_enr' = n_students / row_total
-    ) %>%
-    select(-row_total)
-  
-  ensure_that(
-    df, nrow(.) == nrow_before ~ 'calculating percent of total changed the size of the sector_aggs dataframe. this suggests duplicate district_id/subgroup/year rows'
-  )
-  
   # column order and return
-  df %>%
-    select(
-      end_year, CDS_Code,
-      county_id, county_name,
-      district_id, district_name,
-      school_id, school_name,
-      program_code, program_name, grade_level,
-      subgroup,
-      n_students,
-      pct_total_enr, 
-      n_schools,
-      is_state, is_county, 
-      is_district, is_charter_sector, is_allpublic,
-      is_school, 
-      is_subprogram
-    )
+  agg_enr_column_order(df)
 }
 
 
-citywide_enr_aggs <- function(df) {
+#' Calculate All Public Enrollment Aggregates
+#'
+#' @param df 
+#'
+#' @param df a tidied enrollment dataframe, eg output of `fetch_enr`
+#'
+#' @return dataframe with all public school option aggregates for any charter host city
+#' @export
+
+allpublic_enr_aggs <- function(df) {
   # id hosts 
+  df <- id_charter_hosts(df)
   
-  # group by - host city
+  # if charter, make host_district_id the district id
+  df <- df %>%
+    mutate(
+      is_charter = !is.na(host_district_id),
+      county_id = ifelse(!is.na(host_county_id), host_county_id, county_id),
+      district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
+    )
   
-  # sum
+  # group by - newly modified county_id, district_id and summarize
+  df <- df %>% 
+    group_by(
+      end_year, 
+      county_id, district_id,
+      program_code, program_name, grade_level,
+      subgroup
+    ) %>%
+    summarize(
+      n_students = sum(n_students),
+      n_schools = n(),
+      n_charter = sum(is_charter)
+    ) %>%
+    ungroup()
+  
+  # if there are no charters in the host, out of scope for this calc
+  df <- df %>%
+    filter(n_charter > 0)
+  
+  # add county_name, district_name by joining to charter_city
+  ch_join <- charter_city %>% 
+    select(host_district_id, host_district_name, host_county_name) %>%
+    rename(
+      district_id = host_district_id,
+      district_name = host_district_name,
+      county_name = host_county_name
+    ) %>%
+    unique()
+  
+  df <- df %>%
+    left_join(ch_join, by = 'district_id')
   
   # give psuedo district names and codes
-  
   # create appropriate boolean flag
+  df <- df %>%
+    mutate(
+      CDS_Code = NA_character_,
+      district_id = paste0(district_id, 'A'),
+      district_name = paste0(district_name, ' All Public'),
+      school_id = '999A',
+      school_name = 'All Public Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_citywide = FALSE,
+      is_district = FALSE,
+      is_charter_sector = FALSE,
+      is_allpublic = TRUE,
+      is_school = FALSE,
+      is_subprogram = !program_code == '55'
+    ) 
+  
+  # calculate percent
+  df <- agg_enr_pct_total(df)
   
   # column order and return
-  
+  agg_enr_column_order(df)  
 }
