@@ -1,3 +1,10 @@
+# njschooldata 0.7.3
+
+## New features
+
+* can calculate aggregates of all public school options in a given city with `allpublic_enr_aggs()`.
+
+
 # njschooldata 0.7.2
 
 ## New features
