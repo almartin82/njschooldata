@@ -77,6 +77,13 @@ split_enr_cols <- function(df) {
 }
 
 
+clean_name <- function(df_names, clean_list) {
+  z = clean_list[[df_names]] 
+  
+  ifelse(is.null(z), print(df_names), '')
+  
+  return(z)
+}
 
 #' @title clean enrollment names
 #' 
@@ -90,6 +97,9 @@ clean_enr_names <- function(df) {
   clean <- list(
     #preserve these
     "end_year" = "end_year",
+    "program_name" = "program_name",
+    "program_code" = "program_code",
+    "grade_level" = "grade_level",
     
     #county ids
     "COUNTY_ID" = "county_id",
@@ -151,7 +161,7 @@ clean_enr_names <- function(df) {
     #grade level
     "GRADE_LEVEL" = "grade_level",
     "Grade_Level" = "grade_level",
-    
+
     #racial categories -----------------------------
     #white male
     "WH_M" = "white_m",
@@ -257,16 +267,8 @@ clean_enr_names <- function(df) {
     "CHPT1" = "title_1"
   )
 
-  clean_name <- function(x) {
-    z = clean[[x]] 
-    
-    ifelse(is.null(z), print(x), '')
-    
-    return(z)
-  }
-  
-  names(df) <- sapply(X = names(df), FUN = clean_name)
-  
+  names(df) <- map_chr(names(df), ~clean_name(.x, clean))
+
   return(df)
 }
 
@@ -470,6 +472,96 @@ enr_aggs <- function(df) {
 
 process_enr <- function(df) {
 
+  # if no grade level
+  if (!'grade_level' %in% tolower(names(df))) {
+    
+    # clean up program code and name
+    prog_map <- list(
+      "PRGCODE" = "program_code",
+      "PROGRAM_CODE" = "program_code",
+      "PROG" = "program_code",
+      "PROG_CODE" = "program_code",
+      
+      "PROGRAM_NAME" = "program_name_dirty",
+      "PROGRAM" = "program_name_dirty",
+      "PROG_NAME" = "program_name_dirty"
+    )
+    names(df) <- map_chr(
+      names(df),
+      function(.x) {
+        cleaned <- prog_map[[.x]]
+        ifelse(is.null(cleaned), .x, cleaned)
+      }
+    )
+    
+    # force program character
+    df$program_code <- as.character(df$program_code)
+    
+    df <- df %>%
+      dplyr::left_join(prog_codes, by = c("end_year", "program_code")) %>%
+      select(-program_name_dirty)
+    
+    gl_program_df <- tibble(
+      program_name = c(
+        'Half-Day Pre-Kindergarten',
+        'Half-Day Preschool Disabled',
+        'Half-Day Kindergarten',
+        
+        'Full-Day Pre-Kindergarten',
+        'Full-Day Preschool Disabled',
+        'Full-Day Kindergarten',
+        
+        'Grade 1',
+        'Grade 2',
+        'Grade 3',
+        'Grade 4', 
+        'Grade 5',
+        'Grade 6',
+        'Grade 7',
+        'Grade 8',
+        'Grade 9',
+        'Grade 10',
+        'Grade 11', 
+        'Grade 12',
+        
+        'Grade 9 Vocational',
+        'Grade 10 Vocational',
+        'Grade 11 Vocational',
+        'Grade 12 Vocational'
+      ),
+      grade_level = c(
+        'PH',
+        'PH',
+        'KH',
+        
+        'PF',
+        'PF',
+        'KF',
+        
+        '01',
+        '02',
+        '03',
+        '04',
+        '05',
+        '06',
+        '07',
+        '08',
+        '09',
+        '10',
+        '11',
+        '12',
+        
+        '09',
+        '10',
+        '11',
+        '12'
+      )
+    )
+    
+    df <- df %>%
+      left_join(gl_program_df, by = 'program_name')
+  }
+  
   # basic cleaning
   cleaned <- clean_enr_names(df) %>%
     split_enr_cols() %>%

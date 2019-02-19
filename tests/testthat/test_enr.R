@@ -142,3 +142,134 @@ test_that("fetch_enr tidy TRUE works across many years", {
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
   expect_is(enr_df, 'data.frame')
 })
+
+
+test_that("hand test fetch_enr numbers", {
+  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
+  nps_2018 <- enr_2018_tidy %>%
+    filter(district_id == '3570' & is_district)
+  nps_2018_total <- nps_2018 %>% filter(subgroup == 'total_enrollment')
+  
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='PF') %>% pull(n_students),
+    1963
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='KF') %>% pull(n_students),
+    2450
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='01') %>% pull(n_students),
+    2588
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='02') %>% pull(n_students),
+    2640
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='03') %>% pull(n_students),
+    2683
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='04') %>% pull(n_students),
+    2652
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='05') %>% pull(n_students),
+    2597
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='06') %>% pull(n_students),
+    2530
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='07') %>% pull(n_students),
+    2255
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='08') %>% pull(n_students),
+    2514
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='09') %>% pull(n_students),
+    2007
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='10') %>% pull(n_students),
+    2128
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='11') %>% pull(n_students),
+    2116
+  )
+  expect_equal(
+    nps_2018_total %>% filter(grade_level=='12') %>% pull(n_students),
+    1995
+  )
+})
+
+
+test_that("hand test fetch_enr numbers", {
+  enr_2007_tidy <- fetch_enr(2007, tidy=TRUE)
+  nps_2007 <- enr_2007_tidy %>%
+    filter(district_id == '3570' & is_district)
+  nps_2007_total <- nps_2007 %>% filter(subgroup == 'total_enrollment')
+  
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='PF') %>% pull(n_students),
+    652
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='KF') %>% pull(n_students),
+    3210
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='01') %>% pull(n_students),
+    3188
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='02') %>% pull(n_students),
+    3099
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='03') %>% pull(n_students),
+    3185
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='04') %>% pull(n_students),
+    2866
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='05') %>% pull(n_students),
+    2568
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='06') %>% pull(n_students),
+    2606
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='07') %>% pull(n_students),
+    2694
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='08') %>% pull(n_students),
+    2592
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='09') %>% pull(n_students),
+    2813
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='10') %>% pull(n_students),
+    2842
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='11') %>% pull(n_students),
+    2669
+  )
+  expect_equal(
+    nps_2007_total %>% filter(grade_level=='12') %>% pull(n_students),
+    2257
+  )
+})
+
