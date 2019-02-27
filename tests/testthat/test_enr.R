@@ -216,7 +216,7 @@ test_that("hand test fetch_enr numbers", {
   nps_2007_total <- nps_2007 %>% filter(subgroup == 'total_enrollment')
   
   expect_equal(
-    nps_2007_total %>% filter(grade_level=='PF') %>% pull(n_students),
+    nps_2007_total %>% filter(grade_level=='PF' & program_code=='1') %>% pull(n_students),
     652
   )
   expect_equal(
@@ -237,7 +237,7 @@ test_that("hand test fetch_enr numbers", {
   )
   expect_equal(
     nps_2007_total %>% filter(grade_level=='04') %>% pull(n_students),
-    2866
+    2886
   )
   expect_equal(
     nps_2007_total %>% filter(grade_level=='05') %>% pull(n_students),
