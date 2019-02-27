@@ -498,8 +498,9 @@ process_enr <- function(df) {
     df$program_code <- as.character(df$program_code)
     
     df <- df %>%
-      dplyr::left_join(prog_codes, by = c("end_year", "program_code")) %>%
-      select(-program_name_dirty)
+      dplyr::left_join(prog_codes, by = c("end_year", "program_code"))
+    
+    if ('program_name_dirty' %in% names(df)) df <- df %>% select(-program_name_dirty)
     
     gl_program_df <- tibble(
       program_name = c(
