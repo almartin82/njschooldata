@@ -528,7 +528,9 @@ process_enr <- function(df) {
         'Grade 9 Vocational',
         'Grade 10 Vocational',
         'Grade 11 Vocational',
-        'Grade 12 Vocational'
+        'Grade 12 Vocational',
+        
+        'Total'
       ),
       grade_level = c(
         'PH',
@@ -555,7 +557,9 @@ process_enr <- function(df) {
         '09',
         '10',
         '11',
-        '12'
+        '12',
+        
+        'TOTAL'
       )
     )
     
@@ -566,10 +570,14 @@ process_enr <- function(df) {
   # basic cleaning
   cleaned <- clean_enr_names(df) %>%
     split_enr_cols() %>%
-    clean_enr_data()  
+    clean_enr_data() %>%
+    clean_enr_grade()
   
   # add in gender and racial aggregates
   cleaned_agg <- enr_aggs(cleaned)
+  
+  # do custom grade level aggregations
+  cleaned_gr_aggs <- enr_grade_aggs(cleaned_agg)
   
   #join to program code
   final <- cleaned_agg %>%
@@ -580,6 +588,30 @@ process_enr <- function(df) {
   return(final)
 }
 
+
+#' Tidy up the grade level field on enrollment data
+#'
+#' @param df an enrollment data file.  clean_enr_grade is part of a set
+#' of chained cleaning functions that live inside process_enr.
+#'
+#' @return df with cleaner grade_level column
+
+clean_enr_grade <- function(df) {
+  df %>% 
+    mutate(
+      grade_level = case_when(
+        grade_level == 'Total' ~ 'TOTAL',
+        grade_level %in% c('KF', 'KH') ~ 'K',
+        grade_level %in% c('PF', 'PH') ~ 'PK',
+        TRUE ~ grade_level
+      )
+    )
+}
+
+# stub
+enr_grade_aggs <- function(df) {
+  df
+}
 
 #' @title gets and processes a NJ enrollment file
 #' 
