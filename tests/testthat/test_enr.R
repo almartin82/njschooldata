@@ -146,6 +146,8 @@ test_that("fetch_enr tidy TRUE works across many years", {
 
 test_that("hand test fetch_enr numbers", {
   enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
+  expect_is(enr_2018_tidy, 'data.frame')
+  
   nps_2018 <- enr_2018_tidy %>%
     filter(district_id == '3570' & is_district)
   nps_2018_total <- nps_2018 %>% filter(subgroup == 'total_enrollment')
