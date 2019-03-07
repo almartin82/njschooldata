@@ -1,3 +1,11 @@
+# njschooldata 0.7.4
+
+## New features
+
+* `friendly_district_names` will make a legibile vector of unique district names, one per district_id.
+* `district_name_to_id` reverses it, giving ids from names.
+
+
 # njschooldata 0.7.3
 
 ## New features
