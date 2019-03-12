@@ -2,7 +2,7 @@
 % Please edit documentation in R/lookups.R
 \name{district_name_to_id}
 \alias{district_name_to_id}
-\title{Given friendly names, returns ids}
+\title{Given friendly district names, returns ids}
 \usage{
 district_name_to_id(district_names, df)
 }
@@ -15,5 +15,5 @@ district_name_to_id(district_names, df)
 vector of district_ids
 }
 \description{
-Given friendly names, returns ids
+Given friendly district names, returns ids
 }
