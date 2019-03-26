@@ -605,6 +605,10 @@ clean_enr_grade <- function(df) {
         grade_level %in% pk_codes ~ 'PK',
         is.na(grade_level) & program_code %in% k_codes ~ 'K',
         is.na(grade_level) & program_code %in% pk_codes ~ 'PK',
+        is.na(grade_level) & program_code %in% c(1, 2) ~ 'PK',
+        is.na(grade_level) & program_code %in% c(3, 4) ~ 'K',
+        is.na(grade_level) & program_code %in% c('01', '02') ~ 'PK',
+        is.na(grade_level) & program_code %in% c('03', '04') ~ 'K',
         TRUE ~ grade_level
       )
     )
