@@ -2,7 +2,7 @@
 % Please edit documentation in R/enr.R
 \name{enr_aggs}
 \alias{enr_aggs}
-\title{title Calculate enrollment aggregates}
+\title{Calculate enrollment aggregates}
 \usage{
 enr_aggs(df)
 }
@@ -11,7 +11,4 @@ enr_aggs(df)
 }
 \value{
 dataframe
-}
-\description{
-title Calculate enrollment aggregates
 }

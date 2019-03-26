@@ -2,7 +2,7 @@ Package: njschooldata
 Type: Package
 Title: a simple interface for accessing NJ DOE school data in R
 Description: R functions to import NJ school data, including assessment, enrollment and accountability data.
-Version: 0.7.4
+Version: 0.7.5
 Date: 2015-04-21
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"), email = "almartin@gmail.com")
 License: GPL-3 | file LICENSE
