@@ -652,7 +652,7 @@ enr_grade_aggs <- function(df) {
   
   # Any PK
   pk_agg <- df %>%
-    filter(grade_level == 'PK') %>%
+    filter(grade_level == 'PK' | program_code %in% c('PF', 'PH')) %>%
     gr_aggs_group_logic() %>%
     mutate(
       program_code = 'PK',
@@ -665,7 +665,7 @@ enr_grade_aggs <- function(df) {
   
   # Any K (half + full day K)
   k_agg <- df %>%
-    filter(grade_level == 'K') %>%
+    filter(grade_level == 'K' | program_code %in% c('KF', 'KH')) %>%
     gr_aggs_group_logic() %>%
     mutate(
       program_code = '0K',
