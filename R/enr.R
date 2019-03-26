@@ -602,6 +602,7 @@ clean_enr_grade <- function(df) {
       grade_level = case_when(
         grade_level == 'Total' ~ 'TOTAL',
         grade_level %in% k_codes ~ 'K',
+        grade_level == 'KG' ~ 'K',
         grade_level %in% pk_codes ~ 'PK',
         is.na(grade_level) & program_code %in% k_codes ~ 'K',
         is.na(grade_level) & program_code %in% pk_codes ~ 'PK',
