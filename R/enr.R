@@ -407,7 +407,7 @@ process_enr_program <- function(df) {
 }
   
 
-#' @ title Calculate enrollment aggregates
+#' @title Calculate enrollment aggregates
 #'
 #' @param df cleaned enrollment dataframe, eg output of `clean_enr_data`
 #'
@@ -576,9 +576,6 @@ process_enr <- function(df) {
   # add in gender and racial aggregates
   cleaned_agg <- enr_aggs(cleaned)
   
-  # do custom grade level aggregations
-  cleaned_gr_aggs <- enr_grade_aggs(cleaned_agg)
-  
   #join to program code
   final <- cleaned_agg %>%
     process_enr_program() %>%
@@ -595,6 +592,7 @@ process_enr <- function(df) {
 #' of chained cleaning functions that live inside process_enr.
 #'
 #' @return df with cleaner grade_level column
+#' @export
 
 clean_enr_grade <- function(df) {
   df %>% 
@@ -608,9 +606,127 @@ clean_enr_grade <- function(df) {
     )
 }
 
-# stub
+
+#' Custom Enrollment Grade Level Aggregates
+#'
+#' @param df a tidy enrollment df
+#'
+#' @return df of aggregated enrollment data
+#' @export
+
 enr_grade_aggs <- function(df) {
-  df
+  
+  gr_aggs_group_logic <- . %>%
+    group_by(
+      end_year, 
+      CDS_Code, 
+      county_id, county_name, 
+      district_id, district_name,
+      school_id, school_name, 
+      subgroup,
+      # see summarize/mutate
+      is_state, is_county, is_district,
+      is_charter_sector, is_allpublic, is_school, is_subprogram
+    ) %>%
+    summarize(
+      n_students = sum(n_students, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  gr_aggs_col_order <- . %>%
+    select(
+      end_year, CDS_Code,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      program_code, program_name, grade_level,
+      subgroup,
+      n_students,
+      pct,
+      pct_total_enr, 
+      is_state, is_county, 
+      is_district, is_charter_sector, is_allpublic,
+      is_school, 
+      is_subprogram
+    )
+  
+  # Any PK
+  pk_agg <- df %>%
+    filter(grade_level == 'PK') %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = 'PK',
+      program_name = 'Pre-Kindergarten (Full + Half)',
+      grade_level = 'PK (Any)',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
+  # Any K (half + full day K)
+  k_agg <- df %>%
+    filter(grade_level == 'K') %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = '0K',
+      program_name = 'Kindergarten (Full + Half)',
+      grade_level = 'K (Any)',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
+  # K-12 enrollment (exclude pre-k)
+  k12_agg <- df %>%
+    filter(
+      grade_level %in% c('K', 
+                         '01', '02', '03', '04',
+                         '05', '06', '07', '08',
+                         '09', '10', '11', '12')
+    ) %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = 'K12',
+      program_name = 'K to 12 Total',
+      grade_level = 'K12',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
+  # K-8 enrollment
+  k8_agg <- df %>%
+    filter(
+      grade_level %in% c('K', 
+                         '01', '02', '03', '04',
+                         '05', '06', '07', '08')
+    ) %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = 'K8',
+      program_name = 'K to 8 Total',
+      grade_level = 'K8',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
+  # HS
+  hs_agg <- df %>%
+    filter(
+      grade_level %in% c('09', '10', '11', '12')
+    ) %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = 'HS',
+      program_name = 'HS (9-12) Total',
+      grade_level = 'HS',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
+  bind_rows(pk_agg, k_agg, k12_agg, k8_agg, hs_agg)
 }
 
 #' @title gets and processes a NJ enrollment file
