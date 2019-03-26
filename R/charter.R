@@ -182,8 +182,10 @@ allpublic_enr_aggs <- function(df) {
       district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
     )
   
+  # take only district level rows (not school)
   # group by - newly modified county_id, district_id and summarize
   df <- df %>% 
+    filter(is_district) %>%
     group_by(
       end_year, 
       county_id, district_id,
