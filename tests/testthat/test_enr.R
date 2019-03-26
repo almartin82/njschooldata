@@ -275,3 +275,16 @@ test_that("hand test fetch_enr numbers", {
   )
 })
 
+
+test_that("enr_grade_aggs works", {
+  ex_2018 <- fetch_enr(2018, TRUE)
+  aggs_2018 <- enr_grade_aggs(ex_2018)
+  expect_is(aggs_2018, 'data.frame')
+  
+  camden_es_k12 <- aggs_2018 %>% 
+    filter(district_id == '3570' & school_id == '310' & grade_level=='K12')
+  camden_es_k8 <- aggs_2018 %>% 
+    filter(district_id == '3570' & school_id == '310' & grade_level=='K8')
+  expect_equal(camden_es_k8$n_students, camden_es_k12$n_students)
+  
+})

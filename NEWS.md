@@ -1,3 +1,14 @@
+# njschooldata 0.7.5
+
+## New features
+
+* `enr_grade_aggs` will calculate some common grade level aggregations.
+- Any K (half + full day K)
+- K-12 enrollment (exclude pre-k)
+- K-8 enrollment
+- HS
+
+
 # njschooldata 0.7.4
 
 ## New features
