@@ -595,12 +595,16 @@ process_enr <- function(df) {
 #' @export
 
 clean_enr_grade <- function(df) {
+  k_codes <- c('KF', 'KH')
+  pk_codes <- c('PF', 'PH')
   df %>% 
     mutate(
       grade_level = case_when(
         grade_level == 'Total' ~ 'TOTAL',
-        grade_level %in% c('KF', 'KH') ~ 'K',
-        grade_level %in% c('PF', 'PH') ~ 'PK',
+        grade_level %in% k_codes ~ 'K',
+        grade_level %in% pk_codes ~ 'PK',
+        is.na(grade_level) & program_code %in% k_codes ~ 'K',
+        is.na(grade_level) & program_code %in% pk_codes ~ 'PK',
         TRUE ~ grade_level
       )
     )
@@ -652,7 +656,7 @@ enr_grade_aggs <- function(df) {
   
   # Any PK
   pk_agg <- df %>%
-    filter(grade_level == 'PK' | program_code %in% c('PF', 'PH')) %>%
+    filter(grade_level == 'PK') %>%
     gr_aggs_group_logic() %>%
     mutate(
       program_code = 'PK',
@@ -665,7 +669,7 @@ enr_grade_aggs <- function(df) {
   
   # Any K (half + full day K)
   k_agg <- df %>%
-    filter(grade_level == 'K' | program_code %in% c('KF', 'KH')) %>%
+    filter(grade_level == 'K') %>%
     gr_aggs_group_logic() %>%
     mutate(
       program_code = '0K',
