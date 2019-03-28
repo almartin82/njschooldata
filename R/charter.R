@@ -125,7 +125,7 @@ charter_sector_enr_aggs <- function(df) {
       subgroup
     ) %>%
     summarize(
-      n_students = sum(n_students),
+      n_students = sum(n_students, na.rm = TRUE),
       n_schools = n()
     ) %>%
     ungroup()
@@ -193,9 +193,9 @@ allpublic_enr_aggs <- function(df) {
       subgroup
     ) %>%
     summarize(
-      n_students = sum(n_students),
+      n_students = sum(n_students, na.rm = TRUE),
       n_schools = n(),
-      n_charter = sum(is_charter)
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     ungroup()
   
