@@ -573,6 +573,11 @@ process_enr <- function(df) {
     clean_enr_data() %>%
     clean_enr_grade()
   
+  # make sure that various ids are consistent (issue #83)
+  cleaned$county_id <- pad_leading(cleaned$county_id, 2)
+  cleaned$district_id <- pad_leading(cleaned$district_id, 4)
+  cleaned$school_id <- pad_leading(cleaned$school_id, 3)
+  
   # add in gender and racial aggregates
   cleaned_agg <- enr_aggs(cleaned)
   
