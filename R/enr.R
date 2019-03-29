@@ -332,11 +332,14 @@ clean_enr_data <- function(df) {
     }
   }
   
+  # make sure that various ids are consistent (issue #83)
+  df$county_id <- stringr::str_pad(df$county_id, width=2, side='left', pad='0')
+  df$district_id <- stringr::str_pad(df$district_id, width=4, side='left', pad='0')
+  df$school_id <- stringr::str_pad(df$school_id, width=3, side='left', pad='0')
+  
   #make CDS_code
   df$CDS_Code <- paste0(
-    stringr::str_pad(df$county_id, width=2, side='left', pad='0'),
-    stringr::str_pad(df$district_id, width=4, side='left', pad='0'),
-    stringr::str_pad(df$school_id, width=3, side='left', pad='0')
+    df$county_id, df$district_id, df$school_id
   )
   
   return(df)  
@@ -572,11 +575,6 @@ process_enr <- function(df) {
     split_enr_cols() %>%
     clean_enr_data() %>%
     clean_enr_grade()
-  
-  # make sure that various ids are consistent (issue #83)
-  cleaned$county_id <- pad_leading(cleaned$county_id, 2)
-  cleaned$district_id <- pad_leading(cleaned$district_id, 4)
-  cleaned$school_id <- pad_leading(cleaned$school_id, 3)
   
   # add in gender and racial aggregates
   cleaned_agg <- enr_aggs(cleaned)
