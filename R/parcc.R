@@ -19,6 +19,11 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     if (end_year == 2017 & grade_or_subj >= 10) {
       parcc_grade <- paste0('0', parcc_grade)
     }
+    #in 2018 - honestly I just can't.  
+    # fine, state of NJ, ELA003. it's only broken code, not life and death, as they say.
+    if (end_year == 2018) {
+      parcc_grade <- paste0('0', parcc_grade) 
+    }
   } else {
     parcc_grade <- grade_or_subj
   }
@@ -167,7 +172,7 @@ tidy_parcc_subgroup <- function(subgroup_vector) {
 #' \code{fetch_parcc} is a wrapper around \code{get_raw_parcc} and
 #' \code{process_parcc} that gets a parcc file and performs any cleanup.
 #' @param tidy clean up the data frame to make it more compatible with 
-#' NJASK naming conventions?  default is FALSE.
+#' NJASK naming conventions and do some additional calculations?  default is FALSE.
 #' @inheritParams get_raw_parcc
 #' @export
 
@@ -178,6 +183,8 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
   
   if (tidy) {
     p$subgroup <- tidy_parcc_subgroup(p$subgroup)
+    
+    p <- p %>% parcc_perf_level_counts()
   }
   
   p
@@ -196,7 +203,7 @@ fetch_all_parcc <- function() {
   
   parcc_results <- list()
   
-  for (i in c(2015:2017)) {
+  for (i in c(2015:2018)) {
     #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
@@ -224,30 +231,3 @@ fetch_all_parcc <- function() {
   
   dplyr::bind_rows(parcc_results)
 }
-
-
-stu_counts <- . %>%
-  dplyr::mutate(
-    num_l1 = round((pct_l1/100) * number_of_valid_scale_scores, 0),
-    num_l2 = round((pct_l2/100) * number_of_valid_scale_scores, 0),
-    num_l3 = round((pct_l3/100) * number_of_valid_scale_scores, 0),
-    num_l4 = round((pct_l4/100) * number_of_valid_scale_scores, 0),
-    num_l5 = round((pct_l5/100) * number_of_valid_scale_scores, 0)
-  )
-
-summary_pipe <- . %>%
-  dplyr::summarize(
-    valid_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
-    num_l1 = sum(num_l1, na.rm = TRUE),
-    num_l2 = sum(num_l2, na.rm = TRUE),
-    num_l3 = sum(num_l3, na.rm = TRUE),
-    num_l4 = sum(num_l4, na.rm = TRUE),
-    num_l5 = sum(num_l5, na.rm = TRUE),
-    districts = toString(district_name),
-    schools = toString(school_name)
-  ) %>%
-  dplyr::mutate(
-    pct_proficient = round(((num_l4 + num_l5) / valid_scores) * 100, 2),
-    districts = districts,
-    schools = schools
-  )
