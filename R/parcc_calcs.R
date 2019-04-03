@@ -1,8 +1,8 @@
 #' PARCC counts by performance level
 #'
-#' @param df 
+#' @param df dataframe, output of fetch_parcc
 #'
-#' @return
+#' @return df with counts of students by performance level
 #' @export
 
 parcc_perf_level_counts <- function(df) {
@@ -38,6 +38,7 @@ parcc_aggregate_calcs <- function(df) {
       num_l3 = sum(num_l3, na.rm = TRUE),
       num_l4 = sum(num_l4, na.rm = TRUE),
       num_l5 = sum(num_l5, na.rm = TRUE),
+      
       districts = toString(district_name),
       schools = toString(school_name)
     ) %>%
@@ -47,6 +48,7 @@ parcc_aggregate_calcs <- function(df) {
       pct_l3 = round((num_l3 / number_of_valid_scale_scores) * 100, 1),
       pct_l4 = round((num_l4 / number_of_valid_scale_scores) * 100, 1),
       pct_l5 = round((num_l5 / number_of_valid_scale_scores) * 100, 1),
+      
       scale_score_mean = round(scale_score_mean / number_of_valid_scale_scores, 0),
       pct_proficient = round(((num_l4 + num_l5) / number_of_valid_scale_scores) * 100, 2),
       districts = districts,
