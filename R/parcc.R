@@ -21,7 +21,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     }
     #in 2018 - honestly I just can't.  
     # fine, state of NJ, ELA003. it's only broken code, not life and death, as they say.
-    if (end_year == 2018) {
+    if (end_year == 2018 & subj == 'ela') {
       parcc_grade <- paste0('0', parcc_grade) 
     }
   } else {
