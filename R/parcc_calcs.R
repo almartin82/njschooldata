@@ -27,6 +27,7 @@ parcc_perf_level_counts <- function(df) {
 parcc_aggregate_calcs <- function(df) {
 
   df %>%
+    dplyr::mutate(scale_score_mean = as.numeric(scale_score_mean)) %>%
     dplyr::summarize(
       number_enrolled = sum(number_enrolled, na.rm = TRUE),
       number_not_tested = sum(number_not_tested, na.rm = TRUE),
