@@ -40,7 +40,6 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     ''
   }
   
-  
   target_url <- paste0(
     stem, substr(end_year, 3, 4), '/parcc/', season_variant,
       parse_parcc_subj(subj), parcc_grade, '.xlsx' 
@@ -49,7 +48,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   tname <- tempfile(pattern = 'parcc', tmpdir = tempdir(), fileext = '.xlsx')
   tdir <- tempdir()
   downloader::download(target_url, destfile = tname, mode = 'wb') 
-  parcc <- readxl::read_excel(path = tname, skip = 2, na = '*')
+  parcc <- readxl::read_excel(path = tname, skip = 2, na = '*', guess_max = 30000)
   
   #last two rows are notes
   parcc <- parcc[1:(nrow(parcc)-2), ]
