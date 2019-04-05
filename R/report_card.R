@@ -10,6 +10,7 @@
 get_one_rc_database <- function(end_year) {
   
   pr_urls <- list(
+    "2018" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
     "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
     "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
     "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
