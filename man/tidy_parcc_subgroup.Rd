@@ -4,10 +4,10 @@
 \alias{tidy_parcc_subgroup}
 \title{tidy parcc subgroup}
 \usage{
-tidy_parcc_subgroup(subgroup_vector)
+tidy_parcc_subgroup(sv)
 }
 \arguments{
-\item{subgroup_vector}{subgroup column from parcc data file}
+\item{sv}{subgroup column from parcc data file}
 }
 \value{
 character vector with consistent subgroup names
