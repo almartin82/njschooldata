@@ -7,7 +7,10 @@
 parcc_perf_level_counts(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{dataframe, output of fetch_parcc}
+}
+\value{
+df with counts of students by performance level
 }
 \description{
 PARCC counts by performance level
