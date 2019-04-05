@@ -11,7 +11,7 @@ get_one_rc_database <- function(end_year) {
   
   pr_urls <- list(
     "2018" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
-    "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
+    "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/DistrictPerformanceReports.xlsx",
     "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
     "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
     "2014" = "http://www.nj.gov/education/pr/1314/database/2014%20performance%20report%20database.xlsx",
@@ -30,7 +30,7 @@ get_one_rc_database <- function(end_year) {
   
   #temp file for downloading
   file_exts <- c(
-    rep('xlsx', 6),
+    rep('xlsx', 7),
     rep('xls', 9)
   )
   tmp_pr = tempfile(fileext = paste0('.', file_exts[1 + (2017-end_year)]))
