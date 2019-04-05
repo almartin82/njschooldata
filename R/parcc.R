@@ -21,7 +21,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     }
     #in 2018 - honestly I just can't.  
     # fine, state of NJ, ELA003. it's only broken code, not life and death, as they say.
-    if (end_year == 2018) {
+    if (end_year == 2018 & subj == 'ela') {
       parcc_grade <- paste0('0', parcc_grade) 
     }
   } else {
@@ -40,7 +40,6 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     ''
   }
   
-  
   target_url <- paste0(
     stem, substr(end_year, 3, 4), '/parcc/', season_variant,
       parse_parcc_subj(subj), parcc_grade, '.xlsx' 
@@ -49,7 +48,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   tname <- tempfile(pattern = 'parcc', tmpdir = tempdir(), fileext = '.xlsx')
   tdir <- tempdir()
   downloader::download(target_url, destfile = tname, mode = 'wb') 
-  parcc <- readxl::read_excel(path = tname, skip = 2, na = '*')
+  parcc <- readxl::read_excel(path = tname, skip = 2, na = '*', guess_max = 30000)
   
   #last two rows are notes
   parcc <- parcc[1:(nrow(parcc)-2), ]
@@ -115,55 +114,58 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
 
 #' tidy parcc subgroup
 #'
-#' @param subgroup_vector subgroup column from parcc data file
+#' @param sv subgroup column from parcc data file
 #'
 #' @return character vector with consistent subgroup names
 #' @export
 
-tidy_parcc_subgroup <- function(subgroup_vector) {
+tidy_parcc_subgroup <- function(sv) {
   
-  subgroup_vector <- gsub("ALL STUDENTS", 'total_population', subgroup_vector, fixed = TRUE)
+  # 2018 is all proper case
+  sv <- toupper(sv)
   
-  subgroup_vector <- gsub('WHITE', 'white', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('AFRICAN AMERICAN', 'black', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('ASIAN', 'asian', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('HISPANIC', 'hispanic', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub(
+  sv <- gsub("ALL STUDENTS", 'total_population', sv, fixed = TRUE)
+  
+  sv <- gsub('WHITE', 'white', sv, fixed = TRUE)
+  sv <- gsub('AFRICAN AMERICAN', 'black', sv, fixed = TRUE)
+  sv <- gsub('ASIAN', 'asian', sv, fixed = TRUE)
+  sv <- gsub('HISPANIC', 'hispanic', sv, fixed = TRUE)
+  sv <- gsub(
     'NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER|NATIVE HAWAIIAN', 'pacific_islander', 
-    subgroup_vector, fixed = FALSE
+    sv, fixed = FALSE
   )
-  subgroup_vector <- gsub('AMERICAN INDIAN', 'american_indian', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('OTHER', 'other', subgroup_vector, fixed = TRUE)
+  sv <- gsub('AMERICAN INDIAN', 'american_indian', sv, fixed = TRUE)
+  sv <- gsub('OTHER', 'other', sv, fixed = TRUE)
   
-  subgroup_vector <- gsub('FEMALE', 'female', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('MALE', 'male', subgroup_vector, fixed = TRUE)
+  sv <- gsub('FEMALE', 'female', sv, fixed = TRUE)
+  sv <- gsub('MALE', 'male', sv, fixed = TRUE)
   
-  subgroup_vector <- gsub(
+  sv <- gsub(
     "STUDENTS WITH DISABLITIES|STUDENTS WITH DISABILITIES", 'special_education', 
-    subgroup_vector, fixed = FALSE
+    sv, fixed = FALSE
   )
-  subgroup_vector <- gsub("SE ACCOMMODATION", 'sped_accomodations', subgroup_vector, fixed = TRUE)
+  sv <- gsub("SE ACCOMMODATION", 'sped_accomodations', sv, fixed = TRUE)
   
-  subgroup_vector <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub(
-    'NON ECON. DISADVANTAGED|NON-ECON. DISADVANTAGED', 'non_ed', subgroup_vector, fixed = FALSE
+  sv <- gsub('ECONOMICALLY DISADVANTAGED', 'ed', sv, fixed = TRUE)
+  sv <- gsub(
+    'NON ECON. DISADVANTAGED|NON-ECON. DISADVANTAGED', 'non_ed', sv, fixed = FALSE
   )
   
-  subgroup_vector <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('CURRENT - ELL', 'lep_current', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('FORMER - ELL', 'lep_former', subgroup_vector, fixed = TRUE)
+  sv <- gsub('ENGLISH LANGUAGE LEARNERS', 'lep_current_former', sv, fixed = TRUE)
+  sv <- gsub('CURRENT - ELL', 'lep_current', sv, fixed = TRUE)
+  sv <- gsub('FORMER - ELL', 'lep_former', sv, fixed = TRUE)
   
-  subgroup_vector <- gsub('GRADE - other', 'grade_other', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 06', 'grade_06', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 07', 'grade_07', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 08', 'grade_08', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 09', 'grade_09', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 10', 'grade_10', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 11', 'grade_11', subgroup_vector, fixed = TRUE)
-  subgroup_vector <- gsub('GRADE - 12', 'grade_12', subgroup_vector, fixed = TRUE)
+  sv <- gsub('GRADE - other', 'grade_other', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 06', 'grade_06', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 07', 'grade_07', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 08', 'grade_08', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 09', 'grade_09', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 10', 'grade_10', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 11', 'grade_11', sv, fixed = TRUE)
+  sv <- gsub('GRADE - 12', 'grade_12', sv, fixed = TRUE)
   
   
-  subgroup_vector
+  sv
 }
 
 #' @title gets and cleans up a PARCC data file file

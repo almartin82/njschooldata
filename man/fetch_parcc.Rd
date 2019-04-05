@@ -15,7 +15,7 @@ school year is end_year 2015.  valid values are 2015-2017}
 \item{subj}{PARCC subject. c('ela' or 'math')}
 
 \item{tidy}{clean up the data frame to make it more compatible with 
-NJASK naming conventions?  default is FALSE.}
+NJASK naming conventions and do some additional calculations?  default is FALSE.}
 }
 \description{
 \code{fetch_parcc} is a wrapper around \code{get_raw_parcc} and
