@@ -11,10 +11,16 @@
 get_raw_grate <- function(end_year, calc_type = '4 year') {
   
   #xlsx
+  
   if (end_year >= 2013 & calc_type == '4 year') {
     #build url
+    basic_suffix <- "/4Year.xlsx"
+    if (end_year >= 2018) {
+      basic_suffix <- "/4YearGraduation.xlsx"
+    }
+  
     grate_url <- paste0(
-      "http://www.state.nj.us/education/data/grate/", end_year, "/4Year.xlsx"
+      "http://www.state.nj.us/education/data/grate/", end_year, basic_suffix
     )
     
     #download
