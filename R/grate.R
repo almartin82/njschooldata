@@ -3,20 +3,21 @@
 #' @description
 #' \code{get_raw_grate} returns a data frame with NJ HS grad rate
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1998-2015.
-#' @param calc_type c('4 year', '5 year').  5 year only available for 2012 and 2013 
-#' as of 8/26/15
+#' school year is year '2007'.  valid values are 1998-2018.
+#' @param calc_type c('4 year', '5 year')
 #' @export
 
 get_raw_grate <- function(end_year, calc_type = '4 year') {
   
   #xlsx
-  
   if (end_year >= 2013 & calc_type == '4 year') {
     #build url
     basic_suffix <- "/4Year.xlsx"
+    num_skip <- 0
+    
     if (end_year >= 2018) {
       basic_suffix <- "/4YearGraduation.xlsx"
+      num_skip <- 3
     }
   
     grate_url <- paste0(
@@ -28,7 +29,7 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     tdir <- tempdir()
     downloader::download(grate_url, dest = tname, mode = "wb") 
 
-    grate <- readxl::read_excel(tname, na = '-')
+    grate <- readxl::read_excel(tname, na = '-', skip = num_skip)
     names(grate)[names(grate) == 'FOUR_YR_GRAD_RATE'] <- 'grad_rate'
     names(grate)[names(grate) == 'FOUR_YR_ADJ_COHORT_COUNT'] <- 'cohort_count'
 
@@ -128,9 +129,9 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
 
 process_grate <- function(df, end_year) {
   #clean up names
-  names(df)[names(df) %in% c('COUNTY', 'CO', 'CO NAME', 'CO_NAME')] <- 'county_name'
-  names(df)[names(df) %in% c('DISTRICT', 'DIST', 'DIST NAME', 'DIS_NAME')] <- 'district_name'
-  names(df)[names(df) %in% c('SCHOOL', 'SCH', 'SCH NAME', 'SCH_NAME')] <- 'school_name'
+  names(df)[names(df) %in% c('COUNTY', 'CO', 'CO NAME', 'CO_NAME', 'County Name')] <- 'county_name'
+  names(df)[names(df) %in% c('DISTRICT', 'DIST', 'DIST NAME', 'DIS_NAME', 'District Name')] <- 'district_name'
+  names(df)[names(df) %in% c('SCHOOL', 'SCH', 'SCH NAME', 'SCH_NAME', 'School Name')] <- 'school_name'
   
   #oh, man.  in 1998 and 1999 PROG_CODE is program code.  in 2008 PROG_CODE is...
   #actually PROG_NAME
@@ -142,9 +143,9 @@ process_grate <- function(df, end_year) {
   }
   names(df)[names(df) %in% c('PROGNAME', 'PROG', 'PROG NAME')] <- 'program_name'
   
-  names(df)[names(df) %in% c('COUNTY_CODE', 'CO CODE', 'County')] <- 'county_id'
-  names(df)[names(df) %in% c('DISTRICT_CODE', 'DIST CODE', 'District')] <- 'district_id'
-  names(df)[names(df) %in% c('SCHOOL_CODE', 'SCH CODE', 'School')] <- 'school_id'
+  names(df)[names(df) %in% c('COUNTY_CODE', 'CO CODE', 'County', 'County Code')] <- 'county_id'
+  names(df)[names(df) %in% c('DISTRICT_CODE', 'DIST CODE', 'District', 'District Code')] <- 'district_id'
+  names(df)[names(df) %in% c('SCHOOL_CODE', 'SCH CODE', 'School', 'School Code')] <- 'school_id'
   
   #errata
   names(df)[names(df) %in% c('HISP_MALE')] <- 'hisp_m'  
