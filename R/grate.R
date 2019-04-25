@@ -165,7 +165,10 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('2/MORE_RACES_M(NON_HISP)')] <- '2_more_m'
   names(df)[names(df) %in% c('2/MORE_RACES_F(NON_HISP)')] <- '2_more_f'
 
-  names(df)[names(df) %in% c('SUBGROUP')] <- 'group'
+  names(df)[names(df) %in% c('SUBGROUP', 'Subgroup')] <- 'group'
+  names(df)[names(df) %in% c('Four Year Graduation Rate')] <- 'grad_rate'
+  names(df)[names(df) %in% c('Four Year Adjusted Cohort Count')] <- 'cohort_count'
+  names(df)[names(df) %in% c('Four Year Graduates Count')] <- 'graduated_count'
   
   names(df) <- names(df) %>% tolower()
 
@@ -204,14 +207,6 @@ process_grate <- function(df, end_year) {
     df$school_id <- int_matrix[, 1]
     df$school_name <- int_matrix[, 2]
  
-  }
-  
-  df_coltypes <- sapply(df, class) %>% unname()
-
-  for (i in 1:ncol(df)) {
-    if (df_coltypes[i] == 'character') {
-      df[, i] <- sapply(df[, i], trimws, which = 'both')
-    }
   }
   
   #missing program names
