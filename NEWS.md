@@ -1,3 +1,14 @@
+# njschooldata 0.7.6
+
+## New features
+
+* `charter_sector_parcc_aggs` will calculate PARCC composites for city charter sectors. 
+
+## Breaking changes
+
+* PARCC functions now return `_id` (ie `district_id`, `school_id`) instead of `_code`.  This closes [#65](https://github.com/almartin82/njschooldata/issues/65) and makes school/district identifiers consistent across enrollment and PARCC assessment files.
+
+
 # njschooldata 0.7.5
 
 ## New features
