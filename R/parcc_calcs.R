@@ -102,11 +102,11 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
   
   # group, aggregate, return
   all_grades %>%
-    filter(!is.na(county_code)) %>%
+    filter(!is.na(county_id)) %>%
     group_by(
-      county_code, county_name,
-      district_code, district_name,
-      school_code, school_name,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
       dfg, 
       subgroup,
       subgroup_type,
