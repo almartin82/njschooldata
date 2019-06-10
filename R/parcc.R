@@ -108,7 +108,13 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
     'school', parcc_file$district_school
   )
   
-  parcc_file
+  # use district_id, etc
+  parcc_file %>%
+    rename(
+      county_id = county_code,
+      district_id = district_code,
+      school_id = school_code
+    )
 }
 
 
