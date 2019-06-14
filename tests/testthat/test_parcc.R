@@ -27,7 +27,7 @@ test_that("fetch_parcc processes data file", {
   expect_equal(colnames(p)[4], "district_name")
   
   p <- fetch_parcc(2015, 4, 'math', tidy = TRUE)
-  expect_equal(dim(p), c(22324, 28))
+  expect_equal(dim(p), c(22324, 33))
   expect_true("black" %in% p$subgroup)
   expect_false("GENDER" %in% p$subgroup)
   
@@ -40,7 +40,7 @@ test_that("fetch_parcc processes 2016-17 data file", {
   expect_equal(colnames(p)[3], "district_code")
   
   p <- fetch_parcc(2017, 4, 'math', tidy = TRUE)
-  expect_equal(dim(p), c(25558, 23))
+  expect_equal(dim(p), c(25558, 33))
   expect_true("black" %in% p$subgroup)
   expect_false("GENDER" %in% p$subgroup)
   
