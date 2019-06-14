@@ -39,9 +39,11 @@ parcc_aggregate_calcs <- function(df) {
       num_l3 = sum(num_l3, na.rm = TRUE),
       num_l4 = sum(num_l4, na.rm = TRUE),
       num_l5 = sum(num_l5, na.rm = TRUE),
-      
+    
       districts = toString(district_name),
-      schools = toString(school_name)
+      schools = toString(school_name),
+      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      
     ) %>%
     dplyr::mutate(
       pct_l1 = round((num_l1 / number_of_valid_scale_scores) * 100, 1),
