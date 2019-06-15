@@ -13,10 +13,10 @@ test_that("get_raw_parcc gets data file", {
 test_that("fetch_parcc gets data file", {
   
   p <- fetch_parcc(2015, 4, 'math')
-  expect_equal(dim(p), c(22324, 23))
+  expect_equal(dim(p), c(22324, 33))
   
   p <- fetch_parcc(2015, 'GEO', 'math')
-  expect_equal(dim(p), c(12625, 23))
+  expect_equal(dim(p), c(12625, 33))
   
 })
 
@@ -24,7 +24,7 @@ test_that("fetch_parcc gets data file", {
 test_that("fetch_parcc processes data file", {
   
   p <- fetch_parcc(2015, 8, 'ela', tidy = FALSE)
-  expect_equal(colnames(p)[4], "district_name")
+  expect_equal(colnames(p)[4], "grade")
   
   p <- fetch_parcc(2015, 4, 'math', tidy = TRUE)
   expect_equal(dim(p), c(22324, 33))
@@ -37,10 +37,10 @@ test_that("fetch_parcc processes data file", {
 test_that("fetch_parcc processes 2016-17 data file", {
   
   p <- fetch_parcc(2017, 8, 'ela', tidy = FALSE)
-  expect_equal(colnames(p)[3], "district_code")
+  expect_equal(colnames(p)[3], "test_name")
   
   p <- fetch_parcc(2017, 4, 'math', tidy = TRUE)
-  expect_equal(dim(p), c(25558, 33))
+  expect_equal(dim(p), c(25557, 33))
   expect_true("black" %in% p$subgroup)
   expect_false("GENDER" %in% p$subgroup)
   
