@@ -127,8 +127,8 @@ test_that("charter sector aggs, ALL enrollment data", {
 
 test_that("all public aggs, 2017-18 enrollment data", {
   
-  enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
+  enr_1718 <- map_df(c(2017:2018), ~fetch_enr(.x, tidy=TRUE))
   all_public_aggs_1718 <- allpublic_enr_aggs(enr_1718)
   expect_is(all_public_aggs_1718 , "data.frame")
-  expect_equal(nrow(ch_aggs_1718), 16892)
+  expect_equal(nrow(all_public_aggs_1718), 16500)
 })
