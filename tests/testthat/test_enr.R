@@ -120,13 +120,10 @@ test_that("enr aggs correctly calculates known 2018 data", {
 
 test_that("fetch_enr works with tidy=TRUE argument", {
   enr_2018_untidy <- fetch_enr(2018, tidy=FALSE)
-  sample_n(enr_2018_untidy, 5) %>% print.AsIs()
-
-  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
-  sample_n(enr_2018_tidy, 5) %>% print.AsIs()
+  expect_is(enr_2018_untidy, 'data.frame')
   
+  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
   expect_is(enr_2018_tidy, 'data.frame')
-  # sample_n(enr_2018_tidy, 10) %>% print.AsIs()
 })
 
 
