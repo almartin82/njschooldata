@@ -266,8 +266,7 @@ charter_sector_parcc_aggs <- function(df) {
   
   # dfg isn't particularly meaningful and some charters are in the 
   # ND not determined bucket
-  df <- df %>%
-    mutate(dfg = NA)
+  df <- df %>% mutate(dfg = NA)
   
   # group by - host city and summarize
   df <- df %>% 
@@ -330,6 +329,10 @@ allpublic_parcc_aggs <- function(df) {
   
   # only district rows
   df <- df %>% filter(is_district)
+  
+  # dfg isn't particularly meaningful and some charters are in the 
+  # ND not determined bucket
+  df <- df %>% mutate(dfg = NA)
   
   # group by - newly modified county_id, district_id and summarize
   df <- df %>% 
