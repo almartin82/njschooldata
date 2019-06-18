@@ -335,15 +335,15 @@ allpublic_parcc_aggs <- function(df) {
   df <- df %>% mutate(dfg = NA)
   
   # group by - newly modified county_id, district_id and summarize
-  df <- df %>% 
+  df <- df %>%
     group_by(
-      testing_year, 
+      testing_year,
       assess_name, test_name,
       county_id,
       district_id,
       is_charter,
       dfg,
-      grade, 
+      grade,
       subgroup, subgroup_type
     ) %>%
     parcc_aggregate_calcs() %>%
@@ -365,7 +365,6 @@ allpublic_parcc_aggs <- function(df) {
   
   df <- df %>%
     left_join(ch_join, by = 'district_id')
-  
   
   # give psuedo district names and codes
   # create appropriate boolean flag
