@@ -142,3 +142,10 @@ test_that("charter sector parcc aggs, 2018", {
   expect_equal(nrow(ch_aggs_math4_2018), 339)
 })
 
+test_that("allpublic parcc aggs, 2018", {
+  
+  p_math4_2018 <- fetch_parcc(2018, 4, 'math', TRUE)
+  allpublic_aggs_math4_2018 <- allpublic_parcc_aggs(p_math4_2018)
+  expect_is(allpublic_aggs_math4_2018, "data.frame")
+  expect_equal(nrow(allpublic_aggs_math4_2018), 339)
+})
