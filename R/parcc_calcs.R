@@ -27,12 +27,15 @@ parcc_perf_level_counts <- function(df) {
 parcc_aggregate_calcs <- function(df) {
 
   df %>%
-    dplyr::mutate(scale_score_mean = as.numeric(scale_score_mean)) %>%
+    dplyr::mutate(
+      scale_score_mean = as.numeric(scale_score_mean),
+      scale_score_numerator = scale_score_mean * number_of_valid_scale_scores
+    ) %>%
     dplyr::summarize(
       number_enrolled = sum(number_enrolled, na.rm = TRUE),
       number_not_tested = sum(number_not_tested, na.rm = TRUE),
       number_of_valid_scale_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
-      scale_score_mean = sum(scale_score_mean * number_of_valid_scale_scores, na.rm = TRUE),
+      scale_score_mean = sum(scale_score_numerator, na.rm = TRUE),
       
       num_l1 = sum(num_l1, na.rm = TRUE),
       num_l2 = sum(num_l2, na.rm = TRUE),
@@ -43,7 +46,6 @@ parcc_aggregate_calcs <- function(df) {
       districts = toString(district_name),
       schools = toString(school_name),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
-      
     ) %>%
     dplyr::mutate(
       pct_l1 = round((num_l1 / number_of_valid_scale_scores) * 100, 1),
