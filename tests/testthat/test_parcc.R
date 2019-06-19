@@ -45,3 +45,13 @@ test_that("fetch_parcc processes 2016-17 data file", {
   expect_false("GENDER" %in% p$subgroup)
   
 })
+
+
+test_that("calculate_agg_parcc_prof", {
+  math_k11_2018 <- calculate_agg_parcc_prof(
+    end_year = 2018,
+    subj = 'math',
+    k8 = FALSE
+  )
+  expect_is(math_k11_2018, 'data.frame')
+})
