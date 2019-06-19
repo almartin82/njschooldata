@@ -81,7 +81,7 @@ parcc_column_order <- function(df) {
       pct_l1, pct_l2, pct_l3, pct_l4, pct_l5,
       num_l1, num_l2, num_l3, num_l4, num_l5,
       is_state, is_dfg, 
-      is_district, is_school,
+      is_district, is_school, is_charter,
       is_charter_sector,
       is_allpublic
     )
@@ -137,6 +137,7 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$is_dfg <- parcc_file$county_code == 'DFG'
   parcc_file$is_district = is.na(parcc_file$school_code) & !is.na(parcc_file$district_code)
   parcc_file$is_school = !is.na(parcc_file$school_code)
+  parcc_file$is_charter = parcc_file$county_code == '80'
 
   parcc_file$is_charter_sector <- FALSE
   parcc_file$is_allpublic <- FALSE
