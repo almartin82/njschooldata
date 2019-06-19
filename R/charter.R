@@ -296,6 +296,7 @@ charter_sector_parcc_aggs <- function(df) {
       is_state = FALSE,
       is_dfg = FALSE,
       is_district = FALSE,
+      is_charter = FALSE,
       is_school = FALSE,      
       is_charter_sector = TRUE,
       is_allpublic = FALSE
@@ -322,7 +323,6 @@ allpublic_parcc_aggs <- function(df) {
   # if charter, make host_district_id the district id
   df <- df %>%
     mutate(
-      is_charter = !is.na(host_district_id),
       county_id = ifelse(!is.na(host_county_id), host_county_id, county_id),
       district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
     )
@@ -341,7 +341,6 @@ allpublic_parcc_aggs <- function(df) {
       assess_name, test_name,
       county_id,
       district_id,
-      is_charter,
       dfg,
       grade,
       subgroup, subgroup_type
@@ -377,7 +376,8 @@ allpublic_parcc_aggs <- function(df) {
       is_state = FALSE,
       is_dfg = FALSE,
       is_district = FALSE,
-      is_school = FALSE,      
+      is_charter = FALSE,
+      is_school = FALSE,  
       is_charter_sector = FALSE,
       is_allpublic = TRUE
     ) 
