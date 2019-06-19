@@ -116,7 +116,10 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
       subgroup_type,
       testing_year,
       assess_name,
-      district_school
+      is_state, is_dfg, 
+      is_district, is_school, is_charter,
+      is_charter_sector,
+      is_allpublic
     ) %>%
     parcc_aggregate_calcs() %>%
     ungroup() %>%
