@@ -1,6 +1,5 @@
 context("functions in lookups.R")
 
-
 enr_several <- map_df(
   c(2017:2018),
   fetch_enr, tidy=TRUE
@@ -22,7 +21,7 @@ test_that("district_name_to_id correctly identifies the friendly names", {
   
   back_to_id <- district_name_to_id(friendly_names[1:5], enr_several)
   expect_equal(
-    friendly_names[1:5],
+    back_to_id[1:5],
     c("6010", "0010", "0020", "6032", "6110")
   )
 })

@@ -60,7 +60,7 @@ test_that("id_charter_hosts, 2018 parcc math 3", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_math3_18 <- parcc_math3_18 %>% 
-    filter(county_code == '80' & !district_code=='9999')
+    filter(county_id=='80' & !district_id=='9999')
   charter_parcc_math3_18_host <- id_charter_hosts(charter_parcc_math3_18)
   
   expect_equal(nrow(charter_parcc_math3_18), nrow(charter_parcc_math3_18_host))
@@ -75,7 +75,7 @@ test_that("id_charter_hosts, 2018 parcc ela 5", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_ela5_18 <- parcc_ela5_18 %>% 
-    filter(county_code == '80' & !district_code=='9999')
+    filter(county_id == '80' & !district_id=='9999')
   charter_parcc_ela5_18_host <- id_charter_hosts(charter_parcc_ela5_18)
   
   expect_equal(nrow(charter_parcc_ela5_18), nrow(charter_parcc_ela5_18_host))
@@ -90,7 +90,7 @@ test_that("id_charter_hosts, 2018 parcc ALG1 math", {
   
   # look at all county = charters and make sure that none have null host_district_id
   charter_parcc_alg1_18 <- parcc_alg1_18 %>% 
-    filter(county_code == '80' & !district_code=='9999')
+    filter(county_id == '80' & !district_id=='9999')
   charter_parcc_alg1_18_host <- id_charter_hosts(charter_parcc_alg1_18)
   
   expect_equal(nrow(charter_parcc_alg1_18), nrow(charter_parcc_alg1_18_host))
@@ -98,13 +98,13 @@ test_that("id_charter_hosts, 2018 parcc ALG1 math", {
   expect_equal(charter_parcc_alg1_18_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
-
+# charter enrollment aggs
 test_that("charter sector aggs, 2018 enrollment data", {
   
   enr_2018 <- fetch_enr(2018, tidy=TRUE)
   ch_aggs_2018 <- charter_sector_enr_aggs(enr_2018)
   expect_is(ch_aggs_2018, "data.frame")
-  expect_equal(nrow(ch_aggs_2018), 8640)
+  expect_equal(nrow(ch_aggs_2018), 8420)
 })
 
 
@@ -113,12 +113,11 @@ test_that("charter sector aggs, 2017-18 enrollment data", {
   enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
   ch_aggs_1718 <- charter_sector_enr_aggs(enr_1718)
   expect_is(ch_aggs_1718, "data.frame")
-  expect_equal(nrow(ch_aggs_1718), 16892)
+  expect_equal(nrow(ch_aggs_1718), 16500)
 })
 
-
 test_that("charter sector aggs, ALL enrollment data", {
-  enr_all <- c(1999:2018)
+  enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
   ch_aggs_ <- charter_sector_enr_aggs(enr_df)
   expect_is(enr_df, 'data.frame')
@@ -127,8 +126,26 @@ test_that("charter sector aggs, ALL enrollment data", {
 
 test_that("all public aggs, 2017-18 enrollment data", {
   
-  enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
+  enr_1718 <- map_df(c(2017:2018), ~fetch_enr(.x, tidy=TRUE))
   all_public_aggs_1718 <- allpublic_enr_aggs(enr_1718)
   expect_is(all_public_aggs_1718 , "data.frame")
-  expect_equal(nrow(ch_aggs_1718), 16892)
+  expect_equal(nrow(all_public_aggs_1718), 16500)
+})
+
+
+# charter PARCC aggs
+test_that("charter sector parcc aggs, 2018", {
+  
+  p_math4_2018 <- fetch_parcc(2018, 4, 'math', TRUE)
+  ch_aggs_math4_2018 <- charter_sector_parcc_aggs(p_math4_2018)
+  expect_is(ch_aggs_math4_2018, "data.frame")
+  expect_equal(nrow(ch_aggs_math4_2018), 339)
+})
+
+test_that("allpublic parcc aggs, 2018", {
+  
+  p_math4_2018 <- fetch_parcc(2018, 4, 'math', TRUE)
+  allpublic_aggs_math4_2018 <- allpublic_parcc_aggs(p_math4_2018)
+  expect_is(allpublic_aggs_math4_2018, "data.frame")
+  expect_equal(nrow(allpublic_aggs_math4_2018), 339)
 })
