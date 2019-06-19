@@ -42,7 +42,7 @@ test_that("fetch_enr correctly grabs the 2012 enrollment file", {
   fetch_2009 <- fetch_enr(2009)
 
   expect_equal(nrow(fetch_2009), 29491)
-  expect_equal(ncol(fetch_2009), 38)
+  expect_equal(ncol(fetch_2009), 39)
   expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
 })
 
@@ -60,7 +60,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file", {
   fetch_2018 <- fetch_enr(2018)
 
   expect_is(fetch_2018, 'data.frame')
-  expect_equal(nrow(fetch_2018), 26485)
+  expect_equal(nrow(fetch_2018), 26484)
   expect_equal(ncol(fetch_2018), 39)
 })
 
@@ -69,8 +69,8 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
   fetch_2018 <- fetch_enr(2018, TRUE)
   
   expect_is(fetch_2018, 'data.frame')
-  expect_equal(nrow(fetch_2018), 625240)
-  expect_equal(ncol(fetch_2018), 19)
+  expect_equal(nrow(fetch_2018), 648484)
+  expect_equal(ncol(fetch_2018), 22)
 })
 
 
@@ -81,8 +81,8 @@ test_that("all enrollment data can be pulled", {
   )
 
   expect_is(enr_all, 'data.frame')
-  expect_equal(nrow(enr_all), 558627)
-  expect_equal(ncol(enr_all), 33)
+  expect_equal(nrow(enr_all), 559803)
+  expect_equal(ncol(enr_all), 42)
 })
 
 
@@ -120,20 +120,17 @@ test_that("enr aggs correctly calculates known 2018 data", {
 
 test_that("fetch_enr works with tidy=TRUE argument", {
   enr_2018_untidy <- fetch_enr(2018, tidy=FALSE)
-  sample_n(enr_2018_untidy, 5) %>% print.AsIs()
-
-  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
-  sample_n(enr_2018_tidy, 5) %>% print.AsIs()
+  expect_is(enr_2018_untidy, 'data.frame')
   
+  enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
   expect_is(enr_2018_tidy, 'data.frame')
-  # sample_n(enr_2018_tidy, 10) %>% print.AsIs()
 })
 
 
 test_that("fetch_enr tidy FALSE works across many years", {
   enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=FALSE))
-  expect_iss(enr_df, 'data.frame')
+  expect_is(enr_df, 'data.frame')
 })
 
 
@@ -153,11 +150,11 @@ test_that("hand test fetch_enr numbers", {
   nps_2018_total <- nps_2018 %>% filter(subgroup == 'total_enrollment')
   
   expect_equal(
-    nps_2018_total %>% filter(grade_level=='PF') %>% pull(n_students),
+    nps_2018_total %>% filter(grade_level=='PK') %>% pull(n_students),
     1963
   )
   expect_equal(
-    nps_2018_total %>% filter(grade_level=='KF') %>% pull(n_students),
+    nps_2018_total %>% filter(grade_level=='K') %>% pull(n_students),
     2450
   )
   expect_equal(
@@ -218,11 +215,11 @@ test_that("hand test fetch_enr numbers", {
   nps_2007_total <- nps_2007 %>% filter(subgroup == 'total_enrollment')
   
   expect_equal(
-    nps_2007_total %>% filter(grade_level=='PF' & program_code=='1') %>% pull(n_students),
+    nps_2007_total %>% filter(grade_level=='PK' & program_code=='1') %>% pull(n_students),
     652
   )
   expect_equal(
-    nps_2007_total %>% filter(grade_level=='KF') %>% pull(n_students),
+    nps_2007_total %>% filter(grade_level=='K') %>% pull(n_students),
     3210
   )
   expect_equal(

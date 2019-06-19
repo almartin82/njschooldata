@@ -56,6 +56,38 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
 }
 
 
+#' PARCC column order
+#'
+#' @param df tidied PARCC dataframe.  called as final step in fetch_parcc when tidy=TRUE
+#'
+#' @return PARCC df with columns in coherent order
+#' @export
+
+parcc_column_order <- function(df) {
+  df %>% 
+    select(
+      testing_year,
+      assess_name, 
+      test_name,
+      grade,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dfg,
+      subgroup, subgroup_type,
+      number_enrolled, number_not_tested, 
+      number_of_valid_scale_scores,
+      scale_score_mean,
+      pct_l1, pct_l2, pct_l3, pct_l4, pct_l5,
+      num_l1, num_l2, num_l3, num_l4, num_l5,
+      is_state, is_dfg, 
+      is_district, is_school, is_charter,
+      is_charter_sector,
+      is_allpublic
+    )
+}
+
+
 #' Process a raw PARCC data file
 #' 
 #' @description all the logic needed to clean up the raw PARCC files
@@ -97,18 +129,32 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
   
-  #tag district or school
-  parcc_file$district_school <- NA
-  parcc_file$district_school <- ifelse(
-    is.na(parcc_file$school_code) & !is.na(parcc_file$district_code),
-    'district', parcc_file$district_school
-  )
-  parcc_file$district_school <- ifelse(
-    !is.na(parcc_file$school_code) & !is.na(parcc_file$district_code),
-    'school', parcc_file$district_school
-  )
+  #remove random NA row that has the year and grade only
+  parcc_file <- parcc_file %>% filter(!is.na(county_code))
   
-  parcc_file
+  #tag subsets
+  parcc_file$is_state <- parcc_file$county_code == 'STATE'
+  parcc_file$is_dfg <- parcc_file$county_code == 'DFG'
+  parcc_file$is_district = is.na(parcc_file$school_code) & !is.na(parcc_file$district_code)
+  parcc_file$is_school = !is.na(parcc_file$school_code)
+  parcc_file$is_charter = parcc_file$county_code == '80'
+
+  parcc_file$is_charter_sector <- FALSE
+  parcc_file$is_allpublic <- FALSE
+  
+  # use district_id, etc
+  parcc_file <- parcc_file %>%
+    rename(
+      county_id = county_code,
+      district_id = district_code,
+      school_id = school_code
+    )
+  
+  # level counts
+  parcc_file <- parcc_perf_level_counts(parcc_file)
+  
+  # column order
+  parcc_column_order(parcc_file)
 }
 
 

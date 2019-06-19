@@ -27,21 +27,25 @@ parcc_perf_level_counts <- function(df) {
 parcc_aggregate_calcs <- function(df) {
 
   df %>%
-    dplyr::mutate(scale_score_mean = as.numeric(scale_score_mean)) %>%
+    dplyr::mutate(
+      scale_score_mean = as.numeric(scale_score_mean),
+      scale_score_numerator = scale_score_mean * number_of_valid_scale_scores
+    ) %>%
     dplyr::summarize(
       number_enrolled = sum(number_enrolled, na.rm = TRUE),
       number_not_tested = sum(number_not_tested, na.rm = TRUE),
       number_of_valid_scale_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
-      scale_score_mean = sum(scale_score_mean * number_of_valid_scale_scores, na.rm = TRUE),
+      scale_score_mean = sum(scale_score_numerator, na.rm = TRUE),
       
       num_l1 = sum(num_l1, na.rm = TRUE),
       num_l2 = sum(num_l2, na.rm = TRUE),
       num_l3 = sum(num_l3, na.rm = TRUE),
       num_l4 = sum(num_l4, na.rm = TRUE),
       num_l5 = sum(num_l5, na.rm = TRUE),
-      
+    
       districts = toString(district_name),
-      schools = toString(school_name)
+      schools = toString(school_name),
+      n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       pct_l1 = round((num_l1 / number_of_valid_scale_scores) * 100, 1),
@@ -102,11 +106,11 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
   
   # group, aggregate, return
   all_grades %>%
-    filter(!is.na(county_code)) %>%
+    filter(!is.na(county_id)) %>%
     group_by(
-      county_code, county_name,
-      district_code, district_name,
-      school_code, school_name,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
       dfg, 
       subgroup,
       subgroup_type,

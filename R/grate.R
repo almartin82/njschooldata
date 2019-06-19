@@ -450,7 +450,6 @@ tidy_grate <- function(df, end_year) {
     out <- tidy_new_format(df)
   #2013 shifted to long format
   } else if (end_year >= 2013) {
-    print(names(df))
     df$group <- clean_grate_names(df$group)
     
     out <- df
