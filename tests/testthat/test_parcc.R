@@ -47,11 +47,26 @@ test_that("fetch_parcc processes 2016-17 data file", {
 })
 
 
-test_that("calculate_agg_parcc_prof", {
+test_that("calculate_agg_parcc_prof on one year", {
   math_k11_2018 <- calculate_agg_parcc_prof(
     end_year = 2018,
     subj = 'math',
     k8 = FALSE
   )
   expect_is(math_k11_2018, 'data.frame')
+  expect_equal(ncol(math_k11_2018), 37)
+  expect_equal(nrow(math_k11_2018), 47629)
+})
+
+
+test_that("calculate_agg_parcc_prof, 4 years", {
+  
+  math_parcc_multi <- map_df(
+    c(2015:2018),
+    ~calculate_agg_parcc_prof(.x, subj = 'math', k8=FALSE)
+  )
+  expect_is(math_parcc_multi, 'data.frame')
+  
+  expect_equal(ncol(math_parcc_multi), 37)
+  expect_equal(nrow(math_parcc_multi), 47629)
 })

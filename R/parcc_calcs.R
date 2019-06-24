@@ -42,9 +42,11 @@ parcc_aggregate_calcs <- function(df) {
       num_l3 = sum(num_l3, na.rm = TRUE),
       num_l4 = sum(num_l4, na.rm = TRUE),
       num_l5 = sum(num_l5, na.rm = TRUE),
-    
+      
       districts = toString(district_name),
       schools = toString(school_name),
+      grades = toString(grade),
+      
       n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
@@ -116,6 +118,8 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
       subgroup_type,
       testing_year,
       assess_name,
+      test_name,
+      grade, 
       is_state, is_dfg, 
       is_district, is_school, is_charter,
       is_charter_sector,
