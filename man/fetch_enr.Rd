@@ -8,7 +8,7 @@ fetch_enr(end_year, tidy = FALSE)
 }
 \arguments{
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1999-2018.}
+school year is year '2007'.  valid values are 1999-2019.}
 
 \item{tidy}{if TRUE, takes the unwieldy wide data and normalizes into a 
 long, tidy data frame with limited headers - constants (school/district name and code),
