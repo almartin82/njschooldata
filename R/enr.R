@@ -4,42 +4,62 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2018.
+#' school year is year '2007'.  valid values are 1999-2019.
 #' @export
 
 get_raw_enr <- function(end_year) {
-  #build url
-  enr_url <- paste0(
-    "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
-  )
-    
-  #download and unzip
-  tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
-  tdir <- tempdir()
-  downloader::download(enr_url, dest = tname, mode = "wb") 
-
-  utils::unzip(tname, exdir = tdir)
   
-  #read file
-  enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
-  
-  if (grepl('.xls', tolower(enr_files$Name[1]))) {
-    this_file <- file.path(tdir, enr_files$Name[1])
-    if (end_year == 2010) {
-      enr <- gdata::read.xls(
-        this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
-      )
-    # if 2018 skip 3 lines
-    } else if (end_year >= 2018) {
-      enr <- readxl::read_excel(this_file, skip = 2)
-    } else {
-      enr <- readxl::read_excel(this_file)
-    }
-  } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
-    enr <- readr::read_csv(
-      file = file.path(tdir, enr_files$Name[1]),
-      na = "     . "
+  # before 2018-19 files are zipped
+  if (end_year < 2019) {
+    #build url
+    enr_url <- paste0(
+      "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
     )
+    
+    #download and unzip
+    tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
+    tdir <- tempdir()
+    downloader::download(enr_url, dest = tname, mode = "wb") 
+    
+    utils::unzip(tname, exdir = tdir)
+    
+    #read file
+    enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
+    
+    if (grepl('.xls', tolower(enr_files$Name[1]))) {
+      this_file <- file.path(tdir, enr_files$Name[1])
+      if (end_year == 2010) {
+        enr <- gdata::read.xls(
+          this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
+        )
+        # if 2018 skip 3 lines
+      } else if (end_year >= 2018) {
+        enr <- readxl::read_excel(this_file, skip = 2)
+      } else {
+        enr <- readxl::read_excel(this_file)
+      }
+    } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
+      enr <- readr::read_csv(
+        file = file.path(tdir, enr_files$Name[1]),
+        na = "     . "
+      )
+    }
+  # 2019 on raw xlsx files are posted
+  # too cheap to meter!
+  } else {
+    
+    enr_url <- paste0(
+      "http://www.nj.gov/education/data/enr/enr", 
+      substr(end_year, 3, 4), 
+      "/EnrollmentReport.xlsx"
+    )
+    
+    #download and unzip
+    tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".xlsx")
+    tdir <- tempdir()
+    downloader::download(enr_url, dest = tname, mode = "wb") 
+    
+    enr <- readxl::read_excel(tname, skip = 2)
   }
   
   enr$end_year <- end_year
@@ -244,6 +264,8 @@ clean_enr_names <- function(df) {
     
     #lep
     "LEP" = "lep",
+    # 2019 baby
+    "English_Learners" = "lep", 
     
     #migrant & homeless ---------------------
     #migrant
@@ -252,8 +274,8 @@ clean_enr_names <- function(df) {
     "MIGRNT" = "migrant", 
     "Migant" = "migrant",
     # maybe they'll fix the typo in the 2018 data?  if so:
+    # 2019 - they did! :clap:
     "Migrant" = "migrant",
-    
     
     #row totals
     "ROW_TOTAL" = "row_total",
@@ -748,7 +770,7 @@ enr_grade_aggs <- function(df) {
 #' \code{process_enr} that passes the correct file layout data to each function,
 #' given an end_year   
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2018.
+#' school year is year '2007'.  valid values are 1999-2019.
 #' @param tidy if TRUE, takes the unwieldy wide data and normalizes into a 
 #' long, tidy data frame with limited headers - constants (school/district name and code),
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).  

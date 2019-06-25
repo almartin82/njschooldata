@@ -74,6 +74,23 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
 })
 
 
+test_that("fetch_enr handles the 2018-19 enrollment file", {
+  fetch_2019 <- fetch_enr(2019)
+  
+  expect_is(fetch_2019, 'data.frame')
+  expect_equal(nrow(fetch_2019), 26506)
+  expect_equal(ncol(fetch_2019), 39)
+})
+
+test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
+  fetch_2019 <- fetch_enr(2019, TRUE)
+  
+  expect_is(fetch_2019, 'data.frame')
+  expect_equal(nrow(fetch_2019), 649000)
+  expect_equal(ncol(fetch_2019), 22)
+})
+
+
 test_that("all enrollment data can be pulled", {
   enr_all <- map_df(
     c(1999:2018),
