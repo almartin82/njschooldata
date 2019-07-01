@@ -78,7 +78,7 @@ parcc_column_order <- function(df) {
       number_enrolled, number_not_tested, 
       number_of_valid_scale_scores,
       scale_score_mean,
-      pct_l1, pct_l2, pct_l3, pct_l4, pct_l5,
+      pct_l1, pct_l2, pct_l3, pct_l4, pct_l5, proficient_above,
       num_l1, num_l2, num_l3, num_l4, num_l5,
       is_state, is_dfg, 
       is_district, is_school, is_charter,
@@ -95,7 +95,7 @@ parcc_column_order <- function(df) {
 #' @param parcc_file output of get_raw_parcc
 #' @inheritParams get_raw_parcc
 #'
-#' @return a tbl_df / data rame
+#' @return a tbl_df / data rfame
 #' @export
 
 process_parcc <- function(parcc_file, end_year, grade, subj) {
@@ -128,6 +128,10 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$assess_name <- 'PARCC'
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
+  parcc_file <- parcc_file %>%
+    mutate(
+      proficient_above = sum(pct_l4 + pct_l5, na.rm = TRUE)
+    )
   
   #remove random NA row that has the year and grade only
   parcc_file <- parcc_file %>% filter(!is.na(county_code))
