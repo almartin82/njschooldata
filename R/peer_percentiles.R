@@ -39,6 +39,15 @@ assessment_peer_percentile <- function(df) {
 }
 
 
+get_percentile_cols <- function(df) {
+  df %>% select(
+    one_of("temp_id", "proficient_rank", "proficient_group_size", "scale_rank", 
+           "scale_group_size", "proficiency_percentile", "scale_score_percentile", 
+           "avg_percentile")
+  )
+}
+
+
 statewide_peer_percentile <- function(df) {
   
   # group
@@ -54,8 +63,11 @@ statewide_peer_percentile <- function(df) {
 
   # calculate
   df_pctile <- assessment_peer_percentile(df) %>%
-    select(temp_id, assess_name)
+    get_percentile_cols
   
+  # rename
+  df_pctile <- df_pctile %>%
+    rename()
   # join and rename
 
   
