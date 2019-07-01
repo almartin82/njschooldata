@@ -1,31 +1,75 @@
-peer_percentile_pipe <- . %>%
-  dplyr::ungroup() %>%
-#  dplyr::rowwise() %>%
-  dplyr::mutate(
-    proficient_above = proficient + advanced_proficient,
-    count_proficient_dummy = ifelse(is.finite(proficient_above), 1, 0),
-    count_scale_dummy = ifelse(is.finite(scale_score_mean), 1, 0)
-  ) %>%
-  dplyr::group_by(
-    assess_name, test_name, testing_year, grade, subgroup
-  ) %>%
-  dplyr::mutate(
-    proficient_numerator_asc = dplyr::dense_rank(proficient_above),
-    proficient_denominator = sum(count_proficient_dummy),
-    
-    scale_numerator_asc = dplyr::dense_rank(scale_score_mean),
-    scale_denominator = sum(count_scale_dummy),
 
-    proficiency_percentile = proficient_numerator_asc / proficient_denominator,
-    proficiency_percentile2 = dplyr::percent_rank(proficient_above),
-    proficiency_percentile3 = dplyr::cume_dist(proficient_above),
+  
+
+#' Assessment Peer Percentile
+#'
+#' @description calculates the percentile rank of a school, defined as 
+#' the percent of comparison schools with lesser or equal performance,
+#' for both scale score, percent proficiency, and a composite average of
+#' the two.
+#' USE CAUTION when invoking this function.  This function accepts
+#' WHATEVER grouping variables are present in the input data.  If
+#' your data is not grouped in an intelligible or meaningful way, 
+#' you may get nonsense percentile ranks (eg, across grade levels, years, 
+#' subgroups, etc).  Please start with the convenience wrappers
+#' `statewide_peer_percentile()` and `dfg_peer_percentile()` 
+#' to examine percentile rank using comparison groups that are 
+#' sensible.
+#' @param df tidy PARCC df
+#'
+#' @return PARCC df with percentile ranks
+#' @export
+
+assessment_peer_percentile <- function(df) {
+  df %>%
+  dplyr::mutate(
+    count_proficient_dummy = ifelse(is.finite(proficient_above), 1, 0),
+    count_scale_dummy = ifelse(is.finite(scale_score_mean), 1, 0),
     
-    scale_score_percentile = scale_numerator_asc / scale_denominator,
-    scale_score_percentile2 = dplyr::percent_rank(scale_score_mean),
-    scale_score_percentile3 = dplyr::cume_dist(scale_score_mean)
+    proficient_rank = dplyr::dense_rank(proficient_above),
+    proficient_group_size = sum(count_proficient_dummy),
+    
+    scale_rank = dplyr::dense_rank(scale_score_mean),
+    scale_group_size = sum(count_scale_dummy),
+
+    proficiency_percentile = dplyr::cume_dist(proficient_above),
+    scale_score_percentile = dplyr::cume_dist(scale_score_mean)
+  ) %>%
+  select(-count_proficient_dummy, -count_scale_dummy)
+}
+
+
+statewide_peer_percentile <- function(df) {
   
-  )
+  # group
+  df <- df %>%  
+    dplyr::ungroup() %>%
+      dplyr::group_by(
+        testing_year, assess_name, test_name, grade, 
+        subgroup, subgroup_type
+      )
   
+  # rowid to facilitate easy joinin'
+  df$temp_id <- seq(1:nrow(df))
+
+  # calculate
+  df_pctile <- assessment_peer_percentile(df) %>%
+    select(temp_id, assess_name)
+  
+  # join and rename
+
+  
+}
+
+dfg_peer_percentile <- function(df) {
+  
+  # group
+  
+  # calculate
+  
+  # join and rename
+  
+}
 
 #' Calculate NJ Percentiles
 #'
