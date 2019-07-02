@@ -1,6 +1,3 @@
-
-  
-
 #' Assessment Peer Percentile
 #'
 #' @description calculates the percentile rank of a school, defined as 
@@ -27,10 +24,18 @@ assessment_peer_percentile <- function(df) {
     count_scale_dummy = ifelse(is.finite(scale_score_mean), 1, 0),
     
     proficient_rank = dplyr::dense_rank(proficient_above),
-    proficient_group_size = sum(count_proficient_dummy),
+    proficient_group_size = ifelse(
+      is.finite(proficient_above), 
+      sum(count_proficient_dummy),
+      NA_integer_
+    ),
     
     scale_rank = dplyr::dense_rank(scale_score_mean),
-    scale_group_size = sum(count_scale_dummy),
+    scale_group_size = ifelse(
+      is.finite(scale_score_mean), 
+      sum(count_scale_dummy),
+      NA_integer_
+    ),
 
     proficiency_percentile = dplyr::cume_dist(proficient_above),
     scale_score_percentile = dplyr::cume_dist(scale_score_mean)
@@ -39,39 +44,85 @@ assessment_peer_percentile <- function(df) {
 }
 
 
+#' Get percentile cols
+#' 
+#' @description internal/helper function to facilitate the extraction of relevant 
+#' `assessment_peer_percentile` columns when calculating state/dfg-wide 
+#' percentiles
+#' @param df data.frame, output of `assessment_peer_percentile`
+#'
+#' @return slim df with limited columns
+
 get_percentile_cols <- function(df) {
-  df %>% select(
-    one_of("temp_id", "proficient_rank", "proficient_group_size", "scale_rank", 
-           "scale_group_size", "proficiency_percentile", "scale_score_percentile", 
-           "avg_percentile")
-  )
+  df %>% 
+    ungroup() %>%
+    select(one_of(
+      "temp_id", "proficient_rank", "proficient_group_size", "scale_rank", 
+      "scale_group_size", "proficiency_percentile", "scale_score_percentile"
+    ))
 }
 
+percentile_grouping_pipe <- . %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(
+    testing_year, assess_name, test_name, grade, 
+    subgroup, subgroup_type
+  )
+
+#' Calculate statewide peer percentile by grade
+#' 
+#' @description calculates statewide percentile by grade/test
+#' @param df 
+#'
+#' @return data.frame with percent proficient and scale score percentile rank
+#' @export
 
 statewide_peer_percentile <- function(df) {
-  
-  # group
-  df <- df %>%  
-    dplyr::ungroup() %>%
-      dplyr::group_by(
-        testing_year, assess_name, test_name, grade, 
-        subgroup, subgroup_type
-      )
-  
+
   # rowid to facilitate easy joinin'
   df$temp_id <- seq(1:nrow(df))
 
-  # calculate
-  df_pctile <- assessment_peer_percentile(df) %>%
-    get_percentile_cols
+  # only schools or districts, group
+  df_sch <- df %>% 
+    filter(is_school) %>%
+    percentile_grouping_pipe()
   
-  # rename
-  df_pctile <- df_pctile %>%
-    rename()
-  # join and rename
+  df_district <- df %>% 
+    filter(is_district) %>%
+    percentile_grouping_pipe()
 
+  statewide_names <- . %>%
+    rename(
+      statewide_proficient_rank = proficient_rank,
+      statewide_proficient_n = proficient_group_size,
+      statewide_proficient_percentile = proficiency_percentile,
+      
+      statewide_scale_rank = scale_rank,
+      statewide_scale_n = scale_group_size,
+      statewide_scale_percentile = scale_score_percentile
+    )
   
+  # calculate and rename
+  df_sch <- df_sch %>%
+    assessment_peer_percentile() %>%
+    get_percentile_cols() %>%
+    statewide_names()
+  
+  df_district <- df_district  %>%
+    assessment_peer_percentile() %>%
+    get_percentile_cols() %>%
+    statewide_names()
+  
+  # join and rename
+  df_percentile <- bind_rows(df_sch, df_district)
+  
+  df <- df %>%
+    left_join(df_percentile, by = 'temp_id') %>%
+    select(-temp_id)
+  
+  return(df)
 }
+
 
 dfg_peer_percentile <- function(df) {
   
@@ -80,91 +131,6 @@ dfg_peer_percentile <- function(df) {
   # calculate
   
   # join and rename
-  
-}
-
-#' Calculate NJ Percentiles
-#'
-#' @param tidy_df a tidy data frame, eg output of `tidy_nj_assess()`.
-#'
-#' @return the tidy data frame with two new columns - proficiency_percentile
-#' and scale_score_percentile - describing the school/district's position
-#' in the distribution of NJ schools/districts for that:
-#' assessment program (eg NJASK), test name (eg ELA, Math), testing year,
-#' grade, and testing subgroup
-#' @export
-
-calc_nj_percentiles <- function(tidy_df) {
-  
-  #split out: districts
-  tidy_df$temp_rn <- seq(1:nrow(tidy_df))
-  
-  tidy_df <- tidy_df %>% 
-    dplyr::mutate(
-      is_sch = !school_code == '',
-      has_dist = !district_code == '',
-      is_dist = has_dist & !is_sch
-    ) %>%
-    dplyr::select(-has_dist)
-  
-  #split out: schools
-  sch_df <- tidy_df %>%
-    dplyr::filter(is_sch == TRUE) %>%
-    dplyr::select(-is_sch, -is_dist)
-    
-  #split out: districts
-  dist_df <- tidy_df %>%
-    dplyr::filter(is_dist == TRUE) %>%
-    dplyr::select(-is_sch, -is_dist)
-  
-  #split out: leftovers statewide & DFG aggregates
-  `leftover_df - Sad!`  <- tidy_df %>%
-    dplyr::filter(
-      !temp_rn %in% c(sch_df$temp_rn, dist_df$temp_rn)
-    ) %>%
-    dplyr::select(-is_sch, -is_dist)
-  
-  #calc scale and prof peer percentiles, schools
-  sch_df <- sch_df %>%
-    peer_percentile_pipe() 
-  
-  #calc scale and prof peer percentiles, districts
-  dist_df <- dist_df %>%
-    peer_percentile_pipe() 
-  
-  #put everything back together and return
-  out <- dplyr::bind_rows(
-    sch_df, dist_df, `leftover_df - Sad!`
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::arrange(temp_rn) %>%
-  dplyr::select(
-    -temp_rn, -count_proficient_dummy, -count_scale_dummy,
-    -proficient_numerator_asc, -proficient_denominator,
-    -scale_numerator_asc, -scale_denominator
-  )
-  
-  out
-}
-
-#scratch, for testing (needs to sit inside a closure or devtools gets mad)
-fake_func <- function() {
-  
-  foo <- all_assess_tidy %>%
-    dplyr::filter(testing_year == 2014)
-  
-  bizz <- foo %>%
-    peer_percentile_pipe()
-  
-  head(bizz) %>% print.AsIs()
-
-  buzz <- all_assess_tidy  
-  
-  tidy_df <- all_assess_tidy %>%
-    dplyr::filter(testing_year %in% c(2014, 2013, 2012))
-  
-  
-  all_assess_tidy$testing_year %>% table()
   
 }
 
