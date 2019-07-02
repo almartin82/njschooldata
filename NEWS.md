@@ -1,3 +1,10 @@
+# njschooldata 0.7.7
+
+## New features
+
+* `statewide_peer_percentile` will calculate PARCC scale and proficiency percentile rank across NJ.
+* `dfg_peer_percentile` will calculate PARCC scale and proficiency percentile rank across NJ.
+
 # njschooldata 0.7.6
 
 ## New features

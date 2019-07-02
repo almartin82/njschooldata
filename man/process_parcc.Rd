@@ -15,7 +15,7 @@ school year is end_year 2015.  valid values are 2015-2017}
 \item{subj}{PARCC subject. c('ela' or 'math')}
 }
 \value{
-a tbl_df / data rame
+a tbl_df / data rfame
 }
 \description{
 all the logic needed to clean up the raw PARCC files
