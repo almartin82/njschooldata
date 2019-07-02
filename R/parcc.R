@@ -122,6 +122,7 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$pct_l3 <- as.numeric(parcc_file$pct_l3)
   parcc_file$pct_l4 <- as.numeric(parcc_file$pct_l4)
   parcc_file$pct_l5 <- as.numeric(parcc_file$pct_l5)
+  parcc_file$scale_score_mean <- as.numeric(parcc_file$scale_score_mean)
   
   #new columns
   parcc_file$testing_year <- end_year
@@ -129,8 +130,13 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
   parcc_file <- parcc_file %>%
+    rowwise() %>%
     mutate(
-      proficient_above = sum(pct_l4 + pct_l5, na.rm = TRUE)
+      proficient_above = ifelse(
+        is.finite(pct_l4),
+        sum(pct_l4 + pct_l5, na.rm = TRUE),
+        NA_real_
+      )
     )
   
   #remove random NA row that has the year and grade only
