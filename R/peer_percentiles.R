@@ -62,12 +62,6 @@ get_percentile_cols <- function(df) {
     ))
 }
 
-percentile_grouping_pipe <- . %>%
-  dplyr::ungroup() %>%
-  dplyr::group_by(
-    testing_year, assess_name, test_name, grade, 
-    subgroup, subgroup_type
-  )
 
 #' Calculate statewide peer percentile by grade
 #' 
@@ -81,15 +75,22 @@ statewide_peer_percentile <- function(df) {
 
   # rowid to facilitate easy joinin'
   df$temp_id <- seq(1:nrow(df))
-
+  
+  statewide_grouping_pipe <- . %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(
+      testing_year, assess_name, test_name, grade, 
+      subgroup, subgroup_type
+    )
+  
   # only schools or districts, group
   df_sch <- df %>% 
     filter(is_school) %>%
-    percentile_grouping_pipe()
+    statewide_grouping_pipe()
   
   df_district <- df %>% 
     filter(is_district) %>%
-    percentile_grouping_pipe()
+    statewide_grouping_pipe()
 
   statewide_names <- . %>%
     rename(
@@ -123,14 +124,63 @@ statewide_peer_percentile <- function(df) {
   return(df)
 }
 
+#' Calculate DFG peer percentile by grade
+#' 
+#' @description calculates DFG percentile by grade/test
+#' @param df 
+#'
+#' @return data.frame with percent proficient and scale score percentile rank
+#' @export
 
 dfg_peer_percentile <- function(df) {
   
-  # group
+  # rowid to facilitate easy joinin'
+  df$temp_id <- seq(1:nrow(df))
   
-  # calculate
+  dfg_grouping_pipe <- . %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(
+      testing_year, assess_name, test_name, grade, dfg,
+      subgroup, subgroup_type
+    )
+  
+  # only schools or districts, group
+  df_sch <- df %>% 
+    filter(is_school) %>%
+    dfg_grouping_pipe()
+  
+  df_district <- df %>% 
+    filter(is_district) %>%
+    dfg_grouping_pipe()
+  
+  dfg_names <- . %>%
+    rename(
+      dfg_proficient_rank = proficient_rank,
+      dfg_proficient_n = proficient_group_size,
+      dfg_proficient_percentile = proficiency_percentile,
+      
+      dfg_scale_rank = scale_rank,
+      dfg_scale_n = scale_group_size,
+      dfg_scale_percentile = scale_score_percentile
+    )
+  
+  # calculate and rename
+  df_sch <- df_sch %>%
+    assessment_peer_percentile() %>%
+    get_percentile_cols() %>%
+    dfg_names()
+  
+  df_district <- df_district  %>%
+    assessment_peer_percentile() %>%
+    get_percentile_cols() %>%
+    dfg_names()
   
   # join and rename
+  df_percentile <- bind_rows(df_sch, df_district)
   
+  df <- df %>%
+    left_join(df_percentile, by = 'temp_id') %>%
+    select(-temp_id)
+  
+  return(df)
 }
-
