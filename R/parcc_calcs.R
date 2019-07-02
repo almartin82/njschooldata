@@ -55,7 +55,7 @@ parcc_aggregate_calcs <- function(df) {
       pct_l5 = round((num_l5 / number_of_valid_scale_scores) * 100, 1),
       
       scale_score_mean = round(scale_score_mean / number_of_valid_scale_scores, 0),
-      pct_proficient = round(((num_l4 + num_l5) / number_of_valid_scale_scores) * 100, 2),
+      proficient_above = round(((num_l4 + num_l5) / number_of_valid_scale_scores) * 100, 2),
       districts = districts,
       schools = schools
     )
@@ -116,6 +116,7 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
       subgroup_type,
       testing_year,
       assess_name,
+      test_name,
       is_state, is_dfg, 
       is_district, is_school, is_charter,
       is_charter_sector,
