@@ -4,11 +4,11 @@
 \alias{fetch_grate}
 \title{fetch grate}
 \usage{
-fetch_grate(end_year, tidy = TRUE)
+fetch_grate(end_year, calc_type = "4 year", tidy = TRUE)
 }
 \arguments{
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1998-2014.}
+school year is year '2007'.  valid values are 1998-2018.}
 
 \item{tidy}{tidy the response into a data frame with consistent headers?}
 }
