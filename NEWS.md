@@ -1,9 +1,19 @@
+# njschooldata 0.7.8
+
+## New features
+
+* `fetch_grate` takes a calc type argument, and will return 5 year cohort grad rates for 2012-present.
+
+
+
 # njschooldata 0.7.7
 
 ## New features
 
 * `statewide_peer_percentile` will calculate PARCC scale and proficiency percentile rank across NJ.
 * `dfg_peer_percentile` will calculate PARCC scale and proficiency percentile rank across NJ.
+
+
 
 # njschooldata 0.7.6
 
@@ -18,6 +28,8 @@
 
 * `parcc_aggregate_calcs` expects a field called `is_charter`. 
 
+
+
 # njschooldata 0.7.5
 
 ## New features
@@ -29,12 +41,14 @@
 - HS
 
 
+
 # njschooldata 0.7.4
 
 ## New features
 
 * `friendly_district_names` will make a legibile vector of unique district names, one per district_id.
 * `district_name_to_id` reverses it, giving ids from names.
+
 
 
 # njschooldata 0.7.3

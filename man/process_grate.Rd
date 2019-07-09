@@ -10,7 +10,7 @@ process_grate(df, end_year)
 \item{df}{the output of get_raw_grate}
 
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1998-2014.}
+school year is year '2007'.  valid values are 1998-2018.}
 }
 \description{
 does cleanup of the grad rate ('grate') file
