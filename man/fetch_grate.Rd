@@ -10,10 +10,12 @@ fetch_grate(end_year, calc_type = "4 year", tidy = TRUE)
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
 school year is year '2007'.  valid values are 1998-2018.}
 
+\item{calc_type}{c('4 year', '5 year')}
+
 \item{tidy}{tidy the response into a data frame with consistent headers?}
 }
 \value{
-a
+graduation rate data frame
 }
 \description{
 a consistent interface into the NJ HS graduates data.

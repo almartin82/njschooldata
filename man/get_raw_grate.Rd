@@ -10,7 +10,7 @@ get_raw_grate(end_year, calc_type = "4 year")
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
 school year is year '2007'.  valid values are 1998-2018.}
 
-\item{calc_type}{c('4 year', '5 year')}
+\item{calc_type}{one of c('4 year', '5 year')}
 }
 \description{
 \code{get_raw_grate} returns a data frame with NJ HS grad rate

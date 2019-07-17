@@ -1,22 +1,33 @@
 context('grate')
 
+grate_cols <- c(
+  "county_id", "county_name", "district_id", "district_name", 
+  "school_id", "school_name", "group", "grad_rate", "cohort_count", 
+  "graduated_count", "methodology", "time_window", "grad_cohort", 
+  "year_reported"
+)
+
 test_that('fetch grate works properly', {
   ex <- fetch_grate(2015)
   expect_is(ex, 'data.frame')
   expect_equal(sum(ex$graduated_count, na.rm = TRUE), 674621)
+  expect_equal(names(ex), grate_cols)
 })
+
 
 test_that('fetch grate works with more recent data', {
   ex <- fetch_grate(2018)
   expect_is(ex, 'data.frame')
-  expect_equal(sum(ex$graduated_count, na.rm = TRUE), 674621)
+  expect_equal(sum(ex$graduated_count, na.rm = TRUE), 996902)
+  expect_equal(names(ex), grate_cols)
 })
 
 
 test_that('five year window is in more recent data', {
-  ex <- fetch_grate(2017)
+  ex <- fetch_grate(2017, '5 year')
   expect_is(ex, 'data.frame')
-  expect_equal(sum(ex$graduated_count, na.rm = TRUE), 674621)
+  expect_equal(sum(ex$graduated_count, na.rm = TRUE), 996902)
+  expect_equal(names(ex), grate_cols)
 })
 
 

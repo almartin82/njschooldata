@@ -4,13 +4,15 @@
 \alias{tidy_grate}
 \title{tidy grate}
 \usage{
-tidy_grate(df, end_year)
+tidy_grate(df, end_year, calc_type = "4 year")
 }
 \arguments{
 \item{df}{the output of process_grate}
 
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
 school year is year '2007'.  valid values are 1998-2018.}
+
+\item{calc_type}{one of '4 year' or '5 year'}
 }
 \description{
 tidies a processed grate data frame, producing a data frame with consistent

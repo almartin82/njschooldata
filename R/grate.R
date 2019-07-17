@@ -4,7 +4,7 @@
 #' \code{get_raw_grate} returns a data frame with NJ HS grad rate
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
 #' school year is year '2007'.  valid values are 1998-2018.
-#' @param calc_type c('4 year', '5 year')
+#' @param calc_type one of c('4 year', '5 year')
 #' @export
 
 
@@ -30,7 +30,7 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     tdir <- tempdir()
     downloader::download(grate_url, dest = tname, mode = "wb") 
 
-    grate <- readxl::read_excel(tname, na = '-', skip = num_skip)
+    grate <- readxl::read_excel(tname, na = c('-', '*'), skip = num_skip)
     names(grate)[names(grate) == 'FOUR_YR_GRAD_RATE'] <- 'grad_rate'
     names(grate)[names(grate) == 'FOUR_YR_ADJ_COHORT_COUNT'] <- 'cohort_count'
 
@@ -65,7 +65,7 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     tdir <- tempdir()
     downloader::download(grate_url, dest = tname, mode = "wb") 
     
-    grate <- readxl::read_excel(tname, na = '-', skip = num_skip)
+    grate <- readxl::read_excel(tname, na = c('-', '*'), skip = num_skip)
     grate <- grate[, c(1:6, 8)]
     #nothing is named consistently :(
     mask <- names(grate) %in% c(
@@ -78,18 +78,18 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     names(grate)[mask] <- 'grad_rate'    
     grate$methodology <- 'cohort'
     grate$time_window <- '5 year'
-  } else {
+  } else if (calc_type == '5 year' & end_year < 2012){
     stop(paste0('5 year grad rate not available for ending year ', end_year))
   }
   
   
   #2012 and 2011 in the same file?!
-  if (end_year %in% c(2012, 2011)) {
+  if (end_year %in% c(2012, 2011) & calc_type == '4 year') {
     grate_url <- "http://www.state.nj.us/education/data/grate/2012/gradrate.xls"
     tname <- tempfile(pattern = "grate", tmpdir = tempdir(), fileext = ".xls")
     tdir <- tempdir()
     downloader::download(grate_url, dest = tname, mode = "wb") 
-    grate <- readxl::read_excel(tname, na = '-')
+    grate <- readxl::read_excel(tname, na = c('-', '*'))
     
     if (end_year == 2012) {
       grate <- grate[, c(1:7, 8)]
@@ -120,9 +120,13 @@ get_raw_grate <- function(end_year, calc_type = '4 year') {
     
     #extensions changed
     if (end_year >= 2009) {
-      grate <- readxl::read_excel(paste0(unzip_loc, '/', grate_files$Name[1]))
+      grate <- readxl::read_excel(
+        paste0(unzip_loc, '/', grate_files$Name[1]), na = c('-', '*')
+      )
     } else {
-      grate <- readr::read_csv(file = paste0(unzip_loc, '/', grate_files$Name[1]))
+      grate <- readr::read_csv(
+        file = paste0(unzip_loc, '/', grate_files$Name[1]), na = c('-', '*')
+      )
     }
    
     grate$methodology <- 'grad_count'
@@ -157,8 +161,7 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('SCHOOL', 'SCH', 'SCH NAME', 'SCH_NAME', 'School Name', 'SCHOOL_NAME')] <- 'school_name'
   
   #oh, man.  in 1998 and 1999 PROG_CODE is program code.  in 2008 PROG_CODE is...
-  #actually PROG_NAME
-  #guys, seriously.
+  #actually PROG_NAME.  guys, seriously.
   if (end_year == 2008) {
     names(df)[names(df) %in% c('PROG_CODE')] <- 'program_name'
   } else {
@@ -166,8 +169,8 @@ process_grate <- function(df, end_year) {
   }
   names(df)[names(df) %in% c('PROGNAME', 'PROG', 'PROG NAME')] <- 'program_name'
   
-  names(df)[names(df) %in% c('COUNTY_CODE', 'CO CODE', 'County', 'County Code', 'COUNTY_ID')] <- 'county_id'
-  names(df)[names(df) %in% c('DISTRICT_CODE', 'DIST CODE', 'District', 'District Code', 'DISTRICT_ID')] <- 'district_id'
+  names(df)[names(df) %in% c('COUNTY_CODE', 'CO CODE', 'County', 'County Code', 'COUNTY_ID', 'Co Code')] <- 'county_id'
+  names(df)[names(df) %in% c('DISTRICT_CODE', 'DIST CODE', 'District', 'District Code', 'DISTRICT_ID', 'Dist Code')] <- 'district_id'
   names(df)[names(df) %in% c('SCHOOL_CODE', 'SCH CODE', 'School', 'School Code', 'SCHOOL_CODE')] <- 'school_id'
   
   #errata
@@ -208,7 +211,7 @@ process_grate <- function(df, end_year) {
   
   for (i in numeric_cols) {
     if (i %in% names(df)) {
-      df[, i] <- df %>% dplyr::select_(i) %>% unlist() %>% as.numeric()
+      df[, i] <- df %>% dplyr::pull(i) %>% as.numeric()
     }
   }
   
@@ -253,7 +256,6 @@ process_grate <- function(df, end_year) {
   df$school_id <- ifelse(df$school_id == "999.000000", "999", df$school_id)
   df$district_id <- ifelse(df$district_id == "9999.000000", "999", df$district_id)
 
-
   if ('grad_rate' %in% names(df)) {
     if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {
       df$grad_rate <- df$grad_rate * 100
@@ -273,9 +275,10 @@ process_grate <- function(df, end_year) {
 #' @param df the output of process_grate
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
 #' school year is year '2007'.  valid values are 1998-2018.
+#' @param calc_type one of '4 year' or '5 year'
 #' @export
 
-tidy_grate <- function(df, end_year) {
+tidy_grate <- function(df, end_year, calc_type = '4 year') {
   
   grate_col <- function(col_name, nj_df) {
     nj_df <- nj_df %>% as.data.frame(stringsAsFactors = FALSE)
@@ -436,19 +439,21 @@ tidy_grate <- function(df, end_year) {
   
     
   tidy_new_format <- function(df) {
-    df$program_name <- 'Total'
-    df$program_code <- NA
-    df$group <- 'total_population'
-    df$outcome_count <- NA
-    df$postgrad_grad <- 'grad'
-    
+    if (!'program_name' %in% names(df)) {
+      df$program_name <- 'Total'
+      df$program_code <- NA
+      df$outcome_count <- NA
+      df$postgrad_grad <- 'grad'
+    }
+
     if ('graduated_count' %in% names(df)) {
       names(df)[names(df) == 'graduated_count'] <- 'num_grad'
     } else {
       df$num_grad <- NA
     }
     
-    if ('group' %in% names(df)) {
+    if (!'group' %in% names(df)) {
+      df$group <- 'total_population'
       df$group <- tolower(df$group)
       df$group <- clean_grate_names(df$group)
     }
@@ -473,8 +478,12 @@ tidy_grate <- function(df, end_year) {
     out <- tidy_new_format(df)
   #2013 shifted to long format
   } else if (end_year >= 2013) {
+    # 5 year doesn't have group
+    if (calc_type == '5 year') {
+      df <- tidy_new_format(df)
+    }
+    df$group <- tolower(df$group)
     df$group <- clean_grate_names(df$group)
-    
     out <- df
   }
   
@@ -482,24 +491,22 @@ tidy_grate <- function(df, end_year) {
 }
 
 
-
 #' @title fetch grate
 #' 
 #' @description a consistent interface into the NJ HS graduates data. 
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
 #' school year is year '2007'.  valid values are 1998-2018.
+#' @param calc_type c('4 year', '5 year')
 #' @param tidy tidy the response into a data frame with consistent headers?
-#' @return a 
+#' @return graduation rate data frame 
 #' 
 #' @export
 
 fetch_grate <- function(end_year, calc_type = '4 year', tidy = TRUE) {
-  out <- get_raw_grate(end_year, calc_type) %>%
-    process_grate(., end_year)
+  out <- get_raw_grate(end_year, calc_type)
+  out <- process_grate(out, end_year)
   
-  if (tidy) out <- out %>% tidy_grate(., end_year)
+  if (tidy) out <- out %>% tidy_grate(., end_year, calc_type)
   
   return(out)
 }
-
-# calc_type c('4 year', '5 year')
