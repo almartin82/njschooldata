@@ -385,3 +385,58 @@ allpublic_parcc_aggs <- function(df) {
   # organize and return
   parcc_column_order(df) 
 }
+
+#' Calculate Charter Sector Grad Rate aggregates
+#'
+#' @param df tidied grate dataframe, eg output of fetch_grate
+#'
+#' @return df containing charter sector aggregate grad rate
+#' @export
+
+charter_sector_grate_aggs <- function(df) {
+  
+  # id hosts 
+  df <- id_charter_hosts(df) %>%
+    mutate(is_charter = !is.na(host_district_id))
+  
+  # charters are reported twice, one per school one per district
+  # take the district level only, in the hopes that NJ will 
+  # someday fix this and report charter campuses
+  df <- df %>% 
+    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  
+  # group by - host city and summarize
+  df <- df %>% 
+    group_by(
+      time_window, grad_cohort, year_reported,
+      host_county_id, host_county_name,
+      host_district_id, host_district_name,
+      subgroup, subgroup_type
+    ) %>%
+    # DO STUFF
+    
+    ungroup()
+  
+  # give psuedo district names and codes and create appropriate boolean flags
+  df <- df %>%
+    rename(
+      county_id = host_county_id,
+      county_name = host_county_name
+    ) %>%
+    mutate(
+      district_id = paste0(host_district_id, 'C'),
+      district_name = paste0(host_district_name, ' Charters'),
+      school_id = '999C',
+      school_name = 'Charter Sector Total',
+      is_state = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,      
+      is_charter_sector = TRUE,
+      is_allpublic = FALSE
+    ) %>%
+    select(-host_district_id, -host_district_name)
+  
+  # organize and return
+
+}
