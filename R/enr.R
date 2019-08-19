@@ -461,14 +461,11 @@ enr_aggs <- function(df) {
     'pacific_islander_m + pacific_islander_f',
     'NA'
   )
-
   # new
   sg <- function(cols) {
     cols_exist <- map_lgl(cols, ~.x %in% names(df)) %>% all()
     ifelse(cols_exist, paste(cols, collapse = ' + '), 'NA')
   }
-  # valid_subgroup(c('pacific_islander_m', 'pacific_islander_f'))
-  # valid_subgroup(c('black_m', 'black_f'))
   
   df_agg <- df %>%
     mutate(
