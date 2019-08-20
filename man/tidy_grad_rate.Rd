@@ -4,7 +4,7 @@
 \alias{tidy_grad_rate}
 \title{tidy grad rate}
 \usage{
-tidy_grad_rate(df, end_year, calc_type = "4 year")
+tidy_grad_rate(df, end_year, methodology = "4 year")
 }
 \arguments{
 \item{df}{the output of process_grad_rate}
@@ -12,7 +12,7 @@ tidy_grad_rate(df, end_year, calc_type = "4 year")
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
 school year is year '2007'.  valid values are 1998-2018.}
 
-\item{calc_type}{one of '4 year' or '5 year'}
+\item{methodology}{one of '4 year' or '5 year'}
 }
 \description{
 tidies a processed grate data frame, producing a data frame with consistent

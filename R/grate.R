@@ -384,19 +384,25 @@ get_raw_grad_file <- function(end_year, methodology='4 year') {
       df <- readxl::read_xls(grate_file)
     }
     
-  # 2011 and 2012 are insane, no other way to describe it
-  } else if (end_year %in% c(2011, 2012) & methodology=='4 year') {
+  # 2011 is insane, no other way to describe it
+  } else if (end_year == 2011 & methodology=='4 year') {
     grate_url <- 'https://www.state.nj.us/education/data/grate/2012/gradrate.xls'
     grate_file <- tempfile(fileext = ".xls")
     httr::GET(url = grate_url, httr::write_disk(grate_file))
     df <- readxl::read_excel(grate_file)
     
-    if (end_year == 2011) {
-      grate_indices <- c(1:7, 9)
-    } else if (end_year == 2012) {
-      grate_indices <- c(1:7, 8)
-    }
-    df <- df[, grate_indices]
+    grate_indices <- c(1:7, 9)
+    df <- df[, grate_indices] %>%
+      mutate(
+        'GRADUATED_COUNT' = NA_integer_
+      )
+  
+  # 2012 they transition the format but post it in a weird location
+  } else if (end_year == 2012 & methodology=='4 year') {
+    grate_url <- 'https://www.state.nj.us/education/data/grate/2012/grd.xls'
+    grate_file <- tempfile(fileext = ".xls")
+    httr::GET(url = grate_url, httr::write_disk(grate_file))
+    df <- readxl::read_excel(grate_file)
     
   # 2013 on is the cohort grad rate era
   } else if (end_year >= 2013 & end_year <= 2018 & methodology=='4 year') {
@@ -674,12 +680,15 @@ fetch_grad_count <- function(end_year, tidy = TRUE) {
 #' @return dataframe with the number of graduates per school and district
 
 get_grad_rate <- function(end_year, methodology) {
+  if (end_year < 2011 | end_year > 2018) {
+    stop('year not yet supported')
+  }
+  
   df <- get_raw_grad_file(end_year, methodology) %>%
     mutate(
       'methodology' = methodology
     )
   
-
   df %>% 
     process_grate(end_year)
 }
