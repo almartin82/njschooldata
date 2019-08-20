@@ -110,6 +110,23 @@ test_that('fetch_grad_count all years', {
   gr17 <- fetch_grad_count(2016)
   gr18 <- fetch_grad_count(2017)
   gr19 <- fetch_grad_count(2018)
-  gr20 <- fetch_grad_count(2019)
+  expect_error(fetch_grad_count(2019))
+  
+})
+
+
+
+test_that('fetch_grad_rate all years', {
+  
+  expect_error(fetch_grad_rate(2010))
+  grr12 <- fetch_grad_rate(2011)
+  grr13 <- fetch_grad_rate(2012)
+  grr14 <- fetch_grad_rate(2013)
+  grr15 <- fetch_grad_rate(2014)
+  grr16 <- fetch_grad_rate(2015)
+  grr17 <- fetch_grad_rate(2016)
+  grr18 <- fetch_grad_rate(2017)
+  grr19 <- fetch_grad_rate(2018)
+  expect_error(fetch_grad_rate(2019))
   
 })
