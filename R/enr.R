@@ -9,59 +9,40 @@
 
 get_raw_enr <- function(end_year) {
   
-  # before 2018-19 files are zipped
-  if (end_year < 2019) {
-    #build url
-    enr_url <- paste0(
-      "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
-    )
-    
-    #download and unzip
-    tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
-    tdir <- tempdir()
-    downloader::download(enr_url, dest = tname, mode = "wb") 
-    
-    utils::unzip(tname, exdir = tdir)
-    
-    #read file
-    enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
-    
-    if (grepl('.xls', tolower(enr_files$Name[1]))) {
-      this_file <- file.path(tdir, enr_files$Name[1])
-      if (end_year == 2010) {
-        enr <- gdata::read.xls(
-          this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
-        )
-        # if 2018 skip 3 lines
-      } else if (end_year >= 2018) {
-        enr <- readxl::read_excel(this_file, skip = 2)
-      } else {
-        enr <- readxl::read_excel(this_file)
-      }
-    } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
-      enr <- readr::read_csv(
-        file = file.path(tdir, enr_files$Name[1]),
-        na = "     . "
-      )
-    }
-  # 2019 on raw xlsx files are posted
-  # too cheap to meter!
-  } else {
-    
-    enr_url <- paste0(
-      "http://www.nj.gov/education/data/enr/enr", 
-      substr(end_year, 3, 4), 
-      "/EnrollmentReport.xlsx"
-    )
-    
-    #download and unzip
-    tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".xlsx")
-    tdir <- tempdir()
-    downloader::download(enr_url, dest = tname, mode = "wb") 
-    
-    enr <- readxl::read_excel(tname, skip = 2)
-  }
+  #build url
+  enr_url <- paste0(
+    "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
+  )
   
+  #download and unzip
+  tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
+  tdir <- tempdir()
+  downloader::download(enr_url, dest = tname, mode = "wb") 
+  
+  utils::unzip(tname, exdir = tdir)
+  
+  #read file
+  enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
+  
+  if (grepl('.xls', tolower(enr_files$Name[1]))) {
+    this_file <- file.path(tdir, enr_files$Name[1])
+    if (end_year == 2010) {
+      enr <- gdata::read.xls(
+        this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
+      )
+      # if 2018 skip 3 lines
+    } else if (end_year >= 2018) {
+      enr <- readxl::read_excel(this_file, skip = 2)
+    } else {
+      enr <- readxl::read_excel(this_file)
+    }
+  } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
+    enr <- readr::read_csv(
+      file = file.path(tdir, enr_files$Name[1]),
+      na = "     . "
+    )
+  }
+
   enr$end_year <- end_year
     
   return(enr)
