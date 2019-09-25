@@ -13,7 +13,7 @@ process_grad_rate(df, end_year, methodology)
 
 \item{methodology}{one of c('4 year', '5 year')}
 
-\item{description}{to the extend that fetch_grad_rate needs its own custom 
+\item{description}{to the extent that fetch_grad_rate needs its own custom 
 logic above and beyond the generic process_grate, it will live here}
 }
 \value{

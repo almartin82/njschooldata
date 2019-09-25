@@ -4,14 +4,11 @@
 \alias{fetch_grad_rate}
 \title{Fetch Grad Rate}
 \usage{
-fetch_grad_rate(end_year, methodology = "4 year", tidy = TRUE)
+fetch_grad_rate(end_year, methodology = "4 year")
 }
 \arguments{
 \item{end_year}{end of the academic year - eg 2006-07 is 2007.
 valid values are 2011-present.}
-
-\item{tidy}{if TRUE (default) will convert data to long format, where 
-each row is a subgroup}
 }
 \value{
 dataframe with grad rate
