@@ -12,6 +12,3 @@ enr_aggs(df)
 \value{
 dataframe
 }
-\description{
-Calculate enrollment aggregates
-}

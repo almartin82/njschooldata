@@ -109,3 +109,40 @@ school_name_to_id <- function(school_names, df) {
   
   out
 }
+
+
+
+#' District Names to IDs
+#'
+#' @param district_names vector of names
+#' @param lookup_df dataframe with district_id and district_name
+#'
+#' @return list of districtids matching the names
+#' @export
+
+id_selected_districtids <- function(district_names, lookup_df) {
+  selected_districtids <- district_name_to_id(district_names, lookup_df)
+  
+  # charter aggs are a special case
+  if (grepl('Charters', district_names) %>% any()) {
+    #get the district ids
+    selected_ids <- district_name_to_id(district_names, lookup_df)
+    
+    # strip the 'C'
+    hosts <- gsub('C', '', selected_ids)
+    
+    # find the relevant charters via the hosts
+    target_charters <- charter_city %>% 
+      filter(host_district_id %in% hosts)
+    
+    relevant_charters <- lookup_df %>%
+      dplyr::filter(
+        is_school &
+          district_id %in% target_charters$district_id
+      )
+    
+    selected_districtids <- c(selected_districtids, unique(relevant_charters$district_id))
+  }
+  
+  return(selected_districtids)
+}
