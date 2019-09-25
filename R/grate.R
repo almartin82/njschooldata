@@ -353,6 +353,9 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     out <- df
   }
   
+  # 2018 silly row
+  out <- out %>% filter(!county_id == 'end of worksheet')
+  
   return(out)
 }
 
@@ -452,6 +455,26 @@ get_raw_grad_file <- function(end_year, methodology='4 year') {
   df$end_year <- end_year
   
   df
+}
+
+
+#' Identify enrollment aggregation levels
+#'
+#' @param df enrollment dataframe, output of tidy_enr
+#'
+#' @return data.frame with boolean aggregation flags
+#' @export
+
+id_grad_aggs <- function(df) {
+  df %>%
+    mutate(
+      is_state = district_id == '9999' & county_id == '99',
+      is_county = district_id == '9999' & !county_id =='99',
+      is_district = school_id == '999' & !is_state,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
+      is_school = !school_id == '999' & !is_state
+    )
 }
 
 
@@ -635,6 +658,9 @@ tidy_grad_count <- function(df, end_year) {
       )
   }
   
+  # 2018 silly row
+  out <- out %>% filter(!county_id == 'end of worksheet')
+  
   return(out)
 }
 
@@ -643,19 +669,17 @@ tidy_grad_count <- function(df, end_year) {
 #'
 #' @param end_year end of the academic year - eg 2006-07 is 2007.
 #' valid values are 1998-present.
-#' @param tidy if TRUE (default) will convert data to long format, where 
-#' each row is a subgroup
 #'
 #' @return dataframe with grad counts
 #' @export
 
-fetch_grad_count <- function(end_year, tidy = TRUE) {
+fetch_grad_count <- function(end_year) {
     df <- get_grad_count(end_year) %>%
       process_grad_count(end_year)
   
-    if (tidy) {
-      df <- tidy_grad_count(df, end_year)
-    }
+    df <- tidy_grad_count(df, end_year)
+    
+    df <- id_grad_aggs(df)
     
     possible_cols <- c(
       'end_year',
@@ -663,7 +687,14 @@ fetch_grad_count <- function(end_year, tidy = TRUE) {
       'district_id', 'district_name', 
       'school_id', 'school_name',
       'subgroup', 
-      'cohort_count', 'graduated_count')
+      'cohort_count', 'graduated_count',
+      'is_state',
+      'is_county',
+      'is_district',
+      'is_charter_sector',
+      'is_allpublic',
+      'is_school'
+    )
     
     df <- df %>%
       select(one_of(possible_cols))
@@ -696,7 +727,7 @@ get_grad_rate <- function(end_year, methodology) {
 
 #' Process Grad Rate
 #' 
-#' @param description to the extend that fetch_grad_rate needs its own custom 
+#' @param description to the extent that fetch_grad_rate needs its own custom 
 #' logic above and beyond the generic process_grate, it will live here 
 #' @param df output of get_grad_rate
 #' @param end_year ending academic year
@@ -714,20 +745,18 @@ process_grad_rate <- function(df, end_year, methodology) {
 #'
 #' @param end_year end of the academic year - eg 2006-07 is 2007.
 #' valid values are 2011-present.
-#' @param tidy if TRUE (default) will convert data to long format, where 
-#' each row is a subgroup
 #'
 #' @return dataframe with grad rate
 #' @export
 
-fetch_grad_rate <- function(end_year, methodology='4 year', tidy=TRUE) {
+fetch_grad_rate <- function(end_year, methodology='4 year') {
   df <- get_grad_rate(end_year, methodology) %>%
     process_grad_rate(end_year)
   
-  if (tidy) {
-    df <- tidy_grad_rate(df, end_year, methodology)
-  }
-
+  df <- tidy_grad_rate(df, end_year, methodology)
+  
+  df <- id_grad_aggs(df)
+  
   df <- df %>%
     select(
       end_year,
@@ -737,7 +766,13 @@ fetch_grad_rate <- function(end_year, methodology='4 year', tidy=TRUE) {
       group, 
       grad_rate, 
       cohort_count, graduated_count, 
-      methodology
+      methodology,
+      is_state,
+      is_county,
+      is_district,
+      is_charter_sector,
+      is_allpublic,
+      is_school
     )
   
   return(df) 
