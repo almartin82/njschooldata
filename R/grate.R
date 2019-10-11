@@ -494,7 +494,8 @@ id_grad_aggs <- function(df) {
       is_district = school_id == '999' & !is_state,
       is_charter_sector = FALSE,
       is_allpublic = FALSE,
-      is_school = !school_id == '999' & !is_state
+      is_school = !school_id == '999' & !is_state,
+      is_charter = county_id == '80'
     )
 }
 
@@ -716,7 +717,8 @@ fetch_grad_count <- function(end_year) {
       'is_district',
       'is_charter_sector',
       'is_allpublic',
-      'is_school'
+      'is_school',
+      'is_charter'
     )
     
     df <- df %>%
@@ -793,10 +795,41 @@ fetch_grad_rate <- function(end_year, methodology='4 year') {
       is_state,
       is_county,
       is_district,
+      is_school,
+      is_charter,
       is_charter_sector,
-      is_allpublic,
-      is_school
+      is_allpublic
     )
   
   return(df) 
 }
+
+
+#' Grad Rate column order
+#'
+#' @param df processed grad rate df
+#'
+#' @return df in correct order
+#' @export
+
+grate_column_order <- function(df) {
+  df %>% 
+    select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subgroup, 
+      cohort_count,
+      graduated_count,
+      grad_rate,
+      methodology,
+      is_state, 
+      is_district, 
+      is_school, 
+      is_charter,
+      is_charter_sector,
+      is_allpublic
+    )
+}
+
