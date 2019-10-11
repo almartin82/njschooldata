@@ -396,8 +396,7 @@ allpublic_parcc_aggs <- function(df) {
 charter_sector_grate_aggs <- function(df) {
   
   # id hosts 
-  df <- id_charter_hosts(df) %>%
-    mutate(is_charter = !is.na(host_district_id))
+  df <- id_charter_hosts(df)
   
   # charters are reported twice, one per school one per district
   # take the district level only, in the hopes that NJ will 
@@ -408,13 +407,12 @@ charter_sector_grate_aggs <- function(df) {
   # group by - host city and summarize
   df <- df %>% 
     group_by(
-      time_window, grad_cohort, year_reported,
+      end_year, 
       host_county_id, host_county_name,
       host_district_id, host_district_name,
-      subgroup, subgroup_type
+      subgroup, methodology
     ) %>%
-    # DO STUFF
-    
+    grate_aggregate_calcs() %>%
     ungroup()
   
   # give psuedo district names and codes and create appropriate boolean flags
@@ -438,5 +436,5 @@ charter_sector_grate_aggs <- function(df) {
     select(-host_district_id, -host_district_name)
   
   # organize and return
-
+  grate_column_order(df)
 }
