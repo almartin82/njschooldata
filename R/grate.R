@@ -290,9 +290,9 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       name_vector == 'Economically Disadvantaged', 'economically_disadvantaged', name_vector
     )
     name_vector <- ifelse(name_vector == 'Students with Disability', 'iep', name_vector)
-    name_vector <- ifelse(name_vector == 'Schoolwide', 'total_population', name_vector)    
-    name_vector <- ifelse(name_vector == 'Districtwide', 'total_population', name_vector)
-    name_vector <- ifelse(name_vector == 'Statewide Total', 'total_population', name_vector)
+    name_vector <- ifelse(name_vector == 'Schoolwide', 'total population', name_vector)    
+    name_vector <- ifelse(name_vector == 'Districtwide', 'total population', name_vector)
+    name_vector <- ifelse(name_vector == 'Statewide Total', 'total population', name_vector)
     
     name_vector
   }
@@ -322,7 +322,6 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       df$group <- 'total_population'
     }
     df$group <- tolower(df$group)
-    df$group <- clean_grate_names(df$group)
     
     return(df)
   }
@@ -356,9 +355,31 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
   # 2018 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
   
+  out$group <- grad_file_group_cleanup(out$group)
+  out <- out %>%
+    rename(subgroup = group)
+  
   return(out)
 }
 
+
+#' grad file group cleanup
+#'
+#' @param group column of group (subgroup) data from NJ grad file
+#'
+#' @return  column cleaned up subgroup 
+
+grad_file_group_cleanup <- function(group) {
+  case_when(
+    group == 'american indian or alaska native' ~ 'american indian',
+    group == 'black or african american' ~ 'black',
+    group == 'english learners' ~ 'limited english proficiency',
+    group == 'native hawaiian or pacific islander' ~ 'native hawaiian',
+    group == 'students with disabilities' ~ 'students with disability',
+    group %in% c('districtwide', 'schoolwide', 'statewide total') ~ 'total population',
+    TRUE ~ group
+  )
+}
 
 #' Get a raw graduation file from the NJ website
 #'
@@ -661,6 +682,8 @@ tidy_grad_count <- function(df, end_year) {
   # 2018 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
   
+  out$subgroup <- grad_file_group_cleanup(out$subgroup)
+
   return(out)
 }
 
@@ -763,7 +786,7 @@ fetch_grad_rate <- function(end_year, methodology='4 year') {
       county_id, county_name, 
       district_id, district_name, 
       school_id, school_name,
-      group, 
+      subgroup, 
       grad_rate, 
       cohort_count, graduated_count, 
       methodology,
