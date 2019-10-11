@@ -149,3 +149,14 @@ test_that("allpublic parcc aggs, 2018", {
   expect_is(allpublic_aggs_math4_2018, "data.frame")
   expect_equal(nrow(allpublic_aggs_math4_2018), 339)
 })
+
+
+test_that("charter sector grate aggs, 2018", {
+  
+  grate_2018 <- fetch_grad_rate(2018)
+  ch_aggs_grate_2018 <- charter_sector_grate_aggs(grate_2018)
+  expect_is(ch_aggs_grate_2018, "data.frame")
+  
+  expect_equal(nrow(ch_aggs_grate_2018), 180)
+  
+})
