@@ -663,14 +663,15 @@ tidy_grad_count <- function(df, end_year) {
         graduated_count = n_students
       )
     
-  } else if (end_year >= 2011) {
+  } else if (end_year >= 2011 & end_year < 2012) {
+
     # no subgroups reported
     out <- df %>%
       mutate(
         subgroup = 'total_population'
       )
     
-  } else if (end_year >= 2013) {
+  } else if (end_year >= 2012) {
     out <- df %>%
       mutate(
         group = gsub(' ', '_', tolower(group))
@@ -833,3 +834,29 @@ grate_column_order <- function(df) {
     )
 }
 
+
+#' Grad Count column order
+#'
+#' @param df processsed grad count df
+#'
+#' @return df in correct order
+#' @export
+
+gcount_column_order <- function(df) {
+  df %>% 
+    select(one_of(
+      'end_year',
+      'county_id', 'county_name',
+      'district_id', 'district_name',
+      'school_id', 'school_name',
+      'subgroup', 
+      'cohort_count',
+      'graduated_count',
+      'is_state', 
+      'is_district', 
+      'is_school', 
+      'is_charter',
+      'is_charter_sector',
+      'is_allpublic'
+    ))
+}
