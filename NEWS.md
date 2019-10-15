@@ -1,3 +1,11 @@
+# njschooldata 0.7.9
+
+## New features
+
+* Grad Count data (`fetch_grad_count`) from 1999-present.
+* Grad rate and count charter sector and all public aggregations.
+
+
 # njschooldata 0.7.8
 
 ## New features
