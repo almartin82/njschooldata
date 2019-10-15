@@ -171,6 +171,8 @@ charter_sector_enr_aggs <- function(df) {
 #' @export
 
 allpublic_enr_aggs <- function(df) {
+  df <- df %>% ungroup()
+  
   # id hosts 
   df <- id_charter_hosts(df)
   
@@ -576,6 +578,8 @@ charter_sector_gcount_aggs <- function(df) {
 #' @export
 
 allpublic_gcount_aggs <- function(df) {
+  
+  df <- df %>% ungroup()
   
   # id hosts 
   df <- id_charter_hosts(df)

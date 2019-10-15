@@ -319,7 +319,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     } 
     
     if (!'group' %in% names(df)) {
-      df$group <- 'total_population'
+      df$group <- 'total population'
     }
     df$group <- tolower(df$group)
     
@@ -668,7 +668,7 @@ tidy_grad_count <- function(df, end_year) {
     # no subgroups reported
     out <- df %>%
       mutate(
-        subgroup = 'total_population'
+        subgroup = 'total population'
       )
     
   } else if (end_year >= 2012) {
