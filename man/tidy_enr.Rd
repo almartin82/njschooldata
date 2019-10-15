@@ -12,3 +12,6 @@ tidy_enr(df)
 \value{
 a long data.frame of tidied enrollment data
 }
+\description{
+tidy enrollment data
+}
