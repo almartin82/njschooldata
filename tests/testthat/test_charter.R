@@ -158,5 +158,33 @@ test_that("charter sector grate aggs, 2018", {
   expect_is(ch_aggs_grate_2018, "data.frame")
   
   expect_equal(nrow(ch_aggs_grate_2018), 180)
-  
 })
+
+
+test_that("allpublic grate aggs, 2018", {
+  grate_2018 <- fetch_grad_rate(2018)
+  allpublic_aggs_grate_2018 <- allpublic_grate_aggs(grate_2018)
+  expect_is(allpublic_aggs_grate_2018, "data.frame")
+  
+  expect_equal(nrow(allpublic_aggs_grate_2018), 180)
+})
+
+
+test_that("charter sector gcount aggs, 2018", {
+  
+  gcount_2018 <- fetch_grad_count(2018)
+  ch_aggs_gcount_2018 <- charter_sector_gcount_aggs(gcount_2018)
+  expect_is(ch_aggs_gcount_2018, "data.frame")
+  
+  expect_equal(nrow(ch_aggs_gcount_2018), 180)
+})
+
+
+test_that("allpublic gcount aggs, 2018", {
+  gcount_2018 <- fetch_grad_count(2018)
+  allpublic_aggs_gcount_2018 <- allpublic_gcount_aggs(gcount_2018)
+  expect_is(allpublic_aggs_gcount_2018, "data.frame")
+  
+  expect_equal(nrow(allpublic_aggs_gcount_2018), 180)
+})
+
