@@ -371,12 +371,15 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
 
 grad_file_group_cleanup <- function(group) {
   case_when(
-    group == 'american indian or alaska native' ~ 'american indian',
-    group == 'black or african american' ~ 'black',
-    group == 'english learners' ~ 'limited english proficiency',
-    group == 'native hawaiian or pacific islander' ~ 'native hawaiian',
-    group == 'students with disabilities' ~ 'students with disability',
-    group %in% c('districtwide', 'schoolwide', 'statewide total') ~ 'total population',
+    group %in% c('american indian or alaska native', 'american_indian') ~ 'american indian',
+    group %in% c('black or african american') ~ 'black',
+    group %in% c('economically_disadvantaged') ~ 'economically disadvantaged',
+    group %in% c('english learners', 'limited_english_proficiency') ~ 'limited english proficiency',
+    group %in% c('two or more race', 'two_or_more_races') ~ 'multiracial',
+    group %in% c('native hawaiian or pacific islander', 'pacific_islander', 'native_hawaiian') ~ 'pacific islander',
+    group %in% c('students with disabilities', 'students_with_disability') ~ 'students with disability',
+    group %in% c('districtwide', 'schoolwide', 'statewide total', 'statewide_total', 'total_population') ~ 'total population',
+    
     TRUE ~ group
   )
 }
@@ -663,24 +666,17 @@ tidy_grad_count <- function(df, end_year) {
         graduated_count = n_students
       )
     
-  } else if (end_year >= 2011 & end_year < 2012) {
-
-    # no subgroups reported
-    out <- df %>%
-      mutate(
-        subgroup = 'total population'
-      )
-    
+  } else if (end_year == 2011) {
+    out <- df %>% mutate(subgroup = 'total population')
   } else if (end_year >= 2012) {
-    out <- df %>%
-      mutate(
-        group = gsub(' ', '_', tolower(group))
-      ) %>%
-      rename(
-        subgroup = group 
-      )
+    
+    df$group <- grad_file_group_cleanup(tolower(df$group))
+    
+    out <- df %>% 
+      mutate(group = gsub(' ', '_', tolower(group))) %>%
+      rename(subgroup = group)
   }
-  
+    
   # 2018 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
   
