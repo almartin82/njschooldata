@@ -494,10 +494,10 @@ id_grad_aggs <- function(df) {
     mutate(
       is_state = district_id == '9999' & county_id == '99',
       is_county = district_id == '9999' & !county_id =='99',
-      is_district = school_id == '999' & !is_state,
+      is_district = school_id %in% c('997', '999') & !is_state,
       is_charter_sector = FALSE,
       is_allpublic = FALSE,
-      is_school = !school_id == '999' & !is_state,
+      is_school = !school_id %in% c('997', '999') & !is_state,
       is_charter = county_id == '80'
     )
 }
