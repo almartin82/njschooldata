@@ -170,10 +170,18 @@ percentile_rank <- function(x, xo) {
 }
 
 
-peek <- function(df) {
+#' Peek at a data frame
+#'
+#' @param df data.frame
+#' @param nrows how many rows to sample
+#'
+#' @return prints random sample of nrows of a dataframe
+#' @export
+
+peek <- function(df, nrows = 5) {
   df %>%
-  ungroup() %>%
-  sample_n(5) %>% 
+  ungroup() %>% 
+  sample_n(nrows) %>% 
   print.AsIs()
 }
 
