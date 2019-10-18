@@ -54,7 +54,7 @@ parcc_aggregate_calcs <- function(df) {
       pct_l4 = round((num_l4 / number_of_valid_scale_scores) * 100, 1),
       pct_l5 = round((num_l5 / number_of_valid_scale_scores) * 100, 1),
       
-      scale_score_mean = round(scale_score_mean / number_of_valid_scale_scores, 0),
+      scale_score_mean = round(scale_score_mean / number_of_valid_scale_scores, 2),
       proficient_above = round(((num_l4 + num_l5) / number_of_valid_scale_scores) * 100, 2),
       districts = districts,
       schools = schools
@@ -70,22 +70,27 @@ parcc_aggregate_calcs <- function(df) {
 #' 
 #' @param end_year school year / testing year
 #' @param subj one of 'ela' or 'math'
-#' @param k8 boolean, if TRUE will calculate for K-8 only.
+#' @param gradespan one of c('3-11', '3-8', '9-11').  default is '3-11'
 #'
 #' @return dataframe
 #' @export
 
-calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
+calculate_agg_parcc_prof <- function(end_year, subj, gradespan='3-11') {
   
   # grade and subjects to map over
-  if (subj == 'ela' & !k8) {
+  if (subj == 'ela' & gradespan == '3-11') {
     grades <- c(3:11)
-  } else if (subj == 'ela' & k8) {
+  } else if (subj == 'ela' & gradespan == '3-8') {
     grades <- c(3:8)
-  } else if (subj == 'math' & !k8) {
+  } else if (subj == 'ela' & gradespan == '9-11') {
+    grades <- c(9:11)
+    
+  } else if (subj == 'math' & gradespan == '3-11') {
     grades <- c('03', '04', '05', '06', '07', '08', 'ALG1', 'GEO', 'ALG2')
-  } else if (subj == 'math' & k8) {
+  } else if (subj == 'math' & gradespan == '3-8') {
     grades <- c(3:8)
+  } else if (subj == 'math' & gradespan == '9-11') {
+    grades <- c('ALG1', 'GEO', 'ALG2')
   } else {
     stop('invalid subject')
   }
@@ -125,6 +130,6 @@ calculate_agg_parcc_prof <- function(end_year, subj, k8=FALSE) {
     parcc_aggregate_calcs() %>%
     ungroup() %>%
     mutate(
-      grade = ifelse(k8, 'K-8', 'K-11')
+      grade = gradespan
     )
 }

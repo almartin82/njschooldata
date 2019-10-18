@@ -47,11 +47,31 @@ test_that("fetch_parcc processes 2016-17 data file", {
 })
 
 
-test_that("calculate_agg_parcc_prof", {
-  math_k11_2018 <- calculate_agg_parcc_prof(
+test_that("calculate_agg_parcc_prof all grades", {
+  math_311_2018 <- calculate_agg_parcc_prof(
     end_year = 2018,
     subj = 'math',
-    k8 = FALSE
+    gradespan = '3-11'
   )
-  expect_is(math_k11_2018, 'data.frame')
+  expect_is(math_311_2018, 'data.frame')
+})
+
+
+test_that("calculate_agg_parcc_prof 3-8", {
+  math_38_2018 <- calculate_agg_parcc_prof(
+    end_year = 2018,
+    subj = 'math',
+    gradespan = '3-8'
+  )
+  expect_is(math_38_2018, 'data.frame')
+})
+
+
+test_that("calculate_agg_parcc_prof 9-11", {
+  math_911_2018 <- calculate_agg_parcc_prof(
+    end_year = 2018,
+    subj = 'math',
+    gradespan = '9-11'
+  )
+  expect_is(math_911_2018, 'data.frame')
 })

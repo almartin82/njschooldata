@@ -23,24 +23,23 @@ assessment_peer_percentile <- function(df) {
     count_proficient_dummy = ifelse(is.finite(proficient_above), 1, 0),
     count_scale_dummy = ifelse(is.finite(scale_score_mean), 1, 0),
     
-    proficient_rank = dplyr::dense_rank(proficient_above),
+    proficient_rank = dplyr::min_rank(proficient_above),
     proficient_group_size = ifelse(
       is.finite(proficient_above), 
       sum(count_proficient_dummy),
       NA_integer_
     ),
     
-    scale_rank = dplyr::dense_rank(scale_score_mean),
+    scale_rank = dplyr::min_rank(scale_score_mean),
     scale_group_size = ifelse(
-      is.finite(scale_score_mean), 
+      is.finite(scale_score_mean),
       sum(count_scale_dummy),
       NA_integer_
     ),
 
-    proficiency_percentile = dplyr::cume_dist(proficient_above),
-    scale_score_percentile = dplyr::cume_dist(scale_score_mean)
-  ) %>%
-  select(-count_proficient_dummy, -count_scale_dummy)
+    scale_score_percentile = round((scale_rank / scale_group_size) * 100, 1),
+    proficiency_percentile = round((proficient_rank / proficient_group_size) * 100, 1)
+  )
 }
 
 

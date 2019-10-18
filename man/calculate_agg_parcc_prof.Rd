@@ -4,14 +4,14 @@
 \alias{calculate_agg_parcc_prof}
 \title{Aggregate PARCC results across multiple grade levels}
 \usage{
-calculate_agg_parcc_prof(end_year, subj, k8 = FALSE)
+calculate_agg_parcc_prof(end_year, subj, gradespan = "3-11")
 }
 \arguments{
 \item{end_year}{school year / testing year}
 
 \item{subj}{one of 'ela' or 'math'}
 
-\item{k8}{boolean, if TRUE will calculate for K-8 only.}
+\item{gradespan}{one of c('3-11', '3-8', '9-11').  default is '3-11'}
 }
 \value{
 dataframe
