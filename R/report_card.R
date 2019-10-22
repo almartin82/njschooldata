@@ -2,16 +2,35 @@
 #' Get Raw Report Card Database
 #'
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
-#' school year is end_year '2015'.  valid values are 2003 to 2017
+#' school year is end_year '2015'.  valid values are 2003 to 2018
 #'
 #' @return list of data frames
 #' @export
 
 get_one_rc_database <- function(end_year) {
   
+  if (end_year >= 2017) {
+    df_list <- get_merged_rc_database(end_year)
+  } else if (end_year >= 2003) {
+    df_list <- get_standalone_rc_database(end_year)
+  } else {
+    stop('Year not covered by NJ report card data.')
+  }
+  
+  df_list
+}
+
+
+#' Get Standalone Raw Report Card Database
+#'
+#' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
+#' school year is end_year '2015'.  valid values are 2003 to 2016
+#'
+#' @return list of data frames
+
+get_standalone_rc_database <- function(end_year) {
+  
   pr_urls <- list(
-    "2018" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
-    "2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/PerformanceReports.xlsx",
     "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
     "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
     "2014" = "http://www.nj.gov/education/pr/1314/database/2014%20performance%20report%20database.xlsx",
@@ -30,13 +49,20 @@ get_one_rc_database <- function(end_year) {
   
   #temp file for downloading
   file_exts <- c(
-    rep('xlsx', 7),
+    rep('xlsx', 5),
     rep('xls', 9)
   )
   tmp_pr = tempfile(fileext = paste0('.', file_exts[1 + (2018-end_year)]))
   
+  pr_list <- download_and_clean_pr(tmp_pr,  pr_urls[[as.character(end_year)]], end_year)
+  
+  pr_list
+}
+
+
+download_and_clean_pr <- function(tmp_pr, url, end_year) {
   #download to temp
-  download.file(url = pr_urls[[as.character(end_year)]], destfile = tmp_pr, mode = "wb")
+  download.file(url, destfile = tmp_pr, mode = "wb")
   
   #get the sheet names
   sheets_pr <- readxl::excel_sheets(tmp_pr) %>%
@@ -58,15 +84,14 @@ get_one_rc_database <- function(end_year) {
   pr_list
 }
 
-
 #' Get multiple RC databases
 #'
-#' @param end_year_vector vector of years.  Current valid values are 2003 to 2017. 
+#' @param end_year_vector vector of years.  Current valid values are 2003 to 2018. 
 #'
 #' @return a list of dataframes
 #' @export
 
-get_rc_databases <- function(end_year_vector = c(2003:2017)) {
+get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 
   all_prs <- map(
     .x = end_year_vector,
@@ -79,6 +104,88 @@ get_rc_databases <- function(end_year_vector = c(2003:2017)) {
   names(all_prs) <- end_year_vector
   
   all_prs
+}
+
+
+#' Combines school and district Performance Reports for 2017-on, when two files were released.
+#'
+#' @param end_year end of the academic year.  Valid values are 2017, 2018.
+#'
+#' @return list of dataframes
+
+
+get_merged_rc_database <- function(end_year) {
+  
+  pr_urls <- list(
+    "sch_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
+    "dist_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
+    "sch_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/PerformanceReports.xlsx",
+    "dist_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/DistrictPerformanceReports.xlsx"
+  )
+  
+  # get district and school df
+  dist <- pr_urls[[paste0('dist_', end_year)]]
+  sch <- pr_urls[[paste0('sch_', end_year)]]
+  
+  tmp_pr = tempfile(fileext = 'xlsx')
+  dist_pr = download_and_clean_pr(tmp_pr, dist, end_year)
+  sch_pr = download_and_clean_pr(tmp_pr, sch, end_year)
+
+  # tag source
+  dist_pr <- map(dist_pr, ~.x %>% mutate(source_file='district'))
+  sch_pr <- map(sch_pr, ~.x %>% mutate(source_file='school'))
+  
+  # add logical tags
+  dist_pr <- map(
+    dist_pr, 
+    function(.x) {
+      if ('district_code' %in% names(.x)) {
+        .x %>%
+          mutate(
+            school_code = '999',
+            school_name = ifelse(!district_code == 'STATE', 'District Total', ''),
+            is_district = ifelse(!district_code == 'STATE', TRUE, FALSE),
+            is_school = FALSE
+          )
+      }
+    }
+  )
+  
+  sch_pr <- map(
+    sch_pr, 
+    function(.x) {
+      if ('school_code' %in% names(.x)) {
+        .x %>%
+          mutate(
+            is_district = FALSE,
+            is_school = TRUE
+          )
+      }
+    }
+  )
+  
+  # combine if match
+  joint <- names(sch_pr)[names(sch_pr) %in% names(dist_pr)]
+  sch_only <- names(sch_pr)[!names(sch_pr) %in% names(dist_pr)]
+  dist_only <- names(dist_pr)[!names(dist_pr) %in% names(sch_pr)]
+  
+  combined <- map(
+    joint,
+    function(.x) {
+      bind_rows(sch_pr[[.x]], dist_pr[[.x]])
+    }
+  )
+  names(combined) <- joint
+  
+  # only school and only dist
+  sch_dfs <- map(sch_only, ~sch_pr[[.x]])
+  names(sch_dfs) <- sch_only
+  
+  dist_dfs <- map(dist_only, ~dist_pr[[.x]])
+  names(dist_dfs) <- dist_only
+  
+  # combine list of prs and return
+  c(combined, sch_dfs, dist_dfs)
 }
 
 

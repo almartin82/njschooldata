@@ -1,3 +1,12 @@
+# njschooldata 0.8.0
+
+## New features
+
+* Method for combining school/district Report Card data.
+
+* PARCC Percentile Rank functions are more thoroughly tested, with some errors corrected.
+
+
 # njschooldata 0.7.9
 
 ## New features

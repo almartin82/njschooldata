@@ -4,10 +4,10 @@
 \alias{get_rc_databases}
 \title{Get multiple RC databases}
 \usage{
-get_rc_databases(end_year_vector = c(2003:2017))
+get_rc_databases(end_year_vector = c(2003:2018))
 }
 \arguments{
-\item{end_year_vector}{vector of years.  Current valid values are 2003 to 2017.}
+\item{end_year_vector}{vector of years.  Current valid values are 2003 to 2018.}
 }
 \value{
 a list of dataframes

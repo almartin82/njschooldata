@@ -8,7 +8,7 @@ get_one_rc_database(end_year)
 }
 \arguments{
 \item{end_year}{a school year.  end_year is the end of the academic year - eg 2014-15
-school year is end_year '2015'.  valid values are 2003 to 2017}
+school year is end_year '2015'.  valid values are 2003 to 2018}
 }
 \value{
 list of data frames
