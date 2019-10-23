@@ -60,6 +60,14 @@ get_standalone_rc_database <- function(end_year) {
 }
 
 
+#' Download and clean performance report data
+#'
+#' @param tmp_pr path to tempfile
+#' @param url url to download
+#' @param end_year report year
+#'
+#' @return list of dataframes
+
 download_and_clean_pr <- function(tmp_pr, url, end_year) {
   #download to temp
   download.file(url, destfile = tmp_pr, mode = "wb")
@@ -72,9 +80,13 @@ download_and_clean_pr <- function(tmp_pr, url, end_year) {
   pr_list <- map(
     .x = c(1:length(sheets_pr)),
     .f = function(.x) {
-      readxl::read_excel(tmp_pr, sheet = .x) %>%
-        mutate(end_year = end_year) %>%
-        janitor::clean_names()
+      readxl::read_excel(
+        tmp_pr, 
+        sheet = .x,
+        na = c('NA', 'N')
+      ) %>%
+      mutate(end_year = end_year) %>%
+      janitor::clean_names()
     }
   )
   
@@ -112,7 +124,7 @@ get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 #' @param end_year end of the academic year.  Valid values are 2017, 2018.
 #'
 #' @return list of dataframes
-
+#' @export
 
 get_merged_rc_database <- function(end_year) {
   
@@ -127,9 +139,13 @@ get_merged_rc_database <- function(end_year) {
   dist <- pr_urls[[paste0('dist_', end_year)]]
   sch <- pr_urls[[paste0('sch_', end_year)]]
   
-  tmp_pr = tempfile(fileext = 'xlsx')
-  dist_pr = download_and_clean_pr(tmp_pr, dist, end_year)
-  sch_pr = download_and_clean_pr(tmp_pr, sch, end_year)
+  tmp_pr1 = tempfile(fileext = 'xlsx')
+  tmp_pr2 = tempfile(fileext = 'xlsx')
+  dist_pr = download_and_clean_pr(tmp_pr1, dist, end_year)
+  sch_pr = download_and_clean_pr(tmp_pr2, sch, end_year)
+  
+  # exclude bad / duplicate data
+  sch_pr <- sch_pr[!names(sch_pr) %in% c('per_pupil_expenditures')]
 
   # tag source
   dist_pr <- map(dist_pr, ~.x %>% mutate(source_file='district'))
@@ -147,6 +163,8 @@ get_merged_rc_database <- function(end_year) {
             is_district = ifelse(!district_code == 'STATE', TRUE, FALSE),
             is_school = FALSE
           )
+      } else {
+        .x
       }
     }
   )
@@ -160,6 +178,8 @@ get_merged_rc_database <- function(end_year) {
             is_district = FALSE,
             is_school = TRUE
           )
+      } else {
+        .x
       }
     }
   )
@@ -172,7 +192,22 @@ get_merged_rc_database <- function(end_year) {
   combined <- map(
     joint,
     function(.x) {
-      bind_rows(sch_pr[[.x]], dist_pr[[.x]])
+      this_dist_df <- dist_pr[[.x]]
+      this_sch_df <- sch_pr[[.x]]
+      bindable <- compare_df_cols_same(this_dist_df, this_sch_df, verbose=FALSE)
+      if (!bindable) {
+        # which don't match?
+        bad_cols <- compare_df_cols(
+          this_dist_df, 
+          this_sch_df, 
+          return = 'mismatch', 
+          bind_method = 'bind_rows'
+        )
+        # make character if not matched
+        this_dist_df <- this_dist_df %>% mutate_at(bad_cols$column_name, as.character)
+        this_sch_df <- this_sch_df %>% mutate_at(bad_cols$column_name, as.character)
+      }
+      bind_rows(this_dist_df, this_sch_df)
     }
   )
   names(combined) <- joint
