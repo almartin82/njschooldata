@@ -52,7 +52,7 @@ get_standalone_rc_database <- function(end_year) {
     rep('xlsx', 5),
     rep('xls', 9)
   )
-  tmp_pr = tempfile(fileext = paste0('.', file_exts[1 + (2018-end_year)]))
+  tmp_pr = tempfile(fileext = paste0('.', file_exts[1 + (2016-end_year)]))
   
   pr_list <- download_and_clean_pr(tmp_pr,  pr_urls[[as.character(end_year)]], end_year)
   
@@ -83,7 +83,7 @@ download_and_clean_pr <- function(tmp_pr, url, end_year) {
       readxl::read_excel(
         tmp_pr, 
         sheet = .x,
-        na = c('NA', 'N')
+        na = c('NA', 'N', '*', '**')
       ) %>%
       mutate(end_year = end_year) %>%
       janitor::clean_names()
@@ -155,12 +155,16 @@ get_merged_rc_database <- function(end_year) {
   dist_pr <- map(
     dist_pr, 
     function(.x) {
+      # would it be too much to ask that the same code be used for State data 
+      # *inside the same file*?  It would.
+      state_codes <- c('STATE', 'State')
+      
       if ('district_code' %in% names(.x)) {
         .x %>%
           mutate(
             school_code = '999',
-            school_name = ifelse(!district_code == 'STATE', 'District Total', ''),
-            is_district = ifelse(!district_code == 'STATE', TRUE, FALSE),
+            school_name = ifelse(!district_code %in% state_codes, 'District Total', ''),
+            is_district = ifelse(!district_code %in% state_codes, TRUE, FALSE),
             is_school = FALSE
           )
       } else {
