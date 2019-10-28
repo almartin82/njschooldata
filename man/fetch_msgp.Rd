@@ -7,7 +7,10 @@
 fetch_msgp(end_year)
 }
 \arguments{
-\item{end_year}{}
+\item{end_year}{ending school year.  valid values are currently 2012-2018.}
+}
+\value{
+dataframe with mSGP data for the year
 }
 \description{
 Fetch mSGP

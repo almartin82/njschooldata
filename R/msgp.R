@@ -241,9 +241,9 @@ get_and_process_msgp <- function(end_year) {
 
 #' Fetch mSGP
 #'
-#' @param end_year 
+#' @inheritParams get_and_process_msgp
 #'
-#' @return
+#' @return dataframe with mSGP data for the year
 #' @export
 
 fetch_msgp <- function(end_year) {
