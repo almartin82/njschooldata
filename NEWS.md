@@ -2,6 +2,15 @@
 
 ## New features
 
+* `fetch_msgp()` reads msgp data from report card files.
+
+* `fetch_reportcard_special_pop()`
+
+
+# njschooldata 0.8.0
+
+## New features
+
 * Method for combining school/district Report Card data.
 
 * PARCC Percentile Rank functions are more thoroughly tested, with some errors corrected.
