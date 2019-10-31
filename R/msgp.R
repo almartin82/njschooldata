@@ -7,7 +7,6 @@
 
 get_and_process_msgp <- function(end_year) {
   
-  df_list <- get_one_rc_database(end_year)
   
   if (end_year %in% c(2012, 2013, 2014)) {
     
@@ -45,7 +44,39 @@ get_and_process_msgp <- function(end_year) {
         is_district = FALSE
       )
     
-    out <- bind_rows(df_school_ela, df_school_math) %>%
+    df_district_ela <- df %>%
+      select(
+        county_code, district_code, la_sgp, end_year) %>%
+      rename(
+        median_sgp = la_sgp
+      ) %>%
+      unique() %>%
+      mutate(
+        school_code = '999',
+        subject = 'ELA',
+        grade = 'TOTAL',
+        subgroup = 'total population',
+        is_school = FALSE,
+        is_district = TRUE
+      )
+    
+    df_district_math <- df %>%
+      select(
+        county_code, district_code, m_sgp, end_year) %>%
+      rename(
+        median_sgp = m_sgp
+      ) %>%
+      unique() %>%
+      mutate(
+        school_code = '999',
+        subject = 'Math',
+        grade = 'TOTAL',
+        subgroup = 'total population',
+        is_school = FALSE,
+        is_district = TRUE
+      )
+    
+    out <- bind_rows(df_school_ela, df_school_math, df_district_ela, df_district_math) %>%
       select(
         county_code, 
         district_code, 
@@ -90,7 +121,40 @@ get_and_process_msgp <- function(end_year) {
         is_district = FALSE
       )
     
-    out <- bind_rows(df_school_ela, df_school_math) %>%
+    
+    df_district_ela <- df %>%
+      select(
+        county_code, district_code, ela_sgp, end_year) %>%
+      rename(
+        median_sgp = ela_sgp
+      ) %>%
+      unique() %>%
+      mutate(
+        school_code = '999',
+        subject = 'ELA',
+        grade = 'TOTAL',
+        subgroup = 'total population',
+        is_school = FALSE,
+        is_district = TRUE
+      )
+    
+    df_district_math <- df %>%
+      select(
+        county_code, district_code, math_sgp, end_year) %>%
+      rename(
+        median_sgp = math_sgp
+      ) %>%
+      unique() %>%
+      mutate(
+        school_code = '999',
+        subject = 'Math',
+        grade = 'TOTAL',
+        subgroup = 'total population',
+        is_school = FALSE,
+        is_district = TRUE
+      )
+    
+    out <- bind_rows(df_school_ela, df_school_math, df_district_ela, df_district_math) %>%
       select(
         county_code, 
         district_code, 
@@ -121,12 +185,14 @@ get_and_process_msgp <- function(end_year) {
       )
     
     df_district <- df_sgp %>%
-      select(county_code, district_code, school_code, student_growth, district_median, end_year) %>%
+      select(county_code, district_code, student_growth, district_median, end_year) %>%
       rename(
         subject = student_growth,
         median_sgp = district_median
       ) %>%
+      unique() %>%
       mutate(
+        school_code = '999',
         grade = 'TOTAL',
         subgroup = 'total population',
         is_school = FALSE,
@@ -170,7 +236,7 @@ get_and_process_msgp <- function(end_year) {
       # subgroup normalization 
       mutate(
         subgroup = case_when(
-          subgroup %in% c('Schoolwide', 'Statewide') ~ 'total population',
+          subgroup %in% c('Schoolwide', 'Statewide', 'Districtwide') ~ 'total population',
           subgroup %in% c("American Indian or Alaskan Native") ~ 'american indian', 
           subgroup %in% c("Asian, Native Hawaiian, or Pacific Islander") ~ 'asian',
           subgroup %in% c("Black or African American") ~ 'black',        
@@ -234,6 +300,14 @@ get_and_process_msgp <- function(end_year) {
         is_district, is_school
       )
   }
+  
+  # clean upt
+  out <- out %>%
+    rename(
+      county_id = county_code,
+      district_id = district_code,
+      school_id = school_code
+    )
   
   out
 }
