@@ -45,39 +45,8 @@ get_and_process_msgp <- function(end_year) {
         is_district = FALSE
       )
     
-    df_district_ela <- df %>%
-      select(
-        county_code, district_code, la_sgp, end_year) %>%
-      rename(
-        median_sgp = la_sgp
-      ) %>%
-      unique() %>%
-      mutate(
-        school_code = '999',
-        subject = 'ELA',
-        grade = 'TOTAL',
-        subgroup = 'total population',
-        is_school = FALSE,
-        is_district = TRUE
-      )
-    
-    df_district_math <- df %>%
-      select(
-        county_code, district_code, m_sgp, end_year) %>%
-      rename(
-        median_sgp = m_sgp
-      ) %>%
-      unique() %>%
-      mutate(
-        school_code = '999',
-        subject = 'Math',
-        grade = 'TOTAL',
-        subgroup = 'total population',
-        is_school = FALSE,
-        is_district = TRUE
-      )
-    
-    out <- bind_rows(df_school_ela, df_school_math, df_district_ela, df_district_math) %>%
+
+    out <- bind_rows(df_school_ela, df_school_math) %>%
       select(
         county_code, 
         district_code, 
