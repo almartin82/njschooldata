@@ -245,6 +245,9 @@ get_and_process_msgp <- function(end_year) {
       county_id = county_code,
       district_id = district_code,
       school_id = school_code
+    ) %>%
+    mutate(
+      subject = tolower(subject)
     )
   
   out
