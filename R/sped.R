@@ -35,18 +35,18 @@ get_raw_sped <- function(end_year) {
   url1 <- enr_url
   tf <- tempfile()
   
-  download.file ( url1 , tf , mode = 'wb' )
+  download.file (url1, tf, mode = 'wb')
   
   if (grepl('.xlsx', url1)) {
-    invisible(file.rename( tf , paste0( tf , ".xlsx" ) ))
+    invisible(file.rename(tf, paste0( tf, ".xlsx")))
     
     # GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
-    enr <- readxl::read_excel(paste0( tf , ".xlsx" ),  skip = rows.to.skip)
+    enr <- readxl::read_excel(paste0(tf, ".xlsx" ),  skip = rows.to.skip)
   } else {
-    invisible(file.rename( tf , paste0( tf , ".xls" ) ))
+    invisible(file.rename(tf, paste0(tf, ".xls")))
     
     # GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx")))
-    enr <- readxl::read_excel(paste0( tf , ".xls" ),  skip = rows.to.skip)
+    enr <- readxl::read_excel(paste0(tf, ".xls"),  skip = rows.to.skip)
   }
   
   enr$end_year <- end_year
