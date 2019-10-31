@@ -7,6 +7,7 @@
 
 get_and_process_msgp <- function(end_year) {
   
+  df_list <- get_one_rc_database(end_year)
   
   if (end_year %in% c(2012, 2013, 2014)) {
     
@@ -120,41 +121,9 @@ get_and_process_msgp <- function(end_year) {
         is_school = TRUE,
         is_district = FALSE
       )
+  
     
-    
-    df_district_ela <- df %>%
-      select(
-        county_code, district_code, ela_sgp, end_year) %>%
-      rename(
-        median_sgp = ela_sgp
-      ) %>%
-      unique() %>%
-      mutate(
-        school_code = '999',
-        subject = 'ELA',
-        grade = 'TOTAL',
-        subgroup = 'total population',
-        is_school = FALSE,
-        is_district = TRUE
-      )
-    
-    df_district_math <- df %>%
-      select(
-        county_code, district_code, math_sgp, end_year) %>%
-      rename(
-        median_sgp = math_sgp
-      ) %>%
-      unique() %>%
-      mutate(
-        school_code = '999',
-        subject = 'Math',
-        grade = 'TOTAL',
-        subgroup = 'total population',
-        is_school = FALSE,
-        is_district = TRUE
-      )
-    
-    out <- bind_rows(df_school_ela, df_school_math, df_district_ela, df_district_math) %>%
+    out <- bind_rows(df_school_ela, df_school_math) %>%
       select(
         county_code, 
         district_code, 
