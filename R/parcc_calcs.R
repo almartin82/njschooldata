@@ -78,7 +78,9 @@ parcc_aggregate_calcs <- function(df) {
 calculate_agg_parcc_prof <- function(end_year, subj, gradespan='3-11') {
   
   # grade and subjects to map over
-  if (subj == 'ela' & gradespan == '3-11') {
+  if (subj == 'ela' & gradespan == '3-11' & end_year >= 2019) {
+    grades <- c(3:10)
+  } else if (subj == 'ela' & gradespan == '3-11' & end_year >= 2019) {
     grades <- c(3:11)
   } else if (subj == 'ela' & gradespan == '3-8') {
     grades <- c(3:8)
