@@ -110,5 +110,16 @@ test_that("calculate_agg_parcc_prof from parcc calcs works with 2018-19 data", {
       gradespan = '3-11'
     )
   )
+  expect_is(math_311_agg, 'data.frame')
+  
+  ela_311_agg <- map_df(
+    parcc_years,
+    function(x) calculate_agg_parcc_prof(
+      end_year = x, 
+      subj = 'ela',
+      gradespan = '3-11'
+    )
+  )
+  expect_is(ela_311_agg, 'data.frame')
   
 })
