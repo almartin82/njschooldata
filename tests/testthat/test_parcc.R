@@ -75,3 +75,24 @@ test_that("calculate_agg_parcc_prof 9-11", {
   )
   expect_is(math_911_2018, 'data.frame')
 })
+
+
+test_that("works with 2018-19 SLA data", {
+  sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 4, 'ela', TRUE)
+  expect_is(sla_2019, 'data.frame')
+  
+  sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'ALG1', 'math', TRUE)
+  expect_is(sla_2019, 'data.frame')
+  
+  sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'GEO', 'math', TRUE)
+  expect_is(sla_2019, 'data.frame')
+
+  sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'ALG2', 'math', TRUE)
+  expect_is(sla_2019, 'data.frame')
+})
+
+
+test_that("fetch_all_parcc works", {
+  all_parcc <- fetch_all_parcc()
+  expect_is(sla_2019, 'data.frame')
+})
