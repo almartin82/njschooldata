@@ -1,4 +1,22 @@
-# njschooldata 0.8.0
+## njschooldata 0.8.3
+
+## New features
+
+* `fetch_parcc()` supports 2019 NJSLA data
+
+
+## njschooldata 0.8.2
+
+## New features
+
+* `enrich_school_latlong()` will add the address and latitude / longitude of a school
+
+* `enrich_school_city_ward()` will return the relevant administrative subdivision of a school for supported cities.  Currently supported: Newark
+
+* `enrich_school_city_neighborhood()` will return the relevant neighborhood subdivision for supported cities.  Currently supported: Newark
+
+
+# njschooldata 0.8.1
 
 ## New features
 

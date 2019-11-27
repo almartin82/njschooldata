@@ -7,7 +7,7 @@
 #' school year is end_year 2015.  valid values are 2015-2017
 #' @param grade_or_subj grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)
 #' @param subj PARCC subject. c('ela' or 'math')
-#' @param layout what layout dataframe to use.  default is layout_njask.
+#' @return PARCC dataframe
 #' @export
 
 get_raw_parcc <- function(end_year, grade_or_subj, subj) {  
@@ -56,6 +56,49 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
 }
 
 
+#' Title
+#'
+#' @inheritParams get_raw_parcc
+#'
+#' @return NJSLA dataframe
+#' @export
+
+get_raw_sla <- function(end_year, grade_or_subj, subj) {
+  
+  if (is.numeric(grade_or_subj)) {
+    parcc_grade <- pad_grade(grade_or_subj)
+    subj <- parse_parcc_subj(subj)
+  } else if (grepl('ALG|GEO', grade_or_subj)) {
+    parcc_grade <- gsub('ALG', 'ALG0', grade_or_subj)
+    subj <- ''
+  } else {
+    parcc_grade <- grade_or_subj
+    subj <- parse_parcc_subj(subj)
+  }
+  
+  stem <- 'https://www.nj.gov/education/schools/achievement/'
+  
+  target_url <- paste0(
+    stem, substr(end_year, 3, 4), '/njsla/spring/',
+    subj, parcc_grade, '%20NJSLA%20DATA%20', 
+    # "2018-19"
+    end_year - 1, '-', substr(end_year, 3, 4),
+    '.xlsx' 
+  )
+  # 19/njsla/spring/ALG01%20NJSLA%20DATA%202018-19.xlsx
+  # 19/njsla/spring/ALG02%20NJSLA%20DATA%202018-19.xlsx
+  
+  tname <- tempfile(pattern = 'njsla', tmpdir = tempdir(), fileext = '.xlsx')
+  tdir <- tempdir()
+  downloader::download(target_url, destfile = tname, mode = 'wb') 
+  njsla <- readxl::read_excel(path = tname, skip = 2, na = '*', guess_max = 30000)
+
+  #last two rows are notes
+  njsla <- njsla[1:(nrow(njsla)-2), ]
+  njsla
+}
+
+
 #' PARCC column order
 #'
 #' @param df tidied PARCC dataframe.  called as final step in fetch_parcc when tidy=TRUE
@@ -73,7 +116,7 @@ parcc_column_order <- function(df) {
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
-      dfg,
+      contains("dfg"),
       subgroup, subgroup_type,
       number_enrolled, number_not_tested, 
       number_of_valid_scale_scores,
@@ -100,18 +143,24 @@ parcc_column_order <- function(df) {
 
 process_parcc <- function(parcc_file, end_year, grade, subj) {
   
-  names(parcc_file) <- c(
-    'county_code', 'county_name', 'district_code', 'district_name', 
-    'school_code', 'school_name', 'dfg', 'subgroup', 'subgroup_type', 
+  parcc_name_vector <- c(
+    'county_code', 'county_name', 
+    'district_code', 'district_name', 
+    'school_code', 'school_name', 
+    'dfg', 
+    'subgroup_type', 'subgroup', 
     'number_enrolled', 'number_not_tested', 'number_of_valid_scale_scores', 
     'scale_score_mean', 'pct_l1', 'pct_l2', 'pct_l3', 
     'pct_l4', 'pct_l5'
   )
-  #subgroup and subgroup type appear to be flipped
-  orig_subgroup_type <- parcc_file$subgroup_type
-  orig_subgroup <- parcc_file$subgroup
-  parcc_file$subgroup <- orig_subgroup_type
-  parcc_file$subgroup_type <- orig_subgroup_type
+  
+  # NJSLA
+  if (end_year >= 2019) {
+    # dfg dropped in 2018-19
+    names(parcc_file) <- parcc_name_vector[c(1:6, 8:18)]
+  } else {
+    names(parcc_file) <- parcc_name_vector
+  }
   
   #make some numeric
   parcc_file$number_enrolled <- as.numeric(parcc_file$number_enrolled)
@@ -126,7 +175,7 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   
   #new columns
   parcc_file$testing_year <- end_year
-  parcc_file$assess_name <- 'PARCC'
+  parcc_file$assess_name <- ifelse(end_year >= 2019, 'NJSLA', 'PARCC')
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
   parcc_file <- parcc_file %>%
@@ -236,7 +285,11 @@ tidy_parcc_subgroup <- function(sv) {
 
 fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 
-  p <- get_raw_parcc(end_year, grade_or_subj, subj)
+  if (end_year >= 2019) {
+    p <- get_raw_sla(end_year, grade_or_subj, subj)
+  } else {
+    p <- get_raw_parcc(end_year, grade_or_subj, subj)
+  }
   p <- process_parcc(p, end_year, grade_or_subj, subj)
   
   if (tidy) {
@@ -261,7 +314,7 @@ fetch_all_parcc <- function() {
   
   parcc_results <- list()
   
-  for (i in c(2015:2018)) {
+  for (i in c(2015:2019)) {
     #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
@@ -273,12 +326,22 @@ fetch_all_parcc <- function() {
       }
     }
     #hs ela
-    for (j in c(9:11)) {
-      p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
-      
-      parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
-    }
     
+    if (i >= 2019) {
+      # 11th grade optional and not reported
+      for (j in c(9:10)) {
+        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+        
+        parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+      }
+    } else {
+      for (j in c(9:11)) {
+        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+        
+        parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+      }
+    }
+
     #specific math tests
     for (j in c('ALG1', 'GEO', 'ALG2')) {
       p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'math', tidy = TRUE)
