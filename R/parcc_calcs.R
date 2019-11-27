@@ -118,7 +118,6 @@ calculate_agg_parcc_prof <- function(end_year, subj, gradespan='3-11') {
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
-      contains("dfg"), 
       subgroup,
       subgroup_type,
       testing_year,
