@@ -96,3 +96,19 @@ test_that("fetch_all_parcc works", {
   all_parcc <- fetch_all_parcc()
   expect_is(sla_2019, 'data.frame')
 })
+
+
+test_that("calculate_agg_parcc_prof from parcc calcs works with 2018-19 data", {
+  
+  parcc_years <- c(2019)
+  
+  math_311_agg <- map_df(
+    parcc_years,
+    function(x) calculate_agg_parcc_prof(
+      end_year = x, 
+      subj = 'math',
+      gradespan = '3-11'
+    )
+  )
+  
+})
