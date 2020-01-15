@@ -205,3 +205,16 @@ unzipper <- function(url, file_pattern = 'njschooldata') {
   
   paste(unzip_loc, new_files$Name, sep = '/')
 }
+
+
+#' Truncate with configurable precision
+#'
+#' @param x numeric vector
+#' @param prec desired precision
+#'
+#' @return truncated numeric vector
+#' @export
+
+trunc2 <- function(x, prec = 0) {
+  base::trunc(x * 10^prec) / 10^prec
+}
