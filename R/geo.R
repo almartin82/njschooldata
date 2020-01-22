@@ -35,12 +35,13 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       district_id = kill_padformulas(district_id),
       school_id = kill_padformulas(school_id),
       zip = kill_padformulas(zip),
-      address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA')
+      address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA'),
+      address = gsub("\\s+", ' ', address)
     )
   
   # geocode
   if (use_cache) {
-    geocoded <- geocoded_cached
+    data("geocoded_cached")
   } else {
     geocoded <- placement::geocode_url(
       nj_sch$address, 
@@ -51,15 +52,21 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     )
   }
   
-  nj_sch$lat <- geocoded$lat
-  nj_sch$lng <- geocoded$lng
-  
+  geocoded_merge <- geocoded %>%
+    select(locations, lat, lng) %>%
+    rename(
+      address = locations
+    )
+  nj_sch <- nj_sch %>%
+    left_join(geocoded_merge, on = 'address') %>%
+    unique()
+
   # join on district and school and return
-  df %>% left_join(by = c('district_id', 'school_id'))
+  df %>% left_join(nj_sch, by = c('district_id', 'school_id'))
 }
 
 
-#' Title
+#' Enrich School Data with City Ward
 #'
 #' @param df 
 #'
@@ -70,62 +77,41 @@ enrich_school_city_ward <- function(df) {
   supported_geos <- c('3570')
   
   # say what fraction of the rows are supported
+  supported <- df$district_id %in% supported_geos
+  pct_supported <- supported %>%
+    mean() %>%
+    multiply_by(100) %>%
+    round(1)
   
+  message(
+    paste0('ward information available for ', pct_supported, 
+           '% (', sum(supported), '/', length(supported), 
+           ') rows in this data set.')
+  )
   # split into supported / unsupported
+  geo_mask <- df$district_id %in% supported_geos
+  latlong_mask <- !is.na(df$lat) & !is.na(df$lng)
+  final_mask <- geo_mask & latlong_mask
   
+  df_supported <- df %>%
+    filter(final_mask)
+    
+  df_unsupported <- df %>%
+    filter(!final_mask)
+  
+  # add specific geos here
   # newark (3570)
   if ('3570' %in% df$district_id) {
     newark_wards <- geojsonio::geojson_read(
       "http://data.ci.newark.nj.us/dataset/ba8f41a3-584b-4021-b8c3-30a7d1ae8ac3/resource/5b9c86cd-b57b-4341-8c4c-ee975d9e1904/download/wards2012.geojson",
       what = "sp"
     )
+    sp::coordinates(df_supported) <- ~lng+lat
+    sp::proj4string(df_supported) <- sp::proj4string(newark_wards)
+    
+    df_supported$ward <- sp::over(df_supported, newark_wards)$WARD_NAME
+    df_supported <- as_tibble(df_supported)
   }
-  
-  sp::coordinates(df) <- ~lng+lat
-  sp::proj4string(df) <- sp::proj4string(newark_wards)
-  
-  rgeos::gWithin(countyDF, basinDF, byid = TRUE)
-  
-
-  
   # combine and return
-}
-
-
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-
-enrich_school_city_neighborhood <- function(df) {
-  
-}
-
-woo <- function() {
-  
-  
-  tmp_schooldl = tempfile(fileext = '.xls')
-  httr::GET(
-    'https://homeroom5.doe.state.nj.us/directory/schoolDL.php', 
-    write_disk(tmp_schooldl)
-  )
-  nj_sch <- readxl::read_excel(tmp_schooldl, skip=3)
-  
-  
-  foo <- get_one_rc_database(2018)
-  names(foo)
-
-  
-  foo06 <- get_one_rc_database(2006)
-  names(foo06)
-  
-  kill_padformulas <- function(df, col) {
-    df[, col] <- gsub('="', '', df[, col], fixed=TRUE)
-    df[, col] <- gsub('"', "", df[, col], fixed=TRUE)
-    df
-  }
-  
-  
+  bind_rows(df_supported, df_unsupported)
 }
