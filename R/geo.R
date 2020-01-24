@@ -58,7 +58,8 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       address = locations
     )
   nj_sch <- nj_sch %>%
-    left_join(geocoded_merge, on = 'address') %>%
+    select(district_id, school_id, address) %>%
+    left_join(geocoded_merge, by = 'address') %>%
     unique()
 
   # join on district and school and return
@@ -106,6 +107,7 @@ enrich_school_city_ward <- function(df) {
       "http://data.ci.newark.nj.us/dataset/ba8f41a3-584b-4021-b8c3-30a7d1ae8ac3/resource/5b9c86cd-b57b-4341-8c4c-ee975d9e1904/download/wards2012.geojson",
       what = "sp"
     )
+    newark_wards$WARD_NAME <- as.character(newark_wards$WARD_NAME)
     sp::coordinates(df_supported) <- ~lng+lat
     sp::proj4string(df_supported) <- sp::proj4string(newark_wards)
     
@@ -115,3 +117,54 @@ enrich_school_city_ward <- function(df) {
   # combine and return
   bind_rows(df_supported, df_unsupported)
 }
+
+
+ward_enr_aggs <- function(df) {
+  
+  # enrich
+  df <- enrich_school_latlong(df) %>%
+    enrich_school_city_ward()
+  
+  df <- df %>%
+    filter(!is.na(ward)) %>%
+    group_by(
+      end_year, 
+      county_id, county_name,
+      district_id, district_name,
+      ward,
+      program_code, program_name, grade_level,
+      subgroup
+    ) %>%
+    summarize(
+      n_students = sum(n_students, na.rm = TRUE),
+      n_schools = n()
+    ) %>%
+    ungroup()
+  
+  df <- df %>%
+    mutate(
+      CDS_Code = NA_character_,
+      district_id = paste0(district_id, ' ', ward),
+      district_name = paste0(district_name, ' ', ward),
+      school_id = '999W',
+      school_name = 'Ward Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_citywide = FALSE,
+      is_district = FALSE,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
+      is_school = FALSE,
+      is_subprogram = !program_code == '55'
+    ) %>%
+    select(-ward)
+  
+  # calculate percent
+  df <- agg_enr_pct_total(df)
+  
+  # column order and return
+  agg_enr_column_order(df)
+}
+
+
+
