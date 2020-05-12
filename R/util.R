@@ -84,7 +84,7 @@ clean_cds_fields <- function(df, tges=FALSE) {
 #' @export
 
 pad_leading <- function(vector, digits) {
-  sprintf(paste0("%0", digits, "d"), vector)
+  sprintf(paste0("%0", digits, "d"), as.numeric(vector))
 }
 
 
