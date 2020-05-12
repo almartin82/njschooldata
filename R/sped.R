@@ -140,47 +140,8 @@ clean_sped_df <- function(df, end_year) {
   
   # fix missing district ids in 2003-2008 data
   if (end_year <= 2008) {
-    lookup_df <- fetch_enr(end_year) %>%
-      filter(program_code == '55' & school_id == '999') %>%
-      select(county_name, district_name, district_id, row_total) %>%
-      mutate(
-        county_name = tolower(county_name),
-        district_name = tolower(district_name)
-      ) %>% 
-      unique()
-    
-     lookup_df <- lookup_df %>% 
-       mutate(
-        district_name = gsub(' twp', ' township', district_name)
-      )
+    lookup_map <- readr::read_csv(file = file.path('data-raw', ''))
 
-    df_before <- df
-    
-    df2 <- df %>%
-      mutate(
-        county_name_orig = county_name,
-        district_name_orig = district_name,
-        county_name = tolower(county_name),
-        district_name = tolower(district_name)
-      ) %>%
-      left_join(lookup_df, by = c('county_name', 'district_name'))
-    
-    df2_matched <- df2 %>% filter(!is.na(district_id))
-    df2_unmatched <- df2 %>% filter(is.na(district_id))
-    lookup_unmatched <- lookup_df %>% 
-      filter(!district_id %in% df2_matched$district_id) %>%
-      mutate(
-        district_name = gsub(' township', '', district_name),
-        district_name = gsub(' boro', '', district_name)
-      )      
-    
-    nrow(df2_unmatched)
-    
-    df2_unmatched <- df2_unmatched %>%
-      select(-district_id, -row_total) %>%
-      left_join(lookup_unmatched, by = c('county_name', 'district_name'))
-    
-    sum(is.na(df2_unmatched$district_id))
     
     df2 %>%
       filter(is.na(district_id)) %>%
