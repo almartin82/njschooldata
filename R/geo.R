@@ -4,7 +4,7 @@
 #' @param use_cache if TRUE, will read from cache of school info / lat lng stored on TODO
 #' @param api_key optional, personal google maps API key
 #'
-#' @return
+#' @return dataframe enriched with lat lng
 #' @export
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
@@ -69,9 +69,9 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
 
 #' Enrich School Data with City Ward
 #'
-#' @param df 
+#' @param df any dataframe with a district_id
 #'
-#' @return
+#' @return df enriched with ward, if geographic data is 'registered' for a given district
 #' @export
 
 enrich_school_city_ward <- function(df) {
