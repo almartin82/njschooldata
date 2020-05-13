@@ -8,25 +8,27 @@
 
 get_raw_tges <- function(end_year) {
   tges_urls <- list(
-    "2017" = "http://www.state.nj.us/education/guide/2017/TGES.zip",
-    "2016" = "http://www.state.nj.us/education/guide/2016/TGES.zip",
-    "2015" = "http://www.state.nj.us/education/guide/2015/TGES.zip",
-    "2014" = "http://www.state.nj.us/education/guide/2014/TGES.zip",
-    "2013" = "http://www.state.nj.us/education/guide/2013/TGES.zip",
-    "2012" = "http://www.state.nj.us/education/guide/2012/TGES.zip",
-    "2011" = "http://www.state.nj.us/education/guide/2011/TGES.zip",
-    "2010" = "http://www.state.nj.us/education/guide/2010/csg2010.zip",
-    "2009" = "http://www.state.nj.us/education/guide/2009/csg2009.zip",
-    "2008" = "http://www.state.nj.us/education/guide/2008/csg2008.zip",
-    "2007" = "http://www.state.nj.us/education/guide/2007/csg2007.zip",
-    "2006" = "http://www.state.nj.us/education/guide/2006/csg2006.zip",
-    "2005" = "http://www.state.nj.us/education/guide/2005/csg05.zip",
-    "2004" = "http://www.state.nj.us/education/guide/2004/csg2004.zip",
-    "2003" = "http://www.state.nj.us/education/guide/2003/csg2003.zip",
-    "2002" = "http://www.state.nj.us/education/guide/2002/csg2002.zip",
-    "2001" = "http://www.state.nj.us/education/guide/2001/csg01.zip",
-    "2000" = "http://www.state.nj.us/education/guide/2000/csg2000.zip",
-    "1999" = "http://www.state.nj.us/education/guide/1999/csg99.zip"
+    "2019" = "https://www.state.nj.us/education/guide/2019/TGES-2019.zip",
+    "2018" = "https://www.state.nj.us/education/guide/2018/tges.zip",
+    "2017" = "https://www.state.nj.us/education/guide/2017/TGES.zip",
+    "2016" = "https://www.state.nj.us/education/guide/2016/TGES.zip",
+    "2015" = "https://www.state.nj.us/education/guide/2015/TGES.zip",
+    "2014" = "https://www.state.nj.us/education/guide/2014/TGES.zip",
+    "2013" = "https://www.state.nj.us/education/guide/2013/TGES.zip",
+    "2012" = "https://www.state.nj.us/education/guide/2012/TGES.zip",
+    "2011" = "https://www.state.nj.us/education/guide/2011/TGES.zip",
+    "2010" = "https://www.state.nj.us/education/guide/2010/csg2010.zip",
+    "2009" = "https://www.state.nj.us/education/guide/2009/csg2009.zip",
+    "2008" = "https://www.state.nj.us/education/guide/2008/csg2008.zip",
+    "2007" = "https://www.state.nj.us/education/guide/2007/csg2007.zip",
+    "2006" = "https://www.state.nj.us/education/guide/2006/csg2006.zip",
+    "2005" = "https://www.state.nj.us/education/guide/2005/csg05.zip",
+    "2004" = "https://www.state.nj.us/education/guide/2004/csg2004.zip",
+    "2003" = "https://www.state.nj.us/education/guide/2003/csg2003.zip",
+    "2002" = "https://www.state.nj.us/education/guide/2002/csg2002.zip",
+    "2001" = "https://www.state.nj.us/education/guide/2001/csg01.zip",
+    "2000" = "https://www.state.nj.us/education/guide/2000/csg2000.zip",
+    "1999" = "https://www.state.nj.us/education/guide/1999/csg99.zip"
 
   )
   tges_url <- tges_urls[[as.character(end_year)]]

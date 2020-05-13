@@ -84,7 +84,7 @@ clean_cds_fields <- function(df, tges=FALSE) {
 #' @export
 
 pad_leading <- function(vector, digits) {
-  sprintf(paste0("%0", digits, "d"), vector)
+  sprintf(paste0("%0", digits, "d"), as.numeric(vector))
 }
 
 
@@ -204,4 +204,17 @@ unzipper <- function(url, file_pattern = 'njschooldata') {
   closeAllConnections()
   
   paste(unzip_loc, new_files$Name, sep = '/')
+}
+
+
+#' Truncate with configurable precision
+#'
+#' @param x numeric vector
+#' @param prec desired precision
+#'
+#' @return truncated numeric vector
+#' @export
+
+trunc2 <- function(x, prec = 0) {
+  base::trunc(x * 10^prec) / 10^prec
 }
