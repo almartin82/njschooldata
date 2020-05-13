@@ -5,7 +5,6 @@
 #' @return a dataframe with special ed counts, etc.
 #' @export
 
-
 get_raw_sped <- function(end_year) {
   
   print(end_year)
@@ -131,6 +130,16 @@ clean_sped_names <- function(df) {
 }
 
 
+#' Clean historic SPED data
+#'
+#' @description SPED data was published in a way that lacked districtids.  We've built a 
+#' best guess data file that string matches on county and district.  
+#' @param df raw data frame with cleaned names, output of get_raw_sped with clean_sped_names applied.
+#' @param end_year academic year, ending year - eg 2019-2020 is 2020.
+#'
+#' @return cleaned data frame
+#' @export
+
 clean_sped_df <- function(df, end_year) {
   
   # remove trailing footer note
@@ -138,32 +147,45 @@ clean_sped_df <- function(df, end_year) {
     df <- df %>% filter(!is.na(gened_num))
   }
   
+  # doing the heavy lifting - solves for missing district ids
   # fix missing district ids in 2003-2008 data
   if (end_year <= 2008) {
-    lookup_map <- readr::read_csv(file = file.path('data-raw', ''))
-
     
-    df2 %>%
-      filter(is.na(district_id)) %>%
-      peek()
-      
-    # %>%
-    #   select(-county_name, -district_name) %>%
-    #   rename(
-    #     county_name = county_name_orig,
-    #     district_name = district_name_orig
-    #   )
-    # sum(is.na(df2$district_name))
-    # 
+    # sped_lookup_map is saved in package data
+    # left join the input to the lookup map and enrich with district_ids where known
+    df_new <- df %>% 
+      left_join(sped_lookup_map, by=c('county_name', 'district_name'))
+    
     ensure_that(
       df, nrow(.) == nrow(df_new) ~ 'fixing 2003-08 enrollment data changed the size of the sped df.  check for duplicate district_name keys!'
     )
     
+    # if the data frame hasn't grown, great - overwrite df with the updated joined df
+    df <- df_new
   }
-  # return df
-  df
+  
+  # return df with proper column order
+  df %>%
+    select(
+      one_of(
+        'end_year', 'county_name',
+        'district_id', 'district_name',
+        'gened_num', 'sped_num',
+        'sped_rate',
+        'sped_num_no_speech',
+        'sped_rate_no_speech'
+      )
+    )
+
 }
 
+
+#' Gets and cleans older SPED data
+#'
+#' @param end_year @inheritParams fetch_enr
+#'
+#' @return cleaned sped dataframe
+#' @export
 
 fetch_sped <- function(end_year) {
   get_raw_sped(end_year) %>%
