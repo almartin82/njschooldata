@@ -13,6 +13,9 @@ enrich_school_latlong(df, use_cache = TRUE, api_key = "")
 
 \item{api_key}{optional, personal google maps API key}
 }
+\value{
+dataframe enriched with lat lng
+}
 \description{
 Enrich School Data with Lat / Long
 }

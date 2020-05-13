@@ -2,13 +2,16 @@
 % Please edit documentation in R/geo.R
 \name{enrich_school_city_ward}
 \alias{enrich_school_city_ward}
-\title{Title}
+\title{Enrich School Data with City Ward}
 \usage{
 enrich_school_city_ward(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{any dataframe with a district_id}
+}
+\value{
+df enriched with ward, if geographic data is 'registered' for a given district
 }
 \description{
-Title
+Enrich School Data with City Ward
 }
