@@ -44,7 +44,20 @@ get_raw_enr <- function(end_year) {
   }
 
   enr$end_year <- end_year
-    
+  
+  # specific fixes
+  # 2010 pre-k disabled issue
+  if (end_year==2010) {
+    mask <- enr$PROGRAM_CODE == '32' & enr$PROGRAM_NAME == 'Half Day Preschool Dis'
+    enr[mask, 'PROGRAM_CODE'] <- '33'
+  }
+  
+  # 2013 marin issue, pfffffffff
+  if (end_year==2013) {
+    mask <- enr$`SCHOOL NAME` == 'LUIS MUNOZ MARIN ELEM SCH' & enr$`DISTRICT NAME` == 'NEWARK'
+    enr[mask, 'DISTRICT NAME'] <- 'THE NEWARK PUBLIC SCHOOLS'
+  }
+  
   return(enr)
 }
 

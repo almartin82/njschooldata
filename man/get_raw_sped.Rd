@@ -2,7 +2,7 @@
 % Please edit documentation in R/sped.R
 \name{get_raw_sped}
 \alias{get_raw_sped}
-\title{read Special Ed. excel files from the NJ state website}
+\title{read Special ed excel files from the NJ state website}
 \usage{
 get_raw_sped(end_year)
 }
@@ -14,5 +14,5 @@ school year is year '2007'.  valid values are 1999-2019.}
 a dataframe with special ed counts, etc.
 }
 \description{
-read Special Ed. excel files from the NJ state website
+read Special ed excel files from the NJ state website
 }

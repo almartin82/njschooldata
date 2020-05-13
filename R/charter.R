@@ -67,7 +67,18 @@ agg_enr_pct_total <- function(df) {
     select(end_year, district_id, program_code, n_students) %>%
     rename(row_total = n_students)
   
+  # this calculation shouldn't generate duplicate rows
   nrow_before = nrow(df)
+  nonuniques <- df %>%
+    mutate(
+      hash = paste(end_year, district_id, program_code, sep = '_')
+    ) %>%
+    pull(hash) %>%
+    tabyl() %>% 
+    arrange(-n) %>% 
+    filter(n > 1)
+  
+  # join totals back to enable calculation of percentages
   df <- df %>%
     left_join(df_totals, by = c('end_year', 'district_id', 'program_code')) %>%
     mutate(
@@ -76,7 +87,10 @@ agg_enr_pct_total <- function(df) {
     select(-row_total)
   
   ensure_that(
-    df, nrow(.) == nrow_before ~ 'calculating percent of total changed the size of the sector_aggs dataframe. this suggests duplicate district_id/subgroup/year rows'
+    df, nrow(.) == nrow_before ~ 
+      sprintf('calculating percent of total changed the size of the sector_aggs dataframe.\n 
+      this suggests duplicate district_id/subgroup/year rows.\n
+      offending year / district: %s', nonuniques)
   )
   
   df

@@ -372,7 +372,7 @@ extract_rc_college_matric <- function(
         'enroll_2yr', names(df)
       )
       names(df) <- gsub(
-        'post_sec_enrolled_percent|percent_enrolled|postsec_enrolled_percent|enrolled_percent', 
+        'grad_percent|post_sec_enrolled_percent|percent_enrolled|postsec_enrolled_percent|enrolled_percent', 
         'enroll_any', names(df)
       )
       names(df) <- gsub('sub_group|student_group', 'subgroup', names(df))
@@ -398,11 +398,16 @@ extract_rc_college_matric <- function(
       #if there's no subgroup field, implicitly assume that means Schoolwide
       if (!'subgroup' %in% names(df)) {
         df <- df %>%
-          mutate(subgroup = 'Schoolwide')
+          mutate(subgroup = 'Total Population')
       }
       
       #make subgroups consistent
       df$subgroup <- gsub('African American', 'Black', df$subgroup)
+      df$subgroup <- gsub('Students with Disability', 'Students With Disabilities', df$subgroup)
+      df$subgroup <- gsub('Schoolwide', 'Total Population', df$subgroup)
+      df$subgroup <- gsub('Districtwide', 'Total Population', df$subgroup)
+      df$subgroup <- gsub('Statewide', 'Total Population', df$subgroup)
+      df$subgroup <- gsub('Limited English Proficient Students', 'English Language Learners', df$subgroup)
       
       df <- df %>%
         select(
@@ -425,7 +430,14 @@ extract_rc_college_matric <- function(
       )
   }
   
-  out
+  out %>%
+    select(
+      county_code, county_name,
+      district_code, district_name,
+      school_code, school_name,
+      end_year, subgroup,
+      enroll_any, enroll_4yr, enroll_2yr
+    )
 }
 
 
@@ -556,7 +568,7 @@ extract_rc_cds <- function(list_of_prs) {
     list_of_prs,
     function(.x) {
       #find the table      
-      cds_table <- grep('s_header|sch_header|school_header', names(.x), value = TRUE)
+      cds_table <- grep('s_header|sch_header|school_header|header_and_contact', names(.x), value = TRUE)
       #extract the table
       df <- .x %>% extract2(cds_table)
       #make cds names consistent
@@ -572,3 +584,54 @@ extract_rc_cds <- function(list_of_prs) {
   bind_rows(all_cds)
 }
   
+
+
+#' Extract Report Card Enrollment
+#'
+#' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
+#' a list of data.frames
+#' @param cds_identifiers add the county, district and school name?  default is TRUE
+#'
+#' @return data frame with school enrollment
+#' @export
+
+extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
+  
+  all_enr <- map(
+    list_of_prs,
+    function(.x) {
+      #find the table      
+      enr_table <- grep('enrollment\\b|enrollment_by_grade|enrollment_trends_by_grade', names(.x), value = TRUE)
+      #extract the table
+      df <- .x %>% extract2(enr_table)
+      
+      # if wide
+      if ('grade01' %in% names(df)) {
+        
+      }
+      
+      # if long
+      
+      
+      
+      #make cds names consistent
+      df <- clean_cds_fields(df)
+
+      df
+    }
+  )
+  
+  out <- bind_rows(all_enr)
+  
+  if (cds_identifiers) {
+    all_cds <- extract_rc_cds(list_of_prs)
+    out <- out %>%
+      left_join(
+        all_cds, 
+        by = c('county_code', 'district_code', 'school_code', 'end_year')
+      )
+  }
+  
+  out
+}
+
