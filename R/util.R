@@ -135,7 +135,7 @@ clean_name_vector <- . %>%
   snakecase::to_any_case(
     case = 'snake', 
     sep_in = "\\.",
-    transliterations = c("Latin-ASCII"), parsing_option = 4
+    transliterations = c("Latin-ASCII"), parsing_option = 3
   )
 
 
