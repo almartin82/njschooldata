@@ -11,8 +11,8 @@ get_reportcard_special_pop <- function(end_year) {
   out <- df_list %>% 
     use_series('enrollment_trends_by_student_group')
 
-  # 2018 it's wide
-  if (end_year == 2018) {
+  # 2018, 2019 it's wide
+  if (end_year >= 2018) {
     
     pop_names <- c(
       "female", "male", "economically_disadvantaged_students", "students_with_disabilities", 
@@ -69,7 +69,9 @@ process_reportcard_special_pop <- function(df) {
         subgroup %in% c("male", "Male") ~ 'Male', 
         subgroup %in% c("female", "Female") ~ 'Female',
         TRUE ~ subgroup
-      )
+      ),
+      
+      percent = as.numeric(percent)
     )
 }
 
