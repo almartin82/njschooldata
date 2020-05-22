@@ -129,8 +129,10 @@ get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 get_merged_rc_database <- function(end_year) {
   
   pr_urls <- list(
-    "sch_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
-    "dist_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
+    "sch_2019" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
+    "dist_2019" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
+    "sch_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/17-18/PerformanceReports.xlsx",
+    "dist_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/17-18/DistrictPerformanceReports.xlsx",
     "sch_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/PerformanceReports.xlsx",
     "dist_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/DistrictPerformanceReports.xlsx"
   )
