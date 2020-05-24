@@ -175,43 +175,63 @@ get_and_process_msgp <- function(end_year) {
       mutate(
         subgroup = case_when(
           subgroup %in% c('Schoolwide', 'Statewide', 'Districtwide') ~ 'total population',
-          subgroup %in% c("American Indian or Alaskan Native") ~ 'american indian', 
+          subgroup %in% c("American Indian or Alaskan Native", 
+                          "American Indian or Alaska Native") ~ 'american indian', 
           subgroup %in% c("Asian, Native Hawaiian, or Pacific Islander") ~ 'asian',
           subgroup %in% c("Black or African American") ~ 'black',        
-          subgroup %in% c("Economically Disadvantaged") ~ 'economically disadvantaged',                 
+          subgroup %in% c("Economically Disadvantaged",
+                          "Economically Disadvantaged Students") ~ 'economically disadvantaged',                 
           subgroup %in% c("English Learners") ~ 'limited english proficiency',                
           subgroup %in% c("Hispanic") ~ 'hispanic',                      
           subgroup %in% c("Students with Disabilities") ~ 'students with disabilities',      
           subgroup %in% c("Two or More Races") ~ 'multiracial',               
           subgroup %in% c("White") ~ 'white',
+          subgroup %in% c("Female") ~ 'female',
+          subgroup %in% c("Male") ~ 'male',
+          subgroup %in% c("Homeless Students") ~ 'homeless',
+          subgroup %in% c("Students in Foster Care") ~ 'foster care',
+          subgroup %in% c("Military-Connected Students") ~ 'military-connected',
+          subgroup %in% c("Migrant Students") ~ 'migrant', 
           TRUE ~ subgroup
         )
       )
     
-    # second file, mspg by grade
-    if (end_year == 2018) {
-      df_grade <- df_list %>%
-        use_series('student_growth_by_grade') %>%
-        # rename cols
-        mutate(
-          median_sgp = case_when(
-            source_file == 'school' ~ m_sgp_school,
-            source_file == 'district' ~ m_sgp_school,
-            TRUE ~ NA_character_
-          ) 
-        )
-    } else if (end_year == 2017) {
-      df_grade <- df_list %>%
-        use_series('student_growth_by_grade') %>%
-        # rename cols
-        mutate(
-          median_sgp = case_when(
-            source_file == 'school' ~ m_sgp_school,
-            source_file == 'district' ~ m_sgp_district,
-            TRUE ~ NA_character_
-          ) 
-        )
-    }
+       # second file, mspg by grade
+       if (end_year == 2019) {
+          df_grade <- df_list %>%
+             magrittr::use_series('student_growth_by_grade') %>%
+             dplyr::mutate(
+               median_sgp = case_when(
+                  #m_sgp_school is numeric in 2019
+                  source_file == 'school' ~ as.character(m_sgp_school),
+                  source_file == 'district' ~ as.character(m_sgp_school),
+                  TRUE ~ NA_character_
+               )
+            )
+        
+       } else if (end_year == 2018) {
+         df_grade <- df_list %>%
+           use_series('student_growth_by_grade') %>%
+           # rename cols
+           mutate(
+             median_sgp = case_when(
+               source_file == 'school' ~ m_sgp_school,
+               source_file == 'district' ~ m_sgp_school,
+               TRUE ~ NA_character_
+             ) 
+           )
+       } else if (end_year == 2017) {
+         df_grade <- df_list %>%
+           use_series('student_growth_by_grade') %>%
+           # rename cols
+           mutate(
+             median_sgp = case_when(
+               source_file == 'school' ~ m_sgp_school,
+               source_file == 'district' ~ m_sgp_district,
+               TRUE ~ NA_character_
+             ) 
+           )
+       }
     
     df_grade <- df_grade %>%
       # tidy column names
