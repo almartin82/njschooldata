@@ -7,7 +7,7 @@
 fetch_reportcard_special_pop(end_year)
 }
 \arguments{
-\item{end_year}{ending academic year.  valid values are 2017, 2018}
+\item{end_year}{ending academic year.  valid values are 2017, 2018, 2019}
 }
 \value{
 data.frame with special population enrollment data

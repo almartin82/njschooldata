@@ -2,7 +2,7 @@
 #' Get Raw Report Card Database
 #'
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
-#' school year is end_year '2015'.  valid values are 2003 to 2018
+#' school year is end_year '2015'.  valid values are 2003 to 2019
 #'
 #' @return list of data frames
 #' @export
@@ -121,7 +121,7 @@ get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 
 #' Combines school and district Performance Reports for 2017-on, when two files were released.
 #'
-#' @param end_year end of the academic year.  Valid values are 2017, 2018.
+#' @param end_year end of the academic year.  Valid values are 2017, 2018, 2019
 #'
 #' @return list of dataframes
 #' @export

@@ -1,6 +1,6 @@
 #' Get Special Population Enrollment from Report Card Files
 #'
-#' @param end_year ending academic year.  valid values are 2017, 2018
+#' @param end_year ending academic year.  valid values are 2017, 2018, 2019
 #'
 #' @return data.frame with special population enrollment percentages
 #' @export
