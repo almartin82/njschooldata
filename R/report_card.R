@@ -35,16 +35,18 @@ get_standalone_rc_database <- function(end_year) {
     "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
     "2014" = "http://www.nj.gov/education/pr/1314/database/2014%20performance%20report%20database.xlsx",
     "2013" = "http://www.nj.gov/education/pr/1213/database/nj%20pr13%20database.xlsx",
-    "2012" = "http://www.nj.gov/education/pr/2013/database/nj%20pr12%20database.xlsx",
-    "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
-    "2010" = "http://www.nj.gov/education/reportcard/2010/database/RC10%20database.xls",
-    "2009" = "http://www.nj.gov/education/reportcard/2009/database/RC09%20database.xls",
-    "2008" = "http://www.nj.gov/education/reportcard/2008/database/nj_rc08.xls",
-    "2007" = "http://www.nj.gov/education/reportcard/2007/database/nj_rc07.xls",
-    "2006" = "http://www.nj.gov/education/reportcard/2006/database/nj_rc06_data.xls",
-    "2005" = "http://www.nj.gov/education/reportcard/2005/database/NJ_RC05_DATA.XLS",
-    "2004" = "http://www.nj.gov/education/reportcard/2004/database/nj_rc04_data.xls",
-    "2003" = "http://www.nj.gov/education/reportcard/2003/database/nj_rc03_data.xls"
+    "2012" = "http://www.nj.gov/education/pr/2013/database/nj%20pr12%20database.xlsx"
+    
+    # 2003-2011 report cards deleted
+    # "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
+    # "2010" = "http://www.nj.gov/education/reportcard/2010/database/RC10%20database.xls",
+    # "2009" = "http://www.nj.gov/education/reportcard/2009/database/RC09%20database.xls",
+    # "2008" = "http://www.nj.gov/education/reportcard/2008/database/nj_rc08.xls",
+    # "2007" = "http://www.nj.gov/education/reportcard/2007/database/nj_rc07.xls",
+    # "2006" = "http://www.nj.gov/education/reportcard/2006/database/nj_rc06_data.xls",
+    # "2005" = "http://www.nj.gov/education/reportcard/2005/database/NJ_RC05_DATA.XLS",
+    # "2004" = "http://www.nj.gov/education/reportcard/2004/database/nj_rc04_data.xls",
+    # "2003" = "http://www.nj.gov/education/reportcard/2003/database/nj_rc03_data.xls"
   )
   
   #temp file for downloading
