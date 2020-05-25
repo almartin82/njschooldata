@@ -259,7 +259,7 @@ get_and_process_msgp <- function(end_year) {
       )
   }
   
-  # clean upt
+  # clean up
   out <- out %>%
     rename(
       county_id = county_code,
