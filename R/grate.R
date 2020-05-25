@@ -395,7 +395,7 @@ grad_file_group_cleanup <- function(group) {
 
 get_raw_grad_file <- function(end_year, methodology='4 year') {
   
-  if (end_year < 1998 | end_year > 2018) {
+  if (end_year < 1998 | end_year > 2019) {
     stop('year not yet supported')
   }
   
@@ -499,7 +499,8 @@ id_grad_aggs <- function(df) {
       is_allpublic = FALSE,
       is_school = !school_id %in% c('997', '999') & !is_state,
       is_charter = county_id == '80'
-    )
+    ) %>%
+      return()
 }
 
 
@@ -771,7 +772,7 @@ process_grad_rate <- function(df, end_year, methodology) {
 #' @return dataframe with grad rate
 #' @export
 
-fetch_grad_rate <- function(end_year, methodology='4 year') {
+fetch_grad_rate <- function(end_year, methodology = '4 year') {
   df <- get_grad_rate(end_year, methodology) %>%
     process_grad_rate(end_year)
   
