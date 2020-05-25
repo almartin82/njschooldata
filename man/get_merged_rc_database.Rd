@@ -7,7 +7,7 @@
 get_merged_rc_database(end_year)
 }
 \arguments{
-\item{end_year}{end of the academic year.  Valid values are 2017, 2018.}
+\item{end_year}{end of the academic year.  Valid values are 2017, 2018, 2019}
 }
 \value{
 list of dataframes
