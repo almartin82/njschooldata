@@ -1,3 +1,12 @@
+## njschooldata 0.8.7
+
+## New features
+
+* `fetch_msgp()` supports 2019 data
+
+* msgp data supports new subgroups: female, male, homeless, foster care, military-connected, migrant
+
+
 ## njschooldata 0.8.6
 
 ## New features
