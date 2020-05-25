@@ -1,3 +1,10 @@
+## njschooldata 0.8.6
+
+## New features
+
+* `get_reportcard_special_pop()` supports 2019 data
+
+
 ## njschooldata 0.8.3
 
 ## New features
