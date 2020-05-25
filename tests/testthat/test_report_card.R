@@ -2,10 +2,10 @@ context("report_card functions")
 
 rc <- get_one_rc_database(2015)
 many_rc <- get_rc_databases(2012:2017)
-all_rc <- get_rc_databases(2003:2017)
+all_rc <- get_rc_databases(2012:2017)
 
-rc_2003 <- get_one_rc_database(2003)
-rc_2004 <- get_one_rc_database(2004)
+# rc_2003 <- get_one_rc_database(2003)
+# rc_2004 <- get_one_rc_database(2004)
 rc_2016 <- get_one_rc_database(2016)
 rc_2017 <- get_one_rc_database(2017)
 rc_2018 <- get_one_rc_database(2018)
