@@ -301,8 +301,15 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
   tidy_new_format <- function(df) {
     names(df)[names(df) %in% c(
       '2012 5 -year adj cohort grad rate',
-      'class of 2017 5-year graduation rate'
+      "cohort 2015 5 year graduation rate",
+      "cohort 2016 5 year graduation rate",
+      'class of 2017 5-year graduation rate',
+      "cohort 2018 5-year graduation rate"
     )] <- 'grad_rate'
+    
+    if (class(df$grad_rate) == "character") {
+       df$grad_rate <- as.numeric(df$grad_rate) / 100
+    }
     
     if (!'cohort_count' %in% names(df)) {
       df$cohort_count <- NA_integer_
@@ -352,7 +359,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     out <- df
   }
   
-  # 2018 silly row
+  # 2018 and 2019 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
   
   out$group <- grad_file_group_cleanup(out$group)
@@ -373,13 +380,20 @@ grad_file_group_cleanup <- function(group) {
   case_when(
     group %in% c('american indian or alaska native', 'american_indian') ~ 'american indian',
     group %in% c('black or african american') ~ 'black',
-    group %in% c('economically_disadvantaged') ~ 'economically disadvantaged',
+    group %in% c('economically_disadvantaged',
+                 'economically disadvantaged students') ~ 'economically disadvantaged',
     group %in% c('english learners', 'limited_english_proficiency') ~ 'limited english proficiency',
-    group %in% c('two or more race', 'two_or_more_races') ~ 'multiracial',
+    group %in% c('two or more race', 'two_or_more_races', 'two or more races') ~ 'multiracial',
     group %in% c('native hawaiian or pacific islander', 'pacific_islander', 'native_hawaiian') ~ 'pacific islander',
+    group %in% c('asian, native hawaiian, or pacific islander') ~ 'asian', # 2019 groups a and pi together?!
     group %in% c('students with disabilities', 'students_with_disability') ~ 'students with disability',
-    group %in% c('districtwide', 'schoolwide', 'statewide total', 'statewide_total', 'total_population') ~ 'total population',
-    
+    group %in% c('districtwide', 'schoolwide', 
+                 'statewide total', 'statewide_total', 'statewide',
+                 'total_population') ~ 'total population',
+    # c('homeless students', 'homeless')
+    # c('students in foster care', 'foster care')
+    # c('migrant students')
+   
     TRUE ~ group
   )
 }
@@ -393,89 +407,112 @@ grad_file_group_cleanup <- function(group) {
 #' @return data.frame with raw data from state file
 #' @export
 
-get_raw_grad_file <- function(end_year, methodology='4 year') {
+get_raw_grad_file <- function(end_year, methodology = '4 year') {
   
   if (end_year < 1998 | end_year > 2019) {
     stop('year not yet supported')
   }
   
-  # before cohort grad rate
-  if (end_year <= 2010 & methodology=='4 year') {
-    grd_constant <- "http://www.state.nj.us/education/data/grd/grd"
-    grate_file <- paste0(grd_constant, substr(end_year + 1, 3, 4), "/grd.zip") %>% 
-      unzipper()
-
-    if (grepl('.csv', tolower(grate_file))) {
-      df <- read_csv(grate_file)  
-    } else if (grepl('.xls', tolower(grate_file))) {
-      df <- readxl::read_xls(grate_file)
-    }
-    
-  # 2011 is insane, no other way to describe it
-  } else if (end_year == 2011 & methodology=='4 year') {
-    grate_url <- 'https://www.state.nj.us/education/data/grate/2012/gradrate.xls'
-    grate_file <- tempfile(fileext = ".xls")
-    httr::GET(url = grate_url, httr::write_disk(grate_file))
-    df <- readxl::read_excel(grate_file)
-    
-    grate_indices <- c(1:7, 9)
-    df <- df[, grate_indices] %>%
-      mutate(
-        'GRADUATED_COUNT' = NA_integer_
-      )
-  
-  # 2012 they transition the format but post it in a weird location
-  } else if (end_year == 2012 & methodology=='4 year') {
-    grate_url <- 'https://www.state.nj.us/education/data/grate/2012/grd.xls'
-    grate_file <- tempfile(fileext = ".xls")
-    httr::GET(url = grate_url, httr::write_disk(grate_file))
-    df <- readxl::read_excel(grate_file)
-    
-  # 2013 on is the cohort grad rate era
-  } else if (end_year >= 2013 & end_year <= 2018 & methodology=='4 year') {
-    #build url
-    basic_suffix <- "/4Year.xlsx"
-    num_skip <- 0
-    
-    if (end_year >= 2018) {
-      basic_suffix <- "/4YearGraduation.xlsx"
-      num_skip <- 3
-    }
-    
-    grate_url <- paste0("http://www.state.nj.us/education/data/grate/", end_year, basic_suffix)
-    grate_file <- tempfile(fileext = ".xlsx")
-    httr::GET(url = grate_url, httr::write_disk(grate_file))
-    df <- readxl::read_excel(grate_file, skip = num_skip)
-  } else if (end_year >= 2012 & methodology == '5 year') {
-
-    if (end_year <= 2014) {
-      #build url
-      grate_url <- paste0(
-        "http://www.state.nj.us/education/data/grate/", end_year + 1, 
-        "/4And5YearCohort", substr(end_year, 3, 4), ".xlsx"
-      )
-      num_skip <- 0
-    } else if (end_year==2015) {
-      grate_url <- 'https://www.state.nj.us/education/data/grate/2016/4And5YearCohort14.xlsx'
-      num_skip <- 0
-    } else if (end_year==2016) {
-      grate_url <- 'https://www.state.nj.us/education/data/grate/2017/4And5YearCohort.xlsx'
-      num_skip <- 0
-    } else if (end_year >= 2017) {
-      grate_url <- paste0(
-        "http://www.state.nj.us/education/data/grate/", end_year + 1, 
-        "/4and5YearGraduationRates.xlsx"
-      )
-      num_skip <- 3
-    }
-    grate_file <- tempfile(fileext = ".xlsx")
-    httr::GET(url = grate_url, httr::write_disk(grate_file))
-    df <- readxl::read_excel(grate_file, skip = num_skip)
-
-  } else if (end_year < 2012 & methodology == '5 year') {
-    stop(paste0('5 year grad rate not available for ending year ', end_year))
-  }
-  
+  ########## 4 year ##########
+   if (methodology == '4 year') {
+      # before cohort grad rate 
+      if (end_year <= 2010) {
+         grd_constant <- "http://www.state.nj.us/education/data/grd/grd"
+         grate_file <- paste0(grd_constant, substr(end_year + 1, 3, 4), "/grd.zip") %>% 
+            unzipper()
+         
+         if (grepl('.csv', tolower(grate_file))) {
+            df <- read_csv(grate_file)  
+         } else if (grepl('.xls', tolower(grate_file))) {
+            df <- readxl::read_xls(grate_file)
+         }
+         
+      # 2011 is insane, no other way to describe it
+      } else if (end_year == 2011) {
+         grate_url <- 'https://www.state.nj.us/education/data/grate/2012/gradrate.xls'
+         grate_file <- tempfile(fileext = ".xls")
+         httr::GET(url = grate_url, httr::write_disk(grate_file))
+         df <- readxl::read_excel(grate_file)
+         
+         grate_indices <- c(1:7, 9)
+         df <- df[, grate_indices] %>%
+            mutate(
+               'GRADUATED_COUNT' = NA_integer_
+            )
+         
+      # 2012 they transition the format but post it in a weird location
+      } else if (end_year == 2012) {
+         grate_url <- 'https://www.state.nj.us/education/data/grate/2012/grd.xls'
+         grate_file <- tempfile(fileext = ".xls")
+         httr::GET(url = grate_url, httr::write_disk(grate_file))
+         df <- readxl::read_excel(grate_file)
+         
+      # 2013 on is the cohort grad rate era 
+      } else if (end_year >= 2013 & end_year <= 2018) {
+         #build url
+         basic_suffix <- "/4Year.xlsx"
+         num_skip <- 0
+         
+         if (end_year >= 2018) {
+            basic_suffix <- "/4YearGraduation.xlsx"
+            num_skip <- 3
+         }
+         
+         grate_url <- paste0("http://www.state.nj.us/education/data/grate/", end_year, basic_suffix)
+         grate_file <- tempfile(fileext = ".xlsx")
+         httr::GET(url = grate_url, httr::write_disk(grate_file))
+         df <- readxl::read_excel(grate_file, skip = num_skip)
+         
+      } else { # if year == 2019
+         # new location!
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202019%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+         num_skip <- 3
+         grate_file <- tempfile(fileext = ".xlsx")
+         httr::GET(url = grate_url, httr::write_disk(grate_file))
+         df <- readxl::read_excel(grate_file, skip = num_skip)
+      }
+      
+   ########## 5 year ##########
+   } else if (methodology == '5 year') {
+      
+      if (end_year < 2012) {
+         stop(paste0('5 year grad rate not available for ending year ', end_year))
+         
+      }  else if (end_year <= 2014) {
+         #build url
+         grate_url <- paste0(
+            "http://www.state.nj.us/education/data/grate/", end_year + 1, 
+            "/4And5YearCohort", substr(end_year, 3, 4), ".xlsx"
+         )
+         num_skip <- 0
+         
+      } else if (end_year == 2015) {
+         grate_url <- 'https://www.state.nj.us/education/data/grate/2016/4And5YearCohort14.xlsx'
+         num_skip <- 0
+         
+      } else if (end_year == 2016) {
+         grate_url <- 'https://www.state.nj.us/education/data/grate/2017/4And5YearCohort.xlsx'
+         num_skip <- 0
+         
+      } else if (end_year == 2017) {
+         grate_url <- paste0(
+            "http://www.state.nj.us/education/data/grate/", end_year + 1, 
+            "/4and5YearGraduationRates.xlsx"
+         )
+         num_skip <- 3
+         
+      } else { # if (end_year == 2018) {
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202018%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
+         num_skip <- 3
+      }
+      
+      grate_file <- tempfile(fileext = ".xlsx")
+      httr::GET(url = grate_url, httr::write_disk(grate_file))
+      df <- readxl::read_excel(grate_file, skip = num_skip)
+   } else {
+      stop(paste0("invalid methodology: ", methodology)) 
+   }
+   
   df$end_year <- end_year
   
   df
@@ -734,7 +771,7 @@ fetch_grad_count <- function(end_year) {
 #' @return dataframe with the number of graduates per school and district
 
 get_grad_rate <- function(end_year, methodology) {
-  if (end_year < 2011 | end_year > 2018) {
+  if (end_year < 2011 | end_year > 2019) {
     stop('year not yet supported')
   }
   
