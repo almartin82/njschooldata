@@ -114,7 +114,12 @@ process_grate <- function(df, end_year) {
   if ('program_name' %in% names(df)) {
     df$program_name <- ifelse(df$program_name %in% c('Total', 'TOTAL'), 'Total', df$program_name) 
   }
-  df$school_id <- ifelse(df$school_id == "999.000000", "999", df$school_id)
+  
+  df <- df %>%
+     mutate(school_id = case_when(school_id == "999.000000" ~ "999",
+                                  school_id == "888" & end_year == 2019 ~ "999",
+                                  TRUE ~ school_id))
+  
   df$district_id <- ifelse(df$district_id == "9999.000000", "999", df$district_id)
 
   if ('grad_rate' %in% names(df)) {
