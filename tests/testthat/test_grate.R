@@ -163,20 +163,9 @@ test_that("ground truth values on 2018 5y grate", {
 
 # grad count
 test_that('fetch_grad_count all years', {
-  
-  gr00 <- fetch_grad_count(1999)
-  gr01 <- fetch_grad_count(2000)
-  gr02 <- fetch_grad_count(2001)
-  gr03 <- fetch_grad_count(2002)
-  gr04 <- fetch_grad_count(2003)
-  gr05 <- fetch_grad_count(2004)
-  gr06 <- fetch_grad_count(2005)
-  gr07 <- fetch_grad_count(2006)
-  gr08 <- fetch_grad_count(2007)
-  gr09 <- fetch_grad_count(2008)
-  gr10 <- fetch_grad_count(2009)
-  gr11 <- fetch_grad_count(2010)
-  gr12 <- fetch_grad_count(2011)
+  # it doesn't look like 2011 file has any counts in the raw file
+  # to pull out
+  expect_error(fetch_grad_count(2011))
   gr13 <- fetch_grad_count(2012)
   gr14 <- fetch_grad_count(2013)
   gr15 <- fetch_grad_count(2014)
@@ -184,9 +173,31 @@ test_that('fetch_grad_count all years', {
   gr17 <- fetch_grad_count(2016)
   gr18 <- fetch_grad_count(2017)
   gr19 <- fetch_grad_count(2018)
+  gr20 <- fetch_grad_count(2019)
   expect_error(fetch_grad_count(2020))
-  
 })
 
+test_that("ground truth values on 2019 grad count", {
+   ex <- fetch_grad_count(2019)
+   expect_is(ex, "data.frame")
+   
+   expect_equal(filter(ex, 
+                       district_id == '3570',
+                       school_id == '888',
+                       subgroup == "female") %>%
+                   pull(graduated_count), 1085)
+   
+   expect_equal(filter(ex, 
+                       district_id == '3570',
+                       school_id == '030',
+                       subgroup == "economically disadvantaged") %>%
+                   pull(cohort_count), 179)
+   
+   expect_equal(filter(ex, 
+                       district_id == '3570',
+                       school_id == '307',
+                       subgroup == "white") %>%
+                   pull(cohort_count), NA_real_)
+})
 
 
