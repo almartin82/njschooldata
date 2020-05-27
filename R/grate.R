@@ -417,7 +417,7 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
    if (methodology == '4 year') {
       # before cohort grad rate 
       if (end_year <= 2010) {
-         grd_constant <- "http://www.state.nj.us/education/data/grd/grd"
+         grd_constant <- "https://www.state.nj.us/education/data/grd/grd"
          grate_file <- paste0(grd_constant, substr(end_year + 1, 3, 4), "/grd.zip") %>% 
             unzipper()
          
@@ -549,6 +549,9 @@ id_grad_aggs <- function(df) {
 #' @return dataframe with the number of graduates per school and district
 
 get_grad_count <- function(end_year) {
+   if (end_year < 2012 | end_year > 2019)
+      stop(paste0(end_year, " not yet supported."))
+   
   df <- get_raw_grad_file(end_year)
   
   df %>% 
