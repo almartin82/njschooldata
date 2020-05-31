@@ -95,10 +95,12 @@ enrich_school_city_ward <- function(df) {
   final_mask <- geo_mask & latlong_mask
   
   df_supported <- df %>%
-    filter(final_mask)
+     ungroup() %>%
+     filter(final_mask)
     
   df_unsupported <- df %>%
-    filter(!final_mask)
+     ungroup() %>%
+     filter(!final_mask)
   
   # add specific geos here
   # newark (3570)
@@ -166,5 +168,82 @@ ward_enr_aggs <- function(df) {
   agg_enr_column_order(df)
 }
 
+#' Aggregates assessment data by ward
+#'
+#'
+#' @param list_of_dfs output of \code{fetch_all_parcc} or \code{fetch_parcc}
+#'
+#' @return A data frame of ward aggregations
+#'
+#'
+#' @export
+ward_parcc_aggs <- function(list_of_dfs) {
+   
+   df <- list_of_dfs %>%
+      bind_rows() %>% # convert to df
+      enrich_school_latlong() %>%
+      enrich_school_city_ward()
+   
+   df <- df %>%
+      filter(!is.na(ward) #,
+             #subgroup == "special_education",
+             #grade == 3,
+             #test_name == "ela",
+             #testing_year == 2018,
+             #!is.na(number_of_valid_scale_scores)
+             ) %>%
+      group_by(
+         testing_year,
+         assess_name, test_name,
+         county_id, county_name,
+         district_id, district_name,
+         ward,
+         grade,
+         subgroup
+      ) %>%
+      summarize(
+         n_schools = n(), 
+         scale_score_mean = sum(scale_score_mean * number_of_valid_scale_scores, na.rm = T) /
+                            sum(number_of_valid_scale_scores, na.rm = T),
+         number_of_valid_scale_scores = sum(number_of_valid_scale_scores, na.rm = T),
+         num_l1 = sum(num_l1, na.rm = T),
+         num_l2 = sum(num_l2, na.rm = T),
+         num_l3 = sum(num_l3, na.rm = T),
+         num_l4 = sum(num_l4, na.rm = T),
+         num_l5 = sum(num_l5, na.rm = T),
+         pct_l1 = 100 * num_l1 / sum(num_l1, num_l2, num_l3, num_l4, num_l5),
+         pct_l2 = 100 * num_l2 / sum(num_l1, num_l2, num_l3, num_l4, num_l5),
+         pct_l3 = 100 * num_l3 / sum(num_l1, num_l2, num_l3, num_l4, num_l5),
+         pct_l4 = 100 * num_l4 / sum(num_l1, num_l2, num_l3, num_l4, num_l5),
+         pct_l5 = 100 * num_l5 / sum(num_l1, num_l2, num_l3, num_l4, num_l5),
+         proficient_above = pct_l4 + pct_l5
+       ) %>%
+      ungroup()
+   
+   df <- df %>%
+      mutate(
+         district_id = paste0(district_id, ' ', ward),
+         district_name = paste0(district_name, ' ', ward),
+         school_id = '999W',
+         school_name = 'Ward Total',
+         number_of_valid_scale_scores = if_else(is.na(scale_score_mean), NA_real_, 
+                                                number_of_valid_scale_scores),
+         num_l1 = if_else(is.na(scale_score_mean), NA_real_, num_l1),
+         num_l2 = if_else(is.na(scale_score_mean), NA_real_, num_l2),
+         num_l3 = if_else(is.na(scale_score_mean), NA_real_, num_l3),
+         num_l4 = if_else(is.na(scale_score_mean), NA_real_, num_l4),
+         num_l5 = if_else(is.na(scale_score_mean), NA_real_, num_l5),
+         is_state = FALSE,
+         is_county = FALSE,
+         is_citywide = FALSE,
+         is_district = FALSE,
+         is_charter_sector = FALSE,
+         is_allpublic = FALSE,
+         is_school = FALSE
+      ) %>%
+      select(-ward)
+   
+   return(df)
+}
 
 
