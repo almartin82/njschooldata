@@ -110,7 +110,8 @@ calculate_agg_parcc_prof <- function(end_year, subj, gradespan='3-11') {
     )
   )
   
-  all_grades <- ward_parcc_aggs(all_grades)
+  all_grades <- bind_rows(all_grades, 
+                          ward_parcc_aggs(all_grades))
   
   # get the counts from percentages
   all_grades <- parcc_perf_level_counts(all_grades)

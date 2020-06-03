@@ -56,5 +56,6 @@ test_that("grade aggregates work w/ ward aggregation", {
    gr9_11_2018_mat <- calculate_agg_parcc_prof(end_year = 2018, 
                             subj = 'math',
                             gradespan = '9-11') 
-      expect_is('data.frame')
+   
+      expect_is(gr9_11_2018_mat, 'data.frame')
 })
