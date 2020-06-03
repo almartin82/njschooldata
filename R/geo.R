@@ -199,10 +199,12 @@ ward_parcc_aggs <- function(list_of_dfs) {
          district_id, district_name,
          ward,
          grade,
-         subgroup
+         subgroup, subgroup_type
       ) %>%
       summarize(
          n_schools = n(), 
+         number_enrolled = sum(number_enrolled, na.rm = T),
+         number_not_tested = sum(number_not_tested, na.rm = T),
          scale_score_mean = sum(scale_score_mean * number_of_valid_scale_scores, na.rm = T) /
                             sum(number_of_valid_scale_scores, na.rm = T),
          number_of_valid_scale_scores = sum(number_of_valid_scale_scores, na.rm = T),
@@ -239,7 +241,9 @@ ward_parcc_aggs <- function(list_of_dfs) {
          is_district = FALSE,
          is_charter_sector = FALSE,
          is_allpublic = FALSE,
-         is_school = FALSE
+         is_charter = FALSE,
+         is_school = FALSE,
+         is_dfg = (county_id == 'DFG')
       ) %>%
       select(-ward)
    
