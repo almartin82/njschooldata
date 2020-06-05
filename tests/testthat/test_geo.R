@@ -63,9 +63,14 @@ test_that("grade aggregates work w/ ward aggregation", {
 
 # GRAD RATE
 grate_2019 <- fetch_grad_rate(2019)
+grate_2018_5y <- fetch_grad_rate(2018, '5 year')
 
 test_that("aggregates correctly newark grad rate data by ward" , {
    grate_2019 %>%
+      ward_grate_aggs() %>%
+      testthat::expect_is('data.frame')
+   
+   grate_2018_5y %>%
       ward_grate_aggs() %>%
       testthat::expect_is('data.frame')
 })
