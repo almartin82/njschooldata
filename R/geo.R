@@ -296,3 +296,49 @@ ward_grate_aggs <- function(df) {
     grate_column_order() %>%
     return()
 }
+
+
+
+#' Aggregates grad counts data by ward
+#'
+#'
+#' @param df output of \code{fetch_grad_count}
+#'
+#' @return A data frame of ward aggregations
+#'
+#'
+#' @export
+ward_gcount_aggs <- function(df) {
+  enriched_df <- df %>%
+    enrich_school_latlong() %>%
+    enrich_school_city_ward()
+  
+  ward_df <- enriched_df %>% 
+    filter(!is.na(ward)) %>%
+    group_by(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      ward,
+      subgroup
+    ) %>%
+    gcount_aggregate_calcs() %>%
+    ungroup()
+  
+  ward_df %>%
+    mutate(
+      district_id = paste0(district_id, ' ', ward),
+      district_name = paste0(district_name, ' ', ward),
+      school_id = '999W',
+      school_name = 'Ward Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,      
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE
+    ) %>%
+    gcount_column_order() %>%
+    return()
+}
