@@ -1,3 +1,10 @@
+## njschooldata 0.8.8
+
+## New features
+
+* `fetch_grad_rate()` and `fetch_grad_count()` support 2019 data
+
+
 ## njschooldata 0.8.7
 
 ## New features
