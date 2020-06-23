@@ -50,6 +50,20 @@ test_that("grade aggregates work w/ ward aggregation", {
    gr9_11_2018_mat <- calculate_agg_parcc_prof(end_year = 2018,
                             subj = 'math',
                             gradespan = '9-11')
+   
+   gr9_11_2018_mat_ward <- gr9_11_2018_mat %>%
+      ward_parcc_aggs() %>%
+      bind_rows(gr9_11_2018_mat)
 
-      expect_is(gr9_11_2018_mat, 'data.frame')
+   # ward aggregate present
+   expect_equal(sum(c("Newark City EAST", 
+               "Garfield City") %in%
+                gr9_11_2018_mat_ward$district_name), 
+             2)
+   
+   # did not bind ward aggregates in calculate_agg_parcc_prof
+   expect_equal(gr9_11_2018_mat_ward %>%
+                   distinct(.keep_all = T) %>%
+                   dim(),
+                dim(gr9_11_2018_mat_ward))
 })
