@@ -22,13 +22,34 @@ test_that("ward_enr_aggs correctly aggregates newark enrollment data by ward", {
 parcc_ela_8_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 8,
                           subj = 'ela', tidy = T)
 
+parcc_mat_6_2018 <- fetch_parcc(end_year = 2018, grade_or_subj = 6,
+                                subj = 'math', tidy = T)
+
 test_that("ward_parcc_aggs correctly aggregates newark parcc data by ward" , {
    parcc_ela_8_2019 %>%
       ward_parcc_aggs() %>%
       testthat::expect_is('data.frame')
 })
 
-test_that("ground truth values for parcc ward aggregations", {
+
+test_that("ground truth values for parcc 2018 ward aggregations", {
+   parcc_mat_6_2018_ward <- parcc_mat_6_2018 %>%
+      ward_parcc_aggs()
+   
+   expect_equal(parcc_mat_6_2018_ward %>%
+                   filter(district_id == "3570 CENTRAL",
+                          subgroup == "black") %>%
+                   pull(number_of_valid_scores),
+               193)
+   
+   expect_equal(parcc_mat_6_2018_ward %>%
+                   filter(district_name == "Newark City EAST",
+                          subgroup == "lep_current_former") %>%
+                   pull(num_l5),
+               7)
+   })
+
+test_that("ground truth values for parcc 2019 ward aggregations", {
    parcc_ela8_19_ward <- parcc_ela_8_2019 %>%
       ward_parcc_aggs()
 
