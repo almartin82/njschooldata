@@ -4,11 +4,13 @@
 \name{prog_codes}
 \alias{prog_codes}
 \title{program code data}
-\format{\describe{
+\format{
+\describe{
 \item{end_year}{end_year}
 \item{program_code}{program_code}
 \item{program_name}{program_name}
-#' }}
+#' }
+}
 \source{
 NJDOE website for each year of enrollment data (see link above)
 }
