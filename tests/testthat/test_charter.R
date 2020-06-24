@@ -188,3 +188,25 @@ test_that("allpublic gcount aggs, 2018", {
   expect_equal(nrow(allpublic_aggs_gcount_2018), 180)
 })
 
+
+test_that("charter sector sped aggs, 2003, no speech", {
+   sped_2003 <- fetch_sped(2003)
+   ch_aggs_sped_2003 <- charter_sector_sped_aggs(sped_2003)
+   expect_is(ch_aggs_sped_2003, "data.frame")
+   
+   expect_equal(ch_aggs_sped_2003 %>%
+                   filter(district_name == "Atlantic City Charters") %>%
+                   pull(sped_rate_no_speech),
+                12.05)
+})
+
+test_that("charter sector sped aggs, 2018", {
+   sped_2018 <- fetch_sped(2018)
+   ch_aggs_sped_2018 <- charter_sector_sped_aggs(sped_2018)
+   expect_is(ch_aggs_sped_2018, "data.frame")
+   
+   expect_equal(ch_aggs_sped_2018 %>%
+                   filter(district_name == "Asbury Park Charters") %>%
+                   pull(sped_rate),
+                9.3)
+})
