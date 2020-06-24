@@ -1,3 +1,10 @@
+## njschooldata 0.8.9
+
+## New features
+
+* `ward_parcc_aggs()` aggregates PARCC data for city ward / neighborhood geographies (currently supported: Newark)
+
+
 ## njschooldata 0.8.8
 
 ## New features
