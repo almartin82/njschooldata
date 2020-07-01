@@ -32,8 +32,10 @@ get_raw_enr <- function(end_year) {
       )
       # ~~if 2018 skip 3 lines~~
       # the number of 2018 skip lines is decreasing -- it's 1 now
-    } else if (end_year >= 2018) {
+    } else if (end_year == 2018) {
       enr <- readxl::read_excel(this_file, skip = 1)
+    } else if (end_year > 2018) {
+       enr <- readxl::read_excel(this_file, skip = 2)
     } else {
       enr <- readxl::read_excel(this_file)
     }
