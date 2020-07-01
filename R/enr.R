@@ -860,6 +860,7 @@ tidy_enr <- function(df) {
   total_counts <- df %>% 
      filter(program_code == '55') %>%
   # create free and reduced group 
+     rowwise() %>% 
      mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = T))
   
   total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant',
