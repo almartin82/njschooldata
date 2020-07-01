@@ -210,3 +210,25 @@ test_that("charter sector sped aggs, 2018", {
                    pull(sped_rate),
                 9.3)
 })
+
+test_that("allpublic sector sped aggs, 2003, no speech", {
+   sped_2003 <- fetch_sped(2003)
+   ap_aggs_sped_2003 <- allpublic_sped_aggs(sped_2003)
+   expect_is(ap_aggs_sped_2003, "data.frame")
+   
+   expect_equal(ap_aggs_sped_2003 %>%
+                   filter(district_name == "Asbury Park All Public") %>%
+                   pull(sped_rate_no_speech),
+                19.53)
+})
+
+test_that("allpublic sector sped aggs, 2018", {
+   sped_2018 <- fetch_sped(2018)
+   ap_aggs_sped_2018 <- allpublic_sped_aggs(sped_2018)
+   expect_is(ap_aggs_sped_2018, "data.frame")
+   
+   expect_equal(ap_aggs_sped_2018 %>%
+                   filter(district_name == "East Brunswick All Public") %>%
+                   pull(sped_rate),
+                15.6)
+})
