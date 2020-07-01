@@ -69,6 +69,11 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
   fetch_2018 <- fetch_enr(2018, TRUE)
   
   expect_is(fetch_2018, 'data.frame')
+  expect_is(fetch_2018 %>%
+               filter(subgroup == "free_reduced_lunch") %>%
+               nrow(), 
+            3217)
+  
   expect_equal(nrow(fetch_2018), 648484)
   expect_equal(ncol(fetch_2018), 22)
 })
@@ -78,6 +83,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file", {
   fetch_2019 <- fetch_enr(2019)
   
   expect_is(fetch_2019, 'data.frame')
+  
   expect_equal(nrow(fetch_2019), 26506)
   expect_equal(ncol(fetch_2019), 39)
 })
