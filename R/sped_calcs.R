@@ -11,8 +11,10 @@ sped_aggregate_calcs <- function(df) {
       summarize_at(
          vars(one_of("gened_num",
                      "sped_num",
-                     "sped_num_no_speech")), sum, na.rm = TRUE
+                     "sped_num_no_speech",
+                     "is_charter")), sum, na.rm = TRUE
       ) %>%
+      rename(n_charter_rows = is_charter) %>%
       mutate(sped_rate = round(sped_num / gened_num * 100, 2) #, 
              ##### not totally sure why my version of dplyr 1.0.0 doesn't 
              ##### export across()
@@ -22,7 +24,8 @@ sped_aggregate_calcs <- function(df) {
       mutate_at(
          vars(one_of("sped_num_no_speech")), 
          .funs = list(sped_rate_no_speech = ~ round(. / gened_num * 100, 2))
-      )
+      ) %>%
+      return()
 }
 
 
