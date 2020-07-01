@@ -857,10 +857,14 @@ tidy_enr <- function(df) {
 
   # some subgroups are only reported for school totals
   # just total counts, for extracting total enr, free, reduced, migrant etc
-  total_counts <- df %>% filter(program_code == '55') 
-
-  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
-  total_subgroups <- total_subgroups[total_subgroups %in% names(df)]
+  total_counts <- df %>% 
+     filter(program_code == '55') %>%
+  # create free and reduced group 
+     mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = T))
+  
+  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant',
+                       'free_reduced_lunch')
+  total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
   
   # iterate over cols to tidy, do calculations
   tidy_total_subgroups <- map_df(total_subgroups, 
@@ -870,9 +874,9 @@ tidy_enr <- function(df) {
        select(one_of(invariants, 'n_students', 'row_total')) %>%
        mutate(
          'subgroup' = .x,
-         'pct_total_enr' = n_students / row_total
+         'pct' = n_students / row_total
        ) %>%
-       select(one_of(invariants, 'subgroup', 'n_students', 'pct_total_enr'))
+       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
     }
   )
   
