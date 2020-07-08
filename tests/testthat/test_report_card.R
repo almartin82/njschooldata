@@ -1,8 +1,8 @@
 context("report_card functions")
 
 rc <- get_one_rc_database(2015)
-many_rc <- get_rc_databases(2012:2017)
-all_rc <- get_rc_databases(2012:2017)
+many_rc <- get_rc_databases(2012:2019)
+all_rc <- many_rc
 
 # rc_2003 <- get_one_rc_database(2003)
 # rc_2004 <- get_one_rc_database(2004)
@@ -86,8 +86,8 @@ test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
    expect_is(enr_many, 'tbl_df')
    expect_named(enr_many,
                 c("county_code", "district_code", "school_code",
-                  "county_name",  "district_name", "school_name", 
-                  "end_year", "grade_level", "n_enrolled"))
+                  "end_year", "grade_level", "n_enrolled",
+                  "county_name",  "district_name", "school_name"))
    expect_setequal(enr_many %>%
                       pull(grade_level) %>%
                       unique(),
@@ -95,7 +95,7 @@ test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
                      "09", "10", "11", "12", "PK", "KG", "TOTAL", 
                      NA_character_))
    
-   expect_equal(out %>%
+   expect_equal(enr_many %>%
                    filter(district_code == "3570",
                           school_code == "999",
                           grade_level == "TOTAL",
