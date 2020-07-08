@@ -80,4 +80,26 @@ test_that("extract_rc_cds finds the county district school name for every year",
 })
 
 
-test_that("")
+test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
+   enr_many <- extract_rc_enrollment(many_rc)
+   
+   expect_is(enr_many, 'tbl_df')
+   expect_named(enr_many,
+                c("county_code", "district_code", "school_code",
+                  "county_name",  "district_name", "school_name", 
+                  "end_year", "grade_level", "n_enrolled"))
+   expect_setequal(enr_many %>%
+                      pull(grade_level) %>%
+                      unique(),
+                   c("01", "02", "03", "04", "05", "06", "07", "08",
+                     "09", "10", "11", "12", "PK", "KG", "TOTAL", 
+                     NA_character_))
+   
+   expect_equal(out %>%
+                   filter(district_code == "3570",
+                          school_code == "999",
+                          grade_level == "TOTAL",
+                          end_year == 2019) %>%
+                   pull(n_enrolled),
+                "41510")
+}) 
