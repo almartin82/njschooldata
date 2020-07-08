@@ -308,3 +308,21 @@ test_that("enr_grade_aggs works", {
   expect_equal(camden_es_k8$n_students, camden_es_k12$n_students)
   
 })
+
+test_that("frl group exists", {
+  enr_19 <- fetch_enr(2019, TRUE)
+  
+  expect_gt(enr_19 %>%
+              filter(district_id == '3570',
+                     school_id == '999',
+                     subgroup == "free_lunch") %>%
+              pull(pct),
+            0)
+  
+  expect_gt(enr_19 %>%
+              filter(district_id == '3570',
+                     school_id == '999',
+                     subgroup == "free_reduced_lunch") %>%
+              pull(pct), 
+            0)
+})
