@@ -73,6 +73,10 @@ infer_postsec_n <- function(end_year) {
   matric <- matric %>%
     left_join(spr_enr, by=c('end_year', 'county_code', 'district_code', 'school_code'))
 
+  # OR fall enrollment?
+
+  # OR grad rate denominator from grate?
+
   # for every row, enumerate potentnial g / n values.  pick value that is
   # plausible that minimizes n - reported spring n
 
