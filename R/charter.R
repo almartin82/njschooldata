@@ -729,6 +729,7 @@ allpublic_spec_pop_aggs <- function(df) {
   # take only district level rows (not school)
   # group by - newly modified county_id, district_id and summarize
   df <- df %>% 
+    filter(district_id != '999') %>%
     group_by(
       end_year, 
       district_id,
