@@ -225,9 +225,9 @@ test_that("all public special populations aggregates, 2017", {
             "data.frame")
   
   expect_equal(sp_allpub_17 %>%
-                 filter(subgroup == "Economically Disadvantaged",
-                        district_id == "0110C") %>%
+                 filter(subgroup == "Female",
+                        district_id == "0110A") %>%
                  pull(percent),
-               97.2)
+               49.3)
 })
 
