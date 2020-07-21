@@ -192,13 +192,7 @@ ward_parcc_aggs <- function(list_of_dfs) {
       enrich_school_city_ward()
 
    df <- df %>%
-      filter(!is.na(ward) #,
-             #subgroup == "special_education",
-             #grade == 3,
-             #test_name == "ela",
-             #testing_year == 2018,
-             #!is.na(number_of_valid_scale_scores)
-             ) %>%
+      filter(!is.na(ward)) %>%
       group_by(
          testing_year,
          assess_name, test_name,
