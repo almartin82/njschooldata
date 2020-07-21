@@ -1,3 +1,9 @@
+## njschooldata 0.8.10
+
+## New features
+
+* `extract_rc_enrollment()` extracts and cleans spring enrollment data from report card databases
+
 ## njschooldata 0.8.9
 
 ## New features
