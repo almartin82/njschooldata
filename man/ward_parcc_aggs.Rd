@@ -9,7 +9,6 @@ ward_parcc_aggs(list_of_dfs)
 \arguments{
 \item{list_of_dfs}{output of \code{fetch_all_parcc}, \code{fetch_parcc},
 \code{calculate_agg_parcc_prof}}
-}
 \value{
 A data frame of ward aggregations
 }
