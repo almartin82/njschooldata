@@ -31,6 +31,7 @@ get_reportcard_special_pop <- function(end_year) {
         values_to = 'percent'
       ) %>%
       mutate(
+        school_name = NA_character_,
         is_district = if_else(school_code == '999', 1, 0),
         is_school = if_else(school_code != '999', 1, 0)
       )
