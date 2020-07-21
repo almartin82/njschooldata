@@ -41,8 +41,9 @@ test_that("ground truth values for parcc ward aggregations", {
    expect_equal(parcc_ela8_19_ward %>%
                    filter(subgroup == "asian",
                           district_name == "Newark City NORTH") %>%
-                   pull(n_schools),
-                2)
+                   pull(schools) %>%
+                   str_count(","), # one comma = two schools; 
+                1)
    
    expect_equal(parcc_ela8_19_ward %>%
                    filter(subgroup == "lep_current",
