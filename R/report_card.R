@@ -694,9 +694,6 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
   }
   
   out %>%
-    rename(county_id = county_code,
-           district_id = district_code, 
-           school_id = school_code) %>%
     select(-school_name) %>%
     return()
 
