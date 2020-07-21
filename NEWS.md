@@ -1,3 +1,23 @@
+## njschooldata 0.8.10
+
+## New features
+
+* `extract_rc_enrollment()` extracts and cleans spring enrollment data from report card databases
+
+## njschooldata 0.8.9
+
+## New features
+
+* `ward_parcc_aggs()` aggregates PARCC data for city ward / neighborhood geographies (currently supported: Newark)
+
+
+## njschooldata 0.8.8
+
+## New features
+
+* `fetch_grad_rate()` and `fetch_grad_count()` support 2019 data
+
+
 ## njschooldata 0.8.7
 
 ## New features
