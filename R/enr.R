@@ -492,8 +492,12 @@ enr_aggs <- function(df) {
 process_enr <- function(df) {
 
   # if no grade level
-  if (!'grade_level' %in% tolower(names(df))) {
+  if (!'grade_level' %in% tolower(names(df)) | 
+      df$end_year[1] == "2018") {
     
+     # something weird w/ 2018 grade levels; proceed as if they aren't there
+     if (df$end_year[1] == "2018") df <- select(df, -Grade_Level)
+     
     # clean up program code and name
     prog_map <- list(
       "PRGCODE" = "program_code",
