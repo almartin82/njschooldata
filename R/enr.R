@@ -30,9 +30,12 @@ get_raw_enr <- function(end_year) {
       enr <- gdata::read.xls(
         this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
       )
-      # if 2018 skip 3 lines
-    } else if (end_year >= 2018) {
-      enr <- readxl::read_excel(this_file, skip = 2)
+      # ~~if 2018 skip 3 lines~~
+      # the number of 2018 skip lines is decreasing -- it's 1 now
+    } else if (end_year == 2018) {
+      enr <- readxl::read_excel(this_file, skip = 1)
+    } else if (end_year > 2018) {
+       enr <- readxl::read_excel(this_file, skip = 2)
     } else {
       enr <- readxl::read_excel(this_file)
     }
@@ -489,8 +492,12 @@ enr_aggs <- function(df) {
 process_enr <- function(df) {
 
   # if no grade level
-  if (!'grade_level' %in% tolower(names(df))) {
+  if (!'grade_level' %in% tolower(names(df)) | 
+      df$end_year[1] == "2018") {
     
+     # something weird w/ 2018 grade levels; proceed as if they aren't there
+     if (df$end_year[1] == "2018") df <- select(df, -Grade_Level)
+     
     # clean up program code and name
     prog_map <- list(
       "PRGCODE" = "program_code",
