@@ -4,8 +4,11 @@
 \alias{extract_rc_college_matric}
 \title{Extract Report Card Matriculation Rates}
 \usage{
-extract_rc_college_matric(list_of_prs, school_only = TRUE,
-  cds_identifiers = TRUE)
+extract_rc_college_matric(
+  list_of_prs,
+  school_only = TRUE,
+  cds_identifiers = TRUE
+)
 }
 \arguments{
 \item{list_of_prs}{output of get_rc_databases (ie, a list where each element is)

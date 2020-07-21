@@ -718,3 +718,120 @@ allpublic_gcount_aggs <- function(df) {
   # organize and return
   gcount_column_order(df) 
 }
+
+
+
+#' Calculate Charter Sector Special Populations Aggregates
+#'
+#' @param df a tidied enrollment dataframe, eg output of 
+#' `fetch_reportcard_special_pop`
+#'
+#' @return dataframe with charter sector aggregates per host city
+#' @export
+charter_sector_spec_pop_aggs <- function(df) {
+  
+  df <- df %>%
+    id_charter_hosts() %>%
+    # add gened enrollment from report card 
+    enrich_rc_enrollment()
+  
+  df <- df %>%
+    mutate(is_charter = !is.na(host_district_id)) %>%
+    filter(school_id != '999') %>%
+    group_by(
+      end_year, 
+      host_county_id, host_county_name,
+      host_district_id, host_district_name,
+      subgroup
+    ) %>%
+    spec_pop_aggregate_calcs()
+  
+  # give psuedo district names and codes and create appropriate boolean flags
+  df <- df %>%
+    rename(
+      county_id = host_county_id,
+      county_name = host_county_name
+    ) %>%
+    mutate(
+      district_id = paste0(host_district_id, 'C'),
+      district_name = paste0(host_district_name, " Charters"),
+      school_id = '999C',
+      school_name = 'Charter Sector Total',
+      is_district = FALSE,
+      is_charter_sector = TRUE,
+      is_allpublic = FALSE,
+      is_school = FALSE
+    ) %>%
+    select(-host_district_id, -host_district_name)
+  
+  # column order and return
+  df %>%
+    agg_spec_pop_column_order() %>%
+    return()
+}
+
+
+#' Calculate All City Special Populations aggregates
+#'
+#' @param df tidied grad count dataframe, eg output of 
+#' `fetch_reportcard_special_pop``
+#'
+#' @return df with all city aggregates per host city
+#' @export
+allpublic_spec_pop_aggs <- function(df) {
+  df <- df %>% 
+    enrich_rc_enrollment() %>%
+    id_charter_hosts() %>%
+    # if charter, make host_district_id the district_id
+    mutate(
+      is_charter = !is.na(host_district_id),
+      district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
+    )
+  
+  # take only district level rows (not school)
+  # group by - newly modified county_id, district_id and summarize
+  df <- df %>% 
+    filter(district_id != '999') %>%
+    group_by(
+      end_year, 
+      district_id,
+      subgroup
+    ) %>%
+    spec_pop_aggregate_calcs() %>%
+    ungroup()
+  
+  # if there are no charters in the host, out of scope for this calc
+  df <- df %>%
+    filter(n_charter_rows > 0)
+  
+  # add county_name, district_name by joining to charter_city
+  ch_join <- charter_city %>% 
+    select(host_district_id, host_district_name, host_county_name) %>%
+    rename(
+      district_id = host_district_id,
+      district_name = host_district_name,
+      county_name = host_county_name
+    ) %>%
+    unique()
+  
+  df <- df %>%
+    left_join(ch_join, by = 'district_id')
+  
+  # give psuedo district names and codes
+  # create appropriate boolean flag
+  df <- df %>%
+    mutate(
+      district_id = paste0(district_id, 'A'),
+      district_name = paste0(district_name, ' All Public'),
+      school_id = '999A',
+      school_name = 'All Public Total',
+      is_district = FALSE,
+      is_charter_sector = FALSE,
+      is_allpublic = TRUE,
+      is_school = FALSE
+    ) 
+  
+  # column order and return
+  agg_spec_pop_column_order(df) %>%
+    return()
+}

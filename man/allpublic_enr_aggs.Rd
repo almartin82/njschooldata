@@ -7,8 +7,6 @@
 allpublic_enr_aggs(df)
 }
 \arguments{
-\item{df}{}
-
 \item{df}{a tidied enrollment dataframe, eg output of `fetch_enr`}
 }
 \value{

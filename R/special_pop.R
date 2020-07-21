@@ -8,24 +8,55 @@
 get_reportcard_special_pop <- function(end_year) {
   
   df_list <- get_one_rc_database(end_year)
-  out <- df_list %>% 
-    use_series('enrollment_trends_by_student_group')
-
-  # 2018, 2019 it's wide
-  if (end_year >= 2018) {
+  
+  if (end_year == 2016) { # 2016 contains a few sheets, only school level
+    
+    out <- df_list %>%
+      use_series('enrollment_by_spec_pop') %>%
+      left_join(use_series(df_list, 'enrollment_by_gender'),
+                by = c('end_year', 'county_code', 'district_code', 'school_code'))
     
     pop_names <- c(
-      "female", "male", "economically_disadvantaged_students", "students_with_disabilities", 
-      "english_learners", "homeless_students", "students_in_foster_care", 
-      "military_connected_students", "migrant_students"
+      'female', 'male', 'economically_disadvantaged', 'disability', 'lep'
     )
-      
-    out <- pivot_longer(
-      data = out,
-      cols = one_of(pop_names), 
-      names_to = 'student_group',
-      values_to = 'percent' 
-    )
+    
+    out <- out %>%
+      mutate(
+        female = as.numeric(female),
+        male = as.numeric(male)
+      ) %>%
+      pivot_longer(
+        cols = pop_names,
+        names_to = 'student_group',
+        values_to = 'percent'
+      ) %>%
+      mutate(
+        school_name = NA_character_,
+        is_district = if_else(school_code == '999', 1, 0),
+        is_school = if_else(school_code != '999', 1, 0)
+      )
+    
+  } else { 
+    out <- df_list %>% 
+      use_series('enrollment_trends_by_student_group')
+  
+      # 2018, 2019 it's wide
+      if (end_year >= 2018) {
+        
+        pop_names <- c(
+          "female", "male", "economically_disadvantaged_students", "students_with_disabilities", 
+          "english_learners", "homeless_students", "students_in_foster_care", 
+          "military_connected_students", "migrant_students"
+        )
+          
+        out <- pivot_longer(
+          data = out,
+          cols = one_of(pop_names), 
+          names_to = 'student_group',
+          values_to = 'percent' 
+        )
+      }
+    
   }
   out
 }
@@ -49,14 +80,16 @@ process_reportcard_special_pop <- function(df) {
     mutate(
       subgroup = case_when(
         subgroup %in% c(
-          "Disability", "Students with Disabilities", "students_with_disabilities"
+          "Disability", "Students with Disabilities", "students_with_disabilities",
+          "disability"
         ) ~ 'IEP',
         subgroup %in% c(
           "Econdis", "Economically Disadvantaged Students", 
-          "economically_disadvantaged_students"
+          "economically_disadvantaged_students",
+          "economically_disadvantaged"
         ) ~ 'Economically Disadvantaged',
         subgroup %in% c(
-          "English Learners", "english_learners", "LEP"
+          "English Learners", "english_learners", "LEP", "lep"
         ) ~ 'English Learners',
         subgroup %in% c("Homeless Students", "homeless_students") ~ 'Homeless',
         subgroup %in% c("Migrant Students", "migrant_students") ~ 'Migrant',
@@ -87,11 +120,13 @@ fetch_reportcard_special_pop <- function(end_year) {
   get_reportcard_special_pop(end_year) %>%
     process_reportcard_special_pop() %>%
     select(
-      county_id,
-      district_id,
-      school_id, school_name, 
-      end_year, 
-      subgroup, percent,
-      is_district, is_school
+      one_of(
+        'county_id',
+        'district_id',
+        'school_id', 'school_name', 
+        'end_year', 
+        'subgroup', 'percent',
+        'is_district', 'is_school'
+      )
     )
 }

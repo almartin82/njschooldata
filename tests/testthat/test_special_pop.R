@@ -1,5 +1,6 @@
 context("test special pop enr")
 
+sp16 <- fetch_reportcard_special_pop(2016)
 sp17 <- fetch_reportcard_special_pop(2017)
 sp18 <- fetch_reportcard_special_pop(2018)
 sp19 <- fetch_reportcard_special_pop(2019)
@@ -72,16 +73,65 @@ test_that("ground truth value checks on 2019 special populations data", {
    
    expect_is(newark_sp_19, 'data.frame')
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Female") %>% pull(percent), 45.5)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Female") %>% 
+                   pull(percent), 
+                45.5)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Male") %>% pull(percent), 54.5)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Male") %>% 
+                   pull(percent), 
+                54.5)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Economically Disadvantaged") %>% pull(percent), 78.6)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Economically Disadvantaged") %>% 
+                   pull(percent), 
+                78.6)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "IEP") %>% pull(percent), 29.2)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "IEP") %>% 
+                   pull(percent),
+                29.2)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Foster Care") %>% pull(percent), 1.3)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Foster Care") %>% 
+                   pull(percent), 
+                1.3)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Migrant") %>% pull(percent), 0)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Migrant") %>% 
+                   pull(percent), 
+                0)
    }
 )
+
+
+test_that("ground truth value checks on 2016 special populations data", {
+   newark_sp_16 <- sp16 %>%
+      filter(district_id == '3570',
+             school_id == '270',
+             !is_district) 
+   
+   expect_is(newark_sp_16, 'data.frame')
+   
+   expect_equal(newark_sp_16 %>% 
+                   filter(subgroup == "IEP") %>% 
+                   pull(percent), 
+                27)
+   
+   expect_equal(newark_sp_16 %>% 
+                   filter(subgroup == "Male") %>% 
+                   pull(percent), 
+                52)
+   
+   expect_equal(newark_sp_16 %>% 
+                   filter(subgroup == "Economically Disadvantaged") %>% 
+                   pull(percent), 
+                81)
+   
+   expect_equal(newark_sp_16 %>% 
+                   filter(subgroup == "Female") %>% 
+                   pull(percent), 
+                48)
+
+})

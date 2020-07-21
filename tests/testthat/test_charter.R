@@ -188,3 +188,46 @@ test_that("allpublic gcount aggs, 2018", {
   expect_equal(nrow(allpublic_aggs_gcount_2018), 180)
 })
 
+test_that("special populations data is enriched w/ enrollment, 2018", {
+  sp_18_enr <- fetch_reportcard_special_pop(2018) %>%
+    enrich_rc_enrollment()
+  
+  expect_equal(sp_18_enr %>%
+                 filter(district_id == '3570',
+                        school_id == '220',
+                        subgroup == 'Economically Disadvantaged') %>%
+                 pull(n_students),
+               428)
+})
+
+test_that("charter sector special populations aggregates, 2017", {
+  sp_17 <- fetch_reportcard_special_pop(2017)
+  
+  sp_charter_17 <- charter_sector_spec_pop_aggs(sp_17)
+  
+  expect_is(sp_charter_17,
+            "data.frame")
+  
+  expect_equal(sp_charter_17 %>%
+                 filter(subgroup == "Economically Disadvantaged",
+                        district_id == "0110C") %>%
+                 pull(percent),
+               97.2)
+})
+
+
+test_that("all public special populations aggregates, 2017", {
+  sp_17 <- fetch_reportcard_special_pop(2017)
+  
+  sp_allpub_17 <- allpublic_spec_pop_aggs(sp_17)
+  
+  expect_is(sp_allpub_17,
+            "data.frame")
+  
+  expect_equal(sp_allpub_17 %>%
+                 filter(subgroup == "Female",
+                        district_id == "0110A") %>%
+                 pull(percent),
+               49.3)
+})
+

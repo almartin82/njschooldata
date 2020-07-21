@@ -589,39 +589,96 @@ extract_rc_cds <- function(list_of_prs) {
 }
   
 
+#' Clean Report Card Enrollment
+#'
+#' @param list_of_dfs output of get_one_rc_database (ie, a list  of data.frames)
+#'
+#' @return data frame with school enrollment
+#' @export
+clean_rc_enrollment <- function(list_of_dfs) {
+   enr_df_name <- grep('enrollment\\b|enrollment_by_grade|enrollment_trends_by_grade|enrollment_trendsby_grade',
+        names(list_of_dfs), value = T) 
+   
+   df <- list_of_dfs %>%
+      extract2(enr_df_name) 
+   
+   # wide
+   if (any(str_detect(colnames(df), "grade0+"))) {
+      
+      colnames(df) <- colnames(df) %>%
+         str_replace("co_code", "county_code") %>%
+         str_replace("dist_code", "district_code") %>%
+         str_replace("sch_code", "school_code") %>%
+         str_replace("^pk$", "gradepk") %>%
+         str_replace("grade_pk", "gradepk") %>%
+         str_replace("^kg$", "gradekg") %>%
+         str_replace("grade_kg", "gradekg") %>%
+         str_replace("^ug$", "gradeungraded") %>%
+         str_replace("^ungraded$", "gradeungraded") %>%
+         str_replace("rowtotal|total|row_total", "graderow_total") 
+      
+      grade_names <- c(
+         "grade01", "grade02", "grade03", "grade04", "grade05", "grade06",
+         "grade07", "grade08", "grade09", "grade10", "grade11", "grade12",
+         "gradepk", "gradekg", "graderow_total", "gradeungraded"
+      )
+      
+      df <- pivot_longer(
+         data = df,
+         cols = one_of(grade_names), 
+         names_to = 'grade_level',
+         names_prefix = 'grade',
+         values_to = 'n_enrolled' 
+      ) %>%
+         mutate(
+            grade_level = case_when(
+               grade_level == "pk" ~ "PK",
+               grade_level == "kg" ~ "KG",
+               grade_level == "row_total" ~ "TOTAL",
+               grade_level == "ungraded" ~ NA_character_,
+               TRUE ~ grade_level
+               )
+         )
+   
+   } else { # if long
+         colnames(df) <- colnames(df) %>%
+            str_replace("grade$", "grade_level") %>%
+            str_replace("^count$", "n_enrolled")
+         
+         df <- df %>%
+            mutate(
+               grade_level = str_replace_all(grade_level, "Grade ", ""),
+               grade_level = case_when(
+                  grade_level %in% c("Ungraded", "UG") ~ NA_character_,
+                  grade_level == "Total Enrollment" ~ "TOTAL",
+                  TRUE ~ grade_level
+               )
+            )
+      }
+
+   return(df)
+}
 
 #' Extract Report Card Enrollment
 #'
-#' @param list_of_prs output of get_rc_databases (ie, a list where each element is)
-#' a list of data.frames
+#' @param list_of_prs output of get_rc_databases (ie, a list where each element is
+#' a list of data.frames)
 #' @param cds_identifiers add the county, district and school name?  default is TRUE
 #'
 #' @return data frame with school enrollment
 #' @export
-
 extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
-  
-  all_enr <- map(
+   
+   all_enr <- map(
     list_of_prs,
     function(.x) {
-      #find the table      
-      enr_table <- grep('enrollment\\b|enrollment_by_grade|enrollment_trends_by_grade', names(.x), value = TRUE)
-      #extract the table
-      df <- .x %>% extract2(enr_table)
-      
-      # if wide
-      if ('grade01' %in% names(df)) {
-        
-      }
-      
-      # if long
-      
-      
-      
-      #make cds names consistent
-      df <- clean_cds_fields(df)
-
-      df
+      clean_rc_enrollment(.x) %>%
+         clean_cds_fields() %>%
+         select(
+            one_of(c("county_code", "district_code", "school_code",
+                     "end_year", "grade_level", "n_enrolled"))
+            ) %>%
+          return()
     }
   )
   
@@ -636,6 +693,44 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
       )
   }
   
-  out
+  out %>%
+    rename(county_id = county_code,
+           district_id = district_code, 
+           school_id = school_code) %>%
+    select(-school_name) %>%
+    return()
+
 }
 
+
+#' Enrich report card subgroup percentages with best guesses at 
+#' subgroup numbers
+#' 
+#' @param df data frame of icluding subgroup percentages
+#' 
+#' return data_frame
+#' @export
+enrich_rc_enrollment <- function(df) {
+# not totally sure if this should be here - or where to put it!
+# writing the tests in test_charter.R for now, I think.
+  enr_count <- df %>%
+    pull(end_year) %>%
+    unique() %>%
+    get_rc_databases() %>%
+    extract_rc_enrollment() %>%
+    filter(grade_level == "TOTAL")
+  
+  df <- df %>% 
+    left_join(
+      enr_count,
+      # line below will likely cause problems later
+      by = c("end_year", "county_id", 
+             "district_id", "school_id")
+    ) %>%
+    # is there a better solution here w/ recover_enrollment() ?
+    mutate(n_enrolled = as.numeric(n_enrolled),
+           n_students = round(percent / 100 * n_enrolled),
+           n_students = if_else(n_students == 0 & percent > 0, 1, n_students)) 
+  
+  return(df)
+}
