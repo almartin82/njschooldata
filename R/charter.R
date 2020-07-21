@@ -105,74 +105,75 @@ agg_enr_pct_total <- function(df) {
 #' @export
 
 charter_sector_enr_aggs <- function(df) {
-
-  # id hosts 
-  df <- id_charter_hosts(df)
-  
-  # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
-  # someday fix this and report charter campuses
-  df_modern <- df %>% 
-    filter(
-      end_year >= 2010 & 
-      county_id == 80 & 
-      !district_id=='9999' & 
-      school_id == '999'
-    )
-  df_old <- df %>%
-    filter(
-      end_year < 2010 &
-        !district_id == '9999' &
-        school_id == '999' &
-        as.numeric(district_id) >= 6000
-    )
-  
-  df <- bind_rows(df_modern, df_old)
-  
-  # group by - host city and summarize
-  df <- df %>% 
-    group_by(
-      end_year, 
-      host_county_id, host_county_name,
-      host_district_id, host_district_name,
-      program_code, program_name, grade_level,
-      subgroup
-    ) %>%
-    summarize(
-      n_students = sum(n_students, na.rm = TRUE),
-      n_schools = n()
-    ) %>%
-    ungroup()
-
-  # give psuedo district names and codes and create appropriate boolean flags
-  df <- df %>%
-    rename(
-      county_id = host_county_id,
-      county_name = host_county_name
-    ) %>%
-    mutate(
-      CDS_Code = NA_character_,
-      district_id = paste0(host_district_id, 'C'),
-      district_name = paste0(host_district_name, ' Charters'),
-      school_id = '999C',
-      school_name = 'Charter Sector Total',
-      is_state = FALSE,
-      is_county = FALSE,
-      is_citywide = FALSE,
-      is_district = FALSE,
-      is_charter_sector = TRUE,
-      is_allpublic = FALSE,
-      is_school = FALSE,
-      is_subprogram = !program_code == '55'
-    ) %>%
-    select(-host_district_id, -host_district_name)
-  
-  # calculate percent
-  df <- agg_enr_pct_total(df)
-
-  # column order and return
-  agg_enr_column_order(df)
+   
+   # id hosts 
+   df <- id_charter_hosts(df)
+   
+   # charters are reported twice, one per school one per district
+   # take the district level only, in the hopes that NJ will 
+   # someday fix this and report charter campuses
+   df_modern <- df %>% 
+      filter(
+         end_year >= 2010 & 
+            county_id == 80 & 
+            !district_id=='9999' & 
+            school_id == '999'
+      )
+   df_old <- df %>%
+      filter(
+         end_year < 2010 &
+            !district_id == '9999' &
+            school_id == '999' &
+            as.numeric(district_id) >= 6000
+      )
+   
+   df <- bind_rows(df_modern, df_old)
+   
+   # group by - host city and summarize
+   df <- df %>% 
+      group_by(
+         end_year, 
+         host_county_id, host_county_name,
+         host_district_id, host_district_name,
+         program_code, program_name, grade_level,
+         subgroup
+      ) %>%
+      summarize(
+         n_students = sum(n_students, na.rm = TRUE),
+         n_schools = n()
+      ) %>%
+      ungroup()
+   
+   # give psuedo district names and codes and create appropriate boolean flags
+   df <- df %>%
+      rename(
+         county_id = host_county_id,
+         county_name = host_county_name
+      ) %>%
+      mutate(
+         CDS_Code = NA_character_,
+         district_id = paste0(host_district_id, 'C'),
+         district_name = paste0(host_district_name, ' Charters'),
+         school_id = '999C',
+         school_name = 'Charter Sector Total',
+         is_state = FALSE,
+         is_county = FALSE,
+         is_citywide = FALSE,
+         is_district = FALSE,
+         is_charter_sector = TRUE,
+         is_allpublic = FALSE,
+         is_school = FALSE,
+         is_subprogram = !program_code == '55'
+      ) %>%
+      select(-host_district_id, -host_district_name)
+   
+   # calculate percent
+   df <- agg_enr_pct_total(df)
+   
+   # column order and return
+   agg_enr_column_order(df)
 }
+
 
 
 #' Calculate All Public Enrollment Aggregates
@@ -483,7 +484,7 @@ allpublic_grate_aggs <- function(df) {
   df <- df %>%
     group_by(
       end_year, 
-      county_id, ,
+      county_id,
       district_id,
       subgroup, 
       methodology
@@ -612,7 +613,7 @@ allpublic_gcount_aggs <- function(df) {
   df <- df %>%
     group_by(
       end_year, 
-      county_id, ,
+      county_id,
       district_id,
       subgroup
     ) %>%
@@ -655,4 +656,117 @@ allpublic_gcount_aggs <- function(df) {
   
   # organize and return
   gcount_column_order(df) 
+}
+
+
+#' Calculate Charter Sector SPED Aggregates
+#'
+#' @param df a tidied district special education dataframe, 
+#' e.g. output of `fetch_sped`
+#'
+#' @return dataframe with charter sector aggregates per host city
+#' @export
+charter_sector_sped_aggs <- function(df) {
+   
+   # id hosts 
+   df <- id_charter_hosts(df)
+   
+   # group by - host city and summarize
+   df <- df %>% 
+      mutate(is_charter = !is.na(host_district_id)) %>%
+      group_by(
+         end_year, 
+         host_county_id, host_county_name,
+         host_district_id, host_district_name
+      ) %>%
+      sped_aggregate_calcs() %>%
+      ungroup()
+   
+   # give psuedo district names and codes and create appropriate boolean flags
+   df <- df %>%
+      rename(
+         county_id = host_county_id,
+         county_name = host_county_name
+      ) %>%
+      mutate(
+         district_id = paste0(host_district_id, 'C'),
+         district_name = paste0(host_district_name, " Charters"),
+         school_id = '999C',
+         school_name = 'Charter Sector Total',
+         is_district = FALSE,
+         is_charter_sector = TRUE,
+         is_allpublic = FALSE,
+         is_school = FALSE
+      ) %>%
+      select(-host_district_id, -host_district_name)
+   
+   # column order and return
+   agg_sped_column_order(df) %>%
+      return()
+}
+
+
+#' Calculate Charter Sector SPED aggregates
+#'
+#' @param df tidied grad count dataframe, eg output of fetch_sped
+#'
+#' @return df containing charter sector aggregate sped
+#' @export
+allpublic_sped_aggs <- function(df) {
+   df <- df %>% ungroup()
+   
+   # id hosts 
+   df <- id_charter_hosts(df)
+   
+   # if charter, make host_district_id the district id
+   df <- df %>%
+      mutate(
+         is_charter = !is.na(host_district_id),
+         district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
+      )
+   
+   # take only district level rows (not school)
+   # group by - newly modified county_id, district_id and summarize
+   df <- df %>% 
+      group_by(
+         end_year, 
+         district_id
+      ) %>%
+      sped_aggregate_calcs() %>%
+      ungroup()
+   
+   # if there are no charters in the host, out of scope for this calc
+   df <- df %>%
+      filter(n_charter_rows > 0)
+   
+   # add county_name, district_name by joining to charter_city
+   ch_join <- charter_city %>% 
+      select(host_district_id, host_district_name, host_county_name) %>%
+      rename(
+         district_id = host_district_id,
+         district_name = host_district_name,
+         county_name = host_county_name
+      ) %>%
+      unique()
+   
+   df <- df %>%
+      left_join(ch_join, by = 'district_id')
+   
+   # give psuedo district names and codes
+   # create appropriate boolean flag
+   df <- df %>%
+      mutate(
+         district_id = paste0(district_id, 'A'),
+         district_name = paste0(district_name, ' All Public'),
+         school_id = '999A',
+         school_name = 'All Public Total',
+         is_district = FALSE,
+         is_charter_sector = FALSE,
+         is_allpublic = TRUE,
+         is_school = FALSE
+      ) 
+   
+   # column order and return
+   agg_sped_column_order(df) %>%
+      return()
 }
