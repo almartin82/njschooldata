@@ -669,9 +669,7 @@ allpublic_gcount_aggs <- function(df) {
 charter_sector_spec_pop_aggs <- function(df) {
   
   df <- df %>%
-    id_charter_hosts() %>%
-    # add gened enrollment from report card 
-    enrich_rc_enrollment()
+    id_charter_hosts()
   
   df <- df %>%
     mutate(is_charter = !is.na(host_district_id)) %>%
@@ -718,7 +716,6 @@ charter_sector_spec_pop_aggs <- function(df) {
 #' @export
 allpublic_spec_pop_aggs <- function(df) {
   df <- df %>% 
-    enrich_rc_enrollment() %>%
     id_charter_hosts() %>%
     # if charter, make host_district_id the district_id
     mutate(
