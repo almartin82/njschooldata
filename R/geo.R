@@ -1,6 +1,6 @@
 #' Enrich School Data with Lat / Long
 #'
-#' @param df dataframe to be enriched 
+#' @param df dataframe to be enriched
 #' @param use_cache if TRUE, will read from cache of school info / lat lng stored on TODO
 #' @param api_key optional, personal google maps API key
 #'
@@ -8,16 +8,16 @@
 #' @export
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
-  
+
   kill_padformulas <- function(x) {
     gsub('="', '', x, fixed=TRUE) %>%
       gsub('"', "", ., fixed=TRUE)
   }
 
   # download and clean
-  nj_sch <- httr::GET('https://homeroom5.doe.state.nj.us/directory/schoolDL.php') %>% 
+  nj_sch <- httr::GET('https://homeroom5.doe.state.nj.us/directory/schoolDL.php') %>%
     httr::content(as="text") %>%
-    readr::read_csv(skip=3) %>% 
+    readr::read_csv(skip=3) %>%
     rename(
       district_id = `District Code`,
       school_id = `School Code`
@@ -27,7 +27,7 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       district_id,
       school_id,
       address1,
-      city, 
+      city,
       state,
       zip
     ) %>%
@@ -38,20 +38,20 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA'),
       address = gsub("\\s+", ' ', address)
     )
-  
+
   # geocode
   if (use_cache) {
     data("geocoded_cached")
   } else {
     geocoded <- placement::geocode_url(
-      nj_sch$address, 
-      auth='standard_api', 
-      privkey=api_key, 
-      clean=TRUE, 
+      nj_sch$address,
+      auth='standard_api',
+      privkey=api_key,
+      clean=TRUE,
       verbose=TRUE
     )
   }
-  
+
   geocoded_merge <- geocoded %>%
     select(locations, lat, lng) %>%
     rename(
@@ -76,30 +76,32 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
 
 enrich_school_city_ward <- function(df) {
   supported_geos <- c('3570')
-  
+
   # say what fraction of the rows are supported
   supported <- df$district_id %in% supported_geos
   pct_supported <- supported %>%
     mean() %>%
     multiply_by(100) %>%
     round(1)
-  
+
   message(
-    paste0('ward information available for ', pct_supported, 
-           '% (', sum(supported), '/', length(supported), 
+    paste0('ward information available for ', pct_supported,
+           '% (', sum(supported), '/', length(supported),
            ') rows in this data set.')
   )
   # split into supported / unsupported
   geo_mask <- df$district_id %in% supported_geos
   latlong_mask <- !is.na(df$lat) & !is.na(df$lng)
   final_mask <- geo_mask & latlong_mask
-  
+
   df_supported <- df %>%
-    filter(final_mask)
-    
+     ungroup() %>%
+     filter(final_mask)
+
   df_unsupported <- df %>%
-    filter(!final_mask)
-  
+     ungroup() %>%
+     filter(!final_mask)
+
   # add specific geos here
   # newark (3570)
   if ('3570' %in% df$district_id) {
@@ -110,7 +112,7 @@ enrich_school_city_ward <- function(df) {
     newark_wards$WARD_NAME <- as.character(newark_wards$WARD_NAME)
     sp::coordinates(df_supported) <- ~lng+lat
     sp::proj4string(df_supported) <- sp::proj4string(newark_wards)
-    
+
     df_supported$ward <- sp::over(df_supported, newark_wards)$WARD_NAME
     df_supported <- as_tibble(df_supported)
   }
@@ -126,16 +128,17 @@ enrich_school_city_ward <- function(df) {
 #'
 #' @return A data frame of ward aggregations
 #' @export
+
 ward_enr_aggs <- function(df) {
-  
+
   # enrich
   df <- enrich_school_latlong(df) %>%
     enrich_school_city_ward()
-  
+
   df <- df %>%
     filter(!is.na(ward)) %>%
     group_by(
-      end_year, 
+      end_year,
       county_id, county_name,
       district_id, district_name,
       ward,
@@ -147,7 +150,7 @@ ward_enr_aggs <- function(df) {
       n_schools = n()
     ) %>%
     ungroup()
-  
+
   df <- df %>%
     mutate(
       CDS_Code = NA_character_,
@@ -165,13 +168,68 @@ ward_enr_aggs <- function(df) {
       is_subprogram = !program_code == '55'
     ) %>%
     select(-ward)
-  
+
   # calculate percent
   df <- agg_enr_pct_total(df)
-  
+
   # column order and return
   agg_enr_column_order(df)
 }
 
+#' Aggregates assessment data by ward
+#'
+#'
+#' @param list_of_dfs output of \code{fetch_all_parcc} or \code{fetch_parcc}
+#'
+#' @return A data frame of ward aggregations
+#' @export
+
+ward_parcc_aggs <- function(list_of_dfs) {
+
+   df <- list_of_dfs %>%
+      bind_rows() %>% # convert to df
+      enrich_school_latlong() %>%
+      enrich_school_city_ward()
+
+   df <- df %>%
+      filter(!is.na(ward) #,
+             #subgroup == "special_education",
+             #grade == 3,
+             #test_name == "ela",
+             #testing_year == 2018,
+             #!is.na(number_of_valid_scale_scores)
+             ) %>%
+      group_by(
+         testing_year,
+         assess_name, test_name,
+         county_id, county_name,
+         district_id, district_name,
+         ward,
+         grade,
+         subgroup, subgroup_type
+      ) %>%
+     parcc_aggregate_calcs %>%
+     ungroup()
+
+   df <- df %>%
+      mutate(
+         district_id = paste0(district_id, ' ', ward),
+         district_name = paste0(district_name, ' ', ward),
+         school_id = '999W',
+         school_name = 'Ward Total',
+         is_state = FALSE,
+         is_county = FALSE,
+         is_citywide = FALSE,
+         is_district = FALSE,
+         is_charter_sector = FALSE,
+         is_allpublic = FALSE,
+         is_charter = FALSE,
+         is_school = FALSE,
+         is_dfg = (county_id == 'DFG')
+      ) %>%
+      select(-ward)
+
+   return(df)
+}
 
 
