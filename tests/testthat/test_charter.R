@@ -200,8 +200,11 @@ test_that("special populations data is enriched w/ enrollment, 2018", {
                428)
 })
 
+
+
+sp_17 <- fetch_reportcard_special_pop(2017)
+
 test_that("charter sector special populations aggregates, 2017", {
-  sp_17 <- fetch_reportcard_special_pop(2017)
   
   sp_charter_17 <- charter_sector_spec_pop_aggs(sp_17)
   
@@ -213,11 +216,15 @@ test_that("charter sector special populations aggregates, 2017", {
                         district_id == "0110C") %>%
                  pull(percent),
                97.2)
+  
+  expect_lte(sp_charter_17 %>%
+               pull(percent) %>%
+               max(),
+             100)
 })
 
 
 test_that("all public special populations aggregates, 2017", {
-  sp_17 <- fetch_reportcard_special_pop(2017)
   
   sp_allpub_17 <- allpublic_spec_pop_aggs(sp_17)
   
@@ -229,5 +236,10 @@ test_that("all public special populations aggregates, 2017", {
                         district_id == "0110A") %>%
                  pull(percent),
                49.3)
+  
+  expect_lte(sp_charter_17 %>%
+               pull(percent) %>%
+               max(),
+             100)
 })
 
