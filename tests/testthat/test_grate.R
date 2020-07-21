@@ -2,13 +2,13 @@ context('grate')
 
 grad_rate_cols <- c(
   "end_year",
-  "county_id", "county_name", 
-  "district_id", "district_name", 
+  "county_id", "county_name",
+  "district_id", "district_name",
   "school_id", "school_name",
-  "subgroup", 
-  "grad_rate", 
-  "cohort_count", "graduated_count", 
-  "methodology", 
+  "subgroup",
+  "grad_rate",
+  "cohort_count", "graduated_count",
+  "methodology",
   "is_state", "is_county", "is_district", "is_school",
   "is_charter", "is_charter_sector", "is_allpublic"
 )
@@ -24,7 +24,7 @@ test_that('fetch_grad_rate works with 4 year', {
    ex5 <- fetch_grad_rate(2017, '4 year')
    ex6 <- fetch_grad_rate(2018, '4 year')
    ex7 <- fetch_grad_rate(2019, '4 year')
-   
+
    expect_is(ex0, 'data.frame')
    expect_is(ex1, 'data.frame')
    expect_is(ex2, 'data.frame')
@@ -36,7 +36,7 @@ test_that('fetch_grad_rate works with 4 year', {
 })
 
 test_that('fetch_grad_rate all years', {
-   
+
    expect_error(fetch_grad_rate(2010))
    grr12 <- fetch_grad_rate(2011)
    grr13 <- fetch_grad_rate(2012)
@@ -48,7 +48,7 @@ test_that('fetch_grad_rate all years', {
    grr19 <- fetch_grad_rate(2018)
    grr20 <- fetch_grad_rate(2019)
    expect_error(fetch_grad_rate(2020))
-   
+
 })
 
 test_that('fetch grate works with 2015 data', {
@@ -70,20 +70,20 @@ test_that("ground truth values on 2019 grate", {
    ex <- fetch_grad_rate(2019)
    expect_is(ex, "data.frame")
    expect_equal(names(ex), grad_rate_cols)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '030',
                        subgroup == 'black') %>%
                    pull(grad_rate), .744)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '030',
                        subgroup == 'white') %>%
                    pull(grad_rate), NA_real_)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '030',
                        subgroup == 'students with disability') %>%
@@ -108,7 +108,7 @@ test_that('get_raw_grate works with 5 year', {
   ex4 <- get_grad_rate(2016, '5 year')
   ex5 <- get_grad_rate(2017, '5 year')
   ex6 <- get_grad_rate(2018, '5 year')
-  
+
   expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
   expect_is(ex2, 'data.frame')
@@ -127,7 +127,7 @@ test_that('fetch_grad_rate works with 5 year', {
   ex4 <- fetch_grad_rate(2016, '5 year')
   ex5 <- fetch_grad_rate(2017, '5 year')
   ex6 <- fetch_grad_rate(2018, '5 year')
-  
+
   expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
   expect_is(ex2, 'data.frame')
@@ -141,18 +141,18 @@ test_that('fetch_grad_rate works with 5 year', {
 test_that("ground truth values on 2018 5y grate", {
    ex <- fetch_grad_rate(2018, '5 year')
    expect_is(ex, "data.frame")
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '888') %>%
                    pull(grad_rate), .765)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '030') %>%
                    pull(grad_rate), .798)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '307') %>%
                    pull(grad_rate), NA_real_)
@@ -180,20 +180,20 @@ test_that('fetch_grad_count all years', {
 test_that("ground truth values on 2019 grad count", {
    ex <- fetch_grad_count(2019)
    expect_is(ex, "data.frame")
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
-                       school_id == '888',
+                       school_id == '999',
                        subgroup == "female") %>%
                    pull(graduated_count), 1085)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '030',
                        subgroup == "economically disadvantaged") %>%
                    pull(cohort_count), 179)
-   
-   expect_equal(filter(ex, 
+
+   expect_equal(filter(ex,
                        district_id == '3570',
                        school_id == '307',
                        subgroup == "white") %>%
