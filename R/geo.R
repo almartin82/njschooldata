@@ -120,7 +120,15 @@ enrich_school_city_ward <- function(df) {
   bind_rows(df_supported, df_unsupported)
 }
 
+
+#' Aggregates enrollment data by ward
+#'
+#'
+#' @param list_of_dfs output of \code{fetch_enr}
+#'
+#' @return A data frame of ward aggregations
 #' @export
+
 ward_enr_aggs <- function(df) {
 
   # enrich
