@@ -120,7 +120,7 @@ enrich_school_city_ward <- function(df) {
   bind_rows(df_supported, df_unsupported)
 }
 
-
+#' @export
 ward_enr_aggs <- function(df) {
 
   # enrich
