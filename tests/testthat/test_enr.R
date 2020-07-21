@@ -69,6 +69,11 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
   fetch_2018 <- fetch_enr(2018, TRUE)
   
   expect_is(fetch_2018, 'data.frame')
+  
+  expect_lte(fetch_2018 %>%
+                  filter(grade_level == "TOTAL") %>%
+                  nrow(), 6e5)
+  
   expect_equal(nrow(fetch_2018), 648484)
   expect_equal(ncol(fetch_2018), 22)
 })
