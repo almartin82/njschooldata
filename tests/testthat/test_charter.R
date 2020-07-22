@@ -243,3 +243,47 @@ test_that("all public special populations aggregates, 2017", {
              100)
 })
 
+
+test_that("charter sector sped aggs, 2003, no speech", {
+   sped_2003 <- fetch_sped(2003)
+   ch_aggs_sped_2003 <- charter_sector_sped_aggs(sped_2003)
+   expect_is(ch_aggs_sped_2003, "data.frame")
+   
+   expect_equal(ch_aggs_sped_2003 %>%
+                   filter(district_name == "Atlantic City Charters") %>%
+                   pull(sped_rate_no_speech),
+                12.05)
+})
+
+test_that("charter sector sped aggs, 2018", {
+   sped_2018 <- fetch_sped(2018)
+   ch_aggs_sped_2018 <- charter_sector_sped_aggs(sped_2018)
+   expect_is(ch_aggs_sped_2018, "data.frame")
+   
+   expect_equal(ch_aggs_sped_2018 %>%
+                   filter(district_name == "Asbury Park Charters") %>%
+                   pull(sped_rate),
+                9.3)
+})
+
+test_that("allpublic sector sped aggs, 2003, no speech", {
+   sped_2003 <- fetch_sped(2003)
+   ap_aggs_sped_2003 <- allpublic_sped_aggs(sped_2003)
+   expect_is(ap_aggs_sped_2003, "data.frame")
+   
+   expect_equal(ap_aggs_sped_2003 %>%
+                   filter(district_name == "Asbury Park All Public") %>%
+                   pull(sped_rate_no_speech),
+                19.53)
+})
+
+test_that("allpublic sector sped aggs, 2018", {
+   sped_2018 <- fetch_sped(2018)
+   ap_aggs_sped_2018 <- allpublic_sped_aggs(sped_2018)
+   expect_is(ap_aggs_sped_2018, "data.frame")
+   
+   expect_equal(ap_aggs_sped_2018 %>%
+                   filter(district_name == "East Brunswick All Public") %>%
+                   pull(sped_rate),
+                15.6)
+})

@@ -30,9 +30,12 @@ get_raw_enr <- function(end_year) {
       enr <- gdata::read.xls(
         this_file, sheet = 1, header = TRUE, stringsAsFactors = FALSE
       )
-      # if 2018 skip 3 lines
-    } else if (end_year >= 2018) {
-      enr <- readxl::read_excel(this_file, skip = 2)
+      # ~~if 2018 skip 3 lines~~
+      # the number of 2018 skip lines is decreasing -- it's 1 now
+    } else if (end_year == 2018) {
+      enr <- readxl::read_excel(this_file, skip = 1)
+    } else if (end_year > 2018) {
+       enr <- readxl::read_excel(this_file, skip = 2)
     } else {
       enr <- readxl::read_excel(this_file)
     }
@@ -489,8 +492,12 @@ enr_aggs <- function(df) {
 process_enr <- function(df) {
 
   # if no grade level
-  if (!'grade_level' %in% tolower(names(df))) {
+  if (!'grade_level' %in% tolower(names(df)) | 
+      df$end_year[1] == "2018") {
     
+     # something weird w/ 2018 grade levels; proceed as if they aren't there
+     if (df$end_year[1] == "2018") df <- select(df, -Grade_Level)
+     
     # clean up program code and name
     prog_map <- list(
       "PRGCODE" = "program_code",
@@ -854,10 +861,15 @@ tidy_enr <- function(df) {
 
   # some subgroups are only reported for school totals
   # just total counts, for extracting total enr, free, reduced, migrant etc
-  total_counts <- df %>% filter(program_code == '55') 
-
-  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant')
-  total_subgroups <- total_subgroups[total_subgroups %in% names(df)]
+  total_counts <- df %>% 
+     filter(program_code == '55') %>%
+  # create free and reduced group 
+     rowwise() %>% 
+     mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = T))
+  
+  total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant',
+                       'free_reduced_lunch')
+  total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
   
   # iterate over cols to tidy, do calculations
   tidy_total_subgroups <- map_df(total_subgroups, 
@@ -867,9 +879,9 @@ tidy_enr <- function(df) {
        select(one_of(invariants, 'n_students', 'row_total')) %>%
        mutate(
          'subgroup' = .x,
-         'pct_total_enr' = n_students / row_total
+         'pct' = n_students / row_total
        ) %>%
-       select(one_of(invariants, 'subgroup', 'n_students', 'pct_total_enr'))
+       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
     }
   )
   
