@@ -2,7 +2,8 @@
 
 ## New features
 
-* `charter_sector_sped_aggs()` and `allpublic_sped_aggs()` calculate sector-wide SPED averages
+* `charter_sector_spec_pop_aggs()` and `allpublic_spec_pop_aggs()` calculate sector wide special population aggregations
+* `charter_sector_sped_aggs()` and `allpublic_sped_aggs()` calculate sector-wide SPED aggregations
 * `extract_rc_enrollment()` extracts and cleans spring enrollment data from report card databases
 * `fetch_enr` now also returns the count and percentage of free *or* reduced lunch students
 
