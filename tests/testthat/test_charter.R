@@ -237,7 +237,7 @@ test_that("all public special populations aggregates, 2017", {
                  pull(percent),
                49.3)
   
-  expect_lte(sp_charter_17 %>%
+  expect_lte(sp_allpub_17 %>%
                pull(percent) %>%
                max(),
              100)
