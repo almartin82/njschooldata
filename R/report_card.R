@@ -693,6 +693,44 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
       )
   }
   
-  out
+  out %>%
+    rename(county_id = county_code,
+           district_id = district_code, 
+           school_id = school_code) %>%
+    select(-school_name) %>%
+    return()
+
 }
 
+
+#' Enrich report card subgroup percentages with best guesses at 
+#' subgroup numbers
+#' 
+#' @param df data frame of icluding subgroup percentages
+#' 
+#' return data_frame
+#' @export
+enrich_rc_enrollment <- function(df) {
+# not totally sure if this should be here - or where to put it!
+# writing the tests in test_charter.R for now, I think.
+  enr_count <- df %>%
+    pull(end_year) %>%
+    unique() %>%
+    get_rc_databases() %>%
+    extract_rc_enrollment() %>%
+    filter(grade_level == "TOTAL")
+  
+  df <- df %>% 
+    left_join(
+      enr_count,
+      # line below will likely cause problems later
+      by = c("end_year", "county_id", 
+             "district_id", "school_id")
+    ) %>%
+    # is there a better solution here w/ recover_enrollment() ?
+    mutate(n_enrolled = as.numeric(n_enrolled),
+           n_students = round(percent / 100 * n_enrolled),
+           n_students = if_else(n_students == 0 & percent > 0, 1, n_students)) 
+  
+  return(df)
+}
