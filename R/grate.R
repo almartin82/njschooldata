@@ -903,3 +903,38 @@ gcount_column_order <- function(df) {
       'is_allpublic'
     ))
 }
+
+
+#' Enrich report card matriculation percentages with best guesses at 
+#' graduated students
+#' 
+#' @param df data frame of including subgroup percentages
+#' 
+#' @return data_frame
+#' @export
+enrich_grad_count <- function(df) {
+  
+  grad_count_yrs <- df %>%
+    pull(end_year) %>%
+    unique()
+  
+  grad_counts <- map(
+    grad_count_yrs, 
+    function(.x) fetch_grad_count(.x)
+  )
+  
+  grad_counts <- grad_counts %>%
+    bind_rows() %>%
+    select(-county_name, district_name, school_name)
+    
+  
+  out <- df %>%
+    mutate(subgroup = tolower(subgroup)) %>%
+    # to do: check for subgroup consistency between grate / rc matric year by year
+    left_join(grad_counts,
+              by = c("end_year", "county_code" = "county_id",
+                     "district_code" = "district_id",
+                     "school_code" = "school_id", "subgroup"))
+    
+}
+
