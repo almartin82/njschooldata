@@ -410,6 +410,8 @@ extract_rc_college_matric <- function(
       
       #make subgroups consistent
       df$subgroup <- gsub('African American', 'Black', df$subgroup)
+      # above changes "Black or African American" to "Black or Black"
+      df$subgroup <- gsub('Black or Black', 'Black', df$subgroup)
       df$subgroup <- gsub('Students with Disability', 'Students With Disabilities', df$subgroup)
       df$subgroup <- gsub('Schoolwide', 'Total Population', df$subgroup)
       df$subgroup <- gsub('Districtwide', 'Total Population', df$subgroup)
@@ -711,9 +713,9 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
 #' Enrich report card subgroup percentages with best guesses at 
 #' subgroup numbers
 #' 
-#' @param df data frame of icluding subgroup percentages
+#' @param df data frame of including subgroup percentages
 #' 
-#' return data_frame
+#' @return data_frame
 #' @export
 enrich_rc_enrollment <- function(df) {
 # not totally sure if this should be here - or where to put it!
