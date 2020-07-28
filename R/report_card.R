@@ -344,8 +344,11 @@ extract_rc_college_matric <- function(
   all_matric <- map(
     list_of_prs,
     function(.x) {
+      
       matric_tables <- grep('postgrad|post_sec|postsecondary', names(.x), value = TRUE)
-      matric_tables <- matric_tables[!grepl("16mos", matric_tables)] 
+      matric_tables <- matric_tables[!grepl("16mos|16_mos", matric_tables)]
+      matric_tables <- matric_tables[!grepl("summary", matric_tables)]
+      
       
       #2011 didn't include postsec because :shrug:
       if (!is_empty(matric_tables)) {
@@ -436,11 +439,13 @@ extract_rc_college_matric <- function(
   
   out %>%
     select(
-      county_code, county_name,
-      district_code, district_name,
-      school_code, school_name,
-      end_year, subgroup,
-      enroll_any, enroll_4yr, enroll_2yr
+      one_of(
+        'county_code', 'county_name',
+        'district_code', 'district_name',
+        'school_code', 'school_name',
+        'end_year', 'subgroup',
+        'enroll_any', 'enroll_4yr', 'enroll_2yr'
+      )
     )
 }
 
