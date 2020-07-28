@@ -9,6 +9,7 @@ all_rc <- many_rc
 rc_2016 <- get_one_rc_database(2016)
 rc_2017 <- get_one_rc_database(2017)
 rc_2018 <- get_one_rc_database(2018)
+rc_2019 <- get_one_rc_database(2019)
 
 test_that("get_raw_rc_database returns list of data frames", {
   
@@ -44,6 +45,11 @@ test_that("extract_rc_SAT pulls longitudinal SAT data", {
 test_that("extract_rc_college_matric pulls longitudinal matriculation data", {
   df <- extract_rc_college_matric(many_rc)
   expect_is(df, 'tbl_df')
+  
+  expect_equal(df %>%
+                 pull(end_year) %>%
+                 unique(),
+               2012:2019)
   
   df <- extract_rc_college_matric(all_rc)
   expect_is(df, 'tbl_df')
