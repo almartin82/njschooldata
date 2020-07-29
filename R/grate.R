@@ -961,7 +961,7 @@ enrich_grad_count <- function(df) {
     # remove all the subgroup clashes -- should be fixed by the above to-do
     filter(!is.na(is_state)) %>%
     # each school has two rows in later years - one for the school,
-    # one as a state comparison. 
+    # one as a state comparison. #144
     group_by(end_year) %>%
     filter(enroll_any != DescTools::Mode(enroll_any, na.rm = T)) %>%
     ungroup()

@@ -396,11 +396,12 @@ extract_rc_college_matric <- function(
       }
       
       #from 2015 onward enroll_4yr, enroll_2yr pct of college-going, not pct of grade
-      this_year <- df$end_year %>% unique()
-      if (this_year >= 2015) {
-        df <- df %>%
-          mutate(enroll_4yr = enroll_4yr * (enroll_any/100))
-      }
+      # it looks liks enroll_4yr, enroll_2yr are always percents of enrollees?
+      # this_year <- df$end_year %>% unique()
+      # if (this_year >= 2015) {
+      #   df <- df %>%
+      #     mutate(enroll_4yr = enroll_4yr * (enroll_any/100))
+      # }
       
       #if there's no subgroup field, implicitly assume that means Schoolwide
       if (!'subgroup' %in% names(df)) {
@@ -419,6 +420,7 @@ extract_rc_college_matric <- function(
       df$subgroup <- gsub('Limited English Proficient Students', 'English Language Learners', df$subgroup)
       
       df <- df %>%
+        filter(subgroup != "Statewide") %>%
         select(
           one_of('county_code', 'district_code', 'school_code', 
                  'end_year', 'subgroup', 'enroll_any', 'enroll_2yr', 'enroll_4yr')
