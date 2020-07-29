@@ -918,6 +918,14 @@ enrich_grad_count <- function(df) {
     pull(end_year) %>%
     unique()
   
+  # need the year before the earliest year if anything earlier than
+  # 2017 is included in order to get 16 mo grad count
+  if (min(grad_count_yrs) < 2017) {
+    grad_count_yrs <- c(min(grad_count_yrs) - 1, grad_count_yrs)
+  }
+  # but there is no grad count data before 2011
+  grad_count_yrs <- grad_count_yrs[grad_count_yrs > 2011]
+  
   grad_counts <- map(
     grad_count_yrs, 
     function(.x) fetch_grad_count(.x)
@@ -925,16 +933,40 @@ enrich_grad_count <- function(df) {
   
   grad_counts <- grad_counts %>%
     bind_rows() %>%
-    select(-county_name, district_name, school_name)
+    select(-c(county_name, district_name, school_name,
+              cohort_count))
     
+  postsec_rates <- data.frame(
+    end_year = 2012:2019,
+    is_16mo = c(T, T, T, T, T, F, F, F)
+    # data is from National Student Clearinghouse
+  )
   
   out <- df %>%
+    # 16 mo matriculation rate requires 2011 grad count which we don't have
+    filter(end_year != 2012) %>%
+    left_join(postsec_rates, by = "end_year") %>%
+    mutate(gc_year = if_else(is_16mo, end_year - 1, as.numeric(end_year))) %>%
     mutate(subgroup = tolower(subgroup)) %>%
     # to do: check for subgroup consistency between grate / rc matric year by year
     left_join(grad_counts,
-              by = c("end_year", "county_code" = "county_id",
+              by = c("gc_year" = "end_year", "county_code" = "county_id",
                      "district_code" = "district_id",
-                     "school_code" = "school_id", "subgroup"))
+                     "school_code" = "school_id", "subgroup")) %>%
+    mutate(
+      enroll_any_count = round(enroll_any / 100 * graduated_count),
+      enroll_4yr_count = round(enroll_4yr / 100 * graduated_count),
+      enroll_2yr_count = round(enroll_2yr / 100 * graduated_count)
+    ) %>%
+    # remove all the subgroup clashes -- should be fixed by the above to-do
+    filter(!is.na(is_state)) %>%
+    # each school has two rows in later years - one for the school,
+    # one as a state comparison. 
+    group_by(end_year) %>%
+    filter(enroll_any != DescTools::Mode(enroll_any, na.rm = T)) %>%
+    ungroup()
+  
+  return(out)
     
 }
 
