@@ -914,6 +914,8 @@ gcount_column_order <- function(df) {
 #' @export
 enrich_grad_count <- function(df) {
   
+  if (min(df$end_year) < 2013) stop("end_year needs to be > 2012")
+  
   grad_count_yrs <- df %>%
     pull(end_year) %>%
     unique()
