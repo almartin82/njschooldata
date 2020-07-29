@@ -416,7 +416,7 @@ extract_rc_college_matric <- function(
       df$subgroup <- gsub('Students with Disability', 'Students With Disabilities', df$subgroup)
       df$subgroup <- gsub('Schoolwide', 'Total Population', df$subgroup)
       df$subgroup <- gsub('Districtwide', 'Total Population', df$subgroup)
-      df$subgroup <- gsub('Statewide', 'Total Population', df$subgroup)
+      #df$subgroup <- gsub('Statewide', 'Total Population', df$subgroup)
       df$subgroup <- gsub('Limited English Proficient Students', 'English Language Learners', df$subgroup)
       
       df <- df %>%
