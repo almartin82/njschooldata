@@ -6,6 +6,8 @@ all_rc <- many_rc
 
 # rc_2003 <- get_one_rc_database(2003)
 # rc_2004 <- get_one_rc_database(2004)
+rc_2012 <- get_one_rc_database(2012)
+rc_2013 <- get_one_rc_database(2013)
 rc_2016 <- get_one_rc_database(2016)
 rc_2017 <- get_one_rc_database(2017)
 rc_2018 <- get_one_rc_database(2018)
@@ -109,3 +111,69 @@ test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
                    pull(n_enrolled),
                 "41510")
 }) 
+
+
+test_that("extract_rc_college_matric ground truth values", {
+  matric_12 <- extract_rc_college_matric(list(rc_2012))
+  
+  expect_equal(matric_12 %>%
+                 filter(district_code == '3570',
+                        school_code == '055', 
+                        subgroup == 'Economically Disadvantaged Students') %>%
+                 pull(enroll_4yr),
+               84.2)
+  
+  matric_17 <- extract_rc_college_matric(list(rc_2017))
+  
+  expect_equal(matric_17 %>%
+                 filter(district_code == '3570',
+                        school_code == '055',
+                        subgroup == 'Total Population') %>%
+                 pull(enroll_any),
+               85.3)
+  
+  expect_equal(matric_17 %>%
+                 filter(district_code == '3570',
+                        school_code == '055',
+                        subgroup == 'Total Population') %>%
+                 pull(enroll_4yr),
+               93.6)
+})
+
+test_that("enrich_grad_count joins correct years", {
+  matric_12 <- extract_rc_college_matric(list(rc_2012))
+  
+  expect_error(matric_12 %>%
+                 enrich_grad_count())
+  
+  
+  matric_13 <- extract_rc_college_matric(list(rc_2013))
+  
+  matric_counts_13 <- matric_13 %>%
+    enrich_grad_count()
+  
+  expect_equal(matric_counts_13 %>%
+                 pull(gc_year) %>%
+                 unique(),
+               unique(matric_counts_13$end_year) - 1)
+  
+  expect_equal(matric_counts_13 %>%
+                 filter(district_code == '3570',
+                        school_code == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count),
+               167)
+  
+  
+  matric_17 <- extract_rc_college_matric(list(rc_2017))
+  
+  matric_counts_17 <- matric_17 %>%
+    enrich_grad_count()
+  
+  expect_equal(matric_counts_17 %>%
+                 pull(gc_year) %>%
+                 unique(),
+               unique(matric_counts_17$end_year))
+  
+
+})
