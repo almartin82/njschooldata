@@ -8,6 +8,8 @@ all_rc <- many_rc
 # rc_2004 <- get_one_rc_database(2004)
 rc_2012 <- get_one_rc_database(2012)
 rc_2013 <- get_one_rc_database(2013)
+rc_2014 <- get_one_rc_database(2014)
+rc_2015 <- get_one_rc_database(2015)
 rc_2016 <- get_one_rc_database(2016)
 rc_2017 <- get_one_rc_database(2017)
 rc_2018 <- get_one_rc_database(2018)
@@ -174,6 +176,28 @@ test_that("enrich_grad_count joins correct years", {
                  pull(gc_year) %>%
                  unique(),
                unique(matric_counts_17$end_year))
-  
+})
 
+test_that("enrich_grad_count joins correct subgroup", {
+
+  matric_13 <- extract_rc_college_matric(list(rc_2013))
+  
+  gc_12 <- fetch_grad_count(2012)
+  
+  matric_counts_13 <- matric_13 %>%
+    enrich_grad_count()
+  
+  expect_equal(matric_counts_13 %>%
+                 filter(district_code == '3570',
+                        school_code == '055',
+                        subgroup == 'black') %>%
+                 pull(graduated_count),
+               62)
+  
+  expect_equal(matric_counts_13 %>%
+                 filter(district_code == '3570',
+                        school_code == '055',
+                        subgroup == 'economically disadvantaged') %>%
+                 pull(graduated_count),
+               128)
 })

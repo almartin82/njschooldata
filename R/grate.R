@@ -949,7 +949,22 @@ enrich_grad_count <- function(df) {
     filter(end_year != 2012) %>%
     left_join(postsec_rates, by = "end_year") %>%
     mutate(gc_year = if_else(is_16mo, end_year - 1, as.numeric(end_year))) %>%
-    mutate(subgroup = tolower(subgroup)) %>%
+    mutate(
+      subgroup = tolower(subgroup),
+      subgroup = case_when(
+        subgroup == "economically disadvantaged students" ~ "economically disadvantaged",
+        subgroup %in% c("english language learners",
+                        "english learners") ~ "limited english proficiency",
+        subgroup == "students with disabilities" ~ "students with disability",
+        subgroup == "two or more races" ~ "multiracial",
+        subgroup == "native hawaiian" ~ "pacific islander", # or native amer.?
+        subgroup == "american indian or alaska native" ~
+          "american indian",
+        subgroup == "asian, native hawaiian, or pacific islander" ~
+          "asian", #>=2018... what to do here?
+        TRUE ~ subgroup
+        )
+      ) %>%
     # to do: check for subgroup consistency between grate / rc matric year by year
     left_join(grad_counts,
               by = c("gc_year" = "end_year", "county_code" = "county_id",
@@ -957,8 +972,8 @@ enrich_grad_count <- function(df) {
                      "school_code" = "school_id", "subgroup")) %>%
     mutate(
       enroll_any_count = round(enroll_any / 100 * graduated_count),
-      enroll_4yr_count = round(enroll_4yr / 100 * graduated_count),
-      enroll_2yr_count = round(enroll_2yr / 100 * graduated_count)
+      enroll_4yr_count = round(enroll_4yr / 100 * enroll_any_count),
+      enroll_2yr_count = round(enroll_2yr / 100 * enroll_any_count)
     ) %>%
     # remove all the subgroup clashes -- should be fixed by the above to-do
     filter(!is.na(is_state)) %>%
