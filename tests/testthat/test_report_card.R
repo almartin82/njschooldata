@@ -201,3 +201,13 @@ test_that("enrich_grad_count joins correct subgroup", {
                  pull(graduated_count),
                128)
 })
+
+
+test_that("enrich_grad_count gets both 12/16 mo", {
+  
+  matric_18 <- extract_rc_college_matric(list(rc_2018))
+  matric_18_12mo <- extract_rc_college_matric(list(rc_2018),
+                                              type = '12 month')
+  
+  expect_false(identical(matric_18, matric_18_12mo))
+})
