@@ -338,7 +338,7 @@ extract_rc_SAT <- function(
 #' @export
 
 extract_rc_college_matric <- function(
-  list_of_prs, school_only = TRUE, cds_identifiers = TRUE
+  list_of_prs, type = '16 month', school_only = TRUE, cds_identifiers = TRUE
 ) {
   
   all_matric <- map(
@@ -346,8 +346,16 @@ extract_rc_college_matric <- function(
     function(.x) {
       
       matric_tables <- grep('postgrad|post_sec|postsecondary', names(.x), value = TRUE)
-      matric_tables <- matric_tables[!grepl("16mos|16_mos", matric_tables)]
       matric_tables <- matric_tables[!grepl("summary", matric_tables)]
+      
+      # type does nothing when year < 2017
+      if (type == '16 month') {
+        matric_tables <- matric_tables[!grepl("fall", matric_tables)]
+      } else if (type == '12 month') { 
+        matric_tables <- matric_tables[!grepl("16mos|16_mos", matric_tables)]
+      } else {
+        stop("type should be one of {\'16 month\', \'12 month\'")
+      }
       
       
       #2011 didn't include postsec because :shrug:
