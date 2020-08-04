@@ -751,3 +751,15 @@ enrich_rc_enrollment <- function(df) {
   
   return(df)
 }
+
+
+
+#' Enrich matriculation rates with counts from grad counts
+#' 
+#' @param df data frame of including matriculation percentages
+#' 
+#' @return data_frame
+#' @export
+enrich_matric_counts <- function(df) {
+  
+}
