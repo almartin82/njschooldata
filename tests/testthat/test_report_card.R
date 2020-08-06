@@ -185,29 +185,39 @@ test_that("enrich_grad_count joins correct subgroup", {
   gc_12 <- fetch_grad_count(2012)
   
   matric_counts_13 <- matric_13 %>%
-    enrich_grad_count()
+    enrich_matric_counts()
   
   expect_equal(matric_counts_13 %>%
-                 filter(district_code == '3570',
-                        school_code == '055',
+                 filter(district_id == '3570',
+                        school_id == '055',
                         subgroup == 'black') %>%
                  pull(graduated_count),
                62)
   
   expect_equal(matric_counts_13 %>%
-                 filter(district_code == '3570',
-                        school_code == '055',
+                 filter(district_id == '3570',
+                        school_id == '055',
                         subgroup == 'economically disadvantaged') %>%
                  pull(graduated_count),
                128)
 })
 
 
-test_that("enrich_grad_count gets both 12/16 mo", {
+test_that("12/16 mo matriculation rates can be extracted", {
   
   matric_18 <- extract_rc_college_matric(list(rc_2018))
   matric_18_12mo <- extract_rc_college_matric(list(rc_2018),
                                               type = '12 month')
   
   expect_false(identical(matric_18, matric_18_12mo))
+})
+
+
+test_that("enrich_matriculation_counts works over multiple years", {
+  
+  matric_16_17_18 <- extract_rc_college_matric(list(rc_2016, rc_2017, rc_2018))
+  
+  matric_counts_16_17_18 <- enrich_matric_counts(matric_16_17_18)
+  
+  expect_is(matric_counts_16_17_18, "data.frame")
 })
