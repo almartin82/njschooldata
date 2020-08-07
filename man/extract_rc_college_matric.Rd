@@ -6,6 +6,7 @@
 \usage{
 extract_rc_college_matric(
   list_of_prs,
+  type = "16 month",
   school_only = TRUE,
   cds_identifiers = TRUE
 )
