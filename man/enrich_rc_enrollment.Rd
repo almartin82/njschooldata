@@ -8,9 +8,10 @@ subgroup numbers}
 enrich_rc_enrollment(df)
 }
 \arguments{
-\item{df}{data frame of icluding subgroup percentages
-
-return data_frame}
+\item{df}{data frame of including subgroup percentages}
+}
+\value{
+data_frame
 }
 \description{
 Enrich report card subgroup percentages with best guesses at 
