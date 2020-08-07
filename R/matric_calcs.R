@@ -13,7 +13,7 @@ matric_aggregate_calcs <- function(df) {
       enroll_any_count = sum(enroll_any_count, na.rm = T),
       enroll_2yr_count = sum(enroll_2yr_count, na.rm = T),
       enroll_4yr_count = sum(enroll_4yr_count, na.rm = T),
-      n_charter_rows = sum(is_charter, na.rm = T)
+      n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     mutate(
       enroll_any = round(enroll_any_count / graduated_count * 100, 1),
