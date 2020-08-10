@@ -760,14 +760,14 @@ enrich_rc_enrollment <- function(df) {
 #' 
 #' @return data_frame
 #' @export
-enrich_matric_counts <- function(df, type = '16 mo') {
+enrich_matric_counts <- function(df, type = '16 month') {
   if (min(df$end_year) < 2013) stop("end_year needs to be > 2012")
   
   grad_count_yrs <- df %>%
     pull(end_year) %>%
     unique()
   
-  if (type == '16 mo') {
+  if (type == '16 month') {
     
     # 16 month matriculation requires grad counts from prior year
     grad_count_yrs <- c((min(grad_count_yrs) - 1):(max(grad_count_yrs) - 1))
@@ -779,13 +779,13 @@ enrich_matric_counts <- function(df, type = '16 mo') {
       end_year = 2012:2019,
       is_16mo = rep(T, 8)
     )
-  } else if (type == '12 mo') {
+  } else if (type == '12 month') {
     postsec_rates <- data.frame(
     end_year = 2017:2019,
     is_16mo = rep(F, 3)
     )
   } else {
-    stop("type should be one of {\'16 mo\' or \'12 mo\'}")
+    stop("type should be one of {\'16 month\' or \'12 month\'}")
   }
   
   
