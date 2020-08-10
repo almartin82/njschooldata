@@ -1,3 +1,10 @@
+## njschooldata 0.8.11
+
+## New features
+
+* `ward_grate_aggs()` and `ward_gcount_aggs()` calculate grad rate and grad count for supported ward geographies
+
+
 ## njschooldata 0.8.10
 
 ## New features
