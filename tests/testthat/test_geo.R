@@ -124,7 +124,7 @@ test_that("ground truth values for gcount ward aggregations", {
                  filter(district_id == "3570 WEST",
                         subgroup == "white") %>%
                  pull(enroll_2yr_count),
-               0)
+               numeric(0))
 })
 
 

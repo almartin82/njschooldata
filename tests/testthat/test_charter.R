@@ -309,7 +309,7 @@ test_that("charter sector matric aggs, 2018", {
                  filter(district_id == '3570C',
                         subgroup == 'students with disability') %>%
                  pull(enroll_any),
-               36.6)
+               53.6)
 })
 
 
