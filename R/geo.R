@@ -246,7 +246,8 @@ ward_matric_aggs <- function(df) {
     enrich_school_city_ward()
   
   ward_df <- enriched_df %>% 
-    filter(!is.na(ward)) %>%
+    filter(!is.na(ward), 
+           !is.na(enroll_any)) %>%
     group_by(
       end_year,
       county_id, county_name,
