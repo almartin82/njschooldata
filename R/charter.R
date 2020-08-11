@@ -908,6 +908,9 @@ charter_sector_matric_aggs <- function(df) {
   
   # group by - host city and summarize
   df <- df %>% 
+    # 0s are reported as 0 -- distinct from NA
+    # these are then schools w/ grad counts but no matric rates
+    filter(!is.na(enroll_any)) %>%
     group_by(
       end_year, 
       host_county_id, host_county_name,
