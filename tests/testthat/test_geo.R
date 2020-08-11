@@ -88,3 +88,43 @@ test_that("grade aggregates work w/ ward aggregation", {
                    dim(),
                 dim(gr9_11_2018_mat_ward))
 })
+
+
+### postsecondary matriculation
+matric_19 <- 2019 %>%
+  get_one_rc_database() %>%
+  list() %>%
+  extract_rc_college_matric() %>%
+  enrich_matric_counts()
+
+test_that("aggregates correctly newark postsec matric data by ward" , {
+  matric_19 %>%
+    ward_matric_aggs() %>%
+    testthat::expect_is('data.frame')
+})
+
+test_that("ground truth values for gcount ward aggregations", {
+  matric_19_ward <- matric_19 %>%
+    ward_matric_aggs()
+  
+  expect_equal(matric_19_ward %>%
+                 filter(district_id == "3570 SOUTH",
+                        subgroup == "total population") %>%
+                 pull(enroll_any),
+               50.3)
+  
+  # some discrepancy here -- reason for concern?
+  expect_lte(matric_19_ward %>%
+                 filter(district_id == "3570 EAST",
+                        subgroup == "limited english proficiency") %>%
+                 pull(enroll_4yr) - 20.7,
+               1)
+  
+  expect_equal(matric_19_ward %>%
+                 filter(district_id == "3570 WEST",
+                        subgroup == "white") %>%
+                 pull(enroll_2yr_count),
+               0)
+})
+
+

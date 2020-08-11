@@ -17,8 +17,8 @@ matric_aggregate_calcs <- function(df) {
     ) %>%
     mutate(
       enroll_any = round(enroll_any_count / graduated_count * 100, 1),
-      enroll_2yr = round(enroll_2yr_count / graduated_count * 100, 1),
-      enroll_4yr = round(enroll_4yr_count / graduated_count * 100, 1)
+      enroll_2yr = round(enroll_2yr_count / enroll_any_count * 100, 1),
+      enroll_4yr = round(enroll_4yr_count / enroll_any_count * 100, 1)
     ) %>%
     ungroup() %>%
     return()
