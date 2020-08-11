@@ -4,7 +4,7 @@
 \alias{enrich_matric_counts}
 \title{Enrich matriculation rates with counts from grad counts}
 \usage{
-enrich_matric_counts(df, type = "16 mo")
+enrich_matric_counts(df, type = "16 month")
 }
 \arguments{
 \item{df}{data frame of including matriculation percentages}
