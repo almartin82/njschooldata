@@ -5,20 +5,13 @@
 \title{Calculate Charter Sector Grad Count aggregates}
 \usage{
 allpublic_gcount_aggs(df)
-
-allpublic_gcount_aggs(df)
 }
 \arguments{
-\item{df}{tidied postsecondary matriculation dataframe, eg output 
-of enrich_matric_counts()}
+\item{df}{tidied grad count dataframe, eg output of fetch_grad_count}
 }
 \value{
 df containing charter sector aggregate grad count
-
-df containing all-public sector postsecondary matriculation rates
 }
 \description{
 Calculate Charter Sector Grad Count aggregates
-
-Calculate All Public matriculation aggregates
 }

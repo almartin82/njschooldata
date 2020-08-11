@@ -895,7 +895,6 @@ allpublic_sped_aggs <- function(df) {
 #'
 #' @return df containing charter sector matriculation aggregates
 #' @export
-
 charter_sector_matric_aggs <- function(df) {
   
   # id hosts 
@@ -950,8 +949,7 @@ charter_sector_matric_aggs <- function(df) {
 #'
 #' @return df containing all-public sector postsecondary matriculation rates
 #' @export
-
-allpublic_gcount_aggs <- function(df) {
+allpublic_matric_aggs <- function(df) {
   
   df <- df %>% ungroup()
   
@@ -969,7 +967,9 @@ allpublic_gcount_aggs <- function(df) {
   df <- df %>% filter(is_district)
   
   # group by - newly modified county_id, district_id and summarize
-  df <- df %>%
+  agg_df <- df %>%
+    # 0s are reported as 0 -- distinct from NA
+    filter(!is.na(enroll_any)) %>%
     group_by(
       end_year, 
       county_id,
@@ -980,7 +980,7 @@ allpublic_gcount_aggs <- function(df) {
     ungroup()
   
   # if there are no charters in the host, out of scope for this calc
-  df <- df %>%
+  agg_df <- agg_df %>%
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
@@ -993,12 +993,12 @@ allpublic_gcount_aggs <- function(df) {
     ) %>%
     unique()
   
-  df <- df %>%
+  agg_df <- agg_df %>%
     left_join(ch_join, by = 'district_id')
   
   # give psuedo district names and codes
   # create appropriate boolean flag
-  df <- df %>%
+  agg_df <- agg_df %>%
     mutate(
       district_id = paste0(district_id, 'A'),
       district_name = paste0(district_name, ' All Public'),
@@ -1014,5 +1014,5 @@ allpublic_gcount_aggs <- function(df) {
     ) 
   
   # organize and return
-  matric_column_order(df) 
+  matric_column_order(agg_df) 
 }
