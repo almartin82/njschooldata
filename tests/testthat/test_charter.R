@@ -287,3 +287,47 @@ test_that("allpublic sector sped aggs, 2018", {
                    pull(sped_rate),
                 15.6)
 })
+
+matric_18_counts <- 2018 %>%
+  get_one_rc_database() %>%
+  list() %>%
+  extract_rc_college_matric() %>%
+  enrich_matric_counts()
+
+test_that("charter sector matric aggs, 2018", {
+  
+  ch_aggs_matric_2018 <- charter_sector_matric_aggs(matric_18_counts)
+  expect_is(ch_aggs_matric_2018, "data.frame")
+  
+  expect_equal(ch_aggs_matric_2018 %>%
+                 filter(district_id == '0680C',
+                        subgroup == 'economically disadvantaged') %>%
+                 pull(enroll_2yr),
+               43.9)
+  
+  expect_equal(ch_aggs_matric_2018 %>%
+                 filter(district_id == '3570C',
+                        subgroup == 'students with disability') %>%
+                 pull(enroll_any),
+               36.6)
+})
+
+
+test_that("allpublic matric aggs, 2018", {
+  ap_aggs_matric_2018 <- allpublic_matric_aggs(matric_18_counts)
+  expect_is(ap_aggs_matric_2018, "data.frame")
+  
+  expect_equal(ap_aggs_matric_2018 %>%
+                 filter(district_id == '0680A',
+                        subgroup == 'black') %>%
+                 pull(enroll_2yr),
+               52.2)
+  
+  expect_equal(ap_aggs_matric_2018 %>%
+                 filter(district_id == '3570A',
+                        subgroup == 'total population') %>%
+                 pull(enroll_any),
+               58)
+})
+
+
