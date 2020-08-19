@@ -69,6 +69,14 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
   fetch_2018 <- fetch_enr(2018, TRUE)
   
   expect_is(fetch_2018, 'data.frame')
+  expect_is(fetch_2018 %>%
+               filter(subgroup == "free_reduced_lunch") %>%
+               nrow(), 
+            3217)  
+  expect_lte(fetch_2018 %>%
+                  filter(grade_level == "TOTAL") %>%
+                  nrow(), 6e5)
+  
   expect_equal(nrow(fetch_2018), 648484)
   expect_equal(ncol(fetch_2018), 22)
 })
@@ -78,6 +86,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file", {
   fetch_2019 <- fetch_enr(2019)
   
   expect_is(fetch_2019, 'data.frame')
+  
   expect_equal(nrow(fetch_2019), 26506)
   expect_equal(ncol(fetch_2019), 39)
 })
@@ -301,4 +310,22 @@ test_that("enr_grade_aggs works", {
     filter(district_id == '3570' & school_id == '310' & grade_level=='K8')
   expect_equal(camden_es_k8$n_students, camden_es_k12$n_students)
   
+})
+
+test_that("frl group exists", {
+  enr_19 <- fetch_enr(2019, TRUE)
+  
+  expect_gt(enr_19 %>%
+              filter(district_id == '3570',
+                     school_id == '999',
+                     subgroup == "free_lunch") %>%
+              pull(pct),
+            0)
+  
+  expect_gt(enr_19 %>%
+              filter(district_id == '3570',
+                     school_id == '999',
+                     subgroup == "free_reduced_lunch") %>%
+              pull(pct), 
+            0)
 })
