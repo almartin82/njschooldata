@@ -15,3 +15,122 @@ test_that("ward_enr_aggs correctly aggregates newark enrollment data by ward", {
   enr_2019_wards <- ward_enr_aggs(enr_2019)
   testthat::expect_is(enr_2019_wards, 'data.frame')
 })
+
+
+
+# PARCC
+parcc_ela_8_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 8, 
+                          subj = 'ela', tidy = T)
+
+test_that("ward_parcc_aggs correctly aggregates newark parcc data by ward" , {
+   parcc_ela_8_2019 %>%
+      ward_parcc_aggs() %>%
+      testthat::expect_is('data.frame')
+})
+
+test_that("ground truth values for parcc ward aggregations", {
+   parcc_ela8_19_ward <- parcc_ela_8_2019 %>%
+      ward_parcc_aggs()
+   
+   expect_equal(parcc_ela8_19_ward %>%
+                   filter(subgroup == "special_education",
+                          district_name == "Newark City CENTRAL") %>%
+                   pull(number_of_valid_scale_scores),
+                54)
+   
+   expect_equal(parcc_ela8_19_ward %>%
+                   filter(subgroup == "asian",
+                          district_name == "Newark City NORTH") %>%
+                   pull(schools) %>%
+                   str_count(","), # one comma = two schools; 
+                1)
+   
+   expect_equal(parcc_ela8_19_ward %>%
+                   filter(subgroup == "lep_current",
+                          district_name == "Newark City EAST") %>%
+                   pull(scale_score_mean) %>%
+                   round(1),
+                725.2)
+})
+
+test_that("grade aggregates work w/ ward aggregation", {
+   gr9_11_2018_mat <- calculate_agg_parcc_prof(end_year = 2018, 
+                            subj = 'math',
+                            gradespan = '9-11') 
+   
+      expect_is(gr9_11_2018_mat, 'data.frame')
+})
+
+
+
+# GRAD RATE
+grate_2019 <- fetch_grad_rate(2019)
+grate_2018_5y <- fetch_grad_rate(2018, '5 year')
+
+test_that("aggregates correctly newark grad rate data by ward" , {
+   grate_2019 %>%
+      ward_grate_aggs() %>%
+      testthat::expect_is('data.frame')
+   
+   grate_2018_5y %>%
+      ward_grate_aggs() %>%
+      testthat::expect_is('data.frame')
+})
+
+
+test_that("ground truth values for grate ward aggregations", {
+   grate_19_ward <- grate_2019 %>%
+      ward_grate_aggs()
+   
+   expect_equal(grate_19_ward %>%
+                   filter(district_id == "3570 SOUTH",
+                          subgroup == "total population") %>%
+                   pull(graduated_count),
+                384)
+   
+   expect_equal(grate_19_ward %>%
+                   filter(district_id == "3570 EAST",
+                          subgroup == "limited english proficiency") %>%
+                   pull(grad_rate),
+                .827)
+   
+   expect_equal(grate_19_ward %>%
+                   filter(district_id == "3570 WEST",
+                          subgroup == "white") %>%
+                   pull(grad_rate),
+                NA_real_)
+})
+
+
+
+### GRAD COUNT
+gcount_2019 <- fetch_grad_count(2019)
+
+test_that("aggregates correctly newark grad count data by ward" , {
+   gcount_2019 %>%
+      ward_gcount_aggs() %>%
+      testthat::expect_is('data.frame')
+})
+
+test_that("ground truth values for gcount ward aggregations", {
+   gcount_19_ward <- gcount_2019 %>%
+      ward_gcount_aggs()
+   
+   expect_equal(gcount_19_ward %>%
+                   filter(district_id == "3570 CENTRAL",
+                          subgroup == "total population") %>%
+                   pull(graduated_count),
+                1100)
+   
+   expect_equal(gcount_19_ward %>%
+                   filter(district_id == "3570 EAST",
+                          subgroup == "limited english proficiency") %>%
+                   pull(cohort_count),
+                139)
+   
+   expect_equal(gcount_19_ward %>%
+                   filter(district_id == "3570 WEST",
+                          subgroup == "white") %>%
+                   pull(cohort_count),
+                0)
+})

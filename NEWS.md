@@ -1,3 +1,33 @@
+## njschooldata 0.8.11
+
+## New features
+
+* `ward_grate_aggs()` and `ward_gcount_aggs()` calculate grad rate and grad count for supported ward geographies
+
+
+## njschooldata 0.8.10
+
+## New features
+
+* `charter_sector_spec_pop_aggs()` and `allpublic_spec_pop_aggs()` calculate sector wide special population aggregations
+* `charter_sector_sped_aggs()` and `allpublic_sped_aggs()` calculate sector-wide SPED aggregations
+* `extract_rc_enrollment()` extracts and cleans spring enrollment data from report card databases
+* `fetch_enr` now also returns the count and percentage of free *or* reduced lunch students
+
+## njschooldata 0.8.9
+
+## New features
+
+* `ward_parcc_aggs()` aggregates PARCC data for city ward / neighborhood geographies (currently supported: Newark)
+
+
+## njschooldata 0.8.8
+
+## New features
+
+* `fetch_grad_rate()` and `fetch_grad_count()` support 2019 data
+
+
 ## njschooldata 0.8.7
 
 ## New features
