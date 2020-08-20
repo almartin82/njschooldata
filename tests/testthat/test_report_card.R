@@ -237,6 +237,7 @@ test_that("enrich_grad_count joins correct subgroup", {
 
 
 
+
 test_that("enrich_matric_counts enriches multiple yrs", {
   matric_1819 <- extract_rc_college_matric(list(rc_2018, rc_2019))
   
@@ -265,6 +266,7 @@ test_that("enrich_matric_counts enriches multiple yrs", {
                         subgroup == 'black') %>%
                  pull(graduated_count))
   
+
   expect_equal(matric_counts_1819 %>%
                  filter(end_year == 2018,
                         district_id == '3570',
