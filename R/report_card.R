@@ -717,6 +717,11 @@ enrich_rc_enrollment <- function(df) {
     extract_rc_enrollment() %>%
     filter(grade_level == "TOTAL")
   
+  # prevent n_enrolled from being duplicated
+  if ('n_enrolled' %in% names(df)) {
+    df <- df %>% select(-n_enrolled)
+  }
+  
   df <- df %>% 
     left_join(
       enr_count,
