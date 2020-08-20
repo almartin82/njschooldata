@@ -694,9 +694,6 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
   }
   
   out %>%
-    rename(county_id = county_code,
-           district_id = district_code, 
-           school_id = school_code) %>%
     select(-school_name) %>%
     return()
 
@@ -720,12 +717,17 @@ enrich_rc_enrollment <- function(df) {
     extract_rc_enrollment() %>%
     filter(grade_level == "TOTAL")
   
+  # prevent n_enrolled from being duplicated
+  if ('n_enrolled' %in% names(df)) {
+    df <- df %>% select(-n_enrolled)
+  }
+  
   df <- df %>% 
     left_join(
       enr_count,
       # line below will likely cause problems later
-      by = c("end_year", "county_id", 
-             "district_id", "school_id")
+      by = c("end_year", "county_id" = "county_code", 
+             "district_id" = "district_code", "school_id" = "school_code")
     ) %>%
     # is there a better solution here w/ recover_enrollment() ?
     mutate(n_enrolled = as.numeric(n_enrolled),

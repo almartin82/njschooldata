@@ -8,8 +8,16 @@
 get_reportcard_special_pop <- function(end_year) {
   
   df_list <- get_one_rc_database(end_year)
+  
   out <- df_list %>% 
     use_series('enrollment_trends_by_student_group')
+  
+  enr <- df_list %>%
+    list() %>%
+    extract_rc_enrollment() %>%
+    filter(grade_level == "TOTAL") %>%
+    select(county_code, district_code, school_code, 
+           end_year, n_enrolled)
 
   # 2018, 2019 it's wide
   if (end_year >= 2018) {
@@ -27,7 +35,19 @@ get_reportcard_special_pop <- function(end_year) {
       values_to = 'percent' 
     )
   }
-  out
+  
+  out <- out %>%
+    left_join(enr,
+              by = c("county_code", "district_code", 
+                     "school_code", "end_year")) %>% 
+    # is there a better solution for below w/ recover_enrollment() ?
+    mutate(n_enrolled = as.numeric(n_enrolled),
+           percent = as.numeric(percent),
+           n_students = round(percent / 100 * n_enrolled),
+           n_students = if_else(n_students == 0 & percent > 0, 1, n_students)) 
+    
+  
+  return(out)
 }
 
 
@@ -91,7 +111,7 @@ fetch_reportcard_special_pop <- function(end_year) {
       district_id,
       school_id, school_name, 
       end_year, 
-      subgroup, percent,
+      subgroup, n_enrolled, percent, n_students,
       is_district, is_school
     )
 }
