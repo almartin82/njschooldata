@@ -791,6 +791,7 @@ enrich_matric_counts <- function(df, type = '16 month') {
   
   # prepare matric df to join grad count
   df <- df %>%
+    id_rc_aggs() %>%
     # 2012 rc reports only 16 month matriculation rates, which would
     # require 2011 grad counts, which are not available
     filter(end_year != 2012) %>%
@@ -836,4 +837,55 @@ enrich_matric_counts <- function(df, type = '16 month') {
     )
   
   return(out)
+}
+
+
+#' Identify reportcard aggregation levels
+#'
+#' @param df enrollment dataframe, output of extract_rc_*
+#'
+#' @return data.frame with boolean aggregation flags
+#' @export
+
+id_rc_aggs <- function(df) {
+  df %>%
+    mutate(
+      is_state = district_code == '9999' & county_code == '99',
+      is_county = district_code == '9999' & !county_code =='99',
+      is_district = school_code %in% c('997', '999') & !is_state,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
+      is_school = !school_code %in% c('997', '999') & !is_state,
+      is_charter = county_code == '80'
+    ) %>%
+    return()
+}
+
+
+#' Matriculation column order
+#'
+#' @param df processed postsecondary matriculation df
+#'
+#' @return df in correct order
+#' @export
+matric_column_order <- function(df) {
+  df %>%
+    select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subgroup,
+      cohort_count, graduated_count,
+      enroll_any_count, enroll_any,
+      enroll_4yr_count, enroll_4yr,
+      enroll_2yr_count, enroll_2yr,
+      n_charter_rows,
+      is_state,
+      is_district,
+      is_school,
+      is_charter,
+      is_charter_sector,
+      is_allpublic
+    )
 }
