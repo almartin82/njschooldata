@@ -142,72 +142,140 @@ test_that("extract_rc_college_matric ground truth values", {
                87.4)
 })
 
-test_that("enrich_grad_count joins correct years", {
+test_that("enrich_matric_counts joins correct years", {
   matric_12 <- extract_rc_college_matric(list(rc_2012))
   
   expect_error(matric_12 %>%
                  enrich_grad_count())
   
   
+  gcount_12 <- fetch_grad_count(2012)
   matric_13 <- extract_rc_college_matric(list(rc_2013))
   
   matric_counts_13 <- matric_13 %>%
-    enrich_grad_count()
+    enrich_matric_counts()
+  
   
   expect_equal(matric_counts_13 %>%
-                 pull(gc_year) %>%
-                 unique(),
-               unique(matric_counts_13$end_year) - 1)
-  
-  expect_equal(matric_counts_13 %>%
-                 filter(district_code == '3570',
-                        school_code == '055',
+                 filter(district_id == '3570',
+                        school_id == '055',
                         subgroup == 'total population') %>%
                  pull(graduated_count),
-               167)
+               gcount_12 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count))
+
   
   
-  matric_17 <- extract_rc_college_matric(list(rc_2017))
+  matric_18 <- extract_rc_college_matric(list(rc_2018))
+  matric_18_12mo <- extract_rc_college_matric(list(rc_2018),
+                                              type = "12 month")
+  gcount_17 <- fetch_grad_count(2017)
+  gcount_18 <- fetch_grad_count(2018)
   
-  matric_counts_17 <- matric_17 %>%
-    enrich_grad_count()
+  matric_counts_18 <- matric_18 %>%
+    enrich_matric_counts()
+  matric_counts_18_12mo <- matric_18_12mo %>%
+    enrich_matric_counts(type = "12 month")
   
-  expect_equal(matric_counts_17 %>%
-                 pull(gc_year) %>%
-                 unique(),
-               unique(matric_counts_17$end_year))
+  expect_equal(matric_counts_18 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count),
+               gcount_17 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count))
+  
+  expect_equal(matric_counts_18_12mo %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count),
+               gcount_18 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'total population') %>%
+                 pull(graduated_count))
 })
 
 test_that("enrich_grad_count joins correct subgroup", {
 
   matric_13 <- extract_rc_college_matric(list(rc_2013))
   
-  gc_12 <- fetch_grad_count(2012)
+  gcount_12 <- fetch_grad_count(2012)
   
   matric_counts_13 <- matric_13 %>%
-    enrich_grad_count()
+    enrich_matric_counts()
   
   expect_equal(matric_counts_13 %>%
-                 filter(district_code == '3570',
-                        school_code == '055',
+                 filter(district_id == '3570',
+                        school_id == '055',
                         subgroup == 'black') %>%
                  pull(graduated_count),
-               62)
+               gcount_12 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'black') %>%
+                 pull(graduated_count))
   
   expect_equal(matric_counts_13 %>%
-                 filter(district_code == '3570',
-                        school_code == '055',
+                 filter(district_id == '3570',
+                        school_id == '055',
                         subgroup == 'economically disadvantaged') %>%
                  pull(graduated_count),
-               128)
+               gcount_12 %>%
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'economically disadvantaged') %>%
+                 pull(graduated_count))
 })
 
 
-test_that("enrich_grad_count gets both 12/16 mo", {
+
+
+test_that("enrich_matric_counts enriches multiple yrs", {
+  matric_1819 <- extract_rc_college_matric(list(rc_2018, rc_2019))
   
-  matric_18 <- extract_rc_college_matric(list(rc_2018))
-  matric_18_12mo <- extract_rc_college_matric(list(rc_2018),
-                                              type = '12 month')
+  matric_counts_18 <- rc_2018 %>%
+    list() %>%
+    extract_rc_college_matric() %>%
+    enrich_matric_counts()
   
-  expect_false(identical(matric_18, matric_18_12mo))
+  matric_counts_17 <- rc_2017 %>%
+    list() %>%
+    extract_rc_college_matric() %>%
+    enrich_matric_counts()
+  
+  matric_counts_1819 <- matric_1819 %>%
+    enrich_matric_counts()
+  
+  expect_equal(matric_counts_1819 %>%
+                 filter(end_year == 2019,
+                        district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'black') %>%
+                 pull(graduated_count),
+               gcount_18 %>% 
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'black') %>%
+                 pull(graduated_count))
+  
+
+  expect_equal(matric_counts_1819 %>%
+                 filter(end_year == 2018,
+                        district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'hispanic') %>%
+                 pull(graduated_count),
+               gcount_17 %>% 
+                 filter(district_id == '3570',
+                        school_id == '055',
+                        subgroup == 'hispanic') %>%
+                 pull(graduated_count))
 })

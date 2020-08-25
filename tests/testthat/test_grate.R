@@ -201,3 +201,16 @@ test_that("ground truth values on 2019 grad count", {
 })
 
 
+test_that("grad counts correctly enriched", {
+  grate_19 <- fetch_grad_rate(2019)
+  
+  ex <- enrich_grad_count(grate_19, 2019)
+  
+  ex_row <- ex %>%
+    filter(district_id == '3570',
+           school_id == '055',
+           subgroup == 'total population')
+  
+  expect_equal(pull(ex_row, graduated_count.x),
+               pull(ex_row, graduated_count.y))
+  })
