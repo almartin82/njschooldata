@@ -789,6 +789,9 @@ enrich_matric_counts <- function(df, type = '16 month') {
   }
   
   
+  warning("Subgroups have been converted for compatibility across data
+          sources.")
+  
   # prepare matric df to join grad count
   df <- df %>%
     id_rc_aggs() %>%
