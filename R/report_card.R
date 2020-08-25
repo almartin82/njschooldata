@@ -751,3 +751,141 @@ enrich_rc_enrollment <- function(df) {
   
   return(df)
 }
+
+
+
+#' Enrich matriculation rates with counts from grad counts
+#' 
+#' @param df data frame of including matriculation percentages
+#' 
+#' @return data_frame
+#' @export
+enrich_matric_counts <- function(df, type = '16 month') {
+  if (min(df$end_year) < 2013) stop("end_year needs to be > 2012")
+  
+  grad_count_yrs <- df %>%
+    pull(end_year) %>%
+    unique()
+  
+  if (type == '16 month') {
+    
+    # 16 month matriculation requires grad counts from prior year
+    grad_count_yrs <- c((min(grad_count_yrs) - 1):(max(grad_count_yrs) - 1))
+    
+    # but there is no grad count data before 2011
+    grad_count_yrs <- grad_count_yrs[grad_count_yrs > 2011]
+    
+    postsec_rates <- data.frame(
+      end_year = 2012:2019,
+      is_16mo = rep(T, 8)
+    )
+  } else if (type == '12 month') {
+    postsec_rates <- data.frame(
+    end_year = 2017:2019,
+    is_16mo = rep(F, 3)
+    )
+  } else {
+    stop("type should be one of {\'16 month\' or \'12 month\'}")
+  }
+  
+  
+  # prepare matric df to join grad count
+  df <- df %>%
+    id_rc_aggs() %>%
+    # 2012 rc reports only 16 month matriculation rates, which would
+    # require 2011 grad counts, which are not available
+    filter(end_year != 2012) %>%
+    left_join(postsec_rates, by = "end_year") %>%
+    # 16 month matriculation rates requires last year's grad counts
+    mutate(orig_end_year = end_year,
+           end_year = if_else(is_16mo, end_year - 1, as.numeric(end_year))) %>%
+    mutate(
+      subgroup = tolower(subgroup),
+      subgroup = case_when(
+        subgroup == "economically disadvantaged students" ~ "economically disadvantaged",
+        subgroup %in% c("english language learners",
+                        "english learners") ~ "limited english proficiency",
+        subgroup == "students with disabilities" ~ "students with disability",
+        subgroup == "two or more races" ~ "multiracial",
+        subgroup == "native hawaiian" ~ "pacific islander", # or native amer.?
+        subgroup == "american indian or alaska native" ~
+          "american indian",
+        subgroup == "asian, native hawaiian, or pacific islander" ~
+          "asian", #>=2018... what to do here?
+        TRUE ~ subgroup
+      )
+    ) %>%
+    rename(county_id = county_code, 
+           district_id = district_code,
+           school_id = school_code)
+  
+  matric_by_yr <- split(df, df$end_year)
+  
+  
+  out <- map_dfr(
+    matric_by_yr, 
+    function(.x) enrich_grad_count(.x, unique(.x$end_year))
+    ) %>%
+    # restore original end year
+    select(-end_year) %>%
+    rename(end_year = orig_end_year) %>%
+    distinct(.keep_all = T) %>%
+    mutate(
+      enroll_any_count = round(enroll_any / 100 * graduated_count),
+      enroll_4yr_count = round(enroll_4yr / 100 * enroll_any_count),
+      enroll_2yr_count = round(enroll_2yr / 100 * enroll_any_count)
+    )
+  
+  return(out)
+}
+
+
+#' Identify reportcard aggregation levels
+#'
+#' @param df enrollment dataframe, output of extract_rc_*
+#'
+#' @return data.frame with boolean aggregation flags
+#' @export
+
+id_rc_aggs <- function(df) {
+  df %>%
+    mutate(
+      is_state = district_code == '9999' & county_code == '99',
+      is_county = district_code == '9999' & !county_code =='99',
+      is_district = school_code %in% c('997', '999') & !is_state,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
+      is_school = !school_code %in% c('997', '999') & !is_state,
+      is_charter = county_code == '80'
+    ) %>%
+    return()
+}
+
+
+#' Matriculation column order
+#'
+#' @param df processed postsecondary matriculation df
+#'
+#' @return df in correct order
+#' @export
+matric_column_order <- function(df) {
+  df %>%
+    select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subgroup,
+      cohort_count, graduated_count,
+      enroll_any_count, enroll_any,
+      enroll_4yr_count, enroll_4yr,
+      enroll_2yr_count, enroll_2yr,
+      n_charter_rows,
+      is_state,
+      is_district,
+      is_school,
+      is_charter,
+      is_charter_sector,
+      is_allpublic
+    )
+}
