@@ -132,14 +132,14 @@ test_that("extract_rc_college_matric ground truth values", {
                         school_code == '055',
                         subgroup == 'Total Population') %>%
                  pull(enroll_any),
-               85.3)
+               67.2)
   
   expect_equal(matric_17 %>%
                  filter(district_code == '3570',
                         school_code == '055',
                         subgroup == 'Total Population') %>%
                  pull(enroll_4yr),
-               93.6)
+               87.4)
 })
 
 test_that("enrich_grad_count joins correct years", {
