@@ -233,7 +233,7 @@ ward_parcc_aggs <- function(list_of_dfs) {
 }
 
 
-#' Aggregates assessment data by ward
+#' Aggregates matriculation data by ward
 #'
 #'
 #' @param df output of \code{enrich_matric_counts}
