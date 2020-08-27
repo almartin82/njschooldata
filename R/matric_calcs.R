@@ -23,3 +23,46 @@ matric_aggregate_calcs <- function(df) {
     ungroup() %>%
     return()
 }
+
+
+#' Aggregates matriculation data by district. Only school-level matriculation
+#' data reported before 2017. This function approximates district level 
+#' results. If schools within the district do not report for certain subgroups,
+#' the approximation will be further off.
+#'
+#'
+#' @param df output of \code{enrich_matric_counts}
+#'
+#' @return A data frame of ward aggregations
+#' @export
+district_matric_aggs <- function(df) {
+  sum_df <- df %>%
+    group_by(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      subgroup,
+      is_16mo
+    ) %>%
+    matric_aggregate_calcs() %>%
+    ungroup()
+  
+  sum_df %>%
+    mutate(
+      # should aggregated districts be distinguished somehow?
+      district_id = district_id,
+      district_name = district_name,
+      school_id = '999',
+      school_name = 'Aggregated District Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,      
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE
+    ) %>%
+    matric_column_order() %>%
+    return()
+}
+
