@@ -884,6 +884,7 @@ matric_column_order <- function(df) {
       enroll_4yr_count, enroll_4yr,
       enroll_2yr_count, enroll_2yr,
       n_charter_rows,
+      is_16mo,
       is_state,
       is_district,
       is_school,
