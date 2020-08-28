@@ -37,6 +37,7 @@ matric_aggregate_calcs <- function(df) {
 #' @export
 district_matric_aggs <- function(df) {
   sum_df <- df %>%
+    filter(!is.nan(enroll_any) & !is.nan(enroll_4yr) & !is.nan(enroll_2yr)) %>%
     group_by(
       end_year,
       county_id, county_name,
