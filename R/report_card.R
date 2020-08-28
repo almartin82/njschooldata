@@ -32,10 +32,10 @@ get_standalone_rc_database <- function(end_year) {
   
   pr_urls <- list(
     "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
-    "2015" = "http://www.nj.gov/education/pr/1415/database/2015PRDATABASE.xlsx",
-    "2014" = "http://www.nj.gov/education/pr/1314/database/2014%20performance%20report%20database.xlsx",
-    "2013" = "http://www.nj.gov/education/pr/1213/database/nj%20pr13%20database.xlsx",
-    "2012" = "http://www.nj.gov/education/pr/2013/database/nj%20pr12%20database.xlsx"
+    "2015" = "https://nj.gov/education/schoolperformance/archive/201415/2015PRDATABASE.xlsx",
+    "2014" = "https://nj.gov/education/schoolperformance/archive/201314/2014%20performance%20report%20database.xlsx",
+    "2013" = "https://nj.gov/education/schoolperformance/archive/201213/nj%20pr13%20database.xlsx",
+    "2012" = "https://nj.gov/education/schoolperformance/archive/201112/nj%20pr12%20database.xlsx"
     
     # 2003-2011 report cards deleted
     # "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
