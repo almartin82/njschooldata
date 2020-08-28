@@ -279,3 +279,43 @@ test_that("enrich_matric_counts enriches multiple yrs", {
                         subgroup == 'hispanic') %>%
                  pull(graduated_count))
 })
+
+
+test_that("district_matric_aggs aggregates correctly", {
+  
+  matric_counts_16 <- rc_2016 %>%
+    list() %>%
+    extract_rc_college_matric() %>%
+    enrich_matric_counts()
+  
+  # just making sure there aren't any district level outcomes here!
+  expect_equal(matric_counts_16 %>%
+                 filter(school_id == '999') %>%
+                 nrow(),
+               0)
+  
+  dists_16 <- district_matric_aggs(matric_counts_16)
+  
+  expect_equal(dists_16 %>%
+               pull(district_id) %>%
+               unique() %>%
+               length(),
+             matric_counts_16 %>%
+               pull(district_id) %>%
+               unique() %>%
+               length())
+  
+  
+  expect_equal(dists_16 %>%
+                 filter(district_id == '3710',
+                        subgroup == 'total population') %>%
+                 pull(enroll_any_count),
+               529)
+  
+  expect_equal(dists_16 %>%
+                 filter(district_id == '3710',
+                        subgroup == 'total population') %>%
+                 pull(enroll_2yr),
+               5.5)
+})
+
