@@ -33,7 +33,7 @@ matric_aggregate_calcs <- function(df) {
 #'
 #' @param df output of \code{enrich_matric_counts}
 #'
-#' @return A data frame of ward aggregations
+#' @return A data frame of district aggregations
 #' @export
 district_matric_aggs <- function(df) {
   sum_df <- df %>%
