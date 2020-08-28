@@ -34,7 +34,7 @@ test_that("get_raw_rc_database returns list of data frames", {
 
 test_that("get_raw_rc_database returns list of data frames", {
   expect_is(many_rc, 'list')
-  expect_equal(length(many_rc), 6)
+  expect_equal(length(many_rc), 8)
 })
 
 test_that("extract_rc_SAT pulls longitudinal SAT data", {
@@ -95,9 +95,9 @@ test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
    
    expect_is(enr_many, 'tbl_df')
    expect_named(enr_many,
-                c("county_code", "district_code", "school_code",
+                c("county_id", "district_id", "school_id",
                   "end_year", "grade_level", "n_enrolled",
-                  "county_name",  "district_name", "school_name"))
+                  "county_name",  "district_name"))
    expect_setequal(enr_many %>%
                       pull(grade_level) %>%
                       unique(),
@@ -106,8 +106,8 @@ test_that("extract_rc_enrollment pulls longitudinal enrollment data", {
                      NA_character_))
    
    expect_equal(enr_many %>%
-                   filter(district_code == "3570",
-                          school_code == "999",
+                   filter(district_id == "3570",
+                          school_id == "999",
                           grade_level == "TOTAL",
                           end_year == 2019) %>%
                    pull(n_enrolled),
