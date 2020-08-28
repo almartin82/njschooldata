@@ -2,7 +2,7 @@
 % Please edit documentation in R/geo.R
 \name{ward_matric_aggs}
 \alias{ward_matric_aggs}
-\title{Aggregates assessment data by ward}
+\title{Aggregates matriculation data by ward}
 \usage{
 ward_matric_aggs(df)
 }
@@ -13,5 +13,5 @@ ward_matric_aggs(df)
 A data frame of ward aggregations
 }
 \description{
-Aggregates assessment data by ward
+Aggregates matriculation data by ward
 }
