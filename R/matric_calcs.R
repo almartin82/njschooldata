@@ -57,7 +57,7 @@ district_matric_aggs <- function(df) {
       school_name = 'Aggregated District Total',
       is_state = FALSE,
       is_county = FALSE,
-      is_district = FALSE,
+      is_district = TRUE,
       is_charter = FALSE,
       is_school = FALSE,      
       is_charter_sector = FALSE,
