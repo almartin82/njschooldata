@@ -13,7 +13,7 @@ test_that("special pop works with 2017 data", {
       "district_id",
       "school_id", "school_name", 
       "end_year", 
-      "subgroup", "percent",
+      "subgroup", "n_enrolled", "percent", "n_students",
       "is_district", "is_school"
     )
   )
@@ -29,7 +29,7 @@ test_that("special pop works with 2018 data", {
         "district_id",
         "school_id", "school_name", 
         "end_year", 
-        "subgroup", "percent",
+        "subgroup", "n_enrolled", "percent", "n_students",
         "is_district", "is_school"
       )
    )
@@ -45,7 +45,7 @@ test_that("special pop works with 2019 data", {
         "district_id",
         "school_id", "school_name", 
         "end_year", 
-        "subgroup", "percent",
+        "subgroup", "n_enrolled", "percent", "n_students",
         "is_district", "is_school"
       )
    )
@@ -63,6 +63,16 @@ test_that("ground truth value checks on 2018 special populations data", {
    }
 )
 
+test_that("special populations data is enriched w/ enrollment, 2018", {
+   expect_equal(sp_18 %>%
+                   filter(district_id == '3570',
+                          school_id == '220',
+                          subgroup == 'Economically Disadvantaged') %>%
+                   pull(n_students),
+                428)
+})
+
+
 
 test_that("ground truth value checks on 2019 special populations data", {
    newark_sp_19 <- sp19 %>%
@@ -72,16 +82,34 @@ test_that("ground truth value checks on 2019 special populations data", {
    
    expect_is(newark_sp_19, 'data.frame')
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Female") %>% pull(percent), 45.5)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Female") %>% 
+                   pull(percent), 
+                45.5)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Male") %>% pull(percent), 54.5)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Male") %>% 
+                   pull(percent), 
+                54.5)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Economically Disadvantaged") %>% pull(percent), 78.6)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Economically Disadvantaged") %>% 
+                   pull(percent), 
+                78.6)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "IEP") %>% pull(percent), 29.2)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "IEP") %>% 
+                   pull(percent), 
+                29.2)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Foster Care") %>% pull(percent), 1.3)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Foster Care") %>% 
+                   pull(percent), 
+                1.3)
    
-   expect_equal(newark_sp_19 %>% filter(subgroup == "Migrant") %>% pull(percent), 0)
+   expect_equal(newark_sp_19 %>% 
+                   filter(subgroup == "Migrant") %>% 
+                   pull(percent), 
+                0)
    }
 )
