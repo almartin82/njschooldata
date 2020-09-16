@@ -726,6 +726,25 @@ enr_grade_aggs <- function(df) {
     ) %>%
     gr_aggs_col_order()
   
+  # All but PK enrollment
+  nopk_agg <- df %>%
+    filter(
+      grade_level %in% c('K', 
+                         '01', '02', '03', '04',
+                         '05', '06', '07', '08',
+                         '09', '10', '11', '12') |
+        program_code == 'UG'
+    ) %>%
+    gr_aggs_group_logic() %>%
+    mutate(
+      program_code = 'K12UG',
+      program_name = 'K to 12 Total, UG inclusive',
+      grade_level = 'K12UG',
+      pct = NA_real_,
+      pct_total_enr = NA_real_
+    ) %>%
+    gr_aggs_col_order()
+  
   # K-8 enrollment
   k8_agg <- df %>%
     filter(
@@ -758,7 +777,7 @@ enr_grade_aggs <- function(df) {
     ) %>%
     gr_aggs_col_order()
   
-  bind_rows(pk_agg, k_agg, k12_agg, k8_agg, hs_agg)
+  bind_rows(pk_agg, k_agg, k12_agg, nopk_agg, k8_agg, hs_agg)
 }
 
 #' @title gets and processes a NJ enrollment file

@@ -310,6 +310,21 @@ test_that("enr_grade_aggs works", {
     filter(district_id == '3570' & school_id == '310' & grade_level=='K8')
   expect_equal(camden_es_k8$n_students, camden_es_k12$n_students)
   
+  expect_gte(
+    aggs_2018 %>%
+      filter(district_id == '3570',
+             school_id == '020',
+             grade_level == 'K12UG',
+             subgroup == 'total_enrollment') %>%
+      pull(n_students),
+    aggs_2018 %>%
+      filter(district_id == '3570',
+             school_id == '020',
+             grade_level == 'K12',
+             subgroup == 'total_enrollment') %>%
+      pull(n_students)
+    )
+  
 })
 
 test_that("frl group exists", {
