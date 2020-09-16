@@ -104,7 +104,7 @@ test_that("charter sector aggs, 2018 enrollment data", {
   enr_2018 <- fetch_enr(2018, tidy=TRUE)
   ch_aggs_2018 <- charter_sector_enr_aggs(enr_2018)
   expect_is(ch_aggs_2018, "data.frame")
-  expect_equal(nrow(ch_aggs_2018), 8420)
+  expect_equal(nrow(ch_aggs_2018), 8455)
 })
 
 
@@ -113,7 +113,7 @@ test_that("charter sector aggs, 2017-18 enrollment data", {
   enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
   ch_aggs_1718 <- charter_sector_enr_aggs(enr_1718)
   expect_is(ch_aggs_1718, "data.frame")
-  expect_equal(nrow(ch_aggs_1718), 16500)
+  expect_equal(nrow(ch_aggs_1718), 16569)
 })
 
 test_that("charter sector aggs, ALL enrollment data", {
@@ -129,7 +129,7 @@ test_that("all public aggs, 2017-18 enrollment data", {
   enr_1718 <- map_df(c(2017:2018), ~fetch_enr(.x, tidy=TRUE))
   all_public_aggs_1718 <- allpublic_enr_aggs(enr_1718)
   expect_is(all_public_aggs_1718 , "data.frame")
-  expect_equal(nrow(all_public_aggs_1718), 16500)
+  expect_equal(nrow(all_public_aggs_1718), 16569)
 })
 
 

@@ -183,7 +183,6 @@ ward_enr_aggs <- function(df) {
 #'
 #' @return A data frame of ward aggregations
 #' @export
-
 ward_parcc_aggs <- function(list_of_dfs) {
 
    df <- list_of_dfs %>%
@@ -192,13 +191,7 @@ ward_parcc_aggs <- function(list_of_dfs) {
       enrich_school_city_ward()
 
    df <- df %>%
-      filter(!is.na(ward) #,
-             #subgroup == "special_education",
-             #grade == 3,
-             #test_name == "ela",
-             #testing_year == 2018,
-             #!is.na(number_of_valid_scale_scores)
-             ) %>%
+      filter(!is.na(ward)) %>%
       group_by(
          testing_year,
          assess_name, test_name,
@@ -208,7 +201,7 @@ ward_parcc_aggs <- function(list_of_dfs) {
          grade,
          subgroup, subgroup_type
       ) %>%
-     parcc_aggregate_calcs %>%
+     parcc_aggregate_calcs() %>%
      ungroup()
 
    df <- df %>%
@@ -276,4 +269,3 @@ ward_matric_aggs <- function(df) {
     matric_column_order() %>%
     return()
 }
-
