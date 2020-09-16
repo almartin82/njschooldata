@@ -1,3 +1,10 @@
+## njschooldata 0.8.12
+
+## New features
+
+* `K12UG` aggregate published - K12 w/ ungraded students.
+
+
 ## njschooldata 0.8.11
 
 ## New features
