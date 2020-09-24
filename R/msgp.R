@@ -122,20 +122,35 @@ get_and_process_msgp <- function(end_year) {
         is_district = FALSE
       )
     
-    df_district <- df_sgp %>%
-      select(county_code, district_code, student_growth, district_median, end_year) %>%
-      rename(
-        subject = student_growth,
-        median_sgp = district_median
-      ) %>%
-      unique() %>%
-      mutate(
-        school_code = '999',
-        grade = 'TOTAL',
-        subgroup = 'total population',
-        is_school = FALSE,
-        is_district = TRUE
-      )
+    # identify high schools by their presence in grade rate df
+    high_school_cds <- df_list$grad_rate_by_subgroup %>%
+      mutate(cds = paste0(county_code, district_code, school_code)) %>%
+      pull(cds)
+    
+      df_district <- df_sgp %>%
+        select(county_code, district_code, school_code, student_growth, district_median, end_year) %>%
+        # use high school cds to filter out high school msgp
+        filter(!paste0(county_code, district_code, school_code) %in% high_school_cds) %>%
+        rename(
+          subject = student_growth,
+          median_sgp = district_median
+        ) %>%
+        mutate(
+          school_code = '999',
+          grade = 'TOTAL',
+          subgroup = 'total population',
+          is_school = FALSE,
+          is_district = TRUE
+        ) %>%
+      # assume that majority of HS have been filtered out; mode of sgp
+      # should return the elem value (right? lol)
+      # after filtering using cds codes, there are only two districts
+      # with multiple msgp values, 3570 (oi...) and 5850. district
+      # 5850 only has one school with 'S' as a value for mSGP, and
+      # newark has two schools with different msgps -- Eagle and 
+      # school id 311
+      filter(median_sgp == DescTools::Mode(median_sgp)) %>%
+      unique()
     
     out <- bind_rows(df_school, df_district) %>%
       select(

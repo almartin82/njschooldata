@@ -13,8 +13,14 @@ test_that("sgp works with 2016 data", {
     names(sgp16),
     c("county_id", "district_id", "school_id",
       "end_year", "subject", "grade", "subgroup", "median_sgp", 
-      "is_district", "is_school")
-  )
+      "is_district", "is_school"))
+    
+    expect_length(sgp16 %>% 
+                    filter(is_district) %>%
+                    group_by(district_id, subject) %>%
+                    filter(n() > 1) %>%
+                    pull(median_sgp),
+                  0)
 })
 
 
