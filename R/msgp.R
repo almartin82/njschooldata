@@ -143,6 +143,7 @@ get_and_process_msgp <- function(end_year) {
         is_school = FALSE,
         is_district = TRUE
       ) %>%
+      group_by(district_code, subject) %>%
       # assume majority of high schools have been filtered out; mode of 
       # median_sgp should return the elem value
       # checked: after filtering using cds, two districts are left with
@@ -150,6 +151,7 @@ get_and_process_msgp <- function(end_year) {
       # 5850 only has one school with 'S' as msgp value and 3570 has eagle
       # and state school id 311 with presumably high school values
       filter(median_sgp == DescTools::Mode(median_sgp)) %>%
+      ungroup() %>%
       unique()
     
     out <- bind_rows(df_school, df_district) %>%
