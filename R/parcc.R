@@ -28,7 +28,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     parcc_grade <- grade_or_subj
   }
   
-  stem <- 'http://www.nj.gov/education/schools/achievement/'
+  stem <- 'https://www.nj.gov/education/assessment/results/reports/'
   
   #after 2016 they
   #added a spring / fall element
@@ -37,11 +37,13 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   season_variant <- if (end_year >= 2016) {
     'spring/'
   } else {
-    ''
+    'parcc/'
   }
   
+  sy <- as.numeric(substr(end_year, 3, 4))
+  
   target_url <- paste0(
-    stem, substr(end_year, 3, 4), '/parcc/', season_variant,
+    stem, sy - 1, sy, '/', season_variant,
       parse_parcc_subj(subj), parcc_grade, '.xlsx' 
   )
   
