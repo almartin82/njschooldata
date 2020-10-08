@@ -78,10 +78,10 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
     subj <- parse_parcc_subj(subj)
   }
   
-  stem <- 'https://www.nj.gov/education/schools/achievement/'
+  stem <- 'https://www.nj.gov/education/assessment/results/reports/'
   
   target_url <- paste0(
-    stem, substr(end_year, 3, 4), '/njsla/spring/',
+    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), '/spring/',
     subj, parcc_grade, '%20NJSLA%20DATA%20', 
     # "2018-19"
     end_year - 1, '-', substr(end_year, 3, 4),
