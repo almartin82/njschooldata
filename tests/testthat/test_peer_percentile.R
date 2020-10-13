@@ -2,7 +2,7 @@ context("assessment peer percentiles")
 
 parcc_grade <- fetch_all_parcc()
 
-parcc_years <- c(2018, 2017, 2016, 2015)
+parcc_years <- c(2019, 2018, 2017, 2016, 2015)
 
 math_k11_agg <- map_df(
   parcc_years,
@@ -25,7 +25,7 @@ math_k8_agg <- map_df(
   function(x) calculate_agg_parcc_prof(
     end_year = x, 
     subj = 'math',
-    k8 = TRUE
+    gradespan = '3-8'
   )
 )
 
@@ -34,7 +34,7 @@ ela_k8_agg <- map_df(
   function(x) calculate_agg_parcc_prof(
     end_year = x, 
     subj = 'ela',
-    k8 = TRUE
+    gradespan = '3-8'
   )
 )
 
