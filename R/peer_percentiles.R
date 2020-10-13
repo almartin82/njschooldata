@@ -183,3 +183,86 @@ dfg_peer_percentile <- function(df) {
   
   return(df)
 }
+
+
+#' Looks up caclulated percentile value by searching for closest
+#' scale score / proficient above match
+#' 
+#' @description Given a peer percentile lookup table with calculated
+#' mean scale score and percent proficient distributions by year, grade,
+#' subgroup, take the given values (likely of assessment aggregates) and
+#' find the closest match to return percentiles
+#' @param assess_agg an assessments aggregate such as the output 
+#' of \code{charter_sector_parcc_aggs}
+#' @param assess_percentiles calculated assessments peer percentiles 
+#' such as the output of \code{statewide_peer_percentile}
+#'
+#' @return data.frame with percent proficient and scale score percentile ranks
+#' @export
+
+lookup_peer_percentile <- function(assess_agg, assess_percentiles) {
+  
+  # create lookup table of all percentile values and their corresponding
+  # scale score and grouping
+  scale_pctile_lookup <- assess_percentiles %>% 
+    # only getting percentiles for charter, all public now
+    # if schools later, line below should be arg
+    filter(is_district,
+           !is.na(statewide_scale_percentile)) %>%
+    select(testing_year, test_name, grade, subgroup, subgroup_type,
+           scale_score_mean, statewide_scale_percentile) %>%
+    distinct(.keep_all = TRUE)
+  
+  # join lookup table to all aggregate scale scores
+  # the lookup value closest to the aggregate value is kept
+  scale_agg_percentiles <- assess_agg %>%
+    filter(!is.na(scale_score_mean)) %>%
+    left_join(scale_pctile_lookup,
+              by = c('testing_year', 'test_name', 'grade', 'subgroup',
+                     'subgroup_type')) %>%
+    mutate(scale_score_diff = abs(scale_score_mean.y - scale_score_mean.x)) %>%
+    group_by(testing_year, district_id, test_name, grade, subgroup,
+             subgroup_type, scale_score_mean.x) %>%
+    filter(rank(scale_score_diff, ties.method = 'average') == 1) %>%
+    ungroup() %>%
+    select(testing_year, district_id, test_name, grade, subgroup,
+           subgroup_type, scale_score_mean = scale_score_mean.x,
+           statewide_scale_percentile) %>%
+    distinct(.keep_all = T)
+  
+  
+  # do the same thing for proficiency pct
+  prof_pctile_lookup <- assess_percentiles %>% 
+    filter(is_district,
+           !is.na(proficient_above)) %>%
+    select(testing_year, test_name, grade, subgroup, subgroup_type,
+           proficient_above, statewide_proficient_percentile) %>%
+    distinct(.keep_all = TRUE)
+  
+  prof_agg_percentiles <- assess_agg %>%
+    filter(!is.na(proficient_above)) %>%
+    left_join(prof_pctile_lookup,
+              by = c('testing_year', 'test_name', 'grade', 'subgroup',
+                     'subgroup_type')) %>%
+    mutate(proficient_diff = abs(proficient_above.y - proficient_above.x)) %>%
+    group_by(testing_year, district_id, test_name, grade, subgroup,
+             subgroup_type, proficient_above.x) %>%
+    filter(rank(proficient_diff, ties.method = 'average') == 1) %>%
+    ungroup() %>%
+    select(testing_year, district_id, test_name, grade, subgroup,
+           subgroup_type, proficient_above = proficient_above.x,
+           statewide_proficient_percentile) %>%
+    distinct(.keep_all = T)
+  
+  foo <- parcc_agg %>%
+    left_join(scale_agg_percentiles,
+              by = c('testing_year', 'district_id', 'test_name', 'grade',
+                     'subgroup', 'subgroup_type', 'scale_score_mean')) %>%
+    distinct(.keep_all = T) %>% 
+    left_join(prof_agg_percentiles,
+              by = c('testing_year', 'district_id', 'test_name', 'grade',
+                    'subgroup', 'subgroup_type', 'proficient_above')) %>%
+    distinct(.keep_all = T) %>%
+    return()
+  
+}
