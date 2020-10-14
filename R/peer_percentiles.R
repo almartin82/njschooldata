@@ -223,7 +223,12 @@ lookup_peer_percentile <- function(assess_agg, assess_percentiles) {
     mutate(scale_score_diff = abs(scale_score_mean.y - scale_score_mean.x)) %>%
     group_by(testing_year, district_id, test_name, grade, subgroup,
              subgroup_type, scale_score_mean.x) %>%
-    filter(rank(scale_score_diff, ties.method = 'average') == 1) %>%
+    filter(scale_score_diff == min(scale_score_diff)) %>%
+    ungroup() %>%
+    # deal with ties 
+    select(-scale_score_mean.y, -scale_score_diff) %>%
+    group_by_at(vars(-statewide_scale_percentile)) %>%
+    summarize(statewide_scale_percentile = mean(statewide_scale_percentile)) %>%
     ungroup() %>%
     select(testing_year, district_id, test_name, grade, subgroup,
            subgroup_type, scale_score_mean = scale_score_mean.x,
@@ -247,14 +252,19 @@ lookup_peer_percentile <- function(assess_agg, assess_percentiles) {
     mutate(proficient_diff = abs(proficient_above.y - proficient_above.x)) %>%
     group_by(testing_year, district_id, test_name, grade, subgroup,
              subgroup_type, proficient_above.x) %>%
-    filter(rank(proficient_diff, ties.method = 'average') == 1) %>%
+    filter(proficient_diff == min(proficient_diff)) %>%
+    ungroup() %>%
+    # deal with ties 
+    select(-proficient_above.y, -proficient_diff) %>%
+    group_by_at(vars(-statewide_proficient_percentile)) %>%
+    summarize(statewide_proficient_percentile = mean(statewide_proficient_percentile)) %>%
     ungroup() %>%
     select(testing_year, district_id, test_name, grade, subgroup,
            subgroup_type, proficient_above = proficient_above.x,
            statewide_proficient_percentile) %>%
     distinct(.keep_all = T)
   
-  foo <- parcc_agg %>%
+  assess_agg %>%
     left_join(scale_agg_percentiles,
               by = c('testing_year', 'district_id', 'test_name', 'grade',
                      'subgroup', 'subgroup_type', 'scale_score_mean')) %>%
