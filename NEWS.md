@@ -1,3 +1,10 @@
+## njschooldata 0.8.14
+
+## New features
+
+`lookup_peer_percentile` function to gauge where an aggregation falls in the distribution of measured/actual schools/districts. 
+
+
 ## njschooldata 0.8.13
 
 ## New features
