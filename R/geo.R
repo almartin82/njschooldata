@@ -226,7 +226,6 @@ ward_parcc_aggs <- function(list_of_dfs) {
 }
 
 
-
 #' Aggregates grad rate data by ward
 #'
 #'
@@ -272,6 +271,49 @@ ward_grate_aggs <- function(df) {
     return()
 }
 
+#' Aggregates matriculation data by ward
+#'
+#'
+#' @param df output of \code{enrich_matric_counts}
+#'
+#' @return A data frame of ward aggregations
+#' @export
+ward_matric_aggs <- function(df) {
+  enriched_df <- df %>%
+    enrich_school_latlong() %>%
+    enrich_school_city_ward()
+  
+  ward_df <- enriched_df %>% 
+    filter(!is.na(ward), 
+           !is.na(enroll_any)) %>%
+    group_by(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      ward,
+      subgroup,
+      is_16mo
+    ) %>%
+    matric_aggregate_calcs() %>%
+    ungroup()
+  
+  ward_df %>%
+    mutate(
+      district_id = paste0(district_id, ' ', ward),
+      district_name = paste0(district_name, ' ', ward),
+      school_id = '999W',
+      school_name = 'Ward Total',
+      is_state = FALSE,
+      is_county = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,      
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE
+    ) %>%
+    matric_column_order() %>%
+    return()
+}
 
 
 #' Aggregates grad counts data by ward

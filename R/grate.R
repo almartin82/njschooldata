@@ -903,3 +903,29 @@ gcount_column_order <- function(df) {
       'is_allpublic'
     ))
 }
+
+
+#' Enrich report card matriculation percentages with best guesses at 
+#' graduated students
+#' 
+#' @param df data frame of including subgroup percentages
+#' @param end_year numeric end year of grad counts to join
+#' 
+#' @return data_frame
+#' @export
+enrich_grad_count <- function(df, end_year) {
+  
+  grad_counts <- fetch_grad_count(end_year) %>%
+    select(end_year, county_id, district_id, school_id,
+           subgroup, graduated_count, cohort_count)
+    
+  out <- df %>%
+    left_join(grad_counts,
+              by = c("end_year", "county_id",
+                     "district_id",
+                     "school_id", "subgroup"))
+  
+  return(out)
+    
+}
+

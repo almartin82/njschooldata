@@ -4,7 +4,8 @@
 \name{layout_njask06gr3}
 \alias{layout_njask06gr3}
 \title{NJASK layout metadata, 2006 grade 3 and 4 test}
-\format{\describe{
+\format{
+\describe{
 \item{field_start_position}{field_start_position}
 \item{field_end_position}{field_end_position}
 \item{field_length}{field_length}
@@ -15,7 +16,8 @@
 \item{spanner1}{spanner1}
 \item{spanner2}{spanner2}
 \item{final_name}{final_name}
-#' }}
+#' }
+}
 \source{
 NJDOE website - eg the 'File Layout' link on
 http://www.state.nj.us/education/schools/achievement/2007/njask3/
