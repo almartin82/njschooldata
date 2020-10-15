@@ -1,3 +1,12 @@
+## njschooldata 0.8.13
+
+## New features
+
+* postsecondary matriculation aggregations - `district_matric_aggs` and `allpublic_matric_aggs`
+
+* bug fixes for mSGP and for njsla/parcc assessment file location changes
+
+
 ## njschooldata 0.8.12
 
 ## New features
