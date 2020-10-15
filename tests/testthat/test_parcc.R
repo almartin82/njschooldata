@@ -94,7 +94,7 @@ test_that("works with 2018-19 SLA data", {
 
 test_that("fetch_all_parcc works", {
   all_parcc <- fetch_all_parcc()
-  expect_is(sla_2019, 'data.frame')
+  expect_is(all_parcc, 'data.frame')
 })
 
 
