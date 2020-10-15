@@ -28,7 +28,7 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
     parcc_grade <- grade_or_subj
   }
   
-  stem <- 'http://www.nj.gov/education/schools/achievement/'
+  stem <- 'https://www.nj.gov/education/assessment/results/reports/'
   
   #after 2016 they
   #added a spring / fall element
@@ -37,11 +37,13 @@ get_raw_parcc <- function(end_year, grade_or_subj, subj) {
   season_variant <- if (end_year >= 2016) {
     'spring/'
   } else {
-    ''
+    'parcc/'
   }
   
+  sy <- as.numeric(substr(end_year, 3, 4))
+  
   target_url <- paste0(
-    stem, substr(end_year, 3, 4), '/parcc/', season_variant,
+    stem, sy - 1, sy, '/', season_variant,
       parse_parcc_subj(subj), parcc_grade, '.xlsx' 
   )
   
@@ -76,10 +78,10 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
     subj <- parse_parcc_subj(subj)
   }
   
-  stem <- 'https://www.nj.gov/education/schools/achievement/'
+  stem <- 'https://www.nj.gov/education/assessment/results/reports/'
   
   target_url <- paste0(
-    stem, substr(end_year, 3, 4), '/njsla/spring/',
+    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), '/spring/',
     subj, parcc_grade, '%20NJSLA%20DATA%20', 
     # "2018-19"
     end_year - 1, '-', substr(end_year, 3, 4),
