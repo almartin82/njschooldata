@@ -20,8 +20,14 @@ test_that("sgp works with 2016 data", {
                   filter(is_district) %>%
                   group_by(district_id, subject) %>%
                   filter(n() > 1) %>%
-                  pull(median_sgp) %>%
+                  pull(median_sgp),
                   0)
+  
+  expect_length(sgp16 %>%
+                  filter(district_id == '3570',
+                         is_district) %>%
+                  pull(median_sgp), 
+                2)
 })
 
 
