@@ -883,3 +883,136 @@ allpublic_sped_aggs <- function(df) {
    agg_sped_column_order(df) %>%
       return()
 }
+
+
+#' Calculate Charter Sector postsecondary matriculation aggregates
+#'
+#' @param df tidied matriculation dataframe, eg output of 
+#' enrich_matric_counts
+#'
+#' @return df containing charter sector matriculation aggregates
+#' @export
+charter_sector_matric_aggs <- function(df) {
+  
+  # id hosts 
+  df <- id_charter_hosts(df)
+  
+  # charters are reported twice, one per school one per district
+  # take the district level only, in the hopes that NJ will 
+  # someday fix this and report charter campuses
+  df <- df %>% 
+    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  
+  # group by - host city and summarize
+  df <- df %>% 
+    # 0s are reported as 0 -- distinct from NA
+    # these are then schools w/ grad counts but no matric rates
+    filter(!is.na(enroll_any)) %>%
+    group_by(
+      end_year, 
+      host_county_id, host_county_name,
+      host_district_id, host_district_name,
+      is_16mo, subgroup
+    ) %>%
+    matric_aggregate_calcs() %>%
+    ungroup()
+  
+  # give psuedo district names and codes and create appropriate boolean flags
+  df <- df %>%
+    rename(
+      county_id = host_county_id,
+      county_name = host_county_name
+    ) %>%
+    mutate(
+      district_id = paste0(host_district_id, 'C'),
+      district_name = paste0(host_district_name, ' Charters'),
+      school_id = '999C',
+      school_name = 'Charter Sector Total',
+      is_state = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,      
+      is_charter_sector = TRUE,
+      is_allpublic = FALSE
+    ) %>%
+    select(-host_district_id, -host_district_name)
+  
+  # organize and return
+  matric_column_order(df)
+}
+
+
+#' Calculate All Public matriculation aggregates
+#'
+#' @param df tidied postsecondary matriculation dataframe, eg output 
+#' of enrich_matric_counts()
+#'
+#' @return df containing all-public sector postsecondary matriculation rates
+#' @export
+allpublic_matric_aggs <- function(df) {
+  
+  df <- df %>% ungroup()
+  
+  # id hosts 
+  df <- id_charter_hosts(df)
+  
+  # if charter, make host_district_id the district id
+  df <- df %>%
+    mutate(
+      county_id = ifelse(!is.na(host_county_id), host_county_id, county_id),
+      district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
+    )
+  
+  # only district rows
+  df <- df %>% filter(is_district)
+  
+  # group by - newly modified county_id, district_id and summarize
+  agg_df <- df %>%
+    # 0s are reported as 0 -- distinct from NA
+    filter(!is.na(enroll_any)) %>%
+    group_by(
+      end_year, 
+      county_id,
+      district_id,
+      is_16mo, subgroup
+    ) %>%
+    matric_aggregate_calcs() %>%
+    ungroup()
+  
+  # if there are no charters in the host, out of scope for this calc
+  agg_df <- agg_df %>%
+    filter(n_charter_rows > 0)
+  
+  # add county_name, district_name by joining to charter_city
+  ch_join <- charter_city %>% 
+    select(host_district_id, host_district_name, host_county_name) %>%
+    rename(
+      district_id = host_district_id,
+      district_name = host_district_name,
+      county_name = host_county_name
+    ) %>%
+    unique()
+  
+  agg_df <- agg_df %>%
+    left_join(ch_join, by = 'district_id')
+  
+  # give psuedo district names and codes
+  # create appropriate boolean flag
+  agg_df <- agg_df %>%
+    mutate(
+      district_id = paste0(district_id, 'A'),
+      district_name = paste0(district_name, ' All Public'),
+      school_id = '999A',
+      school_name = 'All Public Total',
+      is_state = FALSE,
+      is_dfg = FALSE,
+      is_district = FALSE,
+      is_charter = FALSE,
+      is_school = FALSE,  
+      is_charter_sector = FALSE,
+      is_allpublic = TRUE
+    ) 
+  
+  # organize and return
+  matric_column_order(agg_df) 
+}
