@@ -2,7 +2,7 @@ context("assessment peer percentiles")
 
 parcc_grade <- fetch_all_parcc()
 
-parcc_years <- c(2018, 2017, 2016, 2015)
+parcc_years <- c(2019, 2018, 2017, 2016, 2015)
 
 math_k11_agg <- map_df(
   parcc_years,
@@ -25,7 +25,7 @@ math_k8_agg <- map_df(
   function(x) calculate_agg_parcc_prof(
     end_year = x, 
     subj = 'math',
-    k8 = TRUE
+    gradespan = '3-8'
   )
 )
 
@@ -34,12 +34,14 @@ ela_k8_agg <- map_df(
   function(x) calculate_agg_parcc_prof(
     end_year = x, 
     subj = 'ela',
-    k8 = TRUE
+    gradespan = '3-8'
   )
 )
 
 parcc_agg_all <- bind_rows(parcc_grade, math_k11_agg, ela_k11_agg, math_k8_agg, ela_k8_agg) %>%
   ungroup()
+
+parcc_statewide_percentile <- statewide_peer_percentile(parcc_agg_all)
 
 
 test_that("parcc peer percentile works with 2017 math data", {
@@ -57,9 +59,6 @@ test_that("parcc peer percentile works with 2017 math data", {
 
 
 test_that("parcc statewide percentiles make sense", {
-
-  parcc_statewide_percentile <- statewide_peer_percentile(parcc_agg_all)
-  
   sped_k11_dist_math <- parcc_statewide_percentile %>% 
     filter(test_name == 'math' & subgroup=='special_education') %>% 
     filter(grade=='K-11') %>% 
@@ -108,4 +107,52 @@ test_that("parcc statewide percentiles make sense", {
       "Upper Saddle River Boro", "River Edge Boro", "Ho Ho Kus Boro"
     )
   )
+})
+
+
+test_that('percentile lookup picks correctly', {
+  ch_parcc <- charter_sector_parcc_aggs(parcc_statewide_percentile)
+  
+  ch_parcc_pctiles <- lookup_peer_percentile(ch_parcc, parcc_statewide_percentile)
+  
+  # only one set of percentiles per grouping!
+  expect_equal(nrow(ch_parcc),
+               nrow(ch_parcc_pctiles))
+  
+  expect_equal(parcc_statewide_percentile %>%
+                 filter(testing_year == '2019',
+                        grade == '7',
+                        test_name == 'ela',
+                        subgroup == 'total_population',
+                        is_district,
+                        scale_score_mean == 740) %>%
+                 pull(statewide_scale_percentile) %>%
+                 unique(),
+               ch_parcc_pctiles %>% 
+                 filter(testing_year == '2019',
+                        grade == '7',
+                        test_name == 'ela',
+                        subgroup == 'total_population',
+                        scale_score_mean == 740) %>%
+                 pull(statewide_scale_percentile) %>%
+                 unique())
+  
+  # 3570C scale score mean is 721.5
+  expect_equal(parcc_statewide_percentile %>%
+                 filter(testing_year == '2016',
+                        grade == '10',
+                        test_name == 'ela',
+                        subgroup == 'hispanic',
+                        is_district,
+                        scale_score_mean %in% c(721, 722)) %>%
+                 pull(statewide_scale_percentile) %>%
+                 unique() %>%
+                 mean(),
+               ch_parcc_pctiles %>% 
+                 filter(testing_year == '2016',
+                        grade == '10',
+                        test_name == 'ela',
+                        subgroup == 'hispanic',
+                        district_id == '3570C') %>%
+                 pull(statewide_scale_percentile))
 })
