@@ -4,14 +4,17 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2019.
+#' school year is year '2007'.  valid values are 1999-2020.
 #' @export
 
 get_raw_enr <- function(end_year) {
   
   #build url
+  enr_filename <- ifelse(end_year < 2020, "enr.zip", "enrollment_1920.zip")
+  
   enr_url <- paste0(
-    "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
+    "http://www.nj.gov/education/data/enr/enr", 
+    substr(end_year, 3, 4), "/", enr_filename
   )
   
   #download and unzip
@@ -34,9 +37,17 @@ get_raw_enr <- function(end_year) {
       # the number of 2018 skip lines is decreasing -- it's 1 now
     } else if (end_year == 2018) {
       enr <- readxl::read_excel(this_file, skip = 1)
-    } else if (end_year > 2018) {
+    } else if (end_year == 2019) {
        enr <- readxl::read_excel(this_file, skip = 2)
-    } else {
+    } else if (end_year > 2019) { 
+      # not only does the format change extraordinarily, 
+      # they also leave a stray space in this sheet name. 
+      enr_state <- readxl::read_excel(this_file, sheet = 'State ', skip = 2)
+      
+      enr_dist <- readxl::read_excel(this_file, sheet = 'District', skip = 2)
+      
+      enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
+    }  else {
       enr <- readxl::read_excel(this_file)
     }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
