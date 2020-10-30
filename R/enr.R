@@ -57,6 +57,62 @@ get_raw_enr <- function(end_year) {
     )
   }
 
+  # some...... a lot? of pre-processing before getting to one file
+  # tbh just kind of stuck this code here but it's not in the 
+  # spirit of how the rest of the pipeline is organized
+  if (end_year == 2020) {
+    enr_state %>%
+      filter(`Grade` != 'end of worksheet') %>%
+      mutate(
+        county_id = '99',
+        county_name = 'State Total',
+        district_id = '9999',
+        district_name = 'State Total',
+        school_id = '999',
+        CDS_Code = paste0(county_id, district_id, school_id),
+        school_name = 'State Total',
+        program_code = case_when(
+          `Grade` == "Pre-K Halfday" ~ "PH",
+          `Grade` == "Pre-K Fullday" ~ "PF",
+          `Grade` == "Kindergarten Halfday" ~ "KH",
+          `Grade` == "Kindergarten Fullday" ~ "KF",
+          `Grade` == "First Grade"  ~ "01",
+          `Grade` == "Second Grade" ~ "02",
+          `Grade` == "Third Grade"  ~ "03",
+          `Grade` == "Fourth Grade" ~ "04",
+          `Grade` == "Fifth Grade"  ~ "05",
+          `Grade` == "Sixth Grade" ~ "06",
+          `Grade` == "Seventh Grade" ~ "07",
+          `Grade` == "Eighth Grade" ~ "08",
+          `Grade` == "Ninth Grade" ~ "09",
+          `Grade` == "Tenth Grade" ~ "10",
+          `Grade` == "Eleventh Grade" ~ "11",
+          `Grade` == "Twelfth Grade" ~ "12",
+          `Grade` == "Ungraded" ~ "UG",
+          `Grade` == "All Grades" ~ "55",
+          TRUE ~ NA_character_
+        ),
+        grade_level = case_when(
+          substr(program_code, 0, 1) == 'P' ~ "PK",
+          substr(program_code, 0, 1) == 'K' ~ "K",
+          program_code == '55' ~ "TOTAL",
+          TRUE ~ program_code
+        )
+      ) %>%
+      tidyr::pivot_longer(
+        `White`:`Total`, names_to = "subgroup", values_to = "n_students"
+      ) %>%
+      mutate(subgroup = gsub(" ", "_", tolower(subgroup)),
+             subgroup = case_when(
+               subgroup == 'american indian' ~ "native_american",
+               subgroup == 'native hawaiian' ~ "pacific_islander",
+               subgroup == 'two or more races' ~ "multiracial",
+               subgroup == 'english_learners' ~ "lep",
+               subgroup == 'total' ~ 'total_enrollment'
+             )
+        ) %>%
+      select(-Grade)
+  }
   enr$end_year <- end_year
   
   # specific fixes
