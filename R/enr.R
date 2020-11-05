@@ -108,10 +108,114 @@ get_raw_enr <- function(end_year) {
                subgroup == 'native hawaiian' ~ "pacific_islander",
                subgroup == 'two or more races' ~ "multiracial",
                subgroup == 'english_learners' ~ "lep",
-               subgroup == 'total' ~ 'total_enrollment'
+               subgroup == 'total' ~ 'total_enrollment',
+               TRUE ~ subgroup
              )
         ) %>%
       select(-Grade)
+    
+    
+    enr_state_tidy <- enr_dist %>%
+      select(-starts_with('%')) %>%
+      mutate(school_id = '999',
+             school_name = 'District Total',
+             CDS_Code = paste0(`County Code`, `District Code`, school_id)) %>%
+      tidyr::pivot_longer(
+        `Total Enrollment`:`Ungraded`, names_to = "subgroup", values_to = "n_students"
+      ) %>% 
+      mutate(
+        program_code = case_when(
+          # extra space after the pre
+          subgroup == "Pre -K Halfday" ~ "PH",
+          # capitalize the d in full day
+          subgroup == "Pre-K FullDay" ~ "PF",
+          subgroup == "Kindergarten Halfday" ~ "KH",
+          # but the k fullday d is not capitalized?
+          subgroup == "Kindergarten Fullday" ~ "KF",
+          subgroup == "First Grade"  ~ "01",
+          subgroup == "Second Grade" ~ "02",
+          subgroup == "Third Grade"  ~ "03",
+          subgroup == "Fourth Grade" ~ "04",
+          subgroup == "Fifth Grade"  ~ "05",
+          subgroup == "Sixth Grade" ~ "06",
+          subgroup == "Seventh Grade" ~ "07",
+          subgroup == "Eighth Grade" ~ "08",
+          subgroup == "Ninth Grade" ~ "09",
+          subgroup == "Tenth Grade" ~ "10",
+          subgroup == "Eleventh Grade" ~ "11",
+          subgroup == "Twelfth Grade" ~ "12",
+          subgroup == "Ungraded" ~ "UG",
+          TRUE ~ "55"
+        ),
+        grade_level = case_when(
+          substr(program_code, 0, 1) == 'P' ~ "PK",
+          substr(program_code, 0, 1) == 'K' ~ "K",
+          program_code == '55' ~ "TOTAL",
+          TRUE ~ program_code
+        ),
+        subgroup = gsub(" ", "_", tolower(subgroup)),
+        subgroup = case_when(
+          str_detect(subgroup, "grade|kinder|pre") ~ "total_enrollment",
+          subgroup == 'american indian' ~ "native_american",
+          subgroup == 'native hawaiian' ~ "pacific_islander",
+          subgroup == 'two or more races' ~ "multiracial",
+          subgroup == 'english_learners' ~ "lep",
+          subgroup == 'total' ~ 'total_enrollment',
+          TRUE ~ subgroup
+        )
+      )
+      # missing pcts -- call tidy_subgroups() ?
+      # actually... they did pcts already, i just selected them out
+       
+       
+    enr_sch_tidy <- enr_sch %>%
+      select(-starts_with('%')) %>%
+      mutate(CDS_Code = paste0(`County Code`, `District Code`, `School Code`)) %>%
+      tidyr::pivot_longer(
+        `Total Enrollment`:`Ungraded`, names_to = "subgroup", values_to = "n_students"
+      ) %>% 
+      mutate(
+        program_code = case_when(
+          # extra space after the pre
+          subgroup == "Pre -K Halfday" ~ "PH",
+          # capitalize the d in full day
+          subgroup == "Pre-K FullDay" ~ "PF",
+          subgroup == "Kindergarten Halfday" ~ "KH",
+          # but the k fullday d is not capitalized?
+          subgroup == "Kindergarten Fullday" ~ "KF",
+          subgroup == "First Grade"  ~ "01",
+          subgroup == "Second Grade" ~ "02",
+          subgroup == "Third Grade"  ~ "03",
+          subgroup == "Fourth Grade" ~ "04",
+          subgroup == "Fifth Grade"  ~ "05",
+          subgroup == "Sixth Grade" ~ "06",
+          subgroup == "Seventh Grade" ~ "07",
+          subgroup == "Eighth Grade" ~ "08",
+          subgroup == "Ninth Grade" ~ "09",
+          subgroup == "Tenth Grade" ~ "10",
+          subgroup == "Eleventh Grade" ~ "11",
+          subgroup == "Twelfth Grade" ~ "12",
+          subgroup == "Ungraded" ~ "UG",
+          TRUE ~ "55"
+        ),
+        grade_level = case_when(
+          substr(program_code, 0, 1) == 'P' ~ "PK",
+          substr(program_code, 0, 1) == 'K' ~ "K",
+          program_code == '55' ~ "TOTAL",
+          TRUE ~ program_code
+        ),
+        subgroup = gsub(" ", "_", tolower(subgroup)),
+        subgroup = case_when(
+          str_detect(subgroup, "grade|kinder|pre") ~ "total_enrollment",
+          subgroup == 'american indian' ~ "native_american",
+          subgroup == 'native hawaiian' ~ "pacific_islander",
+          subgroup == 'two or more races' ~ "multiracial",
+          subgroup == 'english_learners' ~ "lep",
+          subgroup == 'total' ~ 'total_enrollment',
+          TRUE ~ subgroup
+        )
+      )
+      
   }
   enr$end_year <- end_year
   
