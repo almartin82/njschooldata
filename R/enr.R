@@ -61,7 +61,7 @@ get_raw_enr <- function(end_year) {
   # tbh just kind of stuck this code here but it's not in the 
   # spirit of how the rest of the pipeline is organized
   if (end_year == 2020) {
-    enr_state %>%
+    enr_state_tidy <- enr_state %>%
       filter(`Grade` != 'end of worksheet') %>%
       mutate(
         county_id = '99',
