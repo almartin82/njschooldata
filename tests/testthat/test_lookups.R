@@ -25,3 +25,18 @@ test_that("district_name_to_id correctly identifies the friendly names", {
     c("6010", "0010", "0020", "6032", "6110")
   )
 })
+
+
+test_that("comparing schools with the same id across districts", {
+  
+  newark <- filter(enr_several, district_id %in% c('3570')) %>%
+    friendly_school_names()
+  
+  jerseycity <- filter(enr_several, district_id %in% c('2390')) %>%
+    friendly_school_names()
+  
+  both <- filter(enr_several, district_id %in% c('3570', '2390')) %>%
+    friendly_school_names()
+  
+  expect_equal(length(both), length(newark) + length(jerseycity))
+})
