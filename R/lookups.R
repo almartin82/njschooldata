@@ -65,7 +65,7 @@ district_name_to_id <- function(district_names, df) {
 friendly_school_names <- function(df) {
   # group by district id, tag by most recent year in df, take first
   df_first <- df %>% 
-    group_by(school_id) %>% 
+    group_by(district_id, school_id) %>% 
     arrange(-end_year) %>%
     mutate(count = row_number()) %>%
     ungroup() %>%
