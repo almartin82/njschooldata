@@ -36,7 +36,11 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       school_id = kill_padformulas(school_id),
       zip = kill_padformulas(zip),
       address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA'),
-      address = gsub("\\s+", ' ', address)
+      address = gsub("\\s+", ' ', address),
+      address = str_to_lower(address),
+      address = str_replace(address, "-\\d{4}\\susa", " usa"),
+      address_2 = str_replace(address, "street", "st"),
+      address_2 = str_replace(address_2, "avenue", "ave")
     )
 
   # geocode
@@ -56,10 +60,17 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     select(locations, lat, lng) %>%
     rename(
       address = locations
-    )
+    ) %>%
+    mutate(address = str_to_lower(address),
+           address = str_replace(address, "-\\d{4}\\susa", " usa"))
+  
   nj_sch <- nj_sch %>%
-    select(district_id, school_id, address) %>%
+    select(district_id, school_id, address, address_2) %>%
     left_join(geocoded_merge, by = 'address') %>%
+    left_join(geocoded_merge, by = c('address_2' = 'address')) %>%
+    mutate(lat = coalesce(lat.x, lat.y),
+           lng = coalesce(lng.x, lng.y)) %>%
+    select(district_id, school_id, address, lat, lng) %>%
     unique()
 
   # join on district and school and return
