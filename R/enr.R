@@ -407,7 +407,7 @@ clean_enr_data <- function(df) {
     "hispanic" = 'numeric',
     "asian" = 'numeric',
     "native_american" = 'numeric',
-    "hawaiian_native" = 'numeric',
+    "pacific_islander" = 'numeric',
     "multiracial" = 'numeric',
     "male" = 'numeric',
     "female" = 'numeric',
