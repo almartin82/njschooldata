@@ -4,14 +4,17 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2019.
+#' school year is year '2007'.  valid values are 1999-2020.
 #' @export
 
 get_raw_enr <- function(end_year) {
   
   #build url
+  enr_filename <- ifelse(end_year < 2020, "enr.zip", "enrollment_1920.zip")
+  
   enr_url <- paste0(
-    "http://www.nj.gov/education/data/enr/enr", substr(end_year, 3, 4), "/enr.zip"
+    "http://www.nj.gov/education/data/enr/enr", 
+    substr(end_year, 3, 4), "/", enr_filename
   )
   
   #download and unzip
@@ -34,9 +37,59 @@ get_raw_enr <- function(end_year) {
       # the number of 2018 skip lines is decreasing -- it's 1 now
     } else if (end_year == 2018) {
       enr <- readxl::read_excel(this_file, skip = 1)
-    } else if (end_year > 2018) {
+    } else if (end_year == 2019) {
        enr <- readxl::read_excel(this_file, skip = 2)
-    } else {
+    } else if (end_year > 2019) { 
+      # not only does the format change extraordinarily, 
+      # they also leave a stray space in this sheet name. 
+      enr_state <- readxl::read_excel(this_file, sheet = 'State ', skip = 2)
+      
+      enr_dist <- readxl::read_excel(this_file, sheet = 'District', skip = 2)
+      
+      enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
+      
+      
+      # combine state, dist, sch df by binding dist and sch and then 
+      # pivoting grade level columns long
+      enr_dist_sch <- enr_dist %>%
+        mutate(`School Code` = '999',
+               `School Name` = "District Total") %>%
+        rename("Pre-K Halfday" = "Pre -K Halfday",
+               "Pre-K Fullday" = "Pre-K FullDay") %>%
+        bind_rows(enr_sch %>%
+                    rename("Pre-K Halfday" = "Pre-K Half day",
+                           "Pre-K Fullday" = "Pre-K Full Day")) %>%
+        mutate(
+          # >95 to 95 ... maybe not a good decision?
+          `%Free Lunch` = if_else(`%Free Lunch` == ">95", '95', `%Free Lunch`),
+          `%Reduced Lunch` = if_else(`%Reduced Lunch` == ">95", '95', `%Reduced Lunch`),
+          `%English Learners` = if_else(`%English Learners` == ">95", '95', `%English Learners`),
+          `%Migrant` = if_else(`%Migrant` == ">95", '95', `%Migrant`),
+          `%Military` = if_else(`%Military` == ">95", '95', `%Military`),
+          `%Homeless` = if_else(`%Homeless` == ">95", '95', `%Homeless`),
+          # populations in this mutate block are only reported as pcts,
+          # so convert percents into counts
+          `Free Lunch` = as.numeric(`%Free Lunch`) / 100 * `Total Enrollment`,
+          `Reduced Lunch` = as.numeric(`%Reduced Lunch`) / 100 * `Total Enrollment`,
+          `English Learners` = as.numeric(`%English Learners`) / 100 * `Total Enrollment`,
+          `Migrant` = as.numeric(`%Migrant`) / 100 * `Total Enrollment`,
+          `Military` = as.numeric(`%Military`) / 100 * `Total Enrollment`,
+          `Homeless` = as.numeric(`%Homeless`) / 100 * `Total Enrollment`
+          )
+      
+      enr <- enr_dist_sch %>%
+        select(`County Code`:`District Name`, `School Code`, `School Name`,
+               `Pre-K Halfday`:`Ungraded`) %>%
+        pivot_longer(cols = `Pre-K Halfday`:`Ungraded`,
+                     names_to = 'Grade', values_to = 'Total Enrollment') %>%
+       bind_rows(enr_dist_sch %>%
+                   select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
+                   mutate(Grade = 'All Grades')) %>%
+        bind_rows(enr_state %>%
+                    rename("Total Enrollment" = Total,
+                           "Native American" = "American Indian"))
+      
+    }  else {
       enr <- readxl::read_excel(this_file)
     }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
@@ -45,7 +98,7 @@ get_raw_enr <- function(end_year) {
       na = "     . "
     )
   }
-
+      
   enr$end_year <- end_year
   
   # specific fixes
@@ -124,6 +177,7 @@ clean_enr_names <- function(df) {
     "Co code" = "county_id",
     "COUNTY_CODE" = "county_id",
     "County_ID" = "county_id",
+    "County Code" = "county_id",
     
     #county names
     "COUNTY_NAME" = "county_name",
@@ -140,6 +194,7 @@ clean_enr_names <- function(df) {
     "District ID" = "district_id",
     "DISTRICT_ID" = "district_id",
     "Dist_ID" = "district_id",
+    "District Code" = "district_id",
     
     #district names
     "LEA_NAME" = "district_name",
@@ -155,6 +210,7 @@ clean_enr_names <- function(df) {
     "SCHOOL CODE" = "school_id",
     "SCH_CODE" = "school_id",
     "School_ID" = "school_id",
+    "School Code" = "school_id",
     
     #school name
     "SCHOOL_NAME" = "school_name",
@@ -178,6 +234,7 @@ clean_enr_names <- function(df) {
     #grade level
     "GRADE_LEVEL" = "grade_level",
     "Grade_Level" = "grade_level",
+    "Grade" = "grade_level",
 
     #racial categories -----------------------------
     #white male
@@ -245,11 +302,25 @@ clean_enr_names <- function(df) {
     "2/MORE_RACES_F(NON_HISP)" = "multiracial_f",
     "2/MORE_RACES_F" = "multiracial_f",
     
+    # 2020 -- a great year, wasn't it?!?!?!??!
+    "White" = "white",
+    "Black" = "black",
+    "Hispanic" = "hispanic",
+    "Asian" = "asian",
+    "Native American" = "native_american",
+    "American Indian" = "native_american",
+    "Hawaiian Native" = "pacific_islander",
+    "Two or More Races" = "multiracial",
+    "Male" = "male",
+    "Female" = "female",
+    "Non-Binary" = "non_binary",
+    
     #lunch status & english status --------------
     #free
     "FREE_LUNCH" = "free_lunch",
     "FREE" = "free_lunch",
     "Free_Lunch" = "free_lunch",
+    "Free Lunch" = "free_lunch",
     
     #reduced
     "REDUCED_PRICE_LUNCH" = "reduced_lunch",
@@ -258,11 +329,13 @@ clean_enr_names <- function(df) {
     "REDUCE" = "reduced_lunch",
     "REDUCED" = "reduced_lunch",
     "Reduced_Price_Lunch" = "reduced_lunch",
+    "Reduced Lunch" = "reduced_lunch",
     
     #lep
     "LEP" = "lep",
     # 2019 baby
     "English_Learners" = "lep", 
+    "English Learners" = "lep",
     
     #migrant & homeless ---------------------
     #migrant
@@ -279,9 +352,13 @@ clean_enr_names <- function(df) {
     "ROWTOT" = "row_total",
     "ROWTOTAL" = "row_total",
     "Row_Total" = "row_total",
+    "Total Enrollment" = "row_total",
+    
     
     #very inconsistently reported
     "HOMELESS" = "homeless",
+    "Homeless" = "homeless",
+    "Military" = "military",
     "SPECED" = "special_ed",
     "CHPT1" = "title_1"
   )
@@ -325,12 +402,24 @@ clean_enr_data <- function(df) {
     'pacific_islander_f' = 'numeric',
     'multiracial_m' = 'numeric',
     'multiracial_f' = 'numeric',
+    "white" = 'numeric',
+    "black" = 'numeric',
+    "hispanic" = 'numeric',
+    "asian" = 'numeric',
+    "native_american" = 'numeric',
+    "pacific_islander" = 'numeric',
+    "multiracial" = 'numeric',
+    "male" = 'numeric',
+    "female" = 'numeric',
+    "non_binary" = 'numeric',
     'free_lunch' = 'numeric',
     'reduced_lunch' = 'numeric',
     'lep' = 'numeric',
     'migrant' = 'numeric',
     'row_total' = 'numeric',
     'homeless' = 'numeric',
+    'military' = 'numeric',
+    'non_binary' = 'numeric',
     'special_ed' = 'numeric',
     'title_1' = 'numeric',
     'end_year' = 'numeric'
@@ -517,6 +606,26 @@ process_enr <- function(df) {
       }
     )
     
+    # there isn't in 2020...
+    if (!"program_code" %in% names(df)) {
+      convert_from_grade = data.frame(
+        Grade = c("Pre-K Halfday", "Pre-K Fullday", "Kindergarten Halfday",
+                  "Kindergarten Fullday", "First Grade", "Second Grade",
+                  "Third Grade", "Fourth Grade", "Fifth Grade", "Sixth Grade",
+                  "Seventh Grade", "Eighth Grade", "Ninth Grade", "Tenth Grade",
+                  "Eleventh Grade", "Twelfth Grade", "Ungraded", "All Grades"),
+        program_code = c("PH", "PF", "KH", "KF", "01", "02", "03", "04", "05",
+                         "06", "07", "08", "09", "10", "11", "12", "UG", "55"),
+        grade_level = c("PK", "PK", "K", "K", "01", "02", "03", "04", "05",
+                        "06", "07", "08", "09", "10", "11", "12", "UG", "TOTAL")
+      )
+      
+      df <- df %>%
+        left_join(convert_from_grade,
+                  by = "Grade") %>%
+        select(-Grade)
+    }
+    
     # force program character
     df$program_code <- as.character(df$program_code)
     
@@ -586,18 +695,23 @@ process_enr <- function(df) {
       )
     )
     
-    df <- df %>%
-      left_join(gl_program_df, by = 'program_name')
+    if (df$end_year[1] != '2020') {
+      df <- df %>%
+        left_join(gl_program_df, by = 'program_name')
+    }
   }
   
   # basic cleaning
-  cleaned <- clean_enr_names(df) %>%
+  cleaned <- df %>%
+    select(!starts_with("%")) %>%
+    clean_enr_names() %>%
     split_enr_cols() %>%
     clean_enr_data() %>%
     clean_enr_grade()
   
   # add in gender and racial aggregates
-  cleaned_agg <- enr_aggs(cleaned)
+  if (df$end_year[1] != '2020') cleaned_agg <- enr_aggs(cleaned)
+  else cleaned_agg <- cleaned
   
   #join to program code
   final <- cleaned_agg %>%
@@ -905,7 +1019,8 @@ tidy_enr <- function(df) {
   )
   
   # put it all together in a long data frame
-  bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups)
+  bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups) %>% 
+    filter(!is.na(n_students) | !is.na(pct))
 }
 
 
