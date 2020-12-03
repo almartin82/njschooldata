@@ -17,6 +17,18 @@ test_that("enrich geo functions cover all newark schools", {
     nrow
   
   expect_equal(nwk_no_geocode, 0)
+  
+  
+  nwk_no_ward <- enr_all %>%
+    filter(district_id == '3570', is_school) %>%
+    enrich_school_latlong %>%
+    enrich_school_city_ward %>%
+    select(school_id, school_name, address, lat, lng, ward) %>%
+    unique() %>%
+    filter(is.na(ward)) %>%
+    nrow
+  
+  expect_equal(nwk_no_ward, 0)
 })
 
 test_that("enrich_school_latlong gets all newark schools w/ address 2019", {
