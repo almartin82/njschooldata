@@ -2,6 +2,57 @@ context("functions in geo.R")
 
 enr_2019 <- fetch_enr(2019, tidy=TRUE)
 
+test_that("enrich geo functions cover all newark schools", {
+  enr_all <- map_df(
+    c(1999:2019),
+    ~fetch_enr(end_year=.x, tidy=TRUE)
+  ) 
+  
+  nwk_no_geocode <- enr_all %>%
+    filter(district_id == '3570', is_school) %>%
+    enrich_school_latlong %>%
+    select(end_year, school_id, school_name, address, lat, lng) %>%
+    unique %>%
+    filter(is.na(lat)) %>%
+    nrow
+  
+  expect_equal(nwk_no_geocode, 0)
+  
+  
+  nwk_no_ward <- enr_all %>%
+    filter(district_id == '3570', is_school) %>%
+    enrich_school_latlong %>%
+    enrich_school_city_ward %>%
+    select(school_id, school_name, address, lat, lng, ward) %>%
+    unique() %>%
+    filter(is.na(ward)) %>%
+    nrow
+  
+  expect_equal(nwk_no_ward, 0)
+})
+
+test_that("enrich_school_latlong gets all newark schools w/ address 2019", {
+  nwk_19 <- enr_2019 %>%
+    filter(district_id == '3570') %>%
+    enrich_school_latlong %>%
+    select(school_id, school_name, address, lat, lng) %>%
+    unique
+    
+    expect_equal(sum(is.na(nwk_19$address)),
+                 sum(is.na(nwk_19$lat)))
+    
+    nwk_19_ward <- enr_2019 %>%
+      filter(district_id == '3570') %>%
+      enrich_school_latlong %>%
+      enrich_school_city_ward %>%
+      select(school_id, school_name, address, lat, lng, ward) %>%
+      unique
+    
+    expect_equal(sum(is.na(nwk_19_ward$address)),
+                 sum(is.na(nwk_19_ward$ward)))
+}) 
+
+
 #post-NJSMART
 test_that("ward_enr_aggs correctly labels newark 2018-19 enrollment data", {
   enr_2019_enriched <- enr_2019 %>%
