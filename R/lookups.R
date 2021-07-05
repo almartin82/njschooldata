@@ -63,13 +63,22 @@ district_name_to_id <- function(district_names, df) {
 #' @export
 
 friendly_school_names <- function(df) {
+  
+  dayton_peshine <- if_else('3570' %in% unique(df$district_id) &
+                            min(df$end_year) < 2013,
+                            TRUE,
+                            FALSE)
+  
+  
   # group by district id, tag by most recent year in df, take first
   df_first <- df %>% 
     group_by(school_id) %>% 
     arrange(-end_year) %>%
     mutate(count = row_number()) %>%
     ungroup() %>%
-    filter(count == 1)
+    filter(count == 1) %>%
+    mutate(school_name = if_else(dayton_peshine &
+                                 school_id == '370', "Dayton Street School", school_name))
   
   # count unique districts per district_name
   name_count <- df_first %>%
@@ -102,12 +111,24 @@ friendly_school_names <- function(df) {
 #' @export
 
 school_name_to_id <- function(school_names, df) {
+  
+  
+  dayton_flag <- if_else("Dayton Street School" %in% school_names &
+                         min(df$end_year) < 2013, TRUE, FALSE)
+  
+  peshine_flag <- if_else("PESHINE AVE" %in% school_names &
+                          max(df$end_year) > 2012, TRUE, FALSE)
+  
   out <- df %>% 
     filter(school_name %in% school_names) %>%
     pull(school_id) %>%
     unique()
   
-  out
+  
+  if (dayton_flag | peshine_flag)
+    return(unique(c(out, "370")))
+  else
+    out
 }
 
 
