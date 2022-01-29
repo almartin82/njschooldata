@@ -344,3 +344,37 @@ test_that("frl group exists", {
               pull(pct), 
             0)
 })
+
+
+test_that("2020 isn't terribly wrong", {
+  enr_2020 <- fetch_enr(2020, tidy = TRUE)
+  
+  expect_equal(filter(enr_2020,
+                      district_id == '3570',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               36676)
+  
+  
+  expect_equal(filter(enr_2020,
+                      district_id == '3570',
+                      school_id == '303',
+                      grade_level == "01",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               91)
+  
+  
+  expect_equal(filter(enr_2020,
+                      district_id == '3570',
+                      school_id == '004',
+                      program_code == "55",
+                      subgroup == "migrant") %>%
+                 pull(n_students),
+               0)
+  
+  
+  
+})
