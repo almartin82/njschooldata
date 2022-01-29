@@ -35,9 +35,17 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       district_id = kill_padformulas(district_id),
       school_id = kill_padformulas(school_id),
       zip = kill_padformulas(zip),
-      address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA'),
-      address = gsub("\\s+", ' ', address)
-    )
+      address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA')
+      )
+  
+  
+  old_nwk_addresses_RAW <- read_csv("data/nwk_address_addendum.csv",
+                                    col_types = "ccccl")
+  
+  old_nwk_addresses <- old_nwk_addresses_RAW %>%
+    mutate(
+      school_id = str_pad(school_id, 3, pad = '0')
+      )
 
   # geocode
   if (use_cache) {
@@ -56,10 +64,34 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     select(locations, lat, lng) %>%
     rename(
       address = locations
-    )
+    ) %>%
+    mutate(address = str_to_lower(address),
+           address = str_replace(address, "-\\d{4}\\susa", " usa"))
+  
   nj_sch <- nj_sch %>%
-    select(district_id, school_id, address) %>%
+    bind_rows(old_nwk_addresses) %>%
+    mutate(
+      address = gsub("\\s+", ' ', address),
+      address = str_to_lower(address),
+      address = str_replace_all(address, "-\\d{4}\\susa", " usa"),
+      address_2 = case_when(
+        str_detect(address, "street") ~ str_replace(address, "street", "st"),
+        str_detect(address, "avenue") ~ str_replace(address, "avenue", "ave"),
+        str_detect(address, "boulevard") ~ str_replace(address, "boulevard", "blvd"),
+        TRUE ~ address),
+      address_3 = case_when(
+        str_detect(address, "ave,") ~ str_replace(address, "ave,", "avenue,"),
+        str_detect(address, "st,") ~ str_replace(address, "st,", "street,"),
+        str_detect(address, "blvd,") ~ str_replace(address, "blvd,", "boulevard,"),
+        TRUE ~ address1)
+    ) %>%
+    select(district_id, school_id, address, address_2, address_3) %>%
     left_join(geocoded_merge, by = 'address') %>%
+    left_join(geocoded_merge, by = c('address_2' = 'address')) %>%
+    left_join(geocoded_merge, by = c('address_3' = 'address')) %>%
+    mutate(lat = coalesce(lat.x, lat.y, lat),
+           lng = coalesce(lng.x, lng.y, lng)) %>%
+    select(district_id, school_id, address, lat, lng) %>%
     unique()
 
   # join on district and school and return
