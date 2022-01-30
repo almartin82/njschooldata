@@ -10,11 +10,23 @@
 get_raw_enr <- function(end_year) {
   
   #build url
-  enr_filename <- ifelse(end_year < 2020, "enr.zip", "enrollment_1920.zip")
+  enr_filename <- case_when(
+    end_year < 2020 ~ "enr.zip",
+    end_year == 2020 ~ "enrollment_1920.zip",
+    end_year == 2021 ~ "enrollment_2021.zip"
+  )
   
-  enr_url <- paste0(
-    "http://www.nj.gov/education/data/enr/enr", 
-    substr(end_year, 3, 4), "/", enr_filename
+  enr_url <- case_when(
+    # lol they changed the path to /doedata/ from /data/ 🙃
+    # whyyyy
+    end_year >= 2020 ~ paste0(
+      "http://www.nj.gov/education/doedata/enr/enr",
+      substr(end_year, 3, 4), "/", enr_filename
+    ),
+    end_year < 2020 ~ paste0(
+      "http://www.nj.gov/education/data/enr/enr",
+      substr(end_year, 3, 4), "/", enr_filename
+    )
   )
   
   #download and unzip
@@ -38,7 +50,7 @@ get_raw_enr <- function(end_year) {
     } else if (end_year == 2018) {
       enr <- readxl::read_excel(this_file, skip = 1)
     } else if (end_year == 2019) {
-       enr <- readxl::read_excel(this_file, skip = 2)
+      enr <- readxl::read_excel(this_file, skip = 2)
     } else if (end_year > 2019) { 
       # not only does the format change extraordinarily, 
       # they also leave a stray space in this sheet name. 
@@ -75,16 +87,16 @@ get_raw_enr <- function(end_year) {
           `Migrant` = as.numeric(`%Migrant`) / 100 * `Total Enrollment`,
           `Military` = as.numeric(`%Military`) / 100 * `Total Enrollment`,
           `Homeless` = as.numeric(`%Homeless`) / 100 * `Total Enrollment`
-          )
+        )
       
       enr <- enr_dist_sch %>%
         select(`County Code`:`District Name`, `School Code`, `School Name`,
                `Pre-K Halfday`:`Ungraded`) %>%
         pivot_longer(cols = `Pre-K Halfday`:`Ungraded`,
                      names_to = 'Grade', values_to = 'Total Enrollment') %>%
-       bind_rows(enr_dist_sch %>%
-                   select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
-                   mutate(Grade = 'All Grades')) %>%
+        bind_rows(enr_dist_sch %>%
+                    select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
+                    mutate(Grade = 'All Grades')) %>%
         bind_rows(enr_state %>%
                     rename("Total Enrollment" = Total,
                            "Native American" = "American Indian"))
@@ -98,9 +110,9 @@ get_raw_enr <- function(end_year) {
       na = "     . "
     )
   }
-      
-  enr$end_year <- end_year
   
+  enr$end_year <- end_year
+
   # specific fixes
   # 2010 pre-k disabled issue
   if (end_year==2010) {
@@ -433,10 +445,25 @@ clean_enr_data <- function(df) {
   for (i in 1:ncol(df)) {
     z = enr_types[[names(df)[i]]]
     if (z=='numeric') {
+
+      # NJ uses periods for missing / suppressed
+      # make these empty string to reduce
+      # number of "NAs introduced by coercion" warnings
+      df[, i] <- gsub(".", "", df[, i], fixed = TRUE)
+      df[, i] <- gsub(" ,", "", df[, i], fixed = TRUE)
+      df[, i] <- gsub(" ,,", "", df[, i], fixed = TRUE)
+
+      # find non-numerics (useful when debugging)
+      # bad_indices <- which(!grepl('^[0-9]+$|^$', df[, i]))
+      # bad_chars <- df[, i][bad_indices] %>% unique()
+      # if (length(bad_chars) > 0) {
+      #   print(bad_chars %>% unique())
+      # }
+
       df[, i] <- as.numeric(df[, i])
+
     } else if (z=='character') {
       df[, i] <- trim_whitespace(as.character(df[, i]))
-      
     }
   }
   
