@@ -346,6 +346,17 @@ test_that("frl group exists", {
 })
 
 
+test_that("refactor 2010 test", {
+  
+  enr_2010 <- get_raw_enr(2010)
+  
+  expect_equal(dim(enr_2010)[1], 29599)
+  expect_equal(dim(enr_2010)[2], 29)
+  expect_equal(sum(enr_2010$ROW_TOTAL), 11084504)
+  
+})
+
+
 test_that("2020 isn't terribly wrong", {
   enr_2020 <- fetch_enr(2020, tidy = TRUE)
   
