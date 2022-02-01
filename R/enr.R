@@ -515,7 +515,7 @@ arrange_enr <- function(df) {
     
   df <- df %>% 
     dplyr::ungroup() %>%
-    dplyr::select_(
+    dplyr::select(
       ~one_of(clean_names[mask])
     )
   
