@@ -736,9 +736,12 @@ process_enr <- function(df) {
     clean_enr_grade()
   
   # add in gender and racial aggregates
-  if (df$end_year[1] != '2020') cleaned_agg <- enr_aggs(cleaned)
-  else cleaned_agg <- cleaned
-  
+  if (df$end_year[1] != '2020') {
+    cleaned_agg <- enr_aggs(cleaned)
+  } else {
+    cleaned_agg <- cleaned
+  }
+
   #join to program code
   final <- cleaned_agg %>%
     process_enr_program() %>%
