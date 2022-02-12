@@ -42,41 +42,61 @@ get_raw_enr <- function(end_year) {
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
     
-    if (end_year == 2010) {
-      enr <- readxl::read_excel(this_file)
-      # ~~if 2018 skip 3 lines~~
-      # the number of 2018 skip lines is decreasing -- it's 1 now
-    } else if (end_year == 2018) {
-      enr <- readxl::read_excel(this_file, skip = 1)
-    } else if (end_year == 2019) {
-      enr <- readxl::read_excel(this_file, skip = 2)
-    } else if (end_year > 2019) { 
-      # not only does the format change extraordinarily, 
-      # they also leave a stray space in this sheet name. 
-      enr_state <- readxl::read_excel(this_file, sheet = 'State ', skip = 2)
+    to_skip = case_when(
+      end_year == 2018 ~ 1,
+      end_year >= 2019 ~ 2,
+      TRUE ~ 0
+    )
+    if (end_year < 2020) {
+      enr <- readxl::read_excel(this_file, skip = to_skip)
+
+    # starting in the 2020 school year the format changes significantly
+    # three distinct worksheets to combine
+    } else if (end_year >= 2020) {
       
+      # in 2020 they leave a stray space in this sheet name
+      enr_state <- readxl::read_excel(
+        this_file, sheet = ifelse(end_year==2020, 'State ', 'State'), skip = 2
+      )
       enr_dist <- readxl::read_excel(this_file, sheet = 'District', skip = 2)
-      
       enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
       
+      # fix some bad program columns
+      if (end_year == 2020) {
+        enr_dist <- enr_dist %>%
+          rename("Pre-K Halfday" = "Pre -K Halfday",
+                 "Pre-K Fullday" = "Pre-K FullDay")
+        enr_sch <- enr_sch %>%
+          rename("Pre-K Halfday" = "Pre-K Half day",
+                 "Pre-K Fullday" = "Pre-K Full Day")
+      }
+
+      # set some constants
+      enr_dist <- enr_dist %>%
+        mutate(`School Code` = '999',
+               `School Name` = "District Total")
+
       # combine state, dist, sch df by binding dist and sch and then 
       # pivoting grade level columns long
-      enr_dist_sch <- enr_dist %>%
-        mutate(`School Code` = '999',
-               `School Name` = "District Total") %>%
-        rename("Pre-K Halfday" = "Pre -K Halfday",
-               "Pre-K Fullday" = "Pre-K FullDay") %>%
-        bind_rows(enr_sch %>%
-                    rename("Pre-K Halfday" = "Pre-K Half day",
-                           "Pre-K Fullday" = "Pre-K Full Day")) %>%
+      enr_dist_sch <- bind_rows(enr_dist, enr_sch)
+
+      # in 2020 they decided not to report above 95%?!
+      # set to 97.5 to split the difference
+      if (end_year == 2020) {
+          enr_dist_sch <- enr_dist_sch %>%
+            mutate(
+              # >95 to 95 ... maybe not a good decision?
+              `%Free Lunch` = if_else(`%Free Lunch` == ">95", '97.5', `%Free Lunch`),
+              `%Reduced Lunch` = if_else(`%Reduced Lunch` == ">95", '97.5', `%Reduced Lunch`),
+              `%English Learners` = if_else(`%English Learners` == ">95", '97.5', `%English Learners`),
+              `%Migrant` = if_else(`%Migrant` == ">95", '97.5', `%Migrant`),
+              `%Military` = if_else(`%Military` == ">95", '97.5', `%Military`),
+              `%Homeless` = if_else(`%Homeless` == ">95", '97.5', `%Homeless`)
+            )
+      }
+
+      enr_dist_sch <- enr_dist_sch %>%
         mutate(
-          # >95 to 95 ... maybe not a good decision?
-          `%Free Lunch` = if_else(`%Free Lunch` == ">95", '95', `%Free Lunch`),
-          `%Reduced Lunch` = if_else(`%Reduced Lunch` == ">95", '95', `%Reduced Lunch`),
-          `%English Learners` = if_else(`%English Learners` == ">95", '95', `%English Learners`),
-          `%Migrant` = if_else(`%Migrant` == ">95", '95', `%Migrant`),
-          `%Military` = if_else(`%Military` == ">95", '95', `%Military`),
-          `%Homeless` = if_else(`%Homeless` == ">95", '95', `%Homeless`),
           # populations in this mutate block are only reported as pcts,
           # so convert percents into counts
           `Free Lunch` = as.numeric(`%Free Lunch`) / 100 * `Total Enrollment`,
@@ -96,11 +116,9 @@ get_raw_enr <- function(end_year) {
                     select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
                     mutate(Grade = 'All Grades')) %>%
         bind_rows(enr_state %>%
-                    rename("Total Enrollment" = Total,
+                    rename("Total Enrollment" = 'Total',
                            "Native American" = "American Indian"))
       
-    }  else {
-      enr <- readxl::read_excel(this_file)
     }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
@@ -720,7 +738,7 @@ process_enr <- function(df) {
       )
     )
     
-    if (df$end_year[1] != '2020') {
+    if (df$end_year[1] < 2020) {
       df <- df %>%
         left_join(gl_program_df, by = 'program_name')
     }
@@ -735,7 +753,7 @@ process_enr <- function(df) {
     clean_enr_grade()
   
   # add in gender and racial aggregates
-  if (df$end_year[1] != '2020') {
+  if (df$end_year[1] < 2020) {
     cleaned_agg <- enr_aggs(cleaned)
   } else {
     cleaned_agg <- cleaned
