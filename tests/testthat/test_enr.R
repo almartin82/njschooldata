@@ -385,7 +385,33 @@ test_that("2020 isn't terribly wrong", {
                       subgroup == "migrant") %>%
                  pull(n_students),
                0)
+})
+
+
+test_that("2021 makes sense", {
+  enr_2021 <- fetch_enr(2021, tidy = TRUE)
   
-  
-  
+  expect_equal(filter(enr_2021,
+                      district_id == '3570',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               36405)
+
+  expect_equal(filter(enr_2021,
+                      district_id == '3570',
+                      school_id == '303',
+                      grade_level == "01",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               82)
+
+  expect_equal(filter(enr_2021,
+                      district_id == '3570',
+                      school_id == '004',
+                      program_code == "55",
+                      subgroup == "migrant") %>%
+                 pull(n_students),
+               0)
 })
