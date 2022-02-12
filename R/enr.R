@@ -59,7 +59,6 @@ get_raw_enr <- function(end_year) {
       
       enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
       
-      
       # combine state, dist, sch df by binding dist and sch and then 
       # pivoting grade level columns long
       enr_dist_sch <- enr_dist %>%
@@ -608,8 +607,7 @@ enr_aggs <- function(df) {
 process_enr <- function(df) {
 
   # if no grade level
-  if (!'grade_level' %in% tolower(names(df)) | 
-      df$end_year[1] == "2018") {
+  if (!'grade_level' %in% tolower(names(df)) | df$end_year[1] == "2018") {
     
      # something weird w/ 2018 grade levels; proceed as if they aren't there
      if (df$end_year[1] == "2018") df <- select(df, -Grade_Level)
