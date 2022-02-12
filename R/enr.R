@@ -451,6 +451,7 @@ clean_enr_data <- function(df) {
       df[, i] <- gsub(".", "", df[, i], fixed = TRUE)
       df[, i] <- gsub(" ,", "", df[, i], fixed = TRUE)
       df[, i] <- gsub(" ,,", "", df[, i], fixed = TRUE)
+      df[, i] <- gsub(",", "", df[, i], fixed = TRUE)
 
       # find non-numerics (useful when debugging)
       # bad_indices <- which(!grepl('^[0-9]+$|^$', df[, i]))
