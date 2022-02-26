@@ -414,7 +414,7 @@ grad_file_group_cleanup <- function(group) {
 
 get_raw_grad_file <- function(end_year, methodology = '4 year') {
 
-  if (end_year < 1998 | end_year > 2019) {
+  if (end_year < 1998 | end_year > 2020) {
     stop('year not yet supported')
   }
 
@@ -554,7 +554,7 @@ id_grad_aggs <- function(df) {
 #' @return dataframe with the number of graduates per school and district
 
 get_grad_count <- function(end_year) {
-   if (end_year < 2012 | end_year > 2019)
+   if (end_year < 2012 | end_year > 2020)
       stop(paste0(end_year, " not yet supported."))
 
   df <- get_raw_grad_file(end_year)
@@ -780,7 +780,7 @@ fetch_grad_count <- function(end_year) {
 #' @export
 
 get_grad_rate <- function(end_year, methodology) {
-  if (end_year < 2011 | end_year > 2019) {
+  if (end_year < 2011 | end_year > 2020) {
     stop('year not yet supported')
   }
 
