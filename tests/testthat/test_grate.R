@@ -14,25 +14,59 @@ grad_rate_cols <- c(
 )
 
 
+
+## what does grad rate file currently work for?!
+### 4 year
+test_that('raw grad rate file, 4 year', {
+  # njdoe broke these by totally changing the way the files are published
+  ex_2012 <- get_raw_grad_file(2012, '4 year')
+  ex_2013 <- get_raw_grad_file(2013, '4 year')
+  ex_2014 <- get_raw_grad_file(2014, '4 year')
+  ex_2015 <- get_raw_grad_file(2015, '4 year')
+  ex_2016 <- get_raw_grad_file(2016, '4 year')
+  ex_2017 <- get_raw_grad_file(2017, '4 year')
+  ex_2018 <- get_raw_grad_file(2018, '4 year')
+  # works
+  ex_2019 <- get_raw_grad_file(2019, '4 year')
+  ex_2020 <- get_raw_grad_file(2020, '4 year')
+})
+
+### 5 year
+test_that('raw grad rate file, 5 year', {
+  ex_2012 <- get_raw_grad_file(2012, '5 year')
+  ex_2013 <- get_raw_grad_file(2013, '5 year')
+  ex_2014 <- get_raw_grad_file(2014, '5 year')
+  ex_2015 <- get_raw_grad_file(2015, '5 year')
+  ex_2016 <- get_raw_grad_file(2016, '5 year')
+  ex_2017 <- get_raw_grad_file(2017, '5 year')
+  ex_2018 <- get_raw_grad_file(2018, '5 year')
+  ex_2019 <- get_raw_grad_file(2019, '5 year')
+})
+
+
+
 ## 4 year
 test_that('fetch_grad_rate works with 4 year', {
-   ex0 <- fetch_grad_rate(2012, '4 year')
-   ex1 <- fetch_grad_rate(2013, '4 year')
-   ex2 <- fetch_grad_rate(2014, '4 year')
-   ex3 <- fetch_grad_rate(2015, '4 year')
-   ex4 <- fetch_grad_rate(2016, '4 year')
-   ex5 <- fetch_grad_rate(2017, '4 year')
-   ex6 <- fetch_grad_rate(2018, '4 year')
-   ex7 <- fetch_grad_rate(2019, '4 year')
-
-   expect_is(ex0, 'data.frame')
-   expect_is(ex1, 'data.frame')
-   expect_is(ex2, 'data.frame')
-   expect_is(ex3, 'data.frame')
-   expect_is(ex4, 'data.frame')
-   expect_is(ex5, 'data.frame')
-   expect_is(ex6, 'data.frame')
-   expect_is(ex7, 'data.frame')
+  #broken
+  ex0 <- fetch_grad_rate(2012, '4 year')
+  ex1 <- fetch_grad_rate(2013, '4 year')
+  ex2 <- fetch_grad_rate(2014, '4 year')
+  ex3 <- fetch_grad_rate(2015, '4 year')
+  ex4 <- fetch_grad_rate(2016, '4 year')
+  ex5 <- fetch_grad_rate(2017, '4 year')
+  ex6 <- fetch_grad_rate(2018, '4 year')
+  # works
+  ex7 <- fetch_grad_rate(2019, '4 year')
+  ex8 <- fetch_grad_rate(2020, '4 year')
+   
+  expect_is(ex0, 'data.frame')
+  expect_is(ex1, 'data.frame')
+  expect_is(ex2, 'data.frame')
+  expect_is(ex3, 'data.frame')
+  expect_is(ex4, 'data.frame')
+  expect_is(ex5, 'data.frame')
+  expect_is(ex6, 'data.frame')
+  expect_is(ex7, 'data.frame')
 })
 
 test_that('fetch_grad_rate all years', {
@@ -127,7 +161,8 @@ test_that('fetch_grad_rate works with 5 year', {
   ex4 <- fetch_grad_rate(2016, '5 year')
   ex5 <- fetch_grad_rate(2017, '5 year')
   ex6 <- fetch_grad_rate(2018, '5 year')
-
+  ex6 <- fetch_grad_rate(2019, '5 year')
+  
   expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
   expect_is(ex2, 'data.frame')
