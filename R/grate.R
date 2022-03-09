@@ -76,7 +76,13 @@ process_grate <- function(df, end_year) {
 
   for (i in numeric_cols) {
     if (i %in% names(df)) {
-      df[, i] <- df %>% dplyr::pull(i) %>% as.numeric()
+      df <- df %>%
+        dplyr::mutate({{i}} := as.numeric(
+                            dplyr::if_else(stringr::str_detect(.data[[i]], "\\*|N|-"),
+                                           NA_character_,
+                                           .data[[i]])
+                                      )
+                      )
     }
   }
 
@@ -318,7 +324,18 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     )] <- 'grad_rate'
 
     if (class(df$grad_rate) == "character") {
-       df$grad_rate <- as.numeric(df$grad_rate) / 100
+
+      df <- df %>%  dplyr::mutate(grad_rate =
+                             as.numeric(
+                               dplyr::if_else(stringr::str_detect(grad_rate, "\\*|N|-"),
+                                              NA_character_,
+                                              grad_rate)
+                               ),
+                             grad_rate = grad_rate / 100
+                             )
+
+
+       #df$grad_rate <- df$grad_rate / 100
     }
 
     if (!'cohort_count' %in% names(df)) {
