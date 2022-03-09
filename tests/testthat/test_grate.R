@@ -95,6 +95,30 @@ test_that("ground truth values on 2019 grate", {
 })
 
 
+test_that("ground truth values on 2020 grate", {
+  ex <- fetch_grad_rate(2020)
+  expect_is(ex, "data.frame")
+  expect_equal(names(ex), grad_rate_cols)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'black') %>%
+                 pull(grad_rate), 0.754)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'white') %>%
+                 pull(grad_rate), NA_real_)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'students with disability') %>%
+                 pull(grad_rate), 0.672)
+})
+
 
 ## 5 year
 test_that('five year window is in more recent data', {
@@ -112,8 +136,9 @@ test_that('get_raw_grate works with 5 year', {
   ex4 <- get_grad_rate(2016, '5 year')
   ex5 <- get_grad_rate(2017, '5 year')
   ex6 <- get_grad_rate(2018, '5 year')
+  ex7 <- get_grad_rate(2019, '5 year')
 
-  expect_is(ex0, 'data.frame')
+  #expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
   expect_is(ex2, 'data.frame')
   expect_is(ex3, 'data.frame')

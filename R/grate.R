@@ -313,7 +313,8 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       "cohort 2015 5 year graduation rate",
       "cohort 2016 5 year graduation rate",
       'class of 2017 5-year graduation rate',
-      "cohort 2018 5-year graduation rate"
+      "cohort 2018 5-year graduation rate",
+      "cohort 2019 5-year graduation rate"
     )] <- 'grad_rate'
 
     if (class(df$grad_rate) == "character") {
@@ -359,7 +360,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
   } else if (end_year %in%  c(2011, 2012, 2020)) {
     out <- tidy_new_format(df)
   #2013 shifted to long format
-  } else if (end_year >= 2013) {
+  } else if (end_year > 2012) {
     # 5 year doesn't have group
     if (methodology == '5 year') {
       df <- tidy_new_format(df)
@@ -369,7 +370,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     out <- df
   }
 
-  # 2018 and 2019 silly row
+  # 2018 and 2019 and 2020 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
 
   out$group <- grad_file_group_cleanup(out$group)
@@ -507,27 +508,29 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
       if (end_year < 2012) {
          stop(paste0('5 year grad rate not available for ending year ', end_year))
 
-      }  else if (end_year <= 2014) {
-         #build url
-         grate_url <- paste0(
-            "http://www.state.nj.us/education/data/grate/", end_year + 1,
-            "/4And5YearCohort", substr(end_year, 3, 4), ".xlsx"
-         )
-         num_skip <- 0
+      }  else if (end_year == 2012) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2013_4And5YearCohort12.xlsx'
+        num_skip <- 0
+
+
+      }  else if (end_year == 2013) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2014_4And5YearCohort13.xlsx'
+        num_skip <- 0
+
+      }  else if (end_year == 2014) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2015_4And5YearCohort14.xlsx'
+        num_skip <- 0
 
       } else if (end_year == 2015) {
-         grate_url <- 'https://www.state.nj.us/education/data/grate/2016/4And5YearCohort14.xlsx'
+         grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2016_4And5YearCohort14.xlsx'
          num_skip <- 0
 
       } else if (end_year == 2016) {
-         grate_url <- 'https://www.state.nj.us/education/data/grate/2017/4And5YearCohort.xlsx'
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2017_4And5YearCohort.xlsx"
          num_skip <- 0
 
       } else if (end_year == 2017) {
-         grate_url <- paste0(
-            "http://www.state.nj.us/education/data/grate/", end_year + 1,
-            "/4and5YearGraduationRates.xlsx"
-         )
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2018_4and5YearGraduationRates.xlsx"
          num_skip <- 3
 
       } else if (end_year == 2018) {
@@ -537,7 +540,8 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
       } else if (end_year == 2019){
         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202019%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
         num_skip <- 3
-        }
+
+      }
 
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
