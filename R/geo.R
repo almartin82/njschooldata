@@ -37,6 +37,15 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       zip = kill_padformulas(zip),
       address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA')
       )
+  
+  
+  old_nwk_addresses_RAW <- read_csv("data/nwk_address_addendum.csv",
+                                    col_types = "ccccl")
+  
+  old_nwk_addresses <- old_nwk_addresses_RAW %>%
+    mutate(
+      school_id = str_pad(school_id, 3, pad = '0')
+      )
 
   # geocode
   if (use_cache) {
