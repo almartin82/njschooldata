@@ -138,7 +138,7 @@ test_that('get_raw_grate works with 5 year', {
   ex6 <- get_grad_rate(2018, '5 year')
   ex7 <- get_grad_rate(2019, '5 year')
 
-  #expect_is(ex0, 'data.frame')
+  expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
   expect_is(ex2, 'data.frame')
   expect_is(ex3, 'data.frame')
