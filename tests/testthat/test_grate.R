@@ -24,6 +24,7 @@ test_that('fetch_grad_rate works with 4 year', {
    ex5 <- fetch_grad_rate(2017, '4 year')
    ex6 <- fetch_grad_rate(2018, '4 year')
    ex7 <- fetch_grad_rate(2019, '4 year')
+   ex8 <- fetch_grad_rate(2020, '4 year')
 
    expect_is(ex0, 'data.frame')
    expect_is(ex1, 'data.frame')
@@ -33,12 +34,14 @@ test_that('fetch_grad_rate works with 4 year', {
    expect_is(ex5, 'data.frame')
    expect_is(ex6, 'data.frame')
    expect_is(ex7, 'data.frame')
+   expect_is(ex8, 'data.frame')
 })
 
 test_that('fetch_grad_rate all years', {
 
    expect_error(fetch_grad_rate(2010))
-   grr12 <- fetch_grad_rate(2011)
+   expect_error(fetch_grad_rate(2011))
+   #grr12 <- fetch_grad_rate(2011)
    grr13 <- fetch_grad_rate(2012)
    grr14 <- fetch_grad_rate(2013)
    grr15 <- fetch_grad_rate(2014)
@@ -47,7 +50,8 @@ test_that('fetch_grad_rate all years', {
    grr18 <- fetch_grad_rate(2017)
    grr19 <- fetch_grad_rate(2018)
    grr20 <- fetch_grad_rate(2019)
-   expect_error(fetch_grad_rate(2020))
+   grr20 <- fetch_grad_rate(2020)
+   expect_error(fetch_grad_rate(2021))
 
 })
 
@@ -91,6 +95,30 @@ test_that("ground truth values on 2019 grate", {
 })
 
 
+test_that("ground truth values on 2020 grate", {
+  ex <- fetch_grad_rate(2020)
+  expect_is(ex, "data.frame")
+  expect_equal(names(ex), grad_rate_cols)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'black') %>%
+                 pull(grad_rate), 0.754)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'white') %>%
+                 pull(grad_rate), NA_real_)
+
+  expect_equal(filter(ex,
+                      district_id == '3570',
+                      school_id == '030',
+                      subgroup == 'students with disability') %>%
+                 pull(grad_rate), 0.672)
+})
+
 
 ## 5 year
 test_that('five year window is in more recent data', {
@@ -108,6 +136,7 @@ test_that('get_raw_grate works with 5 year', {
   ex4 <- get_grad_rate(2016, '5 year')
   ex5 <- get_grad_rate(2017, '5 year')
   ex6 <- get_grad_rate(2018, '5 year')
+  ex7 <- get_grad_rate(2019, '5 year')
 
   expect_is(ex0, 'data.frame')
   expect_is(ex1, 'data.frame')
@@ -203,14 +232,14 @@ test_that("ground truth values on 2019 grad count", {
 
 test_that("grad counts correctly enriched", {
   grate_19 <- fetch_grad_rate(2019)
-  
+
   ex <- enrich_grad_count(grate_19, 2019)
-  
+
   ex_row <- ex %>%
     filter(district_id == '3570',
            school_id == '055',
            subgroup == 'total population')
-  
+
   expect_equal(pull(ex_row, graduated_count.x),
                pull(ex_row, graduated_count.y))
   })
