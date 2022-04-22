@@ -47,17 +47,21 @@ process_grate <- function(df, end_year) {
   names(df)[names(df) %in% c('2/MORE_RACES_M(NON_HISP)', '2_MORE_M')] <- 'multiracial_m'
   names(df)[names(df) %in% c('2/MORE_RACES_F(NON_HISP)', '2_MORE_F')] <- 'multiracial_f'
 
-  names(df)[names(df) %in% c('SUBGROUP', 'Subgroup')] <- 'group'
+  names(df)[names(df) %in% c('SUBGROUP', 'Subgroup', "Student Group")] <- 'group'
   names(df)[names(df) %in% c(
     'Four Year Graduation Rate',
     '2011 Adjusted Cohort Grad Rate',
     '2012 Adjusted Cohort Grad Rate',
-    'FOUR_YR_GRAD_RATE'
+    'FOUR_YR_GRAD_RATE',
+    'Graduation Rate'
   )] <- 'grad_rate'
   names(df)[names(df) %in% c('Four Year Adjusted Cohort Count', 'FOUR_YR_ADJ_COHORT_COUNT')] <- 'cohort_count'
   names(df)[names(df) %in% c('Four Year Graduates Count', 'GRADUATED_COUNT')] <- 'graduated_count'
 
   names(df) <- names(df) %>% tolower()
+
+
+
 
   numeric_cols <- c("rowtotal", "female", "male",
     "white", "black", "hispanic", "native_american",
@@ -72,7 +76,13 @@ process_grate <- function(df, end_year) {
 
   for (i in numeric_cols) {
     if (i %in% names(df)) {
-      df[, i] <- df %>% dplyr::pull(i) %>% as.numeric()
+      df <- df %>%
+        dplyr::mutate({{i}} := as.numeric(
+                            dplyr::if_else(stringr::str_detect(.data[[i]], "\\*|N|-"),
+                                           NA_character_,
+                                           .data[[i]])
+                                      )
+                      )
     }
   }
 
@@ -309,11 +319,23 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       "cohort 2015 5 year graduation rate",
       "cohort 2016 5 year graduation rate",
       'class of 2017 5-year graduation rate',
-      "cohort 2018 5-year graduation rate"
+      "cohort 2018 5-year graduation rate",
+      "cohort 2019 5-year graduation rate"
     )] <- 'grad_rate'
 
     if (class(df$grad_rate) == "character") {
-       df$grad_rate <- as.numeric(df$grad_rate) / 100
+
+      df <- df %>%  dplyr::mutate(grad_rate =
+                             as.numeric(
+                               dplyr::if_else(stringr::str_detect(grad_rate, "\\*|N|-"),
+                                              NA_character_,
+                                              grad_rate)
+                               ),
+                             grad_rate = grad_rate / 100
+                             )
+
+
+       #df$grad_rate <- df$grad_rate / 100
     }
 
     if (!'cohort_count' %in% names(df)) {
@@ -351,10 +373,11 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
 
     out <- dplyr::rbind_all(sch_list)
   #cohort 2011-2012 didn't report subgroups method (different file structure)
-  } else if (end_year %in%  c(2011, 2012)) {
+  #cohort 2020 lacks cohortcount and graduated_count columns . . . . yeah!
+  } else if (end_year %in%  c(2011, 2012, 2020)) {
     out <- tidy_new_format(df)
   #2013 shifted to long format
-  } else if (end_year >= 2013) {
+  } else if (end_year > 2012) {
     # 5 year doesn't have group
     if (methodology == '5 year') {
       df <- tidy_new_format(df)
@@ -364,7 +387,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
     out <- df
   }
 
-  # 2018 and 2019 silly row
+  # 2018 and 2019 and 2020 silly row
   out <- out %>% filter(!county_id == 'end of worksheet')
 
   out$group <- grad_file_group_cleanup(out$group)
@@ -414,7 +437,7 @@ grad_file_group_cleanup <- function(group) {
 
 get_raw_grad_file <- function(end_year, methodology = '4 year') {
 
-  if (end_year < 1998 | end_year > 2019) {
+  if (end_year < 1998 | end_year > 2021) {
     stop('year not yet supported')
   }
 
@@ -447,35 +470,54 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
 
       # 2012 they transition the format but post it in a weird location
       } else if (end_year == 2012) {
-         grate_url <- 'https://www.state.nj.us/education/data/grate/2012/grd.xls'
+         grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2012_grd.xls'
          grate_file <- tempfile(fileext = ".xls")
          httr::GET(url = grate_url, httr::write_disk(grate_file))
          df <- readxl::read_excel(grate_file)
 
       # 2013 on is the cohort grad rate era
-      } else if (end_year >= 2013 & end_year <= 2018) {
+      } else if (end_year >= 2013 & end_year <= 2017) {
          #build url
-         basic_suffix <- "/4Year.xlsx"
+         basic_suffix <- "_4Year.xlsx"
          num_skip <- 0
 
-         if (end_year >= 2018) {
-            basic_suffix <- "/4YearGraduation.xlsx"
-            num_skip <- 3
-         }
+         # if (end_year >= 2018) {
+         #    basic_suffix <- "/4YearGraduation.xlsx"
+         #    num_skip <- 3
+         # }
 
-         grate_url <- paste0("http://www.state.nj.us/education/data/grate/", end_year, basic_suffix)
+         grate_url <- paste0("https://www.nj.gov/education/schoolperformance/grad/data/ACGR", end_year, basic_suffix)
          grate_file <- tempfile(fileext = ".xlsx")
          httr::GET(url = grate_url, httr::write_disk(grate_file))
          df <- readxl::read_excel(grate_file, skip = num_skip)
 
-      } else { # if year == 2019
+
+
+      # starting in 2018 the URLS are inconsistent, so better, for now to hard code them
+      } else if (end_year == 2018) {
+        # new location!
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2018_4YearGraduation.xlsx"
+        num_skip <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+
+
+      } else if (end_year == 2019) {
          # new location!
          grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202019%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
          num_skip <- 3
          grate_file <- tempfile(fileext = ".xlsx")
          httr::GET(url = grate_url, httr::write_disk(grate_file))
          df <- readxl::read_excel(grate_file, skip = num_skip)
-      }
+
+      } else if (end_year == 2020) {
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202020%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+        num_skip  <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+        }
 
    ########## 5 year ##########
    } else if (methodology == '5 year') {
@@ -483,32 +525,39 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
       if (end_year < 2012) {
          stop(paste0('5 year grad rate not available for ending year ', end_year))
 
-      }  else if (end_year <= 2014) {
-         #build url
-         grate_url <- paste0(
-            "http://www.state.nj.us/education/data/grate/", end_year + 1,
-            "/4And5YearCohort", substr(end_year, 3, 4), ".xlsx"
-         )
-         num_skip <- 0
+      }  else if (end_year == 2012) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2013_4And5YearCohort12.xlsx'
+        num_skip <- 0
+
+
+      }  else if (end_year == 2013) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2014_4And5YearCohort13.xlsx'
+        num_skip <- 0
+
+      }  else if (end_year == 2014) {
+        grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2015_4And5YearCohort14.xlsx'
+        num_skip <- 0
 
       } else if (end_year == 2015) {
-         grate_url <- 'https://www.state.nj.us/education/data/grate/2016/4And5YearCohort14.xlsx'
+         grate_url <- 'https://www.nj.gov/education/schoolperformance/grad/data/ACGR2016_4And5YearCohort14.xlsx'
          num_skip <- 0
 
       } else if (end_year == 2016) {
-         grate_url <- 'https://www.state.nj.us/education/data/grate/2017/4And5YearCohort.xlsx'
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2017_4And5YearCohort.xlsx"
          num_skip <- 0
 
       } else if (end_year == 2017) {
-         grate_url <- paste0(
-            "http://www.state.nj.us/education/data/grate/", end_year + 1,
-            "/4and5YearGraduationRates.xlsx"
-         )
+         grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2018_4and5YearGraduationRates.xlsx"
          num_skip <- 3
 
-      } else { # if (end_year == 2018) {
+      } else if (end_year == 2018) {
          grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202018%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
          num_skip <- 3
+
+      } else if (end_year == 2019){
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202019%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
+        num_skip <- 3
+
       }
 
       grate_file <- tempfile(fileext = ".xlsx")
@@ -780,7 +829,7 @@ fetch_grad_count <- function(end_year) {
 #' @export
 
 get_grad_rate <- function(end_year, methodology) {
-  if (end_year < 2011 | end_year > 2019) {
+  if (end_year < 2011 | end_year > 2021) {
     stop('year not yet supported')
   }
 
@@ -905,27 +954,27 @@ gcount_column_order <- function(df) {
 }
 
 
-#' Enrich report card matriculation percentages with best guesses at 
+#' Enrich report card matriculation percentages with best guesses at
 #' graduated students
-#' 
+#'
 #' @param df data frame of including subgroup percentages
 #' @param end_year numeric end year of grad counts to join
-#' 
+#'
 #' @return data_frame
 #' @export
 enrich_grad_count <- function(df, end_year) {
-  
+
   grad_counts <- fetch_grad_count(end_year) %>%
     select(end_year, county_id, district_id, school_id,
            subgroup, graduated_count, cohort_count)
-    
+
   out <- df %>%
     left_join(grad_counts,
               by = c("end_year", "county_id",
                      "district_id",
                      "school_id", "subgroup"))
-  
+
   return(out)
-    
+
 }
 
