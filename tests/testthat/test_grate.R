@@ -242,4 +242,17 @@ test_that("grad counts correctly enriched", {
 
   expect_equal(pull(ex_row, graduated_count.x),
                pull(ex_row, graduated_count.y))
-  })
+  
+
+  grate_20 <- fetch_grad_rate(2020)
+  ex2 <- enrich_grad_count(grate_20, 2020)
+  
+  ex_row <- ex %>%
+    filter(district_id == '3570',
+           school_id == '055',
+           subgroup == 'total population')
+  
+  expect_equal(pull(ex_row, graduated_count.x),
+               pull(ex_row, graduated_count.y))
+  
+})
