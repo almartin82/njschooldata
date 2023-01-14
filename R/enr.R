@@ -4,30 +4,28 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2022.
+#' school year is year '2007'.  valid values are 2000-2022.
 #' @export
 
 get_raw_enr <- function(end_year) {
   
-  #build url
-  enr_filename <- case_when(
-    end_year < 2020 ~ "enr.zip",
-    end_year == 2020 ~ "enrollment_1920.zip",
-    end_year == 2021 ~ "enrollment_2021.zip",
-    end_year == 2022 ~ "enrollment_2122.zip"
+  # sometime in 2022 they ripped, replaced, and rationalized the
+  # url pattern for historic data
+  # website claims to have 98-99 data but link is broken
+  
+  # build url
+  yy <- substr(end_year, 3, 4)
+  enr_folder <- paste0("enr", yy)
+  
+  enr_filename <- paste0(
+    "enrollment_",
+    substr(end_year - 1, 3, 4),
+    yy,
+    ".zip"
   )
   
-  enr_url <- case_when(
-    # lol they changed the path to /doedata/ from /data/ 🙃
-    # whyyyy
-    end_year >= 2020 ~ paste0(
-      "http://www.nj.gov/education/doedata/enr/enr",
-      substr(end_year, 3, 4), "/", enr_filename
-    ),
-    end_year < 2020 ~ paste0(
-      "http://www.nj.gov/education/data/enr/enr",
-      substr(end_year, 3, 4), "/", enr_filename
-    )
+  enr_url <- paste0(
+    "https://www.nj.gov/education/doedata/enr/", enr_folder, "/", enr_filename    
   )
   
   #download and unzip

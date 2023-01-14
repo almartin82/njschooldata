@@ -102,12 +102,12 @@ test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
 
 test_that("all enrollment data can be pulled", {
   enr_all <- map_df(
-    c(1999:2018),
+    c(2000:2018),
     fetch_enr
   )
 
   expect_is(enr_all, 'data.frame')
-  expect_equal(nrow(enr_all), 559791)
+  expect_equal(nrow(enr_all), 529787)
   expect_equal(ncol(enr_all), 42)
 })
 
@@ -443,4 +443,10 @@ test_that("2022 makes sense", {
                       subgroup == "migrant") %>%
                  pull(n_students),
                0)
+})
+
+test_that("1999-2000 works again", {
+  ex <- fetch_enr(2000)
+  expect_is(ex, 'data.frame')
+  
 })
