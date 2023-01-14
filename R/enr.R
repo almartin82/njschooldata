@@ -4,7 +4,7 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 1999-2020.
+#' school year is year '2007'.  valid values are 1999-2022.
 #' @export
 
 get_raw_enr <- function(end_year) {
@@ -13,7 +13,8 @@ get_raw_enr <- function(end_year) {
   enr_filename <- case_when(
     end_year < 2020 ~ "enr.zip",
     end_year == 2020 ~ "enrollment_1920.zip",
-    end_year == 2021 ~ "enrollment_2021.zip"
+    end_year == 2021 ~ "enrollment_2021.zip",
+    end_year == 2022 ~ "enrollment_2122.zip"
   )
   
   enr_url <- case_when(
