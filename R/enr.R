@@ -66,8 +66,11 @@ get_raw_enr <- function(end_year) {
           rename("Pre-K Halfday" = "Pre -K Halfday",
                  "Pre-K Fullday" = "Pre-K FullDay")
         enr_sch <- enr_sch %>%
-          rename("Pre-K Halfday" = "Pre-K Half day",
-                 "Pre-K Fullday" = "Pre-K Full Day")
+          rename(# sometime after 2020 they #fixed the above errors, 
+                 # but only in the enr_sch file and in so doing 
+                 # introduced this magnificent error 🤡
+                 "Pre-K Fullday" = "Pre-K\r\n Full day",
+                 "Pre-K Halfday" = "Pre-K Half Day")
       }
 
       # set some constants
