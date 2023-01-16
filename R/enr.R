@@ -125,7 +125,7 @@ get_raw_enr <- function(end_year) {
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
       file = file.path(tdir, enr_files$Name[1]),
-      na = "     . ",
+      na = c("     . ", ""),
       show_col_types = FALSE
     )
   }
