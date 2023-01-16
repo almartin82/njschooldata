@@ -445,8 +445,16 @@ test_that("2022 makes sense", {
                0)
 })
 
+
 test_that("1999-2000 works again", {
   ex <- fetch_enr(2000)
   expect_is(ex, 'data.frame')
   
+})
+
+
+test_that("2020 works again", {
+  ex <- fetch_enr(2020)
+  expect_is(ex, 'data.frame')
+
 })
