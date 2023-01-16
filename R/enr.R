@@ -385,7 +385,6 @@ clean_enr_names <- function(df) {
     "Row_Total" = "row_total",
     "Total Enrollment" = "row_total",
     
-    
     #very inconsistently reported
     "HOMELESS" = "homeless",
     "Homeless" = "homeless",
