@@ -102,12 +102,12 @@ test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
 
 test_that("all enrollment data can be pulled", {
   enr_all <- map_df(
-    c(2000:2018),
+    c(2000:2022),
     fetch_enr
   )
 
   expect_is(enr_all, 'data.frame')
-  expect_equal(nrow(enr_all), 529787)
+  expect_equal(nrow(enr_all), 727779)
   expect_equal(ncol(enr_all), 42)
 })
 
