@@ -125,7 +125,7 @@ get_raw_enr <- function(end_year) {
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
       file = file.path(tdir, enr_files$Name[1]),
-      na = c("     . ", ""),
+      na = c("     . ", ".", ""),
       show_col_types = FALSE
     )
   }
@@ -385,7 +385,6 @@ clean_enr_names <- function(df) {
     "Row_Total" = "row_total",
     "Total Enrollment" = "row_total",
     
-    
     #very inconsistently reported
     "HOMELESS" = "homeless",
     "Homeless" = "homeless",
@@ -459,16 +458,12 @@ clean_enr_data <- function(df) {
   df <- as.data.frame(df)
   
   #some old files (eg 02-03) have random, unlabeled rows.  kill those.
-  df <- df[nchar(df$county_name) >0, ]
+  df <- df[nchar(df$county_name) > 0, ]
   
   for (i in 1:ncol(df)) {
     z = enr_types[[names(df)[i]]]
     if (z=='numeric') {
 
-      # NJ uses periods for missing / suppressed
-      # make these empty string to reduce
-      # number of "NAs introduced by coercion" warnings
-      df[, i] <- gsub(".", "", df[, i], fixed = TRUE)
       df[, i] <- gsub(" ,", "", df[, i], fixed = TRUE)
       df[, i] <- gsub(" ,,", "", df[, i], fixed = TRUE)
       df[, i] <- gsub(",", "", df[, i], fixed = TRUE)
