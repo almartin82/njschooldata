@@ -504,3 +504,18 @@ test_that("princeton data looks reasonable", {
   expect_equal(filtered_fetch$row_total, 3164.5)
 
 })
+
+
+test_that("look at all enr data to see if there are parsing problems", {
+  
+  all_years <- c(2000:2022)
+
+  # clear warnings
+  assign("last.warning", NULL, envir = baseenv())
+  for (i in all_years) {
+    print(i)
+    enr_output = fetch_enr(i)
+    expect_is(enr_output, 'data.frame')
+  }
+  expect_true(is.null(warnings()))
+})
