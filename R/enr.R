@@ -60,19 +60,6 @@ get_raw_enr <- function(end_year) {
       enr_dist <- readxl::read_excel(this_file, sheet = 'District', skip = 2)
       enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
       
-      # fix some bad program columns
-      if (end_year == 2020) {
-        enr_dist <- enr_dist %>%
-          rename("Pre-K Halfday" = "Pre -K Halfday",
-                 "Pre-K Fullday" = "Pre-K FullDay")
-        enr_sch <- enr_sch %>%
-          rename(# sometime after 2020 they #fixed the above errors, 
-                 # but only in the enr_sch file and in so doing 
-                 # introduced this magnificent error 🤡
-                 "Pre-K Fullday" = "Pre-K\r\n Full day",
-                 "Pre-K Halfday" = "Pre-K Half Day")
-      }
-
       # set some constants
       enr_dist <- enr_dist %>%
         mutate(`School Code` = '999',
@@ -656,15 +643,38 @@ process_enr <- function(df) {
           "First Grade", "Second Grade", "Third Grade", "Fourth Grade",
           "Fifth Grade", "Sixth Grade", "Seventh Grade", "Eighth Grade",
           "Ninth Grade", "Tenth Grade", "Eleventh Grade", "Twelfth Grade", 
-          "Ungraded", "All Grades"
+          "Ungraded", "All Grades",
+          
+          # as always the dumb typos section
+          "Pre -K Halfday",  # 2020
+          "Pre-K FullDay",  # 2020, 2021
+          "Pre-K\r\n Full day",  # 2020 
+          "Pre-K Half Day",  # 2020?
+          "Eight Grade"  # 2021
+          
           ),
         program_code = c(
           "PH", "PF", "KH", "KF", "01", "02", "03", "04", "05",
-          "06", "07", "08", "09", "10", "11", "12", "UG", "55"
+          "06", "07", "08", "09", "10", "11", "12", "UG", "55",
+          
+          # delicious typos
+          "PH",
+          "PF",
+          "PF",
+          "PH",
+          "08"
+          
         ),
         grade_level = c(
           "PK", "PK", "K", "K", "01", "02", "03", "04", "05",
-          "06", "07", "08", "09", "10", "11", "12", "UG", "TOTAL"
+          "06", "07", "08", "09", "10", "11", "12", "UG", "TOTAL",
+          
+          # typos
+          "PK",
+          "PK",
+          "PK",
+          "PK",
+          "08"
         )
       )
       
