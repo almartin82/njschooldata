@@ -650,15 +650,22 @@ process_enr <- function(df) {
     # there isn't in 2020...
     if (!"program_code" %in% names(df)) {
       convert_from_grade = data.frame(
-        Grade = c("Pre-K Halfday", "Pre-K Fullday", "Kindergarten Halfday",
-                  "Kindergarten Fullday", "First Grade", "Second Grade",
-                  "Third Grade", "Fourth Grade", "Fifth Grade", "Sixth Grade",
-                  "Seventh Grade", "Eighth Grade", "Ninth Grade", "Tenth Grade",
-                  "Eleventh Grade", "Twelfth Grade", "Ungraded", "All Grades"),
-        program_code = c("PH", "PF", "KH", "KF", "01", "02", "03", "04", "05",
-                         "06", "07", "08", "09", "10", "11", "12", "UG", "55"),
-        grade_level = c("PK", "PK", "K", "K", "01", "02", "03", "04", "05",
-                        "06", "07", "08", "09", "10", "11", "12", "UG", "TOTAL")
+        Grade = c(
+          "Pre-K Halfday", "Pre-K Fullday", 
+          "Kindergarten Halfday", "Kindergarten Fullday", 
+          "First Grade", "Second Grade", "Third Grade", "Fourth Grade",
+          "Fifth Grade", "Sixth Grade", "Seventh Grade", "Eighth Grade",
+          "Ninth Grade", "Tenth Grade", "Eleventh Grade", "Twelfth Grade", 
+          "Ungraded", "All Grades"
+          ),
+        program_code = c(
+          "PH", "PF", "KH", "KF", "01", "02", "03", "04", "05",
+          "06", "07", "08", "09", "10", "11", "12", "UG", "55"
+        ),
+        grade_level = c(
+          "PK", "PK", "K", "K", "01", "02", "03", "04", "05",
+          "06", "07", "08", "09", "10", "11", "12", "UG", "TOTAL"
+        )
       )
       
       df <- df %>%
@@ -736,6 +743,7 @@ process_enr <- function(df) {
       )
     )
     
+    # grade level already exists for 2020 onward, no need to enrich
     if (df$end_year[1] < 2020) {
       df <- df %>%
         left_join(gl_program_df, by = 'program_name')
