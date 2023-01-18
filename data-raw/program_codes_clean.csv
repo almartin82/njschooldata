@@ -212,10 +212,10 @@ end_year,program_code,program_name
 2011,PF,Preschool Full Day
 2011,PH,Preschool Half Day
 2011,UG,Ungraded
-2010,1,Full-Day Pre-Kindergarten
-2010,2,Half-Day Pre-Kindergarten
-2010,3,Full-Day Kindergarten
-2010,4,Half-Day Kindergarten
+2010,1,Preschool Full Day
+2010,2,Preschool Half Day
+2010,3,Kindergarten Full Day
+2010,4,Kindergarten Half Day
 2010,5,Grade 1
 2010,6,Grade 2
 2010,7,Grade 3
@@ -250,10 +250,10 @@ end_year,program_code,program_name
 2010,55,Total
 2010,56,FT Post Secondary
 2010,57,PT Post Secondary
-2009,1,Full-Day Pre-Kindergarten
-2009,2,Half-Day Pre-Kindergarten
-2009,3,Full-Day Kindergarten
-2009,4,Half-Day Kindergarten
+2009,1,Preschool Full Day
+2009,2,Preschool Half Day
+2009,3,Kindergarten Full Day
+2009,4,Kindergarten Half Day
 2009,5,Grade 1
 2009,6,Grade 2
 2009,7,Grade 3
@@ -287,10 +287,10 @@ end_year,program_code,program_name
 2009,55,Total
 2009,56,FT Post Secondary
 2009,57,PT Post Secondary
-2008,1,Full-Day Pre-Kindergarten
-2008,2,Half-Day Pre-Kindergarten
-2008,3,Full-Day Kindergarten
-2008,4,Half-Day Kindergarten
+2008,1,Preschool Full Day
+2008,2,Preschool Half Day
+2008,3,Kindergarten Full Day
+2008,4,Kindergarten Half Day
 2008,5,Grade 1
 2008,6,Grade 2
 2008,7,Grade 3
@@ -324,10 +324,10 @@ end_year,program_code,program_name
 2008,55,Total
 2008,56,FT Post Secondary
 2008,57,PT Post Secondary
-2007,1,Full-Day Pre-Kindergarten
-2007,2,Half-Day Pre-Kindergarten
-2007,3,Full-Day Kindergarten
-2007,4,Half-Day Kindergarten
+2007,1,Preschool Full Day
+2007,2,Preschool Half Day
+2007,3,Kindergarten Full Day
+2007,4,Kindergarten Half Day
 2007,5,Grade 1
 2007,6,Grade 2
 2007,7,Grade 3
@@ -361,10 +361,10 @@ end_year,program_code,program_name
 2007,55,Total
 2007,56,FT Post Secondary
 2007,57,PT Post Secondary
-2006,1,Full-Day Pre-Kindergarten
-2006,2,Half-Day Pre-Kindergarten
-2006,3,Full-Day Kindergarten
-2006,4,Half-Day Kindergarten
+2006,1,Preschool Full Day
+2006,2,Preschool Half Day
+2006,3,Kindergarten Full Day
+2006,4,Kindergarten Half Day
 2006,5,Grade 1
 2006,6,Grade 2
 2006,7,Grade 3
@@ -399,10 +399,10 @@ end_year,program_code,program_name
 2006,55,Total
 2006,56,FT Post Secondary
 2006,57,PT Post Secondary
-2005,1,Full-Day Pre-Kindergarten
-2005,2,Half-Day Pre-Kindergarten
-2005,3,Full-Day Kindergarten
-2005,4,Half-Day Kindergarten
+2005,1,Preschool Full Day
+2005,2,Preschool Half Day
+2005,3,Kindergarten Full Day
+2005,4,Kindergarten Half Day
 2005,5,Grade 1
 2005,6,Grade 2
 2005,7,Grade 3
@@ -439,10 +439,10 @@ end_year,program_code,program_name
 2005,38,Special Education
 2005,55,Total
 2005,56,FT Post Secondary
-2004,1,Full-Day Pre-Kindergarten
-2004,2,Half-Day Pre-Kindergarten
-2004,3,Full-Day Kindergarten
-2004,4,Half-Day Kindergarten
+2004,1,Preschool Full Day
+2004,2,Preschool Half Day
+2004,3,Kindergarten Full Day
+2004,4,Kindergarten Half Day
 2004,5,Grade 1
 2004,6,Grade 2
 2004,7,Grade 3
@@ -479,10 +479,10 @@ end_year,program_code,program_name
 2004,38,Special Education
 2004,55,Total
 2004,56,FT Post Secondary
-2003,1,Full-Day Pre-Kindergarten
-2003,2,Half-Day Pre-Kindergarten
-2003,3,Full-Day Kindergarten
-2003,4,Half-Day Kindergarten
+2003,1,Preschool Full Day
+2003,2,Preschool Half Day
+2003,3,Kindergarten Full Day
+2003,4,Kindergarten Half Day
 2003,5,Grade 1
 2003,6,Grade 2
 2003,7,Grade 3
@@ -519,10 +519,10 @@ end_year,program_code,program_name
 2003,38,Special Education
 2003,55,Total
 2003,56,FT Post Secondary
-2002,1,Full-Day Pre-Kindergarten
-2002,2,Half-Day Pre-Kindergarten
-2002,3,Full-Day Kindergarten
-2002,4,Half-Day Kindergarten
+2002,1,Preschool Full Day
+2002,2,Preschool Half Day
+2002,3,Kindergarten Full Day
+2002,4,Kindergarten Half Day
 2002,5,Grade 1
 2002,6,Grade 2
 2002,7,Grade 3
@@ -559,10 +559,10 @@ end_year,program_code,program_name
 2002,38,Special Education
 2002,55,Total
 2002,56,FT Post Secondary
-2001,1,Full-Day Pre-Kindergarten
-2001,2,Half-Day Pre-Kindergarten
-2001,3,Full-Day Kindergarten
-2001,4,Half-Day Kindergarten
+2001,1,Preschool Full Day
+2001,2,Preschool Half Day
+2001,3,Kindergarten Full Day
+2001,4,Kindergarten Half Day
 2001,5,Grade 1
 2001,6,Grade 2
 2001,7,Grade 3
@@ -600,10 +600,10 @@ end_year,program_code,program_name
 2001,39,Special Programs - High
 2001,55,Total
 2001,56,FT Post Secondary
-2000,1,Full-Day Pre-Kindergarten
-2000,2,Half-Day Pre-Kindergarten
-2000,3,Full-Day Kindergarten
-2000,4,Half-Day Kindergarten
+2000,1,Preschool Full Day
+2000,2,Preschool Half Day
+2000,3,Kindergarten Full Day
+2000,4,Kindergarten Half Day
 2000,5,Grade 1
 2000,6,Grade 2
 2000,7,Grade 3
@@ -640,10 +640,10 @@ end_year,program_code,program_name
 2000,39,Special Programs - High
 2000,55,Total
 2000,56,FT Post Secondary
-1999,1,Full-Day Pre-Kindergarten
-1999,2,Half-Day Pre-Kindergarten
-1999,3,Full-Day Kindergarten
-1999,4,Half-Day Kindergarten
+1999,1,Preschool Full Day
+1999,2,Preschool Half Day
+1999,3,Kindergarten Full Day
+1999,4,Kindergarten Half Day
 1999,5,Grade 1
 1999,6,Grade 2
 1999,7,Grade 3
