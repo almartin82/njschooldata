@@ -506,6 +506,52 @@ test_that("princeton data looks reasonable", {
 })
 
 
+test_that("2007 princeton data looks reasonable", {
+  
+  ex_fetch <- fetch_enr(2007)
+  
+  ex <- fetch_enr(2007, tidy=TRUE)
+  ex_agg <- enr_grade_aggs(ex)
+  ex_all <- bind_rows(ex, ex_agg)
+  
+  expect_is(ex_all, 'data.frame')
+  
+  ex_raw <- get_raw_enr(end_year = 2007)
+  
+  filtered_fetch <- ex_fetch %>%
+    filter(CDS_Code == '214255999') %>%
+    filter(
+      grade_level == 'TOTAL'
+    )
+  
+  filtered_tidy <- ex_all %>%
+    filter(CDS_Code == '214255999') %>%
+    filter(
+      grade_level == 'TOTAL' &
+        subgroup == 'total_enrollment'
+    )
+  
+  filtered_raw <- ex_raw %>%
+    filter(
+      COUNTY == '21-MERCER' &
+        DISTRICT == '4255-PRINCETON REGIONAL' &
+        SCHOOL == '999-DISTRICT TOTAL'
+    ) %>%
+    filter(
+      PROG_NAME == 'Total'
+    )
+  
+  filtered_fetch %>% print.AsIs()
+  filtered_tidy %>% print.AsIs()
+  filtered_raw %>% print.AsIs()
+  
+  expect_equal(filtered_fetch$row_total, 3164.5)
+  expect_equal(filtered_tidy$n_students, 3164.5)
+  expect_equal(filtered_fetch$row_total, 3164.5)
+  
+})
+
+
 test_that("look at all enr data to see if there are parsing problems", {
   
   all_years <- c(2000:2022)
@@ -518,4 +564,21 @@ test_that("look at all enr data to see if there are parsing problems", {
     expect_is(enr_output, 'data.frame')
   }
   expect_true(is.null(warnings()))
+})
+
+
+test_that("2020+ data includes racial subgroups when tidy = TRUE", {
+  
+  ex_2020 <- get_raw_enr(2020) %>%
+    filter(`District Code` == '4255') %>%
+    filter(Grade == 'All Grades') %>%
+    filter(`School Code` == '999')
+  
+  ex_tidy <- fetch_enr(2020, tidy=TRUE) %>%
+    filter(district_id == '4255') %>%
+    filter(subgroup == 'asian') %>%
+    filter(school_id == '999')
+
+  expect_equal(ex_tidy$n_students, ex_2020$Asian)
+  expect_equal(ex_tidy$program_name, 'Total')
 })
