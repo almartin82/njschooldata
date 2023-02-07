@@ -1,3 +1,10 @@
+## njschooldata 0.8.16
+
+## New features
+
+`get_district_directory()` and `get_school_directory()` read in metadata about schools and districts (eg, NCES ids!)
+
+
 ## njschooldata 0.8.15
 
 ## New features
