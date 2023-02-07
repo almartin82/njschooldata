@@ -9,11 +9,6 @@
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
 
-  kill_padformulas <- function(x) {
-    gsub('="', '', x, fixed=TRUE) %>%
-      gsub('"', "", ., fixed=TRUE)
-  }
-
   # download and clean
   nj_sch <- httr::GET('https://homeroom5.doe.state.nj.us/directory/schoolDL.php') %>%
     httr::content(as="text") %>%

@@ -582,3 +582,10 @@ test_that("2020+ data includes racial subgroups when tidy = TRUE", {
   expect_equal(ex_tidy$n_students, ex_2020$Asian)
   expect_equal(ex_tidy$program_name, 'Total')
 })
+
+
+test_that("1999 works again", {
+  ex <- fetch_enr(1999)
+  expect_is(ex, 'data.frame')
+  
+})
