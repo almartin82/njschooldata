@@ -14,7 +14,7 @@ Depends:
     janitor,
     magrittr,
     purrr,
-    R(>= 2.10.0),
+    R(>= 3.5.0),
     readr,
     reshape2,
     rlang,
