@@ -17,6 +17,10 @@ get_raw_enr <- function(end_year) {
   yy <- substr(end_year, 3, 4)
   enr_folder <- paste0("enr", yy)
   
+  # 1999 exception
+  #https://www.nj.gov/education/doedata/enr/enr00/enrollment_9899.zip
+  enr_folder <- ifelse(end_year == 1999, 'enr00', enr_folder)
+
   enr_filename <- paste0(
     "enrollment_",
     substr(end_year - 1, 3, 4),
@@ -27,7 +31,7 @@ get_raw_enr <- function(end_year) {
   enr_url <- paste0(
     "https://www.nj.gov/education/doedata/enr/", enr_folder, "/", enr_filename    
   )
-  
+
   #download and unzip
   tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
   tdir <- tempdir()
