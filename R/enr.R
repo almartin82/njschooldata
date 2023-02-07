@@ -17,6 +17,10 @@ get_raw_enr <- function(end_year) {
   yy <- substr(end_year, 3, 4)
   enr_folder <- paste0("enr", yy)
   
+  # 1999 exception
+  #https://www.nj.gov/education/doedata/enr/enr00/enrollment_9899.zip
+  enr_folder <- ifelse(end_year == 1999, 'enr00', enr_folder)
+
   enr_filename <- paste0(
     "enrollment_",
     substr(end_year - 1, 3, 4),
@@ -27,7 +31,7 @@ get_raw_enr <- function(end_year) {
   enr_url <- paste0(
     "https://www.nj.gov/education/doedata/enr/", enr_folder, "/", enr_filename    
   )
-  
+
   #download and unzip
   tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
   tdir <- tempdir()
@@ -60,19 +64,20 @@ get_raw_enr <- function(end_year) {
       enr_dist <- readxl::read_excel(this_file, sheet = 'District', skip = 2)
       enr_sch <- readxl::read_excel(this_file, sheet = 'School', skip = 2)
       
-      # fix some bad program columns
-      if (end_year == 2020) {
-        enr_dist <- enr_dist %>%
-          rename("Pre-K Halfday" = "Pre -K Halfday",
-                 "Pre-K Fullday" = "Pre-K FullDay")
-        enr_sch <- enr_sch %>%
-          rename(# sometime after 2020 they #fixed the above errors, 
-                 # but only in the enr_sch file and in so doing 
-                 # introduced this magnificent error 🤡
-                 "Pre-K Fullday" = "Pre-K\r\n Full day",
-                 "Pre-K Halfday" = "Pre-K Half Day")
-      }
-
+      # the delicious typos section
+      typo_names <- . %>% 
+        rename_with(
+          ~ case_when(
+            . == "Pre -K Halfday" ~ "Pre-K Halfday",
+            . == "Pre-K FullDay" ~ "Pre-K Fullday",
+            . == "Pre-K\r\n Full day" ~ "Pre-K Fullday",
+            . == "Pre-K Half Day" ~ "Pre-K Halfday",
+            . == "Eight Grade" ~ "Eighth Grade",
+            TRUE ~ .))
+      
+      enr_dist <- enr_dist %>% typo_names()
+      enr_sch <- enr_sch %>% typo_names()
+      
       # set some constants
       enr_dist <- enr_dist %>%
         mutate(`School Code` = '999',
