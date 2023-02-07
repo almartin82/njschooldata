@@ -13,7 +13,7 @@ district_matric_aggs(df)
 \item{df}{output of \code{enrich_matric_counts}}
 }
 \value{
-A data frame of ward aggregations
+A data frame of district aggregations
 }
 \description{
 Aggregates matriculation data by district. Only school-level matriculation
