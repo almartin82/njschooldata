@@ -8,7 +8,7 @@ get_raw_sped(end_year)
 }
 \arguments{
 \item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1999-2019.}
+school year is year '2007'.  valid values are 2000-2022.}
 }
 \value{
 a dataframe with special ed counts, etc.

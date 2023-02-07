@@ -2,7 +2,7 @@
 % Please edit documentation in R/grate.R
 \name{enrich_grad_count}
 \alias{enrich_grad_count}
-\title{Enrich report card matriculation percentages with best guesses at 
+\title{Enrich report card matriculation percentages with best guesses at
 graduated students}
 \usage{
 enrich_grad_count(df, end_year)
@@ -16,6 +16,6 @@ enrich_grad_count(df, end_year)
 data_frame
 }
 \description{
-Enrich report card matriculation percentages with best guesses at 
+Enrich report card matriculation percentages with best guesses at
 graduated students
 }
