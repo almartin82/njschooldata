@@ -218,3 +218,16 @@ unzipper <- function(url, file_pattern = 'njschooldata') {
 trunc2 <- function(x, prec = 0) {
   base::trunc(x * 10^prec) / 10^prec
 }
+
+
+#' Kill Excel Formula Padding For Numeric Strings
+#'
+#' @param x a vector with strings entered as formulas - eg =\"01\"
+#'
+#' @return a vector with normalized strings
+#' @export
+
+kill_padformulas <- function(x) {
+  gsub('="', '', x, fixed=TRUE) %>%
+    gsub('"', "", ., fixed=TRUE)
+}
