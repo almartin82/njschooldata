@@ -1,0 +1,92 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library("devtools")
+
+devtools::install_github("almartin82/njschooldata")
+install.packages("downloader")
+
+library(njschooldata)
+library(downloader)
+library(tidyverse)
+library(testthat)
+library(cli)
+
+
+```
+
+
+```{r}
+
+# Define function to fetch PARCC data and return a tidy or untidy dataset
+my_function <- function(year, tidy = TRUE) {
+  
+  # Fetch PARCC data for 7th grade ELA and end year specified
+  data <- fetch_parcc(end_year = year, grade_or_subj = 7, subj = 'ela')
+  
+  # If tidy argument is FALSE, return the raw data
+  if (!tidy) {
+    return(data)
+  }
+  
+  # If tidy argument is TRUE, perform data cleaning and transformation
+  # Step 1: Remove subgroup_type column. Not needed since I'll pivot the data set using 
+  # subgroup
+  # Step 2: Group data by school and subgroup, and calculate means for selected columns
+  # Step 3: Pivot data to wide format, with one column for each subgroup
+  # Step 4: Inner join tidied data with original data, remove rows with missing school_name, and keep only distinct rows
+  tidy1 <- data %>%
+    select(-subgroup_type) %>%
+    group_by(subgroup, school_name) %>%
+    summarise(across(matches("^pct"), ~mean(., na.rm = TRUE)),
+              across(c("scale_score_mean", "proficient_above"), ~mean(., na.rm = TRUE)),
+              across(matches("^num"), ~sum(., na.rm = TRUE))) %>% 
+    pivot_wider(names_from = subgroup, values_from = c(pct_l1:num_l5)) %>% 
+    arrange(school_name)
+  
+  tidy_data <- data %>% 
+    inner_join(tidy1) %>% 
+    filter(!is.na(school_name)) %>% 
+    distinct(school_name, .keep_all = TRUE) 
+  
+  # Return the tidied dataset
+  return(tidy_data)
+}
+
+
+```
+
+##Some Tests
+
+```{r}
+
+# Test 1: Check if the function returns a data frame
+
+test_that("Function returns a data frame", {
+  output <- my_function(2015)
+  expect_is(output, "data.frame")
+})
+
+```
+
+```{r}
+#Test 2: Check if there's any column with more than 50% missing values
+
+test_that("No column has more than 50% of NA's", {
+  output <- my_function(2015)
+  # Calculate the percentage of NA values for each column
+  na_percentages <- apply(output, 2, function(x) mean(is.na(x)) * 100)
+  # Check if any column has more than 50% NA values
+  expect_false(any(na_percentages > 50),
+               info = "At least one column has more than 50% NA's.")
+})
+```
+
+This test didn't pass. More exploratory analysis it's needed to look at the variables with
+more than 50% missing values.
+
+
