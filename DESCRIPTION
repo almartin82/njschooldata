@@ -13,7 +13,6 @@ Depends:
     gdata,
     janitor,
     magrittr,
-    purrr,
     R(>= 3.5.0),
     readr,
     reshape2,
@@ -21,7 +20,8 @@ Depends:
     stringr,
     tidyr
 Imports:
-    downloader
+    downloader,
+    purrr
 Suggests:
     knitr,
     placement,
