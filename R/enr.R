@@ -644,7 +644,7 @@ process_enr <- function(df) {
       "PROGRAM" = "program_name_dirty",
       "PROG_NAME" = "program_name_dirty"
     )
-    names(df) <- map_chr(
+    names(df) <- purrr::map_chr(
       names(df),
       function(.x) {
         cleaned <- prog_map[[.x]]
@@ -687,7 +687,7 @@ process_enr <- function(df) {
     
     if ('program_name_dirty' %in% names(df)) df <- df %>% select(-program_name_dirty)
     
-    gl_program_df <- tibble(
+    gl_program_df <- tibble::tibble(
       program_name = c(
         'Half-Day Pre-Kindergarten',
         'Half-Day Preschool Disabled',
