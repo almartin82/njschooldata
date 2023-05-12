@@ -1,3 +1,10 @@
+## njschooldata 0.8.17
+
+## Bugfixes
+- More explicit namespace prefixes for functions
+- Moved some dependencies to imports
+
+
 ## njschooldata 0.8.16
 
 ## New features
