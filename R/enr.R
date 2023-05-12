@@ -80,18 +80,18 @@ get_raw_enr <- function(end_year) {
       
       # set some constants
       enr_dist <- enr_dist %>%
-        mutate(`School Code` = '999',
+        dplyr::mutate(`School Code` = '999',
                `School Name` = "District Total")
 
       # combine state, dist, sch df by binding dist and sch and then 
       # pivoting grade level columns long
-      enr_dist_sch <- bind_rows(enr_dist, enr_sch)
+      enr_dist_sch <- dplyr::bind_rows(enr_dist, enr_sch)
 
       # in 2020 they decided not to report above 95%?!
       # set to 97.5 to split the difference
       if (end_year == 2020) {
           enr_dist_sch <- enr_dist_sch %>%
-            mutate(
+            dplyr::mutate(
               # >95 to 95 ... maybe not a good decision?
               `%Free Lunch` = if_else(`%Free Lunch` == ">95", '97.5', `%Free Lunch`),
               `%Reduced Lunch` = if_else(`%Reduced Lunch` == ">95", '97.5', `%Reduced Lunch`),
@@ -103,7 +103,7 @@ get_raw_enr <- function(end_year) {
       }
 
       enr_dist_sch <- enr_dist_sch %>%
-        mutate(
+        dplyr::mutate(
           # populations in this mutate block are only reported as pcts,
           # so convert percents into counts
           `Free Lunch` = as.numeric(`%Free Lunch`) / 100 * `Total Enrollment`,
@@ -609,7 +609,7 @@ enr_aggs <- function(df) {
   }
   
   df_agg <- df %>%
-    mutate(
+    dplyr::mutate(
       male = !!rlang::parse_expr(valid_m),
       female = !!rlang::parse_expr(valid_f),
       
@@ -781,7 +781,7 @@ process_enr <- function(df) {
   final <- cleaned_agg %>%
     process_enr_program() %>%
     arrange_enr() %>%
-    filter(!is.na(county_id))
+    dplyr::filter(!is.na(county_id))
   
   return(final)
 }
@@ -799,7 +799,7 @@ clean_enr_grade <- function(df) {
   k_codes <- c('KF', 'KH')
   pk_codes <- c('PF', 'PH')
   df %>% 
-    mutate(
+    dplyr::mutate(
       grade_level = case_when(
         grade_level == 'Total' ~ 'TOTAL',
         grade_level %in% k_codes ~ 'K',
@@ -862,9 +862,9 @@ enr_grade_aggs <- function(df) {
   
   # Any PK
   pk_agg <- df %>%
-    filter(grade_level == 'PK') %>%
+    dplyr::filter(grade_level == 'PK') %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = 'PK',
       program_name = 'Pre-Kindergarten (Full + Half)',
       grade_level = 'PK (Any)',
@@ -875,9 +875,9 @@ enr_grade_aggs <- function(df) {
   
   # Any K (half + full day K)
   k_agg <- df %>%
-    filter(grade_level == 'K') %>%
+    dplyr::filter(grade_level == 'K') %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = '0K',
       program_name = 'Kindergarten (Full + Half)',
       grade_level = 'K (Any)',
@@ -888,14 +888,14 @@ enr_grade_aggs <- function(df) {
   
   # K-12 enrollment (exclude pre-k)
   k12_agg <- df %>%
-    filter(
+    dplyr::filter(
       grade_level %in% c('K', 
                          '01', '02', '03', '04',
                          '05', '06', '07', '08',
                          '09', '10', '11', '12')
     ) %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = 'K12',
       program_name = 'K to 12 Total',
       grade_level = 'K12',
@@ -906,7 +906,7 @@ enr_grade_aggs <- function(df) {
   
   # All but PK enrollment
   nopk_agg <- df %>%
-    filter(
+    dplyr::filter(
       grade_level %in% c('K', 
                          '01', '02', '03', '04',
                          '05', '06', '07', '08',
@@ -914,7 +914,7 @@ enr_grade_aggs <- function(df) {
         program_code == 'UG'
     ) %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = 'K12UG',
       program_name = 'K to 12 Total, UG inclusive',
       grade_level = 'K12UG',
@@ -925,13 +925,13 @@ enr_grade_aggs <- function(df) {
   
   # K-8 enrollment
   k8_agg <- df %>%
-    filter(
+    dplyr::filter(
       grade_level %in% c('K', 
                          '01', '02', '03', '04',
                          '05', '06', '07', '08')
     ) %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = 'K8',
       program_name = 'K to 8 Total',
       grade_level = 'K8',
@@ -942,11 +942,11 @@ enr_grade_aggs <- function(df) {
   
   # HS
   hs_agg <- df %>%
-    filter(
+    dplyr::filter(
       grade_level %in% c('09', '10', '11', '12')
     ) %>%
     gr_aggs_group_logic() %>%
-    mutate(
+    dplyr::mutate(
       program_code = 'HS',
       program_name = 'HS (9-12) Total',
       grade_level = 'HS',
@@ -955,7 +955,7 @@ enr_grade_aggs <- function(df) {
     ) %>%
     gr_aggs_col_order()
   
-  bind_rows(pk_agg, k_agg, k12_agg, nopk_agg, k8_agg, hs_agg)
+  dplyr::bind_rows(pk_agg, k_agg, k12_agg, nopk_agg, k8_agg, hs_agg)
 }
 
 #' @title gets and processes a NJ enrollment file
@@ -1083,8 +1083,8 @@ tidy_enr <- function(df) {
   )
   
   # put it all together in a long data frame
-  bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups) %>% 
-    filter(!is.na(n_students) | !is.na(pct))
+  dplyr::bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups) %>%
+    dplyr::filter(!is.na(n_students) | !is.na(pct))
 }
 
 
@@ -1097,7 +1097,7 @@ tidy_enr <- function(df) {
 
 id_enr_aggs <- function(df) {
   df %>%
-    mutate(
+    dplyr::mutate(
       is_state = district_id == '9999' & county_id == '99',
       is_county = district_id == '9999' & !county_id =='99',
       is_district = school_id == '999' & !is_state,
