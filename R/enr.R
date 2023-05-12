@@ -115,16 +115,24 @@ get_raw_enr <- function(end_year) {
         )
       
       enr <- enr_dist_sch %>%
-        select(`County Code`:`District Name`, `School Code`, `School Name`,
-               `Pre-K Halfday`:`Ungraded`) %>%
-        pivot_longer(cols = `Pre-K Halfday`:`Ungraded`,
-                     names_to = 'Grade', values_to = 'Total Enrollment') %>%
-        bind_rows(enr_dist_sch %>%
-                    select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
-                    mutate(Grade = 'All Grades')) %>%
-        bind_rows(enr_state %>%
-                    rename("Total Enrollment" = 'Total',
-                           "Native American" = "American Indian"))
+        dplyr::select(
+          `County Code`:`District Name`, `School Code`, `School Name`,
+          `Pre-K Halfday`:`Ungraded`
+        ) %>%
+        tidyr::pivot_longer(
+          cols = `Pre-K Halfday`:`Ungraded`,
+          names_to = 'Grade', 
+          values_to = 'Total Enrollment'
+        ) %>%
+        dplyr::bind_rows(
+          enr_dist_sch %>%
+            dplyr::select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
+            dplyr::mutate(Grade = 'All Grades')) %>%
+            dplyr::bind_rows(enr_state %>%
+            dplyr::rename(
+              "Total Enrollment" = 'Total',
+              "Native American" = "American Indian")
+            )
       
     }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
@@ -631,7 +639,7 @@ process_enr <- function(df) {
   if (!'grade_level' %in% tolower(names(df)) | df$end_year[1] == "2018") {
     
      # something weird w/ 2018 grade levels; proceed as if they aren't there
-     if (df$end_year[1] == "2018") df <- select(df, -Grade_Level)
+     if (df$end_year[1] == "2018") df <- dplyr::select(df, -Grade_Level)
      
     # clean up program code and name
     prog_map <- list(
@@ -674,9 +682,9 @@ process_enr <- function(df) {
       )
       
       df <- df %>%
-        left_join(convert_from_grade,
+        dplyr::left_join(convert_from_grade,
                   by = "Grade") %>%
-        select(-Grade)
+        dplyr::select(-Grade)
     }
     
     # force program character
@@ -685,7 +693,7 @@ process_enr <- function(df) {
     df <- df %>%
       dplyr::left_join(njschooldata::prog_codes, by = c("end_year", "program_code"))
     
-    if ('program_name_dirty' %in% names(df)) df <- df %>% select(-program_name_dirty)
+    if ('program_name_dirty' %in% names(df)) df <- df %>% dplyr::select(-program_name_dirty)
     
     gl_program_df <- tibble::tibble(
       program_name = c(
@@ -757,7 +765,7 @@ process_enr <- function(df) {
   
   # basic cleaning
   cleaned <- df %>%
-    select(!starts_with("%")) %>%
+    dplyr::select(!starts_with("%")) %>%
     clean_enr_names() %>%
     split_enr_cols() %>%
     clean_enr_data() %>%
@@ -837,7 +845,7 @@ enr_grade_aggs <- function(df) {
     ungroup()
   
   gr_aggs_col_order <- . %>%
-    select(
+    dplyr::select(
       end_year, CDS_Code,
       county_id, county_name,
       district_id, district_name,
@@ -1029,33 +1037,33 @@ tidy_enr <- function(df) {
   tidy_subgroups <- purrr::map_df(to_tidy, 
     function(.x) {
       df %>%
-        rename(n_students = .x) %>%
-        select(one_of(invariants, 'n_students', 'row_total')) %>%
-        mutate(
+        dplyr::rename(n_students = .x) %>%
+        dplyr::select(one_of(invariants, 'n_students', 'row_total')) %>%
+        dplyr::mutate(
           'subgroup' = .x,
           'pct' = n_students / row_total
         ) %>%
-        select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+        dplyr::select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
     }
   )
 
   # also extract row total as a "subgroup"
   tidy_total_enr <- df %>%
-    select(one_of(invariants, 'row_total')) %>%
-    mutate(
+    dplyr::select(one_of(invariants, 'row_total')) %>%
+    dplyr::mutate(
       'n_students' = row_total,
       'subgroup' = 'total_enrollment',
       'pct' = n_students / row_total
     ) %>%
-    select(one_of(invariants, 'subgroup', 'n_students', 'pct')) 
+    dplyr::select(one_of(invariants, 'subgroup', 'n_students', 'pct')) 
 
   # some subgroups are only reported for school totals
   # just total counts, for extracting total enr, free, reduced, migrant etc
   total_counts <- df %>% 
-     filter(program_code == '55') %>%
+    dplyr::filter(program_code == '55') %>%
   # create free and reduced group 
-     rowwise() %>% 
-     mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = T))
+    dplyr::rowwise() %>% 
+    dplyr::mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = T))
   
   total_subgroups <- c('free_lunch', 'reduced_lunch', 'lep', 'migrant',
                        'free_reduced_lunch')
@@ -1065,13 +1073,13 @@ tidy_enr <- function(df) {
   tidy_total_subgroups <- purrr::map_df(total_subgroups, 
     function(.x) {
       total_counts %>%
-       rename(n_students = .x) %>%
-       select(one_of(invariants, 'n_students', 'row_total')) %>%
-       mutate(
-         'subgroup' = .x,
-         'pct' = n_students / row_total
-       ) %>%
-       select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
+        dplyr::rename(n_students = .x) %>%
+        dplyr::select(one_of(invariants, 'n_students', 'row_total')) %>%
+        dplyr::mutate(
+          'subgroup' = .x,
+          'pct' = n_students / row_total
+        ) %>%
+        dplyr::select(one_of(invariants, 'subgroup', 'n_students', 'pct'))
     }
   )
   
