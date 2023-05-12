@@ -93,12 +93,12 @@ get_raw_enr <- function(end_year) {
           enr_dist_sch <- enr_dist_sch %>%
             dplyr::mutate(
               # >95 to 95 ... maybe not a good decision?
-              `%Free Lunch` = if_else(`%Free Lunch` == ">95", '97.5', `%Free Lunch`),
-              `%Reduced Lunch` = if_else(`%Reduced Lunch` == ">95", '97.5', `%Reduced Lunch`),
-              `%English Learners` = if_else(`%English Learners` == ">95", '97.5', `%English Learners`),
-              `%Migrant` = if_else(`%Migrant` == ">95", '97.5', `%Migrant`),
-              `%Military` = if_else(`%Military` == ">95", '97.5', `%Military`),
-              `%Homeless` = if_else(`%Homeless` == ">95", '97.5', `%Homeless`)
+              `%Free Lunch` = dplyr::if_else(`%Free Lunch` == ">95", '97.5', `%Free Lunch`),
+              `%Reduced Lunch` = dplyr::if_else(`%Reduced Lunch` == ">95", '97.5', `%Reduced Lunch`),
+              `%English Learners` = dplyr::if_else(`%English Learners` == ">95", '97.5', `%English Learners`),
+              `%Migrant` = dplyr::if_else(`%Migrant` == ">95", '97.5', `%Migrant`),
+              `%Military` = dplyr::if_else(`%Military` == ">95", '97.5', `%Military`),
+              `%Homeless` = dplyr::if_else(`%Homeless` == ">95", '97.5', `%Homeless`)
             )
       }
 

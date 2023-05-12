@@ -21,11 +21,11 @@ Depends:
     tidyr
 Imports:
     downloader,
-    purrr
+    purrr,
+    readxl
 Suggests:
     knitr,
     placement,
-    readxl,
     rmarkdown,
     testthat
 LazyData: true
