@@ -682,8 +682,7 @@ process_enr <- function(df) {
       )
       
       df <- df %>%
-        dplyr::left_join(convert_from_grade,
-                  by = "Grade") %>%
+        dplyr::left_join(convert_from_grade, by = "Grade") %>%
         dplyr::select(-Grade)
     }
     
@@ -759,7 +758,7 @@ process_enr <- function(df) {
     # grade level already exists for 2020 onward, no need to enrich
     if (df$end_year[1] < 2020) {
       df <- df %>%
-        left_join(gl_program_df, by = 'program_name')
+        dplyr::left_join(gl_program_df, by = 'program_name')
     }
   }
   
