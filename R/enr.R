@@ -398,7 +398,7 @@ clean_enr_names <- function(df) {
     "CHPT1" = "title_1"
   )
 
-  names(df) <- map_chr(names(df), ~clean_name(.x, clean))
+  names(df) <- purrr::map_chr(names(df), ~clean_name(.x, clean))
 
   return(df)
 }
@@ -596,7 +596,7 @@ enr_aggs <- function(df) {
   )
   # new
   sg <- function(cols) {
-    cols_exist <- map_lgl(cols, ~.x %in% names(df)) %>% all()
+    cols_exist <- purrr::map_lgl(cols, ~.x %in% names(df)) %>% all()
     ifelse(cols_exist, paste(cols, collapse = ' + '), 'NA')
   }
   
@@ -1026,7 +1026,7 @@ tidy_enr <- function(df) {
   to_tidy <- to_tidy[to_tidy %in% names(df)]
   
   # iterate over cols to tidy, do calculations
-  tidy_subgroups <- map_df(to_tidy, 
+  tidy_subgroups <- purrr::map_df(to_tidy, 
     function(.x) {
       df %>%
         rename(n_students = .x) %>%
@@ -1062,7 +1062,7 @@ tidy_enr <- function(df) {
   total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
   
   # iterate over cols to tidy, do calculations
-  tidy_total_subgroups <- map_df(total_subgroups, 
+  tidy_total_subgroups <- purrr::map_df(total_subgroups, 
     function(.x) {
       total_counts %>%
        rename(n_students = .x) %>%
