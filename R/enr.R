@@ -45,7 +45,7 @@ get_raw_enr <- function(end_year) {
   if (grepl('.xls', tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
     
-    to_skip = case_when(
+    to_skip = dplyr::case_when(
       end_year == 2018 ~ 1,
       end_year >= 2019 ~ 2,
       TRUE ~ 0
@@ -66,8 +66,8 @@ get_raw_enr <- function(end_year) {
       
       # the delicious typos section
       typo_names <- . %>% 
-        rename_with(
-          ~ case_when(
+        dplyr::rename_with(
+          ~ dplyr::case_when(
             . == "Pre -K Halfday" ~ "Pre-K Halfday",
             . == "Pre-K FullDay" ~ "Pre-K Fullday",
             . == "Pre-K\r\n Full day" ~ "Pre-K Fullday",
@@ -800,7 +800,7 @@ clean_enr_grade <- function(df) {
   pk_codes <- c('PF', 'PH')
   df %>% 
     dplyr::mutate(
-      grade_level = case_when(
+      grade_level = dplyr::case_when(
         grade_level == 'Total' ~ 'TOTAL',
         grade_level %in% k_codes ~ 'K',
         grade_level == 'KG' ~ 'K',
