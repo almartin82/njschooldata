@@ -10,17 +10,17 @@ get_district_directory <- function() {
     httr::content(as = "text") %>%
     readr::read_csv(skip = 3) %>%
     clean_names() %>%
-    mutate(
+    dplyr::mutate(
       across(.fns = kill_padformulas)
     ) %>%
-    mutate(
+    dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
     ) %>%
-    rename(
+    dplyr::rename(
       county_id = county_code,
       district_id = district_code
     ) %>%
-    mutate(
+    dplyr::mutate(
       CDS_Code = paste0(county_id, district_id, '999')
     )
   
