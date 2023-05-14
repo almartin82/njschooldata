@@ -9,7 +9,7 @@ get_district_directory <- function() {
   nj_dist <- httr::GET(paste0(dir_stem, "districtDL.php")) %>%
     httr::content(as = "text") %>%
     readr::read_csv(skip = 3) %>%
-    clean_names() %>%
+    janitor::clean_names() %>%
     dplyr::mutate(
       across(.fns = kill_padformulas)
     ) %>%
@@ -39,19 +39,19 @@ get_school_directory <- function() {
   nj_sch <- httr::GET(paste0(dir_stem, "schoolDL.php")) %>%
     httr::content(as = "text") %>%
     readr::read_csv(skip = 3) %>%
-    clean_names() %>%
-    mutate(
+    janitor::clean_names() %>%
+    dplyr::mutate(
       across(.fns = kill_padformulas)
     ) %>%
-    mutate(
+    dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
     ) %>%
-    rename(
+    dplyr::rename(
       county_id = county_code,
       district_id = district_code,
       school_id = school_code
     ) %>%
-    mutate(
+    dplyr::mutate(
       CDS_Code = paste0(county_id, district_id, school_id)
     )
   
