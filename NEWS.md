@@ -1,3 +1,10 @@
+## njschooldata 0.8.18
+
+## New features
+
+`fetch_enr` supports 2023 data.
+
+
 ## njschooldata 0.8.17
 
 ## Bugfixes
