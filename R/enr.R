@@ -4,7 +4,7 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 2000-2022.
+#' school year is year '2007'.  valid values are 2000-2023.
 #' @export
 
 get_raw_enr <- function(end_year) {
@@ -73,8 +73,12 @@ get_raw_enr <- function(end_year) {
             . == "Pre-K\r\n Full day" ~ "Pre-K Fullday",
             . == "Pre-K Half Day" ~ "Pre-K Halfday",
             . == "Eight Grade" ~ "Eighth Grade",
-            TRUE ~ .))
+            . == "Reduced_Lunch" ~ "Reduced Lunch",
+            . == "% Reduced_Lunch" ~ "%Reduced Lunch",
+            TRUE ~ .)
+        )
       
+      enr_state <- enr_state %>% typo_names()
       enr_dist <- enr_dist %>% typo_names()
       enr_sch <- enr_sch %>% typo_names()
       
@@ -131,9 +135,9 @@ get_raw_enr <- function(end_year) {
             dplyr::bind_rows(enr_state %>%
             dplyr::rename(
               "Total Enrollment" = 'Total',
-              "Native American" = "American Indian")
+              "Native American" = "American Indian"
+              )
             )
-      
     }
   } else if (grepl('.csv', tolower(enr_files$Name[1]))) {
     enr <- readr::read_csv(
@@ -374,7 +378,7 @@ clean_enr_names <- function(df) {
     "REDUCED" = "reduced_lunch",
     "Reduced_Price_Lunch" = "reduced_lunch",
     "Reduced Lunch" = "reduced_lunch",
-    
+
     #lep
     "LEP" = "lep",
     # 2019 baby
