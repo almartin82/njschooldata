@@ -11,7 +11,7 @@ get_district_directory <- function() {
     readr::read_csv(skip = 3) %>%
     janitor::clean_names() %>%
     dplyr::mutate(
-      across(.fns = kill_padformulas)
+      dplyr::across(tidyselect::everything(), .fns = kill_padformulas)
     ) %>%
     dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
@@ -41,7 +41,7 @@ get_school_directory <- function() {
     readr::read_csv(skip = 3) %>%
     janitor::clean_names() %>%
     dplyr::mutate(
-      across(.fns = kill_padformulas)
+      dplyr::across(tidyselect::everything(), .fns = kill_padformulas)
     ) %>%
     dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
