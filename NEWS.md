@@ -1,3 +1,10 @@
+## njschooldata 0.8.19
+
+## New features
+
+`get_school_directory` and `get_district_directory` updated to reflect new NJDOE pages / format.
+
+
 ## njschooldata 0.8.18
 
 ## New features
