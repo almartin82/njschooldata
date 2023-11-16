@@ -5,14 +5,9 @@
 
 get_district_directory <- function() {
 
-  dir_stem <- "https://homeroom5.doe.state.nj.us/directory/"
-  nj_dist <- httr::GET(paste0(dir_stem, "districtDL.php")) %>%
-    httr::content(as = "text") %>%
-    readr::read_csv(skip = 3) %>%
+  dir_url = "https://homeroom4.doe.state.nj.us/public/districtpublicschools/download/"
+  nj_dist <- readr::read_csv(dir_url, skip = 3) %>%
     janitor::clean_names() %>%
-    dplyr::mutate(
-      dplyr::across(tidyselect::everything(), .fns = kill_padformulas)
-    ) %>%
     dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
     ) %>%
@@ -35,14 +30,9 @@ get_district_directory <- function() {
 
 get_school_directory <- function() {
   
-  dir_stem <- "https://homeroom5.doe.state.nj.us/directory/"
-  nj_sch <- httr::GET(paste0(dir_stem, "schoolDL.php")) %>%
-    httr::content(as = "text") %>%
-    readr::read_csv(skip = 3) %>%
+  dir_url = "https://homeroom4.doe.state.nj.us/public/publicschools/download/"
+  nj_sch <- readr::read_csv(dir_url, skip = 3) %>%
     janitor::clean_names() %>%
-    dplyr::mutate(
-      dplyr::across(tidyselect::everything(), .fns = kill_padformulas)
-    ) %>%
     dplyr::mutate(
       address = paste0(address1, ', ', city, ', ', state, ' ', zip)
     ) %>%
