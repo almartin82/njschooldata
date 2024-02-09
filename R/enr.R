@@ -831,7 +831,7 @@ clean_enr_grade <- function(df) {
 enr_grade_aggs <- function(df) {
   
   gr_aggs_group_logic <- . %>%
-    group_by(
+    dplyr::group_by(
       end_year, 
       CDS_Code, 
       county_id, county_name, 
@@ -842,10 +842,10 @@ enr_grade_aggs <- function(df) {
       is_state, is_county, is_district,
       is_charter_sector, is_allpublic, is_school, is_subprogram
     ) %>%
-    summarize(
+    dplyr::summarize(
       n_students = sum(n_students, na.rm = TRUE)
     ) %>%
-    ungroup()
+    dplyr::ungroup()
   
   gr_aggs_col_order <- . %>%
     dplyr::select(
