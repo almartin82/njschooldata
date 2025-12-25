@@ -1,4 +1,3 @@
-context("report_card functions")
 
 rc <- get_one_rc_database(2015)
 many_rc <- get_rc_databases(2012:2019)

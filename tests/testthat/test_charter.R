@@ -1,10 +1,9 @@
-context("functions in charter.R")
 
 test_that("id_charter_hosts correctly handles enrollment data", {
   
   enr_2017 <- fetch_enr(2017)
   enr_2017_host <- id_charter_hosts(enr_2017)
-  expect_is(enr_2017_host, "data.frame")
+  expect_s3_class(enr_2017_host, "data.frame")
   expect_equal(nrow(enr_2017), nrow(enr_2017_host))
 })
 
@@ -19,7 +18,7 @@ test_that("id_charter_hosts finds host cities for all charters, 2018 enr", {
   charter_enr_2018_host <- id_charter_hosts(charter_enr_2018)
   
   expect_equal(nrow(charter_enr_2018), nrow(charter_enr_2018_host))
-  expect_is(charter_enr_2018_host, "data.frame")
+  expect_s3_class(charter_enr_2018_host, "data.frame")
   expect_equal(charter_enr_2018_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -34,7 +33,7 @@ test_that("id_charter_hosts finds host cities for all charters, 2017 enr", {
   charter_enr_2017_host <- id_charter_hosts(charter_enr_2017)
   
   expect_equal(nrow(charter_enr_2017), nrow(charter_enr_2017_host))
-  expect_is(charter_enr_2017_host, "data.frame")
+  expect_s3_class(charter_enr_2017_host, "data.frame")
   expect_equal(charter_enr_2017_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -49,7 +48,7 @@ test_that("id_charter_hosts finds host cities for all charters, 2016 enr", {
   charter_enr_2016_host <- id_charter_hosts(charter_enr_2016)
   
   expect_equal(nrow(charter_enr_2016), nrow(charter_enr_2016_host))
-  expect_is(charter_enr_2016_host, "data.frame")
+  expect_s3_class(charter_enr_2016_host, "data.frame")
   expect_equal(charter_enr_2016_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -64,7 +63,7 @@ test_that("id_charter_hosts, 2018 parcc math 3", {
   charter_parcc_math3_18_host <- id_charter_hosts(charter_parcc_math3_18)
   
   expect_equal(nrow(charter_parcc_math3_18), nrow(charter_parcc_math3_18_host))
-  expect_is(charter_parcc_math3_18_host, "data.frame")
+  expect_s3_class(charter_parcc_math3_18_host, "data.frame")
   expect_equal(charter_parcc_math3_18_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -79,7 +78,7 @@ test_that("id_charter_hosts, 2018 parcc ela 5", {
   charter_parcc_ela5_18_host <- id_charter_hosts(charter_parcc_ela5_18)
   
   expect_equal(nrow(charter_parcc_ela5_18), nrow(charter_parcc_ela5_18_host))
-  expect_is(charter_parcc_ela5_18_host, "data.frame")
+  expect_s3_class(charter_parcc_ela5_18_host, "data.frame")
   expect_equal(charter_parcc_ela5_18_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -94,7 +93,7 @@ test_that("id_charter_hosts, 2018 parcc ALG1 math", {
   charter_parcc_alg1_18_host <- id_charter_hosts(charter_parcc_alg1_18)
   
   expect_equal(nrow(charter_parcc_alg1_18), nrow(charter_parcc_alg1_18_host))
-  expect_is(charter_parcc_alg1_18_host, "data.frame")
+  expect_s3_class(charter_parcc_alg1_18_host, "data.frame")
   expect_equal(charter_parcc_alg1_18_host$host_district_id %>% is.na() %>% sum(), 0)
 })
 
@@ -103,7 +102,7 @@ test_that("charter sector aggs, 2018 enrollment data", {
   
   enr_2018 <- fetch_enr(2018, tidy=TRUE)
   ch_aggs_2018 <- charter_sector_enr_aggs(enr_2018)
-  expect_is(ch_aggs_2018, "data.frame")
+  expect_s3_class(ch_aggs_2018, "data.frame")
   expect_equal(nrow(ch_aggs_2018), 8455)
 })
 
@@ -112,7 +111,7 @@ test_that("charter sector aggs, 2017-18 enrollment data", {
   
   enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
   ch_aggs_1718 <- charter_sector_enr_aggs(enr_1718)
-  expect_is(ch_aggs_1718, "data.frame")
+  expect_s3_class(ch_aggs_1718, "data.frame")
   expect_equal(nrow(ch_aggs_1718), 16569)
 })
 
@@ -120,7 +119,7 @@ test_that("charter sector aggs, ALL enrollment data", {
   enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
   ch_aggs_ <- charter_sector_enr_aggs(enr_df)
-  expect_is(enr_df, 'data.frame')
+  expect_s3_class(enr_df, 'data.frame')
 })
 
 
@@ -128,7 +127,7 @@ test_that("all public aggs, 2017-18 enrollment data", {
   
   enr_1718 <- map_df(c(2017:2018), ~fetch_enr(.x, tidy=TRUE))
   all_public_aggs_1718 <- allpublic_enr_aggs(enr_1718)
-  expect_is(all_public_aggs_1718 , "data.frame")
+  expect_s3_class(all_public_aggs_1718 , "data.frame")
   expect_equal(nrow(all_public_aggs_1718), 16569)
 })
 
@@ -138,7 +137,7 @@ test_that("charter sector parcc aggs, 2018", {
   
   p_math4_2018 <- fetch_parcc(2018, 4, 'math', TRUE)
   ch_aggs_math4_2018 <- charter_sector_parcc_aggs(p_math4_2018)
-  expect_is(ch_aggs_math4_2018, "data.frame")
+  expect_s3_class(ch_aggs_math4_2018, "data.frame")
   expect_equal(nrow(ch_aggs_math4_2018), 339)
 })
 
@@ -146,7 +145,7 @@ test_that("allpublic parcc aggs, 2018", {
   
   p_math4_2018 <- fetch_parcc(2018, 4, 'math', TRUE)
   allpublic_aggs_math4_2018 <- allpublic_parcc_aggs(p_math4_2018)
-  expect_is(allpublic_aggs_math4_2018, "data.frame")
+  expect_s3_class(allpublic_aggs_math4_2018, "data.frame")
   expect_equal(nrow(allpublic_aggs_math4_2018), 339)
 })
 
@@ -155,7 +154,7 @@ test_that("charter sector grate aggs, 2018", {
   
   grate_2018 <- fetch_grad_rate(2018)
   ch_aggs_grate_2018 <- charter_sector_grate_aggs(grate_2018)
-  expect_is(ch_aggs_grate_2018, "data.frame")
+  expect_s3_class(ch_aggs_grate_2018, "data.frame")
   
   expect_equal(nrow(ch_aggs_grate_2018), 180)
 })
@@ -164,7 +163,7 @@ test_that("charter sector grate aggs, 2018", {
 test_that("allpublic grate aggs, 2018", {
   grate_2018 <- fetch_grad_rate(2018)
   allpublic_aggs_grate_2018 <- allpublic_grate_aggs(grate_2018)
-  expect_is(allpublic_aggs_grate_2018, "data.frame")
+  expect_s3_class(allpublic_aggs_grate_2018, "data.frame")
   
   expect_equal(nrow(allpublic_aggs_grate_2018), 180)
 })
@@ -174,7 +173,7 @@ test_that("charter sector gcount aggs, 2018", {
   
   gcount_2018 <- fetch_grad_count(2018)
   ch_aggs_gcount_2018 <- charter_sector_gcount_aggs(gcount_2018)
-  expect_is(ch_aggs_gcount_2018, "data.frame")
+  expect_s3_class(ch_aggs_gcount_2018, "data.frame")
   
   expect_equal(nrow(ch_aggs_gcount_2018), 180)
 })
@@ -183,7 +182,7 @@ test_that("charter sector gcount aggs, 2018", {
 test_that("allpublic gcount aggs, 2018", {
   gcount_2018 <- fetch_grad_count(2018)
   allpublic_aggs_gcount_2018 <- allpublic_gcount_aggs(gcount_2018)
-  expect_is(allpublic_aggs_gcount_2018, "data.frame")
+  expect_s3_class(allpublic_aggs_gcount_2018, "data.frame")
   
   expect_equal(nrow(allpublic_aggs_gcount_2018), 180)
 })
@@ -247,7 +246,7 @@ test_that("all public special populations aggregates, 2017", {
 test_that("charter sector sped aggs, 2003, no speech", {
    sped_2003 <- fetch_sped(2003)
    ch_aggs_sped_2003 <- charter_sector_sped_aggs(sped_2003)
-   expect_is(ch_aggs_sped_2003, "data.frame")
+   expect_s3_class(ch_aggs_sped_2003, "data.frame")
    
    expect_equal(ch_aggs_sped_2003 %>%
                    filter(district_name == "Atlantic City Charters") %>%
@@ -258,7 +257,7 @@ test_that("charter sector sped aggs, 2003, no speech", {
 test_that("charter sector sped aggs, 2018", {
    sped_2018 <- fetch_sped(2018)
    ch_aggs_sped_2018 <- charter_sector_sped_aggs(sped_2018)
-   expect_is(ch_aggs_sped_2018, "data.frame")
+   expect_s3_class(ch_aggs_sped_2018, "data.frame")
    
    expect_equal(ch_aggs_sped_2018 %>%
                    filter(district_name == "Asbury Park Charters") %>%
@@ -269,7 +268,7 @@ test_that("charter sector sped aggs, 2018", {
 test_that("allpublic sector sped aggs, 2003, no speech", {
    sped_2003 <- fetch_sped(2003)
    ap_aggs_sped_2003 <- allpublic_sped_aggs(sped_2003)
-   expect_is(ap_aggs_sped_2003, "data.frame")
+   expect_s3_class(ap_aggs_sped_2003, "data.frame")
    
    expect_equal(ap_aggs_sped_2003 %>%
                    filter(district_name == "Asbury Park All Public") %>%
@@ -280,7 +279,7 @@ test_that("allpublic sector sped aggs, 2003, no speech", {
 test_that("allpublic sector sped aggs, 2018", {
    sped_2018 <- fetch_sped(2018)
    ap_aggs_sped_2018 <- allpublic_sped_aggs(sped_2018)
-   expect_is(ap_aggs_sped_2018, "data.frame")
+   expect_s3_class(ap_aggs_sped_2018, "data.frame")
    
    expect_equal(ap_aggs_sped_2018 %>%
                    filter(district_name == "East Brunswick All Public") %>%
@@ -297,7 +296,7 @@ matric_18_counts <- 2018 %>%
 test_that("charter sector matric aggs, 2018", {
   
   ch_aggs_matric_2018 <- charter_sector_matric_aggs(matric_18_counts)
-  expect_is(ch_aggs_matric_2018, "data.frame")
+  expect_s3_class(ch_aggs_matric_2018, "data.frame")
   
   expect_equal(ch_aggs_matric_2018 %>%
                  filter(district_id == '0680C',
@@ -315,7 +314,7 @@ test_that("charter sector matric aggs, 2018", {
 
 test_that("allpublic matric aggs, 2018", {
   ap_aggs_matric_2018 <- allpublic_matric_aggs(matric_18_counts)
-  expect_is(ap_aggs_matric_2018, "data.frame")
+  expect_s3_class(ap_aggs_matric_2018, "data.frame")
   
   expect_equal(ap_aggs_matric_2018 %>%
                  filter(district_id == '0680A',

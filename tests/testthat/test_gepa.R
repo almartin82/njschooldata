@@ -1,4 +1,3 @@
-context("functions in gepa.R")
 
 #constant
 ex_2007 <- get_raw_gepa(2007)
