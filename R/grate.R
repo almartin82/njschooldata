@@ -289,7 +289,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       old_tidy_list[[j]] <- cbind(constant_df, sub_long)
     }
 
-    out <- dplyr::rbind_all(old_tidy_list)
+    out <- dplyr::bind_rows(old_tidy_list)
 
     return(out)
   }
@@ -371,7 +371,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       sch_list[[i]] <- tidy_old_format(this_sch)
     }
 
-    out <- dplyr::rbind_all(sch_list)
+    out <- dplyr::bind_rows(sch_list)
   #cohort 2011-2012 didn't report subgroups method (different file structure)
   #cohort 2020 lacks cohortcount and graduated_count columns . . . . yeah!
   } else if (end_year %in%  c(2011, 2012, 2020)) {
@@ -437,8 +437,8 @@ grad_file_group_cleanup <- function(group) {
 
 get_raw_grad_file <- function(end_year, methodology = '4 year') {
 
-  if (end_year < 1998 | end_year > 2021) {
-    stop('year not yet supported')
+  if (end_year < 1998 | end_year > 2024) {
+    stop('year not yet supported. Valid years are 1998-2024.')
   }
 
   ########## 4 year ##########
@@ -517,7 +517,35 @@ get_raw_grad_file <- function(end_year, methodology = '4 year') {
         grate_file <- tempfile(fileext = ".xlsx")
         httr::GET(url = grate_url, httr::write_disk(grate_file))
         df <- readxl::read_excel(grate_file, skip = num_skip)
-        }
+
+      } else if (end_year == 2021) {
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202021%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+        num_skip  <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+
+      } else if (end_year == 2022) {
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202022%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+        num_skip  <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+
+      } else if (end_year == 2023) {
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202023%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+        num_skip  <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+
+      } else if (end_year == 2024) {
+        grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202024%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+        num_skip  <- 3
+        grate_file <- tempfile(fileext = ".xlsx")
+        httr::GET(url = grate_url, httr::write_disk(grate_file))
+        df <- readxl::read_excel(grate_file, skip = num_skip)
+      }
 
    ########## 5 year ##########
    } else if (methodology == '5 year') {
@@ -603,8 +631,8 @@ id_grad_aggs <- function(df) {
 #' @return dataframe with the number of graduates per school and district
 
 get_grad_count <- function(end_year) {
-   if (end_year < 2012 | end_year > 2019)
-      stop(paste0(end_year, " not yet supported."))
+   if (end_year < 2012 | end_year > 2024)
+      stop(paste0(end_year, " not yet supported. Valid years are 2012-2024."))
 
   df <- get_raw_grad_file(end_year)
 
@@ -829,8 +857,8 @@ fetch_grad_count <- function(end_year) {
 #' @export
 
 get_grad_rate <- function(end_year, methodology) {
-  if (end_year < 2011 | end_year > 2021) {
-    stop('year not yet supported')
+  if (end_year < 2011 | end_year > 2024) {
+    stop('year not yet supported. Valid years are 2011-2024.')
   }
 
   df <- get_raw_grad_file(end_year, methodology) %>%
