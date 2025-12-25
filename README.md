@@ -117,8 +117,6 @@ The flat files provided by the state are a bit painful to work with. The layout 
 
 ## Contributing
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
-
 Contributions are welcome!
 
 Comments? Questions? Problems? Want to contribute to development?

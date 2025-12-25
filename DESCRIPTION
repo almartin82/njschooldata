@@ -13,6 +13,7 @@ BugReports: https://github.com/almartin82/njschooldata/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    digest,
     dplyr (>= 1.0.0),
     downloader,
     httr,
@@ -28,7 +29,8 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    covr
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.3.1
