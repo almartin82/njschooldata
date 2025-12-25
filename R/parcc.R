@@ -313,44 +313,75 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' @export
 
 fetch_all_parcc <- function() {
-  
+
   parcc_results <- list()
-  
-  for (i in c(2015:2019)) {
+
+ # PARCC years 2015-2018, NJSLA 2019+
+ # Note: 2020 assessments were cancelled due to COVID-19
+  valid_years <- c(2015:2019, 2021:2024)
+
+  for (i in valid_years) {
     #normal grade level tests
     for (j in c(3:8)) {
       for (k in c('ela', 'math')) {
-      
-        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = k, tidy = TRUE)
-        
-        parcc_results[[paste(i, j, k, sep = '_')]] <- p
-        
+
+        p <- tryCatch({
+          fetch_parcc(end_year = i, grade_or_subj = j, subj = k, tidy = TRUE)
+        }, error = function(e) {
+          message(sprintf("Could not fetch %s grade %d %s: %s", i, j, k, e$message))
+          NULL
+        })
+
+        if (!is.null(p)) {
+          parcc_results[[paste(i, j, k, sep = '_')]] <- p
+        }
       }
     }
     #hs ela
-    
+
     if (i >= 2019) {
-      # 11th grade optional and not reported
+      # 11th grade optional and not reported starting in 2019
       for (j in c(9:10)) {
-        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
-        
-        parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+        p <- tryCatch({
+          fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+        }, error = function(e) {
+          message(sprintf("Could not fetch %s grade %d ela: %s", i, j, e$message))
+          NULL
+        })
+
+        if (!is.null(p)) {
+          parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+        }
       }
     } else {
       for (j in c(9:11)) {
-        p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
-        
-        parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+        p <- tryCatch({
+          fetch_parcc(end_year = i, grade_or_subj = j, subj = 'ela', tidy = TRUE)
+        }, error = function(e) {
+          message(sprintf("Could not fetch %s grade %d ela: %s", i, j, e$message))
+          NULL
+        })
+
+        if (!is.null(p)) {
+          parcc_results[[paste(i, j, 'ela', sep = '_')]] <- p
+        }
       }
     }
 
     #specific math tests
     for (j in c('ALG1', 'GEO', 'ALG2')) {
-      p <- fetch_parcc(end_year = i, grade_or_subj = j, subj = 'math', tidy = TRUE)
-      
-      parcc_results[[paste(i, j, 'math', sep = '_')]] <- p
+      p <- tryCatch({
+        fetch_parcc(end_year = i, grade_or_subj = j, subj = 'math', tidy = TRUE)
+      }, error = function(e) {
+        message(sprintf("Could not fetch %s %s math: %s", i, j, e$message))
+        NULL
+      })
+
+      if (!is.null(p)) {
+        parcc_results[[paste(i, j, 'math', sep = '_')]] <- p
+      }
     }
   }
-  
+
   dplyr::bind_rows(parcc_results)
 }
