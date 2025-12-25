@@ -1,4 +1,3 @@
-context("functions in lookups.R")
 
 enr_several <- map_df(
   c(2017:2018),

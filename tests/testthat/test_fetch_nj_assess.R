@@ -1,4 +1,3 @@
-context("functions in fetch_nj_assess.R")
 
 test_that("valid_call correctly identifies status of years/grade pairs", {
 

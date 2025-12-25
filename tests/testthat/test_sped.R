@@ -1,4 +1,3 @@
-context("test sped functions")
 
 all_end_years <- c(2003:2019)
 

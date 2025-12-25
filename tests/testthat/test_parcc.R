@@ -1,4 +1,3 @@
-context("parcc functions")
 
 test_that("get_raw_parcc gets data file", {
   
@@ -53,7 +52,7 @@ test_that("calculate_agg_parcc_prof all grades", {
     subj = 'math',
     gradespan = '3-11'
   )
-  expect_is(math_311_2018, 'data.frame')
+  expect_s3_class(math_311_2018, 'data.frame')
 })
 
 
@@ -63,7 +62,7 @@ test_that("calculate_agg_parcc_prof 3-8", {
     subj = 'math',
     gradespan = '3-8'
   )
-  expect_is(math_38_2018, 'data.frame')
+  expect_s3_class(math_38_2018, 'data.frame')
 })
 
 
@@ -73,28 +72,28 @@ test_that("calculate_agg_parcc_prof 9-11", {
     subj = 'math',
     gradespan = '9-11'
   )
-  expect_is(math_911_2018, 'data.frame')
+  expect_s3_class(math_911_2018, 'data.frame')
 })
 
 
 test_that("works with 2018-19 SLA data", {
   sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 4, 'ela', TRUE)
-  expect_is(sla_2019, 'data.frame')
+  expect_s3_class(sla_2019, 'data.frame')
   
   sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'ALG1', 'math', TRUE)
-  expect_is(sla_2019, 'data.frame')
+  expect_s3_class(sla_2019, 'data.frame')
   
   sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'GEO', 'math', TRUE)
-  expect_is(sla_2019, 'data.frame')
+  expect_s3_class(sla_2019, 'data.frame')
 
   sla_2019 <- fetch_parcc(end_year = 2019, grade_or_subj = 'ALG2', 'math', TRUE)
-  expect_is(sla_2019, 'data.frame')
+  expect_s3_class(sla_2019, 'data.frame')
 })
 
 
 test_that("fetch_all_parcc works", {
   all_parcc <- fetch_all_parcc()
-  expect_is(all_parcc, 'data.frame')
+  expect_s3_class(all_parcc, 'data.frame')
 })
 
 
@@ -110,7 +109,7 @@ test_that("calculate_agg_parcc_prof from parcc calcs works with 2018-19 data", {
       gradespan = '3-11'
     )
   )
-  expect_is(math_311_agg, 'data.frame')
+  expect_s3_class(math_311_agg, 'data.frame')
   
   ela_311_agg <- map_df(
     parcc_years,
@@ -120,6 +119,6 @@ test_that("calculate_agg_parcc_prof from parcc calcs works with 2018-19 data", {
       gradespan = '3-11'
     )
   )
-  expect_is(ela_311_agg, 'data.frame')
+  expect_s3_class(ela_311_agg, 'data.frame')
   
 })
