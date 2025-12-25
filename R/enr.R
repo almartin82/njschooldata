@@ -4,7 +4,7 @@
 #' \code{get_raw_enr} returns a data frame with a year's worth of fall school and 
 #' grade level enrollment data.
 #' @param end_year a school year.  year is the end of the academic year - eg 2006-07
-#' school year is year '2007'.  valid values are 2000-2023.
+#' school year is year '2007'.  valid values are 1999-2025.
 #' @export
 
 get_raw_enr <- function(end_year) {
