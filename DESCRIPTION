@@ -1,34 +1,36 @@
 Package: njschooldata
 Type: Package
-Title: a simple interface for accessing NJ DOE school data in R
-Description: R functions to import NJ school data, including assessment, enrollment and accountability data.
-Version: 0.8.19
-Date: 2015-04-21
-Authors@R: person("Andrew", "Martin", role = c("aut","cre"), email = "almartin@gmail.com")
+Title: A Simple Interface for Accessing NJ DOE School Data in R
+Description: R functions to import NJ school data, including assessment,
+    enrollment, and accountability data from the New Jersey Department of
+    Education.
+Version: 0.9.0
+Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
+    email = "almartin@gmail.com")
 License: GPL-3 | file LICENSE
+URL: https://github.com/almartin82/njschooldata
+BugReports: https://github.com/almartin82/njschooldata/issues
 Depends:
-    dplyr,
-    ensurer,
-    foreign,
-    gdata,
+    R (>= 4.1.0)
+Imports:
+    dplyr (>= 1.0.0),
+    downloader,
+    httr,
     janitor,
     magrittr,
-    R(>= 3.5.0),
-    readr,
-    reshape2,
-    rlang,
-    stringr,
-    tidyr
-Imports:
-    downloader,
     purrr,
-    readxl
+    readr,
+    readxl,
+    rlang (>= 0.4.0),
+    snakecase,
+    stringr,
+    tidyr (>= 1.0.0)
 Suggests:
     knitr,
-    placement,
     rmarkdown,
-    testthat
+    testthat (>= 3.0.0)
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
+Config/testthat/edition: 3
