@@ -62,9 +62,9 @@ standard_assess <- function(end_year, grade) {
 
 fetch_old_nj_assess <- function(end_year, grade, tidy = FALSE) {
   #only allow valid calls
-  valid_call(end_year, grade) %>%
-    ensure_that(
-      all(.) ~ "invalid grade/end_year parameter passed")
+  if (!valid_call(end_year, grade)) {
+    stop("invalid grade/end_year parameter passed")
+  }
   
   #everything post 2008 has the same grade coverage
   #some of the layouts are funky, but the fetch_njask function covers that.
@@ -184,12 +184,12 @@ tidy_nj_assess <- function(assess_name, df) {
     as.data.frame()
   
   demog_test <- demog_masks %>%
-    dplyr::summarise_each(dplyr::funs(sum)) %>% 
+    dplyr::summarise(dplyr::across(dplyr::everything(), sum)) %>%
     unname() %>% unlist()
-  
+
   if (!all(demog_test == 1)) {
-    print(names(df)[!demog_test == 1])
-    print(demog_test)
+    message("Columns not matching exactly one demographic mask:")
+    message(paste(names(df)[!demog_test == 1], collapse = ", "))
   }
   
   #by subject
@@ -206,13 +206,12 @@ tidy_nj_assess <- function(assess_name, df) {
     as.data.frame()
   
   subj_test <- subj_masks %>%
-    dplyr::summarise_each(dplyr::funs(sum)) %>% 
+    dplyr::summarise(dplyr::across(dplyr::everything(), sum)) %>%
     unname() %>% unlist()
 
   if (!all(subj_test == 1)) {
-    print(names(df)[!subj_test == 1])  
-    names(subj_masks) <- names(df)
-    print(subj_masks[, !subj_test == 1])
+    message("Columns not matching exactly one subject mask:")
+    message(paste(names(df)[!subj_test == 1], collapse = ", "))
   }
 
   subgroups <- c('total_population', 'general_education', 'special_education', 
