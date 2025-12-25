@@ -1,4 +1,3 @@
-context("test special pop enr")
 
 sp17 <- fetch_reportcard_special_pop(2017)
 sp18 <- fetch_reportcard_special_pop(2018)
@@ -6,7 +5,7 @@ sp19 <- fetch_reportcard_special_pop(2019)
 
 test_that("special pop works with 2017 data", {
   expect_is(sp17, 'tbl_df')
-  expect_is(sp17, 'data.frame')
+  expect_s3_class(sp17, 'data.frame')
   expect_equal(
     names(sp17),
     c("county_id", 
@@ -22,7 +21,7 @@ test_that("special pop works with 2017 data", {
 
 test_that("special pop works with 2018 data", {
    expect_is(sp18, 'tbl_df')
-   expect_is(sp18, 'data.frame')
+   expect_s3_class(sp18, 'data.frame')
    expect_equal(
       names(sp18),
       c("county_id", 
@@ -38,7 +37,7 @@ test_that("special pop works with 2018 data", {
 
 test_that("special pop works with 2019 data", {
    expect_is(sp19, 'tbl_df')
-   expect_is(sp19, 'data.frame')
+   expect_s3_class(sp19, 'data.frame')
    expect_equal(
       names(sp19),
       c("county_id", 
@@ -58,7 +57,7 @@ test_that("ground truth value checks on 2018 special populations data", {
              school_id == '270',
              !is_district) 
    
-   expect_is(newark_sp_18, 'data.frame')
+   expect_s3_class(newark_sp_18, 'data.frame')
 
    }
 )
@@ -80,7 +79,7 @@ test_that("ground truth value checks on 2019 special populations data", {
              school_id == '270',
              !is_district) 
    
-   expect_is(newark_sp_19, 'data.frame')
+   expect_s3_class(newark_sp_19, 'data.frame')
    
    expect_equal(newark_sp_19 %>% 
                    filter(subgroup == "Female") %>% 
