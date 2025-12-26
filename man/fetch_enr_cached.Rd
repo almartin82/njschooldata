@@ -7,10 +7,10 @@
 fetch_enr_cached(end_year, tidy = FALSE)
 }
 \arguments{
-\item{end_year}{a school year.  year is the end of the academic year - eg 2006-07
-school year is year '2007'.  valid values are 1999-2019.}
+\item{end_year}{A school year. Year is the end of the academic year - eg 2006-07
+school year is year '2007'. Valid values are 1999-2025.}
 
-\item{tidy}{if TRUE, takes the unwieldy wide data and normalizes into a 
+\item{tidy}{If TRUE, takes the unwieldy wide data and normalizes into a
 long, tidy data frame with limited headers - constants (school/district name and code),
 subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).}
 }
