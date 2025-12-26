@@ -153,13 +153,13 @@ clean_sped_df <- function(df, end_year) {
     
     # sped_lookup_map is saved in package data
     # left join the input to the lookup map and enrich with district_ids where known
-    df_new <- df %>% 
+    df_new <- df %>%
       left_join(sped_lookup_map, by=c('county_name', 'district_name'))
-    
-    ensure_that(
-      df, nrow(.) == nrow(df_new) ~ 'fixing 2003-08 enrollment data changed the size of the sped df.  check for duplicate district_name keys!'
-    )
-    
+
+    if (nrow(df) != nrow(df_new)) {
+      stop('fixing 2003-08 enrollment data changed the size of the sped df.  check for duplicate district_name keys!')
+    }
+
     # if the data frame hasn't grown, great - overwrite df with the updated joined df
     df <- df_new
   }

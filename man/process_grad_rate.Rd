@@ -12,13 +12,11 @@ process_grad_rate(df, end_year, methodology)
 \item{end_year}{ending academic year}
 
 \item{methodology}{one of c('4 year', '5 year')}
-
-\item{description}{to the extent that fetch_grad_rate needs its own custom
-logic above and beyond the generic process_grate, it will live here}
 }
 \value{
 dataframe with normalized grad rate variables
 }
 \description{
-Process Grad Rate
+To the extent that fetch_grad_rate needs its own custom logic above and
+beyond the generic process_grate, it will live here.
 }

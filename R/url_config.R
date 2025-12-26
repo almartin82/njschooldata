@@ -68,9 +68,8 @@ get_enr_url <- function(end_year) {
 #' \describe{
 #'   \item{end_year}{The graduation cohort year}
 #'   \item{methodology}{Either "4 year" or "5 year"}
-#'   \item{url_pattern}{The URL or URL pattern for this data}
-#'   \item{skip_rows}{Number of header rows to skip when reading}
 #'   \item{file_type}{File format ("xlsx", "xls", "csv")}
+#'   \item{skip_rows}{Number of header rows to skip when reading}
 #' }
 #' @keywords internal
 grad_url_config <- data.frame(
