@@ -2,6 +2,19 @@
 # These are column names used in dplyr/tidyr operations via non-standard evaluation
 
 utils::globalVariables(c(
+  # ========== Column Names with Special Characters ==========
+  "% of Total Salaries",
+  "%English Learners", "%Free Lunch", "%Homeless", "%Migrant", "%Military", "%Reduced Lunch",
+  "Cost as a percentage of the Total Budgetary Cost Per Pupil",
+  "Pre-K Halfday", "Ungraded",
+
+  # ========== Package Data Objects ==========
+  "charter_city", "sped_lookup_map", "nwk_address_addendum", "geocoded_cached",
+  "layout_gepa", "layout_gepa05", "layout_gepa06",
+  "layout_hspa", "layout_hspa04", "layout_hspa05", "layout_hspa06", "layout_hspa10",
+  "layout_njask", "layout_njask04", "layout_njask05", "layout_njask06gr3",
+  "layout_njask06gr5", "layout_njask07gr3", "layout_njask07gr5", "layout_njask09", "layout_njask10",
+
   # ========== ID Columns ==========
   "county_id", "county_name", "county_code",
   "district_id", "district_name", "district_code",
@@ -20,8 +33,8 @@ utils::globalVariables(c(
   "grade_level", "program_code", "program_name",
   "subgroup", "subgroup_type", "rowname",
   "row_total", "rowtotal",
-  "n_enrolled", "n_schools",
-  "source_file", "level",
+  "n_enrolled", "n_schools", "n_charter",
+  "source_file", "level", "enr_2013",
 
   # Enrollment - gender
   "male", "female", "non_binary",
@@ -100,7 +113,19 @@ utils::globalVariables(c(
   "lep_current", "lep_former", "lep_current_former",
 
   # ========== DFG (District Factor Group) ==========
-  "dfg", "dfg_code",
+  "dfg", "dfg_code", "x1990_dfg", "x2000_dfg",
+
+  # ========== SGP/Growth Columns ==========
+  "ela_sgp", "la_sgp", "m_sgp", "math_sgp", "median_sgp", "student_growth",
+  "district_median", "school_median", "state_median", "school_mean", "met_target",
+
+  # ========== Peer Percentile Columns ==========
+  "proficiency_percentile", "proficient_above.x", "proficient_above.y", "proficient_diff",
+  "proficient_group_size", "proficient_rank",
+  "scale_group_size", "scale_rank", "scale_score_diff",
+  "scale_score_mean.x", "scale_score_mean.y", "scale_score_percentile",
+  "statewide_proficient_percentile", "statewide_scale_percentile",
+  "count_proficient_dummy", "count_scale_dummy",
 
   # ========== TGES (Taxpayers Guide) ==========
   "indicator", "indicator_value",
@@ -121,7 +146,7 @@ utils::globalVariables(c(
   "school_participation",
 
   # ========== Utility/Helper Columns ==========
-  "hash",
+  "hash", "Name", "cds", "denom", "extension", "num", "round_1", "temp_id",
   "nrow_before",
 
   # ========== Common Tidyverse ==========
