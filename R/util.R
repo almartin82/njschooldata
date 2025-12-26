@@ -124,19 +124,21 @@ rc_year_matcher <- function(df) {
 }
 
 
-clean_name_vector <- . %>%
-  gsub("'", "", .) %>% 
-  gsub("\"", "", .) %>% 
-  gsub("%", ".percent_", .) %>% 
-  gsub("#", ".number_", .) %>% 
-  gsub('-', '_', .) %>%
-  gsub("^[[:space:][:punct:]]+", "", .) %>% 
-  make.names(.) %>% 
+clean_name_vector <- function(x) {
+  x <- gsub("'", "", x)
+  x <- gsub("\"", "", x)
+  x <- gsub("%", ".percent_", x)
+  x <- gsub("#", ".number_", x)
+  x <- gsub('-', '_', x)
+  x <- gsub("^[[:space:][:punct:]]+", "", x)
+  x <- make.names(x)
   snakecase::to_any_case(
-    case = 'snake', 
+    x,
+    case = 'snake',
     sep_in = "\\.",
     transliterations = c("Latin-ASCII"), parsing_option = 3
   )
+}
 
 
 #' Report Card Numeric Data Cleaner
