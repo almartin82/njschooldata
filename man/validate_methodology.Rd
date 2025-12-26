@@ -18,3 +18,4 @@ TRUE invisibly if valid, otherwise throws an error
 Validates that methodology is either "4 year" or "5 year" and
 that 5-year rates are available for the specified year.
 }
+\keyword{internal}

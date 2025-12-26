@@ -17,3 +17,4 @@ data.frame
 \description{
 Tidy Ratio of Students to Teachers
 }
+\keyword{internal}

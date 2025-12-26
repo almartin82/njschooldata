@@ -17,3 +17,4 @@ vector of district_ids
 \description{
 Given friendly district names, returns ids
 }
+\keyword{internal}

@@ -6,8 +6,7 @@
 #' @param end_year a school end_year.  end_year is the end of the academic year - eg 2013-14
 #' school year is end_year '2014'.  valid values are 2004-2014.
 #' @param layout what layout dataframe to use.  default is layout_hspa.
-#' @export
-
+#' @keywords internal
 get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {    
   #url paths changed in 2012
   years <- list(

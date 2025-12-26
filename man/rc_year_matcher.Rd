@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{rc_year_matcher}
 \alias{rc_year_matcher}
-\title{report card year matcher}
+\title{Report card year matcher}
 \usage{
 rc_year_matcher(df)
 }
@@ -13,5 +13,6 @@ rc_year_matcher(df)
 data frame with only data for the year of the report
 }
 \description{
-report card year matcher
+Filters a report card table to only include data for the specified year.
 }
+\keyword{internal}

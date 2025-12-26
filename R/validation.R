@@ -235,7 +235,7 @@ get_valid_grades <- function(assessment_type, end_year) {
 #'
 #' @param subj The subject to validate
 #' @return TRUE invisibly if valid, otherwise throws an error
-#' @export
+#' @keywords internal
 validate_subject <- function(subj) {
   valid_subjects <- c("ela", "math")
 
@@ -261,7 +261,7 @@ validate_subject <- function(subj) {
 #' @param methodology The methodology to validate
 #' @param end_year Optional year to check availability
 #' @return TRUE invisibly if valid, otherwise throws an error
-#' @export
+#' @keywords internal
 validate_methodology <- function(methodology, end_year = NULL) {
   valid_methodologies <- c("4 year", "5 year")
 
@@ -295,7 +295,7 @@ validate_methodology <- function(methodology, end_year = NULL) {
 #' @param value The value to validate
 #' @param param_name The name of the parameter (for error messages)
 #' @return TRUE invisibly if valid, otherwise throws an error
-#' @export
+#' @keywords internal
 validate_logical <- function(value, param_name) {
   if (!is.logical(value) || length(value) != 1 || is.na(value)) {
     stop(
@@ -323,7 +323,7 @@ validate_logical <- function(value, param_name) {
 #' @param grade_or_subj The grade or subject code
 #' @param subj The subject ("ela" or "math")
 #' @return TRUE invisibly if valid, otherwise throws an error
-#' @export
+#' @keywords internal
 validate_parcc_call <- function(end_year, grade_or_subj, subj) {
   validate_end_year(end_year, "parcc")
   validate_subject(subj)
