@@ -30,9 +30,7 @@ process_nj_assess <- function(df, layout) {
 
   #process the columns that have an implied decimal
   processed <- df[, mask] %>%
-    dplyr::mutate_each(
-      dplyr::funs(implied_decimal_fix)  
-    )
+    dplyr::mutate(dplyr::across(dplyr::everything(), implied_decimal_fix))
   
   #put back together 
   final <- cbind(ignore, processed)
