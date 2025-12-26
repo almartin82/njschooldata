@@ -107,7 +107,6 @@ pad_cds <- function(df) {
 #' report card year matcher
 #'
 #' @param df a report card table that includes trailing/longitudinal data
-#' @param end_year the correct year
 #'
 #' @return data frame with only data for the year of the report
 #' @export
@@ -116,7 +115,7 @@ rc_year_matcher <- function(df) {
   #convert the 0708 to 2008, etc
   yy <- stringr::str_sub(df$year, 3, 4) %>% as.numeric()
   df$yy <- ifelse(yy >= 68 %% 100, 1900+yy, 2000+yy)
-  
+
   #filter on end year
   df %>%
     filter(yy == end_year) %>%

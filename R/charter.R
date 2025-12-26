@@ -6,11 +6,10 @@
 #' @export
 
 id_charter_hosts <- function(df) {
-  ensure_that(
-    df, 'district_id' %in% names(.) | 'district_code' %in% names(.) ~ 
-      "supplied dataframe must contain 'district_id' or 'district_code'"
-  )
-  
+  if (!('district_id' %in% names(df) | 'district_code' %in% names(df))) {
+    stop("supplied dataframe must contain 'district_id' or 'district_code'")
+  }
+
   charter_city_slim <- charter_city %>% select(-district_name)
   
   if ('district_id' %in% names(df)) {
@@ -20,10 +19,10 @@ id_charter_hosts <- function(df) {
     df_new <- df %>% left_join(charter_city_slim, by = 'district_code')
   }
 
-  ensure_that(
-    df, nrow(.) == nrow(df_new) ~ 'joining to the charter hosts data set changed the size of your input dataframe.  this could be an issue with the `charter_city` dataframe included in this package.'
-  )
-  
+  if (nrow(df) != nrow(df_new)) {
+    stop('joining to the charter hosts data set changed the size of your input dataframe.  this could be an issue with the `charter_city` dataframe included in this package.')
+  }
+
   return(df_new)
 }
 
@@ -85,14 +84,13 @@ agg_enr_pct_total <- function(df) {
       'pct_total_enr' = n_students / row_total
     ) %>%
     select(-row_total)
-  
-  ensure_that(
-    df, nrow(.) == nrow_before ~ 
-      sprintf('calculating percent of total changed the size of the sector_aggs dataframe.\n 
+
+  if (nrow(df) != nrow_before) {
+    stop(sprintf('calculating percent of total changed the size of the sector_aggs dataframe.\n
       this suggests duplicate district_id/subgroup/year rows.\n
-      offending year / district: %s', nonuniques)
-  )
-  
+      offending year / district: %s', nonuniques))
+  }
+
   df
 }
 
