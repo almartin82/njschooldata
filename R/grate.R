@@ -852,6 +852,7 @@ fetch_grad_count <- function(end_year) {
 #'
 #' @param end_year end of the academic year - 2011-2012 is 2012
 #' valid values are 2011-present.
+#' @param methodology character string specifying calculation methodology. One of "4 year" or "5 year"
 #'
 #' @return dataframe with the number of graduates per school and district
 #' @export
@@ -891,6 +892,7 @@ process_grad_rate <- function(df, end_year, methodology) {
 #'
 #' @param end_year end of the academic year - eg 2006-07 is 2007.
 #' valid values are 2011-present.
+#' @param methodology character string specifying calculation methodology. One of "4 year" or "5 year"
 #'
 #' @return dataframe with grad rate
 #' @export

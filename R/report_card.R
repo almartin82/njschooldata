@@ -332,7 +332,8 @@ extract_rc_SAT <- function(
 #' Extract Report Card Matriculation Rates
 #'
 #' @inheritParams extract_rc_SAT
-#' 
+#' @param type character string specifying matriculation type. One of "16 month" or "12 month"
+#'
 #' @return data frame with all the years of 4 year and 2 year college matriculation data
 #' present in in the input
 #' @export
@@ -757,9 +758,10 @@ enrich_rc_enrollment <- function(df) {
 
 
 #' Enrich matriculation rates with counts from grad counts
-#' 
+#'
 #' @param df data frame of including matriculation percentages
-#' 
+#' @param type character string specifying matriculation type. One of "16 month" or "12 month"
+#'
 #' @return data_frame
 #' @export
 enrich_matric_counts <- function(df, type = '16 month') {

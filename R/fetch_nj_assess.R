@@ -317,9 +317,10 @@ nj_coltype_parser <- function(datatypes) {
 
 
 #' @title common_fwf_req
-#' 
+#'
 #' @description common fwf logic across various assessment types.  DRY.
 #' @param url file location
+#' @param layout data frame containing fixed-width file column specifications
 #' @return layout layout to use
 #' @export
 
