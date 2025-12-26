@@ -33,12 +33,9 @@ Imports:
     tidyr (>= 1.0.0)
 Suggests:
     covr,
-    geojsonio,
     knitr,
-    placement,
     rmarkdown,
     sf,
-    sp,
     testthat (>= 3.0.0)
 LazyData: true
 VignetteBuilder: knitr
