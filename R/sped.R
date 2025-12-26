@@ -3,8 +3,7 @@
 #' @inheritParams get_raw_enr 
 #'
 #' @return a dataframe with special ed counts, etc.
-#' @export
-
+#' @keywords internal
 get_raw_sped <- function(end_year) {
   
   print(end_year)

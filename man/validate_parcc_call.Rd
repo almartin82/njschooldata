@@ -19,3 +19,4 @@ TRUE invisibly if valid, otherwise throws an error
 \description{
 Validates all parameters for fetch_parcc() in one call.
 }
+\keyword{internal}

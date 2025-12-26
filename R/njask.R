@@ -5,8 +5,7 @@
 #' width text file into a R data frame
 #' @inheritParams fetch_njask
 #' @param layout what layout dataframe to use.  default is layout_njask.
-#' @export
-
+#' @keywords internal
 get_raw_njask <- function(end_year, grade, layout=layout_njask) {  
   #url paths changed after the 2012 assessment
   years <- list(

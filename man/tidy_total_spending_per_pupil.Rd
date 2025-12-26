@@ -17,3 +17,4 @@ data frame
 \description{
 tidy total spending per pupil
 }
+\keyword{internal}

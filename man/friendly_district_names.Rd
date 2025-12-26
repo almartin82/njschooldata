@@ -15,3 +15,4 @@ character vector of names, one per district id
 \description{
 Friendly District Names
 }
+\keyword{internal}

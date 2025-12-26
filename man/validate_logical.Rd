@@ -17,3 +17,4 @@ TRUE invisibly if valid, otherwise throws an error
 \description{
 Validate logical/boolean parameter
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ vector of school_ids
 \description{
 Given friendly school names, returns ids
 }
+\keyword{internal}

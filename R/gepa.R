@@ -6,8 +6,7 @@
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2006-07
 #' school year is end_year '2007'.  valid values are 2004-2007.
 #' @param layout what layout dataframe to use.  default is layout_gepa.
-#' @export
-
+#' @keywords internal
 get_raw_gepa <- function(end_year, layout=layout_gepa) {
     
   #url paths changed in 2012
