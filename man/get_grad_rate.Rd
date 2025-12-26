@@ -9,6 +9,8 @@ get_grad_rate(end_year, methodology)
 \arguments{
 \item{end_year}{end of the academic year - 2011-2012 is 2012
 valid values are 2011-present.}
+
+\item{methodology}{character string specifying calculation methodology. One of "4 year" or "5 year"}
 }
 \value{
 dataframe with the number of graduates per school and district

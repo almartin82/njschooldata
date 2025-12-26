@@ -46,6 +46,9 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
   if (use_cache) {
     data("geocoded_cached")
   } else {
+    if (!requireNamespace("placement", quietly = TRUE)) {
+      stop("Package 'placement' is required for geocoding. Install it with: install.packages('placement')")
+    }
     geocoded <- placement::geocode_url(
       nj_sch$address,
       auth='standard_api',
@@ -132,6 +135,12 @@ enrich_school_city_ward <- function(df) {
   # add specific geos here
   # newark (3570)
   if ('3570' %in% df$district_id) {
+    if (!requireNamespace("geojsonio", quietly = TRUE)) {
+      stop("Package 'geojsonio' is required for ward enrichment. Install it with: install.packages('geojsonio')")
+    }
+    if (!requireNamespace("sp", quietly = TRUE)) {
+      stop("Package 'sp' is required for ward enrichment. Install it with: install.packages('sp')")
+    }
     newark_wards <- geojsonio::geojson_read(
       "http://data.ci.newark.nj.us/dataset/ba8f41a3-584b-4021-b8c3-30a7d1ae8ac3/resource/5b9c86cd-b57b-4341-8c4c-ee975d9e1904/download/wards2012.geojson",
       what = "sp"
@@ -141,7 +150,7 @@ enrich_school_city_ward <- function(df) {
     sp::proj4string(df_supported) <- sp::proj4string(newark_wards)
 
     df_supported$ward <- sp::over(df_supported, newark_wards)$WARD_NAME
-    df_supported <- as_tibble(df_supported)
+    df_supported <- tibble::as_tibble(df_supported)
   }
   # combine and return
   bind_rows(df_supported, df_unsupported)
@@ -151,7 +160,7 @@ enrich_school_city_ward <- function(df) {
 #' Aggregates enrollment data by ward
 #'
 #'
-#' @param list_of_dfs output of \code{fetch_enr}
+#' @param df data frame containing enrollment data
 #'
 #' @return A data frame of ward aggregations
 #' @export

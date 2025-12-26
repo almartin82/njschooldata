@@ -9,6 +9,8 @@ fetch_grad_rate(end_year, methodology = "4 year")
 \arguments{
 \item{end_year}{end of the academic year - eg 2006-07 is 2007.
 valid values are 2011-present.}
+
+\item{methodology}{character string specifying calculation methodology. One of "4 year" or "5 year"}
 }
 \value{
 dataframe with grad rate

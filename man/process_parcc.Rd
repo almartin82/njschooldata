@@ -12,6 +12,8 @@ process_parcc(parcc_file, end_year, grade, subj)
 \item{end_year}{a school year.  end_year is the end of the academic year - eg 2014-15
 school year is end_year 2015.  valid values are 2015-2017}
 
+\item{grade}{integer or character specifying grade level}
+
 \item{subj}{PARCC subject. c('ela' or 'math')}
 }
 \value{
