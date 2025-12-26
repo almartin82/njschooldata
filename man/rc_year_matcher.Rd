@@ -8,8 +8,6 @@ rc_year_matcher(df)
 }
 \arguments{
 \item{df}{a report card table that includes trailing/longitudinal data}
-
-\item{end_year}{the correct year}
 }
 \value{
 data frame with only data for the year of the report

@@ -874,8 +874,9 @@ get_grad_rate <- function(end_year, methodology) {
 
 #' Process Grad Rate
 #'
-#' @param description to the extent that fetch_grad_rate needs its own custom
-#' logic above and beyond the generic process_grate, it will live here
+#' To the extent that fetch_grad_rate needs its own custom logic above and
+#' beyond the generic process_grate, it will live here.
+#'
 #' @param df output of get_grad_rate
 #' @param end_year ending academic year
 #' @param methodology one of c('4 year', '5 year')
