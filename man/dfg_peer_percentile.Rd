@@ -7,7 +7,7 @@
 dfg_peer_percentile(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{data.frame with PARCC/assessment data containing DFG and required columns}
 }
 \value{
 data.frame with percent proficient and scale score percentile rank

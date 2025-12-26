@@ -34,17 +34,20 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       )
   
   
-  old_nwk_addresses_RAW <- read_csv("data/nwk_address_addendum.csv",
-                                    col_types = "ccccl")
-  
-  old_nwk_addresses <- old_nwk_addresses_RAW %>%
-    mutate(
-      school_id = str_pad(school_id, 3, pad = '0')
-      )
+  # Load Newark address addendum from package data
+  nwk_address_addendum <- NULL
+  utils::data("nwk_address_addendum", package = "njschooldata", envir = environment())
+
+  old_nwk_addresses <- nwk_address_addendum %>%
+    dplyr::mutate(
+      school_id = stringr::str_pad(school_id, 3, pad = '0')
+    )
 
   # geocode
   if (use_cache) {
-    data("geocoded_cached")
+    geocoded_cached <- NULL
+    utils::data("geocoded_cached", package = "njschooldata", envir = environment())
+    geocoded <- geocoded_cached
   } else {
     if (!requireNamespace("placement", quietly = TRUE)) {
       stop("Package 'placement' is required for geocoding. Install it with: install.packages('placement')")

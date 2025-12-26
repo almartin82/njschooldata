@@ -323,7 +323,7 @@ tidy_grad_rate <- function(df, end_year, methodology = '4 year') {
       "cohort 2019 5-year graduation rate"
     )] <- 'grad_rate'
 
-    if (class(df$grad_rate) == "character") {
+    if (is.character(df$grad_rate)) {
 
       df <- df %>%  dplyr::mutate(grad_rate =
                              as.numeric(

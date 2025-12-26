@@ -16,6 +16,23 @@
 #' @source NJ Department of Education
 "charter_city"
 
+#' Newark Address Addendum
+#'
+#' Additional address data for Newark schools to supplement geocoding.
+#' Contains school addresses that were not included in the main school
+#' directory or needed corrections for proper geocoding.
+#'
+#' @format A data frame with 98 rows and 5 columns:
+#' \describe{
+#'   \item{district_id}{District identifier (Newark district is 3570)}
+#'   \item{school_id}{School identifier code}
+#'   \item{school_name}{Name of the school}
+#'   \item{address}{Full street address with city, state}
+#'   \item{in_geocode}{Logical indicating if address is in geocode cache}
+#' }
+#' @source Manual address corrections for Newark schools
+"nwk_address_addendum"
+
 #' Geocoded School Addresses
 #'
 #' Cached geocoding results for New Jersey school addresses. Contains latitude,

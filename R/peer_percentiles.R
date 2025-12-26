@@ -63,9 +63,9 @@ get_percentile_cols <- function(df) {
 
 
 #' Calculate statewide peer percentile by grade
-#' 
+#'
 #' @description calculates statewide percentile by grade/test
-#' @param df 
+#' @param df data.frame with PARCC/assessment data containing required columns
 #'
 #' @return data.frame with percent proficient and scale score percentile rank
 #' @export
@@ -124,9 +124,9 @@ statewide_peer_percentile <- function(df) {
 }
 
 #' Calculate DFG peer percentile by grade
-#' 
+#'
 #' @description calculates DFG percentile by grade/test
-#' @param df 
+#' @param df data.frame with PARCC/assessment data containing DFG and required columns
 #'
 #' @return data.frame with percent proficient and scale score percentile rank
 #' @export
