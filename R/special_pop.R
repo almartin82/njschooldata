@@ -3,8 +3,7 @@
 #' @param end_year ending academic year.  valid values are 2017, 2018, 2019
 #'
 #' @return data.frame with special population enrollment percentages
-#' @export
-
+#' @keywords internal
 get_reportcard_special_pop <- function(end_year) {
   
   df_list <- get_one_rc_database(end_year)
@@ -56,8 +55,7 @@ get_reportcard_special_pop <- function(end_year) {
 #' @param df raw special pop dataframe - output of get_reportcard_special_pop
 #'
 #' @return tidy dataframe with conforming id columns
-#' @export
-
+#' @keywords internal
 process_reportcard_special_pop <- function(df) {
   df %>%
     rename(subgroup = student_group) %>%

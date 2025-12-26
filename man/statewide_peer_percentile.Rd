@@ -15,3 +15,4 @@ data.frame with percent proficient and scale score percentile rank
 \description{
 calculates statewide percentile by grade/test
 }
+\keyword{internal}

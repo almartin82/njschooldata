@@ -4,8 +4,7 @@
 #' \code{valid_call} returns a boolean value indicating if a given end_year/grade pairing is
 #' valid for assessment data
 #' @inheritParams fetch_njask
-#' @export
-
+#' @keywords internal
 valid_call <- function(end_year, grade) {
   #data for 2015 school year doesn't exist yet
   #common core transition started in 2015 (njask is no more)
@@ -31,8 +30,7 @@ valid_call <- function(end_year, grade) {
 #' @description for 2008-2014, this function will grab the NJASK for gr 3-8, and HSPA
 #' for grade 11
 #' @inheritParams fetch_njask
-#' @export
-
+#' @keywords internal
 standard_assess <- function(end_year, grade) {
   if (grade %in% c(3:8)) {
     assess_data <- fetch_njask(end_year, grade)
@@ -304,8 +302,7 @@ tidy_nj_assess <- function(assess_name, df) {
 #' @description turns layout datatypes into compact string required by read_fwf
 #' @param datatypes vector of datatypes (from a layout df)
 #' @return a character string of the types, for read_fwf
-#' @export
-
+#' @keywords internal
 nj_coltype_parser <- function(datatypes) {
   datatypes <- ifelse(datatypes == "Text", 'c', datatypes)
   datatypes <- ifelse(datatypes == "Integer", 'i', datatypes)
@@ -322,8 +319,7 @@ nj_coltype_parser <- function(datatypes) {
 #' @param url file location
 #' @param layout data frame containing fixed-width file column specifications
 #' @return layout layout to use
-#' @export
-
+#' @keywords internal
 common_fwf_req <- function(url, layout) {
   #got burned by bad layouts.  read in the raw file
   #this will take extra time, but it is worth it.
