@@ -134,11 +134,12 @@ parcc_column_order <- function(df) {
 
 
 #' Process a raw PARCC data file
-#' 
+#'
 #' @description all the logic needed to clean up the raw PARCC files
 #'
 #' @param parcc_file output of get_raw_parcc
 #' @inheritParams get_raw_parcc
+#' @param grade integer or character specifying grade level
 #'
 #' @return a tbl_df / data rfame
 #' @export
