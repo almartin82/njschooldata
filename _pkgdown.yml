@@ -1,0 +1,121 @@
+url: https://almartin82.github.io/njschooldata/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/almartin82/njschooldata
+      aria-label: GitHub
+
+home:
+  links:
+    - text: Report a bug
+      href: https://github.com/almartin82/njschooldata/issues
+
+reference:
+  - title: Enrollment Data
+    desc: Functions for fetching and processing NJ school enrollment data
+    contents:
+      - fetch_enr
+      - get_raw_enr
+      - process_enr
+      - tidy_enr
+      - enr_aggs
+      - enr_grade_aggs
+      - id_enr_aggs
+
+  - title: Assessment Data (NJSLA/PARCC)
+    desc: Functions for NJSLA (2019+) and PARCC (2015-2018) assessment results
+    contents:
+      - fetch_parcc
+      - fetch_all_parcc
+      - get_raw_parcc
+      - get_raw_sla
+      - process_parcc
+      - parcc_column_order
+
+  - title: Assessment Data (Legacy - NJASK/HSPA/GEPA)
+    desc: Functions for historical NJ assessment data (2004-2014)
+    contents:
+      - fetch_nj_assess
+      - fetch_old_nj_assess
+      - fetch_njask
+      - fetch_hspa
+      - fetch_gepa
+      - tidy_nj_assess
+
+  - title: Graduation Data
+    desc: Functions for graduation rates and counts
+    contents:
+      - fetch_grad_rate
+      - fetch_grad_count
+      - get_grad_rate
+      - get_grad_count
+      - tidy_grad_rate
+      - tidy_grad_count
+      - grate_column_order
+      - gcount_column_order
+
+  - title: School/District Directories
+    desc: Functions for school and district metadata
+    contents:
+      - get_school_directory
+      - get_district_directory
+      - get_school_url
+
+  - title: Charter Aggregations
+    desc: Functions for charter school sector aggregations
+    contents:
+      - starts_with("charter_sector")
+      - starts_with("allpublic")
+      - id_charter_hosts
+
+  - title: Special Populations
+    desc: Functions for special education and other subgroup data
+    contents:
+      - fetch_sped
+      - fetch_reportcard_special_pop
+      - starts_with("sped_")
+
+  - title: Other Data Sources
+    desc: Additional NJ DOE data functions
+    contents:
+      - fetch_msgp
+      - fetch_tges
+      - fetch_dfg
+      - get_one_rc_database
+
+  - title: Utilities
+    desc: Helper functions and lookups
+    contents:
+      - pad_grade
+      - abbrev
+      - parse_parcc_subj
+      - clean_matric_counts
+      - starts_with("enrich_")
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - getting-started
+  - title: Analysis Guides
+    contents:
+      - longitudinal-analysis
+      - data-dictionary
+
+authors:
+  Andrew Martin:
+    href: https://github.com/almartin82
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

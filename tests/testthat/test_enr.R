@@ -1,4 +1,3 @@
-context("functions in enr")
 
 #post-NJSMART
 test_that("get_raw_enr correctly grabs the 2015 enrollment file", {
@@ -50,7 +49,7 @@ test_that("fetch_enr correctly grabs the 2012 enrollment file", {
 test_that("fetch_enr handles the 2016-17 enrollment file", {
   fetch_2017 <- fetch_enr(2017)
 
-  expect_is(fetch_2017, 'data.frame')
+  expect_s3_class(fetch_2017, 'data.frame')
   expect_equal(nrow(fetch_2017), 26467)
   expect_equal(ncol(fetch_2017), 39)
 })
@@ -59,7 +58,7 @@ test_that("fetch_enr handles the 2016-17 enrollment file", {
 test_that("fetch_enr handles the 2017-18 enrollment file", {
   fetch_2018 <- fetch_enr(2018)
 
-  expect_is(fetch_2018, 'data.frame')
+  expect_s3_class(fetch_2018, 'data.frame')
   expect_equal(nrow(fetch_2018), 26484)
   expect_equal(ncol(fetch_2018), 39)
 })
@@ -68,7 +67,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file", {
 test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
   fetch_2018 <- fetch_enr(2018, TRUE)
   
-  expect_is(fetch_2018, 'data.frame')
+  expect_s3_class(fetch_2018, 'data.frame')
   expect_equal(fetch_2018 %>%
                filter(subgroup == "free_reduced_lunch") %>%
                nrow(), 
@@ -85,7 +84,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
 test_that("fetch_enr handles the 2018-19 enrollment file", {
   fetch_2019 <- fetch_enr(2019)
   
-  expect_is(fetch_2019, 'data.frame')
+  expect_s3_class(fetch_2019, 'data.frame')
   
   expect_equal(nrow(fetch_2019), 26506)
   expect_equal(ncol(fetch_2019), 39)
@@ -94,7 +93,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file", {
 test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
   fetch_2019 <- fetch_enr(2019, TRUE)
   
-  expect_is(fetch_2019, 'data.frame')
+  expect_s3_class(fetch_2019, 'data.frame')
   expect_equal(nrow(fetch_2019), 652214)
   expect_equal(ncol(fetch_2019), 21)
 })
@@ -106,7 +105,7 @@ test_that("all enrollment data can be pulled", {
     fetch_enr
   )
 
-  expect_is(enr_all, 'data.frame')
+  expect_s3_class(enr_all, 'data.frame')
   expect_equal(nrow(enr_all), 727779)
   expect_equal(ncol(enr_all), 42)
 })
@@ -146,30 +145,30 @@ test_that("enr aggs correctly calculates known 2018 data", {
 
 test_that("fetch_enr works with tidy=TRUE argument", {
   enr_2018_untidy <- fetch_enr(2018, tidy=FALSE)
-  expect_is(enr_2018_untidy, 'data.frame')
+  expect_s3_class(enr_2018_untidy, 'data.frame')
   
   enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
-  expect_is(enr_2018_tidy, 'data.frame')
+  expect_s3_class(enr_2018_tidy, 'data.frame')
 })
 
 
 test_that("fetch_enr tidy FALSE works across many years", {
   enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=FALSE))
-  expect_is(enr_df, 'data.frame')
+  expect_s3_class(enr_df, 'data.frame')
 })
 
 
 test_that("fetch_enr tidy TRUE works across many years", {
   enr_years <- c(1999:2018)
   enr_df <- map_df(enr_years, ~fetch_enr(.x, tidy=TRUE))
-  expect_is(enr_df, 'data.frame')
+  expect_s3_class(enr_df, 'data.frame')
 })
 
 
 test_that("hand test fetch_enr numbers", {
   enr_2018_tidy <- fetch_enr(2018, tidy=TRUE)
-  expect_is(enr_2018_tidy, 'data.frame')
+  expect_s3_class(enr_2018_tidy, 'data.frame')
   
   nps_2018 <- enr_2018_tidy %>%
     filter(district_id == '3570' & is_district)
@@ -302,7 +301,7 @@ test_that("hand test fetch_enr numbers", {
 test_that("enr_grade_aggs works", {
   ex_2018 <- fetch_enr(2018, TRUE)
   aggs_2018 <- enr_grade_aggs(ex_2018)
-  expect_is(aggs_2018, 'data.frame')
+  expect_s3_class(aggs_2018, 'data.frame')
   
   camden_es_k12 <- aggs_2018 %>% 
     filter(district_id == '3570' & school_id == '310' & grade_level=='K12')
@@ -448,14 +447,14 @@ test_that("2022 makes sense", {
 
 test_that("1999-2000 works again", {
   ex <- fetch_enr(2000)
-  expect_is(ex, 'data.frame')
+  expect_s3_class(ex, 'data.frame')
   
 })
 
 
 test_that("2020 works again", {
   ex <- fetch_enr(2020)
-  expect_is(ex, 'data.frame')
+  expect_s3_class(ex, 'data.frame')
 
 })
 
@@ -468,7 +467,7 @@ test_that("princeton data looks reasonable", {
   ex_agg <- enr_grade_aggs(ex)
   ex_all <- bind_rows(ex, ex_agg)
 
-  expect_is(ex_all, 'data.frame')
+  expect_s3_class(ex_all, 'data.frame')
 
   ex_raw <- get_raw_enr(end_year = 2000)
 
@@ -514,7 +513,7 @@ test_that("2007 princeton data looks reasonable", {
   ex_agg <- enr_grade_aggs(ex)
   ex_all <- bind_rows(ex, ex_agg)
   
-  expect_is(ex_all, 'data.frame')
+  expect_s3_class(ex_all, 'data.frame')
   
   ex_raw <- get_raw_enr(end_year = 2007)
   
@@ -561,7 +560,7 @@ test_that("look at all enr data to see if there are parsing problems", {
   for (i in all_years) {
     print(i)
     enr_output = fetch_enr(i)
-    expect_is(enr_output, 'data.frame')
+    expect_s3_class(enr_output, 'data.frame')
   }
   expect_true(is.null(warnings()))
 })
@@ -584,8 +583,5 @@ test_that("2020+ data includes racial subgroups when tidy = TRUE", {
 })
 
 
-test_that("1999 works again", {
-  ex <- fetch_enr(1999)
-  expect_is(ex, 'data.frame')
-  
-})
+# NOTE: 1999 enrollment data was removed from NJ DOE website.
+# Valid enrollment years are now 2000-2025.

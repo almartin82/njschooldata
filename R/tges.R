@@ -4,8 +4,7 @@
 #' school year is end_year 2017.  valid values are 1999-2017
 #'
 #' @return list of data frames
-#' @export
-
+#' @keywords internal
 get_raw_tges <- function(end_year) {
   tges_urls <- list(
     "2019" = "https://www.state.nj.us/education/guide/2019/TGES-2019.zip",
@@ -151,8 +150,7 @@ tges_name_cleaner <- function(x, indicator_fields) {
 #' @param end_year end year that the report was published
 #'
 #' @return data frame
-#' @export
-
+#' @keywords internal
 tidy_total_spending_per_pupil <- function(df, end_year) {
   
   #masks to break out y1, y2 data
@@ -198,8 +196,7 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
 #' @param indicator character, indicator name
 #'
 #' @return long, tidy data frame
-#' @export
-
+#' @keywords internal
 tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   
   df$indicator <- indicator
@@ -289,8 +286,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
 #' @param end_year year published
 #'
 #' @return data frame that conforms to 2004-2009 style
-#' @export
-
+#' @keywords internal
 year_variable_converter <- function(df, end_year) {
   old_id <- end_year - 1
   old_ids <- c(old_id-2, old_id-1, old_id)
@@ -324,8 +320,7 @@ year_variable_converter <- function(df, end_year) {
 #' @param indicator character, indicator name
 #'
 #' @return long, tidy data frame
-#' @export
-
+#' @keywords internal
 tidy_generic_personnel <- function(df, end_year, indicator) {
   
   df$indicator <- indicator
@@ -391,8 +386,7 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
 #' @param end_year end year that the report was published
 #'
 #' @return data frame
-#' @export
-
+#' @keywords internal
 tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
 
   #goofy column names from 99-2010  
@@ -433,8 +427,7 @@ tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
 #' @param end_year end year that the report was published
 #'
 #' @return data frame
-#' @export
-
+#' @keywords internal
 tidy_excess_unreserved_general_fund <- function(df, end_year) {
   
   #goofy column names from 99-2010  
@@ -516,8 +509,7 @@ tidy_budgetary_per_pupil_cost <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
-
+#' @keywords internal
 tidy_total_classroom_instruction <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Classroom Instruction')
 }
@@ -528,7 +520,7 @@ tidy_total_classroom_instruction <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_classroom_salaries_benefits <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Classroom Salaries & Benefits')
@@ -540,7 +532,7 @@ tidy_classroom_salaries_benefits <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_classroom_general_supplies <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Classroom General Supplies and Textbooks')
@@ -552,7 +544,7 @@ tidy_classroom_general_supplies <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_classroom_purchased_services <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Classroom Purchased Services and Other')
@@ -564,7 +556,7 @@ tidy_classroom_purchased_services <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_total_support_services <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Support Services')
@@ -576,7 +568,7 @@ tidy_total_support_services <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_support_services_salaries <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Support Services Salaries + Benefits')
@@ -588,7 +580,7 @@ tidy_support_services_salaries <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_administrative_costs <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Administrative Costs per Pupil')
@@ -600,8 +592,8 @@ tidy_administrative_costs <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
- 
+#' @keywords internal
+
 tidy_legal_services <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Legal Services per Pupil')
 }
@@ -612,7 +604,7 @@ tidy_legal_services <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_admin_salaries <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Salaries + Benefits for Administration')
@@ -624,7 +616,7 @@ tidy_admin_salaries <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_plant_operations_maintenance <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Operations and Maintenance of Plant')
@@ -636,7 +628,7 @@ tidy_plant_operations_maintenance <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_plant_operations_maintenance_salaries <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Salaries + Benefits - Operations/Maintenance of Plant')
@@ -648,7 +640,7 @@ tidy_plant_operations_maintenance_salaries <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_food_service <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Food Service Cost per Pupil + Benefits')
@@ -660,7 +652,7 @@ tidy_food_service <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_extracurricular <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Extracurricular Costs per Pupil + Benefits')
@@ -672,7 +664,7 @@ tidy_extracurricular <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_personal_services_benefits <- function(df, end_year) {
   #CSG 14 IS DIFFERENT
@@ -686,7 +678,7 @@ tidy_personal_services_benefits <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_equipment <- function(df, end_year) {
   tidy_generic_budget_indicator(df, end_year, 'Total Equipment Cost per Pupil')
@@ -698,7 +690,7 @@ tidy_equipment <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_ratio_students_to_teachers <- function(df, end_year) {
   tidy_generic_personnel(df, end_year, 'Ratio of Students to Teachers, Median Salary')
@@ -710,7 +702,7 @@ tidy_ratio_students_to_teachers <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_ratio_students_to_special_service <- function(df, end_year) {
   tidy_generic_personnel(df, end_year, 'Ratio of Students to Special Service, Median Salary')  
@@ -722,7 +714,7 @@ tidy_ratio_students_to_special_service <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_ratio_students_to_administrators <- function(df, end_year) {
   tidy_generic_personnel(df, end_year, 'Ratio of Students to Administrators, Median Salary')
@@ -734,7 +726,7 @@ tidy_ratio_students_to_administrators <- function(df, end_year) {
 #' @inheritParams tidy_budgetary_per_pupil_cost
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 
 tidy_ratio_faculty_to_administrators <- function(df, end_year) {
   tidy_generic_personnel(df, end_year, 'Ratio of Faculty to Administrators')

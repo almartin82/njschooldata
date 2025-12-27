@@ -15,5 +15,6 @@ peek(df, nrows = 5)
 prints random sample of nrows of a dataframe
 }
 \description{
-Peek at a data frame
+Displays a random sample of rows from a data frame for quick inspection.
 }
+\keyword{internal}

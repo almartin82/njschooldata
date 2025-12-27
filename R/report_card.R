@@ -332,7 +332,8 @@ extract_rc_SAT <- function(
 #' Extract Report Card Matriculation Rates
 #'
 #' @inheritParams extract_rc_SAT
-#' 
+#' @param type character string specifying matriculation type. One of "16 month" or "12 month"
+#'
 #' @return data frame with all the years of 4 year and 2 year college matriculation data
 #' present in in the input
 #' @export
@@ -611,7 +612,7 @@ extract_rc_cds <- function(list_of_prs) {
 #' @param list_of_dfs output of get_one_rc_database (ie, a list  of data.frames)
 #'
 #' @return data frame with school enrollment
-#' @export
+#' @keywords internal
 clean_rc_enrollment <- function(list_of_dfs) {
    enr_df_name <- grep('enrollment\\b|enrollment_by_grade|enrollment_trends_by_grade|enrollment_trendsby_grade',
         names(list_of_dfs), value = T) 
@@ -757,9 +758,10 @@ enrich_rc_enrollment <- function(df) {
 
 
 #' Enrich matriculation rates with counts from grad counts
-#' 
+#'
 #' @param df data frame of including matriculation percentages
-#' 
+#' @param type character string specifying matriculation type. One of "16 month" or "12 month"
+#'
 #' @return data_frame
 #' @export
 enrich_matric_counts <- function(df, type = '16 month') {
@@ -850,8 +852,7 @@ enrich_matric_counts <- function(df, type = '16 month') {
 #' @param df enrollment dataframe, output of extract_rc_*
 #'
 #' @return data.frame with boolean aggregation flags
-#' @export
-
+#' @keywords internal
 id_rc_aggs <- function(df) {
   df %>%
     mutate(
@@ -865,33 +866,4 @@ id_rc_aggs <- function(df) {
     ) %>%
     return()
 }
-
-
-#' Matriculation column order
-#'
-#' @param df processed postsecondary matriculation df
-#'
-#' @return df in correct order
-#' @export
-matric_column_order <- function(df) {
-  df %>%
-    select(
-      end_year,
-      county_id, county_name,
-      district_id, district_name,
-      school_id, school_name,
-      subgroup,
-      cohort_count, graduated_count,
-      enroll_any_count, enroll_any,
-      enroll_4yr_count, enroll_4yr,
-      enroll_2yr_count, enroll_2yr,
-      n_charter_rows,
-      is_16mo,
-      is_state,
-      is_district,
-      is_school,
-      is_charter,
-      is_charter_sector,
-      is_allpublic
-    )
-}
+# Note: matric_column_order() moved to agg_calcs.R

@@ -1,4 +1,3 @@
-context("functions in hspa.R")
 
 #constant
 ex_2014 <- get_raw_hspa(2014)
