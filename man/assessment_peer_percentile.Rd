@@ -26,3 +26,4 @@ subgroups, etc).  Please start with the convenience wrappers
 to examine percentile rank using comparison groups that are 
 sensible.
 }
+\keyword{internal}

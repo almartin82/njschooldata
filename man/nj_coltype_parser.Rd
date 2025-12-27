@@ -15,3 +15,4 @@ a character string of the types, for read_fwf
 \description{
 turns layout datatypes into compact string required by read_fwf
 }
+\keyword{internal}

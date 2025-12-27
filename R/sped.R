@@ -1,110 +1,119 @@
+#' Valid years for SPED data
+#'
+#' @return vector of valid end years for SPED data
+#' @keywords internal
+get_valid_sped_years <- function() {
+ # As of 2024, NJ DOE restructured their website.
+ # Historical data (2003-2019) URLs no longer work.
+ # Only current data is available at new URL structure.
+ c(2024, 2025)
+}
+
+
+#' Build SPED data URL
+#'
+#' @param end_year ending school year
+#' @return URL string for the SPED data file
+#' @keywords internal
+build_sped_url <- function(end_year) {
+  # New URL structure (2024+)
+  # Uses academic year format: 2023-2024 data = "2324"
+  year_suffix <- paste0(
+    substr(as.character(end_year - 1), 3, 4),
+    substr(as.character(end_year), 3, 4)
+  )
+
+  paste0(
+    "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/",
+    end_year - 1, "_618data/DistrictWide_ClassificationRate_",
+    year_suffix, "_public.xlsx"
+  )
+}
+
+
 #' read Special ed excel files from the NJ state website
 #'
-#' @inheritParams get_raw_enr 
+#' @inheritParams get_raw_enr
 #'
 #' @return a dataframe with special ed counts, etc.
-#' @export
-
+#' @keywords internal
 get_raw_sped <- function(end_year) {
-  
-  print(end_year)
-  #build url
-  if (end_year %in% c(2002:2013)) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/ADR/", end_year - 1, "/classification/distclassification.xls"
-  )
-  if (end_year %in% c(2014)) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/ADR/", end_year - 1, "/classification/distclassification.xls"
-  )
-  if (end_year %in% c(2015)) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/", end_year - 1, "/District_Classification_Rate.xlsx"
-  )
-  if (end_year %in% c(2016)) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/", end_year - 1, "/LEA_Classification.xlsx"
-  )
-  # :nail-care:
-  if (end_year %in% c(2017)) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/", end_year - 1, "/LEA_Classificatiom.xlsx"
-  )
-  if (end_year >= 2018) sped_url <- paste0(
-    "http://www.nj.gov/education/specialed/data/", end_year - 1, "/Lea_Classification.xlsx"
-  )
-  if (end_year >= 2019) sped_url <- 'https://www.nj.gov/education/specialed/data/2018/LEA_Classification2.xlsx'
-  
-  if (end_year == 2018) rows_to_skip <- 0
-  if (end_year %in% c(2015, 2016, 2017)) rows_to_skip <- 4
-  if (end_year %in% c(2009, 2010, 2011, 2012, 2013, 2014, 2019)) rows_to_skip <- 5
-  if (end_year %in% c(2003, 2004, 2005, 2006, 2007)) rows_to_skip <- 7
-  if (end_year %in% c(2008)) rows_to_skip <- 8
-  
-  tf <- tempfile()
-  download.file(sped_url, tf, mode = 'wb')
-  
-  if (grepl('.xlsx', sped_url)) {
-    invisible(file.rename(tf, paste0(tf, ".xlsx")))
-    sped <- readxl::read_excel(
-      paste0(tf, ".xlsx" ),  
-      skip = rows_to_skip,
-      na = c('-', '*')
-    )
-  } else {
-    invisible(file.rename(tf, paste0(tf, ".xls")))
-    sped <- readxl::read_excel(
-      paste0(tf, ".xls"),  
-      skip = rows_to_skip,
-      na = c('-', '*')
-    )
+  valid_years <- get_valid_sped_years()
+
+  if (!end_year %in% valid_years) {
+    stop(paste0(
+      end_year, " is not a valid end_year for SPED data. ",
+      "Valid years are: ", paste(valid_years, collapse = ", "), ". ",
+      "Historical data (2003-2019) is no longer available from NJ DOE. ",
+      "Data prior to 2014 requires an OPRA request."
+    ))
   }
-  
+
+  sped_url <- build_sped_url(end_year)
+
+  # Check URL accessibility before attempting download
+  if (!check_url_accessible(sped_url)) {
+    stop(paste0("SPED data URL is not accessible: ", sped_url))
+  }
+
+  # New format (2024+) has 3 header rows
+  rows_to_skip <- 3
+
+  tf <- tempfile(fileext = ".xlsx")
+  utils::download.file(sped_url, tf, mode = 'wb', quiet = TRUE)
+
+  sped <- readxl::read_excel(
+    tf,
+    skip = rows_to_skip,
+    na = c('-', '*', 'N', 'S')
+  )
+
   sped$end_year <- end_year
-  
-  # county vs countyid disambig
-  if (end_year <= 2008) {
-    sped <- sped %>%
-      rename(
-        'county_name' = 'County'
-      )
-  }
+
   return(sped)
 }
 
 
 clean_sped_names <- function(df) {
-  
+
   #data
   clean <- list(
     #preserve these
     "end_year" = "end_year",
-    
+
     #county ids
     "County" = "county_id",
     "COUNTY" = "county_id",
-    
+    "County Code" = "county_id",
+
     #district ids
     "District" = "district_id",
     "DISTRICT" = "district_id",
     "SUB_DIST" = "district_id",
-    
+    "District Code" = "district_id",
+
     #county name
     "county_name" = "county_name",
     "County Name" = "county_name",
     "COUNTYNAME" = "county_name",
-    
-    #district name 
+
+    #district name
     "District Name" = "district_name",
     "DISTRICTNAME" = "district_name",
     "Districts                                 State Agency                            Charter School" = "district_name",
-    
+
     #special ed count
     "Number Classified" = "sped_num",
     "Special Education Student Count" = "sped_num",
+    "Special Ed Student Count" = "sped_num",
     "3-21 Clsfd" = "sped_num",
     "Special Ed. Enrollment" = "sped_num",
     "SPECED" = "sped_num",
     "3-21 Count" = "sped_num",
-    
+
     #special ed count no speech
     "Number Classified Without Speech" = "sped_num_no_speech",
-    
+
     #gened count
     "Enrollment*" = "gened_num",
     "Gened" = "gened_num",
@@ -112,84 +121,71 @@ clean_sped_names <- function(df) {
     "General Ed. Enrollment" = "gened_num",
     "GENED" = "gened_num",
     "LEA" = "gened_num",
-    
+    "All Students Count" = "gened_num",
+
     #special ed classification rate
     "Percent Classified" = "sped_rate",
     "Classification Rate" = "sped_rate",
     "Clsfd Rate" = "sped_rate",
     "CLASSIFICATION RATE" = "sped_rate",
-    
+
     #special ed classification rate no speech
     "Percent Classified Without Speech" = "sped_rate_no_speech"
   )
-  
+
   names(df) <- map_chr(names(df), ~clean_name(.x, clean))
-  
+
   return(df)
-  
+
 }
 
 
-#' Clean historic SPED data
+#' Clean SPED data
 #'
-#' @description SPED data was published in a way that lacked districtids.  We've built a 
-#' best guess data file that string matches on county and district.  
+#' @description Cleans and standardizes SPED data from NJ DOE.
 #' @param df raw data frame with cleaned names, output of get_raw_sped with clean_sped_names applied.
-#' @param end_year academic year, ending year - eg 2019-2020 is 2020.
+#' @param end_year academic year, ending year - eg 2023-2024 is 2024.
 #'
 #' @return cleaned data frame
 #' @export
 
 clean_sped_df <- function(df, end_year) {
-  
-  # remove trailing footer note
-  if (end_year >= 2015) {
-    df <- df %>% filter(!is.na(gened_num))
-  }
-  
-  # doing the heavy lifting - solves for missing district ids
-  # fix missing district ids in 2003-2008 data
-  if (end_year <= 2008) {
-    
-    # sped_lookup_map is saved in package data
-    # left join the input to the lookup map and enrich with district_ids where known
-    df_new <- df %>% 
-      left_join(sped_lookup_map, by=c('county_name', 'district_name'))
-    
-    ensure_that(
-      df, nrow(.) == nrow(df_new) ~ 'fixing 2003-08 enrollment data changed the size of the sped df.  check for duplicate district_name keys!'
-    )
-    
-    # if the data frame hasn't grown, great - overwrite df with the updated joined df
-    df <- df_new
-  }
-  
-  # return df with proper column order
+
+  # Remove rows with missing enrollment data (footer rows)
+  df <- df %>% dplyr::filter(!is.na(gened_num))
+
+  # Return df with proper column order
+  # Use any_of() to handle columns that may not exist in all years
   df %>%
-    select(
-      one_of(
-        'end_year', 'county_name',
+    dplyr::select(
+      dplyr::any_of(c(
+        'end_year', 'county_id', 'county_name',
         'district_id', 'district_name',
         'gened_num', 'sped_num',
         'sped_rate',
         'sped_num_no_speech',
         'sped_rate_no_speech'
-      )
+      ))
     )
 
 }
 
 
-#' Gets and cleans older SPED data
+#' Fetch Special Education Classification Data
 #'
-#' @param end_year @inheritParams fetch_enr
+#' @description Fetches special education classification rate data from NJ DOE.
+#' As of 2024, only current data is available. Historical data (2003-2019) is no
+#' longer accessible via URL and requires an OPRA request.
 #'
-#' @return cleaned sped dataframe
+#' @param end_year ending school year (e.g., 2024 for 2023-2024 school year).
+#'   Valid years: 2024+
+#'
+#' @return cleaned sped dataframe with columns: end_year, county_id, county_name,
+#'   district_id, district_name, gened_num, sped_num, sped_rate
 #' @export
 
 fetch_sped <- function(end_year) {
   get_raw_sped(end_year) %>%
     clean_sped_names() %>%
     clean_sped_df(., end_year)
-  
 }

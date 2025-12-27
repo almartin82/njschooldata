@@ -2,8 +2,7 @@
 #'
 #' @param df data.frame that contains district_id and district_name
 #' @return character vector of names, one per district id
-#' @export
-
+#' @keywords internal
 friendly_district_names <- function(df) {
   
   # group by district id, tag by most recent year in df, take first
@@ -43,8 +42,7 @@ friendly_district_names <- function(df) {
 #' @param df df used to generate the friendly names
 #'
 #' @return vector of district_ids
-#' @export
-
+#' @keywords internal
 district_name_to_id <- function(district_names, df) {
   out <- df %>% 
     filter(district_name %in% district_names) %>%
@@ -60,8 +58,7 @@ district_name_to_id <- function(district_names, df) {
 #'
 #' @param df data.frame that contains school_id and school_name
 #' @return character vector of names, one per school id
-#' @export
-
+#' @keywords internal
 friendly_school_names <- function(df) {
   # group by district id, tag by most recent year in df, take first
   df_first <- df %>% 
@@ -99,8 +96,7 @@ friendly_school_names <- function(df) {
 #' @param df df used to generate the friendly names
 #'
 #' @return vector of school_ids
-#' @export
-
+#' @keywords internal
 school_name_to_id <- function(school_names, df) {
   out <- df %>% 
     filter(school_name %in% school_names) %>%
@@ -118,8 +114,7 @@ school_name_to_id <- function(school_names, df) {
 #' @param lookup_df dataframe with district_id and district_name
 #'
 #' @return list of districtids matching the names
-#' @export
-
+#' @keywords internal
 id_selected_districtids <- function(district_names, lookup_df) {
   selected_districtids <- district_name_to_id(district_names, lookup_df)
   

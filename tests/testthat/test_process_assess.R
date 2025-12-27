@@ -1,4 +1,3 @@
-context("functions in process_assess.R")
 
 #constants
 processed_2014 <- get_raw_njask(2014, 6) %>% 

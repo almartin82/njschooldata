@@ -1,3 +1,24 @@
+# njschooldata 0.9.0
+
+## New features
+
+* Extended data support through 2024-2025 school year
+* `fetch_enr()` supports 2024 and 2025 data
+* `fetch_parcc()` supports 2024 NJSLA data
+* Added GitHub Actions CI/CD workflows
+
+## Breaking changes
+
+* Minimum R version now 4.1.0 (was 3.5.0)
+
+## Internal changes
+
+* Migrated tests to testthat 3e edition
+* Replaced deprecated `ensurer::ensure_that()` with base R validation
+* Replaced deprecated `dplyr::summarise_each()` with `across()`
+* Replaced deprecated `dplyr::rbind_all()` with `bind_rows()`
+* Fixed deprecated function calls
+
 ## njschooldata 0.8.19
 
 ## New features

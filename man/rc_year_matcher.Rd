@@ -2,18 +2,17 @@
 % Please edit documentation in R/util.R
 \name{rc_year_matcher}
 \alias{rc_year_matcher}
-\title{report card year matcher}
+\title{Report card year matcher}
 \usage{
 rc_year_matcher(df)
 }
 \arguments{
 \item{df}{a report card table that includes trailing/longitudinal data}
-
-\item{end_year}{the correct year}
 }
 \value{
 data frame with only data for the year of the report
 }
 \description{
-report card year matcher
+Filters a report card table to only include data for the specified year.
 }
+\keyword{internal}

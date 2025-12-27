@@ -15,5 +15,5 @@ trunc2(x, prec = 0)
 truncated numeric vector
 }
 \description{
-Truncate with configurable precision
+Truncates numeric values to specified decimal precision.
 }

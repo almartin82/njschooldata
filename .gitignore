@@ -20,3 +20,8 @@ results.Rds
 #mac
 *.DS_Store
 inst/doc
+njschooldata.Rcheck/
+njschooldata_*.tar.gz
+
+# Analysis files (not part of package)
+analysis/

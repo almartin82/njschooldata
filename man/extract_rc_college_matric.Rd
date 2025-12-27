@@ -15,6 +15,8 @@ extract_rc_college_matric(
 \item{list_of_prs}{output of get_rc_databases (ie, a list where each element is)
 a list of data.frames}
 
+\item{type}{character string specifying matriculation type. One of "16 month" or "12 month"}
+
 \item{school_only}{some years have district average results, not just school-level. 
 if school_only, return only school data.  default is TRUE}
 
