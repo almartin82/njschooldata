@@ -67,7 +67,7 @@ get_raw_enr <- function(end_year) {
       enr_dist <- readxl::read_excel(this_file, sheet = "District", skip = 2)
       enr_sch <- readxl::read_excel(this_file, sheet = "School", skip = 2)
 
-      # The delicious typos section
+      # The delicious typos section (and column name changes over time)
       typo_names <- . %>%
         dplyr::rename_with(
           ~ dplyr::case_when(
@@ -78,6 +78,12 @@ get_raw_enr <- function(end_year) {
             . == "Eight Grade" ~ "Eighth Grade",
             . == "Reduced_Lunch" ~ "Reduced Lunch",
             . == "% Reduced_Lunch" ~ "%Reduced Lunch",
+            # 2024+ renamed English Learners to Multilingual Learners
+            . == "Multilingual Learners" ~ "English Learners",
+            . == "%Multilingual Learners" ~ "%English Learners",
+            # 2024+ renamed Hawaiian Native
+            . == "Hawaiian Native" ~ "Pacific Islander",
+            . == "%Hawaiian Native" ~ "%Pacific Islander",
             TRUE ~ .
           )
         )
@@ -123,19 +129,32 @@ get_raw_enr <- function(end_year) {
           `Homeless` = as.numeric(`%Homeless`) / 100 * `Total Enrollment`
         )
 
+      # Determine the last grade column (Ungraded removed in 2024+)
+      last_grade_col <- if ("Ungraded" %in% names(enr_dist_sch)) {
+        "Ungraded"
+      } else {
+        "Twelfth Grade"
+      }
+
+      # Get grade columns dynamically
+      all_cols <- names(enr_dist_sch)
+      start_idx <- which(all_cols == "Pre-K Halfday")
+      end_idx <- which(all_cols == last_grade_col)
+      grade_cols <- all_cols[start_idx:end_idx]
+
       enr <- enr_dist_sch %>%
         dplyr::select(
           `County Code`:`District Name`, `School Code`, `School Name`,
-          `Pre-K Halfday`:`Ungraded`
+          dplyr::all_of(grade_cols)
         ) %>%
         tidyr::pivot_longer(
-          cols = `Pre-K Halfday`:`Ungraded`,
+          cols = dplyr::all_of(grade_cols),
           names_to = "Grade",
           values_to = "Total Enrollment"
         ) %>%
         dplyr::bind_rows(
           enr_dist_sch %>%
-            dplyr::select(-c(`Pre-K Halfday`:`Ungraded`)) %>%
+            dplyr::select(-dplyr::all_of(grade_cols)) %>%
             dplyr::mutate(Grade = "All Grades")
         ) %>%
         dplyr::bind_rows(
