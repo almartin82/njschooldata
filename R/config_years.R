@@ -13,8 +13,9 @@
 NULL
 
 #' Enrollment data valid years
+#' Note: 1999 data was removed from NJ DOE website
 #' @keywords internal
-ENR_VALID_YEARS <- 1999:2025
+ENR_VALID_YEARS <- 2000:2025
 
 #' PARCC/NJSLA assessment valid years (skip 2020 - no testing due to COVID)
 #' @keywords internal

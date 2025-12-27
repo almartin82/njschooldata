@@ -9,7 +9,7 @@
 #' Valid year ranges by data type
 #' @keywords internal
 year_ranges <- list(
-  enrollment = list(min = 1999, max = 2025),
+  enrollment = list(min = 2000, max = 2025),
   parcc = list(min = 2015, max = 2024, skip = 2020),
   njask = list(min = 2004, max = 2014),
   hspa = list(min = 2004, max = 2014),
