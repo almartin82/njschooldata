@@ -10,22 +10,18 @@
 #' Read a zipped Excel fall enrollment file from the NJ state website
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 1999-2025.
+#' school year is year '2007'. Valid values are 2000-2025.
 #' @return Data frame with raw enrollment data
 #' @keywords internal
 get_raw_enr <- function(end_year) {
 
   # Sometime in 2022 they ripped, replaced, and rationalized the
   # url pattern for historic data
-  # Website claims to have 98-99 data but link is broken
+  # 1999 data URL no longer works (removed from NJ DOE website)
 
   # Build URL
   yy <- substr(end_year, 3, 4)
   enr_folder <- paste0("enr", yy)
-
-  # 1999 exception
-  # https://www.nj.gov/education/doedata/enr/enr00/enrollment_9899.zip
-  enr_folder <- ifelse(end_year == 1999, "enr00", enr_folder)
 
   enr_filename <- paste0(
     "enrollment_",
@@ -183,7 +179,7 @@ get_raw_enr <- function(end_year) {
 #' downloads and cleans enrollment data for a given year.
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 1999-2025.
+#' school year is year '2007'. Valid values are 2000-2025.
 #' @param tidy If TRUE, takes the unwieldy wide data and normalizes into a
 #' long, tidy data frame with limited headers - constants (school/district name and code),
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
