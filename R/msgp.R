@@ -3,8 +3,7 @@
 #' @param end_year ending school year.  valid values are currently 2012-2018.
 #'
 #' @return df of msgp data, schoolwide (and district-wide and by grade level, if reported)
-#' @export
-
+#' @keywords internal
 get_and_process_msgp <- function(end_year) {
   
   df_list <- get_one_rc_database(end_year)

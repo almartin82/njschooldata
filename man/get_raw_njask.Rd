@@ -18,3 +18,4 @@ school year is end_year '2014'.  valid values are 2004-2014.}
 \code{get_raw_njask} builds a url and uses readr's \code{read_fwf} to get the fixed 
 width text file into a R data frame
 }
+\keyword{internal}

@@ -13,5 +13,6 @@ parse_parcc_subj(x)
 the subject coded as ELA or MAT.
 }
 \description{
-Parse PARCC subject
+Converts subject name to standardized PARCC code.
 }
+\keyword{internal}

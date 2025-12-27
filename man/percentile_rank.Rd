@@ -15,5 +15,5 @@ percentile_rank(x, xo)
 numeric percentile rank
 }
 \description{
-Percentile Rank
+Calculates the percentile rank of a target value within a distribution.
 }

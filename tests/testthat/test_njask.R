@@ -1,4 +1,3 @@
-context("functions in njask.R")
 
 #constant
 ex_2014 <- get_raw_njask(2014, 6)

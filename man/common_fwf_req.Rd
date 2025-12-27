@@ -8,6 +8,8 @@ common_fwf_req(url, layout)
 }
 \arguments{
 \item{url}{file location}
+
+\item{layout}{data frame containing fixed-width file column specifications}
 }
 \value{
 layout layout to use
@@ -15,3 +17,4 @@ layout layout to use
 \description{
 common fwf logic across various assessment types.  DRY.
 }
+\keyword{internal}

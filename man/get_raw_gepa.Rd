@@ -16,3 +16,4 @@ school year is end_year '2007'.  valid values are 2004-2007.}
 \code{get_raw_gepa} builds a url and uses readr's \code{read_fwf} to get the fixed 
 width text file into a R data frame
 }
+\keyword{internal}

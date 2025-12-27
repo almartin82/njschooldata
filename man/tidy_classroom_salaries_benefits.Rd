@@ -17,3 +17,4 @@ data.frame
 \description{
 Tidy Classroom Salaries and Benefits
 }
+\keyword{internal}

@@ -8,6 +8,8 @@ enrich_matric_counts(df, type = "16 month")
 }
 \arguments{
 \item{df}{data frame of including matriculation percentages}
+
+\item{type}{character string specifying matriculation type. One of "16 month" or "12 month"}
 }
 \value{
 data_frame

@@ -16,3 +16,4 @@ school year is end_year '2014'.  valid values are 2004-2014.}
 \code{valid_call} returns a boolean value indicating if a given end_year/grade pairing is
 valid for assessment data
 }
+\keyword{internal}

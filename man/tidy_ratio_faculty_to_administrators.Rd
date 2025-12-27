@@ -17,3 +17,4 @@ data.frame
 \description{
 Tidy Ratio of Faculty to Administrators
 }
+\keyword{internal}

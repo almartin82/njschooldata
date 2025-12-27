@@ -1,4 +1,3 @@
-context("assessment peer percentiles")
 
 parcc_grade <- fetch_all_parcc()
 
@@ -50,7 +49,7 @@ test_that("parcc peer percentile works with 2017 math data", {
   p_sch <- p %>% filter(is_school)
   p_sch_ile <- assessment_peer_percentile(p_sch)
   
-  expect_is(p_sch_ile, 'data.frame')
+  expect_s3_class(p_sch_ile, 'data.frame')
   expect_is(p_sch_ile, 'tbl_df')
   
   p_sch_ile %>%
@@ -66,7 +65,7 @@ test_that("parcc statewide percentiles make sense", {
     filter(is_district) %>%
     select(-districts, -schools)
   
-  expect_is(sped_k11_dist_math, 'data.frame')
+  expect_s3_class(sped_k11_dist_math, 'data.frame')
   expect_is(sped_k11_dist_math, 'tbl_df')
   
   expect_equal(nrow(sped_k11_dist_math), 654)
@@ -79,7 +78,7 @@ test_that("parcc statewide percentiles make sense", {
     filter(is_district) %>%
     select(-districts, -schools)
   
-  expect_is(sped_k11_dist_ela, 'data.frame')
+  expect_s3_class(sped_k11_dist_ela, 'data.frame')
   expect_is(sped_k11_dist_ela, 'tbl_df')
   
   expect_equal(nrow(sped_k11_dist_ela), 654)

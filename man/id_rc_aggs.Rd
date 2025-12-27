@@ -15,3 +15,4 @@ data.frame with boolean aggregation flags
 \description{
 Identify reportcard aggregation levels
 }
+\keyword{internal}

@@ -7,7 +7,7 @@
 ward_enr_aggs(df)
 }
 \arguments{
-\item{list_of_dfs}{output of \code{fetch_enr}}
+\item{df}{data frame containing enrollment data}
 }
 \value{
 A data frame of ward aggregations

@@ -1,4 +1,3 @@
-context('grate')
 
 grad_rate_cols <- c(
   "end_year",
@@ -26,15 +25,15 @@ test_that('fetch_grad_rate works with 4 year', {
    ex7 <- fetch_grad_rate(2019, '4 year')
    ex8 <- fetch_grad_rate(2020, '4 year')
 
-   expect_is(ex0, 'data.frame')
-   expect_is(ex1, 'data.frame')
-   expect_is(ex2, 'data.frame')
-   expect_is(ex3, 'data.frame')
-   expect_is(ex4, 'data.frame')
-   expect_is(ex5, 'data.frame')
-   expect_is(ex6, 'data.frame')
-   expect_is(ex7, 'data.frame')
-   expect_is(ex8, 'data.frame')
+   expect_s3_class(ex0, 'data.frame')
+   expect_s3_class(ex1, 'data.frame')
+   expect_s3_class(ex2, 'data.frame')
+   expect_s3_class(ex3, 'data.frame')
+   expect_s3_class(ex4, 'data.frame')
+   expect_s3_class(ex5, 'data.frame')
+   expect_s3_class(ex6, 'data.frame')
+   expect_s3_class(ex7, 'data.frame')
+   expect_s3_class(ex8, 'data.frame')
 })
 
 test_that('fetch_grad_rate all years', {
@@ -57,7 +56,7 @@ test_that('fetch_grad_rate all years', {
 
 test_that('fetch grate works with 2015 data', {
   ex <- fetch_grad_rate(2015)
-  expect_is(ex, 'data.frame')
+  expect_s3_class(ex, 'data.frame')
   expect_equal(sum(ex$graduated_count, na.rm = TRUE), 674621)
   expect_equal(names(ex), grad_rate_cols)
 })
@@ -65,14 +64,14 @@ test_that('fetch grate works with 2015 data', {
 
 test_that('fetch grate works with 2018 data', {
   ex <- fetch_grad_rate(2018)
-  expect_is(ex, 'data.frame')
+  expect_s3_class(ex, 'data.frame')
   expect_equal(sum(ex$graduated_count, na.rm = TRUE), 996902)
   expect_equal(names(ex), grad_rate_cols)
 })
 
 test_that("ground truth values on 2019 grate", {
    ex <- fetch_grad_rate(2019)
-   expect_is(ex, "data.frame")
+   expect_s3_class(ex, "data.frame")
    expect_equal(names(ex), grad_rate_cols)
 
    expect_equal(filter(ex,
@@ -97,7 +96,7 @@ test_that("ground truth values on 2019 grate", {
 
 test_that("ground truth values on 2020 grate", {
   ex <- fetch_grad_rate(2020)
-  expect_is(ex, "data.frame")
+  expect_s3_class(ex, "data.frame")
   expect_equal(names(ex), grad_rate_cols)
 
   expect_equal(filter(ex,
@@ -123,7 +122,7 @@ test_that("ground truth values on 2020 grate", {
 ## 5 year
 test_that('five year window is in more recent data', {
    ex <- fetch_grad_rate(2017, '5 year')
-   expect_is(ex, 'data.frame')
+   expect_s3_class(ex, 'data.frame')
    expect_equal(names(ex), grad_rate_cols)
 })
 
@@ -138,13 +137,13 @@ test_that('get_raw_grate works with 5 year', {
   ex6 <- get_grad_rate(2018, '5 year')
   ex7 <- get_grad_rate(2019, '5 year')
 
-  expect_is(ex0, 'data.frame')
-  expect_is(ex1, 'data.frame')
-  expect_is(ex2, 'data.frame')
-  expect_is(ex3, 'data.frame')
-  expect_is(ex4, 'data.frame')
-  expect_is(ex5, 'data.frame')
-  expect_is(ex6, 'data.frame')
+  expect_s3_class(ex0, 'data.frame')
+  expect_s3_class(ex1, 'data.frame')
+  expect_s3_class(ex2, 'data.frame')
+  expect_s3_class(ex3, 'data.frame')
+  expect_s3_class(ex4, 'data.frame')
+  expect_s3_class(ex5, 'data.frame')
+  expect_s3_class(ex6, 'data.frame')
 })
 
 
@@ -157,19 +156,19 @@ test_that('fetch_grad_rate works with 5 year', {
   ex5 <- fetch_grad_rate(2017, '5 year')
   ex6 <- fetch_grad_rate(2018, '5 year')
 
-  expect_is(ex0, 'data.frame')
-  expect_is(ex1, 'data.frame')
-  expect_is(ex2, 'data.frame')
-  expect_is(ex3, 'data.frame')
-  expect_is(ex4, 'data.frame')
-  expect_is(ex5, 'data.frame')
-  expect_is(ex6, 'data.frame')
+  expect_s3_class(ex0, 'data.frame')
+  expect_s3_class(ex1, 'data.frame')
+  expect_s3_class(ex2, 'data.frame')
+  expect_s3_class(ex3, 'data.frame')
+  expect_s3_class(ex4, 'data.frame')
+  expect_s3_class(ex5, 'data.frame')
+  expect_s3_class(ex6, 'data.frame')
 })
 
 
 test_that("ground truth values on 2018 5y grate", {
    ex <- fetch_grad_rate(2018, '5 year')
-   expect_is(ex, "data.frame")
+   expect_s3_class(ex, "data.frame")
 
    expect_equal(filter(ex,
                        district_id == '3570',
@@ -208,7 +207,7 @@ test_that('fetch_grad_count all years', {
 
 test_that("ground truth values on 2019 grad count", {
    ex <- fetch_grad_count(2019)
-   expect_is(ex, "data.frame")
+   expect_s3_class(ex, "data.frame")
 
    expect_equal(filter(ex,
                        district_id == '3570',
