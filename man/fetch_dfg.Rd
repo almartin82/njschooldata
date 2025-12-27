@@ -7,11 +7,20 @@
 fetch_dfg(revision = 2000)
 }
 \arguments{
-\item{revision}{c(2000, 1990)}
+\item{revision}{c(2000, 1990) Which census revision to use. Default 2000.}
 }
 \value{
-data.frame
+data.frame with columns: county_code, county_name, district_code,
+  district_name, dfg
 }
 \description{
-Fetch NJ District Factor Group (DFG) data
+Downloads DFG classification data from NJ DOE. DFGs group
+districts by socioeconomic status for comparison purposes. DFG A represents
+the highest-need communities; DFG J represents the lowest-need.
+
+Note: DFGs were last updated using 2000 Census data and are no longer
+maintained by NJ DOE, but remain useful for peer comparisons.
+}
+\references{
+\url{https://www.nj.gov/education/stateaid/dfg.shtml}
 }

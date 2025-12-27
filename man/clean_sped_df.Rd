@@ -2,19 +2,18 @@
 % Please edit documentation in R/sped.R
 \name{clean_sped_df}
 \alias{clean_sped_df}
-\title{Clean historic SPED data}
+\title{Clean SPED data}
 \usage{
 clean_sped_df(df, end_year)
 }
 \arguments{
 \item{df}{raw data frame with cleaned names, output of get_raw_sped with clean_sped_names applied.}
 
-\item{end_year}{academic year, ending year - eg 2019-2020 is 2020.}
+\item{end_year}{academic year, ending year - eg 2023-2024 is 2024.}
 }
 \value{
 cleaned data frame
 }
 \description{
-SPED data was published in a way that lacked districtids.  We've built a 
-best guess data file that string matches on county and district.
+Cleans and standardizes SPED data from NJ DOE.
 }

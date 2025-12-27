@@ -15,14 +15,15 @@
 #' @return data.frame with boolean aggregation flags
 #' @export
 id_grad_aggs <- function(df) {
+  # Note: school_id '888' is used for district totals in 2021+ data
   df %>%
     dplyr::mutate(
       is_state = district_id == "9999" & county_id == "99",
       is_county = district_id == "9999" & !county_id == "99",
-      is_district = school_id %in% c("997", "999") & !is_state,
+      is_district = school_id %in% c("888", "997", "999") & !is_state,
       is_charter_sector = FALSE,
       is_allpublic = FALSE,
-      is_school = !school_id %in% c("997", "999") & !is_state,
+      is_school = !school_id %in% c("888", "997", "999") & !is_state,
       is_charter = county_id == "80"
     )
 }

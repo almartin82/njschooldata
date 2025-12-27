@@ -4,7 +4,8 @@
 utils::globalVariables(c(
   # ========== Column Names with Special Characters ==========
   "% of Total Salaries",
-  "%English Learners", "%Free Lunch", "%Homeless", "%Migrant", "%Military", "%Reduced Lunch",
+  "%English Learners", "%Multilingual Learners", "%Free Lunch", "%Homeless", "%Migrant", "%Military", "%Reduced Lunch",
+  "Multilingual Learners", "Hawaiian Native", "%Hawaiian Native", "Column1", "Column2",
   "Cost as a percentage of the Total Budgetary Cost Per Pupil",
   "Pre-K Halfday", "Ungraded",
 
@@ -126,6 +127,28 @@ utils::globalVariables(c(
   "scale_score_mean.x", "scale_score_mean.y", "scale_score_percentile",
   "statewide_proficient_percentile", "statewide_scale_percentile",
   "count_proficient_dummy", "count_scale_dummy",
+
+  # ========== Generic Percentile Rank Columns (percentile_rank.R) ==========
+  ".metric_valid", "sector", "threshold", "is_above_threshold",
+  "n_students_total", "n_students_above", "n_schools_total", "n_schools_above",
+  "pct_students_access", "pct_schools_above",
+  # Dynamic column names - base patterns
+  "grad_rate_rank", "grad_rate_n", "grad_rate_percentile",
+  "proficient_above_rank", "proficient_above_n", "proficient_above_percentile",
+  "dfg_grad_rate_rank", "dfg_grad_rate_n", "dfg_grad_rate_percentile",
+  # Trend columns
+  "grad_rate_percentile_yoy_change", "grad_rate_percentile_cumulative_change",
+  "grad_rate_percentile_baseline",
+  # Gap analysis columns (Extension #1)
+  ".gap_for_rank", "subgroup_pair",
+  "grad_rate_a", "grad_rate_b", "grad_rate_gap", "grad_rate_gap_pct",
+  "grad_rate_gap_equity_rank", "grad_rate_gap_equity_n", "grad_rate_gap_equity_percentile",
+  "grad_rate_gap_yoy_change", "grad_rate_gap_cumulative_change", "grad_rate_gap_baseline",
+  "proficient_above_a", "proficient_above_b", "proficient_above_gap", "proficient_above_gap_pct",
+  # Sector ecosystem columns (Extension #3)
+  "charter_value", "district_value", "sector_gap", "sector_leader",
+  "charter_enrollment", "total_enrollment", "charter_share", "district_enrollment",
+  "allpublic_value", "allpublic_percentile",
 
   # ========== TGES (Taxpayers Guide) ==========
   "indicator", "indicator_value",
