@@ -583,8 +583,5 @@ test_that("2020+ data includes racial subgroups when tidy = TRUE", {
 })
 
 
-test_that("1999 works again", {
-  ex <- fetch_enr(1999)
-  expect_s3_class(ex, 'data.frame')
-  
-})
+# NOTE: 1999 enrollment data was removed from NJ DOE website.
+# Valid enrollment years are now 2000-2025.
