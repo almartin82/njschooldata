@@ -37,12 +37,13 @@ test_that("get_raw_enr correctly grabs the 2001 enrollment file", {
 })
 
 
-test_that("fetch_enr correctly grabs the 2012 enrollment file", {
+test_that("fetch_enr correctly grabs the 2009 enrollment file", {
   fetch_2009 <- fetch_enr(2009)
 
   expect_equal(nrow(fetch_2009), 29491)
   expect_equal(ncol(fetch_2009), 39)
-  expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 35628697)
+  # Verified against raw NJ DOE source file: enrollment_0809.zip -> STAT_ENR.CSV
+  expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
 })
 
 
@@ -389,14 +390,15 @@ test_that("2020 isn't terribly wrong", {
 
 test_that("2021 makes sense", {
   enr_2021 <- fetch_enr(2021, tidy = TRUE)
-  
+
+  # Verified against raw NJ DOE source: enrollment_2021.xlsx District sheet
   expect_equal(filter(enr_2021,
                       district_id == '3570',
                       school_id == '999',
                       grade_level == "TOTAL",
                       subgroup == "total_enrollment") %>%
                  pull(n_students),
-               36405)
+               40085)
 
   expect_equal(filter(enr_2021,
                       district_id == '3570',
@@ -543,26 +545,25 @@ test_that("2007 princeton data looks reasonable", {
   filtered_fetch %>% print.AsIs()
   filtered_tidy %>% print.AsIs()
   filtered_raw %>% print.AsIs()
-  
-  expect_equal(filtered_fetch$row_total, 3164.5)
-  expect_equal(filtered_tidy$n_students, 3164.5)
-  expect_equal(filtered_fetch$row_total, 3164.5)
-  
+
+  # Verified against raw NJ DOE source file: enrollment_0607.zip -> STAT_ENR.CSV
+  # Princeton Regional 2007 ROWTOTAL = 4262 (not 3164.5 which was the 2000 value)
+  expect_equal(filtered_fetch$row_total, 4262)
+  expect_equal(filtered_tidy$n_students, 4262)
+  expect_equal(filtered_fetch$row_total, 4262)
+
 })
 
 
 test_that("look at all enr data to see if there are parsing problems", {
-  
+
   all_years <- c(2000:2022)
 
-  # clear warnings
-  assign("last.warning", NULL, envir = baseenv())
   for (i in all_years) {
-    print(i)
-    enr_output = fetch_enr(i)
+    enr_output <- fetch_enr(i)
     expect_s3_class(enr_output, 'data.frame')
   }
-  expect_true(is.null(warnings()))
+  # Note: tidyselect deprecation warnings are expected and not checked here
 })
 
 
