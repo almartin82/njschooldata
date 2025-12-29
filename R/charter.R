@@ -219,17 +219,21 @@ allpublic_enr_aggs <- function(df) {
     filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -368,17 +372,21 @@ allpublic_parcc_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -496,17 +504,21 @@ allpublic_grate_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -625,17 +637,21 @@ allpublic_gcount_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -741,17 +757,21 @@ allpublic_spec_pop_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -853,17 +873,20 @@ allpublic_sped_aggs <- function(df) {
       filter(n_charter_rows > 0)
    
    # add county_name, district_name by joining to charter_city
-   ch_join <- charter_city %>% 
-      select(host_district_id, host_district_name, host_county_name) %>%
+   # join by both county_id and district_id to handle districts with same ID
+   # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+   ch_join <- charter_city %>%
+      select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
       rename(
+         county_id = host_county_id,
          district_id = host_district_id,
          district_name = host_district_name,
          county_name = host_county_name
       ) %>%
       unique()
-   
+
    df <- df %>%
-      left_join(ch_join, by = 'district_id')
+      left_join(ch_join, by = c('county_id', 'district_id'))
    
    # give psuedo district names and codes
    # create appropriate boolean flag
@@ -985,17 +1008,20 @@ allpublic_matric_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   agg_df <- agg_df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
