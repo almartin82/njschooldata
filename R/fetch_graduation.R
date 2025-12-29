@@ -286,3 +286,296 @@ fetch_grad_rate <- function(end_year, methodology = "4 year") {
 
   return(df)
 }
+
+
+# -----------------------------------------------------------------------------
+# 6-Year Graduation Rate Functions (from School Performance Reports database)
+# -----------------------------------------------------------------------------
+
+#' Get SPR database URL for 6-year graduation rates
+#'
+#' Builds the URL for the School Performance Reports database containing
+#' 6-year graduation cohort profile data.
+#'
+#' @param end_year A school year (2021-2024). Year is the end of the academic
+#'   year - eg 2020-21 school year is end_year '2021'.
+#' @param level One of "school" or "district". Determines which database file
+#'   to download.
+#' @return URL string
+#' @keywords internal
+get_spr_6yr_grad_url <- function(end_year, level = "school") {
+  valid_years <- c(2021, 2022, 2023, 2024)
+  if (!end_year %in% valid_years) {
+    stop(paste0(
+      "6-year graduation rate data is available for years: ",
+      paste(valid_years, collapse = ", "),
+      ". Earlier years do not include 6-year graduation cohort profiles."
+    ))
+  }
+
+  # Convert end_year to academic year format (e.g., 2024 -> "2023-2024")
+  academic_year <- paste0(end_year - 1, "-", end_year)
+
+  stem <- "https://www.nj.gov/education/sprreports/download/DataFiles/"
+
+  file_name <- if (level == "school") {
+    "Database_SchoolDetail.xlsx"
+  } else if (level == "district") {
+    "Database_DistrictStateDetail.xlsx"
+  } else {
+    stop("level must be one of 'school' or 'district'")
+  }
+
+  paste0(stem, academic_year, "/", file_name)
+}
+
+
+#' Clean 6-year graduation subgroup names
+#'
+#' Standardizes subgroup names from the SPR 6-year graduation data to match
+#' the naming conventions used elsewhere in the package.
+#'
+#' @param group Vector of subgroup names
+#' @return Vector of cleaned subgroup names
+#' @keywords internal
+clean_6yr_grad_subgroups <- function(group) {
+  dplyr::case_when(
+    tolower(group) %in% c("schoolwide", "districtwide") ~ "total population",
+    tolower(group) == "american indian or alaska native" ~ "american indian",
+    tolower(group) == "black or african american" ~ "black",
+    tolower(group) == "economically disadvantaged students" ~ "economically disadvantaged",
+    tolower(group) %in% c("english learners", "multilingual learners") ~ "limited english proficiency",
+    tolower(group) == "two or more races" ~ "multiracial",
+    tolower(group) == "native hawaiian or pacific islander" ~ "pacific islander",
+    tolower(group) == "asian, native hawaiian, or pacific islander" ~ "asian",
+    tolower(group) == "students with disabilities" ~ "students with disability",
+    TRUE ~ tolower(group)
+  )
+}
+
+
+#' Fetch 6-Year Graduation Rate data
+#'
+#' Downloads and processes 6-year graduation rate data from the NJ School
+#' Performance Reports database. This data shows the percentage of students
+#' who graduated within six years of entering high school.
+#'
+#' The 6-year graduation data is from a different source than the 4-year and
+#' 5-year data (SPR database vs ACGR files), which is why it has its own
+#' fetch function rather than being an option in \code{fetch_grad_rate()}.
+#'
+#' @param end_year A school year. Year is the end of the academic year - eg
+#'   2020-21 school year is end_year '2021'. Valid values are 2021-2024.
+#' @param level One of "school" or "district". "school" returns school-level
+#'   data, "district" returns district and state-level data.
+#' @return dataframe with 6-year graduation rates including:
+#'   \itemize{
+#'     \item end_year, county_id, county_name, district_id, district_name
+#'     \item school_id, school_name (for school-level data)
+#'     \item subgroup - student group (total population, racial/ethnic groups, etc.)
+#'     \item grad_rate_6yr - 6-year graduation rate (0-100 scale)
+#'     \item continuing_rate - percentage of students still enrolled after 6 years
+#'     \item non_continuing_rate - percentage who dropped out or left
+#'     \item persistence_rate - graduates + continuing students (high school persistence)
+#'     \item Aggregation flags (is_state, is_district, is_school, is_charter)
+#'   }
+#' @export
+#' @examples
+#' \dontrun{
+#' # Get 2024 school-level 6-year graduation rates
+#' grad6_2024 <- fetch_6yr_grad_rate(2024)
+#'
+#' # Get district-level 6-year graduation rates
+#' grad6_dist <- fetch_6yr_grad_rate(2024, level = "district")
+#' }
+fetch_6yr_grad_rate <- function(end_year, level = "school") {
+
+  target_url <- get_spr_6yr_grad_url(end_year, level)
+
+  tname <- tempfile(pattern = "spr_6yr", tmpdir = tempdir(), fileext = ".xlsx")
+  downloader::download(target_url, destfile = tname, mode = "wb")
+
+  # Read 6YrGraduationCohortProfile sheet
+  df <- readxl::read_excel(
+    path = tname,
+    sheet = "6YrGraduationCohortProfile",
+    na = c("*", "N", "NA", "", "-"),
+    guess_max = 10000
+  )
+
+  # Check if HighSchoolPersistance column exists (added in 2024)
+  has_persistence <- "HighSchoolPersistance" %in% names(df) |
+    "StateHighSchoolPersistance" %in% names(df)
+
+  # Standardize column names based on level
+  if (level == "school") {
+    df <- df %>%
+      dplyr::rename(
+        county_id = CountyCode,
+        county_name = CountyName,
+        district_id = DistrictCode,
+        district_name = DistrictName,
+        school_id = SchoolCode,
+        school_name = SchoolName,
+        subgroup = StudentGroup,
+        grad_rate_6yr = Graduates,
+        continuing_rate = `Continuing Students`,
+        non_continuing_rate = `Non-Continuing Student`
+      )
+
+    # Add persistence_rate if available, otherwise calculate or set NA
+    if (has_persistence) {
+      df <- df %>% dplyr::rename(persistence_rate = HighSchoolPersistance)
+    } else {
+      # Calculate persistence = graduates + continuing (not available in early years)
+      df <- df %>% dplyr::mutate(persistence_rate = NA_real_)
+    }
+
+    df <- df %>%
+      dplyr::select(
+        county_id, county_name,
+        district_id, district_name,
+        school_id, school_name,
+        subgroup,
+        grad_rate_6yr, continuing_rate, non_continuing_rate, persistence_rate
+      )
+  } else {
+    # District file doesn't have SchoolCode/SchoolName
+    df <- df %>%
+      dplyr::rename(
+        county_id = CountyCode,
+        county_name = CountyName,
+        district_id = DistrictCode,
+        district_name = DistrictName,
+        subgroup = StudentGroup,
+        grad_rate_6yr = Graduates,
+        continuing_rate = `Continuing Students`,
+        non_continuing_rate = `Non-Continuing Student`
+      )
+
+    # Add persistence_rate if available, otherwise set NA
+    if (has_persistence) {
+      df <- df %>% dplyr::rename(persistence_rate = HighSchoolPersistance)
+    } else {
+      df <- df %>% dplyr::mutate(persistence_rate = NA_real_)
+    }
+
+    df <- df %>%
+      dplyr::mutate(
+        school_id = "999",
+        school_name = "District Total"
+      ) %>%
+      dplyr::select(
+        county_id, county_name,
+        district_id, district_name,
+        school_id, school_name,
+        subgroup,
+        grad_rate_6yr, continuing_rate, non_continuing_rate, persistence_rate
+      )
+  }
+
+  # Convert rate columns to numeric
+  rate_cols <- c("grad_rate_6yr", "continuing_rate", "non_continuing_rate", "persistence_rate")
+  for (col in rate_cols) {
+    df[[col]] <- as.numeric(df[[col]])
+  }
+
+  # Clean subgroup names
+  df$subgroup <- clean_6yr_grad_subgroups(df$subgroup)
+
+  # Add metadata
+  df$end_year <- end_year
+  df$methodology <- "6 year"
+
+  # Remove rows without county_id
+  df <- df %>%
+    dplyr::filter(!is.na(county_id))
+
+  # Add aggregation flags
+  df <- df %>%
+    dplyr::mutate(
+      is_state = district_id == "9999" & county_id == "99",
+      is_county = district_id == "9999" & !county_id == "99",
+      is_district = school_id %in% c("888", "997", "999") & !is_state,
+      is_charter_sector = FALSE,
+      is_allpublic = FALSE,
+      is_school = !school_id %in% c("888", "997", "999") & !is_state,
+      is_charter = county_id == "80"
+    )
+
+  # Reorder columns
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subgroup,
+      grad_rate_6yr, continuing_rate, non_continuing_rate, persistence_rate,
+      methodology,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch all 6-Year Graduation Rate data
+#'
+#' Convenience function to download and combine all available 6-year
+#' graduation rate data into a single data frame.
+#'
+#' @param level One of "school", "district", or "both". "both" combines
+#'   school and district data. Default is "school".
+#' @return A data frame with all 6-year graduation rate results (2021-2024)
+#' @export
+#' @examples
+#' \dontrun{
+#' # Get all school-level 6-year graduation data
+#' all_grad6 <- fetch_all_6yr_grad_rate()
+#'
+#' # Get both school and district data
+#' all_grad6_both <- fetch_all_6yr_grad_rate(level = "both")
+#' }
+fetch_all_6yr_grad_rate <- function(level = "school") {
+
+  results <- list()
+
+  # 6-year graduation data available 2021-2024
+  valid_years <- c(2021, 2022, 2023, 2024)
+
+  if (level == "both") {
+    for (year in valid_years) {
+      for (lvl in c("school", "district")) {
+        result <- tryCatch(
+          {
+            fetch_6yr_grad_rate(end_year = year, level = lvl)
+          },
+          error = function(e) {
+            message(sprintf("Could not fetch 6yr grad rate %s %s: %s", year, lvl, e$message))
+            NULL
+          }
+        )
+        if (!is.null(result)) {
+          results[[paste(year, lvl, sep = "_")]] <- result
+        }
+      }
+    }
+  } else {
+    for (year in valid_years) {
+      result <- tryCatch(
+        {
+          fetch_6yr_grad_rate(end_year = year, level = level)
+        },
+        error = function(e) {
+          message(sprintf("Could not fetch 6yr grad rate %s: %s", year, e$message))
+          NULL
+        }
+      )
+      if (!is.null(result)) {
+        results[[as.character(year)]] <- result
+      }
+    }
+  }
+
+  dplyr::bind_rows(results)
+}
