@@ -202,7 +202,9 @@ test_that('fetch_grad_count all years', {
   gr18 <- fetch_grad_count(2017)
   gr19 <- fetch_grad_count(2018)
   gr20 <- fetch_grad_count(2019)
-  expect_error(fetch_grad_count(2020))
+  # 2020 grad count data is now available from NJ DOE
+  gr21 <- fetch_grad_count(2020)
+  expect_s3_class(gr21, "data.frame")
 })
 
 test_that("ground truth values on 2019 grad count", {
