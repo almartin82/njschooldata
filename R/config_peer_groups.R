@@ -71,15 +71,6 @@ get_dfg_a_districts <- function() {
 }
 
 
-#' Newark district ID constant
-#'
-#' @description The district ID for Newark Public Schools (3570).
-#' Used as a constant for filtering and analysis.
-#'
-#' @export
-NEWARK_DISTRICT_ID <- "3570"
-
-
 #' Calculate DFG peer percentile for any metric
 #'
 #' @description Calculates percentile rank within District Factor Group
