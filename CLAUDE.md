@@ -18,8 +18,9 @@ R package for fetching and processing New Jersey school data from the NJ Departm
 - Helper functions created during research that are general-purpose → refactor into `R/`
 - District-specific constants, analysis scripts, cached data → stay in `research-private/`
 
-## Commit Guidelines
-- Do NOT include Claude's name, "Co-Authored-By", or any AI attribution in commit messages
+## Commit and PR Guidelines
+- Do NOT include Claude's name, "Co-Authored-By", or any AI attribution in commit messages or PR descriptions
+- Do NOT include "Generated with Claude Code" or similar footers in PRs
 - Keep commit messages concise and focused on the changes made
 
 ## Slash Commands
