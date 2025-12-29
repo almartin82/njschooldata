@@ -198,7 +198,8 @@ tidy_grad_rate <- function(df, end_year, methodology = "4 year") {
         dplyr::mutate(
           grad_rate = as.numeric(
             dplyr::if_else(
-              stringr::str_detect(grad_rate, "\\*|N|-"),
+              # Match suppressed data indicators: *, N, -, <, > (e.g., "<10%", ">90%")
+              stringr::str_detect(grad_rate, "\\*|N|-|<|>"),
               NA_character_,
               grad_rate
             )
