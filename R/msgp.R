@@ -277,6 +277,9 @@ get_and_process_msgp <- function(end_year) {
   
   # clean up
   out <- out %>%
+    mutate(
+      is_charter = county_code == "80"
+    ) %>%
     rename(
       county_id = county_code,
       district_id = district_code,
@@ -285,7 +288,7 @@ get_and_process_msgp <- function(end_year) {
     mutate(
       subject = tolower(subject)
     )
-  
+
   out
 }
 

@@ -19,6 +19,7 @@ utils::globalVariables(c(
   # ========== ID Columns ==========
   "county_id", "county_name", "county_code",
   "district_id", "district_name", "district_code",
+  "district_id_full", "district_id_short",
   "school_id", "school_name", "school_code",
   "CDS_Code",
 
@@ -61,8 +62,8 @@ utils::globalVariables(c(
 
   # ========== Assessment Columns ==========
   "testing_year", "assess_name", "test_name", "grade",
-  "pct_l1", "pct_l2", "pct_l3", "pct_l4", "pct_l5",
-  "num_l1", "num_l2", "num_l3", "num_l4", "num_l5",
+  "pct_l1", "pct_l2", "pct_l3", "pct_l4", "pct_l5", "pct_l6",
+  "num_l1", "num_l2", "num_l3", "num_l4", "num_l5", "num_l6",
   "proficient_above", "scale_score_mean",
   "number_enrolled", "number_not_tested",
   "number_of_valid_scale_scores",
@@ -82,6 +83,11 @@ utils::globalVariables(c(
   "nat_am_m", "nat_am_f",
   "hwn_nat_m", "hwn_nat_f",
   "american_indian",
+  # Graduation rate validation/recovery columns
+  "total_cohort", "calculated_rate", "grad_rate_original", "grad_rate_recovered",
+  "calculated_from_schools", "aggregation_flag", "rate_discrepancy_pp",
+  "n_schools_with_data", "school_total_cohort", "school_names",
+  "ok", "total_records",
 
   # ========== Boolean Flags ==========
   "is_state", "is_county", "is_district", "is_school",
@@ -103,6 +109,11 @@ utils::globalVariables(c(
   "enroll_any_count", "enroll_2yr_count", "enroll_4yr_count",
   "matric_rate",
   "orig_end_year",
+
+  # ========== Postsecondary Enrollment Columns ==========
+  "cds_code", "record_type", "cohort_year", "measurement_type",
+  "lower_bound", "upper_bound",
+  "cds_county_district_school_code", "school_district_state",
 
   # ========== Special Populations ==========
   "economically_disadvantaged", "students_with_disabilities",
@@ -156,6 +167,12 @@ utils::globalVariables(c(
   # ========== SPED Columns ==========
   "gened_num", "sped_num", "sped_rate",
   "sped_num_no_speech", "sped_rate_no_speech",
+
+  # ========== Chronic Absenteeism Columns ==========
+  "configuration", "chronic_absenteeism_total",
+  "attendance_asian_pacific", "attendance_black", "attendance_ed",
+  "attendance_hispanic", "attendance_ell", "attendance_native_american",
+  "attendance_multiracial", "attendance_swd", "attendance_white", "attendance_total",
 
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
