@@ -77,7 +77,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
                   nrow(), 6e5)
   
   expect_equal(nrow(fetch_2018), 651701)
-  expect_equal(ncol(fetch_2018), 21)
+  expect_equal(ncol(fetch_2018), 22)  # includes is_charter column
 })
 
 
@@ -95,7 +95,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
   
   expect_s3_class(fetch_2019, 'data.frame')
   expect_equal(nrow(fetch_2019), 652214)
-  expect_equal(ncol(fetch_2019), 21)
+  expect_equal(ncol(fetch_2019), 22)  # includes is_charter column
 })
 
 
