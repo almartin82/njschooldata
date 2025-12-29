@@ -3,14 +3,16 @@
 \docType{data}
 \name{ENR_VALID_YEARS}
 \alias{ENR_VALID_YEARS}
-\title{Enrollment data valid years}
+\title{Enrollment data valid years
+Note: 1999 data was removed from NJ DOE website}
 \format{
-An object of class \code{integer} of length 27.
+An object of class \code{integer} of length 26.
 }
 \usage{
 ENR_VALID_YEARS
 }
 \description{
 Enrollment data valid years
+Note: 1999 data was removed from NJ DOE website
 }
 \keyword{internal}

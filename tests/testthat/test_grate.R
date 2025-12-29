@@ -50,7 +50,11 @@ test_that('fetch_grad_rate all years', {
    grr19 <- fetch_grad_rate(2018)
    grr20 <- fetch_grad_rate(2019)
    grr20 <- fetch_grad_rate(2020)
-   expect_error(fetch_grad_rate(2021))
+   grr21 <- fetch_grad_rate(2021)
+   grr22 <- fetch_grad_rate(2022)
+   grr23 <- fetch_grad_rate(2023)
+   grr24 <- fetch_grad_rate(2024)
+   expect_error(fetch_grad_rate(2025))
 
 })
 
@@ -202,7 +206,12 @@ test_that('fetch_grad_count all years', {
   gr18 <- fetch_grad_count(2017)
   gr19 <- fetch_grad_count(2018)
   gr20 <- fetch_grad_count(2019)
-  expect_error(fetch_grad_count(2020))
+  gr21 <- fetch_grad_count(2020)
+  gr22 <- fetch_grad_count(2021)
+  gr23 <- fetch_grad_count(2022)
+  gr24 <- fetch_grad_count(2023)
+  gr25 <- fetch_grad_count(2024)
+  expect_error(fetch_grad_count(2025))
 })
 
 test_that("ground truth values on 2019 grad count", {
@@ -242,3 +251,55 @@ test_that("grad counts correctly enriched", {
   expect_equal(pull(ex_row, graduated_count.x),
                pull(ex_row, graduated_count.y))
   })
+
+
+test_that("2020-2024 graduation data includes cohort counts", {
+  # 2020 was previously missing counts but NJ DOE updated file format
+  grate_2024 <- fetch_grad_rate(2024)
+
+  # Check that cohort_count and graduated_count are populated
+  non_na_cohort <- sum(!is.na(grate_2024$cohort_count))
+  expect_gt(non_na_cohort, 5000)  # Should have >5000 non-NA values
+
+  non_na_graduated <- sum(!is.na(grate_2024$graduated_count))
+  expect_gt(non_na_graduated, 5000)
+})
+
+
+test_that("charter sector aggregation works for 2020-2024", {
+  grate_2024 <- fetch_grad_rate(2024)
+
+  # Test charter sector aggs
+  sector <- charter_sector_grate_aggs(grate_2024)
+
+  # Newark should be present
+  newark_sector <- sector %>%
+    filter(district_id == "3570C", subgroup == "total")
+
+  expect_equal(nrow(newark_sector), 1)
+  expect_true(!is.na(newark_sector$grad_rate))
+  expect_true(newark_sector$cohort_count > 0)
+  expect_true(newark_sector$is_charter_sector)
+})
+
+
+test_that("allpublic aggregation works for 2020-2024", {
+  grate_2024 <- fetch_grad_rate(2024)
+
+  # Test allpublic aggs
+  allpublic <- allpublic_grate_aggs(grate_2024)
+
+  # Newark should be present
+  newark_all <- allpublic %>%
+    filter(district_id == "3570A", subgroup == "total")
+
+  expect_equal(nrow(newark_all), 1)
+  expect_true(!is.na(newark_all$grad_rate))
+  expect_true(newark_all$cohort_count > 0)
+  expect_true(newark_all$is_allpublic)
+
+  # All public should have more students than charter sector only
+  sector <- charter_sector_grate_aggs(grate_2024)
+  newark_sector <- sector %>% filter(district_id == "3570C", subgroup == "total")
+  expect_gt(newark_all$cohort_count, newark_sector$cohort_count)
+})

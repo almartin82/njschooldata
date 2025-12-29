@@ -410,15 +410,16 @@ allpublic_parcc_aggs <- function(df) {
 #' @export
 
 charter_sector_grate_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 
@@ -537,15 +538,16 @@ allpublic_grate_aggs <- function(df) {
 #' @export
 
 charter_sector_gcount_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 
@@ -891,15 +893,16 @@ allpublic_sped_aggs <- function(df) {
 #' @return df containing charter sector matriculation aggregates
 #' @export
 charter_sector_matric_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 

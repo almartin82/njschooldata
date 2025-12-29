@@ -14,7 +14,7 @@ school year is end_year 2015. Valid values are 2015-2024.}
 
 \item{grade}{Integer or character specifying grade level}
 
-\item{subj}{PARCC subject. c('ela' or 'math')}
+\item{subj}{PARCC subject. c('ela', 'math', or 'science')}
 }
 \value{
 A tbl_df / data frame

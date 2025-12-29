@@ -112,6 +112,7 @@ id_enr_aggs <- function(df) {
       is_state = district_id == "9999" & county_id == "99",
       is_county = district_id == "9999" & !county_id == "99",
       is_district = school_id == "999" & !is_state,
+      is_charter = county_id == "80",
       is_charter_sector = FALSE,
       is_allpublic = FALSE,
       is_school = !school_id == "999" & !is_state,
