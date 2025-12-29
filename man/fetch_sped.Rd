@@ -2,16 +2,20 @@
 % Please edit documentation in R/sped.R
 \name{fetch_sped}
 \alias{fetch_sped}
-\title{Gets and cleans older SPED data}
+\title{Fetch Special Education Classification Data}
 \usage{
 fetch_sped(end_year)
 }
 \arguments{
-\item{end_year}{@inheritParams fetch_enr}
+\item{end_year}{ending school year (e.g., 2024 for 2023-2024 school year).
+Valid years: 2024+}
 }
 \value{
-cleaned sped dataframe
+cleaned sped dataframe with columns: end_year, county_id, county_name,
+  district_id, district_name, gened_num, sped_num, sped_rate
 }
 \description{
-Gets and cleans older SPED data
+Fetches special education classification rate data from NJ DOE.
+As of 2024, only current data is available. Historical data (2003-2019) is no
+longer accessible via URL and requires an OPRA request.
 }

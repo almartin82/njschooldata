@@ -79,32 +79,34 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2020) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202020%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
-      num_skip <- 3
+      # NJ DOE moved files to /docs/ folder in 2024 and now includes counts
+      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2021) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202021%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
-      num_skip <- 3
+      # NJ DOE moved files to /docs/ folder in 2024 and now includes counts
+      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2022) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202022%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
-      num_skip <- 3
+      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2023) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202023%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
-      num_skip <- 3
+      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2024) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202024%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
-      num_skip <- 3
+      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)

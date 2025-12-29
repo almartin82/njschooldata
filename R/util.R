@@ -15,7 +15,7 @@
 #' Converts subject name to standardized PARCC code.
 #'
 #' @param x a subject (function parameter subj)
-#' @return the subject coded as ELA or MAT.
+#' @return the subject coded as ELA, MAT, or SC.
 #' @keywords internal
 parse_parcc_subj <- function(x) {
   x <- tolower(x)
@@ -24,10 +24,12 @@ parse_parcc_subj <- function(x) {
     "ELA"
   } else if (x == "math") {
     "MAT"
+  } else if (x == "science") {
+    "SC"
   } else if (x == "Reading") {
     "ELA"
   } else {
-    stop("Not a valid subject.  Check the function documentation for valid subjects.")
+    stop("Not a valid subject. Valid subjects are: 'ela', 'math', 'science'")
   }
 }
 
