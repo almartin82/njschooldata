@@ -89,7 +89,8 @@ process_grate <- function(df, end_year) {
         dplyr::mutate(
           {{ i }} := as.numeric(
             dplyr::if_else(
-              stringr::str_detect(.data[[i]], "\\*|N|-"),
+              # Match suppressed data indicators: *, N, -, <, > (e.g., "<10%", ">90%")
+              stringr::str_detect(.data[[i]], "\\*|N|-|<|>"),
               NA_character_,
               .data[[i]]
             )
