@@ -131,10 +131,6 @@ articles:
     navbar: ~
     contents:
       - getting-started
-  - title: Analysis Guides
-    contents:
-      - longitudinal-analysis
-      - data-dictionary
 
 authors:
   Andrew Martin:
