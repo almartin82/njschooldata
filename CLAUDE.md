@@ -38,3 +38,27 @@ Session caching is enabled by default to avoid hitting NJ DOE bot protection:
 - `njsd_cache_enable(FALSE)` - disable caching
 
 The cache validates responses and will NOT cache network errors or bot protection pages.
+
+## pkgdown / GitHub Pages
+
+Site: https://almartin82.github.io/njschooldata/
+
+**Setup:**
+- GitHub Action (`.github/workflows/pkgdown.yml`) builds on push to master
+- Deploys to `gh-pages` branch automatically
+- `docs/` is gitignored on master (build artifacts only)
+
+**Configuration:**
+- `_pkgdown.yml` - site config, reference sections, articles
+- All exported functions must be listed in reference sections (use `matches(".*")` as catch-all)
+- Vignettes in `vignettes/` appear as articles
+
+**To enable on a new repo:**
+1. Add workflow file and `_pkgdown.yml`
+2. Push to master
+3. Enable GitHub Pages via API or Settings:
+   ```bash
+   gh api repos/OWNER/REPO/pages -X POST --input - <<EOF
+   {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}
+   EOF
+   ```
