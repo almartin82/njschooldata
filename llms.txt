@@ -1,0 +1,693 @@
+# njschooldata
+
+A simple interface for accessing NJ DOE school data in R
+
+> It is often said that 80% of data analysis is spent on the process of
+> cleaning and preparing the data (Dasu and Johnson 2003). Data
+> preparation is not just a first step, but must be repeated many over
+> the course of analysis as new problems come to light or new data is
+> collected. -[@hadley](http://vita.had.co.nz/papers/tidy-data.pdf)
+
+The State of NJ has been posting raw, fixed width text files with all
+the assessment results for NJ schools/districts for well over a decade
+now. **That’s great!**
+
+Unfortunately, those files are a bit of a pain to work with, especially
+if you’re trying to work with multiple grades, or multiple years of
+data. Layouts change; file paths aren’t consistent, etc.
+
+`njschooldata` attempts to simplify the task of working with NJ
+education data by providing a concise and consistent interface for
+reading state files into R. We make heavy use of the
+[tidyverse](https://www.tidyverse.org/) and aim to create a consistent,
+pipeable interface into NJ state education data.
+
+## Installation
+
+``` r
+# Install from GitHub using remotes (recommended)
+remotes::install_github("almartin82/njschooldata")
+
+# Or using devtools
+devtools::install_github("almartin82/njschooldata")
+
+library(njschooldata)
+```
+
+## Data Coverage
+
+| Data Type         | Years Available | Function                                                                                        |
+|-------------------|-----------------|-------------------------------------------------------------------------------------------------|
+| Enrollment        | 1999-2025       | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)               |
+| NJSLA Assessment  | 2019-2024       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           |
+| PARCC Assessment  | 2015-2018       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           |
+| NJASK Assessment  | 2004-2014       | `fetch_nj_assess()`                                                                             |
+| Graduation Rates  | 2011-2024       | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)   |
+| Graduation Counts | 2012-2024       | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) |
+
+**Note**: The 2019-20 school year assessments were cancelled due to
+COVID-19.
+
+## Usage
+
+### Enrollment Data
+
+``` r
+# Get 2024 enrollment data
+enr_2024 <- fetch_enr(2024)
+
+# Get enrollment data in tidy format
+enr_2024_tidy <- fetch_enr(2024, tidy = TRUE)
+```
+
+### Assessment Data (NJSLA/PARCC)
+
+``` r
+# Get 2023 Grade 4 Math NJSLA data
+math_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 4, subj = 'math')
+
+# Get 2023 Grade 8 ELA data
+ela_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 8, subj = 'ela')
+
+# Get Algebra 1 results
+alg1_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 'ALG1', subj = 'math')
+```
+
+### Legacy Assessment Data (NJASK, 2004-2014)
+
+``` r
+# Get 2010 grade 5 NJASK data
+njask_2010 <- fetch_nj_assess(end_year = 2010, grade = 5)
+
+# Get tidy format for longitudinal analysis
+njask_2010_tidy <- fetch_nj_assess(end_year = 2010, grade = 5, tidy = TRUE)
+```
+
+### Graduation Data
+
+``` r
+# Get 2023 graduation rates
+grate_2023 <- fetch_grad_rate(end_year = 2023)
+
+# Get 5-year graduation rates
+grate_2023_5yr <- fetch_grad_rate(end_year = 2023, methodology = '5 year')
+
+# Get graduation counts
+gcount_2023 <- fetch_grad_count(end_year = 2023)
+```
+
+### School and District Directories
+
+``` r
+# Get current school directory with metadata
+schools <- get_school_directory()
+
+# Get current district directory
+districts <- get_district_directory()
+```
+
+## Assessment History
+
+NJ has used several assessment systems over the years:
+
+- **NJASK** (NJ Assessment of Skills and Knowledge): 2004-2014, Grades
+  3-8
+- **HSPA** (High School Proficiency Assessment): Through 2014, Grade 11
+- **GEPA** (Grade Eight Proficiency Assessment): Through 2007, Grade 8
+- **PARCC**: 2015-2018, aligned to Common Core
+- **NJSLA** (NJ Student Learning Assessment): 2019-present (2020
+  cancelled due to COVID)
+
+## Longitudinal Analysis
+
+The flat files provided by the state are a bit painful to work with. The
+layout isn’t consistent across years or assessments, making longitudinal
+analysis challenging.
+
+`fetch_nj_assess` and `fetch_enr` have a `tidy` parameter that returns a
+processed version of the data designed to facilitate longitudinal
+analysis with consistent data frame structure.
+
+## Contributing
+
+Contributions are welcome!
+
+Comments? Questions? Problems? Want to contribute to development? - File
+an [issue](https://github.com/almartin82/njschooldata/issues) - Send me
+an [email](mailto:almartin@gmail.com)
+
+# Package index
+
+## Enrollment Data
+
+Functions for fetching and processing NJ school enrollment data
+
+- [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  : Gets and processes a NJ enrollment file
+- [`fetch_enr_cached()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_cached.md)
+  : Fetch enrollment data with caching
+- [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
+  : Fetch multiple years of enrollment data with progress
+- [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
+  : Tidy enrollment data
+- [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
+  : Custom Enrollment Grade Level Aggregates
+- [`id_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/id_enr_aggs.md)
+  : Identify enrollment aggregation levels
+
+## Assessment Data (NJSLA/PARCC)
+
+Functions for NJSLA (2019+) and PARCC (2015-2018) assessment results
+
+- [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)
+  : Gets and cleans up a PARCC data file
+- [`fetch_all_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_all_parcc.md)
+  : Fetch all PARCC results
+- [`fetch_all_parcc_with_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_all_parcc_with_progress.md)
+  : Fetch all PARCC/NJSLA results with progress
+- [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md)
+  : Fetch NJGPA (NJ Graduation Proficiency Assessment) data
+- [`fetch_all_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_all_njgpa.md)
+  : Fetch all NJGPA results
+- [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)
+  : Fetch ACCESS for ELLs data
+- [`fetch_all_access()`](https://almartin82.github.io/njschooldata/reference/fetch_all_access.md)
+  : Fetch all ACCESS for ELLs results
+- [`parcc_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/parcc_aggregate_calcs.md)
+  : Aggregate multiple PARCC rows and produce summary statistics
+- [`parcc_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/parcc_percentile_rank.md)
+  : Assessment proficiency percentile rank
+- [`parcc_perf_level_counts()`](https://almartin82.github.io/njschooldata/reference/parcc_perf_level_counts.md)
+  : PARCC counts by performance level
+- [`tidy_parcc_subgroup()`](https://almartin82.github.io/njschooldata/reference/tidy_parcc_subgroup.md)
+  : Tidy PARCC subgroup names
+
+## Assessment Data (Legacy - NJASK/HSPA/GEPA)
+
+Functions for historical NJ assessment data (2004-2014)
+
+- [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md)
+  : a simplified interface into NJ assessment data
+- [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md)
+  : gets and processes a NJASK file
+- [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md)
+  : gets and processes a HSPA file
+- [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md)
+  : gets and processes a GEPA file
+- [`tidy_nj_assess()`](https://almartin82.github.io/njschooldata/reference/tidy_nj_assess.md)
+  : tidies NJ assessment data
+
+## Graduation Data
+
+Functions for graduation rates and counts
+
+- [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
+  : Fetch Grad Rate
+- [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)
+  : Fetch Grad Counts
+- [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)
+  : Fetch 6-Year Graduation Rate data
+- [`fetch_all_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_all_6yr_grad_rate.md)
+  : Fetch all 6-Year Graduation Rate data
+- [`id_grad_aggs()`](https://almartin82.github.io/njschooldata/reference/id_grad_aggs.md)
+  : Identify graduation aggregation levels
+- [`grate_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/grate_aggregate_calcs.md)
+  : Aggregate multiple grad rate rows and produce summary statistics
+- [`gcount_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/gcount_aggregate_calcs.md)
+  : Aggregate multiple grad count rows and produce summary statistics
+- [`grate_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/grate_percentile_rank.md)
+  : Graduation rate percentile rank
+- [`grate_validation_summary()`](https://almartin82.github.io/njschooldata/reference/grate_validation_summary.md)
+  : Get graduation rate validation summary
+- [`recover_suppressed_grate()`](https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.md)
+  : Recover suppressed district graduation rates from school data
+
+## School/District Directories
+
+Functions for school and district metadata
+
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get NJ School Directory Data
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get NJ District Directory Data
+
+## Charter Aggregations
+
+Functions for charter school sector aggregations
+
+- [`charter_sector_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_enr_aggs.md)
+  : Calculate Charter Sector Enrollment Aggregates
+- [`charter_sector_gcount_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_gcount_aggs.md)
+  : Calculate Charter Sector Grad Count aggregates
+- [`charter_sector_grate_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_grate_aggs.md)
+  : Calculate Charter Sector Grad Rate aggregates
+- [`charter_sector_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_matric_aggs.md)
+  : Calculate Charter Sector postsecondary matriculation aggregates
+- [`charter_sector_parcc_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_parcc_aggs.md)
+  : Calculate Charter Sector PARCC aggregates
+- [`charter_sector_spec_pop_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_spec_pop_aggs.md)
+  : Calculate Charter Sector Special Populations Aggregates
+- [`charter_sector_sped_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_sped_aggs.md)
+  : Calculate Charter Sector SPED Aggregates
+- [`allpublic_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_enr_aggs.md)
+  : Calculate All Public Enrollment Aggregates
+- [`allpublic_gcount_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_gcount_aggs.md)
+  : Calculate Charter Sector Grad Count aggregates
+- [`allpublic_grate_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_grate_aggs.md)
+  : Calculate All Public Grad Rate aggregates
+- [`allpublic_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_matric_aggs.md)
+  : Calculate All Public matriculation aggregates
+- [`allpublic_parcc_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_parcc_aggs.md)
+  : Calculate All Public Options PARCC Aggregates
+- [`allpublic_spec_pop_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_spec_pop_aggs.md)
+  : Calculate All City Special Populations aggregates
+- [`allpublic_sped_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_sped_aggs.md)
+  : Calculate Charter Sector SPED aggregates
+- [`id_charter_hosts()`](https://almartin82.github.io/njschooldata/reference/id_charter_hosts.md)
+  : Identify charter host districts
+
+## Special Populations
+
+Functions for special education and other subgroup data
+
+- [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
+  : Fetch Special Education Classification Data
+- [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
+  : Fetch Special Population data
+- [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
+  : Fetch Chronic Absenteeism data
+- [`fetch_all_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_all_chronic_absenteeism.md)
+  : Fetch all Chronic Absenteeism data
+- [`sped_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.md)
+  : Aggregate multiple sped rows and produce summary statistics
+- [`spec_pop_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.md)
+  : Aggregate multiple special populations rows and produce summary
+  statistics
+
+## Other Data Sources
+
+Additional NJ DOE data functions
+
+- [`fetch_msgp()`](https://almartin82.github.io/njschooldata/reference/fetch_msgp.md)
+  : Fetch mSGP
+- [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)
+  : Fetch Cleaned Taxpayer's Guide to Educational Spending
+- [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md)
+  : Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
+- [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
+  : Fetch NJ District Factor Group (DFG) data
+- [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
+  : Fetch Postsecondary Enrollment Rates
+- [`get_one_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_one_rc_database.md)
+  : Get Raw Report Card Database
+- [`get_merged_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_merged_rc_database.md)
+  : Combines school and district Performance Reports for 2017-on, when
+  two files were released.
+- [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
+  : Get multiple RC databases
+- [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
+  : Get districts in a specific District Factor Group
+- [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
+  : Get DFG A districts (highest-need peer group)
+
+## Utilities
+
+Helper functions and lookups
+
+- [`pad_grade()`](https://almartin82.github.io/njschooldata/reference/pad_grade.md)
+  : Pad grade level
+- [`pad_cds()`](https://almartin82.github.io/njschooldata/reference/pad_cds.md)
+  : Pad CDS fields
+- [`pad_leading()`](https://almartin82.github.io/njschooldata/reference/pad_leading.md)
+  : Pad leading digits
+- [`trim_whitespace()`](https://almartin82.github.io/njschooldata/reference/trim_whitespace.md)
+  : Trim whitespace
+- [`enrich_grad_count()`](https://almartin82.github.io/njschooldata/reference/enrich_grad_count.md)
+  : Enrich report card matriculation percentages with grad counts
+- [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
+  : Enrich matriculation rates with counts from grad counts
+- [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
+  : Enrich report card subgroup percentages with best guesses at
+  subgroup numbers
+- [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
+  : Enrich School Data with City Ward
+- [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
+  : Enrich School Data with Lat / Long
+- [`validate_end_year()`](https://almartin82.github.io/njschooldata/reference/validate_end_year.md)
+  : Validate end_year parameter
+- [`validate_grade()`](https://almartin82.github.io/njschooldata/reference/validate_grade.md)
+  : Validate grade parameter
+- [`validate_grate_aggregation()`](https://almartin82.github.io/njschooldata/reference/validate_grate_aggregation.md)
+  : Validate graduation rate aggregation
+
+## Caching
+
+Cache management functions
+
+- [`njsd_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_clear.md)
+  : Clear the session cache
+- [`njsd_cache_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_enable.md)
+  : Enable or disable the session cache
+- [`njsd_cache_enabled()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_enabled.md)
+  : Check if caching is enabled
+- [`njsd_cache_info()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_info.md)
+  : Get cache statistics and information
+- [`njsd_cache_list()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_list.md)
+  : List all cached items
+- [`njsd_cache_remove()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_remove.md)
+  : Remove a specific item from cache
+- [`njsd_progress_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_progress_enable.md)
+  : Enable or disable progress indicators
+
+## All Other Functions
+
+Additional exported functions
+
+- [`SUBGROUP_PAIRS`](https://almartin82.github.io/njschooldata/reference/SUBGROUP_PAIRS.md)
+  : Standard subgroup pairs for gap analysis
+- [`add_dfg()`](https://almartin82.github.io/njschooldata/reference/add_dfg.md)
+  : Add DFG classification to district data
+- [`add_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/add_percentile_rank.md)
+  : Add percentile rank columns for any metric
+- [`agg_enr_column_order()`](https://almartin82.github.io/njschooldata/reference/agg_enr_column_order.md)
+  : Helper function to return aggregate enrollment columns in correct
+  order
+- [`agg_enr_pct_total()`](https://almartin82.github.io/njschooldata/reference/agg_enr_pct_total.md)
+  : Helper function to support calculating pct_total on aggregate enr
+  dataframes
+- [`agg_spec_pop_column_order()`](https://almartin82.github.io/njschooldata/reference/agg_spec_pop_column_order.md)
+  : Helper function to return aggregate special populations columns in
+  correct order
+- [`agg_sped_column_order()`](https://almartin82.github.io/njschooldata/reference/agg_sped_column_order.md)
+  : Helper function to return aggregate sped columns in correct order
+- [`allpublic_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_enr_aggs.md)
+  : Calculate All Public Enrollment Aggregates
+- [`allpublic_gcount_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_gcount_aggs.md)
+  : Calculate Charter Sector Grad Count aggregates
+- [`allpublic_grate_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_grate_aggs.md)
+  : Calculate All Public Grad Rate aggregates
+- [`allpublic_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_matric_aggs.md)
+  : Calculate All Public matriculation aggregates
+- [`allpublic_parcc_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_parcc_aggs.md)
+  : Calculate All Public Options PARCC Aggregates
+- [`allpublic_spec_pop_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_spec_pop_aggs.md)
+  : Calculate All City Special Populations aggregates
+- [`allpublic_sped_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_sped_aggs.md)
+  : Calculate Charter Sector SPED aggregates
+- [`calculate_access_rate()`](https://almartin82.github.io/njschooldata/reference/calculate_access_rate.md)
+  : Calculate equity access rate
+- [`calculate_agg_parcc_prof()`](https://almartin82.github.io/njschooldata/reference/calculate_agg_parcc_prof.md)
+  : Aggregate PARCC results across multiple grade levels
+- [`calculate_subgroup_gap()`](https://almartin82.github.io/njschooldata/reference/calculate_subgroup_gap.md)
+  : Calculate achievement gap between two subgroups
+- [`charter_city`](https://almartin82.github.io/njschooldata/reference/charter_city.md)
+  : Charter School Host District Mapping
+- [`charter_market_share()`](https://almartin82.github.io/njschooldata/reference/charter_market_share.md)
+  : Calculate charter market share for host cities
+- [`charter_sector_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_enr_aggs.md)
+  : Calculate Charter Sector Enrollment Aggregates
+- [`charter_sector_gcount_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_gcount_aggs.md)
+  : Calculate Charter Sector Grad Count aggregates
+- [`charter_sector_grate_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_grate_aggs.md)
+  : Calculate Charter Sector Grad Rate aggregates
+- [`charter_sector_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_matric_aggs.md)
+  : Calculate Charter Sector postsecondary matriculation aggregates
+- [`charter_sector_parcc_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_parcc_aggs.md)
+  : Calculate Charter Sector PARCC aggregates
+- [`charter_sector_spec_pop_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_spec_pop_aggs.md)
+  : Calculate Charter Sector Special Populations Aggregates
+- [`charter_sector_sped_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_sped_aggs.md)
+  : Calculate Charter Sector SPED Aggregates
+- [`check_url_accessible()`](https://almartin82.github.io/njschooldata/reference/check_url_accessible.md)
+  : Check if a URL is accessible
+- [`city_ecosystem_summary()`](https://almartin82.github.io/njschooldata/reference/city_ecosystem_summary.md)
+  : Summarize sector performance within a city
+- [`clean_cds_fields()`](https://almartin82.github.io/njschooldata/reference/clean_cds_fields.md)
+  : Clean up CDS field names
+- [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
+  : Clean SPED data
+- [`define_peer_group()`](https://almartin82.github.io/njschooldata/reference/define_peer_group.md)
+  : Define a peer comparison group
+- [`dfg_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/dfg_percentile_rank.md)
+  : Calculate DFG peer percentile for any metric
+- [`district_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/district_matric_aggs.md)
+  : Aggregates matriculation data by district
+- [`download_and_clean_pr()`](https://almartin82.github.io/njschooldata/reference/download_and_clean_pr.md)
+  : Download and clean performance report data
+- [`ecosystem_trend()`](https://almartin82.github.io/njschooldata/reference/ecosystem_trend.md)
+  : Track sector ecosystem dynamics over time
+- [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
+  : Custom Enrollment Grade Level Aggregates
+- [`enrich_grad_count()`](https://almartin82.github.io/njschooldata/reference/enrich_grad_count.md)
+  : Enrich report card matriculation percentages with grad counts
+- [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
+  : Enrich matriculation rates with counts from grad counts
+- [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
+  : Enrich report card subgroup percentages with best guesses at
+  subgroup numbers
+- [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
+  : Enrich School Data with City Ward
+- [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
+  : Enrich School Data with Lat / Long
+- [`extract_rc_AP()`](https://almartin82.github.io/njschooldata/reference/extract_rc_AP.md)
+  : Extract Report Card Advanced Placement Data
+- [`extract_rc_SAT()`](https://almartin82.github.io/njschooldata/reference/extract_rc_SAT.md)
+  : Extract Report Card SAT School Averages
+- [`extract_rc_cds()`](https://almartin82.github.io/njschooldata/reference/extract_rc_cds.md)
+  : Extract Report Card CDS
+- [`extract_rc_college_matric()`](https://almartin82.github.io/njschooldata/reference/extract_rc_college_matric.md)
+  : Extract Report Card Matriculation Rates
+- [`extract_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/extract_rc_enrollment.md)
+  : Extract Report Card Enrollment
+- [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)
+  : Fetch 6-Year Graduation Rate data
+- [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)
+  : Fetch ACCESS for ELLs data
+- [`fetch_all_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_all_6yr_grad_rate.md)
+  : Fetch all 6-Year Graduation Rate data
+- [`fetch_all_access()`](https://almartin82.github.io/njschooldata/reference/fetch_all_access.md)
+  : Fetch all ACCESS for ELLs results
+- [`fetch_all_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_all_chronic_absenteeism.md)
+  : Fetch all Chronic Absenteeism data
+- [`fetch_all_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_all_njgpa.md)
+  : Fetch all NJGPA results
+- [`fetch_all_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_all_parcc.md)
+  : Fetch all PARCC results
+- [`fetch_all_parcc_with_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_all_parcc_with_progress.md)
+  : Fetch all PARCC/NJSLA results with progress
+- [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
+  : Fetch Chronic Absenteeism data
+- [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
+  : Fetch NJ District Factor Group (DFG) data
+- [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  : Gets and processes a NJ enrollment file
+- [`fetch_enr_cached()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_cached.md)
+  : Fetch enrollment data with caching
+- [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
+  : Fetch multiple years of enrollment data with progress
+- [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md)
+  : gets and processes a GEPA file
+- [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)
+  : Fetch Grad Counts
+- [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
+  : Fetch Grad Rate
+- [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md)
+  : gets and processes a HSPA file
+- [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md)
+  : Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
+- [`fetch_msgp()`](https://almartin82.github.io/njschooldata/reference/fetch_msgp.md)
+  : Fetch mSGP
+- [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md)
+  : gets and processes a NJASK file
+- [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md)
+  : Fetch NJGPA (NJ Graduation Proficiency Assessment) data
+- [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md)
+  : a simplified interface into NJ assessment data
+- [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)
+  : Gets and cleans up a PARCC data file
+- [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
+  : Fetch Postsecondary Enrollment Rates
+- [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
+  : Fetch Special Population data
+- [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
+  : Fetch Special Education Classification Data
+- [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)
+  : Fetch Cleaned Taxpayer's Guide to Educational Spending
+- [`gap_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/gap_percentile_rank.md)
+  : Rank entities by achievement gap within peer group
+- [`gap_trajectory()`](https://almartin82.github.io/njschooldata/reference/gap_trajectory.md)
+  : Track achievement gap trends over time
+- [`gcount_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/gcount_aggregate_calcs.md)
+  : Aggregate multiple grad count rows and produce summary statistics
+- [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
+  : Geocoded School Addresses
+- [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
+  : Get DFG A districts (highest-need peer group)
+- [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
+  : Get districts in a specific District Factor Group
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get NJ District Directory Data
+- [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
+  : Get an ESSA comprehensive or targeted accountability file
+- [`get_merged_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_merged_rc_database.md)
+  : Combines school and district Performance Reports for 2017-on, when
+  two files were released.
+- [`get_one_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_one_rc_database.md)
+  : Get Raw Report Card Database
+- [`get_percentile_cols()`](https://almartin82.github.io/njschooldata/reference/get_percentile_cols.md)
+  : Get percentile cols
+- [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
+  : Get multiple RC databases
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get NJ School Directory Data
+- [`get_standalone_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.md)
+  : Get Standalone Raw Report Card Database
+- [`get_valid_grades()`](https://almartin82.github.io/njschooldata/reference/get_valid_grades.md)
+  : Get valid grades for an assessment type and year
+- [`grate_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/grate_aggregate_calcs.md)
+  : Aggregate multiple grad rate rows and produce summary statistics
+- [`grate_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/grate_percentile_rank.md)
+  : Graduation rate percentile rank
+- [`grate_validation_summary()`](https://almartin82.github.io/njschooldata/reference/grate_validation_summary.md)
+  : Get graduation rate validation summary
+- [`id_charter_hosts()`](https://almartin82.github.io/njschooldata/reference/id_charter_hosts.md)
+  : Identify charter host districts
+- [`id_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/id_enr_aggs.md)
+  : Identify enrollment aggregation levels
+- [`id_grad_aggs()`](https://almartin82.github.io/njschooldata/reference/id_grad_aggs.md)
+  : Identify graduation aggregation levels
+- [`kill_padformulas()`](https://almartin82.github.io/njschooldata/reference/kill_padformulas.md)
+  : Kill Excel Formula Padding For Numeric Strings
+- [`layout_gepa`](https://almartin82.github.io/njschooldata/reference/layout_gepa.md)
+  : GEPA Fixed-Width File Layout
+- [`layout_gepa05`](https://almartin82.github.io/njschooldata/reference/layout_gepa05.md)
+  : GEPA 2005 Fixed-Width File Layout
+- [`layout_gepa06`](https://almartin82.github.io/njschooldata/reference/layout_gepa06.md)
+  : GEPA 2006 Fixed-Width File Layout
+- [`layout_hspa`](https://almartin82.github.io/njschooldata/reference/layout_hspa.md)
+  : HSPA Fixed-Width File Layout
+- [`layout_hspa04`](https://almartin82.github.io/njschooldata/reference/layout_hspa04.md)
+  : HSPA 2004 Fixed-Width File Layout
+- [`layout_hspa05`](https://almartin82.github.io/njschooldata/reference/layout_hspa05.md)
+  : HSPA 2005 Fixed-Width File Layout
+- [`layout_hspa06`](https://almartin82.github.io/njschooldata/reference/layout_hspa06.md)
+  : HSPA 2006 Fixed-Width File Layout
+- [`layout_hspa10`](https://almartin82.github.io/njschooldata/reference/layout_hspa10.md)
+  : HSPA 2010 Fixed-Width File Layout
+- [`layout_njask`](https://almartin82.github.io/njschooldata/reference/layout_njask.md)
+  : NJASK Fixed-Width File Layout
+- [`layout_njask04`](https://almartin82.github.io/njschooldata/reference/layout_njask04.md)
+  : NJASK 2004 Fixed-Width File Layout
+- [`layout_njask05`](https://almartin82.github.io/njschooldata/reference/layout_njask05.md)
+  : NJASK 2005 Fixed-Width File Layout
+- [`layout_njask06gr3`](https://almartin82.github.io/njschooldata/reference/layout_njask06gr3.md)
+  : NJASK 2006 Grade 3 Fixed-Width File Layout
+- [`layout_njask06gr5`](https://almartin82.github.io/njschooldata/reference/layout_njask06gr5.md)
+  : NJASK 2006 Grade 5 Fixed-Width File Layout
+- [`layout_njask07gr3`](https://almartin82.github.io/njschooldata/reference/layout_njask07gr3.md)
+  : NJASK 2007 Grade 3 Fixed-Width File Layout
+- [`layout_njask07gr5`](https://almartin82.github.io/njschooldata/reference/layout_njask07gr5.md)
+  : NJASK 2007 Grade 5 Fixed-Width File Layout
+- [`layout_njask09`](https://almartin82.github.io/njschooldata/reference/layout_njask09.md)
+  : NJASK 2009 Fixed-Width File Layout
+- [`layout_njask10`](https://almartin82.github.io/njschooldata/reference/layout_njask10.md)
+  : NJASK 2010 Fixed-Width File Layout
+- [`matric_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/matric_aggregate_calcs.md)
+  : Aggregate multiple postsecondary matriculation rows and produce
+  summary statistics
+- [`matric_column_order()`](https://almartin82.github.io/njschooldata/reference/matric_column_order.md)
+  : Matriculation column order
+- [`njsd_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_clear.md)
+  : Clear the session cache
+- [`njsd_cache_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_enable.md)
+  : Enable or disable the session cache
+- [`njsd_cache_enabled()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_enabled.md)
+  : Check if caching is enabled
+- [`njsd_cache_info()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_info.md)
+  : Get cache statistics and information
+- [`njsd_cache_list()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_list.md)
+  : List all cached items
+- [`njsd_cache_remove()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_remove.md)
+  : Remove a specific item from cache
+- [`njsd_progress_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_progress_enable.md)
+  : Enable or disable progress indicators
+- [`nwk_address_addendum`](https://almartin82.github.io/njschooldata/reference/nwk_address_addendum.md)
+  : Newark Address Addendum
+- [`pad_cds()`](https://almartin82.github.io/njschooldata/reference/pad_cds.md)
+  : Pad CDS fields
+- [`pad_grade()`](https://almartin82.github.io/njschooldata/reference/pad_grade.md)
+  : Pad grade level
+- [`pad_leading()`](https://almartin82.github.io/njschooldata/reference/pad_leading.md)
+  : Pad leading digits
+- [`parcc_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/parcc_aggregate_calcs.md)
+  : Aggregate multiple PARCC rows and produce summary statistics
+- [`parcc_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/parcc_percentile_rank.md)
+  : Assessment proficiency percentile rank
+- [`parcc_perf_level_counts()`](https://almartin82.github.io/njschooldata/reference/parcc_perf_level_counts.md)
+  : PARCC counts by performance level
+- [`percentile_rank()`](https://almartin82.github.io/njschooldata/reference/percentile_rank.md)
+  : Percentile Rank
+- [`percentile_rank_trend()`](https://almartin82.github.io/njschooldata/reference/percentile_rank_trend.md)
+  : Calculate percentile rank change over time
+- [`print(`*`<njsd_cache_info>`*`)`](https://almartin82.github.io/njschooldata/reference/print.njsd_cache_info.md)
+  : Print cache information
+- [`prog_codes`](https://almartin82.github.io/njschooldata/reference/prog_codes.md)
+  : NJ Program Codes
+- [`rc_numeric_cleaner()`](https://almartin82.github.io/njschooldata/reference/rc_numeric_cleaner.md)
+  : Report Card Numeric Data Cleaner
+- [`recover_suppressed_grate()`](https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.md)
+  : Recover suppressed district graduation rates from school data
+- [`sector_gap()`](https://almartin82.github.io/njschooldata/reference/sector_gap.md)
+  : Calculate performance gap between charter and district sectors
+- [`sector_percentile_comparison()`](https://almartin82.github.io/njschooldata/reference/sector_percentile_comparison.md)
+  : Compare percentile ranks across sectors
+- [`spec_pop_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.md)
+  : Aggregate multiple special populations rows and produce summary
+  statistics
+- [`sped_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.md)
+  : Aggregate multiple sped rows and produce summary statistics
+- [`sped_lookup_map`](https://almartin82.github.io/njschooldata/reference/sped_lookup_map.md)
+  : Special Education District Lookup Map
+- [`tges_name_cleaner()`](https://almartin82.github.io/njschooldata/reference/tges_name_cleaner.md)
+  : TGES name cleaner
+- [`tidy_budgetary_per_pupil_cost()`](https://almartin82.github.io/njschooldata/reference/tidy_budgetary_per_pupil_cost.md)
+  : Tidy Budgetary Per Pupil data frame
+- [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
+  : Tidy enrollment data
+- [`tidy_nj_assess()`](https://almartin82.github.io/njschooldata/reference/tidy_nj_assess.md)
+  : tidies NJ assessment data
+- [`tidy_parcc_subgroup()`](https://almartin82.github.io/njschooldata/reference/tidy_parcc_subgroup.md)
+  : Tidy PARCC subgroup names
+- [`tidy_tges_data()`](https://almartin82.github.io/njschooldata/reference/tidy_tges_data.md)
+  : Tidy list of TGES data frames
+- [`tidy_vitstat()`](https://almartin82.github.io/njschooldata/reference/tidy_vitstat.md)
+  : Tidy Vital Statistics
+- [`trim_whitespace()`](https://almartin82.github.io/njschooldata/reference/trim_whitespace.md)
+  : Trim whitespace
+- [`trunc2()`](https://almartin82.github.io/njschooldata/reference/trunc2.md)
+  : Truncate with configurable precision
+- [`validate_end_year()`](https://almartin82.github.io/njschooldata/reference/validate_end_year.md)
+  : Validate end_year parameter
+- [`validate_grade()`](https://almartin82.github.io/njschooldata/reference/validate_grade.md)
+  : Validate grade parameter
+- [`validate_grate_aggregation()`](https://almartin82.github.io/njschooldata/reference/validate_grate_aggregation.md)
+  : Validate graduation rate aggregation
+- [`verify_data_urls()`](https://almartin82.github.io/njschooldata/reference/verify_data_urls.md)
+  : Verify all configured URLs for a data type
+- [`ward_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/ward_enr_aggs.md)
+  : Aggregates enrollment data by ward
+- [`ward_gcount_aggs()`](https://almartin82.github.io/njschooldata/reference/ward_gcount_aggs.md)
+  : Aggregates grad counts data by ward
+- [`ward_grate_aggs()`](https://almartin82.github.io/njschooldata/reference/ward_grate_aggs.md)
+  : Aggregates grad rate data by ward
+- [`ward_matric_aggs()`](https://almartin82.github.io/njschooldata/reference/ward_matric_aggs.md)
+  : Aggregates matriculation data by ward
+- [`ward_parcc_aggs()`](https://almartin82.github.io/njschooldata/reference/ward_parcc_aggs.md)
+  : Aggregates assessment data by ward
+
+# Articles
+
+### Getting Started
+
+- [Getting Started with
+  njschooldata](https://almartin82.github.io/njschooldata/articles/getting-started.md):
