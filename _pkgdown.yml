@@ -121,6 +121,11 @@ reference:
       - starts_with("njsd_cache")
       - njsd_progress_enable
 
+  - title: All Other Functions
+    desc: Additional exported functions
+    contents:
+      - matches(".*")
+
 articles:
   - title: Getting Started
     navbar: ~
