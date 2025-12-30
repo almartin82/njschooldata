@@ -24,10 +24,9 @@ reference:
     desc: Functions for fetching and processing NJ school enrollment data
     contents:
       - fetch_enr
-      - get_raw_enr
-      - process_enr
+      - fetch_enr_cached
+      - fetch_enr_years
       - tidy_enr
-      - enr_aggs
       - enr_grade_aggs
       - id_enr_aggs
 
@@ -36,15 +35,19 @@ reference:
     contents:
       - fetch_parcc
       - fetch_all_parcc
-      - get_raw_parcc
-      - get_raw_sla
-      - process_parcc
-      - parcc_column_order
+      - fetch_all_parcc_with_progress
+      - fetch_njgpa
+      - fetch_all_njgpa
+      - fetch_access
+      - fetch_all_access
+      - parcc_aggregate_calcs
+      - parcc_percentile_rank
+      - parcc_perf_level_counts
+      - tidy_parcc_subgroup
 
   - title: Assessment Data (Legacy - NJASK/HSPA/GEPA)
     desc: Functions for historical NJ assessment data (2004-2014)
     contents:
-      - fetch_nj_assess
       - fetch_old_nj_assess
       - fetch_njask
       - fetch_hspa
@@ -56,19 +59,20 @@ reference:
     contents:
       - fetch_grad_rate
       - fetch_grad_count
-      - get_grad_rate
-      - get_grad_count
-      - tidy_grad_rate
-      - tidy_grad_count
-      - grate_column_order
-      - gcount_column_order
+      - fetch_6yr_grad_rate
+      - fetch_all_6yr_grad_rate
+      - id_grad_aggs
+      - grate_aggregate_calcs
+      - gcount_aggregate_calcs
+      - grate_percentile_rank
+      - grate_validation_summary
+      - recover_suppressed_grate
 
   - title: School/District Directories
     desc: Functions for school and district metadata
     contents:
       - get_school_directory
       - get_district_directory
-      - get_school_url
 
   - title: Charter Aggregations
     desc: Functions for charter school sector aggregations
@@ -82,34 +86,51 @@ reference:
     contents:
       - fetch_sped
       - fetch_reportcard_special_pop
-      - starts_with("sped_")
+      - fetch_chronic_absenteeism
+      - fetch_all_chronic_absenteeism
+      - sped_aggregate_calcs
+      - spec_pop_aggregate_calcs
 
   - title: Other Data Sources
     desc: Additional NJ DOE data functions
     contents:
       - fetch_msgp
       - fetch_tges
+      - fetch_many_tges
       - fetch_dfg
+      - fetch_postsecondary
       - get_one_rc_database
+      - get_merged_rc_database
+      - get_rc_databases
+      - get_dfg_districts
+      - get_dfg_a_districts
 
   - title: Utilities
     desc: Helper functions and lookups
     contents:
       - pad_grade
-      - abbrev
-      - parse_parcc_subj
-      - clean_matric_counts
+      - pad_cds
+      - pad_leading
+      - trim_whitespace
       - starts_with("enrich_")
+      - starts_with("validate_")
+
+  - title: Caching
+    desc: Cache management functions
+    contents:
+      - starts_with("njsd_cache")
+      - njsd_progress_enable
+
+  - title: All Other Functions
+    desc: Additional exported functions
+    contents:
+      - matches(".*")
 
 articles:
   - title: Getting Started
     navbar: ~
     contents:
       - getting-started
-  - title: Analysis Guides
-    contents:
-      - longitudinal-analysis
-      - data-dictionary
 
 authors:
   Andrew Martin:
