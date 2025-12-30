@@ -219,17 +219,21 @@ allpublic_enr_aggs <- function(df) {
     filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -368,17 +372,21 @@ allpublic_parcc_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -410,15 +418,16 @@ allpublic_parcc_aggs <- function(df) {
 #' @export
 
 charter_sector_grate_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 
@@ -495,17 +504,21 @@ allpublic_grate_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -537,15 +550,16 @@ allpublic_grate_aggs <- function(df) {
 #' @export
 
 charter_sector_gcount_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 
@@ -623,17 +637,21 @@ allpublic_gcount_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -739,17 +757,21 @@ allpublic_spec_pop_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   df <- df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
@@ -851,17 +873,20 @@ allpublic_sped_aggs <- function(df) {
       filter(n_charter_rows > 0)
    
    # add county_name, district_name by joining to charter_city
-   ch_join <- charter_city %>% 
-      select(host_district_id, host_district_name, host_county_name) %>%
+   # join by both county_id and district_id to handle districts with same ID
+   # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+   ch_join <- charter_city %>%
+      select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
       rename(
+         county_id = host_county_id,
          district_id = host_district_id,
          district_name = host_district_name,
          county_name = host_county_name
       ) %>%
       unique()
-   
+
    df <- df %>%
-      left_join(ch_join, by = 'district_id')
+      left_join(ch_join, by = c('county_id', 'district_id'))
    
    # give psuedo district names and codes
    # create appropriate boolean flag
@@ -891,15 +916,16 @@ allpublic_sped_aggs <- function(df) {
 #' @return df containing charter sector matriculation aggregates
 #' @export
 charter_sector_matric_aggs <- function(df) {
-  
-  # id hosts 
+
+  # id hosts
   df <- id_charter_hosts(df)
-  
+
   # charters are reported twice, one per school one per district
-  # take the district level only, in the hopes that NJ will 
+  # take the district level only, in the hopes that NJ will
   # someday fix this and report charter campuses
-  df <- df %>% 
-    filter(county_id == '80' & !district_id=='9999' & school_id == '999')
+  # Note: school_id '999' was used pre-2021, '888' is used in 2021+ data
+  df <- df %>%
+    filter(county_id == '80' & !district_id=='9999' & school_id %in% c('888', '999'))
   
   # group by - host city and summarize
   df <- df %>% 
@@ -982,17 +1008,20 @@ allpublic_matric_aggs <- function(df) {
     filter(n_charter_rows > 0)
   
   # add county_name, district_name by joining to charter_city
-  ch_join <- charter_city %>% 
-    select(host_district_id, host_district_name, host_county_name) %>%
+  # join by both county_id and district_id to handle districts with same ID
+  # in different counties (e.g., Franklin Township in Gloucester vs Somerset)
+  ch_join <- charter_city %>%
+    select(host_county_id, host_district_id, host_district_name, host_county_name) %>%
     rename(
+      county_id = host_county_id,
       district_id = host_district_id,
       district_name = host_district_name,
       county_name = host_county_name
     ) %>%
     unique()
-  
+
   agg_df <- agg_df %>%
-    left_join(ch_join, by = 'district_id')
+    left_join(ch_join, by = c('county_id', 'district_id'))
   
   # give psuedo district names and codes
   # create appropriate boolean flag
