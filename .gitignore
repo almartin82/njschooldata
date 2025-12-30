@@ -28,3 +28,6 @@ analysis/
 
 # Private research (MarGrady extension - not for public repo)
 research-private/
+
+# pkgdown site (built on GitHub Pages)
+docs/
