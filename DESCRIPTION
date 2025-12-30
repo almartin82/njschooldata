@@ -33,10 +33,15 @@ Imports:
     tidyr (>= 1.0.0)
 Suggests:
     covr,
+    geojsonio,
     knitr,
+    placement,
     rmarkdown,
     sf,
+    sp,
     testthat (>= 3.0.0)
+Remotes:
+    DerekYves/placement
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3

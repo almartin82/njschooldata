@@ -78,7 +78,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
                   nrow(), 6e5)
   
   expect_equal(nrow(fetch_2018), 651701)
-  expect_equal(ncol(fetch_2018), 21)
+  expect_equal(ncol(fetch_2018), 22)  # includes is_charter column
 })
 
 
@@ -96,7 +96,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
   
   expect_s3_class(fetch_2019, 'data.frame')
   expect_equal(nrow(fetch_2019), 652214)
-  expect_equal(ncol(fetch_2019), 21)
+  expect_equal(ncol(fetch_2019), 22)  # includes is_charter column
 })
 
 
@@ -586,3 +586,166 @@ test_that("2020+ data includes racial subgroups when tidy = TRUE", {
 
 # NOTE: 1999 enrollment data was removed from NJ DOE website.
 # Valid enrollment years are now 2000-2025.
+
+
+test_that("2024-25 enrollment data fetches correctly", {
+  enr_2025 <- fetch_enr(2025, tidy = TRUE)
+
+  # Newark total enrollment (verified against raw Excel file)
+  newark_total <- filter(enr_2025,
+                         district_id == '3570',
+                         school_id == '999',
+                         grade_level == "TOTAL",
+                         subgroup == "total_enrollment") %>%
+    pull(n_students)
+  expect_equal(newark_total, 43980)
+
+  # Newark racial subgroups
+  expect_equal(filter(enr_2025,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "black") %>%
+                 pull(n_students),
+               13906)
+
+  expect_equal(filter(enr_2025,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "hispanic") %>%
+                 pull(n_students),
+               26384)
+
+  expect_equal(filter(enr_2025,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "white") %>%
+                 pull(n_students),
+               2880)
+
+  # Jersey City verification
+  expect_equal(filter(enr_2025,
+                      district_id == '2390',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               25692)
+
+  expect_equal(filter(enr_2025,
+                      district_id == '2390',
+                      school_id == '999',
+                      subgroup == "asian") %>%
+                 pull(n_students),
+               4663)
+
+  # Princeton verification
+  expect_equal(filter(enr_2025,
+                      district_id == '4255',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               3787)
+
+  expect_equal(filter(enr_2025,
+                      district_id == '4255',
+                      school_id == '999',
+                      subgroup == "asian") %>%
+                 pull(n_students),
+               970)
+})
+
+
+test_that("2023-24 enrollment data fetches correctly", {
+  enr_2024 <- fetch_enr(2024, tidy = TRUE)
+
+  # Basic structure tests
+  expect_s3_class(enr_2024, 'data.frame')
+  expect_true(nrow(enr_2024) > 100000)  # Should have many rows
+  expect_true("district_id" %in% names(enr_2024))
+  expect_true("subgroup" %in% names(enr_2024))
+  expect_true("n_students" %in% names(enr_2024))
+
+  # Check Newark is present
+  newark_exists <- filter(enr_2024,
+                          district_id == '3570',
+                          school_id == '999',
+                          subgroup == "total_enrollment") %>%
+    nrow()
+  expect_true(newark_exists > 0)
+})
+
+
+test_that("2024-25 charter schools have correct enrollment", {
+  enr_2025 <- fetch_enr(2025, tidy = TRUE)
+
+  # North Star Academy Charter School (7320) - one of Newark's largest charters
+  north_star <- filter(enr_2025,
+                       district_id == '7320',
+                       school_id == '999',
+                       grade_level == "TOTAL",
+                       subgroup == "total_enrollment") %>%
+    pull(n_students)
+  expect_true(north_star > 2000)  # Known to be a large charter
+
+  # TEAM Academy Charter School (7325) - another large Newark charter
+  team <- filter(enr_2025,
+                 district_id == '7325',
+                 school_id == '999',
+                 grade_level == "TOTAL",
+                 subgroup == "total_enrollment") %>%
+    pull(n_students)
+  expect_true(team > 1000)  # Known to be a large charter
+})
+
+
+test_that("2024-25 enrollment has expected grade levels", {
+  enr_2025 <- fetch_enr(2025, tidy = TRUE)
+
+  # Check Newark has expected grade levels
+  newark_grades <- filter(enr_2025,
+                          district_id == '3570',
+                          school_id == '999',
+                          subgroup == "total_enrollment") %>%
+    pull(grade_level) %>%
+    unique()
+
+  # Should have Pre-K through 12 plus TOTAL
+  expect_true("TOTAL" %in% newark_grades)
+  expect_true("01" %in% newark_grades | "1" %in% newark_grades)  # First grade
+  expect_true("12" %in% newark_grades)  # Twelfth grade
+})
+
+
+test_that("2024-25 enrollment has all racial subgroups", {
+  enr_2025 <- fetch_enr(2025, tidy = TRUE)
+
+  # Check Newark has all expected racial subgroups
+  newark_subgroups <- filter(enr_2025,
+                             district_id == '3570',
+                             school_id == '999') %>%
+    pull(subgroup) %>%
+    unique()
+
+  expect_true("black" %in% newark_subgroups)
+  expect_true("hispanic" %in% newark_subgroups)
+  expect_true("white" %in% newark_subgroups)
+  expect_true("asian" %in% newark_subgroups)
+  expect_true("multiracial" %in% newark_subgroups)
+  expect_true("total_enrollment" %in% newark_subgroups)
+})
+
+
+test_that("historical enrollment data (2000-2010) still works", {
+  # Test year 2005 - middle of old format era
+  enr_2005 <- fetch_enr(2005, tidy = TRUE)
+
+  expect_s3_class(enr_2005, 'data.frame')
+  expect_true(nrow(enr_2005) > 10000)
+
+  # Check Newark exists in 2005
+  newark_2005 <- filter(enr_2005,
+                        district_id == '3570') %>%
+    nrow()
+  expect_true(newark_2005 > 0)
+})

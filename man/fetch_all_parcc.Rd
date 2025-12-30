@@ -4,18 +4,24 @@
 \alias{fetch_all_parcc}
 \title{Fetch all PARCC results}
 \usage{
-fetch_all_parcc()
+fetch_all_parcc(include_science = TRUE)
+}
+\arguments{
+\item{include_science}{Include science assessments (2019+)? Default is TRUE.}
 }
 \value{
-A data frame with all PARCC results
+A data frame with all PARCC/NJSLA results
 }
 \description{
-Convenience function to download and combine all PARCC results
-into single data frame.
+Convenience function to download and combine all PARCC/NJSLA results
+into single data frame, including ELA, Math, and Science assessments.
 }
 \examples{
 \dontrun{
 # Get all PARCC/NJSLA results (takes a while)
 all_parcc <- fetch_all_parcc()
+
+# Exclude science assessments
+all_parcc_no_sci <- fetch_all_parcc(include_science = FALSE)
 }
 }

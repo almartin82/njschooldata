@@ -10,7 +10,7 @@ parse_parcc_subj(x)
 \item{x}{a subject (function parameter subj)}
 }
 \value{
-the subject coded as ELA or MAT.
+the subject coded as ELA, MAT, or SC.
 }
 \description{
 Converts subject name to standardized PARCC code.

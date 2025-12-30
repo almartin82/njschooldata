@@ -109,28 +109,62 @@ parcc_column_order <- function(df) {
 #' @param end_year A school year. end_year is the end of the academic year - eg 2014-15
 #' school year is end_year 2015. Valid values are 2015-2024.
 #' @param grade Integer or character specifying grade level
-#' @param subj PARCC subject. c('ela' or 'math')
+#' @param subj PARCC subject. c('ela', 'math', or 'science')
 #' @return A tbl_df / data frame
 #' @keywords internal
 process_parcc <- function(parcc_file, end_year, grade, subj) {
 
-  parcc_name_vector <- c(
-    "county_code", "county_name",
-    "district_code", "district_name",
-    "school_code", "school_name",
-    "dfg",
-    "subgroup_type", "subgroup",
-    "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
-    "scale_score_mean", "pct_l1", "pct_l2", "pct_l3",
-    "pct_l4", "pct_l5"
-  )
+  subj <- tolower(subj)
 
-  # NJSLA
-  if (end_year >= 2019) {
-    # dfg dropped in 2018-19
-    names(parcc_file) <- parcc_name_vector[c(1:6, 8:18)]
-  } else {
+  # Different assessment types have different performance levels:
+  # - NJGPA: 2 levels (L1-L2) - pass/fail for graduation
+
+  # - Science: 4 levels (L1-L4)
+  # - ELA/Math: 5 levels (L1-L5)
+  is_science <- subj == "science"
+  is_njgpa <- grade == "GP"
+
+  if (is_njgpa) {
+    # NJGPA has only 2 performance levels (L1=not proficient, L2=proficient)
+    # Column structure similar to Science (no DFG)
+    parcc_name_vector <- c(
+      "county_code", "county_name",
+      "district_code", "district_name",
+      "school_code", "school_name",
+      "subgroup", "subgroup_type",
+      "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
+      "scale_score_mean", "pct_l1", "pct_l2"
+    )
     names(parcc_file) <- parcc_name_vector
+  } else if (is_science) {
+    # Science files have different column structure
+    parcc_name_vector <- c(
+      "county_code", "county_name",
+      "district_code", "district_name",
+      "school_code", "school_name",
+      "subgroup", "subgroup_type",
+      "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
+      "scale_score_mean", "pct_l1", "pct_l2", "pct_l3", "pct_l4"
+    )
+    names(parcc_file) <- parcc_name_vector
+  } else {
+    parcc_name_vector <- c(
+      "county_code", "county_name",
+      "district_code", "district_name",
+      "school_code", "school_name",
+      "dfg",
+      "subgroup_type", "subgroup",
+      "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
+      "scale_score_mean", "pct_l1", "pct_l2", "pct_l3",
+      "pct_l4", "pct_l5"
+    )
+
+    # NJSLA (2019+) dropped DFG column
+    if (end_year >= 2019) {
+      names(parcc_file) <- parcc_name_vector[c(1:6, 8:18)]
+    } else {
+      names(parcc_file) <- parcc_name_vector
+    }
   }
 
   # Make some numeric
@@ -139,38 +173,98 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   parcc_file$number_of_valid_scale_scores <- as.numeric(parcc_file$number_of_valid_scale_scores)
   parcc_file$pct_l1 <- as.numeric(parcc_file$pct_l1)
   parcc_file$pct_l2 <- as.numeric(parcc_file$pct_l2)
-  parcc_file$pct_l3 <- as.numeric(parcc_file$pct_l3)
-  parcc_file$pct_l4 <- as.numeric(parcc_file$pct_l4)
-  parcc_file$pct_l5 <- as.numeric(parcc_file$pct_l5)
   parcc_file$scale_score_mean <- as.numeric(parcc_file$scale_score_mean)
+
+  # Handle pct_l3, pct_l4, pct_l5 based on assessment type
+  # NJGPA: only L1-L2, Science: L1-L4, ELA/Math: L1-L5
+  if (is_njgpa) {
+    parcc_file$pct_l3 <- NA_real_
+    parcc_file$pct_l4 <- NA_real_
+    parcc_file$pct_l5 <- NA_real_
+  } else if (is_science) {
+    parcc_file$pct_l3 <- as.numeric(parcc_file$pct_l3)
+    parcc_file$pct_l4 <- as.numeric(parcc_file$pct_l4)
+    parcc_file$pct_l5 <- NA_real_
+  } else {
+    parcc_file$pct_l3 <- as.numeric(parcc_file$pct_l3)
+    parcc_file$pct_l4 <- as.numeric(parcc_file$pct_l4)
+    parcc_file$pct_l5 <- as.numeric(parcc_file$pct_l5)
+  }
 
   # New columns
   parcc_file$testing_year <- end_year
-  parcc_file$assess_name <- ifelse(end_year >= 2019, "NJSLA", "PARCC")
+  # Set assess_name based on assessment type
+  if (is_njgpa) {
+    parcc_file$assess_name <- "NJGPA"
+  } else {
+    parcc_file$assess_name <- ifelse(end_year >= 2019, "NJSLA", "PARCC")
+  }
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
-  parcc_file <- parcc_file %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(
-      proficient_above = ifelse(
-        is.finite(pct_l4),
-        sum(pct_l4 + pct_l5, na.rm = TRUE),
-        NA_real_
+
+  # Calculate proficient_above
+  # For NJGPA: L2 (L2 = proficient, only 2 levels)
+  # For Science: L3 + L4 (proficient = L3, advanced = L4)
+  # For ELA/Math: L4 + L5 (proficient = L4, advanced = L5)
+  if (is_njgpa) {
+    parcc_file <- parcc_file %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        proficient_above = ifelse(
+          is.finite(pct_l2),
+          pct_l2,
+          NA_real_
+        )
       )
-    )
+  } else if (is_science) {
+    parcc_file <- parcc_file %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        proficient_above = ifelse(
+          is.finite(pct_l3),
+          sum(pct_l3, pct_l4, na.rm = TRUE),
+          NA_real_
+        )
+      )
+  } else {
+    parcc_file <- parcc_file %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(
+        proficient_above = ifelse(
+          is.finite(pct_l4),
+          sum(pct_l4, pct_l5, na.rm = TRUE),
+          NA_real_
+        )
+      )
+  }
 
   # Remove random NA row that has the year and grade only
   parcc_file <- parcc_file %>% dplyr::filter(!is.na(county_code))
 
-  # Tag subsets
-  parcc_file$is_state <- parcc_file$county_code == "STATE"
-  parcc_file$is_dfg <- parcc_file$county_code == "DFG"
+  # Remove footer/garbage rows (Excel footnotes that got included as data)
+  parcc_file <- parcc_file %>%
+    dplyr::filter(
+      !grepl("suppressed|end of worksheet", county_code, ignore.case = TRUE)
+    )
+
+  # Tag subsets (case-insensitive for state since 2015 uses "STATE", 2019+ uses "State")
+  parcc_file$is_state <- toupper(parcc_file$county_code) == "STATE"
+  parcc_file$is_dfg <- toupper(parcc_file$county_code) == "DFG"
   parcc_file$is_district <- is.na(parcc_file$school_code) & !is.na(parcc_file$district_code)
   parcc_file$is_school <- !is.na(parcc_file$school_code)
   parcc_file$is_charter <- parcc_file$county_code == "80"
 
   parcc_file$is_charter_sector <- FALSE
   parcc_file$is_allpublic <- FALSE
+
+  # Normalize state-level records to use standard codes
+  # NJ DOE uses "STATE"/"State" but package convention is county_id="99"
+  parcc_file <- parcc_file %>%
+    dplyr::mutate(
+      county_code = ifelse(is_state, "99", county_code),
+      district_code = ifelse(is_state, "9999", district_code),
+      school_code = ifelse(is_state, "999", school_code)
+    )
 
   # Use district_id, etc
   parcc_file <- parcc_file %>%

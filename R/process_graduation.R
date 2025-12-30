@@ -65,8 +65,9 @@ process_grate <- function(df, end_year) {
     "FOUR_YR_GRAD_RATE",
     "Graduation Rate"
   )] <- "grad_rate"
-  names(df)[names(df) %in% c("Four Year Adjusted Cohort Count", "FOUR_YR_ADJ_COHORT_COUNT")] <- "cohort_count"
-  names(df)[names(df) %in% c("Four Year Graduates Count", "GRADUATED_COUNT")] <- "graduated_count"
+  # 2021+ files use "Cohort Count" and "Graduated" instead of full names
+  names(df)[names(df) %in% c("Four Year Adjusted Cohort Count", "FOUR_YR_ADJ_COHORT_COUNT", "Cohort Count")] <- "cohort_count"
+  names(df)[names(df) %in% c("Four Year Graduates Count", "GRADUATED_COUNT", "Graduated")] <- "graduated_count"
 
   names(df) <- names(df) %>% tolower()
 
@@ -88,7 +89,8 @@ process_grate <- function(df, end_year) {
         dplyr::mutate(
           {{ i }} := as.numeric(
             dplyr::if_else(
-              stringr::str_detect(.data[[i]], "\\*|N|-"),
+              # Match suppressed data indicators: *, N, -, <, > (e.g., "<10%", ">90%")
+              stringr::str_detect(.data[[i]], "\\*|N|-|<|>"),
               NA_character_,
               .data[[i]]
             )

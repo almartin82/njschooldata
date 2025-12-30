@@ -25,3 +25,6 @@ njschooldata_*.tar.gz
 
 # Analysis files (not part of package)
 analysis/
+
+# Private research (MarGrady extension - not for public repo)
+research-private/
