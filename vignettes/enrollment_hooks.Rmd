@@ -1,0 +1,331 @@
+---
+title: "10 Insights from New Jersey School Enrollment Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{10 Insights from New Jersey School Enrollment Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 5
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+theme_set(theme_minimal(base_size = 14))
+```
+
+This vignette explores New Jersey's public school enrollment data, surfacing key trends and demographic patterns across 26 years of data (1999-2025).
+
+---
+
+## 1. New Jersey's enrollment peaked and plateaued
+
+New Jersey's public school enrollment peaked around 1.4 million students in the mid-2010s and has been gradually declining since. The Garden State follows national demographic trends.
+
+```{r statewide-trend}
+enr <- purrr::map_df(c(2000, 2005, 2010, 2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+
+state_totals <- enr |>
+  filter(is_state, subgroup == "total_enrollment", program_code == "55") |>
+  select(end_year, n_students) |>
+  mutate(change = n_students - lag(n_students),
+         pct_change = round(change / lag(n_students) * 100, 2))
+
+state_totals
+```
+
+```{r statewide-chart}
+ggplot(state_totals, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.2, color = "#003366") +
+  geom_point(size = 3, color = "#003366") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "New Jersey Public School Enrollment (2000-2025)",
+    subtitle = "Peaked in mid-2010s, now in gradual decline",
+    x = "School Year (ending)",
+    y = "Total Enrollment"
+  )
+```
+
+---
+
+## 2. Newark leads, but urban giants are shrinking
+
+Newark is New Jersey's largest school district, but it and other urban centers have seen significant enrollment declines as families move to suburbs or leave the state.
+
+```{r top-districts}
+enr_2025 <- fetch_enr(2025, tidy = TRUE)
+
+top_districts <- enr_2025 |>
+  filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
+  arrange(desc(n_students)) |>
+  head(10) |>
+  select(district_name, n_students)
+
+top_districts
+```
+
+```{r top-districts-chart}
+top_districts |>
+  mutate(district_name = forcats::fct_reorder(district_name, n_students)) |>
+  ggplot(aes(x = n_students, y = district_name, fill = district_name)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(n_students)), hjust = -0.1, size = 3.5) +
+  scale_x_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
+  scale_fill_viridis_d(option = "mako", begin = 0.2, end = 0.8) +
+  labs(
+    title = "Top 10 New Jersey Districts by Enrollment (2025)",
+    subtitle = "Newark leads, followed by Jersey City and Paterson",
+    x = "Number of Students",
+    y = NULL
+  )
+```
+
+---
+
+## 3. COVID hit hard, recovery is slow
+
+The 2020-21 school year saw sharp enrollment drops as families pulled students for homeschooling or private options. Recovery has been gradual.
+
+```{r covid-impact}
+covid_enr <- purrr::map_df(2019:2023, ~fetch_enr(.x, tidy = TRUE))
+
+covid_changes <- covid_enr |>
+  filter(is_district, subgroup == "total_enrollment", program_code == "55",
+         end_year %in% c(2020, 2021)) |>
+  pivot_wider(names_from = end_year, values_from = n_students) |>
+  mutate(pct_change = round((`2021` / `2020` - 1) * 100, 1)) |>
+  filter(!is.na(pct_change)) |>
+  arrange(pct_change) |>
+  head(10) |>
+  select(district_name, `2020`, `2021`, pct_change)
+
+covid_changes
+```
+
+---
+
+## 4. New Jersey's demographics are shifting
+
+New Jersey has become increasingly diverse. Hispanic enrollment has grown substantially, while white enrollment has declined over two decades.
+
+```{r demographics}
+demographics <- enr_2025 |>
+  filter(is_state, program_code == "55",
+         subgroup %in% c("white", "black", "hispanic", "asian", "american_indian", "pacific_islander")) |>
+  mutate(pct = round(n_students / sum(n_students, na.rm = TRUE) * 100, 1)) |>
+  select(subgroup, n_students, pct) |>
+  arrange(desc(n_students))
+
+demographics
+```
+
+```{r demographics-chart}
+demographics |>
+  mutate(subgroup = forcats::fct_reorder(subgroup, n_students)) |>
+  ggplot(aes(x = n_students, y = subgroup, fill = subgroup)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste0(pct, "%")), hjust = -0.1) +
+  scale_x_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "New Jersey Student Demographics (2025)",
+    subtitle = "An increasingly diverse student population",
+    x = "Number of Students",
+    y = NULL
+  )
+```
+
+---
+
+## 5. Kindergarten numbers signal future decline
+
+Kindergarten enrollment is the leading indicator. New Jersey's K numbers have been soft, suggesting continued enrollment decline ahead.
+
+```{r k-vs-12}
+grade_enr <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE))
+
+grade_trends <- grade_enr |>
+  filter(is_state, subgroup == "total_enrollment",
+         program_code %in% c("14", "26")) |>
+  select(end_year, program_code, n_students) |>
+  mutate(grade = ifelse(program_code == "14", "K", "12")) |>
+  pivot_wider(names_from = grade, values_from = n_students)
+
+grade_trends
+```
+
+```{r k-trend-chart}
+grade_enr |>
+  filter(is_state, subgroup == "total_enrollment",
+         program_code %in% c("14", "26")) |>
+  mutate(grade = ifelse(program_code == "14", "K", "12")) |>
+  ggplot(aes(x = end_year, y = n_students, color = grade)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_color_manual(values = c("K" = "#E69F00", "12" = "#56B4E9")) +
+  labs(
+    title = "Kindergarten vs 12th Grade Enrollment",
+    subtitle = "Kindergarten declines signal future enrollment drops",
+    x = "School Year",
+    y = "Enrollment",
+    color = "Grade"
+  )
+```
+
+---
+
+## 6. Charter schools continue to grow
+
+Charter school enrollment has expanded significantly, now serving a meaningful share of New Jersey students, particularly in urban areas.
+
+```{r charter-growth}
+# Charter districts typically have "CHARTER" in their name
+charter_enr <- enr_2025 |>
+  filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
+  mutate(is_charter = grepl("CHARTER", district_name, ignore.case = TRUE)) |>
+  group_by(is_charter) |>
+  summarize(
+    students = sum(n_students, na.rm = TRUE),
+    districts = n()
+  )
+
+charter_enr
+```
+
+---
+
+## 7. Regional disparities are stark
+
+North Jersey, Central Jersey, and South Jersey show different enrollment patterns. Urban decline contrasts with suburban stability.
+
+```{r regional}
+# Define regions by county code
+# North: 03, 07, 13, 17, 25, 31, 37 (Bergen, Essex, Hudson, Middlesex, Morris, Passaic, Sussex)
+# Central: 11, 21, 23, 33, 35 (Hunterdon, Mercer, Monmouth, Somerset, Union)
+# South: 01, 05, 09, 15, 29, 33 (Atlantic, Burlington, Camden, Cumberland, Gloucester, Ocean, Salem)
+
+regional <- enr_2025 |>
+  filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
+  mutate(region = case_when(
+    county_id %in% c("03", "07", "13", "17", "25", "31", "37", "41") ~ "North",
+    county_id %in% c("11", "21", "23", "35", "39") ~ "Central",
+    TRUE ~ "South"
+  )) |>
+  group_by(region) |>
+  summarize(
+    students = sum(n_students, na.rm = TRUE),
+    districts = n()
+  ) |>
+  mutate(pct = round(students / sum(students) * 100, 1))
+
+regional
+```
+
+```{r regional-chart}
+regional |>
+  mutate(region = factor(region, levels = c("North", "Central", "South"))) |>
+  ggplot(aes(x = region, y = students, fill = region)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste0(scales::comma(students), "\n(", pct, "%)")),
+            vjust = -0.2, size = 4) +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
+  scale_fill_manual(values = c("North" = "#003366", "Central" = "#0066CC", "South" = "#66B2FF")) +
+  labs(
+    title = "Enrollment by Region (2025)",
+    subtitle = "North Jersey has the largest student population",
+    x = NULL,
+    y = "Number of Students"
+  )
+```
+
+---
+
+## 8. Abbott districts face unique challenges
+
+New Jersey's 31 Abbott districts (now known as SDA districts) receive special state funding but continue to see enrollment changes.
+
+```{r abbott-districts}
+# Major Abbott districts
+abbott_names <- c("NEWARK", "JERSEY CITY", "PATERSON", "ELIZABETH", "TRENTON", "CAMDEN")
+
+abbott_enr <- enr_2025 |>
+  filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
+  filter(grepl(paste(abbott_names, collapse = "|"), district_name, ignore.case = TRUE)) |>
+  arrange(desc(n_students)) |>
+  select(district_name, n_students) |>
+  head(10)
+
+abbott_enr
+```
+
+---
+
+## 9. Pre-K expansion is working
+
+New Jersey's investment in universal pre-K has led to significant growth in early childhood enrollment, particularly in Abbott districts.
+
+```{r prek-growth}
+prek_enr <- purrr::map_df(c(2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+
+prek_trends <- prek_enr |>
+  filter(is_state, subgroup == "total_enrollment",
+         program_code %in% c("10", "11")) |>  # Half-day and full-day Pre-K
+  group_by(end_year) |>
+  summarize(prek_students = sum(n_students, na.rm = TRUE))
+
+prek_trends
+```
+
+---
+
+## 10. The graduation pipeline shows promise
+
+Despite enrollment declines, New Jersey's graduation rates have improved, showing that fewer students doesn't mean lower quality education.
+
+```{r graduation-pipeline}
+pipeline <- enr_2025 |>
+  filter(is_district, subgroup == "total_enrollment",
+         program_code %in% c("22", "26")) |>  # Grade 9 and Grade 12
+  pivot_wider(names_from = program_code, values_from = n_students,
+              names_prefix = "grade_") |>
+  mutate(ratio = round(grade_26 / grade_22 * 100, 1)) |>
+  filter(grade_22 >= 100) |>
+  arrange(desc(ratio)) |>
+  head(10) |>
+  select(district_name, grade_22, grade_26, ratio)
+
+pipeline
+```
+
+---
+
+## Summary
+
+New Jersey's school enrollment data reveals:
+
+- **Gradual decline**: Enrollment peaked in the mid-2010s and continues to drop
+- **Urban challenges**: Newark and other cities face the steepest declines
+- **Increasing diversity**: Hispanic enrollment growth is reshaping demographics
+- **Charter expansion**: Alternative schools continue to attract students
+- **Regional differences**: North Jersey dominates, but all regions are shifting
+
+These patterns shape school funding formulas and facility planning across the Garden State.
+
+---
+
+*Data sourced from the New Jersey Department of Education [Data Center](https://www.nj.gov/education/doedata/).*
