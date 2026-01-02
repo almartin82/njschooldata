@@ -5,10 +5,8 @@ Core functions wrapping njschooldata R package via rpy2.
 import pandas as pd
 from rpy2 import robjects
 from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
 from rpy2.robjects.packages import importr
-
-# Activate pandas conversion
-pandas2ri.activate()
 
 # Import the R package (lazy load)
 _pkg = None
@@ -44,8 +42,9 @@ def fetch_enr(end_year: int) -> pd.DataFrame:
     >>> df.head()
     """
     pkg = _get_pkg()
-    r_df = pkg.fetch_enr(end_year)
-    return pandas2ri.rpy2py(r_df)
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_enr(end_year)
+        return pandas2ri.rpy2py(r_df)
 
 
 def fetch_enr_multi(end_years: list[int]) -> pd.DataFrame:
@@ -68,9 +67,10 @@ def fetch_enr_multi(end_years: list[int]) -> pd.DataFrame:
     >>> df = nj.fetch_enr_multi([2020, 2021, 2022])
     """
     pkg = _get_pkg()
-    r_years = robjects.IntVector(end_years)
-    r_df = pkg.fetch_enr_multi(r_years)
-    return pandas2ri.rpy2py(r_df)
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_years = robjects.IntVector(end_years)
+        r_df = pkg.fetch_enr_multi(r_years)
+        return pandas2ri.rpy2py(r_df)
 
 
 def tidy_enr(df: pd.DataFrame) -> pd.DataFrame:
@@ -94,9 +94,10 @@ def tidy_enr(df: pd.DataFrame) -> pd.DataFrame:
     >>> tidy = nj.tidy_enr(df)
     """
     pkg = _get_pkg()
-    r_df = pandas2ri.py2rpy(df)
-    r_result = pkg.tidy_enr(r_df)
-    return pandas2ri.rpy2py(r_result)
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pandas2ri.py2rpy(df)
+        r_result = pkg.tidy_enr(r_df)
+        return pandas2ri.rpy2py(r_result)
 
 
 def get_available_years() -> dict:
@@ -115,8 +116,9 @@ def get_available_years() -> dict:
     >>> print(f"Data available from {years['min_year']} to {years['max_year']}")
     """
     pkg = _get_pkg()
-    r_result = pkg.get_available_years()
-    return {
-        "min_year": int(r_result.rx2("min_year")[0]),
-        "max_year": int(r_result.rx2("max_year")[0]),
-    }
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_result = pkg.get_available_years()
+        return {
+            "min_year": int(r_result.rx2("min_year")[0]),
+            "max_year": int(r_result.rx2("max_year")[0]),
+        }
