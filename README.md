@@ -11,11 +11,11 @@ Fetch and analyze New Jersey public school enrollment data from NJDOE.
 remotes::install_github("almartin82/njschooldata")
 ```
 
-## Part of the 50 State Schooldata Family
+## Part of the State Schooldata Project
 
-This package is part of a family of R packages providing school enrollment data for all 50 US states.
+A simple, consistent interface for accessing state-published school data in Python and R.
 
-**All packages:** [github.com/almartin82](https://github.com/almartin82?tab=repositories&q=schooldata)
+**All 50 state packages:** [github.com/almartin82](https://github.com/almartin82?tab=repositories&q=schooldata)
 
 ## Author
 
