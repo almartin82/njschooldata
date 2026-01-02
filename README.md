@@ -1,7 +1,10 @@
 # njschooldata
 
+<!-- badges: start -->
 [![R-CMD-check](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml)
 [![Python Tests](https://github.com/almartin82/njschooldata/actions/workflows/python-test.yaml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/python-test.yaml)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
 
 Fetch and analyze New Jersey school enrollment data from [NJDOE](https://www.nj.gov/education/doedata/) in R or Python.
 
