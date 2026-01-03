@@ -1,6 +1,7 @@
 """Tests for graduation functions."""
 
 import pytest
+import pandas as pd
 
 
 class TestFetchGradRateSignature:

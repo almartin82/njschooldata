@@ -1,6 +1,7 @@
 """Tests for assessment functions."""
 
 import pytest
+import pandas as pd
 
 
 class TestFetchParccSignature:

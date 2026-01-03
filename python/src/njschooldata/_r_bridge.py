@@ -7,9 +7,7 @@ import pandas as pd
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
-
-# Enable automatic pandas conversion
-pandas2ri.activate()
+from rpy2.robjects.conversion import localconverter
 
 # Lazy initialization of R package
 _njschooldata_r = None
@@ -34,9 +32,11 @@ def r_to_pandas(func: Callable) -> Callable:
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> pd.DataFrame:
         result = func(*args, **kwargs)
-        if hasattr(result, "to_pandas"):
-            return result.to_pandas()
-        return pandas2ri.rpy2py(result)
+        # Use localconverter context for pandas conversion
+        with localconverter(ro.default_converter + pandas2ri.converter):
+            if hasattr(result, "to_pandas"):
+                return result.to_pandas()
+            return pandas2ri.rpy2py(result)
     return wrapper
 
 
