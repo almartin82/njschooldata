@@ -131,6 +131,10 @@ articles:
     navbar: ~
     contents:
       - getting-started
+  - title: Data Insights
+    navbar: ~
+    contents:
+      - nj-enrollment-insights
 
 authors:
   Andrew Martin:
