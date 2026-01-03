@@ -169,11 +169,11 @@ alg1_2024 <- fetch_parcc(
 
 ### Legacy Assessments (2004-2014)
 
-For historical data, use `fetch_nj_assess()`:
+For historical data, use `fetch_old_nj_assess()`:
 
 ```{r legacy-assessment}
 # Get 2010 Grade 5 NJASK results
-njask_2010 <- fetch_nj_assess(
+njask_2010 <- fetch_old_nj_assess(
   end_year = 2010,
   grade = 5,
   tidy = TRUE
@@ -226,7 +226,7 @@ names(schools)
 |-----------|----------|-----------------|
 | Enrollment | `fetch_enr()` | 1999-2025 |
 | NJSLA/PARCC | `fetch_parcc()` | 2015-2024 |
-| NJASK | `fetch_nj_assess()` | 2004-2014 |
+| NJASK | `fetch_old_nj_assess()` | 2004-2014 |
 | Graduation Rates | `fetch_grad_rate()` | 2011-2024 |
 | Graduation Counts | `fetch_grad_count()` | 2012-2024 |
 
