@@ -31,7 +31,7 @@ This package solves that problem by:
 
 Install the package from GitHub:
 
-```{r installation}
+```{r installation, eval = FALSE}
 # Using remotes (recommended)
 remotes::install_github("almartin82/njschooldata")
 
