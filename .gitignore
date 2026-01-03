@@ -31,3 +31,19 @@ research-private/
 
 # pkgdown site (built on GitHub Pages)
 docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+*.so
+.venv/
+venv/
