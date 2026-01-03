@@ -1,6 +1,7 @@
 """Tests for directory functions."""
 
 import pytest
+import pandas as pd
 
 
 class TestGetSchoolDirectorySignature:
