@@ -1,6 +1,6 @@
 # njschooldata
 
-A simple interface for accessing NJ DOE school data in R
+A simple interface for accessing NJ DOE school data in **R and Python**
 
 > It is often said that 80% of data analysis is spent on the process of
 > cleaning and preparing the data (Dasu and Johnson 2003). Data
@@ -24,6 +24,8 @@ pipeable interface into NJ state education data.
 
 ## Installation
 
+### R
+
 ``` r
 # Install from GitHub using remotes (recommended)
 remotes::install_github("almartin82/njschooldata")
@@ -32,6 +34,19 @@ remotes::install_github("almartin82/njschooldata")
 devtools::install_github("almartin82/njschooldata")
 
 library(njschooldata)
+```
+
+### Python
+
+Python bindings require R and the njschooldata R package to be installed
+first.
+
+``` bash
+# Install R package first
+Rscript -e "remotes::install_github('almartin82/njschooldata')"
+
+# Install Python bindings
+pip install git+https://github.com/almartin82/njschooldata.git#subdirectory=python
 ```
 
 ## Data Coverage
@@ -50,7 +65,37 @@ COVID-19.
 
 ## Usage
 
-### Enrollment Data
+### R
+
+``` r
+# Get 2024 enrollment data
+enr_2024 <- fetch_enr(2024)
+
+# Get assessment data
+math_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 4, subj = 'math')
+
+# Get school directory
+schools <- get_school_directory()
+```
+
+### Python
+
+``` python
+import njschooldata as njsd
+
+# Get 2024 enrollment data
+enr_2024 = njsd.fetch_enr(2024)
+
+# Get assessment data
+math_2023 = njsd.fetch_parcc(2023, 4, 'math')
+
+# Get school directory
+schools = njsd.get_school_directory()
+```
+
+### More R Examples
+
+#### Enrollment Data
 
 ``` r
 # Get 2024 enrollment data
