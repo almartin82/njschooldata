@@ -79,6 +79,13 @@
 <p>Session caching is enabled by default to avoid hitting NJ DOE bot protection: - <code><a href="reference/njsd_cache_info.html">njsd_cache_info()</a></code> - view cache status - <code><a href="reference/njsd_cache_clear.html">njsd_cache_clear()</a></code> - clear cache - <code>njsd_cache_enable(FALSE)</code> - disable caching</p>
 <p>The cache validates responses and will NOT cache network errors or bot protection pages.</p>
 </div>
+<div class="section level2">
+<h2 id="pkgdown--github-pages">pkgdown / GitHub Pages<a class="anchor" aria-label="anchor" href="#pkgdown--github-pages"></a></h2>
+<p>Site: <a href="https://almartin82.github.io/njschooldata/" class="uri">https://almartin82.github.io/njschooldata/</a></p>
+<p><strong>Setup:</strong> - GitHub Action (<code>.github/workflows/pkgdown.yml</code>) builds on push to master - Deploys to <code>gh-pages</code> branch automatically - <code>docs/</code> is gitignored on master (build artifacts only)</p>
+<p><strong>Configuration:</strong> - <code>_pkgdown.yml</code> - site config, reference sections, articles - All exported functions must be listed in reference sections (use <code>matches(".*")</code> as catch-all) - Vignettes in <code>vignettes/</code> appear as articles</p>
+<p><strong>To enable on a new repo:</strong> 1. Add workflow file and <code>_pkgdown.yml</code> 2. Push to master 3. Enable GitHub Pages via API or Settings: <code>bash    gh api repos/OWNER/REPO/pages -X POST --input - &lt;&lt;EOF    {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}    EOF</code></p>
+</div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
