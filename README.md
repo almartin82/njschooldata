@@ -3,9 +3,10 @@
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml)
+[![Python Tests](https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml)
 <!-- badges: end -->
 
-A simple interface for accessing NJ DOE school data in R
+A simple interface for accessing NJ DOE school data in **R and Python**
 
 > It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data (Dasu and Johnson 2003). Data preparation is not just a first step, but must be
 repeated many over the course of analysis as new problems come to light or new data is
@@ -19,6 +20,8 @@ Unfortunately, those files are a bit of a pain to work with, especially if you'r
 
 ## Installation
 
+### R
+
 ```R
 # Install from GitHub using remotes (recommended)
 remotes::install_github("almartin82/njschooldata")
@@ -27,6 +30,18 @@ remotes::install_github("almartin82/njschooldata")
 devtools::install_github("almartin82/njschooldata")
 
 library(njschooldata)
+```
+
+### Python
+
+Python bindings require R and the njschooldata R package to be installed first.
+
+```bash
+# Install R package first
+Rscript -e "remotes::install_github('almartin82/njschooldata')"
+
+# Install Python bindings
+pip install git+https://github.com/almartin82/njschooldata.git#subdirectory=python
 ```
 
 ## Data Coverage
@@ -44,7 +59,37 @@ library(njschooldata)
 
 ## Usage
 
-### Enrollment Data
+### R
+
+```R
+# Get 2024 enrollment data
+enr_2024 <- fetch_enr(2024)
+
+# Get assessment data
+math_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 4, subj = 'math')
+
+# Get school directory
+schools <- get_school_directory()
+```
+
+### Python
+
+```python
+import njschooldata as njsd
+
+# Get 2024 enrollment data
+enr_2024 = njsd.fetch_enr(2024)
+
+# Get assessment data
+math_2023 = njsd.fetch_parcc(2023, 4, 'math')
+
+# Get school directory
+schools = njsd.get_school_directory()
+```
+
+### More R Examples
+
+#### Enrollment Data
 
 ```R
 # Get 2024 enrollment data
