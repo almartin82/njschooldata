@@ -36,6 +36,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
+    <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
   </ul>
 </li>
       </ul>
@@ -57,12 +58,98 @@
 <!-- badges: start -->
 
 <p>A simple interface for accessing NJ DOE school data in <strong>R and Python</strong></p>
-<blockquote>
-<p>It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data (Dasu and Johnson 2003). Data preparation is not just a first step, but must be repeated many over the course of analysis as new problems come to light or new data is collected. -<a href="http://vita.had.co.nz/papers/tidy-data.pdf" class="external-link">@hadley</a></p>
-</blockquote>
-<p>The State of NJ has been posting raw, fixed width text files with all the assessment results for NJ schools/districts for well over a decade now. <strong>That’s great!</strong></p>
-<p>Unfortunately, those files are a bit of a pain to work with, especially if you’re trying to work with multiple grades, or multiple years of data. Layouts change; file paths aren’t consistent, etc.</p>
-<p><code>njschooldata</code> attempts to simplify the task of working with NJ education data by providing a concise and consistent interface for reading state files into R. We make heavy use of the <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a> and aim to create a consistent, pipeable interface into NJ state education data.</p>
+<p><strong>25+ years of enrollment data. 1.4 million students. 600+ districts. Here are 10 stories in the data…</strong></p>
+<hr>
+<div class="section level3">
+<h3 id="id_1-new-jersey-educates-14-million-students">1. New Jersey Educates 1.4 Million Students<a class="anchor" aria-label="anchor" href="#id_1-new-jersey-educates-14-million-students"></a>
+</h3>
+<p>Statewide public school enrollment has held relatively steady over the past decade.</p>
+<div class="float">
+<img src="reference/figures/statewide-enrollment.png" alt="Statewide Enrollment"><div class="figcaption">Statewide Enrollment</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_2-newark-leads-the-charter-school-revolution">2. Newark Leads the Charter School Revolution<a class="anchor" aria-label="anchor" href="#id_2-newark-leads-the-charter-school-revolution"></a>
+</h3>
+<p>Over 30% of Newark students now attend charter schools - one of the highest rates in the nation.</p>
+<div class="float">
+<img src="reference/figures/newark-charter.png" alt="Newark Charter"><div class="figcaption">Newark Charter</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_3-hispanic-students-are-the-fastest-growing-group">3. Hispanic Students are the Fastest-Growing Group<a class="anchor" aria-label="anchor" href="#id_3-hispanic-students-are-the-fastest-growing-group"></a>
+</h3>
+<p>Hispanic enrollment has grown from 20% to nearly 30% of all NJ students.</p>
+<div class="float">
+<img src="reference/figures/hispanic-growth.png" alt="Hispanic Growth"><div class="figcaption">Hispanic Growth</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_4-the-big-three-newark-jersey-city-and-paterson">4. The Big Three: Newark, Jersey City, and Paterson<a class="anchor" aria-label="anchor" href="#id_4-the-big-three-newark-jersey-city-and-paterson"></a>
+</h3>
+<p>Combined enrollment of over 100,000 students - nearly 8% of the state.</p>
+<div class="float">
+<img src="reference/figures/big-three.png" alt="Big Three"><div class="figcaption">Big Three</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_5-covid-hit-kindergarten-hard">5. COVID Hit Kindergarten Hard<a class="anchor" aria-label="anchor" href="#id_5-covid-hit-kindergarten-hard"></a>
+</h3>
+<p>New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn’t fully recovered.</p>
+<div class="float">
+<img src="reference/figures/covid-kindergarten.png" alt="COVID Kindergarten"><div class="figcaption">COVID Kindergarten</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_6-economic-disadvantage-varies-widely">6. Economic Disadvantage Varies Widely<a class="anchor" aria-label="anchor" href="#id_6-economic-disadvantage-varies-widely"></a>
+</h3>
+<p>Some districts approach 100% economically disadvantaged while affluent suburbs have under 5%.</p>
+<div class="float">
+<img src="reference/figures/econ-disadvantage.png" alt="Economic Disadvantage"><div class="figcaption">Economic Disadvantage</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_7-white-student-share-has-declined-dramatically">7. White Student Share Has Declined Dramatically<a class="anchor" aria-label="anchor" href="#id_7-white-student-share-has-declined-dramatically"></a>
+</h3>
+<p>NJ public schools are now majority-minority.</p>
+<div class="float">
+<img src="reference/figures/demographic-shift.png" alt="Demographic Shift"><div class="figcaption">Demographic Shift</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_8-english-learners-concentrated-in-urban-areas">8. English Learners Concentrated in Urban Areas<a class="anchor" aria-label="anchor" href="#id_8-english-learners-concentrated-in-urban-areas"></a>
+</h3>
+<p>Some districts have over 20% ELL students, while most suburban districts have under 1%.</p>
+<div class="float">
+<img src="reference/figures/ell-concentration.png" alt="ELL Concentration"><div class="figcaption">ELL Concentration</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_9-top-10-districts-educate-20-of-all-students">9. Top 10 Districts Educate 20% of All Students<a class="anchor" aria-label="anchor" href="#id_9-top-10-districts-educate-20-of-all-students"></a>
+</h3>
+<p>Just 10 out of 600+ districts serve one-fifth of all NJ students.</p>
+<div class="float">
+<img src="reference/figures/top-10-districts.png" alt="Top 10 Districts"><div class="figcaption">Top 10 Districts</div>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="id_10-special-education-rates-remain-steady">10. Special Education Rates Remain Steady<a class="anchor" aria-label="anchor" href="#id_10-special-education-rates-remain-steady"></a>
+</h3>
+<p>About 17-18% of NJ students receive special education services - among the highest rates nationally.</p>
+<div class="float">
+<img src="reference/figures/special-education.png" alt="Special Education"><div class="figcaption">Special Education</div>
+</div>
+<hr>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -72,10 +159,6 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub using remotes (recommended)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"almartin82/njschooldata"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Or using devtools</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"almartin82/njschooldata"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -90,63 +173,264 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="data-coverage">Data Coverage<a class="anchor" aria-label="anchor" href="#data-coverage"></a>
+<h2 id="nj-doe-data-coverage">NJ DOE Data Coverage<a class="anchor" aria-label="anchor" href="#nj-doe-data-coverage"></a>
 </h2>
+<div class="section level3">
+<h3 id="supported-data-sources">Supported Data Sources<a class="anchor" aria-label="anchor" href="#supported-data-sources"></a>
+</h3>
 <table class="table">
+<colgroup>
+<col width="30%">
+<col width="27%">
+<col width="19%">
+<col width="22%">
+</colgroup>
 <thead><tr class="header">
 <th>Data Type</th>
-<th>Years Available</th>
 <th>Function</th>
+<th>Years</th>
+<th>Status</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>Enrollment</td>
-<td>1999-2025</td>
+<td><strong>Enrollment</strong></td>
 <td><code><a href="reference/fetch_enr.html">fetch_enr()</a></code></td>
+<td>2000-2025</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
 </tr>
 <tr class="even">
-<td>NJSLA Assessment</td>
-<td>2019-2024</td>
+<td><strong>NJSLA/PARCC Assessment</strong></td>
 <td><code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code></td>
+<td>2015-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
 </tr>
 <tr class="odd">
-<td>PARCC Assessment</td>
-<td>2015-2018</td>
-<td><code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code></td>
+<td><strong>NJGPA (Grad Proficiency)</strong></td>
+<td><code><a href="reference/fetch_njgpa.html">fetch_njgpa()</a></code></td>
+<td>2022-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
 </tr>
 <tr class="even">
-<td>NJASK Assessment</td>
-<td>2004-2014</td>
+<td><strong>ACCESS for ELLs</strong></td>
+<td><code><a href="reference/fetch_access.html">fetch_access()</a></code></td>
+<td>2022-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>NJASK/HSPA/GEPA (Legacy)</strong></td>
 <td><code>fetch_nj_assess()</code></td>
-</tr>
-<tr class="odd">
-<td>Graduation Rates</td>
-<td>2011-2024</td>
-<td><code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code></td>
+<td>2004-2014</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
 </tr>
 <tr class="even">
-<td>Graduation Counts</td>
-<td>2012-2024</td>
+<td><strong>Graduation Rates (4-year)</strong></td>
+<td><code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code></td>
+<td>2011-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>Graduation Rates (5-year)</strong></td>
+<td><code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code></td>
+<td>2012-2019</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>Graduation Rates (6-year)</strong></td>
+<td><code><a href="reference/fetch_6yr_grad_rate.html">fetch_6yr_grad_rate()</a></code></td>
+<td>2021-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>Graduation Counts</strong></td>
 <td><code><a href="reference/fetch_grad_count.html">fetch_grad_count()</a></code></td>
+<td>2012-2024</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>Chronic Absenteeism</strong></td>
+<td><code><a href="reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism()</a></code></td>
+<td>2017-2024*</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>Postsecondary Enrollment</strong></td>
+<td><code><a href="reference/fetch_postsecondary.html">fetch_postsecondary()</a></code></td>
+<td>Current</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>Special Education Rates</strong></td>
+<td><code><a href="reference/fetch_sped.html">fetch_sped()</a></code></td>
+<td>2024+</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>School Directory</strong></td>
+<td><code><a href="reference/get_school_directory.html">get_school_directory()</a></code></td>
+<td>Current</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>District Directory</strong></td>
+<td><code><a href="reference/get_district_directory.html">get_district_directory()</a></code></td>
+<td>Current</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>District Factor Groups</strong></td>
+<td><code><a href="reference/fetch_dfg.html">fetch_dfg()</a></code></td>
+<td>1990, 2000</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>Taxpayer’s Guide (TGES)</strong></td>
+<td><code><a href="reference/fetch_tges.html">fetch_tges()</a></code></td>
+<td>1999-2019</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="odd">
+<td><strong>Performance Reports</strong></td>
+<td><code>get_rc_database()</code></td>
+<td>2003-2019</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Full support</td>
+</tr>
+<tr class="even">
+<td><strong>Student Growth (mSGP)</strong></td>
+<td><code><a href="reference/fetch_msgp.html">fetch_msgp()</a></code></td>
+<td>2012-2015</td>
+<td>
+<span class="emoji" data-emoji="white_check_mark">✅</span> Historical</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Note</strong>: The 2019-20 school year assessments were cancelled due to COVID-19.</p>
+<p><em>*2020-2021 chronic absenteeism not reported due to COVID</em></p>
+</div>
+<div class="section level3">
+<h3 id="not-yet-supported">Not Yet Supported<a class="anchor" aria-label="anchor" href="#not-yet-supported"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Data Type</th>
+<th>NJ DOE Source</th>
+<th>Status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Staff/Teacher Census</td>
+<td>NJ DOE Data Portal</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="even">
+<td>Teacher Certification</td>
+<td>NJ DOE Licensing</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="odd">
+<td>Career/Technical Ed (CTE)</td>
+<td>CTE Reports</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="even">
+<td>Suspension/Discipline</td>
+<td>Civil Rights Data</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="odd">
+<td>Per-Pupil Spending (post-2019)</td>
+<td>State Aid</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="even">
+<td>School Climate Surveys</td>
+<td>NJ DOE</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="odd">
+<td>AP/IB Participation</td>
+<td>College Board</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+<tr class="even">
+<td>SAT/ACT Scores (post-2019)</td>
+<td>College Board</td>
+<td>
+<span class="emoji" data-emoji="x">❌</span> Not implemented</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="data-gaps">Data Gaps<a class="anchor" aria-label="anchor" href="#data-gaps"></a>
+</h3>
+<table class="table">
+<thead><tr class="header">
+<th>Gap</th>
+<th>Reason</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>2020 Assessments</td>
+<td>Cancelled due to COVID-19</td>
+</tr>
+<tr class="even">
+<td>2020-2021 Chronic Absenteeism</td>
+<td>Not reported due to COVID</td>
+</tr>
+<tr class="odd">
+<td>5-Year Graduation (2020+)</td>
+<td>No longer published by NJ DOE</td>
+</tr>
+<tr class="even">
+<td>Performance Reports (2020+)</td>
+<td>Format discontinued</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level2">
-<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="section level3">
 <h3 id="r-1">R<a class="anchor" aria-label="anchor" href="#r-1"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get 2024 enrollment data</span></span>
-<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get assessment data</span></span>
-<span><span class="va">math_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span>, grade_or_subj <span class="op">=</span> <span class="fl">4</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span>
+<span><span class="co"># Enrollment data</span></span>
+<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get school directory</span></span>
+<span><span class="co"># Assessment data</span></span>
+<span><span class="va">math_g4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span><span class="fl">2024</span>, grade_or_subj <span class="op">=</span> <span class="fl">4</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Graduation rates</span></span>
+<span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># School directory</span></span>
 <span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -154,104 +438,89 @@
 </h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="im">import</span> njschooldata <span class="im">as</span> njsd</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Get 2024 enrollment data</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Enrollment data</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>enr_2024 <span class="op">=</span> njsd.fetch_enr(<span class="dv">2024</span>)</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Get assessment data</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>math_2023 <span class="op">=</span> njsd.fetch_parcc(<span class="dv">2023</span>, <span class="dv">4</span>, <span class="st">'math'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Assessment data</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>math_g4 <span class="op">=</span> njsd.fetch_parcc(<span class="dv">2024</span>, <span class="dv">4</span>, <span class="st">'math'</span>)</span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Get school directory</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="more-r-examples">More R Examples<a class="anchor" aria-label="anchor" href="#more-r-examples"></a>
-</h3>
-<div class="section level4">
-<h4 id="enrollment-data">Enrollment Data<a class="anchor" aria-label="anchor" href="#enrollment-data"></a>
-</h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get 2024 enrollment data</span></span>
-<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get enrollment data in tidy format</span></span>
-<span><span class="va">enr_2024_tidy</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level3">
-<h3 id="assessment-data-njslaparcc">Assessment Data (NJSLA/PARCC)<a class="anchor" aria-label="anchor" href="#assessment-data-njslaparcc"></a>
-</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get 2023 Grade 4 Math NJSLA data</span></span>
-<span><span class="va">math_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span>, grade_or_subj <span class="op">=</span> <span class="fl">4</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get 2023 Grade 8 ELA data</span></span>
-<span><span class="va">ela_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span>, grade_or_subj <span class="op">=</span> <span class="fl">8</span>, subj <span class="op">=</span> <span class="st">'ela'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get Algebra 1 results</span></span>
-<span><span class="va">alg1_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span>, grade_or_subj <span class="op">=</span> <span class="st">'ALG1'</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="legacy-assessment-data-njask-2004-2014">Legacy Assessment Data (NJASK, 2004-2014)<a class="anchor" aria-label="anchor" href="#legacy-assessment-data-njask-2004-2014"></a>
-</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get 2010 grade 5 NJASK data</span></span>
-<span><span class="va">njask_2010</span> <span class="op">&lt;-</span> <span class="fu">fetch_nj_assess</span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2010</span>, grade <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get tidy format for longitudinal analysis</span></span>
-<span><span class="va">njask_2010_tidy</span> <span class="op">&lt;-</span> <span class="fu">fetch_nj_assess</span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2010</span>, grade <span class="op">=</span> <span class="fl">5</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="graduation-data">Graduation Data<a class="anchor" aria-label="anchor" href="#graduation-data"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get 2023 graduation rates</span></span>
-<span><span class="va">grate_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get 5-year graduation rates</span></span>
-<span><span class="va">grate_2023_5yr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span>, methodology <span class="op">=</span> <span class="st">'5 year'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get graduation counts</span></span>
-<span><span class="va">gcount_2023</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_count.html">fetch_grad_count</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="fl">2023</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="school-and-district-directories">School and District Directories<a class="anchor" aria-label="anchor" href="#school-and-district-directories"></a>
-</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get current school directory with metadata</span></span>
-<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get current district directory</span></span>
-<span><span class="va">districts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_district_directory.html">get_district_directory</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Graduation rates</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># School directory</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="assessment-history">Assessment History<a class="anchor" aria-label="anchor" href="#assessment-history"></a>
 </h2>
 <p>NJ has used several assessment systems over the years:</p>
-<ul>
-<li>
-<strong>NJASK</strong> (NJ Assessment of Skills and Knowledge): 2004-2014, Grades 3-8</li>
-<li>
-<strong>HSPA</strong> (High School Proficiency Assessment): Through 2014, Grade 11</li>
-<li>
-<strong>GEPA</strong> (Grade Eight Proficiency Assessment): Through 2007, Grade 8</li>
-<li>
-<strong>PARCC</strong>: 2015-2018, aligned to Common Core</li>
-<li>
-<strong>NJSLA</strong> (NJ Student Learning Assessment): 2019-present (2020 cancelled due to COVID)</li>
-</ul>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="20%">
+<col width="23%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th>Assessment</th>
+<th>Years</th>
+<th>Grades</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>NJSLA</strong></td>
+<td>2019-present</td>
+<td>3-10 ELA, 3-8 Math</td>
+<td>Current assessment (2020 cancelled)</td>
+</tr>
+<tr class="even">
+<td><strong>PARCC</strong></td>
+<td>2015-2018</td>
+<td>3-11</td>
+<td>Common Core aligned</td>
+</tr>
+<tr class="odd">
+<td><strong>NJASK</strong></td>
+<td>2004-2014</td>
+<td>3-8</td>
+<td>Previous state assessment</td>
+</tr>
+<tr class="even">
+<td><strong>HSPA</strong></td>
+<td>Through 2014</td>
+<td>11</td>
+<td>High school graduation requirement</td>
+</tr>
+<tr class="odd">
+<td><strong>GEPA</strong></td>
+<td>Through 2007</td>
+<td>8</td>
+<td>Grade 8 proficiency</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
-<h2 id="longitudinal-analysis">Longitudinal Analysis<a class="anchor" aria-label="anchor" href="#longitudinal-analysis"></a>
+<h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h2>
-<p>The flat files provided by the state are a bit painful to work with. The layout isn’t consistent across years or assessments, making longitudinal analysis challenging.</p>
-<p><code>fetch_nj_assess</code> and <code>fetch_enr</code> have a <code>tidy</code> parameter that returns a processed version of the data designed to facilitate longitudinal analysis with consistent data frame structure.</p>
+<ul>
+<li><a href="https://almartin82.github.io/njschooldata/articles/getting-started.html">Getting Started Guide</a></li>
+<li><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights</a></li>
+<li><a href="https://almartin82.github.io/njschooldata/reference/index.html">Function Reference</a></li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>Contributions are welcome!</p>
-<p>Comments? Questions? Problems? Want to contribute to development? - File an <a href="https://github.com/almartin82/njschooldata/issues" class="external-link">issue</a> - Send me an <a href="mailto:almartin@gmail.com">email</a></p>
+<ul>
+<li>File an <a href="https://github.com/almartin82/njschooldata/issues" class="external-link">issue</a>
+</li>
+<li>Send me an <a href="mailto:almartin@gmail.com">email</a>
+</li>
+</ul>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

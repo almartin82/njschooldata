@@ -2,25 +2,116 @@
 
 A simple interface for accessing NJ DOE school data in **R and Python**
 
-> It is often said that 80% of data analysis is spent on the process of
-> cleaning and preparing the data (Dasu and Johnson 2003). Data
-> preparation is not just a first step, but must be repeated many over
-> the course of analysis as new problems come to light or new data is
-> collected. -[@hadley](http://vita.had.co.nz/papers/tidy-data.pdf)
+**25+ years of enrollment data. 1.4 million students. 600+ districts.
+Here are 10 stories in the data…**
 
-The State of NJ has been posting raw, fixed width text files with all
-the assessment results for NJ schools/districts for well over a decade
-now. **That’s great!**
+------------------------------------------------------------------------
 
-Unfortunately, those files are a bit of a pain to work with, especially
-if you’re trying to work with multiple grades, or multiple years of
-data. Layouts change; file paths aren’t consistent, etc.
+### 1. New Jersey Educates 1.4 Million Students
 
-`njschooldata` attempts to simplify the task of working with NJ
-education data by providing a concise and consistent interface for
-reading state files into R. We make heavy use of the
-[tidyverse](https://www.tidyverse.org/) and aim to create a consistent,
-pipeable interface into NJ state education data.
+Statewide public school enrollment has held relatively steady over the
+past decade.
+
+![Statewide Enrollment](reference/figures/statewide-enrollment.png)
+
+Statewide Enrollment
+
+------------------------------------------------------------------------
+
+### 2. Newark Leads the Charter School Revolution
+
+Over 30% of Newark students now attend charter schools - one of the
+highest rates in the nation.
+
+![Newark Charter](reference/figures/newark-charter.png)
+
+Newark Charter
+
+------------------------------------------------------------------------
+
+### 3. Hispanic Students are the Fastest-Growing Group
+
+Hispanic enrollment has grown from 20% to nearly 30% of all NJ students.
+
+![Hispanic Growth](reference/figures/hispanic-growth.png)
+
+Hispanic Growth
+
+------------------------------------------------------------------------
+
+### 4. The Big Three: Newark, Jersey City, and Paterson
+
+Combined enrollment of over 100,000 students - nearly 8% of the state.
+
+![Big Three](reference/figures/big-three.png)
+
+Big Three
+
+------------------------------------------------------------------------
+
+### 5. COVID Hit Kindergarten Hard
+
+New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment
+hasn’t fully recovered.
+
+![COVID Kindergarten](reference/figures/covid-kindergarten.png)
+
+COVID Kindergarten
+
+------------------------------------------------------------------------
+
+### 6. Economic Disadvantage Varies Widely
+
+Some districts approach 100% economically disadvantaged while affluent
+suburbs have under 5%.
+
+![Economic Disadvantage](reference/figures/econ-disadvantage.png)
+
+Economic Disadvantage
+
+------------------------------------------------------------------------
+
+### 7. White Student Share Has Declined Dramatically
+
+NJ public schools are now majority-minority.
+
+![Demographic Shift](reference/figures/demographic-shift.png)
+
+Demographic Shift
+
+------------------------------------------------------------------------
+
+### 8. English Learners Concentrated in Urban Areas
+
+Some districts have over 20% ELL students, while most suburban districts
+have under 1%.
+
+![ELL Concentration](reference/figures/ell-concentration.png)
+
+ELL Concentration
+
+------------------------------------------------------------------------
+
+### 9. Top 10 Districts Educate 20% of All Students
+
+Just 10 out of 600+ districts serve one-fifth of all NJ students.
+
+![Top 10 Districts](reference/figures/top-10-districts.png)
+
+Top 10 Districts
+
+------------------------------------------------------------------------
+
+### 10. Special Education Rates Remain Steady
+
+About 17-18% of NJ students receive special education services - among
+the highest rates nationally.
+
+![Special Education](reference/figures/special-education.png)
+
+Special Education
+
+------------------------------------------------------------------------
 
 ## Installation
 
@@ -29,10 +120,6 @@ pipeable interface into NJ state education data.
 ``` r
 # Install from GitHub using remotes (recommended)
 remotes::install_github("almartin82/njschooldata")
-
-# Or using devtools
-devtools::install_github("almartin82/njschooldata")
-
 library(njschooldata)
 ```
 
@@ -49,32 +136,72 @@ Rscript -e "remotes::install_github('almartin82/njschooldata')"
 pip install git+https://github.com/almartin82/njschooldata.git#subdirectory=python
 ```
 
-## Data Coverage
+## NJ DOE Data Coverage
 
-| Data Type         | Years Available | Function                                                                                        |
-|-------------------|-----------------|-------------------------------------------------------------------------------------------------|
-| Enrollment        | 1999-2025       | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)               |
-| NJSLA Assessment  | 2019-2024       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           |
-| PARCC Assessment  | 2015-2018       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           |
-| NJASK Assessment  | 2004-2014       | `fetch_nj_assess()`                                                                             |
-| Graduation Rates  | 2011-2024       | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)   |
-| Graduation Counts | 2012-2024       | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) |
+### Supported Data Sources
 
-**Note**: The 2019-20 school year assessments were cancelled due to
-COVID-19.
+| Data Type                     | Function                                                                                                          | Years       | Status          |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------|-------------|-----------------|
+| **Enrollment**                | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                                 | 2000-2025   | ✅ Full support |
+| **NJSLA/PARCC Assessment**    | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)                             | 2015-2024   | ✅ Full support |
+| **NJGPA (Grad Proficiency)**  | [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md)                             | 2022-2024   | ✅ Full support |
+| **ACCESS for ELLs**           | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)                           | 2022-2024   | ✅ Full support |
+| **NJASK/HSPA/GEPA (Legacy)**  | `fetch_nj_assess()`                                                                                               | 2004-2014   | ✅ Full support |
+| **Graduation Rates (4-year)** | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)                     | 2011-2024   | ✅ Full support |
+| **Graduation Rates (5-year)** | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)                     | 2012-2019   | ✅ Full support |
+| **Graduation Rates (6-year)** | [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)             | 2021-2024   | ✅ Full support |
+| **Graduation Counts**         | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)                   | 2012-2024   | ✅ Full support |
+| **Chronic Absenteeism**       | [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md) | 2017-2024\* | ✅ Full support |
+| **Postsecondary Enrollment**  | [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)             | Current     | ✅ Full support |
+| **Special Education Rates**   | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)                               | 2024+       | ✅ Full support |
+| **School Directory**          | [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)           | Current     | ✅ Full support |
+| **District Directory**        | [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)       | Current     | ✅ Full support |
+| **District Factor Groups**    | [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)                                 | 1990, 2000  | ✅ Full support |
+| **Taxpayer’s Guide (TGES)**   | [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)                               | 1999-2019   | ✅ Full support |
+| **Performance Reports**       | `get_rc_database()`                                                                                               | 2003-2019   | ✅ Full support |
+| **Student Growth (mSGP)**     | [`fetch_msgp()`](https://almartin82.github.io/njschooldata/reference/fetch_msgp.md)                               | 2012-2015   | ✅ Historical   |
 
-## Usage
+*\*2020-2021 chronic absenteeism not reported due to COVID*
+
+### Not Yet Supported
+
+| Data Type                      | NJ DOE Source      | Status             |
+|--------------------------------|--------------------|--------------------|
+| Staff/Teacher Census           | NJ DOE Data Portal | ❌ Not implemented |
+| Teacher Certification          | NJ DOE Licensing   | ❌ Not implemented |
+| Career/Technical Ed (CTE)      | CTE Reports        | ❌ Not implemented |
+| Suspension/Discipline          | Civil Rights Data  | ❌ Not implemented |
+| Per-Pupil Spending (post-2019) | State Aid          | ❌ Not implemented |
+| School Climate Surveys         | NJ DOE             | ❌ Not implemented |
+| AP/IB Participation            | College Board      | ❌ Not implemented |
+| SAT/ACT Scores (post-2019)     | College Board      | ❌ Not implemented |
+
+### Data Gaps
+
+| Gap                           | Reason                        |
+|-------------------------------|-------------------------------|
+| 2020 Assessments              | Cancelled due to COVID-19     |
+| 2020-2021 Chronic Absenteeism | Not reported due to COVID     |
+| 5-Year Graduation (2020+)     | No longer published by NJ DOE |
+| Performance Reports (2020+)   | Format discontinued           |
+
+## Quick Start
 
 ### R
 
 ``` r
-# Get 2024 enrollment data
-enr_2024 <- fetch_enr(2024)
+library(njschooldata)
 
-# Get assessment data
-math_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 4, subj = 'math')
+# Enrollment data
+enr_2024 <- fetch_enr(2024, tidy = TRUE)
 
-# Get school directory
+# Assessment data
+math_g4 <- fetch_parcc(2024, grade_or_subj = 4, subj = 'math')
+
+# Graduation rates
+grate <- fetch_grad_rate(2024)
+
+# School directory
 schools <- get_school_directory()
 ```
 
@@ -83,100 +210,43 @@ schools <- get_school_directory()
 ``` python
 import njschooldata as njsd
 
-# Get 2024 enrollment data
+# Enrollment data
 enr_2024 = njsd.fetch_enr(2024)
 
-# Get assessment data
-math_2023 = njsd.fetch_parcc(2023, 4, 'math')
+# Assessment data
+math_g4 = njsd.fetch_parcc(2024, 4, 'math')
 
-# Get school directory
+# Graduation rates
+grate = njsd.fetch_grad_rate(2024)
+
+# School directory
 schools = njsd.get_school_directory()
-```
-
-### More R Examples
-
-#### Enrollment Data
-
-``` r
-# Get 2024 enrollment data
-enr_2024 <- fetch_enr(2024)
-
-# Get enrollment data in tidy format
-enr_2024_tidy <- fetch_enr(2024, tidy = TRUE)
-```
-
-### Assessment Data (NJSLA/PARCC)
-
-``` r
-# Get 2023 Grade 4 Math NJSLA data
-math_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 4, subj = 'math')
-
-# Get 2023 Grade 8 ELA data
-ela_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 8, subj = 'ela')
-
-# Get Algebra 1 results
-alg1_2023 <- fetch_parcc(end_year = 2023, grade_or_subj = 'ALG1', subj = 'math')
-```
-
-### Legacy Assessment Data (NJASK, 2004-2014)
-
-``` r
-# Get 2010 grade 5 NJASK data
-njask_2010 <- fetch_nj_assess(end_year = 2010, grade = 5)
-
-# Get tidy format for longitudinal analysis
-njask_2010_tidy <- fetch_nj_assess(end_year = 2010, grade = 5, tidy = TRUE)
-```
-
-### Graduation Data
-
-``` r
-# Get 2023 graduation rates
-grate_2023 <- fetch_grad_rate(end_year = 2023)
-
-# Get 5-year graduation rates
-grate_2023_5yr <- fetch_grad_rate(end_year = 2023, methodology = '5 year')
-
-# Get graduation counts
-gcount_2023 <- fetch_grad_count(end_year = 2023)
-```
-
-### School and District Directories
-
-``` r
-# Get current school directory with metadata
-schools <- get_school_directory()
-
-# Get current district directory
-districts <- get_district_directory()
 ```
 
 ## Assessment History
 
 NJ has used several assessment systems over the years:
 
-- **NJASK** (NJ Assessment of Skills and Knowledge): 2004-2014, Grades
-  3-8
-- **HSPA** (High School Proficiency Assessment): Through 2014, Grade 11
-- **GEPA** (Grade Eight Proficiency Assessment): Through 2007, Grade 8
-- **PARCC**: 2015-2018, aligned to Common Core
-- **NJSLA** (NJ Student Learning Assessment): 2019-present (2020
-  cancelled due to COVID)
+| Assessment | Years        | Grades             | Notes                               |
+|------------|--------------|--------------------|-------------------------------------|
+| **NJSLA**  | 2019-present | 3-10 ELA, 3-8 Math | Current assessment (2020 cancelled) |
+| **PARCC**  | 2015-2018    | 3-11               | Common Core aligned                 |
+| **NJASK**  | 2004-2014    | 3-8                | Previous state assessment           |
+| **HSPA**   | Through 2014 | 11                 | High school graduation requirement  |
+| **GEPA**   | Through 2007 | 8                  | Grade 8 proficiency                 |
 
-## Longitudinal Analysis
+## Learn More
 
-The flat files provided by the state are a bit painful to work with. The
-layout isn’t consistent across years or assessments, making longitudinal
-analysis challenging.
-
-`fetch_nj_assess` and `fetch_enr` have a `tidy` parameter that returns a
-processed version of the data designed to facilitate longitudinal
-analysis with consistent data frame structure.
+- [Getting Started
+  Guide](https://almartin82.github.io/njschooldata/articles/getting-started.html)
+- [NJ Enrollment
+  Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html)
+- [Function
+  Reference](https://almartin82.github.io/njschooldata/reference/index.html)
 
 ## Contributing
 
 Contributions are welcome!
 
-Comments? Questions? Problems? Want to contribute to development? - File
-an [issue](https://github.com/almartin82/njschooldata/issues) - Send me
-an [email](mailto:almartin@gmail.com)
+- File an [issue](https://github.com/almartin82/njschooldata/issues)
+- Send me an [email](mailto:almartin@gmail.com)

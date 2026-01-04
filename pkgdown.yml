@@ -3,7 +3,8 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   getting-started: getting-started.html
-last_built: 2026-01-03T15:53Z
+  nj-enrollment-insights: nj-enrollment-insights.html
+last_built: 2026-01-04T19:06Z
 urls:
   reference: https://almartin82.github.io/njschooldata/reference
   article: https://almartin82.github.io/njschooldata/articles
