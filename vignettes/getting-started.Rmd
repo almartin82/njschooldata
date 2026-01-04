@@ -251,7 +251,7 @@ When working with tidy data, you'll encounter these subgroup codes:
 
 Data is downloaded fresh each call. For repeated analysis, save locally:
 
-```{r caching}
+```{r caching, eval = FALSE}
 # Download once
 enr_2024 <- fetch_enr(2024, tidy = TRUE)
 
