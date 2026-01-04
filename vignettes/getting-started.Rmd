@@ -171,7 +171,7 @@ alg1_2024 <- fetch_parcc(
 
 For historical data, use `fetch_old_nj_assess()`:
 
-```{r legacy-assessment}
+```{r legacy-assessment, eval = FALSE}
 # Get 2010 Grade 5 NJASK results
 njask_2010 <- fetch_old_nj_assess(
   end_year = 2010,
