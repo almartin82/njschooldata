@@ -191,9 +191,9 @@ grad_rate_2024 <- fetch_grad_rate(
   methodology = "4 year"
 )
 
-# Get 5-year graduation rates (available 2012+)
+# Get 5-year graduation rates (available 2012-2019)
 grad_rate_5yr <- fetch_grad_rate(
-  end_year = 2024,
+  end_year = 2019,
   methodology = "5 year"
 )
 ```
