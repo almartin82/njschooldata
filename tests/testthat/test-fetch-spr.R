@@ -298,3 +298,180 @@ test_that("can combine multiple years of absenteeism data", {
 
   expect_equal(length(unique(combined$end_year)), 2)
 })
+
+
+# ==============================================================================
+# SPR Sheet Discovery Tests
+# ==============================================================================
+
+test_that("list_spr_sheets returns all 63 sheets", {
+  sheets <- list_spr_sheets(2024)
+
+  expect_s3_class(sheets, "character")
+  expect_true(length(sheets) >= 60)  # At least 60 sheets
+  expect_true(any(grepl("ChronicAbsenteeism", sheets)))
+  expect_true(any(grepl("TeachersExperience", sheets)))
+  expect_true(any(grepl("Graduation", sheets)))
+})
+
+test_that("list_spr_sheets returns alphabetically sorted list", {
+  sheets <- list_spr_sheets(2024)
+
+  # Check if sorted
+  expect_identical(sheets, sort(sheets))
+})
+
+test_that("list_spr_sheets works for district level", {
+  sheets <- list_spr_sheets(2024, level = "district")
+
+  expect_s3_class(sheets, "character")
+  expect_true(length(sheets) >= 60)
+})
+
+test_that("list_spr_sheets works across different years", {
+  sheets_2024 <- list_spr_sheets(2024)
+  sheets_2020 <- list_spr_sheets(2020)
+  sheets_2018 <- list_spr_sheets(2018)
+
+  expect_s3_class(sheets_2024, "character")
+  expect_s3_class(sheets_2020, "character")
+  expect_s3_class(sheets_2018, "character")
+})
+
+
+# ==============================================================================
+# SPR Sheet Name Mapping Tests
+# ==============================================================================
+
+test_that("get_mapped_sheet_name returns canonical name if no mapping", {
+  result <- get_mapped_sheet_name("TeachersExperience", 2024)
+  expect_equal(result, "TeachersExperience")
+})
+
+test_that("get_mapped_sheet_name handles year-based mapping", {
+  # Test chronic absenteeism by grade mapping
+  result_2018 <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2018)
+  result_2020 <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2020)
+
+  expect_equal(result_2018, "ChronicAbsByGrade")
+  expect_equal(result_2020, "ChronicAbsenteeismByGrade")
+})
+
+test_that("get_mapped_sheet_name returns most recent if year not in range", {
+  # For a year outside the defined range, should return most recent
+  result <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2030)
+  expect_equal(result, "ChronicAbsenteeismByGrade")
+})
+
+
+# ==============================================================================
+# High-Value Convenience Wrapper Tests
+# ==============================================================================
+
+test_that("fetch_teacher_experience returns expected structure", {
+  df <- fetch_teacher_experience(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true("school_id" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_staff_demographics returns expected structure", {
+  df <- fetch_staff_demographics(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_disciplinary_removals returns expected structure", {
+  df <- fetch_disciplinary_removals(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_violence_vandalism_hib returns expected structure", {
+  df <- fetch_violence_vandalism_hib(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_staff_ratios returns expected structure", {
+  df <- fetch_staff_ratios(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_math_course_enrollment returns expected structure", {
+  df <- fetch_math_course_enrollment(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_dropout_rates returns expected structure", {
+  df <- fetch_dropout_rates(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+test_that("fetch_essa_status returns expected structure", {
+  df <- fetch_essa_status(2024)
+
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
+
+# ==============================================================================
+# Multiple Sheet Type Tests
+# ==============================================================================
+
+test_that("fetch_spr_data works with different sheet categories", {
+  # Attendance sheet
+  df1 <- fetch_spr_data("DaysAbsent", 2024)
+  expect_s3_class(df1, "data.frame")
+
+  # Staffing sheet
+  df2 <- fetch_spr_data("AdministratorsExperience", 2024)
+  expect_s3_class(df2, "data.frame")
+
+  # Graduation sheet
+  df3 <- fetch_spr_data("GraduatonRateTrendsProgress", 2024)
+  expect_s3_class(df3, "data.frame")
+
+  # Accountability sheet
+  df4 <- fetch_spr_data("ESSAAccountabilityStatus", 2024)
+  expect_s3_class(df4, "data.frame")
+
+  # Course enrollment sheet
+  df5 <- fetch_spr_data("ScienceCourseParticipation", 2024)
+  expect_s3_class(df5, "data.frame")
+})
+
+test_that("fetch_spr_data works across multiple years for different sheets", {
+  # Test teacher experience across years
+  df_teach_2024 <- fetch_teacher_experience(2024)
+  df_teach_2020 <- fetch_teacher_experience(2020)
+
+  expect_equal(max(df_teach_2024$end_year), 2024)
+  expect_equal(max(df_teach_2020$end_year), 2020)
+
+  # Test discipline across years
+  df_disc_2024 <- fetch_disciplinary_removals(2024)
+  df_disc_2020 <- fetch_disciplinary_removals(2020)
+
+  expect_equal(max(df_disc_2024$end_year), 2024)
+  expect_equal(max(df_disc_2020$end_year), 2020)
+})
