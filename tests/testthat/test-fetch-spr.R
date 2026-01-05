@@ -26,12 +26,12 @@ ca_cols <- c(
 )
 
 # Expected columns for absenteeism by grade
+# Note: The grade-level sheet doesn't have a subgroup column
 ca_grade_cols <- c(
   "end_year",
   "county_id", "county_name",
   "district_id", "district_name",
   "school_id", "school_name",
-  "subgroup",
   "grade_level",
   "chronically_absent_rate",
   "is_state", "is_county", "is_district", "is_school",
@@ -65,7 +65,7 @@ test_that("fetch_spr_data returns standard columns", {
   df <- fetch_spr_data("ChronicAbsenteeism", 2024)
 
   expect_true(all(spr_cols %in% names(df)))
-  expect_equal(df$end_year, 2024)
+  expect_true(all(df$end_year == 2024))
 })
 
 test_that("fetch_spr_data handles school level", {
@@ -220,13 +220,9 @@ test_that("fetch_days_absent returns expected structure", {
   # Should have all standard columns
   expect_true(all(spr_cols %in% names(df)))
 
-  # Should have subgroup
-  expect_true("subgroup" %in% names(df))
-
-  # Should have at least one of avg_days_absent or median_days_absent
-  expect_true(
-    "avg_days_absent" %in% names(df) || "median_days_absent" %in% names(df)
-  )
+  # Should have percentage distribution columns (after clean_name_vector)
+  expect_true("x_0_percent_absences" %in% names(df))
+  expect_true("x_20_percent_or_higher" %in% names(df))
 })
 
 test_that("fetch_days_absent works across multiple years", {
