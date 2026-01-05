@@ -72,9 +72,35 @@ reference:
     desc: Functions for SPR database data (2017-2024)
     contents:
       - fetch_spr_data
+      - list_spr_sheets
       - fetch_chronic_absenteeism
       - fetch_absenteeism_by_grade
       - fetch_days_absent
+      - enrich_absenteeism_demographics
+      - calc_attendance_rate_trends
+      - fetch_sat_act_participation
+      - fetch_sat_act_performance
+      - fetch_ap_ib_participation_performance
+      - fetch_ap_ib_dual_enrollment
+      - fetch_ap_ib_courses_offered
+      - fetch_cte_participation
+      - fetch_cte_ivc_participation
+      - fetch_industry_credentials
+      - fetch_work_based_learning
+      - fetch_apprenticeship
+      - fetch_biliteracy_seal
+      - fetch_violence_vandalism_hib
+      - fetch_hib_investigations
+      - fetch_police_notifications
+      - fetch_disciplinary_removals
+      - fetch_days_missed_suspensions
+      - calc_discipline_rates_by_subgroup
+      - compare_discipline_across_years
+      - fetch_teacher_experience
+      - fetch_staff_demographics
+      - fetch_staff_ratios
+      - fetch_dropout_rates
+      - fetch_essa_status
 
   - title: School/District Directories
     desc: Functions for school and district metadata
@@ -143,6 +169,10 @@ articles:
     navbar: ~
     contents:
       - nj-enrollment-insights
+  - title: School Performance Reports
+    navbar: ~
+    contents:
+      - spr-dictionary
 
 authors:
   Andrew Martin:
