@@ -68,6 +68,14 @@ reference:
       - grate_validation_summary
       - recover_suppressed_grate
 
+  - title: School Performance Reports (SPR)
+    desc: Functions for SPR database data (2017-2024)
+    contents:
+      - fetch_spr_data
+      - fetch_chronic_absenteeism
+      - fetch_absenteeism_by_grade
+      - fetch_days_absent
+
   - title: School/District Directories
     desc: Functions for school and district metadata
     contents:

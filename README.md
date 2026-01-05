@@ -16,7 +16,7 @@ A simple interface for accessing NJ DOE school data in **R and Python**
 
 Statewide public school enrollment has held relatively steady over the past decade.
 
-![Statewide Enrollment](man/figures/statewide-enrollment.png)
+![Statewide Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
 
 ---
 
@@ -24,7 +24,7 @@ Statewide public school enrollment has held relatively steady over the past deca
 
 Over 30% of Newark students now attend charter schools - one of the highest rates in the nation.
 
-![Newark Charter](man/figures/newark-charter.png)
+![Newark Charter](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/newark-charter-1.png)
 
 ---
 
@@ -32,7 +32,7 @@ Over 30% of Newark students now attend charter schools - one of the highest rate
 
 Hispanic enrollment has grown from 20% to nearly 30% of all NJ students.
 
-![Hispanic Growth](man/figures/hispanic-growth.png)
+![Hispanic Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/hispanic-growth-1.png)
 
 ---
 
@@ -40,7 +40,7 @@ Hispanic enrollment has grown from 20% to nearly 30% of all NJ students.
 
 Combined enrollment of over 100,000 students - nearly 8% of the state.
 
-![Big Three](man/figures/big-three.png)
+![Big Three](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/big-three-1.png)
 
 ---
 
@@ -48,7 +48,7 @@ Combined enrollment of over 100,000 students - nearly 8% of the state.
 
 New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn't fully recovered.
 
-![COVID Kindergarten](man/figures/covid-kindergarten.png)
+![COVID Kindergarten](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png)
 
 ---
 
@@ -56,7 +56,7 @@ New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn't ful
 
 Some districts approach 100% economically disadvantaged while affluent suburbs have under 5%.
 
-![Economic Disadvantage](man/figures/econ-disadvantage.png)
+![Economic Disadvantage](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/econ-disadvantage-1.png)
 
 ---
 
@@ -64,7 +64,7 @@ Some districts approach 100% economically disadvantaged while affluent suburbs h
 
 NJ public schools are now majority-minority.
 
-![Demographic Shift](man/figures/demographic-shift.png)
+![Demographic Shift](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/demographic-shift-1.png)
 
 ---
 
@@ -72,7 +72,7 @@ NJ public schools are now majority-minority.
 
 Some districts have over 20% ELL students, while most suburban districts have under 1%.
 
-![ELL Concentration](man/figures/ell-concentration.png)
+![ELL Concentration](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
 
 ---
 
@@ -80,7 +80,7 @@ Some districts have over 20% ELL students, while most suburban districts have un
 
 Just 10 out of 600+ districts serve one-fifth of all NJ students.
 
-![Top 10 Districts](man/figures/top-10-districts.png)
+![Top 10 Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
 
 ---
 
@@ -88,7 +88,9 @@ Just 10 out of 600+ districts serve one-fifth of all NJ students.
 
 About 17-18% of NJ students receive special education services - among the highest rates nationally.
 
-![Special Education](man/figures/special-education.png)
+![Special Education](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/special-ed-1.png)
+
+*(Figures sourced from [NJ Enrollment Insights vignette](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html))*
 
 ---
 
