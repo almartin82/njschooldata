@@ -233,12 +233,21 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
 #' @keywords internal
 process_chronic_absenteeism_cols <- function(df) {
   # Detect chronic absenteeism rate column (name may vary)
-  rate_cols <- grep("chronic|absent", names(df), value = TRUE, ignore.case = TRUE)
+  # Main sheet: "Chronic_Abs_Pct"
+  # Grade-level sheet: "SchoolPercent"
+  rate_cols <- grep("chronic|absent|percent", names(df), value = TRUE, ignore.case = TRUE)
 
   # Filter to find the actual rate column (exclude names with "Number", "Count", etc.)
-  rate_cols <- rate_cols[!grepl("number|count|enrollment|n_", rate_cols, ignore.case = TRUE)]
+  rate_cols <- rate_cols[!grepl("number|count|enrollment|n_|state", rate_cols, ignore.case = TRUE)]
 
-  if (length(rate_cols) > 0) {
+  # Prefer Chronic_Abs_Pct over SchoolPercent if both exist
+  if ("chronic_abs_pct" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(chronically_absent_rate = chronic_abs_pct)
+  } else if ("school_percent" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(chronically_absent_rate = school_percent)
+  } else if (length(rate_cols) > 0) {
     # Rename first matching column to chronically_absent_rate
     df <- df %>%
       dplyr::rename(chronically_absent_rate = !!rate_cols[1])
@@ -397,9 +406,9 @@ fetch_chronic_absenteeism <- function(end_year, level = "school") {
 #' }
 fetch_absenteeism_by_grade <- function(end_year, level = "school") {
   # Determine sheet name (changed over time)
-  # 2018: ChronicAbsByGrade
-  # 2019+: ChronicAbsenteeismByGrade
-  sheet_name <- if (end_year == 2018) {
+  # 2018-2019: ChronicAbsByGrade
+  # 2020+: ChronicAbsenteeismByGrade
+  sheet_name <- if (end_year %in% c(2018, 2019)) {
     "ChronicAbsByGrade"
   } else {
     "ChronicAbsenteeismByGrade"
@@ -448,7 +457,7 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #' Fetch Days Absent Data
 #'
 #' Downloads and extracts days absent statistics from the SPR database.
-#' This includes average and median days absent.
+#' This includes percentage distributions of students by absence ranges.
 #'
 #' @param end_year A school year (2017-2024). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
@@ -459,9 +468,9 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #'   \itemize{
 #'     \item end_year, county_id, county_name, district_id, district_name
 #'     \item school_id, school_name (for school-level data)
-#'     \item subgroup - Student group (total population, racial/ethnic groups, etc.)
-#'     \item avg_days_absent - Average days absent (may be NA for some subgroups)
-#'     \item median_days_absent - Median days absent (may be NA for some subgroups)
+#'     \item Percentage distribution columns: `0% Absences`, `>0% to 6.9% Absences`,
+#'       `7% to 9.9% Absences`, `10% to 12.9% Absences`, `13% to 19.9% Absences`,
+#'       `20% or higher`
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
 #'
@@ -469,17 +478,13 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #'
 #' @examples
 #' \dontrun{
-#' # Get school-level days absent
+#' # Get school-level days absent distribution
 #' days <- fetch_days_absent(2024)
 #'
-#' # Compare average days absent across subgroups
+#' # View absence distribution for a specific school
 #' days %>%
 #'   filter(school_id == "030") %>%
-#'   group_by(subgroup) %>%
-#'   summarize(
-#'     avg_days = mean(avg_days_absent, na.rm = TRUE),
-#'     .groups = "drop"
-#'   )
+#'   select(school_name, `0% Absences`, `20% or higher`)
 #' }
 fetch_days_absent <- function(end_year, level = "school") {
   # Use generic extractor
@@ -489,19 +494,6 @@ fetch_days_absent <- function(end_year, level = "school") {
     level = level
   )
 
-  # Process days absent columns
-  df <- process_days_absent_cols(df)
-
-  # Select and order columns (subgroup may not exist in all sheets)
-  df %>%
-    dplyr::select(
-      end_year,
-      county_id, county_name,
-      district_id, district_name,
-      school_id, school_name,
-      dplyr::any_of("subgroup"),
-      dplyr::any_of(c("avg_days_absent", "median_days_absent")),
-      is_state, is_county, is_district, is_school,
-      is_charter, is_charter_sector, is_allpublic
-    )
+  # Return all columns (the sheet has percentage distribution buckets)
+  df
 }
