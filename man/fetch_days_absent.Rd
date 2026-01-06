@@ -18,28 +18,24 @@ Data frame with days absent statistics including:
   \itemize{
     \item end_year, county_id, county_name, district_id, district_name
     \item school_id, school_name (for school-level data)
-    \item subgroup - Student group (total population, racial/ethnic groups, etc.)
-    \item avg_days_absent - Average days absent (may be NA for some subgroups)
-    \item median_days_absent - Median days absent (may be NA for some subgroups)
+    \item Percentage distribution columns: `0% Absences`, `>0% to 6.9% Absences`,
+      `7% to 9.9% Absences`, `10% to 12.9% Absences`, `13% to 19.9% Absences`,
+      `20% or higher`
     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
   }
 }
 \description{
 Downloads and extracts days absent statistics from the SPR database.
-This includes average and median days absent.
+This includes percentage distributions of students by absence ranges.
 }
 \examples{
 \dontrun{
-# Get school-level days absent
+# Get school-level days absent distribution
 days <- fetch_days_absent(2024)
 
-# Compare average days absent across subgroups
+# View absence distribution for a specific school
 days \%>\%
   filter(school_id == "030") \%>\%
-  group_by(subgroup) \%>\%
-  summarize(
-    avg_days = mean(avg_days_absent, na.rm = TRUE),
-    .groups = "drop"
-  )
+  select(school_name, `0\% Absences`, `20\% or higher`)
 }
 }
