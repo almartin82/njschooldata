@@ -80,14 +80,20 @@ reference:
       - calc_attendance_rate_trends
       - fetch_sat_act_participation
       - fetch_sat_act_performance
+      - fetch_sat_participation
+      - fetch_sat_performance
       - fetch_ap_ib_participation_performance
       - fetch_ap_ib_dual_enrollment
       - fetch_ap_ib_courses_offered
+      - fetch_ap_participation
+      - fetch_ap_performance
+      - fetch_ib_participation
       - fetch_cte_participation
       - fetch_cte_ivc_participation
       - fetch_industry_credentials
       - fetch_work_based_learning
       - fetch_apprenticeship
+      - fetch_apprenticeship_data
       - fetch_biliteracy_seal
       - fetch_violence_vandalism_hib
       - fetch_hib_investigations
@@ -101,6 +107,7 @@ reference:
       - fetch_staff_ratios
       - fetch_dropout_rates
       - fetch_essa_status
+      - fetch_math_course_enrollment
 
   - title: School/District Directories
     desc: Functions for school and district metadata
