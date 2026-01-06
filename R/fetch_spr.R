@@ -497,3 +497,269 @@ fetch_days_absent <- function(end_year, level = "school") {
   # Return all columns (the sheet has percentage distribution buckets)
   df
 }
+
+
+# ==============================================================================
+# SPR Sheet Discovery & Helpers
+# ==============================================================================
+#
+# Utilities for discovering available SPR sheets and handling sheet name
+# variations across years.
+#
+# ==============================================================================
+
+# -----------------------------------------------------------------------------
+# Sheet Discovery
+# -----------------------------------------------------------------------------
+
+#' List Available SPR Sheets
+#'
+#' Returns a vector of all sheet names available in the SPR database for a
+#' given year and level. Useful for discovering what data is available.
+#'
+#' @param end_year A school year (2017-2024). Year is the end of the academic
+#'   year - eg 2020-21 school year is end_year '2021'.
+#' @param level One of "school" or "district". Determines which database file
+#'   to query.
+#'
+#' @return Character vector of sheet names
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # List all school-level sheets for 2024
+#' sheets <- list_spr_sheets(2024)
+#'
+#' # List all district-level sheets
+#' district_sheets <- list_spr_sheets(2024, level = "district")
+#'
+#' # Search for specific types of sheets
+#' attendance_sheets <- sheets[grepl("Absent|Attendance", sheets, ignore.case = TRUE)]
+#' }
+list_spr_sheets <- function(end_year, level = "school") {
+  # Build URL
+  target_url <- get_spr_url(end_year, level)
+
+  # Download to temp file
+  tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
+  downloader::download(target_url, destfile = tname, mode = "wb")
+
+  # Get sheet names
+  sheets <- readxl::excel_sheets(tname)
+
+  # Sort alphabetically
+  sort(sheets)
+}
+
+
+# -----------------------------------------------------------------------------
+# Sheet Name Mapping
+# -----------------------------------------------------------------------------
+
+#' Map Sheet Names Across Years
+#'
+#' Internal data structure mapping sheet name variations across years.
+#' Some SPR sheet names changed over time (e.g., 2018-2019 vs 2020+).
+#'
+#' @description
+#' This list maps common sheet name variations. Format is:
+#' \code{list(canonical_name = list(year_range = "actual_sheet_name"))}
+#'
+#' @keywords internal
+spr_sheet_mapping <- list(
+  chronic_absenteeism_by_grade = list(
+    "2018-2019" = "ChronicAbsByGrade",
+    "2020-2024" = "ChronicAbsenteeismByGrade"
+  ),
+  # Add more mappings as discovered
+  graduation_rate_5yr = list(
+    "2017-2020" = "5YrGraduationCohortProfile",
+    "2021-2024" = "5YrGraduationCohortProfile"
+  )
+)
+
+
+#' Get Mapped Sheet Name
+#'
+#' Returns the correct sheet name for a given year, handling historical
+#' name variations. If no mapping exists, returns the input name.
+#'
+#' @param canonical_name Canonical sheet name (e.g., "chronic_absenteeism_by_grade")
+#' @param end_year School year end
+#' @return Actual sheet name to use with fetch_spr_data()
+#' @keywords internal
+get_mapped_sheet_name <- function(canonical_name, end_year) {
+  if (!(canonical_name %in% names(spr_sheet_mapping))) {
+    return(canonical_name)
+  }
+
+  year_map <- spr_sheet_mapping[[canonical_name]]
+
+  # Find matching year range
+  for (year_range in names(year_map)) {
+    range_parts <- strsplit(year_range, "-")[[1]]
+    start_year <- as.numeric(range_parts[1])
+    end_yr <- as.numeric(range_parts[2])
+
+    if (end_year >= start_year && end_year <= end_yr) {
+      return(year_map[[year_range]])
+    }
+  }
+
+  # If no match, return the most recent name
+  year_map[[length(year_map)]]
+}
+
+
+# ==============================================================================
+# High-Value Convenience Wrappers
+# ==============================================================================
+#
+# Quick-access functions for commonly-requested SPR data. These wrap the
+# generic fetch_spr_data() with appropriate column selection/cleaning.
+#
+# ==============================================================================
+
+#' Fetch Teacher Experience Data
+#'
+#' Downloads teacher experience data from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with teacher experience breakdown
+#' @export
+#' @examples \dontrun{
+#' teachers <- fetch_teacher_experience(2024)
+#' }
+fetch_teacher_experience <- function(end_year, level = "school") {
+  df <- fetch_spr_data("TeachersExperience", end_year, level)
+  df
+}
+
+
+#' Fetch Staff Demographics Data
+#'
+#' Downloads teacher/administrator demographic data from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with staff race/gender breakdowns
+#' @export
+#' @examples \dontrun{
+#' staff <- fetch_staff_demographics(2024)
+#' }
+fetch_staff_demographics <- function(end_year, level = "school") {
+  df <- fetch_spr_data("TeachersAdminsDemographics", end_year, level)
+  df
+}
+
+
+#' Fetch Disciplinary Removals Data
+#'
+#' Downloads discipline data (suspensions/expulsions) from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with disciplinary actions
+#' @export
+#' @examples \dontrun{
+#' discipline <- fetch_disciplinary_removals(2024)
+#' }
+fetch_disciplinary_removals <- function(end_year, level = "school") {
+  df <- fetch_spr_data("DisciplinaryRemovals", end_year, level)
+  df
+}
+
+
+#' Fetch Violence/Vandalism/HIB Data
+#'
+#' Downloads incident data from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with incident counts
+#' @export
+#' @examples \dontrun{
+#' incidents <- fetch_violence_vandalism_hib(2024)
+#' }
+fetch_violence_vandalism_hib <- function(end_year, level = "school") {
+  df <- fetch_spr_data("ViolenceVandalismHIBSubstanceOf", end_year, level)
+  df
+}
+
+
+#' Fetch Student-Staff Ratio Data
+#'
+#' Downloads student-to-staff ratio data from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with staff ratios
+#' @export
+#' @examples \dontrun{
+#' ratios <- fetch_staff_ratios(2024)
+#' }
+fetch_staff_ratios <- function(end_year, level = "school") {
+  df <- fetch_spr_data("StudentToStaffRatios", end_year, level)
+  df
+}
+
+
+#' Fetch Math Course Enrollment Data
+#'
+#' Downloads math course participation data from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with math course enrollment
+#' @export
+#' @examples \dontrun{
+#' math <- fetch_math_course_enrollment(2024)
+#' }
+fetch_math_course_enrollment <- function(end_year, level = "school") {
+  df <- fetch_spr_data("MathCourseParticipation", end_year, level)
+  df
+}
+
+
+#' Fetch Dropout Rate Data
+#'
+#' Downloads dropout rate trends from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with dropout rates
+#' @export
+#' @examples \dontrun{
+#' dropout <- fetch_dropout_rates(2024)
+#' }
+fetch_dropout_rates <- function(end_year, level = "school") {
+  df <- fetch_spr_data("DropoutRateTrends", end_year, level)
+  df
+}
+
+
+#' Fetch ESSA Accountability Status
+#'
+#' Downloads ESSA accountability ratings from SPR database.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with ESSA status ratings
+#' @export
+#' @examples \dontrun{
+#' essa <- fetch_essa_status(2024)
+#' }
+fetch_essa_status <- function(end_year, level = "school") {
+  df <- fetch_spr_data("ESSAAccountabilityStatus", end_year, level)
+  df
+}

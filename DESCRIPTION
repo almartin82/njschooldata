@@ -7,6 +7,8 @@ Description: R functions (with Python bindings) to import NJ school data,
 Version: 0.9.0
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
     email = "almartin@gmail.com")
+Author: Andrew Martin [aut, cre]
+Maintainer: Andrew Martin <almartin@gmail.com>
 License: GPL-3 | file LICENSE
 URL: https://github.com/almartin82/njschooldata
 BugReports: https://github.com/almartin82/njschooldata/issues
