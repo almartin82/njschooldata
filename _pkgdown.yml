@@ -72,12 +72,6 @@ reference:
     desc: Functions for SPR database data (2017-2024)
     contents:
       - fetch_spr_data
-      - list_spr_sheets
-      - fetch_chronic_absenteeism
-      - fetch_absenteeism_by_grade
-      - fetch_days_absent
-      - enrich_absenteeism_demographics
-      - calc_attendance_rate_trends
       - fetch_sat_participation
       - fetch_sat_performance
       - fetch_ap_participation
