@@ -1,12 +1,49 @@
-.Rproj.user
+# History files
 .Rhistory
-.RData
-.Ruserdata
-src/*.o
-src/*.so
-src/*.dll
-/doc/
-/Meta/
-vignettes/*_cache/
-vignettes/*_files/
-..Rcheck/
+.Rapp.history
+
+# Example code in package build process
+*-Ex.R
+# RStudio files
+.Rproj.user/
+*.Rproj
+.Rbuildignore
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+.Rproj.user
+.Rdata
+#one off
+all_assess.RData
+assess_years.Rda
+results.Rds
+#mac
+*.DS_Store
+inst/doc
+njschooldata.Rcheck/
+njschooldata_*.tar.gz
+
+# Analysis files (not part of package)
+analysis/
+
+# Private research (MarGrady extension - not for public repo)
+research-private/
+
+# pkgdown site (built on GitHub Pages)
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+*.so
+.venv/
+venv/

@@ -1,5 +1,146 @@
 url: https://almartin82.github.io/njschooldata/
 
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/almartin82/njschooldata
+      aria-label: GitHub
+
+home:
+  links:
+    - text: Report a bug
+      href: https://github.com/almartin82/njschooldata/issues
+
+reference:
+  - title: Enrollment Data
+    desc: Functions for fetching and processing NJ school enrollment data
+    contents:
+      - fetch_enr
+      - fetch_enr_cached
+      - fetch_enr_years
+      - tidy_enr
+      - enr_grade_aggs
+      - id_enr_aggs
+
+  - title: Assessment Data (NJSLA/PARCC)
+    desc: Functions for NJSLA (2019+) and PARCC (2015-2018) assessment results
+    contents:
+      - fetch_parcc
+      - fetch_all_parcc
+      - fetch_all_parcc_with_progress
+      - fetch_njgpa
+      - fetch_all_njgpa
+      - fetch_access
+      - fetch_all_access
+      - parcc_aggregate_calcs
+      - parcc_percentile_rank
+      - parcc_perf_level_counts
+      - tidy_parcc_subgroup
+
+  - title: Assessment Data (Legacy - NJASK/HSPA/GEPA)
+    desc: Functions for historical NJ assessment data (2004-2014)
+    contents:
+      - fetch_old_nj_assess
+      - fetch_njask
+      - fetch_hspa
+      - fetch_gepa
+      - tidy_nj_assess
+
+  - title: Graduation Data
+    desc: Functions for graduation rates and counts
+    contents:
+      - fetch_grad_rate
+      - fetch_grad_count
+      - fetch_6yr_grad_rate
+      - fetch_all_6yr_grad_rate
+      - id_grad_aggs
+      - grate_aggregate_calcs
+      - gcount_aggregate_calcs
+      - grate_percentile_rank
+      - grate_validation_summary
+      - recover_suppressed_grate
+
+  - title: School/District Directories
+    desc: Functions for school and district metadata
+    contents:
+      - get_school_directory
+      - get_district_directory
+
+  - title: Charter Aggregations
+    desc: Functions for charter school sector aggregations
+    contents:
+      - starts_with("charter_sector")
+      - starts_with("allpublic")
+      - id_charter_hosts
+
+  - title: Special Populations
+    desc: Functions for special education and other subgroup data
+    contents:
+      - fetch_sped
+      - fetch_reportcard_special_pop
+      - fetch_chronic_absenteeism
+      - fetch_all_chronic_absenteeism
+      - sped_aggregate_calcs
+      - spec_pop_aggregate_calcs
+
+  - title: Other Data Sources
+    desc: Additional NJ DOE data functions
+    contents:
+      - fetch_msgp
+      - fetch_tges
+      - fetch_many_tges
+      - fetch_dfg
+      - fetch_postsecondary
+      - get_one_rc_database
+      - get_merged_rc_database
+      - get_rc_databases
+      - get_dfg_districts
+      - get_dfg_a_districts
+
+  - title: Utilities
+    desc: Helper functions and lookups
+    contents:
+      - pad_grade
+      - pad_cds
+      - pad_leading
+      - trim_whitespace
+      - starts_with("enrich_")
+      - starts_with("validate_")
+
+  - title: Caching
+    desc: Cache management functions
+    contents:
+      - starts_with("njsd_cache")
+      - njsd_progress_enable
+
+  - title: All Other Functions
+    desc: Additional exported functions
+    contents:
+      - matches(".*")
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - getting-started
+  - title: Data Insights
+    navbar: ~
+    contents:
+      - nj-enrollment-insights
+
 authors:
-  Andy Martin:
+  Andrew Martin:
     href: https://github.com/almartin82
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
