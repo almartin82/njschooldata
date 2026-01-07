@@ -37,8 +37,7 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          args: 'c("--no-manual", "--no-tests", "--no-vignettes", "--ignore-vignettes", "--no-build-vignettes")'
-          build_args: 'c("--no-manual", "--no-build-vignettes")'
+          args: 'c("--no-manual", "--no-tests", "--no-vignettes", "--ignore-vignettes")'
           error-on: '"error"'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false

@@ -4,9 +4,9 @@
 \name{njschooldata-package}
 \alias{njschooldata}
 \alias{njschooldata-package}
-\title{njschooldata: A Simple Interface for Accessing NJ DOE School Data in R and Python}
+\title{njschooldata: A Simple Interface for Accessing NJ DOE School Data in R}
 \description{
-R functions (with Python bindings) to import NJ school data, including assessment, enrollment, and accountability data from the New Jersey Department of Education.
+R functions to import NJ school data, including assessment, enrollment, and accountability data from the New Jersey Department of Education.
 }
 \seealso{
 Useful links:
