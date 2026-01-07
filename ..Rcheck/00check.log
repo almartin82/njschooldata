@@ -1,0 +1,321 @@
+* using log directory ‘/Users/almartin/Documents/state-schooldata/njschooldata/..Rcheck’
+* using R version 4.5.0 (2025-04-11)
+* using platform: aarch64-apple-darwin22.6.0
+* R was compiled by
+    Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+    GNU Fortran (Homebrew GCC 14.2.0_1) 14.2.0
+* running under: macOS 26.1
+* using session charset: UTF-8
+* using option ‘--no-tests’
+* checking for file ‘./DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘njschooldata’ version ‘0.9.0’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... INFO
+Packages suggested but not available for checking: 'geojsonio', 'placement'
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  .gitignore
+  .travis.yml
+  ..Rcheck
+  .claude
+  .git
+  .github
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘njschooldata’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... NOTE
+Checking should be performed on sources prepared by ‘R CMD build’.
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directory with the name of a check directory:
+  ./..Rcheck
+Most likely, these were included erroneously.
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+analyze_retention_patterns: no visible binding for global variable
+  ‘retention_rate’
+analyze_retention_patterns: no visible binding for global variable
+  ‘turnover_rate’
+analyze_retention_patterns: no visible binding for global variable
+  ‘location_id’
+analyze_retention_patterns: no visible binding for global variable
+  ‘stability_index’
+analyze_retention_patterns: no visible global function definition for
+  ‘coef’
+analyze_retention_patterns: no visible global function definition for
+  ‘lm’
+analyze_retention_patterns: no visible binding for global variable
+  ‘trend_slope’
+analyze_retention_patterns: no visible binding for global variable
+  ‘n_years’
+analyze_retention_patterns: no visible binding for global variable
+  ‘trend’
+calc_discipline_rates_by_subgroup: no visible binding for global
+  variable ‘discipline_rate’
+calc_staff_diversity_metrics: no visible binding for global variable
+  ‘location_id’
+calc_staff_diversity_metrics: no visible binding for global variable
+  ‘total_staff’
+calc_staff_diversity_metrics: no visible binding for global variable
+  ‘prop’
+calc_staff_diversity_metrics: no visible binding for global variable
+  ‘gender_diversity_score’
+calc_staff_diversity_metrics: no visible binding for global variable
+  ‘diversity_index’
+calc_student_staff_ratio: no visible binding for global variable
+  ‘student_staff_ratio’
+compare_discipline_across_years: no visible binding for global variable
+  ‘location_id’
+compare_discipline_across_years: no visible binding for global variable
+  ‘metric_name’
+compare_discipline_across_years: no visible binding for global variable
+  ‘metric_value’
+compare_discipline_across_years: no visible binding for global variable
+  ‘prev_value’
+compare_discipline_across_years: no visible binding for global variable
+  ‘trend_slope’
+compare_discipline_across_years: no visible binding for global variable
+  ‘n_unique_years’
+compare_discipline_across_years: no visible binding for global variable
+  ‘year_over_year_change’
+compare_discipline_across_years: no visible binding for global variable
+  ‘year_over_year_pct_change’
+compare_discipline_across_years: no visible binding for global variable
+  ‘multi_year_trend’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘CountyCode’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘CountyName’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘DistrictCode’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘DistrictName’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘SchoolCode’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘SchoolName’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘StudentGroup’
+fetch_6yr_grad_rate: no visible binding for global variable ‘Graduates’
+fetch_6yr_grad_rate: no visible binding for global variable ‘Continuing
+  Students’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘Non-Continuing Student’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘HighSchoolPersistance’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘grad_rate_6yr’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘continuing_rate’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘non_continuing_rate’
+fetch_6yr_grad_rate: no visible binding for global variable
+  ‘persistence_rate’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_course_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_course_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_exam_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_exam_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘ap_3_ib_4_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘ap_3_ib_4_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘dual_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘dual_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_coursework_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘apib_coursework_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘ap3_ib4_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘ap3_ib4_state’
+fetch_ap_participation: no visible binding for global variable
+  ‘dual_enrollment_school’
+fetch_ap_participation: no visible binding for global variable
+  ‘dual_enrollment_state’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘Language’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘SealsEarned’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘Perc12Graders’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘language’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘seals_earned’
+fetch_biliteracy_seal: no visible binding for global variable
+  ‘pct_12th_graders’
+fetch_chronic_absenteeism: no visible binding for global variable
+  ‘chronically_absent_rate’
+fetch_cte_participation: no visible binding for global variable
+  ‘school_cteparticipants’
+fetch_cte_participation: no visible binding for global variable
+  ‘school_cteconcentrators’
+fetch_cte_participation: no visible binding for global variable
+  ‘state_cteparticipants’
+fetch_cte_participation: no visible binding for global variable
+  ‘state_cteconcentrators’
+fetch_cte_participation: no visible binding for global variable
+  ‘cte_participants’
+fetch_cte_participation: no visible binding for global variable
+  ‘cte_concentrators’
+fetch_cte_participation: no visible binding for global variable
+  ‘state_cte_participants’
+fetch_cte_participation: no visible binding for global variable
+  ‘state_cte_concentrators’
+fetch_industry_credentials: no visible binding for global variable
+  ‘career_cluster’
+fetch_industry_credentials: no visible binding for global variable
+  ‘students_enrolled_in_program’
+fetch_industry_credentials: no visible binding for global variable
+  ‘atleast_one_credential_earned’
+fetch_industry_credentials: no visible binding for global variable
+  ‘industry_credentials_earned’
+fetch_industry_credentials: no visible binding for global variable
+  ‘students_enrolled’
+fetch_industry_credentials: no visible binding for global variable
+  ‘earned_one_credential’
+fetch_industry_credentials: no visible binding for global variable
+  ‘credentials_earned’
+fetch_sat_participation: no visible binding for global variable ‘SAT’
+fetch_sat_participation: no visible binding for global variable ‘ACT’
+fetch_sat_participation: no visible binding for global variable ‘PSAT’
+fetch_sat_participation: no visible binding for global variable
+  ‘STATE_SAT’
+fetch_sat_participation: no visible binding for global variable
+  ‘STATE_ACT’
+fetch_sat_participation: no visible binding for global variable
+  ‘STATE_PSAT’
+fetch_sat_participation: no visible binding for global variable
+  ‘sat_participation’
+fetch_sat_participation: no visible binding for global variable
+  ‘act_participation’
+fetch_sat_participation: no visible binding for global variable
+  ‘psat_participation’
+fetch_sat_participation: no visible binding for global variable
+  ‘state_sat’
+fetch_sat_participation: no visible binding for global variable
+  ‘state_act’
+fetch_sat_participation: no visible binding for global variable
+  ‘state_psat’
+fetch_sat_performance: no visible binding for global variable ‘Test’
+fetch_sat_performance: no visible binding for global variable ‘Subject’
+fetch_sat_performance: no visible binding for global variable
+  ‘School_Avg’
+fetch_sat_performance: no visible binding for global variable
+  ‘State_avg’
+fetch_sat_performance: no visible binding for global variable
+  ‘Benchmark’
+fetch_sat_performance: no visible binding for global variable ‘BT_PCT’
+fetch_sat_performance: no visible binding for global variable
+  ‘STATE_BT_PCT’
+fetch_work_based_learning: no visible binding for global variable
+  ‘career_cluster’
+fetch_work_based_learning: no visible binding for global variable
+  ‘students_participating_in_work_based_learning’
+fetch_work_based_learning: no visible binding for global variable
+  ‘perc_students_participating_learning_by_cluster’
+fetch_work_based_learning: no visible binding for global variable
+  ‘students_participating’
+fetch_work_based_learning: no visible binding for global variable
+  ‘pct_participating’
+process_chronic_absenteeism_cols: no visible binding for global
+  variable ‘chronic_abs_pct’
+Undefined global functions or variables:
+  ACT BT_PCT Benchmark Continuing Students CountyCode CountyName
+  DistrictCode DistrictName Graduates HighSchoolPersistance Language
+  Non-Continuing Student PSAT Perc12Graders SAT STATE_ACT STATE_BT_PCT
+  STATE_PSAT STATE_SAT SchoolCode SchoolName School_Avg SealsEarned
+  State_avg StudentGroup Subject Test act_participation ap3_ib4_school
+  ap3_ib4_state ap_3_ib_4_school ap_3_ib_4_state apib_course_school
+  apib_course_state apib_coursework_school apib_coursework_state
+  apib_exam_school apib_exam_state atleast_one_credential_earned
+  career_cluster chronic_abs_pct chronically_absent_rate coef
+  continuing_rate credentials_earned cte_concentrators cte_participants
+  discipline_rate diversity_index dual_enrollment_school
+  dual_enrollment_state dual_school dual_state earned_one_credential
+  gender_diversity_score grad_rate_6yr industry_credentials_earned
+  language lm location_id metric_name metric_value multi_year_trend
+  n_unique_years n_years non_continuing_rate pct_12th_graders
+  pct_participating perc_students_participating_learning_by_cluster
+  persistence_rate prev_value prop psat_participation retention_rate
+  sat_participation school_cteconcentrators school_cteparticipants
+  seals_earned stability_index state_act state_cte_concentrators
+  state_cte_participants state_cteconcentrators state_cteparticipants
+  state_psat state_sat student_staff_ratio students_enrolled
+  students_enrolled_in_program students_participating
+  students_participating_in_work_based_learning total_staff trend
+  trend_slope turnover_rate year_over_year_change
+  year_over_year_pct_change
+Consider adding
+  importFrom("stats", "coef", "lm")
+to your NAMESPACE file.
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... WARNING
+Missing link(s) in Rd file 'analyze_retention_patterns.Rd':
+  ‘fetch_staff_retention’
+
+See section 'Cross-references' in the 'Writing R Extensions' manual.
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... WARNING
+Codoc mismatches from Rd file 'fetch_chronic_absenteeism.Rd':
+fetch_chronic_absenteeism
+  Code: function(end_year, level = "school")
+  Docs: function(end_year)
+  Argument names in code not in docs:
+    level
+
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking LazyData ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking files in ‘vignettes’ ... WARNING
+Files in the 'vignettes' directory but no files in 'inst/doc':
+  ‘getting-started.Rmd’ ‘nj-enrollment-insights.Rmd’
+  ‘spr-dictionary.Rmd’
+* checking examples ... OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... SKIPPED
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... WARNING
+Directory 'inst/doc' does not exist.
+Package vignettes without corresponding single PDF/HTML:
+  ‘getting-started.Rmd’
+  ‘nj-enrollment-insights.Rmd’
+  ‘spr-dictionary.Rmd’
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... OK
+* DONE
+Status: 5 WARNINGs, 3 NOTEs

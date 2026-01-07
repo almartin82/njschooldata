@@ -9,6 +9,33 @@
 #
 # ==============================================================================
 
+# Declare global variables to suppress R CMD check notes
+utils::globalVariables(
+  c("CountyCode", "CountyName", "DistrictCode", "DistrictName", "SchoolCode",
+    "SchoolName", "StudentGroup", "Graduates", "Continuing Students",
+    "Non-Continuing Student", "HighSchoolPersistance", "grad_rate_6yr",
+    "continuing_rate", "non_continuing_rate", "persistence_rate",
+    "apib_course_school", "apib_course_state", "apib_exam_school",
+    "apib_exam_state", "ap_3_ib_4_school", "ap_3_ib_4_state",
+    "dual_school", "dual_state", "apib_coursework_school", "apib_coursework_state",
+    "ap3_ib4_school", "ap3_ib4_state", "dual_enrollment_school",
+    "dual_enrollment_state", "Language", "SealsEarned", "Perc12Graders",
+    "language", "seals_earned", "pct_12th_graders", "chronically_absent_rate",
+    "school_cteparticipants", "school_cteconcentrators", "state_cteparticipants",
+    "state_cteconcentrators", "cte_participants", "cte_concentrators",
+    "state_cte_participants", "state_cte_concentrators", "career_cluster",
+    "students_enrolled_in_program", "atleast_one_credential_earned",
+    "industry_credentials_earned", "students_enrolled", "earned_one_credential",
+    "credentials_earned", "SAT", "ACT", "PSAT", "STATE_SAT", "STATE_ACT",
+    "STATE_PSAT", "sat_participation", "act_participation", "psat_participation",
+    "state_sat", "state_act", "state_psat", "Test", "Subject", "School_Avg",
+    "State_avg", "Benchmark", "BT_PCT", "STATE_BT_PCT",
+    "students_participating_in_work_based_learning",
+    "perc_students_participating_learning_by_cluster", "students_participating",
+    "pct_participating", "chronic_abs_pct")
+)
+
+
 # -----------------------------------------------------------------------------
 # SAT/ACT Participation
 # -----------------------------------------------------------------------------

@@ -1,0 +1,1473 @@
+
+R version 4.5.0 (2025-04-11) -- "How About a Twenty-Six"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin22.6.0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "njschooldata"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('njschooldata')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("add_percentile_rank")
+> ### * add_percentile_rank
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: add_percentile_rank
+> ### Title: Add percentile rank columns for any metric
+> ### Aliases: add_percentile_rank
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Simple statewide percentile
+> ##D grate %>%
+> ##D   group_by(end_year, subgroup) %>%
+> ##D   add_percentile_rank("grad_rate")
+> ##D 
+> ##D # DFG peer percentile
+> ##D grate %>%
+> ##D   group_by(end_year, dfg, subgroup) %>%
+> ##D   add_percentile_rank("grad_rate", prefix = "dfg")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("analyze_retention_patterns")
+> ### * analyze_retention_patterns
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: analyze_retention_patterns
+> ### Title: Analyze Staff Retention Patterns
+> ### Aliases: analyze_retention_patterns
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Fetch retention data for multiple years
+> ##D retain_2022 <- fetch_staff_retention(2022)
+> ##D retain_2023 <- fetch_staff_retention(2023)
+> ##D retain_2024 <- fetch_staff_retention(2024)
+> ##D 
+> ##D # Combine into named list
+> ##D df_list <- list(
+> ##D   "2022" = retain_2022,
+> ##D   "2023" = retain_2023,
+> ##D   "2024" = retain_2024
+> ##D )
+> ##D 
+> ##D # Analyze overall retention patterns
+> ##D overall_patterns <- analyze_retention_patterns(df_list, by_subgroup = FALSE)
+> ##D 
+> ##D # Analyze by demographic subgroup
+> ##D subgroup_patterns <- analyze_retention_patterns(df_list, by_subgroup = TRUE)
+> ##D 
+> ##D # View schools with declining retention
+> ##D subgroup_patterns %>%
+> ##D   dplyr::filter(trend == "declining") %>%
+> ##D   dplyr::select(school_name, year, subgroup, retention_rate, trend)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("calc_discipline_rates_by_subgroup")
+> ### * calc_discipline_rates_by_subgroup
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: calc_discipline_rates_by_subgroup
+> ### Title: Calculate Discipline Rates by Subgroup
+> ### Aliases: calc_discipline_rates_by_subgroup
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get disciplinary removals data
+> ##D discipline <- fetch_disciplinary_removals(2024)
+> ##D 
+> ##D # Calculate rates per 1000 students
+> ##D rates <- calc_discipline_rates_by_subgroup(discipline, rate_per = 1000)
+> ##D 
+> ##D # View disproportionality for racial subgroups
+> ##D rates %>%
+> ##D   dplyr::filter(subgroup %in% c("black", "hispanic", "white")) %>%
+> ##D   dplyr::select(school_name, subgroup, discipline_rate, risk_ratio)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("calc_staff_diversity_metrics")
+> ### * calc_staff_diversity_metrics
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: calc_staff_diversity_metrics
+> ### Title: Calculate Staff Diversity Metrics
+> ### Aliases: calc_staff_diversity_metrics
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get staff demographics data
+> ##D demographics <- fetch_staff_demographics(2024)
+> ##D 
+> ##D # Calculate racial diversity
+> ##D racial_div <- calc_staff_diversity_metrics(demographics, metrics = "racial")
+> ##D 
+> ##D # Calculate both racial and gender diversity
+> ##D all_div <- calc_staff_diversity_metrics(demographics,
+> ##D                                          metrics = c("racial", "gender"))
+> ##D 
+> ##D # View most diverse schools
+> ##D all_div %>%
+> ##D   dplyr::arrange(dplyr::desc(diversity_index)) %>%
+> ##D   dplyr::select(school_name, diversity_index, diversity_quintile)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("calc_student_staff_ratio")
+> ### * calc_student_staff_ratio
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: calc_student_staff_ratio
+> ### Title: Calculate and Analyze Student-Staff Ratios
+> ### Aliases: calc_student_staff_ratio
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get staff ratio data
+> ##D ratios <- fetch_staff_ratios(2024)
+> ##D 
+> ##D # Calculate overall student-staff ratios
+> ##D overall_ratios <- calc_student_staff_ratio(ratios, ratio_type = "overall")
+> ##D 
+> ##D # Calculate teacher-specific ratios
+> ##D teacher_ratios <- calc_student_staff_ratio(ratios, ratio_type = "teachers")
+> ##D 
+> ##D # View schools with highest student-teacher ratios
+> ##D teacher_ratios %>%
+> ##D   dplyr::arrange(dplyr::desc(student_staff_ratio)) %>%
+> ##D   dplyr::select(school_name, student_staff_ratio, ratio_category)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("calculate_subgroup_gap")
+> ### * calculate_subgroup_gap
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: calculate_subgroup_gap
+> ### Title: Calculate achievement gap between two subgroups
+> ### Aliases: calculate_subgroup_gap
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Calculate Black-White graduation rate gap
+> ##D grate %>%
+> ##D   filter(subgroup %in% c("white", "black")) %>%
+> ##D   calculate_subgroup_gap(
+> ##D     metric_col = "grad_rate",
+> ##D     subgroup_a = "white",
+> ##D     subgroup_b = "black"
+> ##D   )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("check_url_accessible")
+> ### * check_url_accessible
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: check_url_accessible
+> ### Title: Check if a URL is accessible
+> ### Aliases: check_url_accessible
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D check_url_accessible("https://www.nj.gov/education/")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("city_ecosystem_summary")
+> ### * city_ecosystem_summary
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: city_ecosystem_summary
+> ### Title: Summarize sector performance within a city
+> ### Aliases: city_ecosystem_summary
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Newark ecosystem summary
+> ##D city_ecosystem_summary(
+> ##D   df = grate_with_aggs,
+> ##D   metric_col = "grad_rate",
+> ##D   host_district_id = "3570"
+> ##D )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("compare_discipline_across_years")
+> ### * compare_discipline_across_years
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: compare_discipline_across_years
+> ### Title: Compare Discipline Across Years
+> ### Aliases: compare_discipline_across_years
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Fetch data for multiple years
+> ##D disc_2022 <- fetch_disciplinary_removals(2022)
+> ##D disc_2023 <- fetch_disciplinary_removals(2023)
+> ##D disc_2024 <- fetch_disciplinary_removals(2024)
+> ##D 
+> ##D # Combine into named list
+> ##D df_list <- list(
+> ##D   "2022" = disc_2022,
+> ##D   "2023" = disc_2023,
+> ##D   "2024" = disc_2024
+> ##D )
+> ##D 
+> ##D # Compare trends
+> ##D trends <- compare_discipline_across_years(df_list)
+> ##D 
+> ##D # View schools with increasing discipline rates
+> ##D trends %>%
+> ##D   dplyr::filter(metric_name == "discipline_rate", multi_year_trend == "increasing")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("define_peer_group")
+> ### * define_peer_group
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: define_peer_group
+> ### Title: Define a peer comparison group
+> ### Aliases: define_peer_group
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # DFG peer group for districts
+> ##D grate %>%
+> ##D   define_peer_group("dfg", level = "district") %>%
+> ##D   add_percentile_rank("grad_rate")
+> ##D 
+> ##D # Custom peer group (DFG A districts)
+> ##D grate %>%
+> ##D   define_peer_group("custom", custom_ids = dfg_a_districts, level = "district") %>%
+> ##D   add_percentile_rank("grad_rate")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_6yr_grad_rate")
+> ### * fetch_6yr_grad_rate
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_6yr_grad_rate
+> ### Title: Fetch 6-Year Graduation Rate data
+> ### Aliases: fetch_6yr_grad_rate
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 school-level 6-year graduation rates
+> ##D grad6_2024 <- fetch_6yr_grad_rate(2024)
+> ##D 
+> ##D # Get district-level 6-year graduation rates
+> ##D grad6_dist <- fetch_6yr_grad_rate(2024, level = "district")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_absenteeism_by_grade")
+> ### * fetch_absenteeism_by_grade
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_absenteeism_by_grade
+> ### Title: Fetch Absenteeism by Grade
+> ### Aliases: fetch_absenteeism_by_grade
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get school-level chronic absenteeism by grade
+> ##D ca_grade <- fetch_absenteeism_by_grade(2024)
+> ##D 
+> ##D # Analyze kindergarten absenteeism
+> ##D k_absent <- ca_grade %>%
+> ##D   filter(grade_level == "KF", subgroup == "total population")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_access")
+> ### * fetch_access
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_access
+> ### Title: Fetch ACCESS for ELLs data
+> ### Aliases: fetch_access
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 ACCESS results for all grades
+> ##D access_2024 <- fetch_access(2024)
+> ##D 
+> ##D # Get 2024 ACCESS results for Grade 3 only
+> ##D access_g3 <- fetch_access(2024, grade = 3)
+> ##D 
+> ##D # Get Kindergarten ACCESS results
+> ##D access_k <- fetch_access(2024, grade = "K")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_6yr_grad_rate")
+> ### * fetch_all_6yr_grad_rate
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_6yr_grad_rate
+> ### Title: Fetch all 6-Year Graduation Rate data
+> ### Aliases: fetch_all_6yr_grad_rate
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all school-level 6-year graduation data
+> ##D all_grad6 <- fetch_all_6yr_grad_rate()
+> ##D 
+> ##D # Get both school and district data
+> ##D all_grad6_both <- fetch_all_6yr_grad_rate(level = "both")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_access")
+> ### * fetch_all_access
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_access
+> ### Title: Fetch all ACCESS for ELLs results
+> ### Aliases: fetch_all_access
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all ACCESS results (takes a while)
+> ##D all_access <- fetch_all_access()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_chronic_absenteeism")
+> ### * fetch_all_chronic_absenteeism
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_chronic_absenteeism
+> ### Title: Fetch all Chronic Absenteeism data
+> ### Aliases: fetch_all_chronic_absenteeism
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all chronic absenteeism data
+> ##D all_ca <- fetch_all_chronic_absenteeism()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_njgpa")
+> ### * fetch_all_njgpa
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_njgpa
+> ### Title: Fetch all NJGPA results
+> ### Aliases: fetch_all_njgpa
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all NJGPA results
+> ##D all_njgpa <- fetch_all_njgpa()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_parcc")
+> ### * fetch_all_parcc
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_parcc
+> ### Title: Fetch all PARCC results
+> ### Aliases: fetch_all_parcc
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all PARCC/NJSLA results (takes a while)
+> ##D all_parcc <- fetch_all_parcc()
+> ##D 
+> ##D # Exclude science assessments
+> ##D all_parcc_no_sci <- fetch_all_parcc(include_science = FALSE)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_all_parcc_with_progress")
+> ### * fetch_all_parcc_with_progress
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_all_parcc_with_progress
+> ### Title: Fetch all PARCC/NJSLA results with progress
+> ### Aliases: fetch_all_parcc_with_progress
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D all_results <- fetch_all_parcc_with_progress()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_ap_participation")
+> ### * fetch_ap_participation
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_ap_participation
+> ### Title: Fetch AP/IB Participation and Performance Data
+> ### Aliases: fetch_ap_participation
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 AP/IB data
+> ##D apib <- fetch_ap_participation(2024)
+> ##D 
+> ##D # Compare exam participation vs performance
+> ##D apib %>%
+> ##D   select(school_name, apib_exam_school, ap3_ib4_school)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_ap_performance")
+> ### * fetch_ap_performance
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_ap_performance
+> ### Title: Fetch AP/IB Performance Data (Alias)
+> ### Aliases: fetch_ap_performance
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ap_perf <- fetch_ap_performance(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_apprenticeship_data")
+> ### * fetch_apprenticeship_data
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_apprenticeship_data
+> ### Title: Fetch Apprenticeship Data
+> ### Aliases: fetch_apprenticeship_data
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 apprenticeship data
+> ##D app <- fetch_apprenticeship_data(2024)
+> ##D 
+> ##D # Reshape to long format for analysis
+> ##D app_long <- app %>%
+> ##D   tidyr::pivot_longer(
+> ##D     cols = starts_with("year_"),
+> ##D     names_to = "apprenticeship_year",
+> ##D     values_to = "apprenticeship_count",
+> ##D     names_prefix = "year_"
+> ##D   ) %>%
+> ##D   filter(!is.na(apprenticeship_count))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_biliteracy_seal")
+> ### * fetch_biliteracy_seal
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_biliteracy_seal
+> ### Title: Fetch Seal of Biliteracy Data
+> ### Aliases: fetch_biliteracy_seal
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 biliteracy seal data
+> ##D biliteracy <- fetch_biliteracy_seal(2024)
+> ##D 
+> ##D # Top languages by seal count
+> ##D biliteracy %>%
+> ##D   group_by(language) %>%
+> ##D   summarize(total_seals = sum(seals_earned, na.rm = TRUE)) %>%
+> ##D   dplyr::arrange(desc(total_seals))
+> ##D 
+> ##D # Schools with most diverse language offerings
+> ##D biliteracy %>%
+> ##D   group_by(school_name) %>%
+> ##D   summarize(num_languages = sum(seals_earned > 0, na.rm = TRUE)) %>%
+> ##D   dplyr::arrange(desc(num_languages))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_chronic_absenteeism")
+> ### * fetch_chronic_absenteeism
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_chronic_absenteeism
+> ### Title: Fetch Chronic Absenteeism data
+> ### Aliases: fetch_chronic_absenteeism
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 chronic absenteeism data
+> ##D ca_2024 <- fetch_chronic_absenteeism(2024)
+> ##D 
+> ##D # Calculate chronic absenteeism rates
+> ##D ca_2024$chronic_absent_black <- 100 - ca_2024$attendance_black
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_cte_participation")
+> ### * fetch_cte_participation
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_cte_participation
+> ### Title: Fetch CTE Participation Data
+> ### Aliases: fetch_cte_participation
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 CTE participation
+> ##D cte <- fetch_cte_participation(2024)
+> ##D 
+> ##D # Compare CTE participation across subgroups
+> ##D cte %>%
+> ##D   filter(school_id == "030") %>%
+> ##D   select(subgroup, cte_participants)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_days_absent")
+> ### * fetch_days_absent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_days_absent
+> ### Title: Fetch Days Absent Data
+> ### Aliases: fetch_days_absent
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get school-level days absent distribution
+> ##D days <- fetch_days_absent(2024)
+> ##D 
+> ##D # View absence distribution for a specific school
+> ##D days %>%
+> ##D   filter(school_id == "030") %>%
+> ##D   select(school_name, `0% Absences`, `20% or higher`)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_disciplinary_removals")
+> ### * fetch_disciplinary_removals
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_disciplinary_removals
+> ### Title: Fetch Disciplinary Removals Data
+> ### Aliases: fetch_disciplinary_removals
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D discipline <- fetch_disciplinary_removals(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_dropout_rates")
+> ### * fetch_dropout_rates
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_dropout_rates
+> ### Title: Fetch Dropout Rate Data
+> ### Aliases: fetch_dropout_rates
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D dropout <- fetch_dropout_rates(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_enr")
+> ### * fetch_enr
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_enr
+> ### Title: Gets and processes a NJ enrollment file
+> ### Aliases: fetch_enr
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2023 enrollment data
+> ##D enr_2023 <- fetch_enr(2023)
+> ##D 
+> ##D # Get tidy (long format) enrollment data
+> ##D enr_tidy <- fetch_enr(2023, tidy = TRUE)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_enr_cached")
+> ### * fetch_enr_cached
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_enr_cached
+> ### Title: Fetch enrollment data with caching
+> ### Aliases: fetch_enr_cached
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # First call downloads data
+> ##D enr <- fetch_enr_cached(2024)
+> ##D 
+> ##D # Second call returns cached data
+> ##D enr <- fetch_enr_cached(2024)  # Instant!
+> ##D 
+> ##D # Check cache status
+> ##D njsd_cache_info()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_enr_years")
+> ### * fetch_enr_years
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_enr_years
+> ### Title: Fetch multiple years of enrollment data with progress
+> ### Aliases: fetch_enr_years
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D enr_5yr <- fetch_enr_years(2020:2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_essa_status")
+> ### * fetch_essa_status
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_essa_status
+> ### Title: Fetch ESSA Accountability Status
+> ### Aliases: fetch_essa_status
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D essa <- fetch_essa_status(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_grad_count")
+> ### * fetch_grad_count
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_grad_count
+> ### Title: Fetch Grad Counts
+> ### Aliases: fetch_grad_count
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2023 graduation counts
+> ##D gcount_2023 <- fetch_grad_count(2023)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_grad_rate")
+> ### * fetch_grad_rate
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_grad_rate
+> ### Title: Fetch Grad Rate
+> ### Aliases: fetch_grad_rate
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2023 graduation rates
+> ##D grate_2023 <- fetch_grad_rate(2023)
+> ##D 
+> ##D # Get 5-year graduation rates
+> ##D grate_5yr <- fetch_grad_rate(2019, methodology = "5 year")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_ib_participation")
+> ### * fetch_ib_participation
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_ib_participation
+> ### Title: Fetch IB Participation Data
+> ### Aliases: fetch_ib_participation
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ib <- fetch_ib_participation(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_industry_credentials")
+> ### * fetch_industry_credentials
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_industry_credentials
+> ### Title: Fetch Industry Valued Credentials Data
+> ### Aliases: fetch_industry_credentials
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 industry credentials
+> ##D creds <- fetch_industry_credentials(2024)
+> ##D 
+> ##D # Top schools by credentials earned
+> ##D creds %>%
+> ##D   group_by(school_name) %>%
+> ##D   summarize(total_credentials = sum(credentials_earned, na.rm = TRUE)) %>%
+> ##D   dplyr::arrange(desc(total_credentials))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_math_course_enrollment")
+> ### * fetch_math_course_enrollment
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_math_course_enrollment
+> ### Title: Fetch Math Course Enrollment Data
+> ### Aliases: fetch_math_course_enrollment
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D math <- fetch_math_course_enrollment(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_njgpa")
+> ### * fetch_njgpa
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_njgpa
+> ### Title: Fetch NJGPA (NJ Graduation Proficiency Assessment) data
+> ### Aliases: fetch_njgpa
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2023 NJGPA ELA results
+> ##D njgpa_ela <- fetch_njgpa(2023, "ela")
+> ##D 
+> ##D # Get 2024 NJGPA Math results
+> ##D njgpa_math <- fetch_njgpa(2024, "math")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_parcc")
+> ### * fetch_parcc
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_parcc
+> ### Title: Gets and cleans up a PARCC data file
+> ### Aliases: fetch_parcc
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2023 grade 4 math results
+> ##D parcc_2023 <- fetch_parcc(2023, 4, "math")
+> ##D 
+> ##D # Get 2023 Algebra 1 results
+> ##D alg1_2023 <- fetch_parcc(2023, "ALG1", "math")
+> ##D 
+> ##D # Get 2023 grade 8 science results
+> ##D science_2023 <- fetch_parcc(2023, 8, "science")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_postsecondary")
+> ### * fetch_postsecondary
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_postsecondary
+> ### Title: Fetch Postsecondary Enrollment Rates
+> ### Aliases: fetch_postsecondary
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all postsecondary enrollment data
+> ##D postsec <- fetch_postsecondary()
+> ##D 
+> ##D # Filter for 16-month rates only
+> ##D postsec_16mo <- postsec[postsec$measurement_type == "16_month", ]
+> ##D 
+> ##D # Filter for district-level data only
+> ##D district_rates <- postsec[postsec$is_district, ]
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_sat_participation")
+> ### * fetch_sat_participation
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_sat_participation
+> ### Title: Fetch SAT/ACT/PSAT Participation Data
+> ### Aliases: fetch_sat_participation
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 SAT/ACT participation
+> ##D sat <- fetch_sat_participation(2024)
+> ##D 
+> ##D # Analyze SAT participation gaps
+> ##D sat %>%
+> ##D   filter(sat_participation < 50) %>%
+> ##D   select(school_name, sat_participation, state_sat)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_sat_performance")
+> ### * fetch_sat_performance
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_sat_performance
+> ### Title: Fetch SAT/ACT/PSAT Performance Data
+> ### Aliases: fetch_sat_performance
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 SAT performance
+> ##D sat_perf <- fetch_sat_performance(2024)
+> ##D 
+> ##D # Filter for SAT Math scores only
+> ##D sat_math <- sat_perf %>%
+> ##D   filter(test_type == "SAT", subject == "Math") %>%
+> ##D   select(school_name, school_avg, state_avg)
+> ##D 
+> ##D # Get only SAT data
+> ##D sat_only <- fetch_sat_performance(2024, test_type = "SAT")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_spr_data")
+> ### * fetch_spr_data
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_spr_data
+> ### Title: Fetch SPR Data
+> ### Aliases: fetch_spr_data
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get chronic absenteeism data
+> ##D ca <- fetch_spr_data("ChronicAbsenteeism", 2024)
+> ##D 
+> ##D # Get district-level graduation data
+> ##D grad <- fetch_spr_data("6YrGraduationCohortProfile", 2024, level = "district")
+> ##D 
+> ##D # Get teacher experience data
+> ##D teachers <- fetch_spr_data("TeachersExperience", 2023)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_staff_demographics")
+> ### * fetch_staff_demographics
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_staff_demographics
+> ### Title: Fetch Staff Demographics Data
+> ### Aliases: fetch_staff_demographics
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D staff <- fetch_staff_demographics(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_staff_ratios")
+> ### * fetch_staff_ratios
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_staff_ratios
+> ### Title: Fetch Student-Staff Ratio Data
+> ### Aliases: fetch_staff_ratios
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ratios <- fetch_staff_ratios(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_teacher_experience")
+> ### * fetch_teacher_experience
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_teacher_experience
+> ### Title: Fetch Teacher Experience Data
+> ### Aliases: fetch_teacher_experience
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D teachers <- fetch_teacher_experience(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_violence_vandalism_hib")
+> ### * fetch_violence_vandalism_hib
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_violence_vandalism_hib
+> ### Title: Fetch Violence/Vandalism/HIB Data
+> ### Aliases: fetch_violence_vandalism_hib
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D incidents <- fetch_violence_vandalism_hib(2024)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fetch_work_based_learning")
+> ### * fetch_work_based_learning
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fetch_work_based_learning
+> ### Title: Fetch Work-Based Learning Data
+> ### Aliases: fetch_work_based_learning
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get 2024 work-based learning data
+> ##D wbl <- fetch_work_based_learning(2024)
+> ##D 
+> ##D # Schools with highest work-based learning participation
+> ##D wbl %>%
+> ##D   group_by(school_name) %>%
+> ##D   summarize(avg_participation = mean(pct_participating, na.rm = TRUE)) %>%
+> ##D   dplyr::arrange(desc(avg_participation))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("gap_percentile_rank")
+> ### * gap_percentile_rank
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: gap_percentile_rank
+> ### Title: Rank entities by achievement gap within peer group
+> ### Aliases: gap_percentile_rank
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D grate %>%
+> ##D   calculate_subgroup_gap("grad_rate", "white", "black") %>%
+> ##D   gap_percentile_rank(gap_col = "grad_rate_gap", peer_type = "dfg")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("gap_trajectory")
+> ### * gap_trajectory
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: gap_trajectory
+> ### Title: Track achievement gap trends over time
+> ### Aliases: gap_trajectory
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Track Newark's Black-White grad rate gap over time
+> ##D grate %>%
+> ##D   filter(district_id == "3570") %>%
+> ##D   gap_trajectory(
+> ##D     metric_col = "grad_rate",
+> ##D     subgroup_a = "white",
+> ##D     subgroup_b = "black"
+> ##D   )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("get_dfg_districts")
+> ### * get_dfg_districts
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: get_dfg_districts
+> ### Title: Get districts in a specific District Factor Group
+> ### Aliases: get_dfg_districts
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get all DFG A districts (highest need)
+> ##D dfg_a <- get_dfg_districts("A")
+> ##D 
+> ##D # Use as peer group for percentile ranking
+> ##D grate %>%
+> ##D   define_peer_group("custom", custom_ids = dfg_a) %>%
+> ##D   add_percentile_rank("grad_rate")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("get_valid_grades")
+> ### * get_valid_grades
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: get_valid_grades
+> ### Title: Get valid grades for an assessment type and year
+> ### Aliases: get_valid_grades
+> 
+> ### ** Examples
+> 
+> get_valid_grades("njask", 2010)
+[1] 3 4 5 6 7 8
+> get_valid_grades("parcc", 2023)
+ [1] "3"    "4"    "5"    "6"    "7"    "8"    "9"    "10"   "ALG1" "GEO" 
+[11] "ALG2"
+> 
+> 
+> 
+> cleanEx()
+> nameEx("get_valid_years")
+> ### * get_valid_years
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: get_valid_years
+> ### Title: Get valid year range for a data type
+> ### Aliases: get_valid_years
+> ### Keywords: internal
+> 
+> ### ** Examples
+> 
+> get_valid_years("enrollment")
+ [1] 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014
+[16] 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025
+> get_valid_years("parcc")
+[1] 2015 2016 2017 2018 2019 2021 2022 2023 2024
+> 
+> 
+> 
+> cleanEx()
+> nameEx("list_spr_sheets")
+> ### * list_spr_sheets
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: list_spr_sheets
+> ### Title: List Available SPR Sheets
+> ### Aliases: list_spr_sheets
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # List all school-level sheets for 2024
+> ##D sheets <- list_spr_sheets(2024)
+> ##D 
+> ##D # List all district-level sheets
+> ##D district_sheets <- list_spr_sheets(2024, level = "district")
+> ##D 
+> ##D # Search for specific types of sheets
+> ##D attendance_sheets <- sheets[grepl("Absent|Attendance", sheets, ignore.case = TRUE)]
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("njsd_cache_clear")
+> ### * njsd_cache_clear
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: njsd_cache_clear
+> ### Title: Clear the session cache
+> ### Aliases: njsd_cache_clear
+> 
+> ### ** Examples
+> 
+> njsd_cache_clear()
+Cleared 0 item(s) from njschooldata cache.
+> 
+> 
+> 
+> cleanEx()
+> nameEx("njsd_cache_enable")
+> ### * njsd_cache_enable
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: njsd_cache_enable
+> ### Title: Enable or disable the session cache
+> ### Aliases: njsd_cache_enable
+> 
+> ### ** Examples
+> 
+> njsd_cache_enable(FALSE)  # Disable caching
+njschooldata cache disabled. Data will be downloaded fresh each time.
+> njsd_cache_enable(TRUE)   # Re-enable caching
+njschooldata cache enabled.
+> 
+> 
+> 
+> cleanEx()
+> nameEx("njsd_cache_info")
+> ### * njsd_cache_info
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: njsd_cache_info
+> ### Title: Get cache statistics and information
+> ### Aliases: njsd_cache_info
+> 
+> ### ** Examples
+> 
+> njsd_cache_info()
+njschooldata Session Cache
+==========================
+Status:     Enabled
+Items:      0
+Memory:     0.00 MB
+Cache hits: 0
+Misses:     0
+> 
+> 
+> 
+> cleanEx()
+> nameEx("njsd_progress_enable")
+> ### * njsd_progress_enable
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: njsd_progress_enable
+> ### Title: Enable or disable progress indicators
+> ### Aliases: njsd_progress_enable
+> 
+> ### ** Examples
+> 
+> njsd_progress_enable(FALSE)  # Quiet mode
+> njsd_progress_enable(TRUE)   # Show progress
+> 
+> 
+> 
+> cleanEx()
+> nameEx("percentile_rank_trend")
+> ### * percentile_rank_trend
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: percentile_rank_trend
+> ### Title: Calculate percentile rank change over time
+> ### Aliases: percentile_rank_trend
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Track Newark's percentile rank over time
+> ##D grate_ranked %>%
+> ##D   filter(district_id == "3570") %>%
+> ##D   percentile_rank_trend(
+> ##D     percentile_col = "grad_rate_percentile",
+> ##D     entity_cols = c("district_id", "subgroup")
+> ##D   )
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("progress_tracker")
+> ### * progress_tracker
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: progress_tracker
+> ### Title: Create a simple progress tracker
+> ### Aliases: progress_tracker
+> ### Keywords: internal
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D pb <- progress_tracker(10, "Downloading files")
+> ##D for (i in 1:10) {
+> ##D   Sys.sleep(0.1)
+> ##D   pb$update(i, sprintf("File %d", i))
+> ##D }
+> ##D pb$done()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("sector_gap")
+> ### * sector_gap
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: sector_gap
+> ### Title: Calculate performance gap between charter and district sectors
+> ### Aliases: sector_gap
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Get sector gaps for all host cities
+> ##D grate_with_aggs %>%
+> ##D   sector_gap(metric_col = "grad_rate")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("validate_end_year")
+> ### * validate_end_year
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: validate_end_year
+> ### Title: Validate end_year parameter
+> ### Aliases: validate_end_year
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D validate_end_year(2024, "enrollment")  # Valid
+> ##D validate_end_year(1990, "enrollment")  # Error: year out of range
+> ##D validate_end_year(2020, "parcc")       # Error: COVID year
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("verify_data_urls")
+> ### * verify_data_urls
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: verify_data_urls
+> ### Title: Verify all configured URLs for a data type
+> ### Aliases: verify_data_urls
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D verify_data_urls("enrollment", 2022:2024)
+> ## End(Not run)
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  0.39 0.035 0.444 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

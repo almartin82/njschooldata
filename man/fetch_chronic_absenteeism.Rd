@@ -4,10 +4,12 @@
 \alias{fetch_chronic_absenteeism}
 \title{Fetch Chronic Absenteeism data}
 \usage{
-fetch_chronic_absenteeism(end_year)
+fetch_chronic_absenteeism(end_year, level = "school")
 }
 \arguments{
 \item{end_year}{A school year. Valid values are 2017-2019 and 2022-2024.}
+
+\item{level}{One of "school" or "district"}
 }
 \value{
 Processed chronic absenteeism dataframe with columns including:

@@ -9,6 +9,14 @@
 #
 # ==============================================================================
 
+# Declare global variables to suppress R CMD check notes
+utils::globalVariables(
+  c("discipline_rate", "location_id", "metric_name", "metric_value",
+    "prev_value", "trend_slope", "n_unique_years", "year_over_year_change",
+    "year_over_year_pct_change", "multi_year_trend")
+)
+
+
 # -----------------------------------------------------------------------------
 # Discipline Rate Calculations by Subgroup
 # -----------------------------------------------------------------------------

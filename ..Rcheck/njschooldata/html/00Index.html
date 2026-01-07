@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: A Simple Interface for Accessing NJ DOE School Data in R and
+Python</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> A Simple Interface for Accessing NJ DOE School Data in R and
+Python
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;njschooldata&rsquo; version 0.9.0</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<p style="text-align: center;">
+<a href="#A">A</a>
+<a href="#C">C</a>
+<a href="#D">D</a>
+<a href="#E">E</a>
+<a href="#F">F</a>
+<a href="#G">G</a>
+<a href="#I">I</a>
+<a href="#K">K</a>
+<a href="#L">L</a>
+<a href="#M">M</a>
+<a href="#N">N</a>
+<a href="#P">P</a>
+<a href="#R">R</a>
+<a href="#S">S</a>
+<a href="#T">T</a>
+<a href="#V">V</a>
+<a href="#W">W</a>
+</p>
+
+
+<h2><a id="A">-- A --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="add_dfg.html">add_dfg</a></td>
+<td>Add DFG classification to district data</td></tr>
+<tr><td style="width: 25%;"><a href="add_percentile_rank.html">add_percentile_rank</a></td>
+<td>Add percentile rank columns for any metric</td></tr>
+<tr><td style="width: 25%;"><a href="agg_enr_column_order.html">agg_enr_column_order</a></td>
+<td>Helper function to return aggregate enrollment columns in correct order</td></tr>
+<tr><td style="width: 25%;"><a href="agg_enr_pct_total.html">agg_enr_pct_total</a></td>
+<td>Helper function to support calculating pct_total on aggregate enr dataframes</td></tr>
+<tr><td style="width: 25%;"><a href="agg_spec_pop_column_order.html">agg_spec_pop_column_order</a></td>
+<td>Helper function to return aggregate special populations columns in correct order</td></tr>
+<tr><td style="width: 25%;"><a href="agg_sped_column_order.html">agg_sped_column_order</a></td>
+<td>Helper function to return aggregate sped columns in correct order</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_enr_aggs.html">allpublic_enr_aggs</a></td>
+<td>Calculate All Public Enrollment Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_gcount_aggs.html">allpublic_gcount_aggs</a></td>
+<td>Calculate Charter Sector Grad Count aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_grate_aggs.html">allpublic_grate_aggs</a></td>
+<td>Calculate All Public Grad Rate aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_matric_aggs.html">allpublic_matric_aggs</a></td>
+<td>Calculate All Public matriculation aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_parcc_aggs.html">allpublic_parcc_aggs</a></td>
+<td>Calculate All Public Options PARCC Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_spec_pop_aggs.html">allpublic_spec_pop_aggs</a></td>
+<td>Calculate All City Special Populations aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="allpublic_sped_aggs.html">allpublic_sped_aggs</a></td>
+<td>Calculate Charter Sector SPED aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="analyze_retention_patterns.html">analyze_retention_patterns</a></td>
+<td>Analyze Staff Retention Patterns</td></tr>
+</table>
+
+<h2><a id="C">-- C --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="calculate_access_rate.html">calculate_access_rate</a></td>
+<td>Calculate equity access rate</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_agg_parcc_prof.html">calculate_agg_parcc_prof</a></td>
+<td>Aggregate PARCC results across multiple grade levels</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_subgroup_gap.html">calculate_subgroup_gap</a></td>
+<td>Calculate achievement gap between two subgroups</td></tr>
+<tr><td style="width: 25%;"><a href="calc_discipline_rates_by_subgroup.html">calc_discipline_rates_by_subgroup</a></td>
+<td>Calculate Discipline Rates by Subgroup</td></tr>
+<tr><td style="width: 25%;"><a href="calc_staff_diversity_metrics.html">calc_staff_diversity_metrics</a></td>
+<td>Calculate Staff Diversity Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="calc_student_staff_ratio.html">calc_student_staff_ratio</a></td>
+<td>Calculate and Analyze Student-Staff Ratios</td></tr>
+<tr><td style="width: 25%;"><a href="charter_city.html">charter_city</a></td>
+<td>Charter School Host District Mapping</td></tr>
+<tr><td style="width: 25%;"><a href="charter_market_share.html">charter_market_share</a></td>
+<td>Calculate charter market share for host cities</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_enr_aggs.html">charter_sector_enr_aggs</a></td>
+<td>Calculate Charter Sector Enrollment Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_gcount_aggs.html">charter_sector_gcount_aggs</a></td>
+<td>Calculate Charter Sector Grad Count aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_grate_aggs.html">charter_sector_grate_aggs</a></td>
+<td>Calculate Charter Sector Grad Rate aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_matric_aggs.html">charter_sector_matric_aggs</a></td>
+<td>Calculate Charter Sector postsecondary matriculation aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_parcc_aggs.html">charter_sector_parcc_aggs</a></td>
+<td>Calculate Charter Sector PARCC aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_spec_pop_aggs.html">charter_sector_spec_pop_aggs</a></td>
+<td>Calculate Charter Sector Special Populations Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="charter_sector_sped_aggs.html">charter_sector_sped_aggs</a></td>
+<td>Calculate Charter Sector SPED Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="check_url_accessible.html">check_url_accessible</a></td>
+<td>Check if a URL is accessible</td></tr>
+<tr><td style="width: 25%;"><a href="city_ecosystem_summary.html">city_ecosystem_summary</a></td>
+<td>Summarize sector performance within a city</td></tr>
+<tr><td style="width: 25%;"><a href="clean_cds_fields.html">clean_cds_fields</a></td>
+<td>Clean up CDS field names</td></tr>
+<tr><td style="width: 25%;"><a href="clean_sped_df.html">clean_sped_df</a></td>
+<td>Clean SPED data</td></tr>
+<tr><td style="width: 25%;"><a href="compare_discipline_across_years.html">compare_discipline_across_years</a></td>
+<td>Compare Discipline Across Years</td></tr>
+</table>
+
+<h2><a id="D">-- D --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="define_peer_group.html">define_peer_group</a></td>
+<td>Define a peer comparison group</td></tr>
+<tr><td style="width: 25%;"><a href="dfg_percentile_rank.html">dfg_percentile_rank</a></td>
+<td>Calculate DFG peer percentile for any metric</td></tr>
+<tr><td style="width: 25%;"><a href="district_matric_aggs.html">district_matric_aggs</a></td>
+<td>Aggregates matriculation data by district</td></tr>
+<tr><td style="width: 25%;"><a href="download_and_clean_pr.html">download_and_clean_pr</a></td>
+<td>Download and clean performance report data</td></tr>
+</table>
+
+<h2><a id="E">-- E --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="ecosystem_trend.html">ecosystem_trend</a></td>
+<td>Track sector ecosystem dynamics over time</td></tr>
+<tr><td style="width: 25%;"><a href="enrich_grad_count.html">enrich_grad_count</a></td>
+<td>Enrich report card matriculation percentages with grad counts</td></tr>
+<tr><td style="width: 25%;"><a href="enrich_matric_counts.html">enrich_matric_counts</a></td>
+<td>Enrich matriculation rates with counts from grad counts</td></tr>
+<tr><td style="width: 25%;"><a href="enrich_rc_enrollment.html">enrich_rc_enrollment</a></td>
+<td>Enrich report card subgroup percentages with best guesses at subgroup numbers</td></tr>
+<tr><td style="width: 25%;"><a href="enrich_school_city_ward.html">enrich_school_city_ward</a></td>
+<td>Enrich School Data with City Ward</td></tr>
+<tr><td style="width: 25%;"><a href="enrich_school_latlong.html">enrich_school_latlong</a></td>
+<td>Enrich School Data with Lat / Long</td></tr>
+<tr><td style="width: 25%;"><a href="enr_grade_aggs.html">enr_grade_aggs</a></td>
+<td>Custom Enrollment Grade Level Aggregates</td></tr>
+<tr><td style="width: 25%;"><a href="extract_rc_AP.html">extract_rc_AP</a></td>
+<td>Extract Report Card Advanced Placement Data</td></tr>
+<tr><td style="width: 25%;"><a href="extract_rc_cds.html">extract_rc_cds</a></td>
+<td>Extract Report Card CDS</td></tr>
+<tr><td style="width: 25%;"><a href="extract_rc_college_matric.html">extract_rc_college_matric</a></td>
+<td>Extract Report Card Matriculation Rates</td></tr>
+<tr><td style="width: 25%;"><a href="extract_rc_enrollment.html">extract_rc_enrollment</a></td>
+<td>Extract Report Card Enrollment</td></tr>
+<tr><td style="width: 25%;"><a href="extract_rc_SAT.html">extract_rc_SAT</a></td>
+<td>Extract Report Card SAT School Averages</td></tr>
+</table>
+
+<h2><a id="F">-- F --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="fetch_6yr_grad_rate.html">fetch_6yr_grad_rate</a></td>
+<td>Fetch 6-Year Graduation Rate data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_absenteeism_by_grade.html">fetch_absenteeism_by_grade</a></td>
+<td>Fetch Absenteeism by Grade</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_access.html">fetch_access</a></td>
+<td>Fetch ACCESS for ELLs data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_6yr_grad_rate.html">fetch_all_6yr_grad_rate</a></td>
+<td>Fetch all 6-Year Graduation Rate data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_access.html">fetch_all_access</a></td>
+<td>Fetch all ACCESS for ELLs results</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_chronic_absenteeism.html">fetch_all_chronic_absenteeism</a></td>
+<td>Fetch all Chronic Absenteeism data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_njgpa.html">fetch_all_njgpa</a></td>
+<td>Fetch all NJGPA results</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_parcc.html">fetch_all_parcc</a></td>
+<td>Fetch all PARCC results</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_all_parcc_with_progress.html">fetch_all_parcc_with_progress</a></td>
+<td>Fetch all PARCC/NJSLA results with progress</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_apprenticeship_data.html">fetch_apprenticeship_data</a></td>
+<td>Fetch Apprenticeship Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_ap_participation.html">fetch_ap_participation</a></td>
+<td>Fetch AP/IB Participation and Performance Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_ap_performance.html">fetch_ap_performance</a></td>
+<td>Fetch AP/IB Performance Data (Alias)</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_biliteracy_seal.html">fetch_biliteracy_seal</a></td>
+<td>Fetch Seal of Biliteracy Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></td>
+<td>Fetch Chronic Absenteeism data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_cte_participation.html">fetch_cte_participation</a></td>
+<td>Fetch CTE Participation Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_days_absent.html">fetch_days_absent</a></td>
+<td>Fetch Days Absent Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_dfg.html">fetch_dfg</a></td>
+<td>Fetch NJ District Factor Group (DFG) data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_disciplinary_removals.html">fetch_disciplinary_removals</a></td>
+<td>Fetch Disciplinary Removals Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_dropout_rates.html">fetch_dropout_rates</a></td>
+<td>Fetch Dropout Rate Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_enr.html">fetch_enr</a></td>
+<td>Gets and processes a NJ enrollment file</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_enr_cached.html">fetch_enr_cached</a></td>
+<td>Fetch enrollment data with caching</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_enr_years.html">fetch_enr_years</a></td>
+<td>Fetch multiple years of enrollment data with progress</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_essa_status.html">fetch_essa_status</a></td>
+<td>Fetch ESSA Accountability Status</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_gepa.html">fetch_gepa</a></td>
+<td>gets and processes a GEPA file</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_grad_count.html">fetch_grad_count</a></td>
+<td>Fetch Grad Counts</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_grad_rate.html">fetch_grad_rate</a></td>
+<td>Fetch Grad Rate</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_hspa.html">fetch_hspa</a></td>
+<td>gets and processes a HSPA file</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_ib_participation.html">fetch_ib_participation</a></td>
+<td>Fetch IB Participation Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_industry_credentials.html">fetch_industry_credentials</a></td>
+<td>Fetch Industry Valued Credentials Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_many_tges.html">fetch_many_tges</a></td>
+<td>Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_math_course_enrollment.html">fetch_math_course_enrollment</a></td>
+<td>Fetch Math Course Enrollment Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_msgp.html">fetch_msgp</a></td>
+<td>Fetch mSGP</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_njask.html">fetch_njask</a></td>
+<td>gets and processes a NJASK file</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_njgpa.html">fetch_njgpa</a></td>
+<td>Fetch NJGPA (NJ Graduation Proficiency Assessment) data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_old_nj_assess.html">fetch_old_nj_assess</a></td>
+<td>a simplified interface into NJ assessment data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_parcc.html">fetch_parcc</a></td>
+<td>Gets and cleans up a PARCC data file</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_postsecondary.html">fetch_postsecondary</a></td>
+<td>Fetch Postsecondary Enrollment Rates</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_reportcard_special_pop.html">fetch_reportcard_special_pop</a></td>
+<td>Fetch Special Population data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_sat_participation.html">fetch_sat_participation</a></td>
+<td>Fetch SAT/ACT/PSAT Participation Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_sat_performance.html">fetch_sat_performance</a></td>
+<td>Fetch SAT/ACT/PSAT Performance Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_sped.html">fetch_sped</a></td>
+<td>Fetch Special Education Classification Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_spr_data.html">fetch_spr_data</a></td>
+<td>Fetch SPR Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_staff_demographics.html">fetch_staff_demographics</a></td>
+<td>Fetch Staff Demographics Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_staff_ratios.html">fetch_staff_ratios</a></td>
+<td>Fetch Student-Staff Ratio Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_teacher_experience.html">fetch_teacher_experience</a></td>
+<td>Fetch Teacher Experience Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_tges.html">fetch_tges</a></td>
+<td>Fetch Cleaned Taxpayer's Guide to Educational Spending</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib</a></td>
+<td>Fetch Violence/Vandalism/HIB Data</td></tr>
+<tr><td style="width: 25%;"><a href="fetch_work_based_learning.html">fetch_work_based_learning</a></td>
+<td>Fetch Work-Based Learning Data</td></tr>
+</table>
+
+<h2><a id="G">-- G --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="gap_percentile_rank.html">gap_percentile_rank</a></td>
+<td>Rank entities by achievement gap within peer group</td></tr>
+<tr><td style="width: 25%;"><a href="gap_trajectory.html">gap_trajectory</a></td>
+<td>Track achievement gap trends over time</td></tr>
+<tr><td style="width: 25%;"><a href="gcount_aggregate_calcs.html">gcount_aggregate_calcs</a></td>
+<td>Aggregate multiple grad count rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="geocoded.html">geocoded</a></td>
+<td>Geocoded School Addresses</td></tr>
+<tr><td style="width: 25%;"><a href="get_dfg_a_districts.html">get_dfg_a_districts</a></td>
+<td>Get DFG A districts (highest-need peer group)</td></tr>
+<tr><td style="width: 25%;"><a href="get_dfg_districts.html">get_dfg_districts</a></td>
+<td>Get districts in a specific District Factor Group</td></tr>
+<tr><td style="width: 25%;"><a href="get_district_directory.html">get_district_directory</a></td>
+<td>Get NJ District Directory Data</td></tr>
+<tr><td style="width: 25%;"><a href="get_essa_file.html">get_essa_file</a></td>
+<td>Get an ESSA comprehensive or targeted accountability file</td></tr>
+<tr><td style="width: 25%;"><a href="get_merged_rc_database.html">get_merged_rc_database</a></td>
+<td>Combines school and district Performance Reports for 2017-on, when two files were released.</td></tr>
+<tr><td style="width: 25%;"><a href="get_one_rc_database.html">get_one_rc_database</a></td>
+<td>Get Raw Report Card Database</td></tr>
+<tr><td style="width: 25%;"><a href="get_percentile_cols.html">get_percentile_cols</a></td>
+<td>Get percentile cols</td></tr>
+<tr><td style="width: 25%;"><a href="get_rc_databases.html">get_rc_databases</a></td>
+<td>Get multiple RC databases</td></tr>
+<tr><td style="width: 25%;"><a href="get_school_directory.html">get_school_directory</a></td>
+<td>Get NJ School Directory Data</td></tr>
+<tr><td style="width: 25%;"><a href="get_standalone_rc_database.html">get_standalone_rc_database</a></td>
+<td>Get Standalone Raw Report Card Database</td></tr>
+<tr><td style="width: 25%;"><a href="get_valid_grades.html">get_valid_grades</a></td>
+<td>Get valid grades for an assessment type and year</td></tr>
+<tr><td style="width: 25%;"><a href="grate_aggregate_calcs.html">grate_aggregate_calcs</a></td>
+<td>Aggregate multiple grad rate rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="grate_percentile_rank.html">grate_percentile_rank</a></td>
+<td>Graduation rate percentile rank</td></tr>
+<tr><td style="width: 25%;"><a href="grate_validation_summary.html">grate_validation_summary</a></td>
+<td>Get graduation rate validation summary</td></tr>
+</table>
+
+<h2><a id="I">-- I --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="id_charter_hosts.html">id_charter_hosts</a></td>
+<td>Identify charter host districts</td></tr>
+<tr><td style="width: 25%;"><a href="id_enr_aggs.html">id_enr_aggs</a></td>
+<td>Identify enrollment aggregation levels</td></tr>
+<tr><td style="width: 25%;"><a href="id_grad_aggs.html">id_grad_aggs</a></td>
+<td>Identify graduation aggregation levels</td></tr>
+</table>
+
+<h2><a id="K">-- K --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="kill_padformulas.html">kill_padformulas</a></td>
+<td>Kill Excel Formula Padding For Numeric Strings</td></tr>
+</table>
+
+<h2><a id="L">-- L --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="layout_gepa.html">layout_gepa</a></td>
+<td>GEPA Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_gepa05.html">layout_gepa05</a></td>
+<td>GEPA 2005 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_gepa06.html">layout_gepa06</a></td>
+<td>GEPA 2006 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_hspa.html">layout_hspa</a></td>
+<td>HSPA Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_hspa04.html">layout_hspa04</a></td>
+<td>HSPA 2004 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_hspa05.html">layout_hspa05</a></td>
+<td>HSPA 2005 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_hspa06.html">layout_hspa06</a></td>
+<td>HSPA 2006 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_hspa10.html">layout_hspa10</a></td>
+<td>HSPA 2010 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask.html">layout_njask</a></td>
+<td>NJASK Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask04.html">layout_njask04</a></td>
+<td>NJASK 2004 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask05.html">layout_njask05</a></td>
+<td>NJASK 2005 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask06gr3.html">layout_njask06gr3</a></td>
+<td>NJASK 2006 Grade 3 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask06gr5.html">layout_njask06gr5</a></td>
+<td>NJASK 2006 Grade 5 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask07gr3.html">layout_njask07gr3</a></td>
+<td>NJASK 2007 Grade 3 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask07gr5.html">layout_njask07gr5</a></td>
+<td>NJASK 2007 Grade 5 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask09.html">layout_njask09</a></td>
+<td>NJASK 2009 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="layout_njask10.html">layout_njask10</a></td>
+<td>NJASK 2010 Fixed-Width File Layout</td></tr>
+<tr><td style="width: 25%;"><a href="list_spr_sheets.html">list_spr_sheets</a></td>
+<td>List Available SPR Sheets</td></tr>
+</table>
+
+<h2><a id="M">-- M --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="matric_aggregate_calcs.html">matric_aggregate_calcs</a></td>
+<td>Aggregate multiple postsecondary matriculation rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="matric_column_order.html">matric_column_order</a></td>
+<td>Matriculation column order</td></tr>
+</table>
+
+<h2><a id="N">-- N --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="njsd_cache_clear.html">njsd_cache_clear</a></td>
+<td>Clear the session cache</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_cache_enable.html">njsd_cache_enable</a></td>
+<td>Enable or disable the session cache</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_cache_enabled.html">njsd_cache_enabled</a></td>
+<td>Check if caching is enabled</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_cache_info.html">njsd_cache_info</a></td>
+<td>Get cache statistics and information</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_cache_list.html">njsd_cache_list</a></td>
+<td>List all cached items</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_cache_remove.html">njsd_cache_remove</a></td>
+<td>Remove a specific item from cache</td></tr>
+<tr><td style="width: 25%;"><a href="njsd_progress_enable.html">njsd_progress_enable</a></td>
+<td>Enable or disable progress indicators</td></tr>
+<tr><td style="width: 25%;"><a href="nwk_address_addendum.html">nwk_address_addendum</a></td>
+<td>Newark Address Addendum</td></tr>
+</table>
+
+<h2><a id="P">-- P --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="pad_cds.html">pad_cds</a></td>
+<td>Pad CDS fields</td></tr>
+<tr><td style="width: 25%;"><a href="pad_grade.html">pad_grade</a></td>
+<td>Pad grade level</td></tr>
+<tr><td style="width: 25%;"><a href="pad_leading.html">pad_leading</a></td>
+<td>Pad leading digits</td></tr>
+<tr><td style="width: 25%;"><a href="parcc_aggregate_calcs.html">parcc_aggregate_calcs</a></td>
+<td>Aggregate multiple PARCC rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="parcc_percentile_rank.html">parcc_percentile_rank</a></td>
+<td>Assessment proficiency percentile rank</td></tr>
+<tr><td style="width: 25%;"><a href="parcc_perf_level_counts.html">parcc_perf_level_counts</a></td>
+<td>PARCC counts by performance level</td></tr>
+<tr><td style="width: 25%;"><a href="percentile_rank.html">percentile_rank</a></td>
+<td>Percentile Rank</td></tr>
+<tr><td style="width: 25%;"><a href="percentile_rank_trend.html">percentile_rank_trend</a></td>
+<td>Calculate percentile rank change over time</td></tr>
+<tr><td style="width: 25%;"><a href="print.njsd_cache_info.html">print.njsd_cache_info</a></td>
+<td>Print cache information</td></tr>
+<tr><td style="width: 25%;"><a href="prog_codes.html">prog_codes</a></td>
+<td>NJ Program Codes</td></tr>
+</table>
+
+<h2><a id="R">-- R --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="rc_numeric_cleaner.html">rc_numeric_cleaner</a></td>
+<td>Report Card Numeric Data Cleaner</td></tr>
+<tr><td style="width: 25%;"><a href="recover_suppressed_grate.html">recover_suppressed_grate</a></td>
+<td>Recover suppressed district graduation rates from school data</td></tr>
+</table>
+
+<h2><a id="S">-- S --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="sector_gap.html">sector_gap</a></td>
+<td>Calculate performance gap between charter and district sectors</td></tr>
+<tr><td style="width: 25%;"><a href="sector_percentile_comparison.html">sector_percentile_comparison</a></td>
+<td>Compare percentile ranks across sectors</td></tr>
+<tr><td style="width: 25%;"><a href="spec_pop_aggregate_calcs.html">spec_pop_aggregate_calcs</a></td>
+<td>Aggregate multiple special populations rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="sped_aggregate_calcs.html">sped_aggregate_calcs</a></td>
+<td>Aggregate multiple sped rows and produce summary statistics</td></tr>
+<tr><td style="width: 25%;"><a href="sped_lookup_map.html">sped_lookup_map</a></td>
+<td>Special Education District Lookup Map</td></tr>
+<tr><td style="width: 25%;"><a href="SUBGROUP_PAIRS.html">SUBGROUP_PAIRS</a></td>
+<td>Standard subgroup pairs for gap analysis</td></tr>
+</table>
+
+<h2><a id="T">-- T --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="tges_name_cleaner.html">tges_name_cleaner</a></td>
+<td>TGES name cleaner</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_budgetary_per_pupil_cost.html">tidy_budgetary_per_pupil_cost</a></td>
+<td>Tidy Budgetary Per Pupil data frame</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_enr.html">tidy_enr</a></td>
+<td>Tidy enrollment data</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_nj_assess.html">tidy_nj_assess</a></td>
+<td>tidies NJ assessment data</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_parcc_subgroup.html">tidy_parcc_subgroup</a></td>
+<td>Tidy PARCC subgroup names</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_tges_data.html">tidy_tges_data</a></td>
+<td>Tidy list of TGES data frames</td></tr>
+<tr><td style="width: 25%;"><a href="tidy_vitstat.html">tidy_vitstat</a></td>
+<td>Tidy Vital Statistics</td></tr>
+<tr><td style="width: 25%;"><a href="trim_whitespace.html">trim_whitespace</a></td>
+<td>Trim whitespace</td></tr>
+<tr><td style="width: 25%;"><a href="trunc2.html">trunc2</a></td>
+<td>Truncate with configurable precision</td></tr>
+</table>
+
+<h2><a id="V">-- V --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="validate_end_year.html">validate_end_year</a></td>
+<td>Validate end_year parameter</td></tr>
+<tr><td style="width: 25%;"><a href="validate_grade.html">validate_grade</a></td>
+<td>Validate grade parameter</td></tr>
+<tr><td style="width: 25%;"><a href="validate_grate_aggregation.html">validate_grate_aggregation</a></td>
+<td>Validate graduation rate aggregation</td></tr>
+<tr><td style="width: 25%;"><a href="verify_data_urls.html">verify_data_urls</a></td>
+<td>Verify all configured URLs for a data type</td></tr>
+</table>
+
+<h2><a id="W">-- W --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="ward_enr_aggs.html">ward_enr_aggs</a></td>
+<td>Aggregates enrollment data by ward</td></tr>
+<tr><td style="width: 25%;"><a href="ward_gcount_aggs.html">ward_gcount_aggs</a></td>
+<td>Aggregates grad counts data by ward</td></tr>
+<tr><td style="width: 25%;"><a href="ward_grate_aggs.html">ward_grate_aggs</a></td>
+<td>Aggregates grad rate data by ward</td></tr>
+<tr><td style="width: 25%;"><a href="ward_matric_aggs.html">ward_matric_aggs</a></td>
+<td>Aggregates matriculation data by ward</td></tr>
+<tr><td style="width: 25%;"><a href="ward_parcc_aggs.html">ward_parcc_aggs</a></td>
+<td>Aggregates assessment data by ward</td></tr>
+</table>
+</div></body></html>
