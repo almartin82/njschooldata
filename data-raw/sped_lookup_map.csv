@@ -1,0 +1,579 @@
+county_name_orig,district_name_orig,district_id
+Atlantic,Absecon City,0010
+Hunterdon,Alexandria Township,0020
+Warren,Allamuchy Township,0030
+Salem,Alloway Township,0060
+Atlantic,Atlantic City,0110
+Monmouth,Avon Borough,0180
+Ocean,Barnegat Township,0185
+Camden,Barrington Borough,0190
+Burlington,Bass River Township,0200
+Ocean,Beach Haven Borough,0230
+Somerset,Bedminster Township,0240
+Camden,Bellmawr Borough,0260
+Bergen,Bergen County Vocational,0290
+Ocean,Berkeley Township,0320
+Camden,Berlin Borough,0330
+Camden,Berlin Township,0340
+Somerset,Bernards Township,0350
+Hunterdon,Bethlehem Township,0370
+Burlington,Beverly City,0380
+Camden,Black Horse Pike Regional,0390
+Warren,Blairstown Township,0400
+Essex,Bloomfield Township,0410
+Morris,Boonton Town,0450
+Morris,Boonton Township,0460
+Burlington,Bordentown Regional,0475
+Somerset,Bound Brook Borough,0490
+Somerset,Branchburg Township,0510
+Ocean,Brick Township,0530
+Monmouth,Brielle Borough,0560
+Atlantic,Brigantine City,0570
+Atlantic,Buena Regional,0590
+Burlington,Burlington City,0600
+Burlington,Burlington Township,0620
+Sussex,Byram Township,0640
+Essex,Caldwell-West Caldwell,0660
+Camden,Camden City,0680
+Cape May,Cape May City,0710
+Middlesex,Carteret Borough,0750
+Essex,Cedar Grove Township,0760
+Ocean,Central Regional,0770
+Camden,Cherry Hill Township,0800
+Morris,Chester Township,0820
+Burlington,Chesterfield Township,0830
+Burlington,Cinnaminson Township,0840
+Essex,City Of Orange Township,3880
+Union,Clark Township,0850
+Gloucester,Clearview Regional,0870
+Camden,Clementon Borough,0880
+Hunterdon,Clinton Town,0910
+Hunterdon,Clinton Township,0920
+Camden,Collingswood Borough,0940
+Monmouth,Colts Neck Township,0945
+Cumberland,Commercial Township,0950
+Middlesex,Cranbury Township,0970
+Union,Cranford Township,0980
+Cumberland,Cumberland Regional,0997
+Monmouth,Deal Borough,1000
+Cumberland,Deerfield Township,1020
+Burlington,Delanco Township,1030
+Hunterdon,Delaware Township,1040
+Burlington,Delran Township,1060
+Cape May,Dennis Township,1080
+Morris,Denville Township,1090
+Gloucester,Deptford Township,1100
+Morris,Dover Town,1110
+Cumberland,Downe Township,1120
+Ocean,Eagleswood Township,1150
+Hunterdon,East Amwell Township,1160
+Middlesex,East Brunswick Township,1170
+Gloucester,East Greenwich Township,1180
+Morris,East Hanover Township,1190
+Essex,East Orange,1210
+Mercer,East Windsor Regional,1245
+Burlington,Eastampton Township,1250
+Burlington,Edgewater Park Township,1280
+Middlesex,Edison Township,1290
+Atlantic,Egg Harbor City,1300
+Atlantic,Egg Harbor Township,1310
+Gloucester,Elk Township,1330
+Salem,Elmer Borough,1340
+Bergen,Elmwood Park,1345
+Salem,Elsinboro Township,1350
+Bergen,Englewood City,1370
+Atlantic,Estell Manor City,1410
+Burlington,Evesham Township,1420
+Mercer,Ewing Township,1430
+Monmouth,Fair Haven Borough,1440
+Cumberland,Fairfield Township,1460
+Essex,Fairfield Township,1465
+Monmouth,Farmingdale Borough,1490
+Burlington,Florence Township,1520
+Sussex,Frankford Township,1560
+Sussex,Franklin Borough,1570
+Gloucester,Franklin Township,1590
+Somerset,Franklin Township,1610
+Warren,Franklin Township,1620
+Hunterdon,Franklin Township,1600
+Sussex,Fredon Township,1630
+Monmouth,Freehold Borough,1640
+Monmouth,Freehold Township,1660
+Warren,Frelinghuysen Township,1670
+Hunterdon,Frenchtown Borough,1680
+Atlantic,Galloway Township,1690
+Gloucester,Gateway Regional,1715
+Gloucester,Glassboro,1730
+Camden,Gloucester City,1770
+Camden,Gloucester Township,1780
+Warren,Great Meadows Regional,1785
+Somerset,Green Brook Township,1810
+Sussex,Green Township,1800
+Cumberland,Greenwich Township,1820
+Gloucester,Greenwich Township,1830
+Warren,Greenwich Township,1840
+Warren,Hackettstown,1870
+Camden,Haddon Township,1890
+Camden,Haddonfield Borough,1900
+Burlington,Hainesport Township,1910
+Sussex,Hamburg Borough,1930
+Atlantic,Hamilton Township,1940
+Mercer,Hamilton Township,1950
+Atlantic,Hammonton Town,1960
+Hunterdon,Hampton Borough,1970
+Sussex,Hampton Township,1980
+Morris,Hanover Township,2000
+Morris,Harding Township,2010
+Sussex,Hardyston Township,2030
+Warren,Harmony Township,2040
+Gloucester,Harrison Township,2070
+Monmouth,Hazlet Township,2105
+Monmouth,Henry Hudson Regional,2120
+Hunterdon,High Bridge Borough,2140
+Sussex,High Point Regional,2165
+Monmouth,Highlands Borough,2160
+Somerset,Hillsborough Township,2170
+Union,Hillside Township,2190
+Hunterdon,Holland Township,2220
+Monmouth,Holmdel Township,2230
+Monmouth,Hope Academy CS,6740
+Warren,Hope Township,2250
+Cumberland,Hopewell Township,2270
+Mercer,Hopewell Valley Regional,2280
+Monmouth,Howell Township,2290
+Hudson,Hudson County Vocational,2295
+Essex,Irvington Township,2330
+Ocean,Jackson Township,2360
+Morris,Jefferson Township,2380
+Hudson,Jersey City,2390
+Monmouth,Keansburg Borough,2400
+Hunterdon,Kingwood Township,2450
+Morris,Kinnelon Borough,2460
+Sussex,Kittatinny Regional,2465
+Warren,Knowlton Township,2470
+Ocean,Lacey Township,2480
+Sussex,Lafayette Township,2490
+Passaic,Lakeland Regional,2510
+Ocean,Lakewood Township,2520
+Ocean,Lavallette Borough,2550
+Camden,Lawnside Borough,2560
+Cumberland,Lawrence Township,2570
+Mercer,Lawrence Township,2580
+Hunterdon,Lebanon Borough,2590
+Hunterdon,Lebanon Township,2600
+Burlington,Lenape Regional,2610
+Morris,Lincoln Park Borough,2650
+Camden,Lindenwold Borough,2670
+Atlantic,Linwood City,2680
+Ocean,Little Egg Harbor Township,2690
+Passaic,Little Falls Township,2700
+Monmouth,Little Silver Borough,2720
+Essex,Livingston Township,2730
+Gloucester,Logan Township,2750
+Ocean,Long Beach Island,2760
+Morris,Long Hill Township,4000
+Warren,Lopatcong Township,2790
+Cape May,Lower Cape May Regional,2820
+Cape May,Lower Township,2840
+Burlington,Lumberton Township,2850
+Bergen,Lyndhurst Township,2860
+Camden,Magnolia Borough,2890
+Bergen,Mahwah Township,2900
+Atlantic,Mainland Regional,2910
+Ocean,Manchester Township,2940
+Salem,Mannington Township,2950
+Warren,Mansfield Township,2970
+Burlington,Mansfield Township,2960
+Gloucester,Mantua Township,2990
+Somerset,Manville Borough,3000
+Burlington,Maple Shade Township,3010
+Atlantic,Margate City,3020
+Monmouth,Marlboro Township,3030
+Monmouth,Matawan-Aberdeen Regional,3040
+Cumberland,Maurice River Township,3050
+Burlington,Medford Lakes Borough,3070
+Burlington,Medford Township,3080
+Morris,Mendham Borough,3090
+Morris,Mendham Township,3100
+Cape May,Middle Township,3130
+Middlesex,Middlesex Borough,3140
+Monmouth,Middletown Township,3160
+Bergen,Midland Park Borough,3170
+Hunterdon,Milford Borough,3180
+Essex,Millburn Township,3190
+Monmouth,Millstone Township,3200
+Morris,Mine Hill Township,3240
+Middlesex,Monroe Township,3290
+Gloucester,Monroe Township,3280
+Somerset,Montgomery Township,3320
+Morris,Montville Township,3340
+Burlington,Moorestown Township,3360
+Morris,Morris County Vocational,3365
+Morris,Morris Hills Regional,3370
+Camden,Mount Ephraim Borough,3420
+Burlington,Mount Holly Township,3430
+Burlington,Mount Laurel Township,3440
+Morris,Mount Olive Township,3450
+Atlantic,Mullica Township,3480
+Gloucester,National Park Borough,3490
+Monmouth,Neptune City,3500
+Monmouth,Neptune Township,3510
+Burlington,New Hanover Township,3540
+Middlesex,North Brunswick Township,3620
+Burlington,North Hanover Township,3650
+Somerset,North Plainfield Borough,3670
+Warren,North Warren Regional,3675
+Cape May,North Wildwood City,3680
+Bergen,Northern Valley Regional,3710
+Atlantic,Northfield City,3720
+Camden,Oaklyn Borough,3770
+Cape May,Ocean City,3780
+Ocean,Ocean County Vocational,3790
+Ocean,Ocean Township,3820
+Monmouth,Ocean Township,3810
+Monmouth,Oceanport Borough,3830
+Sussex,Ogdensburg Borough,3840
+Middlesex,Old Bridge Township,3845
+Salem,Oldmans Township,3860
+Warren,Oxford Township,3890
+Bergen,Palisades Park,3910
+Burlington,Palmyra Borough,3920
+Morris,Parsippany-Troy Hills Township,3950
+Passaic,Passaic City,3970
+Passaic,Passaic County Vocational,3995
+Burlington,Pemberton Borough,4040
+Burlington,Pemberton Township,4050
+Camden,Pennsauken Township,4060
+Morris,Pequannock Township,4080
+Camden,Pine Hill Borough,4110
+Ocean,Pinelands Regional,4105
+Middlesex,Piscataway Township,4130
+Salem,Pittsgrove Township,4150
+Ocean,Plumsted Township,4190
+Warren,Pohatcong Township,4200
+Ocean,Point Pleasant Borough,4210
+Mercer,Princeton Regional,4255
+Salem,Quinton Township,4280
+Burlington,Rancocas Valley Regional,4320
+Morris,Randolph Township,4330
+Hunterdon,Readington Township,4350
+Bergen,Ridgewood Village,4390
+Burlington,Riverside Township,4450
+Morris,Rockaway Borough,4480
+Morris,Rockaway Township,4490
+Monmouth,Roosevelt Borough,4520
+Union,Roselle Borough,4540
+Morris,Roxbury Township,4560
+Monmouth,Rumson Borough,4570
+Camden,Runnemede Borough,4590
+Bergen,Saddle Brook Township,4610
+Salem,Salem City,4630
+Salem,Salem County Vocational,4640
+Sussex,Sandyston-Walpack Township,4650
+Monmouth,Sea Girt Borough,4690
+Cape May,Sea Isle City,4700
+Ocean,Seaside Heights Borough,4710
+Ocean,Seaside Park Borough,4720
+Burlington,Shamong Township,4740
+Monmouth,Shrewsbury Borough,4770
+Camden,Somerdale Borough,4790
+Somerset,Somerset Hills Regional,4815
+Somerset,Somerville Borough,4820
+Middlesex,South Brunswick Township,4860
+Gloucester,South Harrison Township,4880
+Hunterdon,South Hunterdon Regional,4890
+Essex,South Orange-Maplewood,4900
+Burlington,Southampton Township,4930
+Ocean,Southern Regional,4950
+Sussex,Sparta Township,4960
+Monmouth,Spring Lake Heights Borough,4990
+Burlington,Springfield Township,5010
+Union,Springfield Township,5000
+Ocean,Stafford Township,5020
+Sussex,Stanhope Borough,5030
+Sussex,Stillwater Township,5040
+Hunterdon,Stockton Borough,5050
+Cumberland,Stow Creek Township,5070
+Camden,Stratford Borough,5080
+Union,Summit City,5090
+Sussex,Sussex County Vocational,5110
+Sussex,Sussex-Wantage Regional,5100
+Gloucester,Swedesboro-Woolwich,5120
+Burlington,Tabernacle Township,5130
+Hunterdon,Tewksbury Township,5180
+Monmouth,Tinton Falls,5185
+Ocean,Toms River Regional,5190
+Mercer,Trenton Community CS,7901
+Ocean,Tuckerton Borough,5220
+Hudson,Union City,5240
+Union,Union County Vocational,5260
+Hunterdon,Union Township,5270
+Union,Union Township,5290
+Cumberland,Upper Deerfield Township,5300
+Monmouth,Upper Freehold Regional,5310
+Salem,Upper Pittsgrove Township,5320
+Cape May,Upper Township,5340
+Atlantic,Ventnor City,5350
+Sussex,Vernon Township,5360
+Cumberland,Vineland City,5390
+Camden,Voorhees Township,5400
+Monmouth,Wall Township,5420
+Sussex,Wallkill Valley Regional,5435
+Warren,Warren County Vocational,5460
+Somerset,Warren Township,5470
+Warren,Washington Borough,5480
+Gloucester,Washington Township,5500
+Mercer,Washington Township,5510
+Warren,Washington Township,5530
+Burlington,Washington Township,5490
+Morris,Washington Township,5520
+Somerset,Watchung Borough,5540
+Somerset,Watchung Hills Regional,5550
+Camden,Waterford Township,5560
+Passaic,Wayne Township,5570
+Hudson,Weehawken Township,5580
+Hunterdon,West Amwell Township,5600
+Gloucester,West Deptford Township,5620
+Essex,West Essex Regional,5630
+Passaic,West Milford Township,5650
+Bergen,Westwood Regional,5755
+Atlantic,Weymouth Township,5760
+Morris,Wharton Borough,5770
+Warren,White Township,5780
+Cape May,Wildwood City,5790
+Burlington,Willingboro Township,5805
+Union,Winfield Township,5810
+Camden,Winslow Township,5820
+Middlesex,Woodbridge Township,5850
+Burlington,Woodland Township,5890
+Camden,Woodlynne Borough,5900
+Bergen,Wyckoff Township,5920
+Bergen,Allendale,0040
+Warren,Alpha,0070
+Bergen,Alpine,0080
+Sussex,Andover Regional,0090
+Monmouth,Asbury Park,0100
+Atlantic,Atlantic County Vocational,0120
+Monmouth,Atlantic Highlands,0130
+Camden,Audubon,0150
+Cape May,Avalon,0170
+Ocean,Bay Head,0210
+Hudson,Bayonne,0220
+Essex,Belleville,0250
+Monmouth,Belmar,0270
+Warren,Belvidere,0280
+Bergen,Bergenfield,0300
+Union,Berkeley Heights,0310
+Passaic,Bloomingdale,0420
+Hunterdon,Bloomsbury,0430
+Bergen,Bogota,0440
+Monmouth,Bradley Beach,0500
+Cumberland,Bridgeton,0540
+Somerset,Bridgewater-Raritan Regional,0555
+Camden,Brooklawn,0580
+Burlington,Burlington County Vocational,0610
+Morris,Butler,0630
+Hunterdon,Califon,0670
+Camden,Camden County Technical,0700
+Camden,Camden's Promise Charter,6215
+Cape May,Cape May County Vocational,0720
+Bergen,Carlstadt,0740
+Camden,Chesilhurst Borough,0810
+Gloucester,Clayton,0860
+Bergen,Cliffside Park,0890
+Passaic,Clifton,0900
+Bergen,Closter,0930
+Bergen,Cresskill,0990
+Cumberland,Cumberland County Vocational,0995
+Gloucester,Delsea Regional,4940
+Bergen,Demarest,1070
+Essex,Discovery Charter,6320
+Bergen,Dumont,1130
+Middlesex,Dunellen,1140
+Hudson,East Newark,1200
+Essex,East Orange Community Charter,6410
+Bergen,East Rutherford,1230
+Camden,Eastern Camden County Regional,1255
+Monmouth,Eatontown,1260
+Bergen,Edgewater,1270
+Union,Elizabeth,1320
+Bergen,Emerson,1360
+Bergen,Englewood Cliffs,1380
+Essex,Essex County Vocational,1390
+Essex,Essex Fells,1400
+Bergen,Fair Lawn,1450
+Bergen,Fairview,1470
+Hunterdon,Flemington-Raritan Regional,1510
+Morris,Florham Park,1530
+Atlantic,Folsom,1540
+Bergen,Fort Lee,1550
+Somerset,Franklin Charter,6520
+Bergen,Franklin Lakes,1580
+Atlantic,Galloway Community Charter,6612
+Bergen,Garfield,1700
+Union,Garwood,1710
+Camden,Gibbsboro,1720
+Essex,Glen Ridge,1750
+Bergen,Glen Rock,1760
+Gloucester,Gloucester County Vocational,1775
+Essex,Gray Charter,6665
+Middlesex,Greater Brunswick Charter,6635
+Hudson,Guttenberg,1850
+Bergen,Hackensack,1860
+Camden,Haddon Heights,1880
+Passaic,Haledon,1920
+Bergen,Harrington Park,2050
+Hudson,Harrison,2060
+Bergen,Hasbrouck Heights,2080
+Bergen,Haworth,2090
+Passaic,Hawthorne,2100
+Middlesex,Highland Park,2150
+Bergen,Hillsdale,2180
+Hudson,Hoboken,2210
+Bergen,Ho-Ho-Kus,2200
+Sussex,Hopatcong Borough,2240
+Hunterdon,Hunterdon Central Regional,2300
+Ocean,Island Heights,2350
+Middlesex,Jamesburg,2370
+Hudson,Kearny,2410
+Union,Kenilworth,2420
+Monmouth,Keyport,2430
+Essex,Lady Liberty Academy Charter,7100
+Ocean,Lakehurst,2500
+Hunterdon,Lambertville,2530
+Camden,Laurel Springs,2540
+Camden,LEAP Academy University Charter,7109
+Atlantic,Learning Center Charter,6040
+Hudson,Learning Community Charter,7115
+Bergen,Leonia,2620
+Hudson,Liberty Academy Charter,6235
+Union,Linden,2660
+Bergen,Little Ferry,2710
+Bergen,Lodi,2740
+Monmouth,Long Branch,2770
+Morris,Madison,2870
+Monmouth,Manalapan-Englishtown Regional,2920
+Monmouth,Manasquan,2930
+Essex,Marion P. Thomas Charter,7210
+Bergen,Maywood,3060
+Camden,Merchantville,3110
+Middlesex,Metuchen,3120
+Middlesex,Middlesex County Vocational,3150
+Middlesex,Milltown,3220
+Cumberland,Millville,3230
+Monmouth,Monmouth Beach,3250
+Monmouth,Monmouth County Vocational,3260
+Sussex,Montague,3300
+Essex,Montclair,3310
+Bergen,Montvale,3330
+Bergen,Moonachie,3350
+Morris,Morris,3385
+Morris,Morris Plains,3380
+Morris,Mount Arlington,3410
+Morris,Mountain Lakes,3460
+Union,Mountainside,3470
+Morris,Netcong,3520
+Middlesex,New Brunswick,3530
+Bergen,New Milford,3550
+Union,New Providence,3560
+Essex,Newark,3570
+Essex,Newark Charter,7280
+Sussex,Newton,3590
+Bergen,North Arlington,3600
+Hudson,North Bergen,3610
+Essex,North Caldwell,3630
+Passaic,North Haledon,3640
+Hunterdon,North Hunterdon/Voorhees Regional High,3660
+Burlington,Northern Burlington County Regional,3690
+Bergen,Northern Highlands Regional,3700
+Bergen,Northvale,3730
+Bergen,Norwood,3740
+Essex,Nutley,3750
+Bergen,Oakland,3760
+Ocean,Ocean Gate,3800
+Atlantic,Oceanside Charter,7420
+Bergen,Old Tappan,3850
+Bergen,Oradell,3870
+Bergen,Paramus,3930
+Bergen,Park Ridge,3940
+Passaic,Passaic County Manchester Regional,3980
+Passaic,Passaic County Regional High,3990
+Passaic,Paterson,4010
+Gloucester,Paulsboro,4020
+Salem,Penns Grove-Carneys Point Regional,4070
+Middlesex,Perth Amboy,4090
+Warren,Phillipsburg,4100
+Gloucester,Pitman,4140
+Union,Plainfield,4160
+Atlantic,PleasanTech Academy Charter,7520
+Atlantic,Pleasantville,4180
+Ocean,Point Pleasant Beach,4220
+Passaic,Pompton Lakes,4230
+Atlantic,Port Republic,4240
+Mercer,Princeton Charter,7540
+Passaic,Prospect Park,4270
+Union,Queen City Academy Charter,7600
+Union,Rahway,4290
+Bergen,Ramapo Indian Hills Regional High School,4300
+Bergen,Ramsey,4310
+Monmouth,Red Bank,4360
+Bergen,Ridgefield,4370
+Bergen,Ridgefield Park,4380
+Passaic,Ringwood,4400
+Bergen,River Edge,4410
+Bergen,River Vale,4430
+Morris,Riverdale,4440
+Burlington,Riverton Borough,4460
+Essex,Robert Treat Academy Charter,7730
+Bergen,Rochelle Park,4470
+Essex,Roseland,4530
+Union,Roselle Park,4550
+Bergen,Rutherford,4600
+Bergen,Saddle River,4620
+Middlesex,Sayreville,4660
+Hudson,Schomburg Charter,7820
+Morris,School District Of The Chathams,0785
+Union,Scotch Plains-Fanwood,4670
+Hudson,Secaucus,4730
+Cumberland,Shiloh,4750
+Hudson,Soaring Heights Charter,7830
+Atlantic,Somers Point,4800
+Somerset,Somerset County Vocational,4810
+Middlesex,South Amboy,4830
+Somerset,South Bound Brook Borough,4850
+Bergen,South Hackensack,4870
+Middlesex,South Plainfield,4910
+Middlesex,South River,4920
+Middlesex,Spotswood,4970
+Monmouth,Spring Lake,4980
+Camden,Sterling High School,5035
+Cape May,Stone Harbor,5060
+Bergen,Teaneck,5150
+Bergen,Teaneck Community Charter,7890
+Bergen,Tenafly,5160
+Passaic,Totowa,5200
+Mercer,Trenton,5210
+Monmouth,Union Beach Borough,5230
+Morris,Unity Charter,8050
+Bergen,Upper Saddle River,5330
+Essex,Verona,5370
+Mercer,Village Charter,8140
+Bergen,Waldwick,5410
+Bergen,Wallington,5430
+Passaic,Wanaque,5440
+Gloucester,Wenonah,5590
+Cape May,West Cape May,5610
+Monmouth,West Long Branch,5640
+Hudson,West New York,5670
+Essex,West Orange,5680
+Passaic,West Paterson,5690
+Mercer,West Windsor-Plainsboro Regional,5715
+Union,Westfield,5730
+Gloucester,Westville,5740
+Cape May,Wildwood Crest,5800
+Cape May,Woodbine,5840
+Gloucester,Woodbury,5860
+Gloucester,Woodbury Heights,5870
+Bergen,Woodcliff Lake,5880
+Bergen,Wood-Ridge,5830
+Salem,Woodstown-Pilesgrove Regional,5910
