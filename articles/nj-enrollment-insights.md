@@ -52,6 +52,8 @@ ggplot(state_total, aes(x = end_year, y = n_students)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
+
 ## 2. Newark leads the charter school revolution
 
 Newark has one of the highest charter school enrollment rates in the
@@ -78,6 +80,8 @@ ggplot(newark_summary, aes(x = end_year, y = n_students, fill = sector)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/newark-charter-1.png)
+
 ## 3. Hispanic students are the fastest-growing group
 
 Hispanic enrollment has grown from 20% to nearly 30% of all NJ students
@@ -95,6 +99,8 @@ ggplot(hispanic, aes(x = end_year, y = pct * 100)) +
        x = "School Year", y = "Percent Hispanic") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/hispanic-growth-1.png)
 
 ## 4. The Big Three: Newark, Jersey City, and Paterson
 
@@ -117,6 +123,8 @@ ggplot(big_three_trend, aes(x = end_year, y = n_students, color = district_name)
        x = "School Year", y = "Students", color = "") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/big-three-1.png)
 
 ## 5. COVID hit kindergarten hard
 
@@ -147,6 +155,8 @@ ggplot(k_trend, aes(x = end_year, y = n_students, color = grade_label)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png)
+
 ## 6. Economic disadvantage varies widely
 
 Some districts have nearly 100% economically disadvantaged students,
@@ -169,6 +179,8 @@ ggplot(econ, aes(x = district_label, y = pct * 100)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/econ-disadvantage-1.png)
+
 ## 7. White student share has declined dramatically
 
 White students went from majority to minority status in NJ public
@@ -189,6 +201,8 @@ ggplot(demo, aes(x = end_year, y = pct * 100, color = subgroup)) +
        x = "School Year", y = "Percent of Students", color = "") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/demographic-shift-1.png)
 
 ## 8. English Language Learners concentrated in urban areas
 
@@ -212,6 +226,8 @@ ggplot(ell, aes(x = district_label, y = pct * 100)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
+
 ## 9. Top 10 districts educate 20% of all students
 
 Concentration at the top: just 10 districts out of 600+ serve one-fifth
@@ -234,6 +250,8 @@ ggplot(top_10, aes(x = district_label, y = n_students)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
+
 ## 10. Special education rates remain steady
 
 About 17-18% of NJ students receive special education services - among
@@ -251,3 +269,5 @@ ggplot(sped, aes(x = end_year, y = pct * 100)) +
        x = "School Year", y = "Percent Special Education") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/special-ed-1.png)
