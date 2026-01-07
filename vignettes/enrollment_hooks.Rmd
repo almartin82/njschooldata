@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   message = FALSE,
   warning = FALSE,
+  error = FALSE,
   fig.width = 8,
   fig.height = 5
 )
