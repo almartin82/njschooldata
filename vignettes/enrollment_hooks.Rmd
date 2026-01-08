@@ -14,14 +14,10 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   error = FALSE,
+  eval = FALSE,
   fig.width = 8,
   fig.height = 5
 )
-
-# Skip data fetching during pkgdown builds (CI doesn't have network access to NJ DOE)
-if (Sys.getenv("PKGDOWN") == "true") {
-  knitr::opts_chunk$set(eval = FALSE)
-}
 ```
 
 ```{r load-packages}
