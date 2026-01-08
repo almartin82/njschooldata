@@ -134,6 +134,7 @@ articles:
   - title: Data Insights
     navbar: ~
     contents:
+      - enrollment_hooks
       - nj-enrollment-insights
 
 authors:
