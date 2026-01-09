@@ -29,6 +29,7 @@ utils::globalVariables(c(
   "SCHOOL_CODE", "SCHOOL_NAME",
   "County Name", "District Name", "School Name",
   "Total Enrollment", "Grade", "Grade_Level",
+  "Continuing Students", "Non-Continuing Student",
 
   # ========== Enrollment Columns ==========
   "end_year", "yy", "n_students", "pct", "pct_total_enr",
@@ -173,6 +174,7 @@ utils::globalVariables(c(
   "attendance_asian_pacific", "attendance_black", "attendance_ed",
   "attendance_hispanic", "attendance_ell", "attendance_native_american",
   "attendance_multiracial", "attendance_swd", "attendance_white", "attendance_total",
+  "chronic_abs_pct", "chronically_absent_rate",
 
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
@@ -209,6 +211,7 @@ utils::globalVariables(c(
   "apib_coursework_school", "apib_coursework_state",
   "apib_exam_school", "apib_exam_state",
   "dual_enrollment_school", "dual_enrollment_state",
+  "dual_school", "dual_state",
   "cte_concentrators", "cte_participants",
   "school_cteconcentrators", "school_cteparticipants",
   "state_cte_concentrators", "state_cte_participants",
@@ -220,6 +223,7 @@ utils::globalVariables(c(
   "atleast_one_credential_earned", "earned_one_credential",
   "credentials_earned", "n_cs", "n_math", "n_science", "n_stem_students",
   "n_total_students", "total_staff", "student_staff_ratio",
+  "language", "seals_earned",
 
   # ========== Graduation Rate Columns (6-year) ==========
   "grad_rate_6yr", "grad_rate_4yr", "grad_rate_5yr",

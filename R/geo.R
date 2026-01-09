@@ -52,9 +52,8 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     utils::data("geocoded_cached", package = "njschooldata", envir = environment())
     geocoded <- geocoded_cached
   } else {
-    if (!requireNamespace("placement", quietly = TRUE)) {
-      stop("Package 'placement' is required for geocoding. Install with: remotes::install_github('DerekYves/placement')")
-    }
+    # Note: placement package is optional, only needed when use_cache=FALSE
+    # asNamespace() will provide a clear error if placement is not installed
     geocode_url <- get("geocode_url", envir = asNamespace("placement"))
     geocoded <- geocode_url(
       nj_sch$address,
