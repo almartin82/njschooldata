@@ -9,6 +9,16 @@
 #
 # ==============================================================================
 
+# Declare global variables to suppress R CMD check notes
+utils::globalVariables(
+  c("location_id", "total_staff", "prop", "gender_diversity_score",
+    "diversity_index", "student_staff_ratio", "retention_rate", "turnover_rate",
+    "stability_index", "trend_slope", "n_years", "trend", "discipline_rate",
+    "metric_name", "metric_value", "prev_value", "n_unique_years",
+    "year_over_year_change", "year_over_year_pct_change", "multi_year_trend")
+)
+
+
 # -----------------------------------------------------------------------------
 # Student-Staff Ratio Analysis
 # -----------------------------------------------------------------------------
