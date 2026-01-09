@@ -82,37 +82,9 @@ enr_2024 <- fetch_enr(2024)
 
 # View the structure
 glimpse(enr_2024)
-#> Rows: 101,568
-#> Columns: 25
-#> $ end_year        <dbl> 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, …
-#> $ CDS_Code        <chr> "010010999", "010010999", "010010999", "010010999", "0…
-#> $ county_id       <chr> "01", "01", "01", "01", "01", "01", "01", "01", "01", …
-#> $ county_name     <chr> "Atlantic", "Atlantic", "Atlantic", "Atlantic", "Atlan…
-#> $ district_id     <chr> "0010", "0010", "0010", "0010", "0010", "0010", "0010"…
-#> $ district_name   <chr> "Absecon Public Schools District", "Absecon Public Sch…
-#> $ school_id       <chr> "999", "999", "999", "999", "999", "999", "999", "999"…
-#> $ school_name     <chr> "District Total", "District Total", "District Total", …
-#> $ program_code    <chr> "PH", NA, "PF", NA, "KH", NA, "KF", NA, "01", NA, "02"…
-#> $ program_name    <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ male            <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ female          <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ white           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ black           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ hispanic        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ asian           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ native_american <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ multiracial     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ row_total       <dbl> 0.0, 0.0, 123.0, 13.3, 0.0, 0.0, 77.0, 8.3, 89.0, 9.6,…
-#> $ free_lunch      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ reduced_lunch   <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ lep             <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ migrant         <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ homeless        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ grade_level     <chr> "PK", NA, "PK", NA, "K", NA, "K", NA, "01", NA, "02", …
 
 # Check dimensions
 dim(enr_2024)  # Rows and columns
-#> [1] 101568     25
 ```
 
 ### Wide vs. Tidy Format
@@ -189,12 +161,11 @@ alg1_2024 <- fetch_parcc(
 
 ### Legacy Assessments (2004-2014)
 
-For historical data, use
-[`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md):
+For historical data, use `fetch_nj_assess()`:
 
 ``` r
 # Get 2010 Grade 5 NJASK results
-njask_2010 <- fetch_old_nj_assess(
+njask_2010 <- fetch_nj_assess(
   end_year = 2010,
   grade = 5,
   tidy = TRUE
@@ -212,9 +183,9 @@ grad_rate_2024 <- fetch_grad_rate(
   methodology = "4 year"
 )
 
-# Get 5-year graduation rates (available 2012-2019)
+# Get 5-year graduation rates (available 2012+)
 grad_rate_5yr <- fetch_grad_rate(
-  end_year = 2019,
+  end_year = 2024,
   methodology = "5 year"
 )
 ```
@@ -243,13 +214,13 @@ names(schools)
 
 ## Data Coverage Summary
 
-| Data Type         | Function                                                                                              | Years Available |
-|-------------------|-------------------------------------------------------------------------------------------------------|-----------------|
-| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                     | 1999-2025       |
-| NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)                 | 2015-2024       |
-| NJASK             | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014       |
-| Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)         | 2011-2024       |
-| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)       | 2012-2024       |
+| Data Type         | Function                                                                                        | Years Available |
+|-------------------|-------------------------------------------------------------------------------------------------|-----------------|
+| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)               | 1999-2025       |
+| NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           | 2015-2024       |
+| NJASK             | `fetch_nj_assess()`                                                                             | 2004-2014       |
+| Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)   | 2011-2024       |
+| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 2012-2024       |
 
 ## Common Subgroups
 

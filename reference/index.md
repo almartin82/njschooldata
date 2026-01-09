@@ -84,57 +84,6 @@ Functions for graduation rates and counts
 - [`recover_suppressed_grate()`](https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.md)
   : Recover suppressed district graduation rates from school data
 
-## School Performance Reports (SPR)
-
-Functions for SPR database data (2017-2024)
-
-- [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
-  : Fetch SPR Data
-- [`list_spr_sheets()`](https://almartin82.github.io/njschooldata/reference/list_spr_sheets.md)
-  : List Available SPR Sheets
-- [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
-  : Fetch Chronic Absenteeism Data
-- [`fetch_absenteeism_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_absenteeism_by_grade.md)
-  : Fetch Absenteeism by Grade
-- [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md)
-  : Fetch Days Absent Data
-- [`fetch_sat_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.md)
-  : Fetch SAT/ACT/PSAT Participation Data
-- [`fetch_sat_performance()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_performance.md)
-  : Fetch SAT/ACT/PSAT Performance Data
-- [`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md)
-  : Fetch AP/IB Participation and Performance Data
-- [`fetch_ap_performance()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_performance.md)
-  : Fetch AP/IB Performance Data (Alias)
-- [`fetch_ib_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ib_participation.md)
-  : Fetch IB Participation Data
-- [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)
-  : Fetch CTE Participation Data
-- [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md)
-  : Fetch Industry Valued Credentials Data
-- [`fetch_work_based_learning()`](https://almartin82.github.io/njschooldata/reference/fetch_work_based_learning.md)
-  : Fetch Work-Based Learning Data
-- [`fetch_apprenticeship_data()`](https://almartin82.github.io/njschooldata/reference/fetch_apprenticeship_data.md)
-  : Fetch Apprenticeship Data
-- [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
-  : Fetch Seal of Biliteracy Data
-- [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md)
-  : Fetch Violence/Vandalism/HIB Data
-- [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
-  : Fetch Disciplinary Removals Data
-- [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md)
-  : Fetch Teacher Experience Data
-- [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
-  : Fetch Staff Demographics Data
-- [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
-  : Fetch Student-Staff Ratio Data
-- [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
-  : Fetch Dropout Rate Data
-- [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
-  : Fetch ESSA Accountability Status
-- [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
-  : Fetch Math Course Enrollment Data
-
 ## School/District Directories
 
 Functions for school and district metadata
@@ -188,7 +137,7 @@ Functions for special education and other subgroup data
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
   : Fetch Special Population data
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
-  : Fetch Chronic Absenteeism Data
+  : Fetch Chronic Absenteeism data
 - [`fetch_all_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_all_chronic_absenteeism.md)
   : Fetch all Chronic Absenteeism data
 - [`sped_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.md)
@@ -307,8 +256,6 @@ Additional exported functions
   : Calculate All City Special Populations aggregates
 - [`allpublic_sped_aggs()`](https://almartin82.github.io/njschooldata/reference/allpublic_sped_aggs.md)
   : Calculate Charter Sector SPED aggregates
-- [`calc_discipline_rates_by_subgroup()`](https://almartin82.github.io/njschooldata/reference/calc_discipline_rates_by_subgroup.md)
-  : Calculate Discipline Rates by Subgroup
 - [`calculate_access_rate()`](https://almartin82.github.io/njschooldata/reference/calculate_access_rate.md)
   : Calculate equity access rate
 - [`calculate_agg_parcc_prof()`](https://almartin82.github.io/njschooldata/reference/calculate_agg_parcc_prof.md)
@@ -341,8 +288,6 @@ Additional exported functions
   : Clean up CDS field names
 - [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
   : Clean SPED data
-- [`compare_discipline_across_years()`](https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.md)
-  : Compare Discipline Across Years
 - [`define_peer_group()`](https://almartin82.github.io/njschooldata/reference/define_peer_group.md)
   : Define a peer comparison group
 - [`dfg_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/dfg_percentile_rank.md)
@@ -378,8 +323,6 @@ Additional exported functions
   : Extract Report Card Enrollment
 - [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)
   : Fetch 6-Year Graduation Rate data
-- [`fetch_absenteeism_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_absenteeism_by_grade.md)
-  : Fetch Absenteeism by Grade
 - [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)
   : Fetch ACCESS for ELLs data
 - [`fetch_all_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_all_6yr_grad_rate.md)
@@ -394,36 +337,16 @@ Additional exported functions
   : Fetch all PARCC results
 - [`fetch_all_parcc_with_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_all_parcc_with_progress.md)
   : Fetch all PARCC/NJSLA results with progress
-- [`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md)
-  : Fetch AP/IB Participation and Performance Data
-- [`fetch_ap_performance()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_performance.md)
-  : Fetch AP/IB Performance Data (Alias)
-- [`fetch_apprenticeship_data()`](https://almartin82.github.io/njschooldata/reference/fetch_apprenticeship_data.md)
-  : Fetch Apprenticeship Data
-- [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
-  : Fetch Seal of Biliteracy Data
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
-  : Fetch Chronic Absenteeism Data
-- [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)
-  : Fetch CTE Participation Data
-- [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md)
-  : Fetch Days Absent Data
+  : Fetch Chronic Absenteeism data
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
-- [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
-  : Fetch Disciplinary Removals Data
-- [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
-  : Fetch Dropout Rate Data
 - [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
   : Gets and processes a NJ enrollment file
 - [`fetch_enr_cached()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_cached.md)
   : Fetch enrollment data with caching
 - [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
   : Fetch multiple years of enrollment data with progress
-- [`fetch_essa_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_chronic_absenteeism.md)
-  : Fetch ESSA Chronic Absenteeism data
-- [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
-  : Fetch ESSA Accountability Status
 - [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md)
   : gets and processes a GEPA file
 - [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)
@@ -432,14 +355,8 @@ Additional exported functions
   : Fetch Grad Rate
 - [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md)
   : gets and processes a HSPA file
-- [`fetch_ib_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ib_participation.md)
-  : Fetch IB Participation Data
-- [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md)
-  : Fetch Industry Valued Credentials Data
 - [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md)
   : Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
-- [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
-  : Fetch Math Course Enrollment Data
 - [`fetch_msgp()`](https://almartin82.github.io/njschooldata/reference/fetch_msgp.md)
   : Fetch mSGP
 - [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md)
@@ -454,26 +371,10 @@ Additional exported functions
   : Fetch Postsecondary Enrollment Rates
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
   : Fetch Special Population data
-- [`fetch_sat_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.md)
-  : Fetch SAT/ACT/PSAT Participation Data
-- [`fetch_sat_performance()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_performance.md)
-  : Fetch SAT/ACT/PSAT Performance Data
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
-- [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
-  : Fetch SPR Data
-- [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
-  : Fetch Staff Demographics Data
-- [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
-  : Fetch Student-Staff Ratio Data
-- [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md)
-  : Fetch Teacher Experience Data
 - [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)
   : Fetch Cleaned Taxpayer's Guide to Educational Spending
-- [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md)
-  : Fetch Violence/Vandalism/HIB Data
-- [`fetch_work_based_learning()`](https://almartin82.github.io/njschooldata/reference/fetch_work_based_learning.md)
-  : Fetch Work-Based Learning Data
 - [`gap_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/gap_percentile_rank.md)
   : Rank entities by achievement gap within peer group
 - [`gap_trajectory()`](https://almartin82.github.io/njschooldata/reference/gap_trajectory.md)
@@ -553,8 +454,6 @@ Additional exported functions
   : NJASK 2009 Fixed-Width File Layout
 - [`layout_njask10`](https://almartin82.github.io/njschooldata/reference/layout_njask10.md)
   : NJASK 2010 Fixed-Width File Layout
-- [`list_spr_sheets()`](https://almartin82.github.io/njschooldata/reference/list_spr_sheets.md)
-  : List Available SPR Sheets
 - [`matric_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/matric_aggregate_calcs.md)
   : Aggregate multiple postsecondary matriculation rows and produce
   summary statistics
