@@ -36,8 +36,8 @@ Imports:
 Suggests:
     covr,
     geojsonio,
+    ggplot2,
     knitr,
-    placement,
     rmarkdown,
     scales,
     sf,
