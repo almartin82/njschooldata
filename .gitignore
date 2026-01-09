@@ -22,6 +22,7 @@ results.Rds
 inst/doc
 njschooldata.Rcheck/
 njschooldata_*.tar.gz
+..Rcheck/
 
 # Analysis files (not part of package)
 analysis/
