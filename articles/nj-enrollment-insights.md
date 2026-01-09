@@ -26,11 +26,11 @@ colors <- c("total" = "#2C3E50", "white" = "#3498DB", "black" = "#E74C3C",
 # Fetch recent years of enrollment data
 years <- 2015:2025
 enr_all <- purrr::map_df(years, ~{
-  tryCatch(fetch_enr(.x, tidy = TRUE), error = function(e) NULL)
+  tryCatch(fetch_enr(.x, tidy = TRUE, use_cache = TRUE), error = function(e) NULL)
 })
 
-enr_current <- fetch_enr(2025, tidy = TRUE)
-enr_2015 <- fetch_enr(2015, tidy = TRUE)
+enr_current <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
+enr_2015 <- fetch_enr(2015, tidy = TRUE, use_cache = TRUE)
 ```
 
 ## 1. New Jersey educates 1.4 million students

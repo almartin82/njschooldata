@@ -78,7 +78,7 @@ flags:
 
 ``` r
 # Get 2024 enrollment data (2023-24 school year)
-enr_2024 <- fetch_enr(2024)
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
 
 # View the structure
 glimpse(enr_2024)
@@ -93,10 +93,10 @@ The `tidy` parameter transforms data for easier analysis:
 
 ``` r
 # Wide format (default) - one row per school, many demographic columns
-enr_wide <- fetch_enr(2024, tidy = FALSE)
+enr_wide <- fetch_enr(2024, tidy = FALSE, use_cache = TRUE)
 
 # Tidy format - one row per school-subgroup combination
-enr_tidy <- fetch_enr(2024, tidy = TRUE)
+enr_tidy <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 ```
 
 The tidy format is better for: - Comparing subgroups within schools -
@@ -247,7 +247,7 @@ Data is downloaded fresh each call. For repeated analysis, save locally:
 
 ``` r
 # Download once
-enr_2024 <- fetch_enr(2024, tidy = TRUE)
+enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
 # Save for reuse
 saveRDS(enr_2024, "data/enr_2024.rds")
@@ -277,7 +277,7 @@ library(purrr)
 
 # Fetch 5 years of enrollment data
 years <- 2020:2024
-multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE))
+multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 # Now you can analyze trends
 enrollment_trends <- multi_year_enr %>%

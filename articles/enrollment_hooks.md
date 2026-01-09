@@ -22,7 +22,7 @@ in the mid-2010s and has been gradually declining since. The Garden
 State follows national demographic trends.
 
 ``` r
-enr <- purrr::map_df(c(2000, 2005, 2010, 2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+enr <- purrr::map_df(c(2000, 2005, 2010, 2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 state_totals <- enr |>
   filter(is_state, subgroup == "total_enrollment", program_code == "55") |>
@@ -55,7 +55,7 @@ centers have seen significant enrollment declines as families move to
 suburbs or leave the state.
 
 ``` r
-enr_2025 <- fetch_enr(2025, tidy = TRUE)
+enr_2025 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
 
 top_districts <- enr_2025 |>
   filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
@@ -91,7 +91,7 @@ students for homeschooling or private options. Recovery has been
 gradual.
 
 ``` r
-covid_enr <- purrr::map_df(2019:2023, ~fetch_enr(.x, tidy = TRUE))
+covid_enr <- purrr::map_df(2019:2023, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 covid_changes <- covid_enr |>
   filter(is_district, subgroup == "total_enrollment", program_code == "55",
@@ -149,7 +149,7 @@ Kindergarten enrollment is the leading indicator. New Jersey’s K numbers
 have been soft, suggesting continued enrollment decline ahead.
 
 ``` r
-grade_enr <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE))
+grade_enr <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 grade_trends <- grade_enr |>
   filter(is_state, subgroup == "total_enrollment",
@@ -277,7 +277,7 @@ New Jersey’s investment in universal pre-K has led to significant growth
 in early childhood enrollment, particularly in Abbott districts.
 
 ``` r
-prek_enr <- purrr::map_df(c(2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+prek_enr <- purrr::map_df(c(2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 prek_trends <- prek_enr |>
   filter(is_state, subgroup == "total_enrollment",
