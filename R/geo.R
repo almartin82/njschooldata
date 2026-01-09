@@ -9,7 +9,6 @@
 #' @note The `placement` package is required for geocoding when `use_cache=FALSE`.
 #'   Install with: `remotes::install_github('DerekYves/placement')`
 #' @export
-#' @rawNamespace if (requireNamespace("placement", quietly = TRUE)) importFrom(placement, geocode_url)
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
 
@@ -56,7 +55,7 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     if (!requireNamespace("placement", quietly = TRUE)) {
       stop("Package 'placement' is required for geocoding. Install with: remotes::install_github('DerekYves/placement')")
     }
-    geocode_url <- utils::getExportedValue("placement", "geocode_url")
+    geocode_url <- get("geocode_url", envir = asNamespace("placement"))
     geocoded <- geocode_url(
       nj_sch$address,
       auth='standard_api',
