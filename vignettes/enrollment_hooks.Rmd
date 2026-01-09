@@ -38,7 +38,7 @@ This vignette explores New Jersey's public school enrollment data, surfacing key
 New Jersey's public school enrollment peaked around 1.4 million students in the mid-2010s and has been gradually declining since. The Garden State follows national demographic trends.
 
 ```{r statewide-trend}
-enr <- purrr::map_df(c(2000, 2005, 2010, 2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+enr <- purrr::map_df(c(2000, 2005, 2010, 2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 state_totals <- enr |>
   filter(is_state, subgroup == "total_enrollment", program_code == "55") |>
@@ -69,7 +69,7 @@ ggplot(state_totals, aes(x = end_year, y = n_students)) +
 Newark is New Jersey's largest school district, but it and other urban centers have seen significant enrollment declines as families move to suburbs or leave the state.
 
 ```{r top-districts}
-enr_2025 <- fetch_enr(2025, tidy = TRUE)
+enr_2025 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
 
 top_districts <- enr_2025 |>
   filter(is_district, subgroup == "total_enrollment", program_code == "55") |>
@@ -103,7 +103,7 @@ top_districts |>
 The 2020-21 school year saw sharp enrollment drops as families pulled students for homeschooling or private options. Recovery has been gradual.
 
 ```{r covid-impact}
-covid_enr <- purrr::map_df(2019:2023, ~fetch_enr(.x, tidy = TRUE))
+covid_enr <- purrr::map_df(2019:2023, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 covid_changes <- covid_enr |>
   filter(is_district, subgroup == "total_enrollment", program_code == "55",
@@ -158,7 +158,7 @@ demographics |>
 Kindergarten enrollment is the leading indicator. New Jersey's K numbers have been soft, suggesting continued enrollment decline ahead.
 
 ```{r k-vs-12}
-grade_enr <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE))
+grade_enr <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 grade_trends <- grade_enr |>
   filter(is_state, subgroup == "total_enrollment",
@@ -282,7 +282,7 @@ abbott_enr
 New Jersey's investment in universal pre-K has led to significant growth in early childhood enrollment, particularly in Abbott districts.
 
 ```{r prek-growth}
-prek_enr <- purrr::map_df(c(2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE))
+prek_enr <- purrr::map_df(c(2015, 2020, 2025), ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
 
 prek_trends <- prek_enr |>
   filter(is_state, subgroup == "total_enrollment",
