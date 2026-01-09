@@ -29,6 +29,7 @@ utils::globalVariables(c(
   "SCHOOL_CODE", "SCHOOL_NAME",
   "County Name", "District Name", "School Name",
   "Total Enrollment", "Grade", "Grade_Level",
+  "Continuing Students", "Non-Continuing Student",
 
   # ========== Enrollment Columns ==========
   "end_year", "yy", "n_students", "pct", "pct_total_enr",
@@ -173,6 +174,7 @@ utils::globalVariables(c(
   "attendance_asian_pacific", "attendance_black", "attendance_ed",
   "attendance_hispanic", "attendance_ell", "attendance_native_american",
   "attendance_multiracial", "attendance_swd", "attendance_white", "attendance_total",
+  "chronic_abs_pct", "chronically_absent_rate",
 
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
@@ -188,6 +190,53 @@ utils::globalVariables(c(
   # ========== Utility/Helper Columns ==========
   "hash", "Name", "cds", "denom", "extension", "num", "round_1", "temp_id",
   "nrow_before",
+
+  # ========== SAT/ACT/PSAT Assessment Columns ==========
+  "SAT", "ACT", "PSAT",
+  "STATE_SAT", "STATE_ACT", "STATE_PSAT",
+  "sat_participation", "act_participation", "psat_participation",
+  "state_sat", "state_act", "state_psat",
+  "School_Avg", "State_avg", "BT_PCT", "STATE_BT_PCT",
+  "Benchmark", "Test", "Subject", "StudentGroup",
+  "Perc12Graders", "Continuing", "Non-Continuing",
+  "Graduates", "Students", "Language",
+  "CountyCode", "CountyName", "DistrictCode", "DistrictName",
+  "SchoolCode", "SchoolName", "SealsEarned",
+  "ap3_ib4_school", "ap3_ib4_state", "ap_3_ib_4_school", "ap_3_ib_4_state",
+  "has_ap", "has_ib",
+
+  # ========== College & Career Readiness Columns ==========
+  "ap_access_rate", "stem_participation_rate",
+  "apib_course_school", "apib_course_state",
+  "apib_coursework_school", "apib_coursework_state",
+  "apib_exam_school", "apib_exam_state",
+  "dual_enrollment_school", "dual_enrollment_state",
+  "dual_school", "dual_state",
+  "cte_concentrators", "cte_participants",
+  "school_cteconcentrators", "school_cteparticipants",
+  "state_cte_concentrators", "state_cte_participants",
+  "state_cteconcentrators", "state_cteparticipants",
+  "students_enrolled", "students_enrolled_in_program", "students_participating",
+  "students_participating_in_work_based_learning",
+  "perc_students_participating_learning_by_cluster",
+  "career_cluster", "disparity_index", "industry_credentials_earned",
+  "atleast_one_credential_earned", "earned_one_credential",
+  "credentials_earned", "n_cs", "n_math", "n_science", "n_stem_students",
+  "n_total_students", "total_staff", "student_staff_ratio",
+  "language", "seals_earned",
+
+  # ========== Graduation Rate Columns (6-year) ==========
+  "grad_rate_6yr", "grad_rate_4yr", "grad_rate_5yr",
+  "retention_rate", "continuing_rate", "non_continuing_rate",
+  "persistence_rate", "HighSchoolPersistance",
+  "turnover_rate", "stability_index", "diversity_index",
+  "gender_diversity_score", "flag_large_gap",
+  "year_over_year_change", "year_over_year_pct_change",
+  "multi_year_trend", "trend_slope", "trend", "prev_value",
+  "n_unique_years", "n_years", "prop", "metric_name", "metric_value",
+  "total_population_rate", "pct_12th_graders", "pct_participating",
+  "access_rate", "access_gap_percentage", "lm", "coef",
+  "weighted_avg", "weighted.mean",
 
   # ========== Common Tidyverse ==========
   ".", "value", "name", "n",

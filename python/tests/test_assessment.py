@@ -89,3 +89,50 @@ class TestFetchAccessIntegration:
         from njschooldata import fetch_access
         result = fetch_access(2024, grade="3")
         assert isinstance(result, pd.DataFrame)
+
+    def test_fetch_parcc_invalid_year(self):
+        """Test that invalid year raises appropriate error."""
+        from njschooldata import fetch_parcc
+        # Test with year too old
+        with pytest.raises(Exception):
+            fetch_parcc(1990, 4, "math")
+
+    def test_fetch_parcc_invalid_grade(self):
+        """Test that invalid grade raises appropriate error."""
+        from njschooldata import fetch_parcc
+        # Test with invalid grade
+        with pytest.raises(Exception):
+            fetch_parcc(2019, 15, "math")
+
+    def test_fetch_parcc_invalid_subject(self):
+        """Test that invalid subject raises appropriate error."""
+        from njschooldata import fetch_parcc
+        # Test with invalid subject
+        with pytest.raises(Exception):
+            fetch_parcc(2019, 4, "invalid_subject")
+
+    def test_fetch_parcc_data_types(self):
+        """Test that PARCC data has expected types."""
+        from njschooldata import fetch_parcc
+        result = fetch_parcc(2019, 4, "math")
+        # Check ID columns are strings
+        assert result["district_id"].dtype == "object"
+        # Check numeric columns
+        assert pd.api.types.is_numeric_dtype(result["number_of_valid_scale_scores"])
+
+    def test_fetch_access_data_types(self):
+        """Test that ACCESS data has expected types."""
+        from njschooldata import fetch_access
+        result = fetch_access(2024)
+        # Check ID columns are strings
+        assert result["district_id"].dtype == "object"
+
+    def test_fetch_parcc_multiple_years(self):
+        """Test fetching multiple years of data."""
+        from njschooldata import fetch_parcc
+        result_2018 = fetch_parcc(2018, 4, "ela")
+        result_2019 = fetch_parcc(2019, 4, "ela")
+        assert isinstance(result_2018, pd.DataFrame)
+        assert isinstance(result_2019, pd.DataFrame)
+        assert len(result_2018) > 0
+        assert len(result_2019) > 0
