@@ -72,6 +72,10 @@ reference:
     desc: Functions for SPR database data (2017-2024)
     contents:
       - fetch_spr_data
+      - list_spr_sheets
+      - fetch_chronic_absenteeism
+      - fetch_absenteeism_by_grade
+      - fetch_days_absent
       - fetch_sat_participation
       - fetch_sat_performance
       - fetch_ap_participation
@@ -82,6 +86,14 @@ reference:
       - fetch_work_based_learning
       - fetch_apprenticeship_data
       - fetch_biliteracy_seal
+      - fetch_violence_vandalism_hib
+      - fetch_disciplinary_removals
+      - fetch_teacher_experience
+      - fetch_staff_demographics
+      - fetch_staff_ratios
+      - fetch_dropout_rates
+      - fetch_essa_status
+      - fetch_math_course_enrollment
 
   - title: School/District Directories
     desc: Functions for school and district metadata
