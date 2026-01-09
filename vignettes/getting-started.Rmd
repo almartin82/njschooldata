@@ -209,7 +209,7 @@ grad_count_2024 <- fetch_grad_count(end_year = 2024)
 
 Get metadata about schools and districts:
 
-```{r directories, eval = FALSE}
+```{r directories, cache = TRUE}
 # Current school directory with addresses, coordinates, grades served
 schools <- get_school_directory()
 
