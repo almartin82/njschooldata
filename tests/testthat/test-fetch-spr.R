@@ -475,3 +475,68 @@ test_that("fetch_spr_data works across multiple years for different sheets", {
   expect_equal(max(df_disc_2024$end_year), 2024)
   expect_equal(max(df_disc_2020$end_year), 2020)
 })
+
+# ESSA Accountability Function Tests
+
+test_that("fetch_essa_progress returns expected structure", {
+  df <- fetch_essa_progress(2024)
+  
+  expect_s3_class(df, "data.frame")
+  expect_true("end_year" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+  expect_gt(nrow(df), 0)
+})
+
+test_that("fetch_essa_progress works for district level", {
+  df <- fetch_essa_progress(2024, level = "district")
+  
+  expect_s3_class(df, "data.frame")
+  expect_true("is_district" %in% names(df))
+})
+
+test_that("identify_focus_schools returns focus schools only", {
+  df <- fetch_essa_status(2024)
+  focus <- identify_focus_schools(df)
+  
+  expect_s3_class(focus, "data.frame")
+  expect_gt(nrow(focus), 0)
+  expect_true("focus_level" %in% names(focus))
+  expect_true(all(focus$focus_level %in% c("Comprehensive Support", "Targeted Support", "Other Support")))
+})
+
+test_that("identify_focus_schools filters by year when specified", {
+  df <- fetch_essa_status(2020)
+  focus <- identify_focus_schools(df, end_year = 2020)
+  
+  expect_true(all(focus$end_year == 2020))
+})
+
+test_that("track_essa_progress_over_time returns longitudinal data", {
+  df_list <- list(
+    "2020" = fetch_essa_status(2020),
+    "2022" = fetch_essa_status(2022),
+    "2024" = fetch_essa_status(2024)
+  )
+  
+  result <- track_essa_progress_over_time(df_list)
+  
+  expect_type(result, "list")
+  expect_true("longitudinal" %in% names(result))
+  expect_true("transitions" %in% names(result))
+  expect_true("summary" %in% names(result))
+  expect_s3_class(result$longitudinal, "data.frame")
+})
+
+test_that("track_essa_progress_over_time filters by school_id", {
+  df_list <- list(
+    "2020" = fetch_essa_status(2020),
+    "2024" = fetch_essa_status(2024)
+  )
+  
+  # Get a school_id from the data
+  test_school <- df_list[["2020"]]$school_id[1]
+  result <- track_essa_progress_over_time(df_list, school_id = test_school)
+  
+  expect_true(nrow(result$longitudinal) > 0)
+  expect_true(all(result$longitudinal$school_id == test_school))
+})

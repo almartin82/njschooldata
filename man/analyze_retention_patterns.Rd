@@ -9,7 +9,7 @@ analyze_retention_patterns(df_list, by_subgroup = TRUE)
 \arguments{
 \item{df_list}{A named list of data frames from different years. Each element
 should be named by its end_year (e.g., list("2022" = df_2022, "2024" = df_2024)).
-Data frames should be from \code{\link{fetch_staff_demographics}} or similar
+Data frames should be from \code{\link{fetch_staff_retention}} or similar
 containing staff retention data.}
 
 \item{by_subgroup}{Logical; if TRUE (default), analyze retention patterns
@@ -47,9 +47,9 @@ Trend classification uses linear regression on multi-year stability scores:
 \examples{
 \dontrun{
 # Fetch retention data for multiple years
-retain_2022 <- fetch_staff_demographics(2022)
-retain_2023 <- fetch_staff_demographics(2023)
-retain_2024 <- fetch_staff_demographics(2024)
+retain_2022 <- fetch_staff_retention(2022)
+retain_2023 <- fetch_staff_retention(2023)
+retain_2024 <- fetch_staff_retention(2024)
 
 # Combine into named list
 df_list <- list(
