@@ -763,3 +763,381 @@ fetch_essa_status <- function(end_year, level = "school") {
   df <- fetch_spr_data("ESSAAccountabilityStatus", end_year, level)
   df
 }
+
+
+#' Fetch ESSA Accountability Progress
+#'
+#' Downloads ESSA accountability progress indicators from SPR database.
+#' Includes metrics on academic proficiency, growth, graduation rates, and
+#' chronic absenteeism.
+#'
+#' @param end_year A school year (2017-2024)
+#' @param level One of "school" or "district"
+#'
+#' @return Data frame with ESSA progress indicators including:
+#'   \itemize{
+#'     \item School/district identifying information
+#'     \item elaproficiency - ELA proficiency status
+#'     \item math_proficiency - Math proficiency status
+#'     \item ela_growth - ELA growth indicator
+#'     \item math_growth - Math growth indicator
+#'     \item x_4_year_graduation_rate - 4-year graduation rate
+#'     \item x_5_year_graduation_rate - 5-year graduation rate
+#'     \item progress_toward_english_language_proficiency - ELL progress
+#'     \item chronic_absenteeism - Chronic absenteeism rate
+#'   }
+#'
+#' @export
+#' @examples \dontrun{
+#' progress <- fetch_essa_progress(2024)
+#' }
+fetch_essa_progress <- function(end_year, level = "school") {
+  df <- fetch_spr_data("ESSAAccountabilityProgress", end_year, level)
+  df
+}
+
+
+# ==============================================================================
+# ESSA Accountability Analysis Functions
+# ==============================================================================
+#
+# Analysis functions for ESSA accountability data. These functions process
+# data from fetch_essa_status() and fetch_essa_progress() to identify schools
+# needing support, track progress over time, and analyze improvement patterns.
+#
+# ==============================================================================
+
+# -----------------------------------------------------------------------------
+# Focus School Identification
+# -----------------------------------------------------------------------------
+
+#' Identify Focus Schools
+#'
+#' Identifies schools that need support based on ESSA accountability status.
+#' Filters for schools identified as Comprehensive Support, Targeted Support,
+#' or other improvement categories, and categorizes by support level.
+#'
+#' @param df A data frame from \code{\link{fetch_essa_status}} containing
+#'   ESSA accountability status information
+#' @param end_year Optional school year to filter results (e.g., 2024)
+#'
+#' @return Data frame with focus schools including:
+#'   \itemize{
+#'     \item All original columns from input data
+#'     \item focus_level - Categorized support level:
+#'       \itemize{
+#'         \item "Comprehensive Support and Improvement" - Lowest performing 5%
+#'         \item "Targeted Support and Improvement" - Underperforming subgroups
+#'         \item "Other Support" - Other identification categories
+#'       }
+#'   }
+#'   Schools are sorted by focus level (Comprehensive first) and then alphabetically
+#'   by district and school name. Schools without support identification are excluded.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Get ESSA status data
+#' essa <- fetch_essa_status(2024)
+#'
+#' # Identify focus schools
+#' focus <- identify_focus_schools(essa)
+#'
+#' # View comprehensive support schools
+#' focus %>%
+#'   dplyr::filter(focus_level == "Comprehensive Support and Improvement") %>%
+#'   dplyr::select(district_name, school_name, category_of_identification)
+#'
+#' # Focus on specific year
+#' focus_2023 <- identify_focus_schools(essa, end_year = 2023)
+#' }
+identify_focus_schools <- function(df, end_year = NULL) {
+
+  # Validate input
+  if (!"category_of_identification" %in% names(df)) {
+    stop("Input data must contain 'category_of_identification' column from fetch_essa_status()")
+  }
+
+  # Filter to specific year if requested
+  if (!is.null(end_year)) {
+    df <- df %>%
+      dplyr::filter(end_year == as.numeric(end_year))
+  }
+
+  # Filter to schools with some form of identification/support needed
+  # Exclude empty, NA, "n/a", or "No Identification" status
+  focus_df <- df %>%
+    dplyr::filter(
+      !is.na(category_of_identification),
+      category_of_identification != "",
+      # Exclude "n/a" (not applicable - no support needed)
+      tolower(trimws(category_of_identification)) != "n/a",
+      # Common variations for "no identification" - case insensitive
+      !grepl("^no", category_of_identification, ignore.case = TRUE),
+      !grepl("^none", category_of_identification, ignore.case = TRUE)
+    )
+
+  # Check if any focus schools were found
+  if (nrow(focus_df) == 0) {
+    warning("No focus schools found in the data")
+    return(focus_df)
+  }
+
+  # Categorize focus level
+  # Look for key terms in the category_of_identification field
+  focus_df <- focus_df %>%
+    dplyr::mutate(
+      focus_level = dplyr::case_when(
+        # Comprehensive support (CSI)
+        grepl("comprehensive|CSI", category_of_identification, ignore.case = TRUE) ~
+          "Comprehensive Support",
+        # Targeted support (TSI/ATSI)
+        grepl("targeted|TSI|ATSI", category_of_identification, ignore.case = TRUE) ~
+          "Targeted Support",
+        # Other support types
+        grepl("identification|support|improvement|warning|watch|low performing|low graduation",
+              category_of_identification, ignore.case = TRUE) ~
+          "Other Support",
+        # Default
+        TRUE ~ "Other Support"
+      )
+    )
+
+  # Sort by focus level (Comprehensive first, then Targeted, then Other)
+  # Then alphabetically by county, district, and school
+  focus_df <- focus_df %>%
+    dplyr::arrange(focus_level, county_name, district_name, school_name)
+
+  focus_df
+}
+
+
+# -----------------------------------------------------------------------------
+# Longitudinal Progress Tracking
+# -----------------------------------------------------------------------------
+
+#' Track ESSA Progress Over Time
+#'
+#' Tracks ESSA accountability status changes across multiple years, identifying
+#' improvement trajectories, calculating transition probabilities, and summarizing
+#' patterns in school accountability status.
+#'
+#' @param df_list A named list of data frames from different years. Each element
+#'   should be named by its end_year (e.g., list("2020" = df_2020, "2024" = df_2024)).
+#'   Data frames should be from \code{\link{fetch_essa_status}}.
+#' @param school_id Optional school code to track a specific school (e.g., "010")
+#'
+#' @return List with two elements:
+#'   \itemize{
+#'     \item \code{longitudinal} - Data frame with one row per school-year combination:
+#'       \itemize{
+#'         \item end_year - School year
+#'         \item county_id, district_id, school_id - Location identifiers
+#'         \item school_name - School name
+#'         \item category_of_identification - ESSA status category
+#'         \item focus_level - Categorized support level (Comprehensive/Targeted/Other/None)
+#'         \item status_change - Change from previous year:
+#'           "Improvement", "Decline", "Stable", "First Year", or "Insufficient Data"
+#'       }
+#'     \item \code{transitions} - Data frame with transition summary statistics:
+#'       \itemize{
+#'         \item from_status - Status in previous year
+#'         \item to_status - Status in current year
+#'         \item n_schools - Number of schools with this transition
+#'         \item pct_schools - Percentage of all transitions
+#'       }
+#'     \item \code{summary} - List with summary statistics:
+#'       \itemize{
+#'         \item n_schools_tracked - Total unique schools tracked
+#'         \item n_years - Number of years in data
+#'         \item n_improvements - Number of schools showing improvement
+#'         \item n_declines - Number of schools showing decline
+#'       }
+#'   }
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Fetch data for multiple years
+#' essa_2020 <- fetch_essa_status(2020)
+#' essa_2022 <- fetch_essa_status(2022)
+#' essa_2024 <- fetch_essa_status(2024)
+#'
+#' # Combine into named list
+#' df_list <- list(
+#'   "2020" = essa_2020,
+#'   "2022" = essa_2022,
+#'   "2024" = essa_2024
+#' )
+#'
+#' # Track progress over time
+#' progress <- track_essa_progress_over_time(df_list)
+#'
+#' # View longitudinal data
+#' head(progress$longitudinal)
+#'
+#' # View transition patterns
+#' progress$transitions
+#'
+#' # View summary
+#' progress$summary
+#'
+#' # Track specific school
+#' single_school <- track_essa_progress_over_time(df_list, school_id = "010")
+#' }
+track_essa_progress_over_time <- function(df_list, school_id = NULL) {
+
+  # Validate input
+  if (!is.list(df_list) || is.data.frame(df_list)) {
+    stop("df_list must be a list of data frames")
+  }
+
+  if (is.null(names(df_list)) || any(names(df_list) == "")) {
+    stop("df_list must be a named list with years as names")
+  }
+
+  # Add year column to each data frame and filter to school if specified
+  df_list <- lapply(names(df_list), function(year_name) {
+    df <- df_list[[year_name]]
+    df$end_year <- as.numeric(year_name)
+
+    # Filter to specific school if requested
+    if (!is.null(school_id)) {
+      df <- df %>%
+        dplyr::filter(school_id == school_id)
+    }
+
+    df
+  })
+  names(df_list) <- names(df_list)
+
+  # Combine all years
+  combined <- dplyr::bind_rows(df_list)
+
+  # Check if any data remains
+  if (nrow(combined) == 0) {
+    warning("No data found for the specified parameters")
+    return(list(
+      longitudinal = combined,
+      transitions = data.frame(),
+      summary = list(
+        n_schools_tracked = 0,
+        n_years = length(df_list),
+        n_improvements = 0,
+        n_declines = 0
+      )
+    ))
+  }
+
+  # Create focus_level for each row (consistent with identify_focus_schools)
+  combined <- combined %>%
+    dplyr::mutate(
+      focus_level = dplyr::case_when(
+        # No identification
+        is.na(category_of_identification) |
+        category_of_identification == "" |
+        tolower(trimws(category_of_identification)) == "n/a" |
+        grepl("^no", category_of_identification, ignore.case = TRUE) |
+        grepl("^none", category_of_identification, ignore.case = TRUE) ~ "No Support",
+        # Comprehensive support (CSI)
+        grepl("comprehensive|CSI", category_of_identification, ignore.case = TRUE) ~
+          "Comprehensive Support",
+        # Targeted support (TSI/ATSI)
+        grepl("targeted|TSI|ATSI", category_of_identification, ignore.case = TRUE) ~
+          "Targeted Support",
+        # Other support
+        grepl("identification|support|improvement|warning|watch|low performing|low graduation",
+              category_of_identification, ignore.case = TRUE) ~
+          "Other Support",
+        # Default
+        TRUE ~ "Other Support"
+      )
+    )
+
+  # Sort by school and year
+  combined <- combined %>%
+    dplyr::arrange(school_id, end_year)
+
+  # Calculate status changes
+  longitudinal <- combined %>%
+    dplyr::group_by(school_id) %>%
+    dplyr::mutate(
+      prev_focus_level = dplyr::lag(focus_level),
+      prev_end_year = dplyr::lag(end_year)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      # Determine status change
+      status_change = dplyr::case_when(
+        # First year for this school
+        is.na(prev_focus_level) ~ "First Year",
+        # Gap in years (not consecutive)
+        end_year - prev_end_year > 1 ~ "Insufficient Data",
+        # Improvement: moved to lower support level
+        prev_focus_level == "Comprehensive Support" &
+          focus_level == "Targeted Support" ~ "Improvement",
+        prev_focus_level == "Comprehensive Support" &
+          focus_level == "No Support" ~ "Improvement",
+        prev_focus_level == "Targeted Support" &
+          focus_level == "No Support" ~ "Improvement",
+        # Decline: moved to higher support level
+        prev_focus_level == "No Support" &
+          focus_level == "Targeted Support" ~ "Decline",
+        prev_focus_level == "No Support" &
+          focus_level == "Comprehensive Support" ~ "Decline",
+        prev_focus_level == "Targeted Support" &
+          focus_level == "Comprehensive Support" ~ "Decline",
+        # Stable: same level or within Other Support
+        prev_focus_level == focus_level ~ "Stable",
+        # Other changes (e.g., Other Support -> No Support)
+        TRUE ~ "Stable"
+      )
+    ) %>%
+    dplyr::select(
+      end_year,
+      county_id,
+      district_id,
+      school_id,
+      school_name,
+      category_of_identification,
+      focus_level,
+      status_change
+    )
+
+  # Calculate transition probabilities (focus_level transitions)
+  # Only include consecutive year transitions
+  transitions <- longitudinal %>%
+    dplyr::filter(status_change %in% c("Improvement", "Decline", "Stable")) %>%
+    dplyr::mutate(
+      from_status = dplyr::lag(focus_level),
+      to_status = focus_level
+    ) %>%
+    dplyr::filter(!is.na(from_status)) %>%
+    dplyr::count(from_status, to_status, name = "n_schools") %>%
+    dplyr::group_by(from_status) %>%
+    dplyr::mutate(pct_schools = (n_schools / sum(n_schools)) * 100) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(from_status, dplyr::desc(n_schools)) %>%
+    dplyr::select(from_status, to_status, n_schools, pct_schools)
+
+  # Calculate summary statistics
+  n_improvements <- sum(longitudinal$status_change == "Improvement", na.rm = TRUE)
+  n_declines <- sum(longitudinal$status_change == "Decline", na.rm = TRUE)
+  n_schools_tracked <- length(unique(longitudinal$school_id))
+
+  summary_stats <- list(
+    n_schools_tracked = n_schools_tracked,
+    n_years = length(df_list),
+    n_improvements = n_improvements,
+    n_declines = n_declines
+  )
+
+  # Return results
+  list(
+    longitudinal = longitudinal,
+    transitions = transitions,
+    summary = summary_stats
+  )
+}

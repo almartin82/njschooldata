@@ -12,7 +12,7 @@ jobs:
   R-CMD-check:
     runs-on: ubuntu-latest
 
-    name: ubuntu-latest (release)
+    name: R-CMD-check
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
