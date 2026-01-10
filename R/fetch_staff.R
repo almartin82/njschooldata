@@ -3,9 +3,8 @@
 # ==============================================================================
 #
 # Analysis functions for staff data. These functions process data from
-# fetch_teacher_experience(), fetch_staff_demographics(), fetch_staff_ratios(),
-# fetch_staff_counts(), and fetch_staff_retention() to calculate ratios,
-# diversity indices, and retention patterns.
+# fetch_teacher_experience(), fetch_staff_demographics(), fetch_staff_ratios()
+# to calculate ratios, diversity indices, and retention patterns.
 #
 # ==============================================================================
 
@@ -367,8 +366,8 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #'
 #' @param df_list A named list of data frames from different years. Each element
 #'   should be named by its end_year (e.g., list("2022" = df_2022, "2024" = df_2024)).
-#'   Data frames should be from \code{\link{fetch_staff_retention}} or similar
-#'   containing staff retention data.
+#'   Data frames should contain staff retention data with columns for year, location,
+#'   and retention/turnover metrics.
 #' @param by_subgroup Logical; if TRUE (default), analyze retention patterns
 #'   by demographic subgroups. If FALSE, aggregate across all staff.
 #'
@@ -399,29 +398,25 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #' @export
 #'
 #' @examples
+#' # NOTE: This function requires staff retention data with appropriate columns.
+#' # Example assumes you have retention data frames with the required structure.
 #' \dontrun{
-#' # Fetch retention data for multiple years
-#' retain_2022 <- fetch_staff_retention(2022)
-#' retain_2023 <- fetch_staff_retention(2023)
-#' retain_2024 <- fetch_staff_retention(2024)
+#' # Create example data frames with required columns
+#' retain_2022 <- data.frame(
+#'   year = 2022,
+#'   location_id = c("school1", "school2"),
+#'   subgroup = c("total", "total"),
+#'   retention_rate = c(85.5, 90.2),
+#'   turnover_rate = c(14.5, 9.8)
+#' )
 #'
 #' # Combine into named list
 #' df_list <- list(
-#'   "2022" = retain_2022,
-#'   "2023" = retain_2023,
-#'   "2024" = retain_2024
+#'   "2022" = retain_2022
 #' )
 #'
-#' # Analyze overall retention patterns
-#' overall_patterns <- analyze_retention_patterns(df_list, by_subgroup = FALSE)
-#'
-#' # Analyze by demographic subgroup
-#' subgroup_patterns <- analyze_retention_patterns(df_list, by_subgroup = TRUE)
-#'
-#' # View schools with declining retention
-#' subgroup_patterns %>%
-#'   dplyr::filter(trend == "declining") %>%
-#'   dplyr::select(school_name, year, subgroup, retention_rate, trend)
+#' # Analyze retention patterns
+#' patterns <- analyze_retention_patterns(df_list, by_subgroup = TRUE)
 #' }
 analyze_retention_patterns <- function(df_list, by_subgroup = TRUE) {
 
