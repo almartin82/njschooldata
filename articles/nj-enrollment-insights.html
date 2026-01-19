@@ -34,8 +34,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with njschooldata</a></li>
-    <li><a class="dropdown-item" href="../articles/enrollment_hooks.html">10 Insights from New Jersey School Enrollment Data</a></li>
     <li><a class="dropdown-item" href="../articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="../articles/spr-dictionary.html">SPR Data Dictionary</a></li>
   </ul>
 </li>
       </ul>
@@ -60,7 +60,7 @@
       <h1>New Jersey Enrollment Insights</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/main/vignettes/nj-enrollment-insights.Rmd" class="external-link"><code>vignettes/nj-enrollment-insights.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/vignettes/nj-enrollment-insights.Rmd" class="external-link"><code>vignettes/nj-enrollment-insights.Rmd</code></a></small>
       <div class="d-none name"><code>nj-enrollment-insights.Rmd</code></div>
     </div>
 
@@ -88,11 +88,11 @@
 <code class="sourceCode R"><span><span class="co"># Fetch recent years of enrollment data</span></span>
 <span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span></span>
 <span><span class="va">enr_all</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_df</a></span><span class="op">(</span><span class="va">years</span>, <span class="op">~</span><span class="op">{</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="va">.x</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="va">.x</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">enr_current</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2025</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">enr_2015</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2015</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">enr_current</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2025</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">enr_2015</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2015</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="new-jersey-educates-1-4-million-students">1. New Jersey educates 1.4 million students<a class="anchor" aria-label="anchor" href="#new-jersey-educates-1-4-million-students"></a>
 </h2>
@@ -111,6 +111,7 @@ decade.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Statewide public school enrollment has held steady"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Students"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="newark-leads-the-charter-school-revolution">2. Newark leads the charter school revolution<a class="anchor" aria-label="anchor" href="#newark-leads-the-charter-school-revolution"></a>
@@ -136,6 +137,7 @@ nation - over 30% of students attend charter schools.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Over 30% of Newark students now attend charter schools"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Students"</span>, fill <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/newark-charter-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="hispanic-students-are-the-fastest-growing-group">3. Hispanic students are the fastest-growing group<a class="anchor" aria-label="anchor" href="#hispanic-students-are-the-fastest-growing-group"></a>
@@ -153,6 +155,7 @@ students in two decades.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"From 20% to nearly 30% of all NJ students"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Percent Hispanic"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/hispanic-growth-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="the-big-three-newark-jersey-city-and-paterson">4. The Big Three: Newark, Jersey City, and Paterson<a class="anchor" aria-label="anchor" href="#the-big-three-newark-jersey-city-and-paterson"></a>
@@ -174,6 +177,7 @@ combined - nearly 8% of the state.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Combined enrollment of over 100,000 students"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Students"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/big-three-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="covid-hit-kindergarten-hard">5. COVID hit kindergarten hard<a class="anchor" aria-label="anchor" href="#covid-hit-kindergarten-hard"></a>
@@ -202,6 +206,7 @@ hasn’t fully recovered.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Lost nearly 10% of kindergartners in 2021 - still recovering"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Students"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="economic-disadvantage-varies-widely">6. Economic disadvantage varies widely<a class="anchor" aria-label="anchor" href="#economic-disadvantage-varies-widely"></a>
@@ -223,6 +228,7 @@ while affluent suburbs have under 5%.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Some districts approach 100% economically disadvantaged"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">""</span>, y <span class="op">=</span> <span class="st">"Percent Economically Disadvantaged"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/econ-disadvantage-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="white-student-share-has-declined-dramatically">7. White student share has declined dramatically<a class="anchor" aria-label="anchor" href="#white-student-share-has-declined-dramatically"></a>
@@ -243,6 +249,7 @@ schools over the past two decades.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"NJ public schools are now majority-minority"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Percent of Students"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/demographic-shift-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="english-language-learners-concentrated-in-urban-areas">8. English Language Learners concentrated in urban areas<a class="anchor" aria-label="anchor" href="#english-language-learners-concentrated-in-urban-areas"></a>
@@ -264,6 +271,7 @@ suburban districts.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Some districts have over 20% ELL students"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">""</span>, y <span class="op">=</span> <span class="st">"Percent English Language Learners"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/ell-concentration-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="top-10-districts-educate-20-of-all-students">9. Top 10 districts educate 20% of all students<a class="anchor" aria-label="anchor" href="#top-10-districts-educate-20-of-all-students"></a>
@@ -285,6 +293,7 @@ one-fifth of all NJ students.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"Just 10 out of 600+ districts serve one-fifth of NJ students"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">""</span>, y <span class="op">=</span> <span class="st">"Students"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/top-10-districts-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="special-education-rates-remain-steady">10. Special education rates remain steady<a class="anchor" aria-label="anchor" href="#special-education-rates-remain-steady"></a>
@@ -302,6 +311,155 @@ among the highest rates nationally.</p>
 <span>       subtitle <span class="op">=</span> <span class="st">"About 17-18% of NJ students - among highest rates nationally"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Percent Special Education"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/special-ed-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="pre-k-enrollment-has-more-than-doubled-since-2015">11. Pre-K enrollment has more than doubled since 2015<a class="anchor" aria-label="anchor" href="#pre-k-enrollment-has-more-than-doubled-since-2015"></a>
+</h2>
+<p>New Jersey’s universal pre-K expansion has dramatically increased
+early childhood enrollment.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prek</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"PK"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">prek</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"hispanic"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span>, color <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"hispanic"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">comma</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Pre-K Enrollment Has More Than Doubled Since 2015"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"NJ's universal pre-K expansion reaches more families"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Pre-K Students"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/prek-growth-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="boys-outnumber-girls-in-nj-public-schools">12. Boys outnumber girls in NJ public schools<a class="anchor" aria-label="anchor" href="#boys-outnumber-girls-in-nj-public-schools"></a>
+</h2>
+<p>A consistent 51-49 split favoring male students across all years.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gender</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"female"</span><span class="op">)</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">gender</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">pct</span> <span class="op">*</span> <span class="fl">100</span>, color <span class="op">=</span> <span class="va">subgroup</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span> <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"total"</span><span class="op">]</span>, <span class="st">"female"</span> <span class="op">=</span> <span class="st">"#E91E63"</span><span class="op">)</span>,</span>
+<span>                     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Female"</span>, <span class="st">"Male"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Boys Outnumber Girls in NJ Public Schools"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Consistent 51-49 split favoring male students"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Percent of Students"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/gender-balance-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="black-student-enrollment-declined-15-since-2015">13. Black student enrollment declined 15% since 2015<a class="anchor" aria-label="anchor" href="#black-student-enrollment-declined-15-since-2015"></a>
+</h2>
+<p>While Hispanic enrollment grew, Black student numbers have steadily
+declined.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">black</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"black"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">black</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"black"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span>, color <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"black"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">comma</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Black Student Enrollment Declined 15% Since 2015"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Continuing a multi-decade trend in NJ public schools"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Black Students"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/black-decline-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="asian-students-now-outnumber-black-students">14. Asian students now outnumber Black students<a class="anchor" aria-label="anchor" href="#asian-students-now-outnumber-black-students"></a>
+</h2>
+<p>A demographic crossover occurred around 2019-2020.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">asian_black</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"asian"</span>, <span class="st">"black"</span><span class="op">)</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">asian_black</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">n_students</span>, color <span class="op">=</span> <span class="va">subgroup</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">comma</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"asian"</span> <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"asian"</span><span class="op">]</span>, <span class="st">"black"</span> <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"black"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Asian"</span>, <span class="st">"Black"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Asian Students Now Outnumber Black Students"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"A demographic crossover occurred around 2019-2020"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Students"</span>, color <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/asian-black-crossover-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="districts-have-fewer-than-1000-students">15. 100+ districts have fewer than 1,000 students<a class="anchor" aria-label="anchor" href="#districts-have-fewer-than-1000-students"></a>
+</h2>
+<p>Small districts dominate NJ’s fragmented school system.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">small_districts</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">500</span> <span class="op">~</span> <span class="st">"Under 500"</span>,</span>
+<span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">1000</span> <span class="op">~</span> <span class="st">"500-999"</span>,</span>
+<span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">2500</span> <span class="op">~</span> <span class="st">"1,000-2,499"</span>,</span>
+<span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">5000</span> <span class="op">~</span> <span class="st">"2,500-4,999"</span>,</span>
+<span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">10000</span> <span class="op">~</span> <span class="st">"5,000-9,999"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"10,000+"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">size_category</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size_category <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">size_category</span>,</span>
+<span>         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Under 500"</span>, <span class="st">"500-999"</span>, <span class="st">"1,000-2,499"</span>, <span class="st">"2,500-4,999"</span>, <span class="st">"5,000-9,999"</span>, <span class="st">"10,000+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">small_districts</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">size_category</span>, y <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="st">"total"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"100+ Districts Have Fewer Than 1,000 Students"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Small districts dominate NJ's fragmented school system"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"District Size"</span>, y <span class="op">=</span> <span class="st">"Number of Districts"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-enrollment-insights_files/figure-html/small-districts-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.3 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] scales_1.4.0       dplyr_1.1.4        ggplot2_4.0.1      njschooldata_0.9.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        stringi_1.8.7     </span></span>
+<span><span class="co">#&gt;  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    </span></span>
+<span><span class="co">#&gt;  [9] grid_4.5.2         timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0     </span></span>
+<span><span class="co">#&gt; [13] cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.1        codetools_0.2-20  </span></span>
+<span><span class="co">#&gt; [17] textshaping_1.0.4  jquerylib_0.1.4    cli_3.6.5          rlang_1.1.7       </span></span>
+<span><span class="co">#&gt; [21] withr_3.0.2        cachem_1.1.0       yaml_2.3.12        downloader_0.4.1  </span></span>
+<span><span class="co">#&gt; [25] tools_4.5.2        tzdb_0.5.0         vctrs_0.7.0        R6_2.6.1          </span></span>
+<span><span class="co">#&gt; [29] lifecycle_1.0.5    lubridate_1.9.4    snakecase_0.11.1   stringr_1.6.0     </span></span>
+<span><span class="co">#&gt; [33] fs_1.6.6           ragg_1.5.0         janitor_2.2.1      pkgconfig_2.0.3   </span></span>
+<span><span class="co">#&gt; [37] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.9.0       </span></span>
+<span><span class="co">#&gt; [41] gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1  xfun_0.55         </span></span>
+<span><span class="co">#&gt; [45] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      </span></span>
+<span><span class="co">#&gt; [49] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30     readr_2.1.6       </span></span>
+<span><span class="co">#&gt; [53] compiler_4.5.2     S7_0.2.1           readxl_1.4.5</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

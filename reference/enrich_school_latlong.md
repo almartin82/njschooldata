@@ -25,3 +25,9 @@ enrich_school_latlong(df, use_cache = TRUE, api_key = "")
 ## Value
 
 dataframe enriched with lat lng
+
+## Note
+
+The \`placement\` package is required for geocoding when
+\`use_cache=FALSE\`. Install with:
+\`remotes::install_github('DerekYves/placement')\`

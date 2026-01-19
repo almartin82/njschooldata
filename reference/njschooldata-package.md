@@ -1,7 +1,8 @@
-# njschooldata: A Simple Interface for Accessing NJ DOE School Data in R
+# njschooldata: A Simple Interface for Accessing NJ DOE School Data in R and Python
 
-R functions to import NJ school data, including assessment, enrollment,
-and accountability data from the New Jersey Department of Education.
+R functions (with Python bindings) to import NJ school data, including
+assessment, enrollment, and accountability data from the New Jersey
+Department of Education.
 
 ## See also
 

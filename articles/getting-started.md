@@ -78,13 +78,41 @@ flags:
 
 ``` r
 # Get 2024 enrollment data (2023-24 school year)
-enr_2024 <- fetch_enr(2024, use_cache = TRUE)
+enr_2024 <- fetch_enr(2024)
 
 # View the structure
 glimpse(enr_2024)
+#> Rows: 101,568
+#> Columns: 25
+#> $ end_year        <dbl> 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, …
+#> $ CDS_Code        <chr> "010010999", "010010999", "010010999", "010010999", "0…
+#> $ county_id       <chr> "01", "01", "01", "01", "01", "01", "01", "01", "01", …
+#> $ county_name     <chr> "Atlantic", "Atlantic", "Atlantic", "Atlantic", "Atlan…
+#> $ district_id     <chr> "0010", "0010", "0010", "0010", "0010", "0010", "0010"…
+#> $ district_name   <chr> "Absecon Public Schools District", "Absecon Public Sch…
+#> $ school_id       <chr> "999", "999", "999", "999", "999", "999", "999", "999"…
+#> $ school_name     <chr> "District Total", "District Total", "District Total", …
+#> $ program_code    <chr> "PH", NA, "PF", NA, "KH", NA, "KF", NA, "01", NA, "02"…
+#> $ program_name    <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ male            <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ female          <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ white           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ black           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ hispanic        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ asian           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ native_american <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ multiracial     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ row_total       <dbl> 0.0, 0.0, 123.0, 13.3, 0.0, 0.0, 77.0, 8.3, 89.0, 9.6,…
+#> $ free_lunch      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ reduced_lunch   <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ lep             <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ migrant         <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ homeless        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+#> $ grade_level     <chr> "PK", NA, "PK", NA, "K", NA, "K", NA, "01", NA, "02", …
 
 # Check dimensions
 dim(enr_2024)  # Rows and columns
+#> [1] 101568     25
 ```
 
 ### Wide vs. Tidy Format
@@ -93,10 +121,10 @@ The `tidy` parameter transforms data for easier analysis:
 
 ``` r
 # Wide format (default) - one row per school, many demographic columns
-enr_wide <- fetch_enr(2024, tidy = FALSE, use_cache = TRUE)
+enr_wide <- fetch_enr(2024, tidy = FALSE)
 
 # Tidy format - one row per school-subgroup combination
-enr_tidy <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
+enr_tidy <- fetch_enr(2024, tidy = TRUE)
 ```
 
 The tidy format is better for: - Comparing subgroups within schools -
@@ -161,11 +189,12 @@ alg1_2024 <- fetch_parcc(
 
 ### Legacy Assessments (2004-2014)
 
-For historical data, use `fetch_nj_assess()`:
+For historical data, use
+[`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md):
 
 ``` r
 # Get 2010 Grade 5 NJASK results
-njask_2010 <- fetch_nj_assess(
+njask_2010 <- fetch_old_nj_assess(
   end_year = 2010,
   grade = 5,
   tidy = TRUE
@@ -183,9 +212,9 @@ grad_rate_2024 <- fetch_grad_rate(
   methodology = "4 year"
 )
 
-# Get 5-year graduation rates (available 2012+)
+# Get 5-year graduation rates (available 2012-2019)
 grad_rate_5yr <- fetch_grad_rate(
-  end_year = 2024,
+  end_year = 2019,
   methodology = "5 year"
 )
 ```
@@ -210,17 +239,42 @@ districts <- get_district_directory()
 
 # View available columns
 names(schools)
+#>  [1] "county_id"                   "county_name"                
+#>  [3] "district_id"                 "district_name"              
+#>  [5] "school_id"                   "school_name"                
+#>  [7] "princ_title"                 "princ_first_name"           
+#>  [9] "princ_last_name"             "princ_title_2"              
+#> [11] "princ_email"                 "address1"                   
+#> [13] "address2"                    "city"                       
+#> [15] "state"                       "zip"                        
+#> [17] "mailing_address1"            "mailing_address2"           
+#> [19] "mailing_city"                "mailing_state"              
+#> [21] "mailing_zip"                 "hib_title1"                 
+#> [23] "hib_first_nname"             "hib_last_name"              
+#> [25] "hib_title2"                  "homeless_liaison_title1"    
+#> [27] "homeless_liaison_first_name" "homeless_liaison_last_name" 
+#> [29] "homeless_liaison_title2"     "phone"                      
+#> [31] "pre_k"                       "kindergarten"               
+#> [33] "grade_1"                     "grade_2"                    
+#> [35] "grade_3"                     "grade_4"                    
+#> [37] "grade_5"                     "grade_6"                    
+#> [39] "grade_7"                     "grade_8"                    
+#> [41] "grade_9"                     "grade_10"                   
+#> [43] "grade_11"                    "grade_12"                   
+#> [45] "post_grad"                   "adult_ed"                   
+#> [47] "nces_code"                   "address"                    
+#> [49] "CDS_Code"
 ```
 
 ## Data Coverage Summary
 
-| Data Type         | Function                                                                                        | Years Available |
-|-------------------|-------------------------------------------------------------------------------------------------|-----------------|
-| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)               | 1999-2025       |
-| NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)           | 2015-2024       |
-| NJASK             | `fetch_nj_assess()`                                                                             | 2004-2014       |
-| Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)   | 2011-2024       |
-| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 2012-2024       |
+| Data Type         | Function                                                                                              | Years Available |
+|-------------------|-------------------------------------------------------------------------------------------------------|-----------------|
+| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                     | 1999-2025       |
+| NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)                 | 2015-2024       |
+| NJASK             | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014       |
+| Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)         | 2011-2024       |
+| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)       | 2012-2024       |
 
 ## Common Subgroups
 
@@ -247,7 +301,7 @@ Data is downloaded fresh each call. For repeated analysis, save locally:
 
 ``` r
 # Download once
-enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
+enr_2024 <- fetch_enr(2024, tidy = TRUE)
 
 # Save for reuse
 saveRDS(enr_2024, "data/enr_2024.rds")
@@ -277,7 +331,7 @@ library(purrr)
 
 # Fetch 5 years of enrollment data
 years <- 2020:2024
-multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
+multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE))
 
 # Now you can analyze trends
 enrollment_trends <- multi_year_enr %>%

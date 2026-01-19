@@ -26,11 +26,11 @@ colors <- c("total" = "#2C3E50", "white" = "#3498DB", "black" = "#E74C3C",
 # Fetch recent years of enrollment data
 years <- 2015:2025
 enr_all <- purrr::map_df(years, ~{
-  tryCatch(fetch_enr(.x, tidy = TRUE, use_cache = TRUE), error = function(e) NULL)
+  tryCatch(fetch_enr(.x, tidy = TRUE), error = function(e) NULL)
 })
 
-enr_current <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
-enr_2015 <- fetch_enr(2015, tidy = TRUE, use_cache = TRUE)
+enr_current <- fetch_enr(2025, tidy = TRUE)
+enr_2015 <- fetch_enr(2015, tidy = TRUE)
 ```
 
 ## 1. New Jersey educates 1.4 million students
@@ -51,6 +51,8 @@ ggplot(state_total, aes(x = end_year, y = n_students)) +
        x = "School Year", y = "Students") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
 
 ## 2. Newark leads the charter school revolution
 
@@ -78,6 +80,8 @@ ggplot(newark_summary, aes(x = end_year, y = n_students, fill = sector)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/newark-charter-1.png)
+
 ## 3. Hispanic students are the fastest-growing group
 
 Hispanic enrollment has grown from 20% to nearly 30% of all NJ students
@@ -95,6 +99,8 @@ ggplot(hispanic, aes(x = end_year, y = pct * 100)) +
        x = "School Year", y = "Percent Hispanic") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/hispanic-growth-1.png)
 
 ## 4. The Big Three: Newark, Jersey City, and Paterson
 
@@ -117,6 +123,8 @@ ggplot(big_three_trend, aes(x = end_year, y = n_students, color = district_name)
        x = "School Year", y = "Students", color = "") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/big-three-1.png)
 
 ## 5. COVID hit kindergarten hard
 
@@ -147,6 +155,8 @@ ggplot(k_trend, aes(x = end_year, y = n_students, color = grade_label)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png)
+
 ## 6. Economic disadvantage varies widely
 
 Some districts have nearly 100% economically disadvantaged students,
@@ -169,6 +179,8 @@ ggplot(econ, aes(x = district_label, y = pct * 100)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/econ-disadvantage-1.png)
+
 ## 7. White student share has declined dramatically
 
 White students went from majority to minority status in NJ public
@@ -189,6 +201,8 @@ ggplot(demo, aes(x = end_year, y = pct * 100, color = subgroup)) +
        x = "School Year", y = "Percent of Students", color = "") +
   theme_nj()
 ```
+
+![](nj-enrollment-insights_files/figure-html/demographic-shift-1.png)
 
 ## 8. English Language Learners concentrated in urban areas
 
@@ -212,6 +226,8 @@ ggplot(ell, aes(x = district_label, y = pct * 100)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
+
 ## 9. Top 10 districts educate 20% of all students
 
 Concentration at the top: just 10 districts out of 600+ serve one-fifth
@@ -234,6 +250,8 @@ ggplot(top_10, aes(x = district_label, y = n_students)) +
   theme_nj()
 ```
 
+![](nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
+
 ## 10. Special education rates remain steady
 
 About 17-18% of NJ students receive special education services - among
@@ -250,4 +268,164 @@ ggplot(sped, aes(x = end_year, y = pct * 100)) +
        subtitle = "About 17-18% of NJ students - among highest rates nationally",
        x = "School Year", y = "Percent Special Education") +
   theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/special-ed-1.png)
+
+## 11. Pre-K enrollment has more than doubled since 2015
+
+New Jersey’s universal pre-K expansion has dramatically increased early
+childhood enrollment.
+
+``` r
+prek <- enr_all %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "PK")
+
+ggplot(prek, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.5, color = colors["hispanic"]) +
+  geom_point(size = 3, color = colors["hispanic"]) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Pre-K Enrollment Has More Than Doubled Since 2015",
+       subtitle = "NJ's universal pre-K expansion reaches more families",
+       x = "School Year", y = "Pre-K Students") +
+  theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/prek-growth-1.png)
+
+## 12. Boys outnumber girls in NJ public schools
+
+A consistent 51-49 split favoring male students across all years.
+
+``` r
+gender <- enr_all %>%
+  filter(is_state, subgroup %in% c("male", "female"), grade_level == "TOTAL")
+
+ggplot(gender, aes(x = end_year, y = pct * 100, color = subgroup)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_manual(values = c("male" = colors["total"], "female" = "#E91E63"),
+                     labels = c("Female", "Male")) +
+  labs(title = "Boys Outnumber Girls in NJ Public Schools",
+       subtitle = "Consistent 51-49 split favoring male students",
+       x = "School Year", y = "Percent of Students", color = "") +
+  theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/gender-balance-1.png)
+
+## 13. Black student enrollment declined 15% since 2015
+
+While Hispanic enrollment grew, Black student numbers have steadily
+declined.
+
+``` r
+black <- enr_all %>%
+  filter(is_state, subgroup == "black", grade_level == "TOTAL")
+
+ggplot(black, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.5, color = colors["black"]) +
+  geom_point(size = 3, color = colors["black"]) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Black Student Enrollment Declined 15% Since 2015",
+       subtitle = "Continuing a multi-decade trend in NJ public schools",
+       x = "School Year", y = "Black Students") +
+  theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/black-decline-1.png)
+
+## 14. Asian students now outnumber Black students
+
+A demographic crossover occurred around 2019-2020.
+
+``` r
+asian_black <- enr_all %>%
+  filter(is_state, subgroup %in% c("asian", "black"), grade_level == "TOTAL")
+
+ggplot(asian_black, aes(x = end_year, y = n_students, color = subgroup)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_y_continuous(labels = comma) +
+  scale_color_manual(values = c("asian" = colors["asian"], "black" = colors["black"]),
+                     labels = c("Asian", "Black")) +
+  labs(title = "Asian Students Now Outnumber Black Students",
+       subtitle = "A demographic crossover occurred around 2019-2020",
+       x = "School Year", y = "Students", color = "") +
+  theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/asian-black-crossover-1.png)
+
+## 15. 100+ districts have fewer than 1,000 students
+
+Small districts dominate NJ’s fragmented school system.
+
+``` r
+small_districts <- enr_current %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(size_category = case_when(
+    n_students < 500 ~ "Under 500",
+    n_students < 1000 ~ "500-999",
+    n_students < 2500 ~ "1,000-2,499",
+    n_students < 5000 ~ "2,500-4,999",
+    n_students < 10000 ~ "5,000-9,999",
+    TRUE ~ "10,000+"
+  )) %>%
+  count(size_category) %>%
+  mutate(size_category = factor(size_category,
+         levels = c("Under 500", "500-999", "1,000-2,499", "2,500-4,999", "5,000-9,999", "10,000+")))
+
+ggplot(small_districts, aes(x = size_category, y = n)) +
+  geom_col(fill = colors["total"]) +
+  labs(title = "100+ Districts Have Fewer Than 1,000 Students",
+       subtitle = "Small districts dominate NJ's fragmented school system",
+       x = "District Size", y = "Number of Districts") +
+  theme_nj()
+```
+
+![](nj-enrollment-insights_files/figure-html/small-districts-1.png)
+
+## Session Info
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: x86_64-pc-linux-gnu
+#> Running under: Ubuntu 24.04.3 LTS
+#> 
+#> Matrix products: default
+#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> 
+#> locale:
+#>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+#>  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+#>  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+#> [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+#> 
+#> time zone: UTC
+#> tzcode source: system (glibc)
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] scales_1.4.0       dplyr_1.1.4        ggplot2_4.0.1      njschooldata_0.9.0
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        stringi_1.8.7     
+#>  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    
+#>  [9] grid_4.5.2         timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0     
+#> [13] cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.1        codetools_0.2-20  
+#> [17] textshaping_1.0.4  jquerylib_0.1.4    cli_3.6.5          rlang_1.1.7       
+#> [21] withr_3.0.2        cachem_1.1.0       yaml_2.3.12        downloader_0.4.1  
+#> [25] tools_4.5.2        tzdb_0.5.0         vctrs_0.7.0        R6_2.6.1          
+#> [29] lifecycle_1.0.5    lubridate_1.9.4    snakecase_0.11.1   stringr_1.6.0     
+#> [33] fs_1.6.6           ragg_1.5.0         janitor_2.2.1      pkgconfig_2.0.3   
+#> [37] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.9.0       
+#> [41] gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1  xfun_0.55         
+#> [45] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      
+#> [49] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30     readr_2.1.6       
+#> [53] compiler_4.5.2     S7_0.2.1           readxl_1.4.5
 ```
