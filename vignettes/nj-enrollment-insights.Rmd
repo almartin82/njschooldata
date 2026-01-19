@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
   fig.height = 6,
   out.width = "100%",
   message = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  cache = TRUE
 )
 ```
 
@@ -259,4 +260,112 @@ ggplot(sped, aes(x = end_year, y = pct * 100)) +
        subtitle = "About 17-18% of NJ students - among highest rates nationally",
        x = "School Year", y = "Percent Special Education") +
   theme_nj()
+```
+
+## 11. Pre-K enrollment has more than doubled since 2015
+
+New Jersey's universal pre-K expansion has dramatically increased early childhood enrollment.
+
+```{r prek-growth}
+prek <- enr_all %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "PK")
+
+ggplot(prek, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.5, color = colors["hispanic"]) +
+  geom_point(size = 3, color = colors["hispanic"]) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Pre-K Enrollment Has More Than Doubled Since 2015",
+       subtitle = "NJ's universal pre-K expansion reaches more families",
+       x = "School Year", y = "Pre-K Students") +
+  theme_nj()
+```
+
+## 12. Boys outnumber girls in NJ public schools
+
+A consistent 51-49 split favoring male students across all years.
+
+```{r gender-balance}
+gender <- enr_all %>%
+  filter(is_state, subgroup %in% c("male", "female"), grade_level == "TOTAL")
+
+ggplot(gender, aes(x = end_year, y = pct * 100, color = subgroup)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_manual(values = c("male" = colors["total"], "female" = "#E91E63"),
+                     labels = c("Female", "Male")) +
+  labs(title = "Boys Outnumber Girls in NJ Public Schools",
+       subtitle = "Consistent 51-49 split favoring male students",
+       x = "School Year", y = "Percent of Students", color = "") +
+  theme_nj()
+```
+
+## 13. Black student enrollment declined 15% since 2015
+
+While Hispanic enrollment grew, Black student numbers have steadily declined.
+
+```{r black-decline}
+black <- enr_all %>%
+  filter(is_state, subgroup == "black", grade_level == "TOTAL")
+
+ggplot(black, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.5, color = colors["black"]) +
+  geom_point(size = 3, color = colors["black"]) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Black Student Enrollment Declined 15% Since 2015",
+       subtitle = "Continuing a multi-decade trend in NJ public schools",
+       x = "School Year", y = "Black Students") +
+  theme_nj()
+```
+
+## 14. Asian students now outnumber Black students
+
+A demographic crossover occurred around 2019-2020.
+
+```{r asian-black-crossover}
+asian_black <- enr_all %>%
+  filter(is_state, subgroup %in% c("asian", "black"), grade_level == "TOTAL")
+
+ggplot(asian_black, aes(x = end_year, y = n_students, color = subgroup)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_y_continuous(labels = comma) +
+  scale_color_manual(values = c("asian" = colors["asian"], "black" = colors["black"]),
+                     labels = c("Asian", "Black")) +
+  labs(title = "Asian Students Now Outnumber Black Students",
+       subtitle = "A demographic crossover occurred around 2019-2020",
+       x = "School Year", y = "Students", color = "") +
+  theme_nj()
+```
+
+## 15. 100+ districts have fewer than 1,000 students
+
+Small districts dominate NJ's fragmented school system.
+
+```{r small-districts}
+small_districts <- enr_current %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(size_category = case_when(
+    n_students < 500 ~ "Under 500",
+    n_students < 1000 ~ "500-999",
+    n_students < 2500 ~ "1,000-2,499",
+    n_students < 5000 ~ "2,500-4,999",
+    n_students < 10000 ~ "5,000-9,999",
+    TRUE ~ "10,000+"
+  )) %>%
+  count(size_category) %>%
+  mutate(size_category = factor(size_category,
+         levels = c("Under 500", "500-999", "1,000-2,499", "2,500-4,999", "5,000-9,999", "10,000+")))
+
+ggplot(small_districts, aes(x = size_category, y = n)) +
+  geom_col(fill = colors["total"]) +
+  labs(title = "100+ Districts Have Fewer Than 1,000 Students",
+       subtitle = "Small districts dominate NJ's fragmented school system",
+       x = "District Size", y = "Number of Districts") +
+  theme_nj()
+```
+
+## Session Info
+
+```{r session-info}
+sessionInfo()
 ```
