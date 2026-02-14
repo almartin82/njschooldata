@@ -424,7 +424,7 @@
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">small_districts</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>size_category <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">500</span> <span class="op">~</span> <span class="st">"Under 500"</span>,</span>
 <span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">1000</span> <span class="op">~</span> <span class="st">"500-999"</span>,</span>
 <span>    <span class="va">n_students</span> <span class="op">&lt;</span> <span class="fl">2500</span> <span class="op">~</span> <span class="st">"1,000-2,499"</span>,</span>
@@ -935,10 +935,10 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
 <li><a href="https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml" class="external-link"><img src="https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml/badge.svg" alt="Python Tests"></a></li>
 <li><a href="https://github.com/almartin82/njschooldata/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/almartin82/njschooldata/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
 </ul>
 </div>
 

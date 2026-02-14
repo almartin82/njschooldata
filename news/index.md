@@ -20,7 +20,7 @@
 - Migrated tests to testthat 3e edition
 - Replaced deprecated `ensurer::ensure_that()` with base R validation
 - Replaced deprecated
-  [`dplyr::summarise_each()`](https://dplyr.tidyverse.org/reference/summarise_each.html)
+  [`dplyr::summarise_each()`](https://dplyr.tidyverse.org/reference/defunct-each.html)
   with [`across()`](https://dplyr.tidyverse.org/reference/across.html)
 - Replaced deprecated `dplyr::rbind_all()` with
   [`bind_rows()`](https://dplyr.tidyverse.org/reference/bind_rows.html)

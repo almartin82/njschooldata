@@ -411,20 +411,20 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scales_1.4.0       dplyr_1.1.4        ggplot2_4.0.1      njschooldata_0.9.0
+#> [1] scales_1.4.0       dplyr_1.2.0        ggplot2_4.0.2      njschooldata_0.9.0
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        stringi_1.8.7     
 #>  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    
-#>  [9] grid_4.5.2         timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0     
+#>  [9] grid_4.5.2         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.1        codetools_0.2-20  
 #> [17] textshaping_1.0.4  jquerylib_0.1.4    cli_3.6.5          rlang_1.1.7       
 #> [21] withr_3.0.2        cachem_1.1.0       yaml_2.3.12        downloader_0.4.1  
-#> [25] tools_4.5.2        tzdb_0.5.0         vctrs_0.7.0        R6_2.6.1          
-#> [29] lifecycle_1.0.5    lubridate_1.9.4    snakecase_0.11.1   stringr_1.6.0     
+#> [25] tools_4.5.2        tzdb_0.5.0         vctrs_0.7.1        R6_2.6.1          
+#> [29] lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1   stringr_1.6.0     
 #> [33] fs_1.6.6           ragg_1.5.0         janitor_2.2.1      pkgconfig_2.0.3   
-#> [37] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.9.0       
-#> [41] gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1  xfun_0.55         
+#> [37] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.10.0      
+#> [41] gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1  xfun_0.56         
 #> [45] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      
 #> [49] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30     readr_2.1.6       
 #> [53] compiler_4.5.2     S7_0.2.1           readxl_1.4.5
