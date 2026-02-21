@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pynjschooldata"
+version = "0.1.0"
+description = "Python wrapper for New Jersey school enrollment data"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Andy Martin", email = "almartin@gmail.com" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=1.5.0",
+    "rpy2>=3.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/almartin82/njschooldata"
+Documentation = "https://almartin82.github.io/njschooldata/"
+Repository = "https://github.com/almartin82/njschooldata"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pynjschooldata"]
