@@ -426,6 +426,6 @@ sessionInfo()
 #> [37] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.10.0      
 #> [41] gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1  xfun_0.56         
 #> [45] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      
-#> [49] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30     readr_2.1.6       
+#> [49] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30     readr_2.2.0       
 #> [53] compiler_4.5.2     S7_0.2.1           readxl_1.4.5
 ```

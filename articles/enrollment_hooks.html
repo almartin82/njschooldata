@@ -36,6 +36,7 @@
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with njschooldata</a></li>
     <li><a class="dropdown-item" href="../articles/enrollment_hooks.html">10 Insights from New Jersey School Enrollment Data</a></li>
     <li><a class="dropdown-item" href="../articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="../articles/spr-dictionary.html">SPR Data Dictionary</a></li>
   </ul>
 </li>
       </ul>
@@ -60,7 +61,7 @@
       <h1>10 Insights from New Jersey School Enrollment Data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/main/vignettes/enrollment_hooks.Rmd" class="external-link"><code>vignettes/enrollment_hooks.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/vignettes/enrollment_hooks.Rmd" class="external-link"><code>vignettes/enrollment_hooks.Rmd</code></a></small>
       <div class="d-none name"><code>enrollment_hooks.Rmd</code></div>
     </div>
 
@@ -261,7 +262,7 @@ stability.</p>
 <span></span>
 <span><span class="va">regional</span> <span class="op">&lt;-</span> <span class="va">enr_2025</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">program_code</span> <span class="op">==</span> <span class="st">"55"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">county_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"03"</span>, <span class="st">"07"</span>, <span class="st">"13"</span>, <span class="st">"17"</span>, <span class="st">"25"</span>, <span class="st">"31"</span>, <span class="st">"37"</span>, <span class="st">"41"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"North"</span>,</span>
 <span>    <span class="va">county_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"11"</span>, <span class="st">"21"</span>, <span class="st">"23"</span>, <span class="st">"35"</span>, <span class="st">"39"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Central"</span>,</span>
 <span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"South"</span></span>
