@@ -52,11 +52,11 @@ New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn't ful
 
 ---
 
-### 6. Economic Disadvantage Varies Widely
+### 6. Free/Reduced Lunch Eligibility Reveals Deep Inequality
 
-Some districts approach 100% economically disadvantaged while affluent suburbs have under 5%.
+Some districts have nearly all students qualifying for free or reduced lunch, while affluent suburbs have under 5%.
 
-![Economic Disadvantage](man/figures/econ-disadvantage.png)
+![Free/Reduced Lunch](man/figures/free-reduced-lunch.png)
 
 ---
 
@@ -84,11 +84,11 @@ Just 10 out of 600+ districts serve one-fifth of all NJ students.
 
 ---
 
-### 10. Special Education Rates Remain Steady
+### 10. Multiracial Students Are NJ's Fastest-Growing Identity
 
-About 17-18% of NJ students receive special education services - among the highest rates nationally.
+Multiracial enrollment has surged as more families identify with multiple races — a nationwide trend reshaping school demographics.
 
-![Special Education](man/figures/special-education.png)
+![Multiracial Growth](man/figures/multiracial-growth.png)
 
 ---
 
