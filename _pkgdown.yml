@@ -95,6 +95,7 @@ reference:
       - fetch_essa_status
       - fetch_math_course_enrollment
 
+
   - title: School/District Directories
     desc: Functions for school and district metadata
     contents:
@@ -161,6 +162,7 @@ articles:
   - title: Data Insights
     navbar: ~
     contents:
+      - enrollment_hooks
       - nj-enrollment-insights
   - title: School Performance Reports
     navbar: ~

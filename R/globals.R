@@ -238,6 +238,7 @@ utils::globalVariables(c(
   "access_rate", "access_gap_percentage", "lm", "coef",
   "weighted_avg", "weighted.mean",
 
+
   # ========== Common Tidyverse ==========
   ".", "value", "name", "n",
   "everything", "where", "one_of", "any_of", "all_of",
