@@ -5,6 +5,9 @@
 #' @param api_key optional, personal google maps API key
 #'
 #' @return dataframe enriched with lat lng
+#'
+#' @note The `placement` package is required for geocoding when `use_cache=FALSE`.
+#'   Install with: `remotes::install_github('DerekYves/placement')`
 #' @export
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {

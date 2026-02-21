@@ -19,3 +19,7 @@ dataframe enriched with lat lng
 \description{
 Enrich School Data with Lat / Long
 }
+\note{
+The `placement` package is required for geocoding when `use_cache=FALSE`.
+  Install with: `remotes::install_github('DerekYves/placement')`
+}

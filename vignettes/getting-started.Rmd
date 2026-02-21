@@ -12,8 +12,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   message = FALSE,
-  warning = FALSE,
-  eval = FALSE
+  warning = FALSE
 )
 ```
 
@@ -88,7 +87,7 @@ Data is provided at multiple aggregation levels, identified by boolean flags:
 
 ```{r enrollment-basic}
 # Get 2024 enrollment data (2023-24 school year)
-enr_2024 <- fetch_enr(2024, use_cache = TRUE)
+enr_2024 <- fetch_enr(2024)
 
 # View the structure
 glimpse(enr_2024)
@@ -102,10 +101,10 @@ dim(enr_2024)  # Rows and columns
 The `tidy` parameter transforms data for easier analysis:
 ```{r enrollment-tidy}
 # Wide format (default) - one row per school, many demographic columns
-enr_wide <- fetch_enr(2024, tidy = FALSE, use_cache = TRUE)
+enr_wide <- fetch_enr(2024, tidy = FALSE)
 
 # Tidy format - one row per school-subgroup combination
-enr_tidy <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
+enr_tidy <- fetch_enr(2024, tidy = TRUE)
 ```
 
 The tidy format is better for:
@@ -170,11 +169,11 @@ alg1_2024 <- fetch_parcc(
 
 ### Legacy Assessments (2004-2014)
 
-For historical data, use `fetch_nj_assess()`:
+For historical data, use `fetch_old_nj_assess()`:
 
-```{r legacy-assessment}
+```{r legacy-assessment, eval = FALSE}
 # Get 2010 Grade 5 NJASK results
-njask_2010 <- fetch_nj_assess(
+njask_2010 <- fetch_old_nj_assess(
   end_year = 2010,
   grade = 5,
   tidy = TRUE
@@ -192,9 +191,9 @@ grad_rate_2024 <- fetch_grad_rate(
   methodology = "4 year"
 )
 
-# Get 5-year graduation rates (available 2012+)
+# Get 5-year graduation rates (available 2012-2019)
 grad_rate_5yr <- fetch_grad_rate(
-  end_year = 2024,
+  end_year = 2019,
   methodology = "5 year"
 )
 ```
@@ -210,7 +209,7 @@ grad_count_2024 <- fetch_grad_count(end_year = 2024)
 
 Get metadata about schools and districts:
 
-```{r directories}
+```{r directories, cache = TRUE}
 # Current school directory with addresses, coordinates, grades served
 schools <- get_school_directory()
 
@@ -227,7 +226,7 @@ names(schools)
 |-----------|----------|-----------------|
 | Enrollment | `fetch_enr()` | 1999-2025 |
 | NJSLA/PARCC | `fetch_parcc()` | 2015-2024 |
-| NJASK | `fetch_nj_assess()` | 2004-2014 |
+| NJASK | `fetch_old_nj_assess()` | 2004-2014 |
 | Graduation Rates | `fetch_grad_rate()` | 2011-2024 |
 | Graduation Counts | `fetch_grad_count()` | 2012-2024 |
 
@@ -252,9 +251,9 @@ When working with tidy data, you'll encounter these subgroup codes:
 
 Data is downloaded fresh each call. For repeated analysis, save locally:
 
-```{r caching}
+```{r caching, eval = FALSE}
 # Download once
-enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
+enr_2024 <- fetch_enr(2024, tidy = TRUE)
 
 # Save for reuse
 saveRDS(enr_2024, "data/enr_2024.rds")
@@ -282,7 +281,7 @@ library(purrr)
 
 # Fetch 5 years of enrollment data
 years <- 2020:2024
-multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE, use_cache = TRUE))
+multi_year_enr <- map_df(years, ~fetch_enr(.x, tidy = TRUE))
 
 # Now you can analyze trends
 enrollment_trends <- multi_year_enr %>%

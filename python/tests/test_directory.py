@@ -82,3 +82,42 @@ class TestGetDistrictDirectoryIntegration:
         result = get_district_directory()
         # NJ has ~600 districts
         assert len(result) > 500, "Should have many districts"
+
+    def test_get_school_directory_has_newark(self):
+        """Test that Newark schools are in directory."""
+        from njschooldata import get_school_directory
+        result = get_school_directory()
+        # Check for Newark district by name
+        newark = result[result["district_name"].str.contains("Newark", case=False, na=False)]
+        assert len(newark) > 0, "Newark schools should be present"
+
+    def test_get_school_directory_data_types(self):
+        """Test that school directory has expected data types."""
+        from njschooldata import get_school_directory
+        result = get_school_directory()
+        # Check ID columns are strings
+        assert result["district_id"].dtype == "object"
+        assert result["school_id"].dtype == "object"
+
+    def test_get_district_directory_data_types(self):
+        """Test that district directory has expected data types."""
+        from njschooldata import get_district_directory
+        result = get_district_directory()
+        # Check ID columns are strings
+        assert result["district_id"].dtype == "object"
+
+    def test_get_school_directory_no_duplicates(self):
+        """Test that there are no fully duplicate rows."""
+        from njschooldata import get_school_directory
+        result = get_school_directory()
+        # Check for fully duplicate rows (all columns identical)
+        duplicates = result.duplicated(keep=False)
+        assert not duplicates.any(), "School directory should not have fully duplicate rows"
+
+    def test_get_district_directory_no_duplicates(self):
+        """Test that there are no duplicate districts."""
+        from njschooldata import get_district_directory
+        result = get_district_directory()
+        # Check for duplicates based on district_id
+        duplicates = result.duplicated(subset=["district_id"])
+        assert not duplicates.any(), "District directory should not have duplicates"

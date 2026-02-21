@@ -38,6 +38,7 @@ Suggests:
     knitr,
     placement,
     rmarkdown,
+    scales,
     sf,
     sp,
     testthat (>= 3.0.0)
