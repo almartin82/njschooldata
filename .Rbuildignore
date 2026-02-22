@@ -24,3 +24,7 @@
 TODO\.md$
 ^..Rcheck$
 .*_cache$
+^\.venv$
+^python$
+^pynjschooldata$
+^scratch$
