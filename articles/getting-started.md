@@ -271,7 +271,7 @@ names(schools)
 
 | Data Type         | Function                                                                                              | Years Available |
 |-------------------|-------------------------------------------------------------------------------------------------------|-----------------|
-| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                     | 1999-2025       |
+| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                     | 2000-2025       |
 | NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)                 | 2015-2024       |
 | NJASK             | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014       |
 | Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)         | 2011-2024       |
@@ -284,31 +284,36 @@ When working with tidy data, you’ll encounter these subgroup codes:
 ### Race/Ethnicity
 
 - `white`, `black`, `hispanic`, `asian`
-- `pacific_islander`, `american_indian`, `other`
+- `pacific_islander`, `native_american`, `multiracial`
 
 ### Other Demographics
 
 - `male`, `female`
-- `ed` (economically disadvantaged)
-- `lep_current` (current English learners)
-- `special_education`
-- `total_enrollment` or `total_population`
+- `free_lunch`, `reduced_lunch`, `free_reduced_lunch`
+- `lep` (English learners)
+- `migrant`
+- `total_enrollment`
+
+**Note:** Special education data is available via
+[`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md),
+not through enrollment subgroups.
 
 ## Tips and Best Practices
 
-### 1. Cache Data Locally
+### 1. Use Session Caching
 
-Data is downloaded fresh each call. For repeated analysis, save locally:
+The package includes built-in session caching to avoid re-downloading:
 
 ``` r
-# Download once
-enr_2024 <- fetch_enr(2024, tidy = TRUE)
+# Use session cache (avoids re-downloading within same session)
+enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
-# Save for reuse
+# Or save to disk for reuse across sessions
 saveRDS(enr_2024, "data/enr_2024.rds")
-
-# Load later without re-downloading
 enr_2024 <- readRDS("data/enr_2024.rds")
+
+# Check cache status
+njsd_cache_info()
 ```
 
 ### 2. Handle Suppressed Data
@@ -342,9 +347,12 @@ enrollment_trends <- multi_year_enr %>%
 
 ## Next Steps
 
-- See `vignette("longitudinal-analysis")` for advanced multi-year
-  analysis
-- See `vignette("data-dictionary")` for complete column definitions
+- See
+  [`vignette("nj-enrollment-insights")`](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.md)
+  for 15 data stories with visualizations
+- See
+  [`vignette("spr-dictionary")`](https://almartin82.github.io/njschooldata/articles/spr-dictionary.md)
+  for School Performance Report data
 - Visit the [package
   website](https://almartin82.github.io/njschooldata/) for full
   documentation
@@ -353,3 +361,45 @@ enrollment_trends <- multi_year_enr %>%
 
 - File issues: <https://github.com/almartin82/njschooldata/issues>
 - Email: <almartin@gmail.com>
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: x86_64-pc-linux-gnu
+#> Running under: Ubuntu 24.04.3 LTS
+#> 
+#> Matrix products: default
+#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> 
+#> locale:
+#>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+#>  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+#>  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+#> [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+#> 
+#> time zone: UTC
+#> tzcode source: system (glibc)
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] purrr_1.2.1        dplyr_1.2.0        njschooldata_0.9.0
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    
+#>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.4    evaluate_1.0.5   
+#>  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   
+#> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.4 jquerylib_0.1.4  
+#> [17] cli_3.6.5         crayon_1.5.3      rlang_1.1.7       bit64_4.6.0-1    
+#> [21] withr_3.0.2       cachem_1.1.0      yaml_2.3.12       parallel_4.5.2   
+#> [25] tools_4.5.2       downloader_0.4.1  tzdb_0.5.0        curl_7.0.0       
+#> [29] vctrs_0.7.1       R6_2.6.1          lifecycle_1.0.5   lubridate_1.9.5  
+#> [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_1.6.6         
+#> [37] vroom_1.7.0       ragg_1.5.0        janitor_2.2.1     pkgconfig_2.0.3  
+#> [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.10.0     
+#> [45] glue_1.8.0        systemfonts_1.3.1 xfun_0.56         tibble_3.3.1     
+#> [49] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.30   
+#> [53] readr_2.2.0       compiler_4.5.2    readxl_1.4.5
+```
