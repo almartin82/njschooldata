@@ -4,7 +4,7 @@
 \alias{fetch_enr}
 \title{Gets and processes a NJ enrollment file}
 \usage{
-fetch_enr(end_year, tidy = FALSE)
+fetch_enr(end_year, tidy = FALSE, use_cache = FALSE)
 }
 \arguments{
 \item{end_year}{A school year. Year is the end of the academic year - eg 2006-07
@@ -13,6 +13,9 @@ school year is year '2007'. Valid values are 2000-2025.}
 \item{tidy}{If TRUE, takes the unwieldy wide data and normalizes into a
 long, tidy data frame with limited headers - constants (school/district name and code),
 subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).}
+
+\item{use_cache}{If TRUE, uses the session cache to avoid re-downloading data.
+See \code{\link{njsd_cache_info}} for cache details.}
 }
 \value{
 Data frame with processed enrollment data
@@ -28,5 +31,8 @@ enr_2023 <- fetch_enr(2023)
 
 # Get tidy (long format) enrollment data
 enr_tidy <- fetch_enr(2023, tidy = TRUE)
+
+# Use caching for faster repeat calls
+enr_cached <- fetch_enr(2023, tidy = TRUE, use_cache = TRUE)
 }
 }

@@ -166,6 +166,7 @@ clean_enr_names <- function(df) {
     "Native American" = "native_american",
     "American Indian" = "native_american",
     "Hawaiian Native" = "pacific_islander",
+    "Pacific Islander" = "pacific_islander",
     "Two or More Races" = "multiracial",
     "Male" = "male",
     "Female" = "female",
