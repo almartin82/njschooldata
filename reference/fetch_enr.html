@@ -48,7 +48,7 @@ downloads and cleans enrollment data for a given year.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_enr</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_enr</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">FALSE</span>, use_cache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -65,6 +65,11 @@ school year is year '2007'. Valid values are 2000-2025.</p></dd>
 long, tidy data frame with limited headers - constants (school/district name and code),
 subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).</p></dd>
 
+
+<dt id="arg-use-cache">use_cache<a class="anchor" aria-label="anchor" href="#arg-use-cache"></a></dt>
+<dd><p>If TRUE, uses the session cache to avoid re-downloading data.
+See <code><a href="njsd_cache_info.html">njsd_cache_info</a></code> for cache details.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -79,6 +84,9 @@ subgroup (all the enrollment file subgroups), program/grade and measure (row_tot
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get tidy (long format) enrollment data</span></span></span>
 <span class="r-in"><span><span class="va">enr_tidy</span> <span class="op">&lt;-</span> <span class="fu">fetch_enr</span><span class="op">(</span><span class="fl">2023</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use caching for faster repeat calls</span></span></span>
+<span class="r-in"><span><span class="va">enr_cached</span> <span class="op">&lt;-</span> <span class="fu">fetch_enr</span><span class="op">(</span><span class="fl">2023</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
