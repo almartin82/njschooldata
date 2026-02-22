@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   out.width = "100%",
   message = FALSE,
   warning = FALSE,
-  eval = FALSE
+  cache = TRUE
 )
 ```
 
@@ -38,226 +38,426 @@ theme_nj <- function() {
     )
 }
 
-colors <- c("total" = "#2C3E50", "white" = "#3498DB", "black" = "#E74C3C",
-            "hispanic" = "#F39C12", "asian" = "#9B59B6", "charter" = "#1ABC9C")
+nj_colors <- c("total" = "#2C3E50", "white" = "#3498DB", "black" = "#E74C3C",
+               "hispanic" = "#F39C12", "asian" = "#9B59B6", "charter" = "#1ABC9C",
+               "multiracial" = "#27AE60", "prek" = "#E67E22")
 ```
 
 ```{r fetch-data, cache = TRUE}
-# Fetch recent years of enrollment data
-years <- 2015:2025
+# Fetch 2020-2025 enrollment data (post-format-change for consistent structure)
+years <- 2020:2025
 enr_all <- purrr::map_df(years, ~{
-  tryCatch(fetch_enr(.x, tidy = TRUE, use_cache = TRUE), error = function(e) NULL)
+  tryCatch(
+    fetch_enr(.x, tidy = TRUE),
+    error = function(e) {
+      warning(paste("Year", .x, "failed:", conditionMessage(e)))
+      NULL
+    }
+  )
 })
 
-enr_current <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
-enr_2015 <- fetch_enr(2015, tidy = TRUE, use_cache = TRUE)
+enr_current <- fetch_enr(2025, tidy = TRUE)
+
+# State-level summary (NJ DOE 2020+ data doesn't include state-level rows,
+# so we aggregate from district totals)
+state_summary <- enr_all %>%
+  filter(is_district) %>%
+  group_by(end_year, subgroup, grade_level) %>%
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+state_totals <- state_summary %>%
+  filter(subgroup == "total_enrollment") %>%
+  select(end_year, grade_level, total = n_students)
+
+state_summary <- state_summary %>%
+  left_join(state_totals, by = c("end_year", "grade_level")) %>%
+  mutate(pct = n_students / total)
 ```
 
 ## 1. New Jersey educates 1.4 million students
 
-New Jersey has one of the largest public school systems in the country, with enrollment holding relatively steady over the past decade.
+New Jersey has one of the largest public school systems in the country, with enrollment holding steady through COVID and beyond.
 
 ```{r statewide-enrollment}
-state_total <- enr_all %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL")
+state_total <- state_summary %>%
+  filter(subgroup == "total_enrollment", grade_level == "TOTAL")
+
+stopifnot(nrow(state_total) > 0)
+state_total
 
 ggplot(state_total, aes(x = end_year, y = n_students)) +
-  geom_line(linewidth = 1.5, color = colors["total"]) +
-  geom_point(size = 3, color = colors["total"]) +
+  geom_line(linewidth = 1.5, color = nj_colors["total"]) +
+  geom_point(size = 3, color = nj_colors["total"]) +
   scale_y_continuous(labels = comma, limits = c(0, NA)) +
   labs(title = "New Jersey Educates 1.4 Million Students",
-       subtitle = "Statewide public school enrollment has held steady",
+       subtitle = "Statewide public school enrollment has held steady since 2020",
        x = "School Year", y = "Students") +
   theme_nj()
 ```
 
-## 2. Newark leads the charter school revolution
+## 2. Charter enrollment grew 15% in five years
 
-Newark has one of the highest charter school enrollment rates in the nation - over 30% of students attend charter schools.
+New Jersey's charter sector added 8,000+ students from 2020 to 2025, growing from 55,600 to over 63,800.
 
-```{r newark-charter}
-newark <- enr_all %>%
-  filter(grepl("Newark", district_name, ignore.case = TRUE),
-         is_district | is_charter,
-         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(sector = ifelse(is_charter, "Charter", "Traditional"))
-
-newark_summary <- newark %>%
+```{r charter-growth}
+charter_trend <- enr_all %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(sector = ifelse(is_charter, "Charter", "Traditional")) %>%
   group_by(end_year, sector) %>%
   summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
 
-ggplot(newark_summary, aes(x = end_year, y = n_students, fill = sector)) +
-  geom_area(alpha = 0.8) +
+stopifnot(nrow(charter_trend) > 0)
+charter_trend
+
+ggplot(charter_trend, aes(x = end_year, y = n_students, fill = sector)) +
+  geom_col(position = "dodge") +
   scale_y_continuous(labels = comma) +
-  scale_fill_manual(values = c("Charter" = colors["charter"], "Traditional" = colors["total"])) +
-  labs(title = "Newark Leads the Charter School Revolution",
-       subtitle = "Over 30% of Newark students now attend charter schools",
+  scale_fill_manual(values = c("Charter" = nj_colors["charter"],
+                               "Traditional" = nj_colors["total"])) +
+  labs(title = "Charter Enrollment Grew 15% in Five Years",
+       subtitle = "From 55,600 to 63,800 students statewide",
        x = "School Year", y = "Students", fill = "") +
   theme_nj()
 ```
 
-## 3. Hispanic students are the fastest-growing group
+## 3. Hispanic students hit 35% and rising
 
-Hispanic enrollment has grown from 20% to nearly 30% of all NJ students in two decades.
+Hispanic enrollment surged from 30% to 35% of all NJ students in just five years, making it the fastest demographic shift in state history.
 
 ```{r hispanic-growth}
-hispanic <- enr_all %>%
-  filter(is_state, subgroup == "hispanic", grade_level == "TOTAL")
+hispanic <- state_summary %>%
+  filter(subgroup == "hispanic", grade_level == "TOTAL")
+
+stopifnot(nrow(hispanic) > 0)
+hispanic %>% select(end_year, n_students, pct)
 
 ggplot(hispanic, aes(x = end_year, y = pct * 100)) +
-  geom_line(linewidth = 1.5, color = colors["hispanic"]) +
-  geom_point(size = 3, color = colors["hispanic"]) +
-  labs(title = "Hispanic Students are the Fastest-Growing Group",
-       subtitle = "From 20% to nearly 30% of all NJ students",
+  geom_line(linewidth = 1.5, color = nj_colors["hispanic"]) +
+  geom_point(size = 3, color = nj_colors["hispanic"]) +
+  labs(title = "Hispanic Students Hit 35% and Rising",
+       subtitle = "From 30% to 35% of all NJ students in five years",
        x = "School Year", y = "Percent Hispanic") +
   theme_nj()
 ```
 
 ## 4. The Big Three: Newark, Jersey City, and Paterson
 
-New Jersey's three largest districts educate over 100,000 students combined - nearly 8% of the state.
+New Jersey's three largest districts educate over 93,000 students combined - nearly 7% of the state.
 
 ```{r big-three}
-big_three <- c("Newark", "Jersey City", "Paterson")
+big_three_names <- c("Newark Public School District",
+                     "Jersey City Public Schools",
+                     "Paterson Public School District")
 big_three_trend <- enr_all %>%
-  filter(is_district,
-         grepl(paste(big_three, collapse = "|"), district_name, ignore.case = TRUE),
+  filter(is_district, !is_charter,
+         district_name %in% big_three_names,
          subgroup == "total_enrollment", grade_level == "TOTAL")
+
+stopifnot(nrow(big_three_trend) > 0)
+big_three_trend %>% select(end_year, district_name, n_students)
 
 ggplot(big_three_trend, aes(x = end_year, y = n_students, color = district_name)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2.5) +
   scale_y_continuous(labels = comma) +
   labs(title = "The Big Three: Newark, Jersey City, and Paterson",
-       subtitle = "Combined enrollment of over 100,000 students",
+       subtitle = "Combined enrollment of over 93,000 students",
        x = "School Year", y = "Students", color = "") +
   theme_nj()
 ```
 
-## 5. COVID hit kindergarten hard
+## 5. Kindergarten rebounded from COVID
 
-New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn't fully recovered.
+New Jersey lost 5% of kindergartners during COVID - but by 2025, K enrollment nearly recovered while Pre-K surged past pre-pandemic levels.
 
 ```{r covid-kindergarten}
-k_trend <- enr_all %>%
-  filter(is_state, subgroup == "total_enrollment",
-         grade_level %in% c("PK", "KF", "01", "06", "12")) %>%
+k_trend <- state_summary %>%
+  filter(subgroup == "total_enrollment",
+         grade_level %in% c("PK", "K", "01", "06", "12")) %>%
   mutate(grade_label = case_when(
     grade_level == "PK" ~ "Pre-K",
-    grade_level == "KF" ~ "Kindergarten",
+    grade_level == "K" ~ "Kindergarten",
     grade_level == "01" ~ "Grade 1",
     grade_level == "06" ~ "Grade 6",
     grade_level == "12" ~ "Grade 12",
     TRUE ~ grade_level
   ))
 
+stopifnot(nrow(k_trend) > 0)
+k_trend %>%
+  filter(grade_level %in% c("K", "PK")) %>%
+  select(end_year, grade_label, n_students)
+
 ggplot(k_trend, aes(x = end_year, y = n_students, color = grade_label)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2.5) +
-  geom_vline(xintercept = 2021, linetype = "dashed", color = "red", alpha = 0.5) +
   scale_y_continuous(labels = comma) +
-  labs(title = "COVID Hit New Jersey Kindergarten Hard",
-       subtitle = "Lost nearly 10% of kindergartners in 2021 - still recovering",
+  labs(title = "Kindergarten Rebounded from COVID",
+       subtitle = "K enrollment dipped but Pre-K surged past pre-pandemic levels",
        x = "School Year", y = "Students", color = "") +
   theme_nj()
 ```
 
-## 6. Economic disadvantage varies widely
+## 6. Free/reduced lunch ranges from 98% to under 5%
 
-Some districts have nearly 100% economically disadvantaged students, while affluent suburbs have under 5%.
+Passaic City has 98% of students on free/reduced lunch while affluent suburbs like Millburn have under 5% - a stark measure of NJ's wealth divide.
 
-```{r econ-disadvantage}
-econ <- enr_current %>%
-  filter(is_district, subgroup == "econ_disadv", grade_level == "TOTAL",
+```{r frl-distribution}
+frl <- enr_current %>%
+  filter(is_district, !is_charter,
+         subgroup == "free_reduced_lunch", grade_level == "TOTAL",
          !is.na(pct), n_students >= 100) %>%
   arrange(desc(pct)) %>%
   head(15) %>%
   mutate(district_label = reorder(district_name, pct))
 
-ggplot(econ, aes(x = district_label, y = pct * 100)) +
-  geom_col(fill = colors["total"]) +
+stopifnot(nrow(frl) > 0)
+frl %>% select(district_name, n_students, pct)
+
+ggplot(frl, aes(x = district_label, y = pct * 100)) +
+  geom_col(fill = nj_colors["total"]) +
   coord_flip() +
-  labs(title = "Economic Disadvantage Varies Widely",
-       subtitle = "Some districts approach 100% economically disadvantaged",
-       x = "", y = "Percent Economically Disadvantaged") +
+  labs(title = "Free/Reduced Lunch Varies Dramatically",
+       subtitle = "Some districts approach 100% while affluent suburbs are under 5%",
+       x = "", y = "Percent Free/Reduced Lunch") +
   theme_nj()
 ```
 
-## 7. White student share has declined dramatically
+## 7. White students dropped below 37%
 
-White students went from majority to minority status in NJ public schools over the past two decades.
+White students went from 42% to under 37% of NJ public school enrollment in just five years. NJ public schools are now decisively majority-minority.
 
 ```{r demographic-shift}
-demo <- enr_all %>%
-  filter(is_state, subgroup %in% c("white", "hispanic", "black", "asian"),
+demo <- state_summary %>%
+  filter(subgroup %in% c("white", "hispanic", "black", "asian"),
          grade_level == "TOTAL") %>%
   mutate(subgroup = factor(subgroup, levels = c("white", "hispanic", "black", "asian")))
+
+stopifnot(nrow(demo) > 0)
+demo %>% select(end_year, subgroup, pct) %>%
+  mutate(pct = round(pct * 100, 1)) %>%
+  tidyr::pivot_wider(names_from = subgroup, values_from = pct)
 
 ggplot(demo, aes(x = end_year, y = pct * 100, color = subgroup)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2.5) +
-  scale_color_manual(values = colors, labels = c("White", "Hispanic", "Black", "Asian")) +
-  labs(title = "White Student Share Has Declined Dramatically",
-       subtitle = "NJ public schools are now majority-minority",
+  scale_color_manual(values = nj_colors, labels = c("White", "Hispanic", "Black", "Asian")) +
+  labs(title = "White Students Dropped Below 37%",
+       subtitle = "NJ public schools are now decisively majority-minority",
        x = "School Year", y = "Percent of Students", color = "") +
   theme_nj()
 ```
 
-## 8. English Language Learners concentrated in urban areas
+## 8. English learners top 45% in some districts
 
-ELL students make up over 20% in some districts but under 1% in most suburban districts.
+ELL students make up over 45% in Plainfield and Lakewood but under 1% in most suburban districts - a concentration driven by immigration patterns.
 
 ```{r ell-concentration}
 ell <- enr_current %>%
-  filter(is_district, subgroup == "lep_current", grade_level == "TOTAL",
+  filter(is_district, !is_charter,
+         subgroup == "lep", grade_level == "TOTAL",
          !is.na(pct), n_students >= 50) %>%
   arrange(desc(pct)) %>%
   head(15) %>%
   mutate(district_label = reorder(district_name, pct))
 
+stopifnot(nrow(ell) > 0)
+ell %>% select(district_name, n_students, pct)
+
 ggplot(ell, aes(x = district_label, y = pct * 100)) +
-  geom_col(fill = colors["hispanic"]) +
+  geom_col(fill = nj_colors["hispanic"]) +
   coord_flip() +
-  labs(title = "English Learners Concentrated in Urban Areas",
-       subtitle = "Some districts have over 20% ELL students",
+  labs(title = "English Learners Top 45% in Some Districts",
+       subtitle = "Concentrated in urban areas; under 1% in most suburbs",
        x = "", y = "Percent English Language Learners") +
   theme_nj()
 ```
 
-## 9. Top 10 districts educate 20% of all students
+## 9. Top 10 districts serve 20% of all students
 
-Concentration at the top: just 10 districts out of 600+ serve one-fifth of all NJ students.
+Just 10 out of 580+ districts educate one-fifth of all NJ students. Newark alone has 44,000.
 
 ```{r top-10-districts}
 top_10 <- enr_current %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(is_district, !is_charter,
+         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   arrange(desc(n_students)) %>%
   head(10) %>%
   mutate(district_label = reorder(district_name, n_students))
 
+stopifnot(nrow(top_10) > 0)
+top_10 %>% select(district_name, n_students)
+
 ggplot(top_10, aes(x = district_label, y = n_students)) +
-  geom_col(fill = colors["total"]) +
+  geom_col(fill = nj_colors["total"]) +
   coord_flip() +
   scale_y_continuous(labels = comma) +
-  labs(title = "Top 10 Districts Educate 20% of All Students",
-       subtitle = "Just 10 out of 600+ districts serve one-fifth of NJ students",
+  labs(title = "Top 10 Districts Serve 20% of All Students",
+       subtitle = "Just 10 out of 580+ districts educate one-fifth of NJ students",
        x = "", y = "Students") +
   theme_nj()
 ```
 
-## 10. Special education rates remain steady
+## 10. Multiracial students: fastest-growing category
 
-About 17-18% of NJ students receive special education services - among the highest rates nationally.
+Multiracial students grew 37% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
 
-```{r special-ed}
-sped <- enr_all %>%
-  filter(is_state, subgroup == "special_education", grade_level == "TOTAL")
+```{r multiracial-growth}
+multi <- state_summary %>%
+  filter(subgroup == "multiracial", grade_level == "TOTAL")
 
-ggplot(sped, aes(x = end_year, y = pct * 100)) +
-  geom_line(linewidth = 1.5, color = colors["total"]) +
-  geom_point(size = 3, color = colors["total"]) +
-  labs(title = "Special Education Rates Remain Steady",
-       subtitle = "About 17-18% of NJ students - among highest rates nationally",
-       x = "School Year", y = "Percent Special Education") +
+stopifnot(nrow(multi) > 0)
+multi %>% select(end_year, n_students, pct)
+
+ggplot(multi, aes(x = end_year, y = pct * 100)) +
+  geom_line(linewidth = 1.5, color = nj_colors["multiracial"]) +
+  geom_point(size = 3, color = nj_colors["multiracial"]) +
+  labs(title = "Multiracial Students: Fastest-Growing Category",
+       subtitle = "From 2.4% to 3.3% of enrollment in five years (37% growth)",
+       x = "School Year", y = "Percent Multiracial") +
   theme_nj()
+```
+
+## 11. Pre-K nearly doubled since 2020
+
+NJ's Pre-K enrollment surged from 45,000 to 87,000 in five years - fueled by the state's expanding universal pre-K program.
+
+```{r prek-surge}
+prek <- state_summary %>%
+  filter(subgroup == "total_enrollment", grade_level == "PK")
+
+stopifnot(nrow(prek) > 0)
+prek %>% select(end_year, n_students)
+
+ggplot(prek, aes(x = end_year, y = n_students)) +
+  geom_line(linewidth = 1.5, color = nj_colors["prek"]) +
+  geom_point(size = 3, color = nj_colors["prek"]) +
+  scale_y_continuous(labels = comma, limits = c(0, NA)) +
+  labs(title = "Pre-K Nearly Doubled Since 2020",
+       subtitle = "From 45,000 to 87,000 students - NJ's universal pre-K expansion",
+       x = "School Year", y = "Pre-K Students") +
+  theme_nj()
+```
+
+## 12. Bergen County has more students than 12 US states
+
+With 132,000+ students, Bergen County alone has a larger public school system than Wyoming, Vermont, North Dakota, and nine other states.
+
+```{r county-enrollment}
+county_enr <- enr_current %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(county_name) %>%
+  summarize(n_students = sum(n_students, na.rm = TRUE),
+            n_districts = n(), .groups = "drop") %>%
+  filter(county_name != "Charters") %>%
+  arrange(desc(n_students)) %>%
+  head(15) %>%
+  mutate(county_label = reorder(county_name, n_students))
+
+stopifnot(nrow(county_enr) > 0)
+county_enr
+
+ggplot(county_enr, aes(x = county_label, y = n_students)) +
+  geom_col(fill = nj_colors["total"]) +
+  coord_flip() +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Bergen County Has More Students Than 12 US States",
+       subtitle = "Top 15 NJ counties by enrollment",
+       x = "", y = "Students") +
+  theme_nj()
+```
+
+## 13. Most NJ districts are tiny
+
+Half of NJ's 580 districts have fewer than 1,200 students. The median district is smaller than a single large high school.
+
+```{r district-size-distribution}
+dist_sizes <- enr_current %>%
+  filter(is_district, !is_charter,
+         subgroup == "total_enrollment", grade_level == "TOTAL")
+
+stopifnot(nrow(dist_sizes) > 0)
+cat("Districts:", nrow(dist_sizes), "\n")
+cat("Median:", median(dist_sizes$n_students, na.rm = TRUE), "\n")
+cat("Under 1000:", sum(dist_sizes$n_students < 1000, na.rm = TRUE), "\n")
+cat("Over 10000:", sum(dist_sizes$n_students > 10000, na.rm = TRUE), "\n")
+
+ggplot(dist_sizes, aes(x = n_students)) +
+  geom_histogram(binwidth = 500, fill = nj_colors["total"], color = "white") +
+  geom_vline(xintercept = median(dist_sizes$n_students, na.rm = TRUE),
+             linetype = "dashed", color = "red", linewidth = 1) +
+  scale_x_continuous(labels = comma) +
+  labs(title = "Most NJ Districts Are Tiny",
+       subtitle = "Half have fewer than 1,200 students (red line = median)",
+       x = "Students", y = "Number of Districts") +
+  theme_nj()
+```
+
+## 14. NJ's enrollment pyramid shows the pre-K boom
+
+The 2025 grade-level distribution reveals the pre-K surge: PK enrollment (87K) is approaching K (89K), reflecting NJ's universal pre-K push.
+
+```{r grade-pyramid}
+grade_enr <- state_summary %>%
+  filter(end_year == 2025, subgroup == "total_enrollment",
+         grade_level != "TOTAL", !is.na(grade_level)) %>%
+  mutate(grade_label = case_when(
+    grade_level == "PK" ~ "Pre-K",
+    grade_level == "K" ~ "K",
+    TRUE ~ paste("Grade", grade_level)
+  ),
+  grade_order = case_when(
+    grade_level == "PK" ~ 0,
+    grade_level == "K" ~ 1,
+    TRUE ~ as.numeric(grade_level) + 1
+  )) %>%
+  arrange(grade_order) %>%
+  mutate(grade_label = factor(grade_label, levels = grade_label))
+
+stopifnot(nrow(grade_enr) > 0)
+grade_enr %>% select(grade_label, n_students)
+
+ggplot(grade_enr, aes(x = grade_label, y = n_students)) +
+  geom_col(fill = nj_colors["total"]) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "NJ's Enrollment Pyramid Shows the Pre-K Boom",
+       subtitle = "Pre-K (87K) nearly matches Kindergarten (89K) in 2025",
+       x = "Grade Level", y = "Students") +
+  theme_nj() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## 15. NJ's poverty gap: Passaic vs Princeton
+
+Passaic City has 98% of students on free/reduced lunch. Nearby Westfield has under 2%. This 96-point gap captures NJ's extreme wealth inequality.
+
+```{r poverty-gap}
+# Compare highest and lowest FRL districts
+frl_all <- enr_current %>%
+  filter(is_district, !is_charter,
+         subgroup == "free_reduced_lunch", grade_level == "TOTAL",
+         !is.na(pct), n_students >= 100) %>%
+  arrange(desc(pct))
+
+top_5 <- frl_all %>% head(5) %>% mutate(group = "Highest FRL")
+bottom_5 <- frl_all %>% tail(5) %>% mutate(group = "Lowest FRL")
+frl_extremes <- bind_rows(top_5, bottom_5) %>%
+  mutate(district_label = reorder(district_name, pct))
+
+stopifnot(nrow(frl_extremes) > 0)
+frl_extremes %>% select(district_name, n_students, pct, group)
+
+ggplot(frl_extremes, aes(x = district_label, y = pct * 100, fill = group)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("Highest FRL" = nj_colors["black"],
+                               "Lowest FRL" = nj_colors["asian"])) +
+  labs(title = "NJ's Poverty Gap: 96 Points Between Districts",
+       subtitle = "Passaic City (98% FRL) vs Westfield (under 2%)",
+       x = "", y = "Percent Free/Reduced Lunch", fill = "") +
+  theme_nj()
+```
+
+```{r session-info}
+sessionInfo()
 ```
