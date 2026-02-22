@@ -12,7 +12,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   message = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  cache = TRUE
 )
 ```
 
@@ -224,7 +225,7 @@ names(schools)
 
 | Data Type | Function | Years Available |
 |-----------|----------|-----------------|
-| Enrollment | `fetch_enr()` | 1999-2025 |
+| Enrollment | `fetch_enr()` | 2000-2025 |
 | NJSLA/PARCC | `fetch_parcc()` | 2015-2024 |
 | NJASK | `fetch_old_nj_assess()` | 2004-2014 |
 | Graduation Rates | `fetch_grad_rate()` | 2011-2024 |
@@ -236,30 +237,33 @@ When working with tidy data, you'll encounter these subgroup codes:
 
 ### Race/Ethnicity
 - `white`, `black`, `hispanic`, `asian`
-- `pacific_islander`, `american_indian`, `other`
+- `pacific_islander`, `native_american`, `multiracial`
 
 ### Other Demographics
 - `male`, `female`
-- `ed` (economically disadvantaged)
-- `lep_current` (current English learners)
-- `special_education`
-- `total_enrollment` or `total_population`
+- `free_lunch`, `reduced_lunch`, `free_reduced_lunch`
+- `lep` (English learners)
+- `migrant`
+- `total_enrollment`
+
+**Note:** Special education data is available via `fetch_sped()`, not through enrollment subgroups.
 
 ## Tips and Best Practices
 
-### 1. Cache Data Locally
+### 1. Use Session Caching
 
-Data is downloaded fresh each call. For repeated analysis, save locally:
+The package includes built-in session caching to avoid re-downloading:
 
 ```{r caching, eval = FALSE}
-# Download once
-enr_2024 <- fetch_enr(2024, tidy = TRUE)
+# Use session cache (avoids re-downloading within same session)
+enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
-# Save for reuse
+# Or save to disk for reuse across sessions
 saveRDS(enr_2024, "data/enr_2024.rds")
-
-# Load later without re-downloading
 enr_2024 <- readRDS("data/enr_2024.rds")
+
+# Check cache status
+njsd_cache_info()
 ```
 
 ### 2. Handle Suppressed Data
@@ -291,11 +295,15 @@ enrollment_trends <- multi_year_enr %>%
 
 ## Next Steps
 
-- See `vignette("longitudinal-analysis")` for advanced multi-year analysis
-- See `vignette("data-dictionary")` for complete column definitions
+- See `vignette("nj-enrollment-insights")` for 15 data stories with visualizations
+- See `vignette("spr-dictionary")` for School Performance Report data
 - Visit the [package website](https://almartin82.github.io/njschooldata/) for full documentation
 
 ## Getting Help
 
 - File issues: https://github.com/almartin82/njschooldata/issues
 - Email: almartin@gmail.com
+
+```{r session-info}
+sessionInfo()
+```
