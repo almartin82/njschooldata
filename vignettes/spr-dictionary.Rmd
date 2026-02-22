@@ -239,7 +239,7 @@ ap_access <- fetch_spr_data("APIBCoursesOffered", 2024) %>%
   filter(is_district) %>%
   mutate(
     has_ap_math = grepl("AP Calculus", courses_offered, ignore.case = TRUE),
-    has_ap science = grepl("AP.*Science", courses_offered, ignore.case = TRUE)
+    has_ap_science = grepl("AP.*Science", courses_offered, ignore.case = TRUE)
   )
 ```
 
@@ -294,3 +294,7 @@ Each sheet contains additional columns relevant to that data type. Column names 
 - [Package documentation](https://almartin82.github.io/njschooldata/)
 - [Function reference](https://almartin82.github.io/njschooldata/reference/index.html)
 - [Getting started guide](https://almartin82.github.io/njschooldata/articles/getting-started.html)
+
+```{r session-info}
+sessionInfo()
+```

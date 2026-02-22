@@ -58,8 +58,7 @@ enr_all <- purrr::map_df(years, ~{
 
 enr_current <- fetch_enr(2025, tidy = TRUE)
 
-# State-level summary (NJ DOE 2020+ data doesn't include state-level rows,
-# so we aggregate from district totals)
+# State-level summary aggregated from district totals for time-series consistency
 state_summary <- enr_all %>%
   filter(is_district) %>%
   group_by(end_year, subgroup, grade_level) %>%
@@ -273,9 +272,9 @@ ggplot(ell, aes(x = district_label, y = pct * 100)) +
   theme_nj()
 ```
 
-## 9. Top 10 districts serve 20% of all students
+## 9. Top 10 districts serve 15% of all students
 
-Just 10 out of 580+ districts educate one-fifth of all NJ students. Newark alone has 44,000.
+Just 10 out of 580+ districts educate nearly 1 in 6 NJ students. Newark alone has 44,000.
 
 ```{r top-10-districts}
 top_10 <- enr_current %>%
@@ -292,15 +291,15 @@ ggplot(top_10, aes(x = district_label, y = n_students)) +
   geom_col(fill = nj_colors["total"]) +
   coord_flip() +
   scale_y_continuous(labels = comma) +
-  labs(title = "Top 10 Districts Serve 20% of All Students",
-       subtitle = "Just 10 out of 580+ districts educate one-fifth of NJ students",
+  labs(title = "Top 10 Districts Serve 15% of All Students",
+       subtitle = "Just 10 out of 580+ districts educate nearly 1 in 6 NJ students",
        x = "", y = "Students") +
   theme_nj()
 ```
 
 ## 10. Multiracial students: fastest-growing category
 
-Multiracial students grew 37% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
+Multiracial students grew 39% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
 
 ```{r multiracial-growth}
 multi <- state_summary %>%
@@ -313,7 +312,7 @@ ggplot(multi, aes(x = end_year, y = pct * 100)) +
   geom_line(linewidth = 1.5, color = nj_colors["multiracial"]) +
   geom_point(size = 3, color = nj_colors["multiracial"]) +
   labs(title = "Multiracial Students: Fastest-Growing Category",
-       subtitle = "From 2.4% to 3.3% of enrollment in five years (37% growth)",
+       subtitle = "From 2.4% to 3.3% of enrollment in five years (39% growth)",
        x = "School Year", y = "Percent Multiracial") +
   theme_nj()
 ```
