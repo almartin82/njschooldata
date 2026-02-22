@@ -162,7 +162,6 @@ articles:
   - title: Data Insights
     navbar: ~
     contents:
-      - enrollment_hooks
       - nj-enrollment-insights
   - title: School Performance Reports
     navbar: ~
