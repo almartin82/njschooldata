@@ -202,6 +202,8 @@ get_raw_enr <- function(end_year) {
 #' @param tidy If TRUE, takes the unwieldy wide data and normalizes into a
 #' long, tidy data frame with limited headers - constants (school/district name and code),
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
+#' @param use_cache If TRUE, uses the session cache to avoid re-downloading data.
+#' See \code{\link{njsd_cache_info}} for cache details.
 #' @return Data frame with processed enrollment data
 #' @export
 #' @examples
@@ -211,14 +213,30 @@ get_raw_enr <- function(end_year) {
 #'
 #' # Get tidy (long format) enrollment data
 #' enr_tidy <- fetch_enr(2023, tidy = TRUE)
+#'
+#' # Use caching for faster repeat calls
+#' enr_cached <- fetch_enr(2023, tidy = TRUE, use_cache = TRUE)
 #' }
-fetch_enr <- function(end_year, tidy = FALSE) {
+fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
+  if (use_cache) {
+    key <- make_cache_key("fetch_enr", end_year = end_year, tidy = tidy)
+    cached <- cache_get(key)
+    if (!is.null(cached)) {
+      message("Using cached enrollment data.")
+      return(cached)
+    }
+  }
+
   enr_data <- get_raw_enr(end_year) %>%
     process_enr()
 
   if (tidy) {
     enr_data <- tidy_enr(enr_data) %>%
       id_enr_aggs()
+  }
+
+  if (use_cache) {
+    cache_set(key, enr_data)
   }
 
   enr_data

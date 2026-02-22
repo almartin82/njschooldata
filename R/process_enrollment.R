@@ -301,6 +301,16 @@ process_enr <- function(df) {
   cleaned <- df %>%
     dplyr::select(!dplyr::starts_with("%")) %>%
     clean_enr_names() %>%
+    # Fill in state-level identifiers for rows from the State sheet
+    # (these come through with NA county/district/school codes)
+    dplyr::mutate(
+      county_id = dplyr::if_else(is.na(county_id), "99", county_id),
+      county_name = dplyr::if_else(is.na(county_name), "STATE", county_name),
+      district_id = dplyr::if_else(is.na(district_id), "9999", district_id),
+      district_name = dplyr::if_else(is.na(district_name), "New Jersey", district_name),
+      school_id = dplyr::if_else(is.na(school_id), "999", school_id),
+      school_name = dplyr::if_else(is.na(school_name), "State Total", school_name)
+    ) %>%
     split_enr_cols() %>%
     clean_enr_data() %>%
     clean_enr_grade()
@@ -316,7 +326,9 @@ process_enr <- function(df) {
   final <- cleaned_agg %>%
     process_enr_program() %>%
     arrange_enr() %>%
-    dplyr::filter(!is.na(county_id))
+    dplyr::filter(!is.na(county_id)) %>%
+    # Remove stray "End of worksheet" rows from State sheet
+    dplyr::filter(is.na(grade_level) | grade_level != "End of worksheet")
 
   return(final)
 }

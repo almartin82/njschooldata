@@ -33,6 +33,7 @@ Imports:
     tidyr (>= 1.0.0)
 Suggests:
     covr,
+    forcats,
     geojsonio,
     ggplot2,
     knitr,
