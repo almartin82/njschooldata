@@ -45,8 +45,7 @@ enr_all <- purrr::map_df(years, ~{
   )
 })
 
-# State-level summary (NJ DOE 2020+ data doesn't include state-level rows,
-# so we aggregate from district totals)
+# State-level summary aggregated from district totals for time-series consistency
 state_summary <- enr_all %>%
   filter(is_district) %>%
   group_by(end_year, subgroup, grade_level) %>%
@@ -329,9 +328,9 @@ ell %>% select(district_name, n_students, pct)
 
 ---
 
-### 9. Top 10 districts serve 20% of all students
+### 9. Top 10 districts serve 15% of all students
 
-Just 10 out of 580+ districts educate one-fifth of all NJ students. Newark alone has 44,000.
+Just 10 out of 580+ districts educate nearly 1 in 6 NJ students. Newark alone has 44,000.
 
 ```r
 top_10 <- enr_current %>%
@@ -364,7 +363,7 @@ top_10 %>% select(district_name, n_students)
 
 ### 10. Multiracial students: fastest-growing category
 
-Multiracial students grew 37% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
+Multiracial students grew 39% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
 
 ```r
 multi <- state_summary %>%
@@ -573,7 +572,7 @@ frl_extremes %>% select(district_name, n_students, pct, group)
 **Census Day:** NJ enrollment counts are based on October 15 enrollment (ASSA reporting).
 
 **Known caveats:**
-- 2020+ enrollment data doesn't include state/county-level summary rows (aggregate from districts)
+- 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency
 - Charter schools appear as separate "districts" in the data
 - Pre-2020 and post-2020 data formats differ significantly
 
