@@ -236,14 +236,14 @@ When working with tidy data, you'll encounter these subgroup codes:
 
 ### Race/Ethnicity
 - `white`, `black`, `hispanic`, `asian`
-- `pacific_islander`, `american_indian`, `other`
+- `native_american`, `pacific_islander`, `multiracial`
 
 ### Other Demographics
 - `male`, `female`
-- `ed` (economically disadvantaged)
-- `lep_current` (current English learners)
-- `special_education`
-- `total_enrollment` or `total_population`
+- `free_lunch`, `reduced_lunch`, `free_reduced_lunch`
+- `lep` (Limited English Proficient)
+- `migrant`
+- `total_enrollment`
 
 ## Tips and Best Practices
 

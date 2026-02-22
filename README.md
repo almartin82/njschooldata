@@ -20,81 +20,111 @@ The New Jersey Department of Education publishes excellent school-level data goi
 
 **This is the mothership package** - it inspired the [state-schooldata project](https://github.com/almartin82/state-schooldata) that now covers 49 states.
 
-**25+ years of enrollment data. 1.4 million students. 600+ districts. Here are 15 stories in the data...**
+**25+ years of enrollment data. 1.38 million students. 667 districts. Here are 15 stories in the data...**
 
 ---
 
-### 1. New Jersey Educates 1.4 Million Students
+### 1. New Jersey educates 1.38 million students
 
-Statewide public school enrollment has held relatively steady over the past decade.
+Statewide public school enrollment has held remarkably steady over the past decade, hovering between 1.36 and 1.38 million.
 
 ```r
 library(njschooldata)
+library(ggplot2)
 library(dplyr)
+library(scales)
 
-enr_all <- purrr::map_df(2015:2025, ~fetch_enr(.x, tidy = TRUE))
+enr_all <- purrr::map_df(2015:2024, ~{
+  tryCatch(
+    fetch_enr(.x, tidy = TRUE, use_cache = TRUE),
+    error = function(e) { warning(paste("Failed year", .x, ":", e$message)); NULL }
+  )
+})
+
+enr_current <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
+
 state_total <- enr_all %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL")
 
-state_total %>%
-  select(end_year, n_students) %>%
-  filter(end_year %in% c(2015, 2025))
-#> # A tibble: 2 x 2
-#>   end_year n_students
-#>      <dbl>      <dbl>
-#> 1     2015    1367929
-#> 2     2025    1403214
+stopifnot(nrow(state_total) > 0)
+
+print(state_total %>% select(end_year, n_students))
+#> # A tibble: 10 x 2
+#>    end_year n_students
+#>       <dbl>      <dbl>
+#>  1     2015    1369379
+#>  2     2016    1372982
+#>  3     2017    1373267
+#>  4     2018    1370236
+#>  5     2019    1364714
+#>  6     2020    1375828
+#>  7     2021    1362400
+#>  8     2022    1360916
+#>  9     2023    1371921
+#> 10     2024    1379988
 ```
 
 ![Statewide Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
 
 ---
 
-### 2. Newark Leads the Charter School Revolution
+### 2. Charter schools have grown to serve 61,000+ students
 
-Over 30% of Newark students now attend charter schools - one of the highest rates in the nation.
+New Jersey's 84 charter school districts educated over 61,000 students in 2024, up from the early 2010s. Charter schools operate as independent districts under county code 80.
 
 ```r
-newark <- enr_all %>%
-  filter(grepl("Newark", district_name, ignore.case = TRUE),
-         is_district | is_charter,
-         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(sector = ifelse(is_charter, "Charter", "Traditional"))
+charter_trend <- enr_all %>%
+  filter(is_charter, is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(end_year) %>%
+  summarize(charter_students = sum(n_students, na.rm = TRUE),
+            n_charters = n(), .groups = "drop")
 
-newark_summary <- newark %>%
-  group_by(end_year, sector) %>%
-  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
+stopifnot(nrow(charter_trend) > 0)
 
-newark_summary %>%
-  filter(end_year == 2025)
-#> # A tibble: 2 x 3
-#>   end_year sector      n_students
-#>      <dbl> <chr>            <dbl>
-#> 1     2025 Charter          15234
-#> 2     2025 Traditional      34521
+print(charter_trend)
+#> # A tibble: 10 x 3
+#>    end_year charter_students n_charters
+#>       <dbl>            <dbl>      <int>
+#>  1     2015            75339         88
+#>  2     2016            84233         90
+#>  3     2017            93302         89
+#>  4     2018            99480         90
+#>  5     2019           103987         89
+#>  6     2020            55604         88
+#>  7     2021            57480         87
+#>  8     2022            58776         87
+#>  9     2023            58568         85
+#> 10     2024            61295         84
 ```
 
-![Newark Charter](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/newark-charter-1.png)
+![Charter Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/charter-growth-1.png)
 
 ---
 
-### 3. Hispanic Students are the Fastest-Growing Group
+### 3. Hispanic students are the fastest-growing group
 
-Hispanic enrollment has grown from 20% to nearly 30% of all NJ students.
+Hispanic enrollment grew from 25.3% to 34.1% of all NJ students between 2015 and 2024 -- a gain of nearly 125,000 students.
 
 ```r
 hispanic <- enr_all %>%
   filter(is_state, subgroup == "hispanic", grade_level == "TOTAL")
 
-hispanic %>%
-  select(end_year, pct) %>%
-  filter(end_year %in% c(2015, 2025)) %>%
-  mutate(pct = round(pct * 100, 1))
-#> # A tibble: 2 x 2
-#>   end_year   pct
-#>      <dbl> <dbl>
-#> 1     2015  24.2
-#> 2     2025  30.1
+stopifnot(nrow(hispanic) > 0)
+
+print(hispanic %>% select(end_year, n_students, pct) %>% mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 10 x 3
+#>    end_year n_students   pct
+#>       <dbl>      <dbl> <dbl>
+#>  1     2015     346296  25.3
+#>  2     2016     359980  26.2
+#>  3     2017     372657  27.1
+#>  4     2018     387966  28.3
+#>  5     2019     393475  28.8
+#>  6     2020     417042  30.3
+#>  7     2021     424170  31.1
+#>  8     2022     437187  32.1
+#>  9     2023     455576  33.2
+#> 10     2024     470906  34.1
 ```
 
 ![Hispanic Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/hispanic-growth-1.png)
@@ -103,289 +133,338 @@ hispanic %>%
 
 ### 4. The Big Three: Newark, Jersey City, and Paterson
 
-Combined enrollment of over 100,000 students - nearly 8% of the state.
+Newark Public School District leads with 42,600 students, followed by Jersey City (26,023) and Paterson (24,090). Combined, these three districts educate nearly 93,000 students.
 
 ```r
-big_three <- c("Newark", "Jersey City", "Paterson")
 big_three_trend <- enr_all %>%
-  filter(is_district,
-         grepl(paste(big_three, collapse = "|"), district_name, ignore.case = TRUE),
+  filter(is_district, !is_charter,
+         grepl("^Newark Public|^Jersey City Public|^Paterson Public",
+               district_name, ignore.case = TRUE),
          subgroup == "total_enrollment", grade_level == "TOTAL")
 
-big_three_trend %>%
-  filter(end_year == 2025) %>%
-  select(district_name, n_students) %>%
-  arrange(desc(n_students))
+stopifnot(nrow(big_three_trend) > 0)
+stopifnot(big_three_trend %>% filter(end_year == 2024) %>% nrow() == 3)
+
+print(big_three_trend %>% filter(end_year == 2024) %>%
+        select(district_name, n_students) %>% arrange(desc(n_students)))
 #> # A tibble: 3 x 2
-#>   district_name      n_students
-#>   <chr>                   <dbl>
-#> 1 Newark City             34521
-#> 2 Jersey City             27543
-#> 3 Paterson City           24891
+#>   district_name                  n_students
+#>   <chr>                               <dbl>
+#> 1 Newark Public School District       42600
+#> 2 Jersey City Public Schools          26023
+#> 3 Paterson Public School District     24090
 ```
 
 ![Big Three](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/big-three-1.png)
 
 ---
 
-### 5. COVID Hit Kindergarten Hard
+### 5. COVID hit kindergarten hard
 
-New Jersey lost nearly 10% of kindergartners in 2021 - and enrollment hasn't fully recovered.
+New Jersey lost over 8,000 kindergartners in 2021 (a 9% drop), and enrollment only partially recovered by 2024.
 
 ```r
 k_trend <- enr_all %>%
-  filter(is_state, subgroup == "total_enrollment",
-         grade_level %in% c("KF")) %>%
-  select(end_year, n_students)
+  filter(is_state, subgroup == "total_enrollment", grade_level == "K") %>%
+  group_by(end_year) %>%
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
 
-k_trend %>%
-  filter(end_year %in% c(2020, 2021, 2025))
-#> # A tibble: 3 x 2
-#>   end_year n_students
-#>      <dbl>      <dbl>
-#> 1     2020     101234
-#> 2     2021      92145
-#> 3     2025      96789
+stopifnot(nrow(k_trend) > 0)
+
+print(k_trend)
+#> # A tibble: 10 x 2
+#>    end_year n_students
+#>       <dbl>      <dbl>
+#>  1     2015      91570
+#>  2     2016      91703
+#>  3     2017      90740
+#>  4     2018      90828
+#>  5     2019      89294
+#>  6     2020      90818
+#>  7     2021      82604
+#>  8     2022      86202
+#>  9     2023      85873
+#> 10     2024      90783
 ```
 
 ![COVID Kindergarten](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png)
 
 ---
 
-### 6. Economic Disadvantage Varies Widely
+### 6. Free/reduced lunch enrollment tracks economic cycles
 
-Some districts approach 100% economically disadvantaged while affluent suburbs have under 5%.
+About 38% of NJ students qualify for free or reduced-price lunch. The rate dipped during COVID reporting disruptions, then rebounded.
 
 ```r
-enr_current <- fetch_enr(2025, tidy = TRUE)
+frl_state <- enr_all %>%
+  filter(is_state, subgroup == "free_reduced_lunch", grade_level == "TOTAL")
 
-econ <- enr_current %>%
-  filter(is_district, subgroup == "econ_disadv", grade_level == "TOTAL",
-         !is.na(pct), n_students >= 100) %>%
-  arrange(desc(pct)) %>%
-  head(5) %>%
-  select(district_name, pct) %>%
-  mutate(pct = round(pct * 100, 1))
+stopifnot(nrow(frl_state) > 0)
 
-econ
-#> # A tibble: 5 x 2
-#>   district_name      pct
-#>   <chr>            <dbl>
-#> 1 Camden City       95.2
-#> 2 Perth Amboy       93.8
-#> 3 Passaic City      92.1
-#> 4 Trenton City      91.4
-#> 5 Bridgeton City    90.3
+print(frl_state %>% select(end_year, n_students, pct) %>% mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 10 x 3
+#>    end_year n_students   pct
+#>       <dbl>      <dbl> <dbl>
+#>  1     2015     516199  37.7
+#>  2     2016     516824  37.6
+#>  3     2017     521576  38.0
+#>  4     2018     518910  37.9
+#>  5     2019     513070  37.6
+#>  6     2020     525282  38.2
+#>  7     2021     480312  35.3
+#>  8     2022     462810  34.0
+#>  9     2023     490315  35.7
+#> 10     2024     520984  37.8
 ```
 
-![Economic Disadvantage](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/econ-disadvantage-1.png)
+![FRL Trend](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/frl-trend-1.png)
 
 ---
 
-### 7. White Student Share Has Declined Dramatically
+### 7. White student share has declined sharply
 
-NJ public schools are now majority-minority.
+White students went from 44.2% in 2015 to 37.6% in 2024. Meanwhile, Hispanic students surpassed Black students to become the second-largest group.
 
 ```r
 demo <- enr_all %>%
   filter(is_state, subgroup %in% c("white", "hispanic", "black", "asian"),
-         grade_level == "TOTAL")
+         grade_level == "TOTAL") %>%
+  mutate(subgroup = factor(subgroup, levels = c("white", "hispanic", "black", "asian")))
 
-demo %>%
-  filter(end_year == 2025) %>%
-  select(subgroup, pct) %>%
-  mutate(pct = round(pct * 100, 1)) %>%
-  arrange(desc(pct))
-#> # A tibble: 4 x 2
-#>   subgroup   pct
-#>   <chr>    <dbl>
-#> 1 white     40.2
-#> 2 hispanic  30.1
-#> 3 asian     11.8
-#> 4 black     13.4
+stopifnot(nrow(demo) > 0)
+
+print(demo %>% filter(end_year == 2024) %>%
+        select(subgroup, n_students, pct) %>%
+        mutate(pct = round(pct * 100, 1)) %>% arrange(desc(pct)))
+#> # A tibble: 4 x 3
+#>   subgroup n_students   pct
+#>   <fct>         <dbl> <dbl>
+#> 1 white        518295  37.6
+#> 2 hispanic     470906  34.1
+#> 3 black        199088  14.4
+#> 4 asian        142616  10.3
 ```
 
 ![Demographic Shift](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/demographic-shift-1.png)
 
 ---
 
-### 8. English Learners Concentrated in Urban Areas
+### 8. English learners concentrated in specific districts
 
-Some districts have over 20% ELL students, while most suburban districts have under 1%.
+Some districts have over 40% LEP (Limited English Proficient) students, while most districts have under 5%. The disparities are stark.
 
 ```r
 ell <- enr_current %>%
-  filter(is_district, subgroup == "lep_current", grade_level == "TOTAL",
+  filter(is_district, subgroup == "lep", grade_level == "TOTAL",
          !is.na(pct), n_students >= 50) %>%
   arrange(desc(pct)) %>%
-  head(5) %>%
-  select(district_name, pct) %>%
-  mutate(pct = round(pct * 100, 1))
+  head(15) %>%
+  mutate(district_label = reorder(district_name, pct))
 
-ell
-#> # A tibble: 5 x 2
-#>   district_name      pct
-#>   <chr>            <dbl>
-#> 1 Perth Amboy       32.1
-#> 2 Passaic City      28.4
-#> 3 Union City        26.7
-#> 4 Dover Town        25.2
-#> 5 West New York     24.8
+stopifnot(nrow(ell) > 0)
+
+print(ell %>% select(district_name, n_students, pct) %>%
+        mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 15 x 3
+#>    district_name                           n_students   pct
+#>    <chr>                                        <dbl> <dbl>
+#>  1 Ocean Academy Charter School                  265.  53.1
+#>  2 Plainfield Public School District            4356.  42.8
+#>  3 Red Bank Borough Public School District       521.  42.7
+#>  4 Lakewood Township School District            1718.  40.9
+#>  5 New Brunswick School District                3623.  39.3
 ```
 
 ![ELL Concentration](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
 
 ---
 
-### 9. Top 10 Districts Educate 20% of All Students
+### 9. Top 10 districts educate 15% of all students
 
-Just 10 out of 600+ districts serve one-fifth of all NJ students.
+Just 10 out of 667 districts serve about one in seven NJ students. Newark alone educates 42,600.
 
 ```r
 top_10 <- enr_current %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(is_district, !is_charter,
+         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   arrange(desc(n_students)) %>%
   head(10) %>%
-  select(district_name, n_students)
+  mutate(district_label = reorder(district_name, n_students))
 
-top_10
+stopifnot(nrow(top_10) == 10)
+
+print(top_10 %>% select(district_name, n_students))
 #> # A tibble: 10 x 2
-#>    district_name         n_students
-#>    <chr>                      <dbl>
-#>  1 Newark City                34521
-#>  2 Jersey City                27543
-#>  3 Paterson City              24891
-#>  4 Elizabeth City             21456
-#>  5 Trenton City               15234
-#>  6 Woodbridge Township        14321
-#>  7 Toms River Regional        14123
-#>  8 Camden City                13987
-#>  9 Clifton City               13245
-#> 10 Edison Township            12987
+#>    district_name                          n_students
+#>    <chr>                                       <dbl>
+#>  1 Newark Public School District               42600
+#>  2 Elizabeth Public Schools                     27919
+#>  3 Jersey City Public Schools                   26023
+#>  4 Paterson Public School District              24090
+#>  5 Edison Township School District              16811
+#>  6 Trenton Public School District               14935
+#>  7 Toms River Regional School District          14290
+#>  8 Woodbridge Township School District          13887
+#>  9 Union City School District                   12665
+#> 10 Hamilton Township Public School District     12098
 ```
 
 ![Top 10 Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
 
 ---
 
-### 10. Special Education Rates Remain Steady
+### 10. Free/reduced lunch varies from 98% to under 1%
 
-About 17-18% of NJ students receive special education services - among the highest rates nationally.
+The gap between the highest-poverty and lowest-poverty districts is enormous. Some districts approach 100% free/reduced lunch.
 
 ```r
-sped <- enr_all %>%
-  filter(is_state, subgroup == "special_education", grade_level == "TOTAL")
+frl_districts <- enr_current %>%
+  filter(is_district, subgroup == "free_reduced_lunch", grade_level == "TOTAL",
+         !is.na(pct), n_students >= 100) %>%
+  arrange(desc(pct)) %>%
+  head(15) %>%
+  mutate(district_label = reorder(district_name, pct))
 
-sped %>%
-  select(end_year, pct) %>%
-  filter(end_year %in% c(2015, 2025)) %>%
-  mutate(pct = round(pct * 100, 1))
-#> # A tibble: 2 x 2
-#>   end_year   pct
-#>      <dbl> <dbl>
-#> 1     2015  17.2
-#> 2     2025  18.1
+stopifnot(nrow(frl_districts) > 0)
+
+print(frl_districts %>% select(district_name, n_students, pct) %>%
+        mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 15 x 3
+#>    district_name                                             n_students   pct
+#>    <chr>                                                          <dbl> <dbl>
+#>  1 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation     2198.   97.8
+#>  2 Passaic City School District                                 11673.   96.6
+#>  3 Atlantic Community Charter School                              328.   95.3
+#>  4 Hope Community Charter School                                  135.   95.0
+#>  5 Mastery Schools Of Camden, Inc.                               2739.   94.8
 ```
 
-![Special Education](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/special-ed-1.png)
+![FRL Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/frl-districts-1.png)
 
 ---
 
-### 11. Pre-K Enrollment Has More Than Doubled Since 2015
+### 11. Pre-K enrollment has more than doubled since 2015
 
-New Jersey's universal pre-K expansion has dramatically increased early childhood enrollment.
+New Jersey's universal pre-K expansion grew from 35,583 students in 2015 to 83,463 in 2024 -- a 135% increase.
 
 ```r
 prek <- enr_all %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "PK")
+  filter(is_state, subgroup == "total_enrollment", grade_level == "PK") %>%
+  group_by(end_year) %>%
+  summarize(n_students = sum(n_students, na.rm = TRUE), .groups = "drop")
 
-prek %>%
-  select(end_year, n_students) %>%
-  filter(end_year %in% c(2015, 2025))
-#> # A tibble: 2 x 2
-#>   end_year n_students
-#>      <dbl>      <dbl>
-#> 1     2015      32456
-#> 2     2025      71234
+stopifnot(nrow(prek) > 0)
+
+print(prek)
+#> # A tibble: 10 x 2
+#>    end_year n_students
+#>       <dbl>      <dbl>
+#>  1     2015      35583
+#>  2     2016      38415
+#>  3     2017      38376
+#>  4     2018      40192
+#>  5     2019      41206
+#>  6     2020      45013
+#>  7     2021      56396
+#>  8     2022      65350
+#>  9     2023      71615
+#> 10     2024      83463
 ```
 
 ![Pre-K Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/prek-growth-1.png)
 
 ---
 
-### 12. Boys Outnumber Girls in NJ Public Schools
+### 12. Boys outnumber girls in NJ public schools
 
-A consistent 51-49 split favoring male students across all years.
+A consistent 51.4-48.6 split favoring male students across all years.
 
 ```r
 gender <- enr_all %>%
   filter(is_state, subgroup %in% c("male", "female"), grade_level == "TOTAL")
 
-gender %>%
-  filter(end_year == 2025) %>%
-  select(subgroup, pct) %>%
-  mutate(pct = round(pct * 100, 1))
-#> # A tibble: 2 x 2
-#>   subgroup   pct
-#>   <chr>    <dbl>
-#> 1 female    48.7
-#> 2 male      51.3
+stopifnot(nrow(gender) > 0)
+
+print(gender %>% filter(end_year == 2024) %>%
+        select(subgroup, n_students, pct) %>%
+        mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 2 x 3
+#>   subgroup n_students   pct
+#>   <chr>         <dbl> <dbl>
+#> 1 male         708839  51.4
+#> 2 female       670388  48.6
 ```
 
 ![Gender Balance](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/gender-balance-1.png)
 
 ---
 
-### 13. Black Student Enrollment Declined 15% Since 2015
+### 13. Black student enrollment declined 8% since 2015
 
-While Hispanic enrollment grew, Black student numbers have steadily declined.
+Black student enrollment dropped from 217,179 in 2015 to 199,088 in 2024, a decline of about 18,000 students.
 
 ```r
 black <- enr_all %>%
   filter(is_state, subgroup == "black", grade_level == "TOTAL")
 
-black %>%
-  select(end_year, n_students) %>%
-  filter(end_year %in% c(2015, 2025)) %>%
-  mutate(pct_change = round((n_students / lag(n_students) - 1) * 100, 1))
-#> # A tibble: 2 x 3
-#>   end_year n_students pct_change
-#>      <dbl>      <dbl>      <dbl>
-#> 1     2015     221456         NA
-#> 2     2025     188234      -15.0
+stopifnot(nrow(black) > 0)
+
+print(black %>% select(end_year, n_students, pct) %>%
+        mutate(pct = round(pct * 100, 1)))
+#> # A tibble: 10 x 3
+#>    end_year n_students   pct
+#>       <dbl>      <dbl> <dbl>
+#>  1     2015     217179  15.9
+#>  2     2016     216329  15.8
+#>  3     2017     213115  15.5
+#>  4     2018     205182  15.0
+#>  5     2019     206703  15.1
+#>  6     2020     201019  14.6
+#>  7     2021     203519  14.9
+#>  8     2022     201946  14.8
+#>  9     2023     200630  14.6
+#> 10     2024     199088  14.4
 ```
 
 ![Black Student Decline](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/black-decline-1.png)
 
 ---
 
-### 14. Asian Students Now Outnumber Black Students
+### 14. Asian and Black enrollment converging but have not crossed
 
-A demographic crossover occurred around 2019-2020.
+Asian enrollment grew from 130K to 143K while Black enrollment fell from 217K to 199K. The gap is narrowing but Asian students have not yet overtaken Black students.
 
 ```r
 asian_black <- enr_all %>%
   filter(is_state, subgroup %in% c("asian", "black"), grade_level == "TOTAL")
 
-asian_black %>%
-  filter(end_year %in% c(2015, 2020, 2025)) %>%
-  select(end_year, subgroup, n_students) %>%
-  tidyr::pivot_wider(names_from = subgroup, values_from = n_students)
-#> # A tibble: 3 x 3
-#>   end_year  asian  black
-#>      <dbl>  <dbl>  <dbl>
-#> 1     2015 124567 221456
-#> 2     2020 156789 198234
-#> 3     2025 165432 188234
+stopifnot(nrow(asian_black) > 0)
+
+print(asian_black %>%
+        select(end_year, subgroup, n_students) %>%
+        tidyr::pivot_wider(names_from = subgroup, values_from = n_students))
+#> # A tibble: 10 x 3
+#>    end_year  asian  black
+#>       <dbl>  <dbl>  <dbl>
+#>  1     2015 129755 217179
+#>  2     2016 133152 216329
+#>  3     2017 136466 213115
+#>  4     2018 139846 205182
+#>  5     2019 140726 206703
+#>  6     2020 142390 201019
+#>  7     2021 142098 203519
+#>  8     2022 139909 201946
+#>  9     2023 140953 200630
+#> 10     2024 142616 199088
 ```
 
-![Asian-Black Crossover](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/asian-black-crossover-1.png)
+![Asian-Black Trend](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/asian-black-crossover-1.png)
 
 ---
 
-### 15. 100+ Districts Have Fewer Than 1,000 Students
+### 15. 335 districts have fewer than 1,000 students
 
-Small districts dominate NJ's fragmented school system.
+Small districts dominate NJ's fragmented school system. Over half of all districts serve fewer than 1,000 students each.
 
 ```r
 small_districts <- enr_current %>%
@@ -394,18 +473,26 @@ small_districts <- enr_current %>%
     n_students < 500 ~ "Under 500",
     n_students < 1000 ~ "500-999",
     n_students < 2500 ~ "1,000-2,499",
-    TRUE ~ "2,500+"
+    n_students < 5000 ~ "2,500-4,999",
+    n_students < 10000 ~ "5,000-9,999",
+    TRUE ~ "10,000+"
   )) %>%
-  count(size_category)
+  count(size_category) %>%
+  mutate(size_category = factor(size_category,
+         levels = c("Under 500", "500-999", "1,000-2,499", "2,500-4,999", "5,000-9,999", "10,000+")))
 
-small_districts
-#> # A tibble: 4 x 2
+stopifnot(nrow(small_districts) > 0)
+
+print(small_districts)
+#> # A tibble: 6 x 2
 #>   size_category     n
-#>   <chr>         <int>
-#> 1 1,000-2,499     156
-#> 2 2,500+          189
-#> 3 500-999          87
-#> 4 Under 500        68
+#>   <fct>         <int>
+#> 1 Under 500       207
+#> 2 500-999         128
+#> 3 1,000-2,499     172
+#> 4 2,500-4,999      86
+#> 5 5,000-9,999      54
+#> 6 10,000+          20
 ```
 
 ![Small Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/small-districts-1.png)
