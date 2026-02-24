@@ -179,7 +179,7 @@ big_three_trend %>% select(end_year, district_name, n_students)
 
 ### 5. Kindergarten rebounded from COVID
 
-New Jersey lost 5% of kindergartners during COVID - but by 2025, K enrollment nearly recovered while Pre-K surged past pre-pandemic levels.
+New Jersey lost 9% of kindergartners during COVID - but by 2025, K enrollment nearly recovered while Pre-K surged past pre-pandemic levels.
 
 ```r
 k_trend <- state_summary %>%
@@ -411,9 +411,9 @@ prek %>% select(end_year, n_students)
 
 ---
 
-### 12. Bergen County has more students than 12 US states
+### 12. Bergen County has more students than several US states
 
-With 132,000+ students, Bergen County alone has a larger public school system than Wyoming, Vermont, North Dakota, and nine other states.
+With 132,000+ students, Bergen County alone has a larger public school system than Wyoming, Vermont, North Dakota, and other small states.
 
 ```r
 county_enr <- enr_current %>%
