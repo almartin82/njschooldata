@@ -7,10 +7,7 @@
 
 ### Data Insights
 
+- [10 Insights from New Jersey School Enrollment
+  Data](https://almartin82.github.io/njschooldata/articles/enrollment_hooks.md):
 - [New Jersey Enrollment
   Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.md):
-
-### School Performance Reports
-
-- [SPR Data
-  Dictionary](https://almartin82.github.io/njschooldata/articles/spr-dictionary.md):

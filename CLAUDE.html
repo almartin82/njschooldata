@@ -19,8 +19,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
+    <li><a class="dropdown-item" href="articles/enrollment_hooks.html">10 Insights from New Jersey School Enrollment Data</a></li>
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
-    <li><a class="dropdown-item" href="articles/spr-dictionary.html">SPR Data Dictionary</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
@@ -34,7 +34,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>CLAUDE.md</h1>
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/main/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
 <div id="claudemd" class="section level1">
@@ -80,24 +80,6 @@
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>
 <p>Session caching is enabled by default to avoid hitting NJ DOE bot protection: - <code><a href="reference/njsd_cache_info.html">njsd_cache_info()</a></code> - view cache status - <code><a href="reference/njsd_cache_clear.html">njsd_cache_clear()</a></code> - clear cache - <code>njsd_cache_enable(FALSE)</code> - disable caching</p>
 <p>The cache validates responses and will NOT cache network errors or bot protection pages.</p>
-</div>
-<div class="section level2">
-<h2 id="valid-filter-values-tidy-enrollment-via-fetch_enrtidy--true">Valid Filter Values (tidy enrollment via <code>fetch_enr(tidy = TRUE)</code>)<a class="anchor" aria-label="anchor" href="#valid-filter-values-tidy-enrollment-via-fetch_enrtidy--true"></a></h2>
-<div class="section level3">
-<h3 id="subgroup">subgroup<a class="anchor" aria-label="anchor" href="#subgroup"></a></h3>
-<p><code>total_enrollment</code>, <code>male</code>, <code>female</code>, <code>white</code>, <code>black</code>, <code>hispanic</code>, <code>asian</code>, <code>native_american</code>, <code>pacific_islander</code>, <code>multiracial</code>, <code>white_m</code>, <code>white_f</code>, <code>black_m</code>, <code>black_f</code>, <code>hispanic_m</code>, <code>hispanic_f</code>, <code>asian_m</code>, <code>asian_f</code>, <code>native_american_m</code>, <code>native_american_f</code>, <code>pacific_islander_m</code>, <code>pacific_islander_f</code>, <code>free_lunch</code>, <code>reduced_lunch</code>, <code>free_reduced_lunch</code>, <code>lep</code>, <code>migrant</code></p>
-<p><strong>NOT in tidy enrollment:</strong> <code>econ_disadv</code>, <code>lep_current</code>, <code>special_education</code> – these live in <code><a href="reference/fetch_sped.html">fetch_sped()</a></code> or report card data, not <code><a href="reference/fetch_enr.html">fetch_enr()</a></code></p>
-</div>
-<div class="section level3">
-<h3 id="grade_level">grade_level<a class="anchor" aria-label="anchor" href="#grade_level"></a></h3>
-<p><code>PK</code>, <code>K</code> (normalized from KF/KH/KG), <code>01</code>-<code>12</code>, <code>TOTAL</code></p>
-<p>Aggregates from <code><a href="reference/enr_grade_aggs.html">enr_grade_aggs()</a></code>: <code>PK (Any)</code>, <code>K (Any)</code>, <code>K12</code>, <code>K12UG</code>, <code>K8</code>, <code>HS</code></p>
-<p><strong>Common trap:</strong> Raw data uses <code>KF</code> for kindergarten, but <code><a href="reference/clean_enr_grade.html">clean_enr_grade()</a></code> normalizes to <code>K</code>. Always filter on <code>K</code>, never <code>KF</code>.</p>
-</div>
-<div class="section level3">
-<h3 id="entity-flags">entity flags<a class="anchor" aria-label="anchor" href="#entity-flags"></a></h3>
-<p><code>is_state</code>, <code>is_county</code>, <code>is_district</code>, <code>is_charter</code>, <code>is_school</code>, <code>is_subprogram</code></p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="pkgdown--github-pages">pkgdown / GitHub Pages<a class="anchor" aria-label="anchor" href="#pkgdown--github-pages"></a></h2>

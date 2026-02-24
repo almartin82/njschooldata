@@ -117,7 +117,7 @@ decades.
 ``` r
 demographics <- enr_2025 |>
   filter(is_state, program_code == "55",
-         subgroup %in% c("white", "black", "hispanic", "asian", "native_american", "pacific_islander")) |>
+         subgroup %in% c("white", "black", "hispanic", "asian", "american_indian", "pacific_islander")) |>
   mutate(pct = round(n_students / sum(n_students, na.rm = TRUE) * 100, 1)) |>
   select(subgroup, n_students, pct) |>
   arrange(desc(n_students))
@@ -335,7 +335,3 @@ across the Garden State.
 
 *Data sourced from the New Jersey Department of Education [Data
 Center](https://www.nj.gov/education/doedata/).*
-
-``` r
-sessionInfo()
-```
