@@ -1,46 +1,55 @@
-# Fetch Chronic Absenteeism data
+# Fetch Chronic Absenteeism Data
 
-Downloads and processes chronic absenteeism data from ESSA
-Accountability Workbooks. Data shows attendance rates by student
-subgroup; chronic absenteeism rate = 100 - attendance rate.
+Downloads and extracts chronic absenteeism data from the SPR database.
+Chronic absenteeism is defined as missing 10
 
 ## Usage
 
 ``` r
-fetch_chronic_absenteeism(end_year)
+fetch_chronic_absenteeism(end_year, level = "school")
 ```
 
 ## Arguments
 
 - end_year:
 
-  A school year. Valid values are 2017-2019 and 2022-2024.
+  A school year (2017-2024). Year is the end of the academic year - eg
+  2020-21 school year is end_year '2021'.
+
+- level:
+
+  One of "school" or "district". "school" returns school-level data,
+  "district" returns district and state-level data.
 
 ## Value
 
-Processed chronic absenteeism dataframe with columns including:
+Data frame with chronic absenteeism rates including:
 
-- county_id, district_id, school_id, configuration
+- end_year, county_id, county_name, district_id, district_name
 
-- Attendance rates by student subgroup (asian, black, hispanic, etc.)
+- school_id, school_name (for school-level data)
 
-- total_attendance_rate, total_chronic_absenteeism_rate
+- subgroup - Student group (total population, racial/ethnic groups,
+  etc.)
 
-## Details
+- chronically_absent_rate - Percentage chronically absent (0-100)
 
-Note: This data is from ESSA accountability workbooks and covers schools
-included in ESSA accountability calculations (approximately 2,300+
-schools). Data for 2020-2021 is not available due to COVID-19 pandemic
-disruptions.
+- Aggregation flags (is_state, is_county, is_district, is_school,
+  is_charter)
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Get 2024 chronic absenteeism data
-ca_2024 <- fetch_chronic_absenteeism(2024)
+# Get school-level chronic absenteeism
+ca <- fetch_chronic_absenteeism(2024)
 
-# Calculate chronic absenteeism rates
-ca_2024$chronic_absent_black <- 100 - ca_2024$attendance_black
+# Get district-level data
+ca_dist <- fetch_chronic_absenteeism(2024, level = "district")
+
+# Filter for specific schools
+newark_ca <- ca %>%
+  filter(district_id == "3570") %>%
+  filter(subgroup == "total population")
 } # }
 ```

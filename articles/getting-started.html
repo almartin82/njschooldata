@@ -34,8 +34,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with njschooldata</a></li>
-    <li><a class="dropdown-item" href="../articles/enrollment_hooks.html">10 Insights from New Jersey School Enrollment Data</a></li>
     <li><a class="dropdown-item" href="../articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="../articles/spr-dictionary.html">SPR Data Dictionary</a></li>
   </ul>
 </li>
       </ul>
@@ -60,7 +60,7 @@
       <h1>Getting Started with njschooldata</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -199,13 +199,42 @@ boolean flags:</p>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get 2024 enrollment data (2023-24 school year)</span></span>
-<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the structure</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">enr_2024</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 101,650</span></span>
+<span><span class="co">#&gt; Columns: 26</span></span>
+<span><span class="co">#&gt; $ end_year         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">, </span>2024<span style="color: #949494;">,</span>…</span></span>
+<span><span class="co">#&gt; $ CDS_Code         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "010010999"<span style="color: #949494;">, </span>"010010999"<span style="color: #949494;">, </span>"010010999"<span style="color: #949494;">, </span>"010010999"<span style="color: #949494;">, </span>"…</span></span>
+<span><span class="co">#&gt; $ county_id        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span>"01"<span style="color: #949494;">,</span>…</span></span>
+<span><span class="co">#&gt; $ county_name      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Atlantic"<span style="color: #949494;">, </span>"Atlantic"<span style="color: #949494;">, </span>"Atlantic"<span style="color: #949494;">, </span>"Atlantic"<span style="color: #949494;">, </span>"Atla…</span></span>
+<span><span class="co">#&gt; $ district_id      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "0010"<span style="color: #949494;">, </span>"0010"<span style="color: #949494;">, </span>"0010"<span style="color: #949494;">, </span>"0010"<span style="color: #949494;">, </span>"0010"<span style="color: #949494;">, </span>"0010"<span style="color: #949494;">, </span>"0010…</span></span>
+<span><span class="co">#&gt; $ district_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Absecon Public Schools District"<span style="color: #949494;">, </span>"Absecon Public Sc…</span></span>
+<span><span class="co">#&gt; $ school_id        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999"<span style="color: #949494;">, </span>"999…</span></span>
+<span><span class="co">#&gt; $ school_name      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "District Total"<span style="color: #949494;">, </span>"District Total"<span style="color: #949494;">, </span>"District Total"<span style="color: #949494;">,</span>…</span></span>
+<span><span class="co">#&gt; $ program_code     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "PH"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"PF"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"KH"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"KF"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"02…</span></span>
+<span><span class="co">#&gt; $ program_name     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ male             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ female           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ white            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ black            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ hispanic         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ asian            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ native_american  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ pacific_islander <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ multiracial      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ row_total        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>123.0<span style="color: #949494;">, </span>13.3<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>0.0<span style="color: #949494;">, </span>77.0<span style="color: #949494;">, </span>8.3<span style="color: #949494;">, </span>89.0<span style="color: #949494;">, </span>9.6…</span></span>
+<span><span class="co">#&gt; $ free_lunch       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ reduced_lunch    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ lep              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ migrant          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ homeless         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">N</span>…</span></span>
+<span><span class="co">#&gt; $ grade_level      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "PK"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"PK"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"K"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"K"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"01"<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>"02"<span style="color: #949494;">,</span>…</span></span>
 <span></span>
 <span><span class="co"># Check dimensions</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">enr_2024</span><span class="op">)</span>  <span class="co"># Rows and columns</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">enr_2024</span><span class="op">)</span>  <span class="co"># Rows and columns</span></span>
+<span><span class="co">#&gt; [1] 101650     26</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="wide-vs--tidy-format">Wide vs. Tidy Format<a class="anchor" aria-label="anchor" href="#wide-vs--tidy-format"></a>
@@ -214,10 +243,10 @@ boolean flags:</p>
 analysis:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Wide format (default) - one row per school, many demographic columns</span></span>
-<span><span class="va">enr_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">FALSE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">enr_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Tidy format - one row per school-subgroup combination</span></span>
-<span><span class="va">enr_tidy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">enr_tidy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The tidy format is better for: - Comparing subgroups within schools -
 Longitudinal analysis across years - Filtering to specific
 demographics</p>
@@ -302,10 +331,10 @@ COVID-19.</p>
 <div class="section level3">
 <h3 id="legacy-assessments-2004-2014">Legacy Assessments (2004-2014)<a class="anchor" aria-label="anchor" href="#legacy-assessments-2004-2014"></a>
 </h3>
-<p>For historical data, use <code>fetch_nj_assess()</code>:</p>
+<p>For historical data, use <code><a href="../reference/fetch_old_nj_assess.html">fetch_old_nj_assess()</a></code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get 2010 Grade 5 NJASK results</span></span>
-<span><span class="va">njask_2010</span> <span class="op">&lt;-</span> <span class="fu">fetch_nj_assess</span><span class="op">(</span></span>
+<span><span class="va">njask_2010</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_old_nj_assess.html">fetch_old_nj_assess</a></span><span class="op">(</span></span>
 <span>  end_year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  grade <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  tidy <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -325,9 +354,9 @@ COVID-19.</p>
 <span>  methodology <span class="op">=</span> <span class="st">"4 year"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get 5-year graduation rates (available 2012+)</span></span>
+<span><span class="co"># Get 5-year graduation rates (available 2012-2019)</span></span>
 <span><span class="va">grad_rate_5yr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span></span>
-<span>  end_year <span class="op">=</span> <span class="fl">2024</span>,</span>
+<span>  end_year <span class="op">=</span> <span class="fl">2019</span>,</span>
 <span>  methodology <span class="op">=</span> <span class="st">"5 year"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -351,7 +380,32 @@ COVID-19.</p>
 <span><span class="va">districts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_district_directory.html">get_district_directory</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View available columns</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "county_id"                   "county_name"                </span></span>
+<span><span class="co">#&gt;  [3] "district_id"                 "district_name"              </span></span>
+<span><span class="co">#&gt;  [5] "school_id"                   "school_name"                </span></span>
+<span><span class="co">#&gt;  [7] "princ_title"                 "princ_first_name"           </span></span>
+<span><span class="co">#&gt;  [9] "princ_last_name"             "princ_title_2"              </span></span>
+<span><span class="co">#&gt; [11] "princ_email"                 "address1"                   </span></span>
+<span><span class="co">#&gt; [13] "address2"                    "city"                       </span></span>
+<span><span class="co">#&gt; [15] "state"                       "zip"                        </span></span>
+<span><span class="co">#&gt; [17] "mailing_address1"            "mailing_address2"           </span></span>
+<span><span class="co">#&gt; [19] "mailing_city"                "mailing_state"              </span></span>
+<span><span class="co">#&gt; [21] "mailing_zip"                 "hib_title1"                 </span></span>
+<span><span class="co">#&gt; [23] "hib_first_nname"             "hib_last_name"              </span></span>
+<span><span class="co">#&gt; [25] "hib_title2"                  "homeless_liaison_title1"    </span></span>
+<span><span class="co">#&gt; [27] "homeless_liaison_first_name" "homeless_liaison_last_name" </span></span>
+<span><span class="co">#&gt; [29] "homeless_liaison_title2"     "phone"                      </span></span>
+<span><span class="co">#&gt; [31] "pre_k"                       "kindergarten"               </span></span>
+<span><span class="co">#&gt; [33] "grade_1"                     "grade_2"                    </span></span>
+<span><span class="co">#&gt; [35] "grade_3"                     "grade_4"                    </span></span>
+<span><span class="co">#&gt; [37] "grade_5"                     "grade_6"                    </span></span>
+<span><span class="co">#&gt; [39] "grade_7"                     "grade_8"                    </span></span>
+<span><span class="co">#&gt; [41] "grade_9"                     "grade_10"                   </span></span>
+<span><span class="co">#&gt; [43] "grade_11"                    "grade_12"                   </span></span>
+<span><span class="co">#&gt; [45] "post_grad"                   "adult_ed"                   </span></span>
+<span><span class="co">#&gt; [47] "nces_code"                   "address"                    </span></span>
+<span><span class="co">#&gt; [49] "CDS_Code"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-coverage-summary">Data Coverage Summary<a class="anchor" aria-label="anchor" href="#data-coverage-summary"></a>
@@ -366,7 +420,7 @@ COVID-19.</p>
 <tr class="odd">
 <td>Enrollment</td>
 <td><code><a href="../reference/fetch_enr.html">fetch_enr()</a></code></td>
-<td>1999-2025</td>
+<td>2000-2025</td>
 </tr>
 <tr class="even">
 <td>NJSLA/PARCC</td>
@@ -375,7 +429,7 @@ COVID-19.</p>
 </tr>
 <tr class="odd">
 <td>NJASK</td>
-<td><code>fetch_nj_assess()</code></td>
+<td><code><a href="../reference/fetch_old_nj_assess.html">fetch_old_nj_assess()</a></code></td>
 <td>2004-2014</td>
 </tr>
 <tr class="even">
@@ -405,8 +459,8 @@ codes:</p>
 <code>asian</code>
 </li>
 <li>
-<code>pacific_islander</code>, <code>american_indian</code>,
-<code>other</code>
+<code>pacific_islander</code>, <code>native_american</code>,
+<code>multiracial</code>
 </li>
 </ul>
 </div>
@@ -418,33 +472,36 @@ codes:</p>
 <code>male</code>, <code>female</code>
 </li>
 <li>
-<code>ed</code> (economically disadvantaged)</li>
-<li>
-<code>lep_current</code> (current English learners)</li>
-<li><code>special_education</code></li>
-<li>
-<code>total_enrollment</code> or <code>total_population</code>
+<code>free_lunch</code>, <code>reduced_lunch</code>,
+<code>free_reduced_lunch</code>
 </li>
+<li>
+<code>lep</code> (English learners)</li>
+<li><code>migrant</code></li>
+<li><code>total_enrollment</code></li>
 </ul>
+<p><strong>Note:</strong> Special education data is available via
+<code><a href="../reference/fetch_sped.html">fetch_sped()</a></code>, not through enrollment subgroups.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="tips-and-best-practices">Tips and Best Practices<a class="anchor" aria-label="anchor" href="#tips-and-best-practices"></a>
 </h2>
 <div class="section level3">
-<h3 id="cache-data-locally">1. Cache Data Locally<a class="anchor" aria-label="anchor" href="#cache-data-locally"></a>
+<h3 id="use-session-caching">1. Use Session Caching<a class="anchor" aria-label="anchor" href="#use-session-caching"></a>
 </h3>
-<p>Data is downloaded fresh each call. For repeated analysis, save
-locally:</p>
+<p>The package includes built-in session caching to avoid
+re-downloading:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download once</span></span>
+<code class="sourceCode R"><span><span class="co"># Use session cache (avoids re-downloading within same session)</span></span>
 <span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Save for reuse</span></span>
+<span><span class="co"># Or save to disk for reuse across sessions</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">enr_2024</span>, <span class="st">"data/enr_2024.rds"</span><span class="op">)</span></span>
+<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"data/enr_2024.rds"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Load later without re-downloading</span></span>
-<span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"data/enr_2024.rds"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Check cache status</span></span>
+<span><span class="fu"><a href="../reference/njsd_cache_info.html">njsd_cache_info</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="handle-suppressed-data">2. Handle Suppressed Data<a class="anchor" aria-label="anchor" href="#handle-suppressed-data"></a>
@@ -465,7 +522,7 @@ locally:</p>
 <span></span>
 <span><span class="co"># Fetch 5 years of enrollment data</span></span>
 <span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fl">2020</span><span class="op">:</span><span class="fl">2024</span></span>
-<span><span class="va">multi_year_enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_df</a></span><span class="op">(</span><span class="va">years</span>, <span class="op">~</span><span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="va">.x</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">multi_year_enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_df</a></span><span class="op">(</span><span class="va">years</span>, <span class="op">~</span><span class="fu"><a href="../reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="va">.x</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Now you can analyze trends</span></span>
 <span><span class="va">enrollment_trends</span> <span class="op">&lt;-</span> <span class="va">multi_year_enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -477,10 +534,10 @@ locally:</p>
 <h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
-<li>See <code>vignette("longitudinal-analysis")</code> for advanced
-multi-year analysis</li>
-<li>See <code>vignette("data-dictionary")</code> for complete column
-definitions</li>
+<li>See <code><a href="../articles/nj-enrollment-insights.html">vignette("nj-enrollment-insights")</a></code> for 15 data
+stories with visualizations</li>
+<li>See <code><a href="../articles/spr-dictionary.html">vignette("spr-dictionary")</a></code> for School Performance
+Report data</li>
 <li>Visit the <a href="https://almartin82.github.io/njschooldata/">package website</a>
 for full documentation</li>
 </ul>
@@ -494,6 +551,46 @@ for full documentation</li>
 <li>Email: <a href="mailto:almartin@gmail.com" class="email">almartin@gmail.com</a>
 </li>
 </ul>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.3 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] purrr_1.2.1        dplyr_1.2.0        njschooldata_0.9.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    </span></span>
+<span><span class="co">#&gt;  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.4    evaluate_1.0.5   </span></span>
+<span><span class="co">#&gt;  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   </span></span>
+<span><span class="co">#&gt; [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.4 jquerylib_0.1.4  </span></span>
+<span><span class="co">#&gt; [17] cli_3.6.5         crayon_1.5.3      rlang_1.1.7       bit64_4.6.0-1    </span></span>
+<span><span class="co">#&gt; [21] withr_3.0.2       cachem_1.1.0      yaml_2.3.12       parallel_4.5.2   </span></span>
+<span><span class="co">#&gt; [25] tools_4.5.2       downloader_0.4.1  tzdb_0.5.0        curl_7.0.0       </span></span>
+<span><span class="co">#&gt; [29] vctrs_0.7.1       R6_2.6.1          lifecycle_1.0.5   lubridate_1.9.5  </span></span>
+<span><span class="co">#&gt; [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_1.6.6         </span></span>
+<span><span class="co">#&gt; [37] vroom_1.7.0       ragg_1.5.0        janitor_2.2.1     pkgconfig_2.0.3  </span></span>
+<span><span class="co">#&gt; [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.10.0     </span></span>
+<span><span class="co">#&gt; [45] glue_1.8.0        systemfonts_1.3.1 xfun_0.56         tibble_3.3.1     </span></span>
+<span><span class="co">#&gt; [49] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.30   </span></span>
+<span><span class="co">#&gt; [53] readr_2.2.0       compiler_4.5.2    readxl_1.4.5</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
