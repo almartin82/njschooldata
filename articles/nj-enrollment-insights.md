@@ -28,7 +28,7 @@ nj_colors <- c("total" = "#2C3E50", "white" = "#3498DB", "black" = "#E74C3C",
 years <- 2020:2025
 enr_all <- purrr::map_df(years, ~{
   tryCatch(
-    fetch_enr(.x, tidy = TRUE),
+    fetch_enr(.x, tidy = TRUE, use_cache = TRUE),
     error = function(e) {
       warning(paste("Year", .x, "failed:", conditionMessage(e)))
       NULL
@@ -36,7 +36,7 @@ enr_all <- purrr::map_df(years, ~{
   )
 })
 
-enr_current <- fetch_enr(2025, tidy = TRUE)
+enr_current <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
 
 # State-level summary aggregated from district totals for time-series consistency
 state_summary <- enr_all %>%

@@ -58,24 +58,16 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>A simple interface for accessing NJ DOE school data in <strong>R and Python</strong></p>
+<p>1.4 million students. 580+ districts. 21 counties. 25+ years of data from the New Jersey Department of Education, in one clean R and Python interface.</p>
+<p>Part of the <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a> family – <strong>this is the mothership package</strong> that inspired the <a href="https://github.com/almartin82/state-schooldata" class="external-link">state-schooldata project</a> now covering all 50 states.</p>
+<p><strong><a href="https://almartin82.github.io/njschooldata/">Full documentation</a></strong> – all 15 stories with interactive charts, getting-started guide, and complete function reference.</p>
 <div class="section level2">
-<h2 id="why-njschooldata">Why njschooldata?<a class="anchor" aria-label="anchor" href="#why-njschooldata"></a>
+<h2 id="highlights">Highlights<a class="anchor" aria-label="anchor" href="#highlights"></a>
 </h2>
-<p>The New Jersey Department of Education publishes excellent school-level data going back decades, but the files are scattered across websites, use inconsistent formats, and change structure year-to-year. This package does the heavy lifting so you can focus on analysis:</p>
-<ul>
-<li>Automatic download from NJ DOE servers</li>
-<li>Consistent column names across 25+ years</li>
-<li>Both wide and tidy data formats</li>
-<li>Assessment, graduation, enrollment, and more</li>
-</ul>
-<p><strong>This is the mothership package</strong> - it inspired the <a href="https://github.com/almartin82/state-schooldata" class="external-link">state-schooldata project</a> that now covers 49 states.</p>
-<p><strong>6 years of enrollment data. 1.4 million students. 580+ districts. 21 counties. Here are 15 stories the data tells…</strong></p>
-<hr>
 <div class="section level3">
-<h3 id="id_1-new-jersey-educates-14-million-students">1. New Jersey educates 1.4 million students<a class="anchor" aria-label="anchor" href="#id_1-new-jersey-educates-14-million-students"></a>
+<h3 id="id_1-charter-enrollment-grew-15-in-five-years">1. Charter enrollment grew 15% in five years<a class="anchor" aria-label="anchor" href="#id_1-charter-enrollment-grew-15-in-five-years"></a>
 </h3>
-<p>New Jersey has one of the largest public school systems in the country, with enrollment holding steady through COVID and beyond.</p>
+<p>New Jersey’s charter sector added 8,000+ students from 2020 to 2025, growing from 55,600 to over 63,800.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -93,45 +85,7 @@
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># State-level summary aggregated from district totals for time-series consistency</span></span>
-<span><span class="va">state_summary</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">grade_level</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">state_totals</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">grade_level</span>, total <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">state_summary</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_totals</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"end_year"</span>, <span class="st">"grade_level"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="va">n_students</span> <span class="op">/</span> <span class="va">total</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">state_total</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">state_total</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">state_total</span></span>
-<span><span class="co">#&gt; # A tibble: 6 x 6</span></span>
-<span><span class="co">#&gt;   end_year subgroup         grade_level n_students   total   pct</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2020 total_enrollment TOTAL         1375828. 1375828.    1</span></span>
-<span><span class="co">#&gt; 2     2021 total_enrollment TOTAL         1362400  1362400     1</span></span>
-<span><span class="co">#&gt; 3     2022 total_enrollment TOTAL         1360916  1360916     1</span></span>
-<span><span class="co">#&gt; 4     2023 total_enrollment TOTAL         1371921  1371921     1</span></span>
-<span><span class="co">#&gt; 5     2024 total_enrollment TOTAL         1379988  1379988     1</span></span>
-<span><span class="co">#&gt; 6     2025 total_enrollment TOTAL         1381182  1381182     1</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png" alt="Statewide Enrollment"><div class="figcaption">Statewide Enrollment</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_2-charter-enrollment-grew-15-in-five-years">2. Charter enrollment grew 15% in five years<a class="anchor" aria-label="anchor" href="#id_2-charter-enrollment-grew-15-in-five-years"></a>
-</h3>
-<p>New Jersey’s charter sector added 8,000+ students from 2020 to 2025, growing from 55,600 to over 63,800.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">charter_trend</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">charter_trend</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sector <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">is_charter</span>, <span class="st">"Charter"</span>, <span class="st">"Traditional"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">sector</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -157,75 +111,55 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/charter-growth-1.png" alt="Charter Growth"><div class="figcaption">Charter Growth</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#charter-enrollment-grew-15-in-five-years">(source)</a></p>
 </div>
 <div class="section level3">
-<h3 id="id_3-hispanic-students-hit-35-and-rising">3. Hispanic students hit 35% and rising<a class="anchor" aria-label="anchor" href="#id_3-hispanic-students-hit-35-and-rising"></a>
+<h3 id="id_2-white-students-dropped-below-37">2. White students dropped below 37%<a class="anchor" aria-label="anchor" href="#id_2-white-students-dropped-below-37"></a>
 </h3>
-<p>Hispanic enrollment surged from 30% to 35% of all NJ students in just five years, making it the fastest demographic shift in state history.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hispanic</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"hispanic"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<p>White students went from 42% to under 37% of NJ public school enrollment in just five years. NJ public schools are now decisively majority-minority.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># State-level summary aggregated from district totals for time-series consistency</span></span>
+<span><span class="va">state_summary</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">grade_level</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">hispanic</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">hispanic</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span>, <span class="va">pct</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 x 3</span></span>
-<span><span class="co">#&gt;   end_year n_students   pct</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2020    417042. 0.303</span></span>
-<span><span class="co">#&gt; 2     2021    424170. 0.311</span></span>
-<span><span class="co">#&gt; 3     2022    437187  0.321</span></span>
-<span><span class="co">#&gt; 4     2023    455576. 0.332</span></span>
-<span><span class="co">#&gt; 5     2024    470906  0.341</span></span>
-<span><span class="co">#&gt; 6     2025    483504. 0.350</span></span></code></pre></div>
+<span><span class="va">state_totals</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">grade_level</span>, total <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">state_summary</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_totals</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"end_year"</span>, <span class="st">"grade_level"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="va">n_students</span> <span class="op">/</span> <span class="va">total</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">demo</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"hispanic"</span>, <span class="st">"black"</span>, <span class="st">"asian"</span><span class="op">)</span>,</span>
+<span>         <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">subgroup</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"hispanic"</span>, <span class="st">"black"</span>, <span class="st">"asian"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">demo</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">pct</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">pct</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">pct</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 x 5</span></span>
+<span><span class="co">#&gt;   end_year white hispanic black asian</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2020  42       30.3  14.6  10.3</span></span>
+<span><span class="co">#&gt; 2     2021  40.6     31.1  14.9  10.4</span></span>
+<span><span class="co">#&gt; 3     2022  39.6     32.1  14.8  10.3</span></span>
+<span><span class="co">#&gt; 4     2023  38.5     33.2  14.6  10.3</span></span>
+<span><span class="co">#&gt; 5     2024  37.6     34.1  14.4  10.3</span></span>
+<span><span class="co">#&gt; 6     2025  36.7     35.0  14.3  10.3</span></span></code></pre></div>
 <div class="float">
-<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/hispanic-growth-1.png" alt="Hispanic Growth"><div class="figcaption">Hispanic Growth</div>
+<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/demographic-shift-1.png" alt="Demographic Shift"><div class="figcaption">Demographic Shift</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#white-students-dropped-below-37">(source)</a></p>
 </div>
 <div class="section level3">
-<h3 id="id_4-the-big-three-newark-jersey-city-and-paterson">4. The Big Three: Newark, Jersey City, and Paterson<a class="anchor" aria-label="anchor" href="#id_4-the-big-three-newark-jersey-city-and-paterson"></a>
-</h3>
-<p>New Jersey’s three largest districts educate over 93,000 students combined - nearly 7% of the state.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">big_three_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Newark Public School District"</span>,</span>
-<span>                     <span class="st">"Jersey City Public Schools"</span>,</span>
-<span>                     <span class="st">"Paterson Public School District"</span><span class="op">)</span></span>
-<span><span class="va">big_three_trend</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
-<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">big_three_names</span>,</span>
-<span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">big_three_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">big_three_trend</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 15 x 3</span></span>
-<span><span class="co">#&gt;    end_year district_name                   n_students</span></span>
-<span><span class="co">#&gt;       &lt;dbl&gt; &lt;chr&gt;                                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1     2021 Newark Public School District        40085</span></span>
-<span><span class="co">#&gt;  2     2021 Jersey City Public Schools           26541</span></span>
-<span><span class="co">#&gt;  3     2021 Paterson Public School District      25657</span></span>
-<span><span class="co">#&gt;  4     2022 Newark Public School District        40607</span></span>
-<span><span class="co">#&gt;  5     2022 Jersey City Public Schools           26890</span></span>
-<span><span class="co">#&gt;  6     2022 Paterson Public School District      24495</span></span>
-<span><span class="co">#&gt;  7     2023 Newark Public School District        41430</span></span>
-<span><span class="co">#&gt;  8     2023 Jersey City Public Schools           26418</span></span>
-<span><span class="co">#&gt;  9     2023 Paterson Public School District      26067</span></span>
-<span><span class="co">#&gt; 10     2024 Newark Public School District        42600</span></span>
-<span><span class="co">#&gt; 11     2024 Jersey City Public Schools           26023</span></span>
-<span><span class="co">#&gt; 12     2024 Paterson Public School District      24090</span></span>
-<span><span class="co">#&gt; 13     2025 Newark Public School District        43980</span></span>
-<span><span class="co">#&gt; 14     2025 Jersey City Public Schools           25692</span></span>
-<span><span class="co">#&gt; 15     2025 Paterson Public School District      23609</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/big-three-1.png" alt="Big Three"><div class="figcaption">Big Three</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_5-kindergarten-rebounded-from-covid">5. Kindergarten rebounded from COVID<a class="anchor" aria-label="anchor" href="#id_5-kindergarten-rebounded-from-covid"></a>
+<h3 id="id_3-kindergarten-rebounded-from-covid">3. Kindergarten rebounded from COVID<a class="anchor" aria-label="anchor" href="#id_3-kindergarten-rebounded-from-covid"></a>
 </h3>
 <p>New Jersey lost 9% of kindergartners during COVID - but by 2025, K enrollment nearly recovered while Pre-K surged past pre-pandemic levels.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">k_trend</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
 <span>         <span class="va">grade_level</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PK"</span>, <span class="st">"K"</span>, <span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"12"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -260,13 +194,297 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png" alt="COVID Kindergarten"><div class="figcaption">COVID Kindergarten</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#kindergarten-rebounded-from-covid">(source)</a></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="data-taxonomy">Data Taxonomy<a class="anchor" aria-label="anchor" href="#data-taxonomy"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="27%">
+<col width="19%">
+<col width="27%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Category</th>
+<th>Years</th>
+<th>Function</th>
+<th>Details</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Enrollment</strong></td>
+<td>2000-2025</td>
+<td><code><a href="reference/fetch_enr.html">fetch_enr()</a></code></td>
+<td>State, county, district, school. Race, gender, FRPL, LEP, migrant</td>
+</tr>
+<tr class="even">
+<td><strong>Assessments</strong></td>
+<td>2004-2024</td>
+<td>
+<code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code> / <code><a href="reference/fetch_njask.html">fetch_njask()</a></code> / <code><a href="reference/fetch_njgpa.html">fetch_njgpa()</a></code>
+</td>
+<td>NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science</td>
+</tr>
+<tr class="odd">
+<td><strong>Graduation</strong></td>
+<td>2011-2024</td>
+<td>
+<code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code> / <code><a href="reference/fetch_grad_count.html">fetch_grad_count()</a></code>
+</td>
+<td>4-yr and 6-yr ACGR. District and school level</td>
+</tr>
+<tr class="even">
+<td><strong>Directory</strong></td>
+<td>Current</td>
+<td>
+<code><a href="reference/get_school_directory.html">get_school_directory()</a></code> / <code><a href="reference/get_district_directory.html">get_district_directory()</a></code>
+</td>
+<td>Names, IDs, addresses, school type</td>
+</tr>
+<tr class="odd">
+<td>Per-Pupil Spending</td>
+<td>–</td>
+<td>–</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td><strong>Accountability</strong></td>
+<td>2018+</td>
+<td>
+<code><a href="reference/fetch_essa_status.html">fetch_essa_status()</a></code> / <code><a href="reference/fetch_essa_progress.html">fetch_essa_progress()</a></code>
+</td>
+<td>CSI/TSI lists, ESSA indicators</td>
+</tr>
+<tr class="odd">
+<td><strong>Chronic Absence</strong></td>
+<td>2017-2024</td>
+<td>
+<code><a href="reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism()</a></code> / <code><a href="reference/fetch_days_absent.html">fetch_days_absent()</a></code>
+</td>
+<td>By grade, by demographic</td>
+</tr>
+<tr class="even">
+<td><strong>EL Progress</strong></td>
+<td>2022-2024</td>
+<td><code><a href="reference/fetch_access.html">fetch_access()</a></code></td>
+<td>WIDA ACCESS for ELLs</td>
+</tr>
+<tr class="odd">
+<td><strong>Special Ed</strong></td>
+<td>2024+</td>
+<td><code><a href="reference/fetch_sped.html">fetch_sped()</a></code></td>
+<td>Classification rates by disability category</td>
+</tr>
+<tr class="even">
+<td><strong>Discipline</strong></td>
+<td>Available</td>
+<td>
+<code><a href="reference/fetch_disciplinary_removals.html">fetch_disciplinary_removals()</a></code> / <code><a href="reference/fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib()</a></code>
+</td>
+<td>Suspensions, expulsions, HIB incidents</td>
+</tr>
+<tr class="odd">
+<td><strong>Staff</strong></td>
+<td>Available</td>
+<td>
+<code><a href="reference/fetch_staff_demographics.html">fetch_staff_demographics()</a></code> / <code><a href="reference/fetch_teacher_experience.html">fetch_teacher_experience()</a></code>
+</td>
+<td>Demographics, experience, ratios</td>
+</tr>
+<tr class="even">
+<td><strong>College-Going</strong></td>
+<td>Available</td>
+<td>
+<code><a href="reference/fetch_postsecondary.html">fetch_postsecondary()</a></code> / <code><a href="reference/fetch_sat_participation.html">fetch_sat_participation()</a></code> / <code><a href="reference/fetch_ap_participation.html">fetch_ap_participation()</a></code>
+</td>
+<td>Postsecondary enrollment, SAT, AP</td>
+</tr>
+<tr class="odd">
+<td><strong>Courses</strong></td>
+<td>Available</td>
+<td>
+<code><a href="reference/fetch_math_course_enrollment.html">fetch_math_course_enrollment()</a></code> / <code><a href="reference/fetch_cs_enrollment.html">fetch_cs_enrollment()</a></code>
+</td>
+<td>Math, science, CS, arts, world languages</td>
+</tr>
+<tr class="even">
+<td><strong>CTE</strong></td>
+<td>Available</td>
+<td>
+<code><a href="reference/fetch_cte_participation.html">fetch_cte_participation()</a></code> / <code><a href="reference/fetch_industry_credentials.html">fetch_industry_credentials()</a></code>
+</td>
+<td>Career pathways, credentials, apprenticeships</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>See the full <a href="DATA-CATEGORY-TAXONOMY.html">data category taxonomy</a></p>
+</blockquote>
+</div>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="section level3">
+<h3 id="r">R<a class="anchor" aria-label="anchor" href="#r"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/njschooldata"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Enrollment data</span></span>
+<span><span class="va">enr_2025</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2025</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Assessment data</span></span>
+<span><span class="va">math_g4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span><span class="fl">2024</span>, grade_or_subj <span class="op">=</span> <span class="fl">4</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Graduation rates</span></span>
+<span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># School directory</span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="id_6-freereduced-lunch-ranges-from-98-to-under-5">6. Free/reduced lunch ranges from 98% to under 5%<a class="anchor" aria-label="anchor" href="#id_6-freereduced-lunch-ranges-from-98-to-under-5"></a>
+<h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Install R package first</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"remotes::install_github('almartin82/njschooldata')"</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Install Python bindings</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/almartin82/njschooldata.git#subdirectory=python</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="im">import</span> njschooldata <span class="im">as</span> njsd</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># Enrollment data</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>enr_2025 <span class="op">=</span> njsd.fetch_enr(<span class="dv">2025</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># Assessment data</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>math_g4 <span class="op">=</span> njsd.fetch_parcc(<span class="dv">2024</span>, <span class="dv">4</span>, <span class="st">'math'</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># Graduation rates</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># School directory</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="explore-more">Explore More<a class="anchor" aria-label="anchor" href="#explore-more"></a>
+</h2>
+<p>Full analysis with 15 stories:</p>
+<ul>
+<li>
+<a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights</a> – 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more</li>
+<li>
+<a href="https://almartin82.github.io/njschooldata/articles/getting-started.html">Getting Started</a> – installation, data fetching, and tidy format guide</li>
+<li><a href="https://almartin82.github.io/njschooldata/reference/">Function reference</a></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="data-notes">Data Notes<a class="anchor" aria-label="anchor" href="#data-notes"></a>
+</h2>
+<p><strong>Source:</strong> <a href="https://www.nj.gov/education/doedata/" class="external-link">New Jersey Department of Education</a> – all data comes directly from NJ DOE, not federal sources.</p>
+<p><strong>Available years:</strong> Enrollment data from 2000-2025. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).</p>
+<p><strong>Suppression rules:</strong> NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.</p>
+<p><strong>Census Day:</strong> NJ enrollment counts are based on October 15 enrollment (ASSA reporting).</p>
+<p><strong>Known caveats:</strong> - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency - Charter schools appear as separate “districts” in the data - Pre-2020 and post-2020 data formats differ significantly</p>
+</div>
+<div class="section level2">
+<h2 id="deeper-dive">Deeper Dive<a class="anchor" aria-label="anchor" href="#deeper-dive"></a>
+</h2>
+<div class="section level3">
+<h3 id="id_4-new-jersey-educates-14-million-students">4. New Jersey educates 1.4 million students<a class="anchor" aria-label="anchor" href="#id_4-new-jersey-educates-14-million-students"></a>
+</h3>
+<p>New Jersey has one of the largest public school systems in the country, with enrollment holding steady through COVID and beyond.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">state_total</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">state_total</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">state_total</span></span>
+<span><span class="co">#&gt; # A tibble: 6 x 6</span></span>
+<span><span class="co">#&gt;   end_year subgroup         grade_level n_students   total   pct</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2020 total_enrollment TOTAL         1375828. 1375828.    1</span></span>
+<span><span class="co">#&gt; 2     2021 total_enrollment TOTAL         1362400  1362400     1</span></span>
+<span><span class="co">#&gt; 3     2022 total_enrollment TOTAL         1360916  1360916     1</span></span>
+<span><span class="co">#&gt; 4     2023 total_enrollment TOTAL         1371921  1371921     1</span></span>
+<span><span class="co">#&gt; 5     2024 total_enrollment TOTAL         1379988  1379988     1</span></span>
+<span><span class="co">#&gt; 6     2025 total_enrollment TOTAL         1381182  1381182     1</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png" alt="Statewide Enrollment"><div class="figcaption">Statewide Enrollment</div>
+</div>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#new-jersey-educates-14-million-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_5-hispanic-students-hit-35-and-rising">5. Hispanic students hit 35% and rising<a class="anchor" aria-label="anchor" href="#id_5-hispanic-students-hit-35-and-rising"></a>
+</h3>
+<p>Hispanic enrollment surged from 30% to 35% of all NJ students in just five years, making it the fastest demographic shift in state history.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hispanic</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"hispanic"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">hispanic</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">hispanic</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span>, <span class="va">pct</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 x 3</span></span>
+<span><span class="co">#&gt;   end_year n_students   pct</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2020    417042. 0.303</span></span>
+<span><span class="co">#&gt; 2     2021    424170. 0.311</span></span>
+<span><span class="co">#&gt; 3     2022    437187  0.321</span></span>
+<span><span class="co">#&gt; 4     2023    455576. 0.332</span></span>
+<span><span class="co">#&gt; 5     2024    470906  0.341</span></span>
+<span><span class="co">#&gt; 6     2025    483504. 0.350</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/hispanic-growth-1.png" alt="Hispanic Growth"><div class="figcaption">Hispanic Growth</div>
+</div>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#hispanic-students-hit-35-and-rising">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_6-the-big-three-newark-jersey-city-and-paterson">6. The Big Three: Newark, Jersey City, and Paterson<a class="anchor" aria-label="anchor" href="#id_6-the-big-three-newark-jersey-city-and-paterson"></a>
+</h3>
+<p>New Jersey’s three largest districts educate over 93,000 students combined - nearly 7% of the state.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">big_three_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Newark Public School District"</span>,</span>
+<span>                     <span class="st">"Jersey City Public Schools"</span>,</span>
+<span>                     <span class="st">"Paterson Public School District"</span><span class="op">)</span></span>
+<span><span class="va">big_three_trend</span> <span class="op">&lt;-</span> <span class="va">enr_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
+<span>         <span class="va">district_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">big_three_names</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">big_three_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">big_three_trend</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 15 x 3</span></span>
+<span><span class="co">#&gt;    end_year district_name                   n_students</span></span>
+<span><span class="co">#&gt;       &lt;dbl&gt; &lt;chr&gt;                                &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     2021 Newark Public School District        40085</span></span>
+<span><span class="co">#&gt;  2     2021 Jersey City Public Schools           26541</span></span>
+<span><span class="co">#&gt;  3     2021 Paterson Public School District      25657</span></span>
+<span><span class="co">#&gt;  4     2022 Newark Public School District        40607</span></span>
+<span><span class="co">#&gt;  5     2022 Jersey City Public Schools           26890</span></span>
+<span><span class="co">#&gt;  6     2022 Paterson Public School District      24495</span></span>
+<span><span class="co">#&gt;  7     2023 Newark Public School District        41430</span></span>
+<span><span class="co">#&gt;  8     2023 Jersey City Public Schools           26418</span></span>
+<span><span class="co">#&gt;  9     2023 Paterson Public School District      26067</span></span>
+<span><span class="co">#&gt; 10     2024 Newark Public School District        42600</span></span>
+<span><span class="co">#&gt; 11     2024 Jersey City Public Schools           26023</span></span>
+<span><span class="co">#&gt; 12     2024 Paterson Public School District      24090</span></span>
+<span><span class="co">#&gt; 13     2025 Newark Public School District        43980</span></span>
+<span><span class="co">#&gt; 14     2025 Jersey City Public Schools           25692</span></span>
+<span><span class="co">#&gt; 15     2025 Paterson Public School District      23609</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/big-three-1.png" alt="Big Three"><div class="figcaption">Big Three</div>
+</div>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#the-big-three-newark-jersey-city-and-paterson">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_7-freereduced-lunch-ranges-from-98-to-under-5">7. Free/reduced lunch ranges from 98% to under 5%<a class="anchor" aria-label="anchor" href="#id_7-freereduced-lunch-ranges-from-98-to-under-5"></a>
 </h3>
 <p>Passaic City has 98% of students on free/reduced lunch while affluent suburbs like Millburn have under 5% - a stark measure of NJ’s wealth divide.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_current</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2025</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">frl</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -300,41 +518,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/frl-distribution-1.png" alt="FRL Distribution"><div class="figcaption">FRL Distribution</div>
 </div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_7-white-students-dropped-below-37">7. White students dropped below 37%<a class="anchor" aria-label="anchor" href="#id_7-white-students-dropped-below-37"></a>
-</h3>
-<p>White students went from 42% to under 37% of NJ public school enrollment in just five years. NJ public schools are now decisively majority-minority.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">demo</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"hispanic"</span>, <span class="st">"black"</span>, <span class="st">"asian"</span><span class="op">)</span>,</span>
-<span>         <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">subgroup</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"hispanic"</span>, <span class="st">"black"</span>, <span class="st">"asian"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">demo</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">pct</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">pct</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">pct</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 x 5</span></span>
-<span><span class="co">#&gt;   end_year white hispanic black asian</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2020  42       30.3  14.6  10.3</span></span>
-<span><span class="co">#&gt; 2     2021  40.6     31.1  14.9  10.4</span></span>
-<span><span class="co">#&gt; 3     2022  39.6     32.1  14.8  10.3</span></span>
-<span><span class="co">#&gt; 4     2023  38.5     33.2  14.6  10.3</span></span>
-<span><span class="co">#&gt; 5     2024  37.6     34.1  14.4  10.3</span></span>
-<span><span class="co">#&gt; 6     2025  36.7     35.0  14.3  10.3</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/demographic-shift-1.png" alt="Demographic Shift"><div class="figcaption">Demographic Shift</div>
-</div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#freereduced-lunch-ranges-from-98-to-under-5">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_8-english-learners-top-45-in-some-districts">8. English learners top 45% in some districts<a class="anchor" aria-label="anchor" href="#id_8-english-learners-top-45-in-some-districts"></a>
 </h3>
 <p>ELL students make up over 45% in Plainfield and Lakewood but under 1% in most suburban districts - a concentration driven by immigration patterns.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ell</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
 <span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"lep"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
@@ -366,13 +556,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/ell-concentration-1.png" alt="ELL Concentration"><div class="figcaption">ELL Concentration</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#english-learners-top-45-in-some-districts">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_9-top-10-districts-serve-15-of-all-students">9. Top 10 districts serve 15% of all students<a class="anchor" aria-label="anchor" href="#id_9-top-10-districts-serve-15-of-all-students"></a>
 </h3>
 <p>Just 10 out of 580+ districts educate nearly 1 in 6 NJ students. Newark alone has 44,000.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_10</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
 <span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -398,13 +588,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/top-10-districts-1.png" alt="Top 10 Districts"><div class="figcaption">Top 10 Districts</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#top-10-districts-serve-15-of-all-students">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_10-multiracial-students-fastest-growing-category">10. Multiracial students: fastest-growing category<a class="anchor" aria-label="anchor" href="#id_10-multiracial-students-fastest-growing-category"></a>
 </h3>
 <p>Multiracial students grew 39% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"multiracial"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
 <span></span>
@@ -422,13 +612,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/multiracial-growth-1.png" alt="Multiracial Growth"><div class="figcaption">Multiracial Growth</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#multiracial-students-fastest-growing-category">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_11-pre-k-nearly-doubled-since-2020">11. Pre-K nearly doubled since 2020<a class="anchor" aria-label="anchor" href="#id_11-pre-k-nearly-doubled-since-2020"></a>
 </h3>
 <p>NJ’s Pre-K enrollment surged from 45,000 to 87,000 in five years - fueled by the state’s expanding universal pre-K program.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prek</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"PK"</span><span class="op">)</span></span>
 <span></span>
@@ -446,13 +636,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/prek-surge-1.png" alt="Pre-K Surge"><div class="figcaption">Pre-K Surge</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#pre-k-nearly-doubled-since-2020">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_12-bergen-county-has-more-students-than-several-us-states">12. Bergen County has more students than several US states<a class="anchor" aria-label="anchor" href="#id_12-bergen-county-has-more-students-than-several-us-states"></a>
 </h3>
 <p>With 132,000+ students, Bergen County alone has a larger public school system than Wyoming, Vermont, North Dakota, and other small states.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">county_enr</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">county_name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -486,13 +676,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/county-enrollment-1.png" alt="County Enrollment"><div class="figcaption">County Enrollment</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#bergen-county-has-more-students-than-several-us-states">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_13-most-nj-districts-are-tiny">13. Most NJ districts are tiny<a class="anchor" aria-label="anchor" href="#id_13-most-nj-districts-are-tiny"></a>
 </h3>
 <p>Half of NJ’s 580 districts have fewer than 1,200 students. The median district is smaller than a single large high school.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dist_sizes</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
 <span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
@@ -509,13 +699,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/district-size-distribution-1.png" alt="District Size Distribution"><div class="figcaption">District Size Distribution</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#most-nj-districts-are-tiny">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_14-njs-enrollment-pyramid-shows-the-pre-k-boom">14. NJ’s enrollment pyramid shows the pre-K boom<a class="anchor" aria-label="anchor" href="#id_14-njs-enrollment-pyramid-shows-the-pre-k-boom"></a>
 </h3>
 <p>The 2025 grade-level distribution reveals the pre-K surge: PK enrollment (87K) is approaching K (89K), reflecting NJ’s universal pre-K push.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grade_enr</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">end_year</span> <span class="op">==</span> <span class="fl">2025</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>,</span>
 <span>         <span class="va">grade_level</span> <span class="op">!=</span> <span class="st">"TOTAL"</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">grade_level</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -554,13 +744,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/grade-pyramid-1.png" alt="Grade Pyramid"><div class="figcaption">Grade Pyramid</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#njs-enrollment-pyramid-shows-the-pre-k-boom">(source)</a></p>
 </div>
 <div class="section level3">
 <h3 id="id_15-njs-poverty-gap-passaic-vs-westfield">15. NJ’s poverty gap: Passaic vs Westfield<a class="anchor" aria-label="anchor" href="#id_15-njs-poverty-gap-passaic-vs-westfield"></a>
 </h3>
 <p>Passaic City has 98% of students on free/reduced lunch. Nearby Westfield has under 2%. This 96-point gap captures NJ’s extreme wealth inequality.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">frl_all</span> <span class="op">&lt;-</span> <span class="va">enr_current</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="op">!</span><span class="va">is_charter</span>,</span>
 <span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"free_reduced_lunch"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
@@ -590,218 +780,8 @@
 <div class="float">
 <img src="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/poverty-gap-1.png" alt="Poverty Gap"><div class="figcaption">Poverty Gap</div>
 </div>
-<p><em>(All figures auto-generated from <a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights vignette</a>)</em></p>
-<hr>
+<p><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#njs-poverty-gap-passaic-vs-westfield">(source)</a></p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="data-notes">Data Notes<a class="anchor" aria-label="anchor" href="#data-notes"></a>
-</h2>
-<p><strong>Source:</strong> <a href="https://www.nj.gov/education/doedata/" class="external-link">New Jersey Department of Education</a> - all data comes directly from NJ DOE, not federal sources.</p>
-<p><strong>Available years:</strong> Enrollment data from 2000-2025. Tidy format (2020+) provides consistent structure with district, charter, and school-level records.</p>
-<p><strong>Suppression rules:</strong> NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.</p>
-<p><strong>Census Day:</strong> NJ enrollment counts are based on October 15 enrollment (ASSA reporting).</p>
-<p><strong>Known caveats:</strong> - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency - Charter schools appear as separate “districts” in the data - Pre-2020 and post-2020 data formats differ significantly</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="section level3">
-<h3 id="r">R<a class="anchor" aria-label="anchor" href="#r"></a>
-</h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from GitHub using remotes (recommended)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/njschooldata"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
-</h3>
-<p>Python bindings require R and the njschooldata R package to be installed first.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Install R package first</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"remotes::install_github('almartin82/njschooldata')"</span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># Install Python bindings</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/almartin82/njschooldata.git#subdirectory=python</span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h2>
-<div class="section level3">
-<h3 id="r-1">R<a class="anchor" aria-label="anchor" href="#r-1"></a>
-</h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Enrollment data</span></span>
-<span><span class="va">enr_2025</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2025</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Assessment data</span></span>
-<span><span class="va">math_g4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_parcc.html">fetch_parcc</a></span><span class="op">(</span><span class="fl">2024</span>, grade_or_subj <span class="op">=</span> <span class="fl">4</span>, subj <span class="op">=</span> <span class="st">'math'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Graduation rates</span></span>
-<span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># School directory</span></span>
-<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="python-1">Python<a class="anchor" aria-label="anchor" href="#python-1"></a>
-</h3>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="im">import</span> njschooldata <span class="im">as</span> njsd</span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co"># Enrollment data</span></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>enr_2025 <span class="op">=</span> njsd.fetch_enr(<span class="dv">2025</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co"># Assessment data</span></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>math_g4 <span class="op">=</span> njsd.fetch_parcc(<span class="dv">2024</span>, <span class="dv">4</span>, <span class="st">'math'</span>)</span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="co"># Graduation rates</span></span>
-<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
-<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co"># School directory</span></span>
-<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="nj-doe-data-coverage">NJ DOE Data Coverage<a class="anchor" aria-label="anchor" href="#nj-doe-data-coverage"></a>
-</h2>
-<table class="table">
-<colgroup>
-<col width="30%">
-<col width="27%">
-<col width="19%">
-<col width="22%">
-</colgroup>
-<thead><tr class="header">
-<th>Data Type</th>
-<th>Function</th>
-<th>Years</th>
-<th>Status</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>Enrollment</strong></td>
-<td><code><a href="reference/fetch_enr.html">fetch_enr()</a></code></td>
-<td>2000-2025</td>
-<td>Full support</td>
-</tr>
-<tr class="even">
-<td><strong>NJSLA/PARCC Assessment</strong></td>
-<td><code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code></td>
-<td>2015-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="odd">
-<td><strong>NJGPA (Grad Proficiency)</strong></td>
-<td><code><a href="reference/fetch_njgpa.html">fetch_njgpa()</a></code></td>
-<td>2022-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="even">
-<td><strong>ACCESS for ELLs</strong></td>
-<td><code><a href="reference/fetch_access.html">fetch_access()</a></code></td>
-<td>2022-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="odd">
-<td><strong>NJASK/HSPA/GEPA (Legacy)</strong></td>
-<td><code>fetch_nj_assess()</code></td>
-<td>2004-2014</td>
-<td>Full support</td>
-</tr>
-<tr class="even">
-<td><strong>Graduation Rates (4-year)</strong></td>
-<td><code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code></td>
-<td>2011-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="odd">
-<td><strong>Graduation Counts</strong></td>
-<td><code><a href="reference/fetch_grad_count.html">fetch_grad_count()</a></code></td>
-<td>2012-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="even">
-<td><strong>Chronic Absenteeism</strong></td>
-<td><code><a href="reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism()</a></code></td>
-<td>2017-2024</td>
-<td>Full support</td>
-</tr>
-<tr class="odd">
-<td><strong>Special Education Rates</strong></td>
-<td><code><a href="reference/fetch_sped.html">fetch_sped()</a></code></td>
-<td>2024+</td>
-<td>Full support</td>
-</tr>
-<tr class="even">
-<td><strong>School Directory</strong></td>
-<td><code><a href="reference/get_school_directory.html">get_school_directory()</a></code></td>
-<td>Current</td>
-<td>Full support</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level2">
-<h2 id="assessment-history">Assessment History<a class="anchor" aria-label="anchor" href="#assessment-history"></a>
-</h2>
-<p>NJ has used several assessment systems over the years:</p>
-<table class="table">
-<colgroup>
-<col width="35%">
-<col width="20%">
-<col width="23%">
-<col width="20%">
-</colgroup>
-<thead><tr class="header">
-<th>Assessment</th>
-<th>Years</th>
-<th>Grades</th>
-<th>Notes</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>NJSLA</strong></td>
-<td>2019-present</td>
-<td>3-10 ELA, 3-8 Math</td>
-<td>Current assessment (2020 cancelled)</td>
-</tr>
-<tr class="even">
-<td><strong>PARCC</strong></td>
-<td>2015-2018</td>
-<td>3-11</td>
-<td>Common Core aligned</td>
-</tr>
-<tr class="odd">
-<td><strong>NJASK</strong></td>
-<td>2004-2014</td>
-<td>3-8</td>
-<td>Previous state assessment</td>
-</tr>
-<tr class="even">
-<td><strong>HSPA</strong></td>
-<td>Through 2014</td>
-<td>11</td>
-<td>High school graduation requirement</td>
-</tr>
-<tr class="odd">
-<td><strong>GEPA</strong></td>
-<td>Through 2007</td>
-<td>8</td>
-<td>Grade 8 proficiency</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level2">
-<h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
-</h2>
-<ul>
-<li><a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights (full vignette)</a></li>
-<li><a href="https://almartin82.github.io/njschooldata/reference/index.html">Function Reference</a></li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
