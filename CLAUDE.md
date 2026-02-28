@@ -1,3 +1,21 @@
+## CRITICAL DATA SOURCE RULES
+
+**NEVER use Urban Institute API, NCES CCD, or ANY federal data source** — the entire point of these packages is to provide STATE-LEVEL data directly from state DOEs. Federal sources aggregate/transform data differently and lose state-specific details. If a state DOE source is broken, FIX IT or find an alternative STATE source — do not fall back to federal data.
+
+**NEVER fabricate data in ANY form.** This is the single most important rule in the entire project. Violations include but are not limited to:
+
+- **Random generation:** `rnorm()`, `runif()`, `set.seed()`, `sample()`, `rlnorm()`, `rgamma()`, or any random number generation
+- **Hardcoded numbers:** Hand-typing enrollment counts in `tribble()`, `data.frame()`, `tibble()`, or any other data structure. If a human typed the number instead of downloading it from a state DOE, it is fabricated.
+- **"Plausible-looking" fake data:** Creating numbers that look real but aren't — smooth monotonic trends, round numbers, demographically "reasonable" percentages applied uniformly. This is the WORST form of fabrication because it is designed to deceive.
+- **`create_example_data()` functions:** Helper functions that generate fake datasets, regardless of how realistic they look
+- **Fixed demographic percentages:** Applying constant demographic ratios across all years/districts (real demographics change year to year)
+- **Uniform grade distributions:** Using the same grade-level percentages for every district (real districts vary significantly)
+
+**The test is simple: can you trace every number back to a downloaded file from a state DOE website?** If not, it is fabricated. There is no gray area. If the data source is unavailable, the package MUST use Under Construction status — not fake data.
+
+---
+
+
 # CLAUDE.md
 
 ## Project Overview
