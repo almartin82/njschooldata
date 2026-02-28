@@ -1,0 +1,8 @@
+^DATA-CATEGORY-TAXONOMY\.md$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.claude$
+^research-private$
+^generate_readme_figs\.R$
+^scripts$
+^nj-raw$
