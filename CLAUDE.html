@@ -37,6 +37,25 @@
       <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
+
+<div class="section level2">
+<h2 id="critical-data-source-rules">CRITICAL DATA SOURCE RULES<a class="anchor" aria-label="anchor" href="#critical-data-source-rules"></a></h2>
+<p><strong>NEVER use Urban Institute API, NCES CCD, or ANY federal data source</strong> — the entire point of these packages is to provide STATE-LEVEL data directly from state DOEs. Federal sources aggregate/transform data differently and lose state-specific details. If a state DOE source is broken, FIX IT or find an alternative STATE source — do not fall back to federal data.</p>
+<p><strong>NEVER fabricate data in ANY form.</strong> This is the single most important rule in the entire project. Violations include but are not limited to:</p>
+<ul><li>
+<strong>Random generation:</strong> <code><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm()</a></code>, <code><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif()</a></code>, <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>, <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code>, <code><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm()</a></code>, <code><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma()</a></code>, or any random number generation</li>
+<li>
+<strong>Hardcoded numbers:</strong> Hand-typing enrollment counts in <code>tribble()</code>, <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>, <code>tibble()</code>, or any other data structure. If a human typed the number instead of downloading it from a state DOE, it is fabricated.</li>
+<li>
+<strong>“Plausible-looking” fake data:</strong> Creating numbers that look real but aren’t — smooth monotonic trends, round numbers, demographically “reasonable” percentages applied uniformly. This is the WORST form of fabrication because it is designed to deceive.</li>
+<li>
+<strong><code>create_example_data()</code> functions:</strong> Helper functions that generate fake datasets, regardless of how realistic they look</li>
+<li>
+<strong>Fixed demographic percentages:</strong> Applying constant demographic ratios across all years/districts (real demographics change year to year)</li>
+<li>
+<strong>Uniform grade distributions:</strong> Using the same grade-level percentages for every district (real districts vary significantly)</li>
+</ul><p><strong>The test is simple: can you trace every number back to a downloaded file from a state DOE website?</strong> If not, it is fabricated. There is no gray area. If the data source is unavailable, the package MUST use Under Construction status — not fake data.</p>
+<hr></div>
 <div id="claudemd" class="section level1">
 
 <div class="section level2">
@@ -107,6 +126,7 @@
 <p><strong>To enable on a new repo:</strong> 1. Add workflow file and <code>_pkgdown.yml</code> 2. Push to master 3. Enable GitHub Pages via API or Settings: <code>bash    gh api repos/OWNER/REPO/pages -X POST --input - &lt;&lt;EOF    {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}    EOF</code></p>
 </div>
 </div>
+
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
