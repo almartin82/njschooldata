@@ -132,8 +132,7 @@ pip install git+https://github.com/almartin82/njschooldata.git#subdirectory=pyth
 | **Chronic Absenteeism** | `fetch_chronic_absenteeism()` | 2017-2024* | :white_check_mark: Full support |
 | **Postsecondary Enrollment** | `fetch_postsecondary()` | Current | :white_check_mark: Full support |
 | **Special Education Rates** | `fetch_sped()` | 2024+ | :white_check_mark: Full support |
-| **School Directory** | `get_school_directory()` | Current | :white_check_mark: Full support |
-| **District Directory** | `get_district_directory()` | Current | :white_check_mark: Full support |
+| **Directory** | `fetch_directory()` | Current | :white_check_mark: School + district. Principal, superintendent, address, phone, grades, website |
 | **District Factor Groups** | `fetch_dfg()` | 1990, 2000 | :white_check_mark: Full support |
 | **Taxpayer's Guide (TGES)** | `fetch_tges()` | 1999-2019 | :white_check_mark: Full support |
 | **Performance Reports** | `get_rc_database()` | 2003-2019 | :white_check_mark: Full support |
