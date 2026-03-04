@@ -99,6 +99,8 @@ reference:
   - title: School/District Directories
     desc: Functions for school and district metadata
     contents:
+      - fetch_directory
+      - clear_directory_cache
       - get_school_directory
       - get_district_directory
 
