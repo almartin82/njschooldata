@@ -106,3 +106,60 @@ clean_name_vector <- function(x) {
     transliterations = c("Latin-ASCII"), parsing_option = 3
   )
 }
+
+
+#' Slugify a district name for URL use
+#'
+#' Converts a district name to a URL-safe slug by lowercasing, stripping
+#' common suffixes (School District, Public Schools, ISD, USD, etc.),
+#' removing punctuation, and replacing spaces with hyphens.
+#'
+#' When called with a vector of names and optional district IDs, detects
+#' slug collisions and appends the district ID to disambiguate.
+#'
+#' @param district_name Character vector of district names.
+#' @param district_id Optional character vector of district IDs (same length
+#'   as district_name). When provided and slug collisions exist, appends the
+#'   district ID to disambiguate.
+#' @return Character vector of slugified names.
+#' @export
+#' @examples
+#' slugify_district("Providence Public Schools")
+#' # "providence"
+#' slugify_district("Dallas Independent School District")
+#' # "dallas"
+#' slugify_district(c("Liberty", "Liberty"), c("1234", "5678"))
+#' # c("liberty-1234", "liberty-5678")
+slugify_district <- function(district_name, district_id = NULL) {
+  slug <- tolower(district_name)
+  slug <- gsub(
+    "\\b(school district|public schools?|schools?|district|independent|isd|usd|unified|consolidated|community|comm|county)\\b",
+    "", slug
+  )
+  slug <- gsub("[^a-z0-9 ]", "", slug)
+  slug <- trimws(gsub("\\s+", "-", trimws(slug)))
+  slug <- gsub("-+$", "", slug)
+  slug <- gsub("^-+", "", slug)
+
+  # Fallback: if stripping removed all words, use original name lowercased
+  empty <- nchar(slug) == 0
+  if (any(empty)) {
+    fallback <- tolower(district_name[empty])
+    fallback <- gsub("[^a-z0-9 ]", "", fallback)
+    fallback <- trimws(gsub("\\s+", "-", trimws(fallback)))
+    slug[empty] <- fallback
+  }
+
+  # Collision resolution: append district_id for duplicates
+  if (!is.null(district_id) && length(district_id) == length(slug)) {
+    dupes <- duplicated(slug) | duplicated(slug, fromLast = TRUE)
+    if (any(dupes)) {
+      slug[dupes] <- paste0(slug[dupes], "-", tolower(district_id[dupes]))
+      slug <- gsub("[^a-z0-9-]", "", slug)
+      slug <- gsub("-+", "-", slug)
+      slug <- gsub("-+$", "", slug)
+    }
+  }
+
+  slug
+}

@@ -142,6 +142,7 @@ reference:
       - pad_cds
       - pad_leading
       - trim_whitespace
+      - slugify_district
       - starts_with("enrich_")
       - starts_with("validate_")
 
