@@ -871,6 +871,10 @@ Functions for SPR database data (2017-2024)
 
 Functions for school and district metadata
 
+- [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
+  : Fetch NJ School Directory Data
+- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
+  : Clear directory data from session cache
 - [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
   : Get NJ School Directory Data
 - [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
@@ -967,6 +971,8 @@ Helper functions and lookups
   : Pad leading digits
 - [`trim_whitespace()`](https://almartin82.github.io/njschooldata/reference/trim_whitespace.md)
   : Trim whitespace
+- [`slugify_district()`](https://almartin82.github.io/njschooldata/reference/slugify_district.md)
+  : Slugify a district name for URL use
 - [`enrich_grad_count()`](https://almartin82.github.io/njschooldata/reference/enrich_grad_count.md)
   : Enrich report card matriculation percentages with grad counts
 - [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
@@ -1085,6 +1091,8 @@ Additional exported functions
   : Clean up CDS field names
 - [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
   : Clean SPED data
+- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
+  : Clear directory data from session cache
 - [`compare_discipline_across_years()`](https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.md)
   : Compare Discipline Across Years
 - [`define_peer_group()`](https://almartin82.github.io/njschooldata/reference/define_peer_group.md)
@@ -1122,6 +1130,10 @@ Additional exported functions
   : Extract Report Card Enrollment
 - [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)
   : Fetch 6-Year Graduation Rate data
+- [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md)
+  : Fetch Chronic Absenteeism Data (Cross-State Standard)
+- [`fetch_absence_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_absence_multi.md)
+  : Fetch Chronic Absenteeism Data for Multiple Years
 - [`fetch_absenteeism_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_absenteeism_by_grade.md)
   : Fetch Absenteeism by Grade
 - [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)
@@ -1158,6 +1170,8 @@ Additional exported functions
   : Fetch Days Absent Data
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
+- [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
+  : Fetch NJ School Directory Data
 - [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
   : Fetch Disciplinary Removals Data
 - [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
@@ -1362,6 +1376,8 @@ Additional exported functions
   : Calculate performance gap between charter and district sectors
 - [`sector_percentile_comparison()`](https://almartin82.github.io/njschooldata/reference/sector_percentile_comparison.md)
   : Compare percentile ranks across sectors
+- [`slugify_district()`](https://almartin82.github.io/njschooldata/reference/slugify_district.md)
+  : Slugify a district name for URL use
 - [`spec_pop_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.md)
   : Aggregate multiple special populations rows and produce summary
   statistics
@@ -1371,6 +1387,8 @@ Additional exported functions
   : Special Education District Lookup Map
 - [`tges_name_cleaner()`](https://almartin82.github.io/njschooldata/reference/tges_name_cleaner.md)
   : TGES name cleaner
+- [`tidy_absence()`](https://almartin82.github.io/njschooldata/reference/tidy_absence.md)
+  : Tidy chronic absenteeism data
 - [`tidy_budgetary_per_pupil_cost()`](https://almartin82.github.io/njschooldata/reference/tidy_budgetary_per_pupil_cost.md)
   : Tidy Budgetary Per Pupil data frame
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)

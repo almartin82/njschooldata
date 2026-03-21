@@ -292,7 +292,7 @@ Column names are automatically cleaned to snake_case.
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
+#> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.3 LTS
 #> 
@@ -316,15 +316,15 @@ sessionInfo()
 #> [1] dplyr_1.2.0        njschooldata_0.9.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] jsonlite_2.0.0    compiler_4.5.2    tidyselect_1.2.1  stringr_1.6.0    
-#>  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.1
-#>  [9] textshaping_1.0.4 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      
+#>  [1] jsonlite_2.0.0    compiler_4.5.3    tidyselect_1.2.1  stringr_1.6.0    
+#>  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2
+#>  [9] textshaping_1.0.5 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      
 #> [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     
 #> [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       
 #> [21] bslib_0.10.0      pillar_1.11.1     rlang_1.1.7       cachem_1.1.0     
-#> [25] stringi_1.8.7     xfun_0.56         fs_1.6.6          sass_0.4.10      
+#> [25] stringi_1.8.7     xfun_0.57         fs_1.6.7          sass_0.4.10      
 #> [29] timechange_0.4.0  cli_3.6.5         pkgdown_2.2.0     magrittr_2.0.4   
 #> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.1      
-#> [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.0        rmarkdown_2.30   
-#> [41] purrr_1.2.1       tools_4.5.2       pkgconfig_2.0.3   htmltools_0.5.9
+#> [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.1        rmarkdown_2.30   
+#> [41] purrr_1.2.1       tools_4.5.3       pkgconfig_2.0.3   htmltools_0.5.9
 ```

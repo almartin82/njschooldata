@@ -682,7 +682,7 @@ ggplot(frl_extremes, aes(x = district_label, y = pct * 100, fill = group)) +
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
+#> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.3 LTS
 #> 
@@ -708,16 +708,16 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       
 #>  [5] stringi_1.8.7      hms_1.1.4          digest_0.6.39      magrittr_2.0.4    
-#>  [9] evaluate_1.0.5     grid_4.5.2         timechange_0.4.0   RColorBrewer_1.1-3
+#>  [9] evaluate_1.0.5     grid_4.5.3         timechange_0.4.0   RColorBrewer_1.1-3
 #> [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.1       
-#> [17] codetools_0.2-20   textshaping_1.0.4  jquerylib_0.1.4    cli_3.6.5         
+#> [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.5         
 #> [21] rlang_1.1.7        withr_3.0.2        cachem_1.1.0       yaml_2.3.12       
-#> [25] downloader_0.4.1   tools_4.5.2        tzdb_0.5.0         vctrs_0.7.1       
+#> [25] downloader_0.4.1   tools_4.5.3        tzdb_0.5.0         vctrs_0.7.1       
 #> [29] R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1  
-#> [33] stringr_1.6.0      fs_1.6.6           ragg_1.5.0         janitor_2.2.1     
+#> [33] stringr_1.6.0      fs_1.6.7           ragg_1.5.1         janitor_2.2.1     
 #> [37] pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1     
-#> [41] bslib_0.10.0       gtable_0.3.6       glue_1.8.0         systemfonts_1.3.1 
-#> [45] xfun_0.56          tibble_3.3.1       tidyselect_1.2.1   knitr_1.51        
+#> [41] bslib_0.10.0       gtable_0.3.6       glue_1.8.0         systemfonts_1.3.2 
+#> [45] xfun_0.57          tibble_3.3.1       tidyselect_1.2.1   knitr_1.51        
 #> [49] farver_2.1.2       htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.30    
-#> [53] readr_2.2.0        compiler_4.5.2     S7_0.2.1           readxl_1.4.5
+#> [53] readr_2.2.0        compiler_4.5.3     S7_0.2.1           readxl_1.4.5
 ```
