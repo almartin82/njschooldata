@@ -160,7 +160,7 @@ k_trend %>%
 | **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
 | Per-Pupil Spending | -- | -- | Not yet available |
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
-| **Chronic Absence** | 2017-2024 | `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic |
+| **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
 | **Special Ed** | 2024+ | `fetch_sped()` | Classification rates by disability category |
 | **Discipline** | Available | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` | Suspensions, expulsions, HIB incidents |
