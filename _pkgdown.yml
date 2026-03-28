@@ -68,6 +68,13 @@ reference:
       - grate_validation_summary
       - recover_suppressed_grate
 
+  - title: Chronic Absence
+    desc: Cross-state standard interface for chronic absenteeism data
+    contents:
+      - fetch_absence
+      - fetch_absence_multi
+      - tidy_absence
+
   - title: School Performance Reports (SPR)
     desc: Functions for SPR database data (2017-2024)
     contents:
@@ -172,7 +179,7 @@ articles:
       - spr-dictionary
 
 authors:
-  Andrew Martin:
+  Andy Martin:
     href: https://github.com/almartin82
 
 footer:

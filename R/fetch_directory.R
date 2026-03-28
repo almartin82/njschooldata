@@ -338,7 +338,7 @@ process_district_directory <- function(raw) {
 #' charters <- fetch_directory() %>%
 #'   dplyr::filter(is_charter)
 #' }
-fetch_directory <- function(level = "school", use_cache = TRUE) {
+fetch_directory <- function(level = "school", use_cache = FALSE) {
 
   valid_levels <- c("school", "district", "both")
   if (!level %in% valid_levels) {
