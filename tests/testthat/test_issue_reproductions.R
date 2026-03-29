@@ -7,7 +7,7 @@
 # https://github.com/almartin82/njschooldata/issues/158
 # =============================================================================
 
-context("Issue #158: geo address matching")
+# Issue #158: geo address matching
 
 test_that("address_3 fallback uses wrong variable (address1 instead of address)", {
   # The geo.R address_3 case_when has `TRUE ~ address1` on line 90,
@@ -65,7 +65,7 @@ test_that("geo address normalization covers common abbreviations", {
 # https://github.com/almartin82/njschooldata/issues/124
 # =============================================================================
 
-context("Issue #124: clean_name_vector parsing_option")
+# Issue #124: clean_name_vector parsing_option
 
 test_that("clean_name_vector works with current snakecase version", {
   # The function uses snakecase::to_any_case(..., parsing_option = 3)
@@ -114,7 +114,7 @@ test_that("clean_name_vector parsing_option is within valid range", {
 # https://github.com/almartin82/njschooldata/issues/71
 # =============================================================================
 
-context("Issue #71: CDS_Code should be lowercase")
+# Issue #71: CDS_Code should be lowercase
 
 test_that("enrollment data uses CDS_Code (uppercase) instead of cds_code", {
   # This test documents the inconsistency: enrollment uses CDS_Code
@@ -163,7 +163,7 @@ test_that("postsecondary enrollment already uses lowercase cds_code", {
 # https://github.com/almartin82/njschooldata/issues/62
 # =============================================================================
 
-context("Issue #62: district code padding consistency")
+# Issue #62: district code padding consistency
 
 test_that("charter.R converts district_id to numeric (drops leading zeros)", {
   # charter.R line 125 uses `as.numeric(district_id) >= 6000`
@@ -232,7 +232,7 @@ test_that("pad_cds() function works correctly", {
 # https://github.com/almartin82/njschooldata/issues/113
 # =============================================================================
 
-context("Issue #113: IEP/SWD subgroup naming inconsistency")
+# Issue #113: IEP/SWD subgroup naming inconsistency
 
 test_that("SWD subgroup has different names across data modules", {
   # This test documents the inconsistency across modules.
