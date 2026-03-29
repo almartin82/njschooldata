@@ -18,7 +18,7 @@ tidy_enr <- function(df) {
 
   # invariant cols
   invariants <- c(
-    "end_year", "CDS_Code",
+    "end_year", "cds_code",
     "county_id", "county_name",
     "district_id", "district_name",
     "school_id", "school_name",
@@ -134,7 +134,7 @@ enr_grade_aggs <- function(df) {
   gr_aggs_group_logic <- . %>%
     dplyr::group_by(
       end_year,
-      CDS_Code,
+      cds_code,
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
@@ -149,7 +149,7 @@ enr_grade_aggs <- function(df) {
 
   gr_aggs_col_order <- . %>%
     dplyr::select(
-      end_year, CDS_Code,
+      end_year, cds_code,
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,

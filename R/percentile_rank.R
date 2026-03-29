@@ -575,7 +575,7 @@ SUBGROUP_PAIRS <- list(
   race_white_hispanic = c("white", "hispanic"),
   gender = c("male", "female"),
   ses = c("total_population", "economically_disadvantaged"),
-  disability = c("total_population", "iep"),
+  disability = c("total_population", "students with disabilities"),
   ell = c("total_population", "lep")
 )
 

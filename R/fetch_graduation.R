@@ -348,7 +348,7 @@ clean_6yr_grad_subgroups <- function(group) {
     tolower(group) == "two or more races" ~ "multiracial",
     tolower(group) == "native hawaiian or pacific islander" ~ "pacific islander",
     tolower(group) == "asian, native hawaiian, or pacific islander" ~ "asian",
-    tolower(group) == "students with disabilities" ~ "students with disability",
+    tolower(group) == "students with disabilities" ~ "students with disabilities",
     TRUE ~ tolower(group)
   )
 }

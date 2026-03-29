@@ -37,7 +37,7 @@ id_charter_hosts <- function(df) {
 agg_enr_column_order <- function(df) {
   df %>%
     select(
-      end_year, CDS_Code,
+      end_year, cds_code,
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
@@ -122,7 +122,7 @@ charter_sector_enr_aggs <- function(df) {
          end_year < 2010 &
             !district_id == '9999' &
             school_id == '999' &
-            as.numeric(district_id) >= 6000
+            district_id >= "6000"
       )
    
    df <- bind_rows(df_modern, df_old)
@@ -149,7 +149,7 @@ charter_sector_enr_aggs <- function(df) {
          county_name = host_county_name
       ) %>%
       mutate(
-         CDS_Code = NA_character_,
+         cds_code = NA_character_,
          district_id = paste0(host_district_id, 'C'),
          district_name = paste0(host_district_name, ' Charters'),
          school_id = '999C',
@@ -239,7 +239,7 @@ allpublic_enr_aggs <- function(df) {
   # create appropriate boolean flag
   df <- df %>%
     mutate(
-      CDS_Code = NA_character_,
+      cds_code = NA_character_,
       district_id = paste0(district_id, 'A'),
       district_name = paste0(district_name, ' All Public'),
       school_id = '999A',

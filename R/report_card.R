@@ -812,7 +812,7 @@ enrich_matric_counts <- function(df, type = '16 month') {
         subgroup == "economically disadvantaged students" ~ "economically disadvantaged",
         subgroup %in% c("english language learners",
                         "english learners") ~ "limited english proficiency",
-        subgroup == "students with disabilities" ~ "students with disability",
+        subgroup == "students with disabilities" ~ "students with disabilities",
         subgroup == "two or more races" ~ "multiracial",
         subgroup == "native hawaiian" ~ "pacific islander", # or native amer.?
         subgroup == "american indian or alaska native" ~
