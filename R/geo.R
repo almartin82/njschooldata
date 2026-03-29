@@ -225,7 +225,7 @@ ward_enr_aggs <- function(df) {
 
   df <- df %>%
     mutate(
-      CDS_Code = NA_character_,
+      cds_code = NA_character_,
       district_id = paste0(district_id, ' ', ward),
       district_name = paste0(district_name, ' ', ward),
       school_id = '999W',

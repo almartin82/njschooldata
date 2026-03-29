@@ -108,45 +108,30 @@ test_that("clean_name_vector parsing_option is within valid range", {
 
 # Issue #71: CDS_Code should be lowercase
 
-test_that("enrollment data uses CDS_Code (uppercase) instead of cds_code", {
-  # This test documents the inconsistency: enrollment uses CDS_Code
-  # while postsecondary enrollment uses cds_code.
-  # The package convention is snake_case for all column names.
+test_that("no R source files use uppercase CDS_Code", {
+  r_files <- list.files("../../R", pattern = "\\.R$", full.names = TRUE)
 
-  source_files <- c(
-    "../../R/process_enrollment.R",
-    "../../R/enrollment_names.R",
-    "../../R/charter.R",
-    "../../R/tidy_enrollment.R"
-  )
-
-  uppercase_count <- 0
-  for (f in source_files) {
-    if (file.exists(f)) {
-      code <- readLines(f)
-      uppercase_count <- uppercase_count + sum(grepl("CDS_Code", code, fixed = TRUE))
-    }
+  for (f in r_files) {
+    code <- readLines(f, warn = FALSE)
+    hits <- grep("CDS_Code", code, fixed = TRUE)
+    expect_equal(length(hits), 0,
+      info = paste(basename(f), "still uses uppercase CDS_Code"))
   }
-
-  # This test will PASS when the bug EXISTS (documenting current state)
-  # and FAIL when fixed (at which point update the test)
-  expect_true(
-    uppercase_count > 0,
-    info = paste(
-      "Expected CDS_Code (uppercase) to still exist in source files.",
-      "If this fails, issue #71 may have been fixed — update this test."
-    )
-  )
 })
 
-test_that("postsecondary enrollment already uses lowercase cds_code", {
-  # Verify the correct convention exists in fetch_assessment.R
-  assess_code <- readLines("../../R/fetch_assessment.R")
-  has_lowercase <- any(grepl("cds_code", assess_code, fixed = TRUE))
-
-  expect_true(has_lowercase,
-    info = "fetch_assessment.R should use lowercase cds_code as the reference convention"
+test_that("all enrollment/directory files use lowercase cds_code", {
+  key_files <- c(
+    "../../R/process_enrollment.R", "../../R/enrollment_names.R",
+    "../../R/charter.R", "../../R/tidy_enrollment.R",
+    "../../R/directory.R", "../../R/fetch_directory.R"
   )
+
+  for (f in key_files) {
+    code <- readLines(f, warn = FALSE)
+    has_lowercase <- any(grepl("cds_code", code, fixed = TRUE))
+    expect_true(has_lowercase,
+      info = paste(basename(f), "should use lowercase cds_code"))
+  }
 })
 
 

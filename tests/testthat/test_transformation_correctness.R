@@ -103,7 +103,7 @@ test_that("county_id is zero-padded to 2 digits", {
 })
 
 
-test_that("CDS_Code is correctly constructed from padded IDs", {
+test_that("cds_code is correctly constructed from padded IDs", {
   df <- data.frame(
     end_year = 2024,
     county_name = c("ATLANTIC"),
@@ -121,8 +121,8 @@ test_that("CDS_Code is correctly constructed from padded IDs", {
 
   result <- clean_enr_data(df)
 
-  # CDS_Code = county_id + district_id + school_id = "01" + "0100" + "001"
-  expect_equal(result$CDS_Code, "010100001")
+  # cds_code = county_id + district_id + school_id = "01" + "0100" + "001"
+  expect_equal(result$cds_code, "010100001")
 })
 
 
@@ -456,7 +456,7 @@ test_that("tidy_enr preserves enrollment counts from wide to long format", {
   # Construct a minimal processed enrollment df
   wide_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01",
     county_name = "ATLANTIC",
     district_id = "0100",
@@ -527,7 +527,7 @@ test_that("tidy_enr preserves enrollment counts from wide to long format", {
 test_that("tidy_enr produces free_reduced_lunch only for program_code 55", {
   wide_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "999", school_name = "TOTAL",
@@ -563,7 +563,7 @@ test_that("tidy_enr produces free_reduced_lunch only for program_code 55", {
 test_that("tidy_enr filters out rows where both n_students and pct are NA", {
   wide_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "999", school_name = "TOTAL",
@@ -596,7 +596,7 @@ test_that("tidy_enr filters out rows where both n_students and pct are NA", {
 test_that("tidy_enr computes pct as n_students / row_total", {
   wide_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "999", school_name = "TOTAL",
@@ -934,7 +934,7 @@ test_that("enr_grade_aggs creates correct K-12 aggregation", {
   # Minimal tidy enrollment df with required columns
   tidy_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "999", school_name = "TOTAL",
@@ -971,7 +971,7 @@ test_that("enr_grade_aggs creates correct K-12 aggregation", {
 test_that("enr_grade_aggs separates K, PK, and HS correctly", {
   tidy_df <- data.frame(
     end_year = 2024,
-    CDS_Code = "010100999",
+    cds_code = "010100999",
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "999", school_name = "TOTAL",
@@ -1352,7 +1352,7 @@ test_that("get_enr_column_order returns expected column order", {
 
   # First columns should be identifiers
   expect_equal(order[1], "end_year")
-  expect_equal(order[2], "CDS_Code")
+  expect_equal(order[2], "cds_code")
   expect_equal(order[3], "county_id")
 
   # Should include key demographic columns

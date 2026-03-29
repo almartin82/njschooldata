@@ -279,7 +279,7 @@ get_enr_types <- function() {
 #' @keywords internal
 get_enr_column_order <- function() {
   c(
-    "end_year", "CDS_Code",
+    "end_year", "cds_code",
     "county_id", "county_name",
     "district_id", "district_name",
     "school_id", "school_name",

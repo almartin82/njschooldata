@@ -16,7 +16,7 @@ get_district_directory <- function() {
       district_id = district_code
     ) %>%
     dplyr::mutate(
-      CDS_Code = paste0(county_id, district_id, '999')
+      cds_code = paste0(county_id, district_id, '999')
     ) %>%
     # Ensure UTF-8 encoding for all character columns (fixes rpy2 conversion issues)
     dplyr::mutate(dplyr::across(dplyr::where(is.character), ~iconv(.x, to = "UTF-8", sub = "")))
@@ -44,7 +44,7 @@ get_school_directory <- function() {
       school_id = school_code
     ) %>%
     dplyr::mutate(
-      CDS_Code = paste0(county_id, district_id, school_id)
+      cds_code = paste0(county_id, district_id, school_id)
     ) %>%
     # Ensure UTF-8 encoding for all character columns (fixes rpy2 conversion issues)
     dplyr::mutate(dplyr::across(dplyr::where(is.character), ~iconv(.x, to = "UTF-8", sub = "")))

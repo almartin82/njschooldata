@@ -46,7 +46,7 @@ for (spec in wide_test_years) {
 
     # Core ID columns always present
     required_cols <- c(
-      "end_year", "CDS_Code",
+      "end_year", "cds_code",
       "county_id", "county_name",
       "district_id", "district_name",
       "school_id", "school_name",
@@ -108,7 +108,7 @@ for (spec in tidy_test_years) {
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
     required_cols <- c(
-      "end_year", "CDS_Code",
+      "end_year", "cds_code",
       "county_id", "county_name",
       "district_id", "district_name",
       "school_id", "school_name",

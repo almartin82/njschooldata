@@ -124,7 +124,7 @@ fetch_old_nj_assess <- function(end_year, grade, tidy = FALSE) {
 
 tidy_nj_assess <- function(assess_name, df) {
   
-  logistical_columns <- c("CDS_Code", "County_Code/DFG/Aggregation_Code", "District_Code", 
+  logistical_columns <- c("cds_code", "County_Code/DFG/Aggregation_Code", "District_Code", 
     "School_Code", "County_Name", "District_Name", "School_Name", 
     "DFG", "Special_Needs", "Testing_Year", "Grade", "RECORD_KEY", "County_Code", 
     "DFG_Flag", "Special_Needs_(Abbott)_district_flag", "Grade_Level", "Test_Year"
