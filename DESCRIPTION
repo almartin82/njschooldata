@@ -27,7 +27,7 @@ Imports:
     readxl,
     reshape2,
     rlang (>= 0.4.0),
-    snakecase,
+    snakecase (>= 0.11.0),
     stringr,
     tibble,
     tidyr (>= 1.0.0)
