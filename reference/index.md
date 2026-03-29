@@ -84,6 +84,17 @@ Functions for graduation rates and counts
 - [`recover_suppressed_grate()`](https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.md)
   : Recover suppressed district graduation rates from school data
 
+## Chronic Absence
+
+Cross-state standard interface for chronic absenteeism data
+
+- [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md)
+  : Fetch Chronic Absenteeism Data (Cross-State Standard)
+- [`fetch_absence_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_absence_multi.md)
+  : Fetch Chronic Absenteeism Data for Multiple Years
+- [`tidy_absence()`](https://almartin82.github.io/njschooldata/reference/tidy_absence.md)
+  : Tidy chronic absenteeism data
+
 ## School Performance Reports (SPR)
 
 Functions for SPR database data (2017-2024)

@@ -294,7 +294,7 @@ Column names are automatically cleaned to snake_case.
 sessionInfo()
 #> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.3 LTS
+#> Running under: Ubuntu 24.04.4 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -322,9 +322,9 @@ sessionInfo()
 #> [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     
 #> [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       
 #> [21] bslib_0.10.0      pillar_1.11.1     rlang_1.1.7       cachem_1.1.0     
-#> [25] stringi_1.8.7     xfun_0.57         fs_1.6.7          sass_0.4.10      
+#> [25] stringi_1.8.7     xfun_0.57         fs_2.0.1          sass_0.4.10      
 #> [29] timechange_0.4.0  cli_3.6.5         pkgdown_2.2.0     magrittr_2.0.4   
-#> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.1      
-#> [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.1        rmarkdown_2.30   
+#> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.2      
+#> [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.2        rmarkdown_2.31   
 #> [41] purrr_1.2.1       tools_4.5.3       pkgconfig_2.0.3   htmltools_0.5.9
 ```
