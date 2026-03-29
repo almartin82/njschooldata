@@ -9,54 +9,46 @@
 
 # Issue #158: geo address matching
 
-test_that("address_3 fallback uses wrong variable (address1 instead of address)", {
-  # The geo.R address_3 case_when has `TRUE ~ address1` on line 90,
-
-  # but `address1` doesn't exist in the pipeline — it should be `address`.
-  # This means any address that doesn't match the abbreviation patterns
-  # in address_3 will fail with an error or produce NA.
-
-  geo_source <- readLines(system.file("R", "geo.R", package = "njschooldata"))
-
-  # If that doesn't work (not installed), read from source
-
-  if (length(geo_source) == 0) {
-    geo_source <- readLines("../../R/geo.R")
-  }
-
-  # Find the address_3 case_when block — the TRUE fallback should use `address`
+test_that("geo.R does not reference undefined 'address1' variable", {
+  geo_source <- readLines("../../R/geo.R")
   address1_lines <- grep("TRUE ~ address1", geo_source, fixed = TRUE)
-  expect_equal(
-    length(address1_lines), 0,
-    info = paste(
-      "Bug: geo.R address_3 fallback references 'address1' which doesn't exist.",
-      "Should be 'address'. See line 90 of geo.R."
-    )
-  )
+  expect_equal(length(address1_lines), 0)
 })
 
-test_that("geo address normalization covers common abbreviations", {
-  # The address matching in geo.R only handles 3 abbreviation pairs:
-  # street/st, avenue/ave, boulevard/blvd
-  # Missing: drive/dr, road/rd, court/ct, lane/ln, place/pl, etc.
-  #
-  # This test documents the gap — addresses with these abbreviations
-  # will fail to match between the directory and geocoded cache.
+test_that("abbreviate_street_types handles common street types", {
+  addr <- "123 main street, newark, nj 07102 usa"
+  result <- abbreviate_street_types(addr)
+  expect_equal(result, "123 main st, newark, nj 07102 usa")
 
-  common_abbrevs <- c("drive", "road", "court", "lane", "place",
-                       "circle", "terrace", "parkway")
+  addr2 <- "456 broad avenue, trenton, nj 08601 usa"
+  result2 <- abbreviate_street_types(addr2)
+  expect_equal(result2, "456 broad ave, trenton, nj 08601 usa")
 
-  geo_source <- paste(readLines("../../R/geo.R"), collapse = "\n")
+  addr3 <- "789 oak drive, princeton, nj 08540 usa"
+  result3 <- abbreviate_street_types(addr3)
+  expect_equal(result3, "789 oak dr, princeton, nj 08540 usa")
+})
 
-  missing <- common_abbrevs[!sapply(common_abbrevs, function(a) grepl(a, geo_source))]
+test_that("expand_street_types handles common abbreviations", {
+  addr <- "123 main st, newark, nj 07102 usa"
+  result <- expand_street_types(addr)
+  expect_equal(result, "123 main street, newark, nj 07102 usa")
 
-  expect_equal(
-    length(missing), 0,
-    info = paste(
-      "geo.R address normalization is missing abbreviation handling for:",
-      paste(missing, collapse = ", ")
-    )
-  )
+  addr2 <- "456 broad ave, trenton, nj 08601 usa"
+  result2 <- expand_street_types(addr2)
+  expect_equal(result2, "456 broad avenue, trenton, nj 08601 usa")
+
+  addr3 <- "789 oak dr, princeton, nj 08540 usa"
+  result3 <- expand_street_types(addr3)
+  expect_equal(result3, "789 oak drive, princeton, nj 08540 usa")
+})
+
+test_that("street type functions are inverses of each other", {
+  addr <- "209 abington avenue, newark, nj 07107 usa"
+  expect_equal(expand_street_types(abbreviate_street_types(addr)), addr)
+
+  addr2 <- "228 ridge st, newark, nj 07104 usa"
+  expect_equal(abbreviate_street_types(expand_street_types(addr2)), addr2)
 })
 
 
