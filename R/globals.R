@@ -202,7 +202,7 @@ utils::globalVariables(c(
   "chronic_abs_pct", "chronically_absent_rate",
 
   # ========== PARCC/Assessment Aggregates ==========
-  "districts", "schools", "n_charter_rows",
+  "districts", "schools", "n_charter",
   "gradespan",
 
   # ========== Report Card Columns ==========

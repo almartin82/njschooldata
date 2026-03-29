@@ -369,7 +369,7 @@ allpublic_parcc_aggs <- function(df) {
   
   # if there are no charters in the host, out of scope for this calc
   df <- df %>%
-    filter(n_charter_rows > 0)
+    filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
   # join by both county_id and district_id to handle districts with same ID
@@ -501,7 +501,7 @@ allpublic_grate_aggs <- function(df) {
   
   # if there are no charters in the host, out of scope for this calc
   df <- df %>%
-    filter(n_charter_rows > 0)
+    filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
   # join by both county_id and district_id to handle districts with same ID
@@ -634,7 +634,7 @@ allpublic_gcount_aggs <- function(df) {
   
   # if there are no charters in the host, out of scope for this calc
   df <- df %>%
-    filter(n_charter_rows > 0)
+    filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
   # join by both county_id and district_id to handle districts with same ID
@@ -754,7 +754,7 @@ allpublic_spec_pop_aggs <- function(df) {
   
   # if there are no charters in the host, out of scope for this calc
   df <- df %>%
-    filter(n_charter_rows > 0)
+    filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
   # join by both county_id and district_id to handle districts with same ID
@@ -870,7 +870,7 @@ allpublic_sped_aggs <- function(df) {
    
    # if there are no charters in the host, out of scope for this calc
    df <- df %>%
-      filter(n_charter_rows > 0)
+      filter(n_charter > 0)
    
    # add county_name, district_name by joining to charter_city
    # join by both county_id and district_id to handle districts with same ID
@@ -1005,7 +1005,7 @@ allpublic_matric_aggs <- function(df) {
   
   # if there are no charters in the host, out of scope for this calc
   agg_df <- agg_df %>%
-    filter(n_charter_rows > 0)
+    filter(n_charter > 0)
   
   # add county_name, district_name by joining to charter_city
   # join by both county_id and district_id to handle districts with same ID

@@ -7,6 +7,23 @@
 #
 # ==============================================================================
 
+
+#' Collapse a vector of names into a deduplicated string with counts
+#'
+#' @param x character vector of names (may contain duplicates)
+#' @return single string with unique names and counts for duplicates,
+#'   e.g. "School A (3), School B (2)"
+#' @export
+collapse_names <- function(x) {
+  counts <- table(x)
+  parts <- vapply(names(counts), function(nm) {
+    n <- unname(counts[nm])
+    if (n == 1) nm else paste0(nm, " (", n, ")")
+  }, character(1))
+  paste(parts, collapse = ", ")
+}
+
+
 # -----------------------------------------------------------------------------
 # Graduation Rate Aggregation
 # -----------------------------------------------------------------------------
@@ -25,9 +42,10 @@ grate_aggregate_calcs <- function(df) {
     dplyr::summarize(
       cohort_count = sum(cohort_count, na.rm = TRUE),
       graduated_count = sum(graduated_count, na.rm = TRUE),
-      districts = toString(district_name),
-      schools = toString(school_name),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      districts = collapse_names(district_name),
+      schools = collapse_names(school_name),
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       grad_rate = round(graduated_count / cohort_count, 3),
@@ -48,9 +66,10 @@ gcount_aggregate_calcs <- function(df) {
     dplyr::summarize(
       cohort_count = sum(cohort_count, na.rm = TRUE),
       graduated_count = sum(graduated_count, na.rm = TRUE),
-      districts = toString(district_name),
-      schools = toString(school_name),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      districts = collapse_names(district_name),
+      schools = collapse_names(school_name),
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     )
 }
 
@@ -102,9 +121,10 @@ parcc_aggregate_calcs <- function(df) {
       num_l3 = sum(num_l3, na.rm = TRUE),
       num_l4 = sum(num_l4, na.rm = TRUE),
       num_l5 = sum(num_l5, na.rm = TRUE),
-      districts = toString(district_name),
-      schools = toString(school_name),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      districts = collapse_names(district_name),
+      schools = collapse_names(school_name),
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       pct_l1 = round((num_l1 / number_of_valid_scale_scores) * 100, 1),
@@ -213,7 +233,8 @@ matric_aggregate_calcs <- function(df) {
       enroll_any_count = sum(enroll_any_count, na.rm = TRUE),
       enroll_2yr_count = sum(enroll_2yr_count, na.rm = TRUE),
       enroll_4yr_count = sum(enroll_4yr_count, na.rm = TRUE),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       enroll_any = round(enroll_any_count / graduated_count * 100, 1),
@@ -244,7 +265,7 @@ matric_column_order <- function(df) {
       enroll_any_count, enroll_any,
       enroll_4yr_count, enroll_4yr,
       enroll_2yr_count, enroll_2yr,
-      dplyr::one_of("n_charter_rows"),
+      dplyr::one_of("n_schools"),
       is_16mo,
       is_state,
       dplyr::one_of("is_county"),
@@ -316,7 +337,8 @@ spec_pop_aggregate_calcs <- function(df) {
     dplyr::summarize(
       n_students = sum(n_students, na.rm = TRUE),
       n_enrolled = sum(n_enrolled, na.rm = TRUE),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       percent = round(n_students / n_enrolled * 100, 1)
@@ -338,7 +360,8 @@ agg_spec_pop_column_order <- function(df) {
       dplyr::one_of(
         "end_year", "county_id", "county_name",
         "district_id", "district_name", "subgroup",
-        "n_students", "n_enrolled", "percent"
+        "n_students", "n_enrolled", "percent",
+        "n_schools"
       )
     ) %>%
     return()
@@ -361,7 +384,8 @@ sped_aggregate_calcs <- function(df) {
       gened_num = sum(gened_num, na.rm = TRUE),
       sped_num = sum(sped_num, na.rm = TRUE),
       sped_num_no_speech = sum(sped_num_no_speech, na.rm = TRUE),
-      n_charter_rows = sum(is_charter, na.rm = TRUE)
+      n_schools = dplyr::n(),
+      n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
       sped_rate = round(sped_num / gened_num * 100, 2),
@@ -382,7 +406,7 @@ agg_sped_column_order <- function(df) {
       dplyr::one_of(
         "end_year", "county_name", "district_id", "district_name",
         "gened_num", "sped_num", "sped_rate", "sped_num_no_speech",
-        "sped_rate_no_speech"
+        "sped_rate_no_speech", "n_schools"
       )
     ) %>%
     return()
