@@ -983,11 +983,14 @@ city_ecosystem_summary <- function(
     dplyr::ungroup()
 
   pctl_col <- paste0(metric_col, "_percentile")
+  rank_col <- paste0(metric_col, "_rank")
+  n_col <- paste0(metric_col, "_n")
 
   # Get percentiles for our city's sectors
   city_percentiles <- peer_data %>%
     dplyr::filter(district_id %in% c(host_district_id, charter_id, allpublic_id)) %>%
-    dplyr::select(!!year_sym, district_id, !!metric_sym, dplyr::all_of(pctl_col))
+    dplyr::select(!!year_sym, district_id, !!metric_sym,
+                  dplyr::all_of(pctl_col), dplyr::all_of(rank_col), dplyr::all_of(n_col))
 
   # Join sector labels
   city_percentiles %>%
@@ -999,7 +1002,8 @@ city_ecosystem_summary <- function(
         TRUE ~ NA_character_
       )
     ) %>%
-    dplyr::select(!!year_sym, sector, !!metric_sym, dplyr::all_of(pctl_col)) %>%
+    dplyr::select(!!year_sym, sector, !!metric_sym,
+                  dplyr::all_of(pctl_col), dplyr::all_of(rank_col), dplyr::all_of(n_col)) %>%
     dplyr::arrange(!!year_sym, sector)
 }
 
@@ -1026,6 +1030,8 @@ city_ecosystem_summary <- function(
 #'     \item \code{charter_share}: Percent of students in charters
 #'     \item \code{sector_gap}: Charter - district performance difference
 #'     \item \code{allpublic_percentile}: City's overall percentile rank
+#'     \item \code{allpublic_rank}: City's rank within peer group
+#'     \item \code{allpublic_n}: Number of districts in peer group
 #'   }
 #'
 #' @export
@@ -1073,6 +1079,8 @@ ecosystem_trend <- function(
 
   # Get all-public percentile
   pctl_col <- paste0(metric_col, "_percentile")
+  rank_col <- paste0(metric_col, "_rank")
+  n_col <- paste0(metric_col, "_n")
 
   allpublic_pctl <- df_performance %>%
     dplyr::filter(is_allpublic | is_district) %>%
@@ -1080,7 +1088,11 @@ ecosystem_trend <- function(
     add_percentile_rank(metric_col) %>%
     dplyr::ungroup() %>%
     dplyr::filter(district_id == allpublic_id) %>%
-    dplyr::select(!!year_sym, allpublic_value = !!metric_sym, allpublic_percentile = dplyr::all_of(pctl_col))
+    dplyr::select(!!year_sym,
+                  allpublic_value = !!metric_sym,
+                  allpublic_percentile = dplyr::all_of(pctl_col),
+                  allpublic_rank = dplyr::all_of(rank_col),
+                  allpublic_n = dplyr::all_of(n_col))
 
   # Combine all metrics
   enrollment %>%
