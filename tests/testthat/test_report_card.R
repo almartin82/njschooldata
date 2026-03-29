@@ -120,7 +120,7 @@ test_that("extract_rc_college_matric ground truth values", {
   expect_equal(matric_12 %>%
                  filter(district_code == '3570',
                         school_code == '055', 
-                        subgroup == 'Economically Disadvantaged Students') %>%
+                        subgroup == 'economically disadvantaged') %>%
                  pull(enroll_4yr),
                84.2)
   
@@ -129,14 +129,14 @@ test_that("extract_rc_college_matric ground truth values", {
   expect_equal(matric_17 %>%
                  filter(district_code == '3570',
                         school_code == '055',
-                        subgroup == 'Total Population') %>%
+                        subgroup == 'total population') %>%
                  pull(enroll_any),
                67.2)
   
   expect_equal(matric_17 %>%
                  filter(district_code == '3570',
                         school_code == '055',
-                        subgroup == 'Total Population') %>%
+                        subgroup == 'total population') %>%
                  pull(enroll_4yr),
                87.4)
 })
