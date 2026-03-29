@@ -203,89 +203,50 @@ test_that("pad_cds() function works correctly", {
 
 # Issue #113: IEP/SWD subgroup naming inconsistency
 
-test_that("SWD subgroup has different names across data modules", {
-  # This test documents the inconsistency across modules.
-  # Each module uses a different name for the same subgroup:
-  #
-  # Module                  | Name used
-  # ----------------------- | ---------
-  # SPR (clean_spr)         | "students with disability" (singular)
-  # Graduation (grad_file)  | "students with disability" (singular)
-  # mSGP                    | "students with disabilities" (PLURAL)
-  # Report card matric      | "Students With Disabilities" (TITLE CASE, plural)
-  # Special population      | "IEP" (acronym)
-  # Tidy graduation         | "iep" (lowercase acronym)
-  # Percentile rank         | "iep" (lowercase acronym)
-  # Chronic absence (tidy)  | "special_ed" (cross-state standard)
-
-  # SPR uses singular
-  spr_code <- readLines("../../R/fetch_spr.R")
-  spr_swd <- grep('"students with disability"', spr_code, fixed = TRUE)
-  expect_true(length(spr_swd) > 0, info = "SPR uses 'students with disability' (singular)")
-
-  # mSGP uses plural
-  msgp_code <- readLines("../../R/msgp.R")
-  msgp_swd <- grep("'students with disabilities'", msgp_code, fixed = TRUE)
-  expect_true(length(msgp_swd) > 0, info = "mSGP uses 'students with disabilities' (plural)")
-
-  # Special pop uses IEP
-  spop_code <- readLines("../../R/special_pop.R")
-  spop_swd <- grep("'IEP'", spop_code, fixed = TRUE)
-  expect_true(length(spop_swd) > 0, info = "special_pop uses 'IEP' (acronym)")
-
-  # Tidy graduation maps to "iep"
-  tidy_code <- readLines("../../R/tidy_graduation.R")
-  tidy_swd <- grep('"iep"', tidy_code, fixed = TRUE)
-  expect_true(length(tidy_swd) > 0, info = "tidy_graduation maps SWD to 'iep'")
-})
-
-test_that("clean_spr_subgroups and msgp use different SWD names", {
-  # These two functions should produce the same name for the same subgroup
-  # but they don't: SPR → "students with disability" vs mSGP → "students with disabilities"
-
-  skip_if_not_installed("njschooldata")
-
-  spr_result <- njschooldata:::clean_spr_subgroups("Students with Disabilities")
-  expect_equal(spr_result, "students with disability",
-    info = "SPR normalizes to singular 'students with disability'"
+test_that("all modules use 'students with disabilities' for SWD subgroup", {
+  # Verify no legacy naming variants remain as OUTPUT values in source code
+  files_to_check <- c(
+    "../../R/fetch_spr.R", "../../R/process_graduation.R",
+    "../../R/fetch_graduation.R", "../../R/special_pop.R",
+    "../../R/tidy_graduation.R", "../../R/percentile_rank.R"
   )
 
-  # If you join SPR and mSGP data on subgroup, these won't match:
-  # SPR: "students with disability" != mSGP: "students with disabilities"
+  for (f in files_to_check) {
+    code <- readLines(f, warn = FALSE)
+
+    # Check for 'IEP' as SWD output (not in comments or other contexts)
+    iep_hits <- grep("~ ['\"]IEP['\"]", code)
+    expect_equal(length(iep_hits), 0,
+      info = paste(f, "still maps SWD to 'IEP'"))
+
+    # Check for "iep" as SWD output
+    iep_lower_hits <- grep("~ ['\"]iep['\"]", code)
+    expect_equal(length(iep_lower_hits), 0,
+      info = paste(f, "still maps SWD to 'iep'"))
+
+    # Check for singular "disability" as output (not as input matcher)
+    # Lines with ~ "students with disability" (singular output) are wrong
+    singular_output <- grep('~ "students with disability"', code, fixed = TRUE)
+    expect_equal(length(singular_output), 0,
+      info = paste(f, "still outputs singular 'students with disability'"))
+  }
 })
 
-test_that("report card matric uses title case for SWD", {
-  # report_card.R line 425 normalizes TO "Students With Disabilities" (title case)
-  # while every other module uses lowercase
-  rc_code <- readLines("../../R/report_card.R")
-  rc_swd <- grep("Students With Disabilities", rc_code, fixed = TRUE)
-  expect_true(length(rc_swd) > 0,
-    info = paste(
-      "report_card.R uses 'Students With Disabilities' (title case)",
-      "while other modules use lowercase. Joining will fail."
-    )
+test_that("clean_spr_subgroups normalizes to 'students with disabilities'", {
+  expect_equal(
+    clean_spr_subgroups("Students with Disabilities"),
+    "students with disabilities"
+  )
+  expect_equal(
+    clean_spr_subgroups("Students with Disability"),
+    "students with disabilities"
   )
 })
 
-test_that("grad_file_group_cleanup and clean_grate_names produce different SWD names", {
-  # grad_file_group_cleanup() → "students with disability"
-  # clean_grate_names() → "iep"
-  # Both operate on graduation data but produce incompatible subgroup names.
-
-  skip_if_not_installed("njschooldata")
-
-  grad_result <- njschooldata:::grad_file_group_cleanup("students with disabilities")
-  expect_equal(grad_result, "students with disability")
-
-  tidy_result <- njschooldata:::clean_grate_names("Students with Disability")
-  expect_equal(tidy_result, "iep")
-
-  # These two functions produce different names for the same concept
-  expect_false(
-    grad_result == tidy_result,
-    info = paste(
-      "grad_file_group_cleanup gives 'students with disability'",
-      "but clean_grate_names gives 'iep' — inconsistent within graduation module"
-    )
-  )
+test_that("grad_file_group_cleanup and clean_grate_names produce same SWD name", {
+  grad_result <- grad_file_group_cleanup("students with disabilities")
+  tidy_result <- clean_grate_names("Students with Disability")
+  expect_equal(grad_result, "students with disabilities")
+  expect_equal(tidy_result, "students with disabilities")
+  expect_equal(grad_result, tidy_result)
 })

@@ -18,11 +18,11 @@ clean_grate_names <- function(name_vector) {
   name_vector <- ifelse(name_vector == "American Indian", "american_indian", name_vector)
   name_vector <- ifelse(name_vector == "Native Hawaiian", "pacific_islander", name_vector)
   name_vector <- ifelse(name_vector == "Two or More Races", "multiracial", name_vector)
-  name_vector <- ifelse(name_vector == "Limited English Proficiency", "lep", name_vector)
+  name_vector <- ifelse(name_vector == "Limited English Proficiency", "limited english proficiency", name_vector)
   name_vector <- ifelse(
-    name_vector == "Economically Disadvantaged", "economically_disadvantaged", name_vector
+    name_vector == "Economically Disadvantaged", "economically disadvantaged", name_vector
   )
-  name_vector <- ifelse(name_vector == "Students with Disability", "iep", name_vector)
+  name_vector <- ifelse(name_vector == "Students with Disability", "students with disabilities", name_vector)
   name_vector <- ifelse(name_vector == "Schoolwide", "total population", name_vector)
   name_vector <- ifelse(name_vector == "Districtwide", "total population", name_vector)
   name_vector <- ifelse(name_vector == "Statewide Total", "total population", name_vector)

@@ -34,7 +34,7 @@ standardize_absence_subgroups <- function(subgroup) {
     subgroup == "multiracial" ~ "multiracial",
     subgroup == "economically disadvantaged" ~ "econ_disadv",
     subgroup == "limited english proficiency" ~ "lep",
-    subgroup == "students with disability" ~ "special_ed",
+    subgroup == "students with disabilities" ~ "special_ed",
     subgroup == "male" ~ "male",
     subgroup == "female" ~ "female",
     TRUE ~ subgroup
