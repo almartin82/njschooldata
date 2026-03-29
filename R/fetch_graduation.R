@@ -259,7 +259,7 @@ fetch_grad_count <- function(end_year) {
 #' }
 fetch_grad_rate <- function(end_year, methodology = "4 year") {
   df <- get_grad_rate(end_year, methodology) %>%
-    process_grad_rate(end_year)
+    process_grad_rate(end_year, methodology)
 
   df <- tidy_grad_rate(df, end_year, methodology)
 
@@ -273,6 +273,7 @@ fetch_grad_rate <- function(end_year, methodology = "4 year") {
       school_id, school_name,
       subgroup,
       grad_rate,
+      dplyr::one_of("four_yr_grad_rate", "five_yr_grad_rate"),
       cohort_count, graduated_count,
       methodology,
       is_state,

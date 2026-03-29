@@ -224,13 +224,88 @@ process_grad_count <- function(df, end_year) {
 #'
 #' Custom processing for grad rate data beyond generic process_grate.
 #'
-#' @param df Output of get_grad_rate
+#' For 5-year methodology, the raw files contain both 4-year and 5-year
+#' columns. This function ensures \code{grad_rate} contains the rate
+#' matching the requested methodology, and preserves the other rate
+#' as \code{four_yr_grad_rate} or \code{five_yr_grad_rate}.
+#'
+#' @param df Output of get_grad_rate (already passed through process_grate)
 #' @param end_year Ending academic year
 #' @param methodology One of c('4 year', '5 year')
 #' @return Data frame with normalized grad rate variables
 #' @keywords internal
 process_grad_rate <- function(df, end_year, methodology) {
-  # Just a stub for now
+
+  if (methodology == "5 year") {
+    # The 5-year files contain both 4yr and 5yr columns.
+    # process_grate() already mapped "Four Year Graduation Rate" -> grad_rate.
+    # We need to find the 5-year column and swap it in.
+
+    five_yr_names <- c(
+      "five_year_graduation_rate", "five_yr_grad_rate",
+      "5_year_graduation_rate", "five_year_adjusted_cohort_graduation_rate",
+      "x5_year_graduation_rate"
+    )
+
+    five_yr_col <- intersect(tolower(names(df)), five_yr_names)
+
+    if (length(five_yr_col) > 0) {
+      five_yr_col <- five_yr_col[1]
+
+      # Preserve the 4-year rate that process_grate put in grad_rate
+      df$four_yr_grad_rate <- df$grad_rate
+
+      # Move the 5-year rate into grad_rate
+      df$grad_rate <- as.numeric(
+        dplyr::if_else(
+          stringr::str_detect(as.character(df[[five_yr_col]]), "\\*|N|-|<|>"),
+          NA_character_,
+          as.character(df[[five_yr_col]])
+        )
+      )
+
+      # Normalize scale: if values are > 1, they're percentages
+      if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {
+        df$grad_rate <- df$grad_rate * 100
+      }
+      df$grad_rate <- df$grad_rate / 100 %>% round(2)
+
+      # Drop the raw 5yr column now that it's in grad_rate
+      df[[five_yr_col]] <- NULL
+
+    } else {
+      # No separate 5yr column found — grad_rate may already be the 5yr rate
+      # (some file formats put the 5yr rate in the main "Graduation Rate" column)
+      # Preserve as-is but add an empty four_yr_grad_rate for consistency
+      if (!"four_yr_grad_rate" %in% names(df)) {
+        df$four_yr_grad_rate <- NA_real_
+      }
+    }
+  } else if (methodology == "4 year") {
+    # Check if there's a 5yr column in 4yr files (shouldn't be, but handle it)
+    five_yr_names <- c(
+      "five_year_graduation_rate", "five_yr_grad_rate",
+      "5_year_graduation_rate", "five_year_adjusted_cohort_graduation_rate",
+      "x5_year_graduation_rate"
+    )
+    five_yr_col <- intersect(tolower(names(df)), five_yr_names)
+    if (length(five_yr_col) > 0) {
+      # Preserve 5yr rate as bonus column
+      df$five_yr_grad_rate <- as.numeric(
+        dplyr::if_else(
+          stringr::str_detect(as.character(df[[five_yr_col[1]]]), "\\*|N|-|<|>"),
+          NA_character_,
+          as.character(df[[five_yr_col[1]]])
+        )
+      )
+      if (all(df$five_yr_grad_rate <= 1 | is.na(df$five_yr_grad_rate))) {
+        df$five_yr_grad_rate <- df$five_yr_grad_rate * 100
+      }
+      df$five_yr_grad_rate <- df$five_yr_grad_rate / 100 %>% round(2)
+      df[[five_yr_col[1]]] <- NULL
+    }
+  }
+
   df
 }
 
