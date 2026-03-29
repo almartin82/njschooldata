@@ -45,7 +45,7 @@ A data frame with directory data. The exact columns depend on the
 
 - `is_charter`, `is_school`, `is_district` - Boolean flags
 
-- `CDS_Code` - Combined County-District-School code
+- `cds_code` - Combined County-District-School code
 
 School-level data additionally includes:
 
