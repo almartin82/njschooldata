@@ -122,7 +122,7 @@ charter_sector_enr_aggs <- function(df) {
          end_year < 2010 &
             !district_id == '9999' &
             school_id == '999' &
-            as.numeric(district_id) >= 6000
+            district_id >= "6000"
       )
    
    df <- bind_rows(df_modern, df_old)

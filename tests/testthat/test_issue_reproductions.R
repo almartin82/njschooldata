@@ -157,45 +157,22 @@ test_that("postsecondary enrollment already uses lowercase cds_code", {
 
 # Issue #62: district code padding consistency
 
-test_that("charter.R converts district_id to numeric (drops leading zeros)", {
-  # charter.R line 125 uses `as.numeric(district_id) >= 6000`
-  # This is problematic because it coerces character district IDs to numeric,
-  # which drops leading zeros. While district_ids >= 6000 don't have leading
-  # zeros, this pattern is dangerous and inconsistent with the convention
-  # that district_id should always be character.
-
+test_that("charter.R does not coerce district_id to numeric", {
   charter_code <- readLines("../../R/charter.R")
   numeric_coercion <- grep("as\\.numeric\\(district_id\\)", charter_code)
-
-  expect_true(
-    length(numeric_coercion) > 0,
-    info = paste(
-      "Bug: charter.R coerces district_id to numeric.",
-      "If this fails, the as.numeric() call has been removed — update test."
-    )
-  )
+  expect_equal(length(numeric_coercion), 0,
+    info = "charter.R should use string comparison, not as.numeric(district_id)")
 })
 
-test_that("config_peer_groups.R concatenates potentially unpadded codes", {
-  # config_peer_groups.R line 46: district_id = paste0(county_code, district_code)
-  # If county_code or district_code aren't padded, the resulting district_id
-  # will be wrong (e.g., "13570" instead of "013570" or "0135700").
-
+test_that("config_peer_groups.R pads codes before concatenation", {
   peer_code <- readLines("../../R/config_peer_groups.R")
-  concat_line <- grep("district_id.*paste0.*county_code.*district_code", peer_code)
+  concat_lines <- grep("paste0.*county_code.*district_code", peer_code)
 
-  if (length(concat_line) > 0) {
-    # Check if there's any padding before the paste0
-    context_lines <- peer_code[max(1, concat_line[1] - 5):concat_line[1]]
-    has_padding <- any(grepl("pad_leading|str_pad|sprintf.*%0", context_lines))
-
-    expect_true(
-      has_padding,
-      info = paste(
-        "Bug: config_peer_groups.R concatenates county_code + district_code",
-        "without ensuring they are padded first. Line:", concat_line[1]
-      )
-    )
+  for (line_num in concat_lines) {
+    line_text <- peer_code[line_num]
+    has_padding <- grepl("pad_leading", line_text)
+    expect_true(has_padding,
+      info = paste("Line", line_num, "concatenates codes without padding:", line_text))
   }
 })
 
