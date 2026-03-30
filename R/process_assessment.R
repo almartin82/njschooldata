@@ -93,6 +93,7 @@ parcc_column_order <- function(df) {
       scale_score_mean,
       pct_l1, pct_l2, pct_l3, pct_l4, pct_l5, proficient_above,
       num_l1, num_l2, num_l3, num_l4, num_l5,
+      dplyr::one_of("n_charter_rows", "n_schools", "districts", "schools"),
       is_state, is_dfg,
       is_district, is_school, is_charter,
       is_charter_sector,

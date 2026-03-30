@@ -457,3 +457,502 @@ test_that("ecosystem_trend includes rank and n columns for allpublic", {
   expect_true("allpublic_n" %in% names(result),
     info = "ecosystem_trend should include allpublic_n")
 })
+
+
+# =============================================================================
+# Issue #134: improve fetch_special_pop to include n / enr
+# https://github.com/almartin82/njschooldata/issues/134
+# =============================================================================
+
+# Issue #134: fetch_special_pop should derive N from enrollment
+
+test_that("fetch_reportcard_special_pop output includes n_enrolled column", {
+  skip_if_offline()
+
+  result <- tryCatch(
+    fetch_reportcard_special_pop(2019),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Report card data not accessible")
+
+  expect_true("n_enrolled" %in% names(result),
+    info = "fetch_reportcard_special_pop should include n_enrolled column")
+  expect_true("n_students" %in% names(result),
+    info = "fetch_reportcard_special_pop should include n_students count column")
+
+  # n_enrolled should be numeric, not character
+  expect_true(is.numeric(result$n_enrolled),
+    info = "n_enrolled should be numeric, not character")
+})
+
+test_that("fetch_reportcard_special_pop n_students is consistent with percent and n_enrolled", {
+  skip_if_offline()
+
+  result <- tryCatch(
+    fetch_reportcard_special_pop(2019),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Report card data not accessible")
+
+  # Where we have both percent and n_enrolled, n_students should be derivable
+  check <- result %>%
+    dplyr::filter(!is.na(percent) & !is.na(n_enrolled) & n_enrolled > 0)
+
+  expect_true(nrow(check) > 0,
+    info = "Should have rows with both percent and n_enrolled populated")
+
+  # n_students should approximately equal percent/100 * n_enrolled
+  check <- check %>%
+    dplyr::mutate(
+      expected_n = round(percent / 100 * n_enrolled),
+      diff = abs(n_students - expected_n)
+    )
+
+  # Allow rounding tolerance of 1
+  expect_true(all(check$diff <= 1, na.rm = TRUE),
+    info = "n_students should be derivable from percent and n_enrolled")
+})
+
+test_that("fetch_reportcard_special_pop includes enrollment from PR enrollment table", {
+  skip_if_offline()
+
+  # The issue specifically asks to "read from enrollment table in PR"
+  # and "add that to special pop to infer N"
+  result <- tryCatch(
+    fetch_reportcard_special_pop(2018),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Report card data not accessible")
+
+  # No row should have NA for n_enrolled when the school exists in enrollment
+  schools_with_data <- result %>%
+    dplyr::filter(!is.na(percent) & percent > 0)
+
+  na_enrolled <- sum(is.na(schools_with_data$n_enrolled))
+  pct_missing <- na_enrolled / nrow(schools_with_data)
+
+  # At most 5% of schools with special pop data should be missing enrollment
+  expect_true(pct_missing < 0.05,
+    info = sprintf(
+      "%d of %d schools (%.1f%%) with special pop data are missing n_enrolled",
+      na_enrolled, nrow(schools_with_data), pct_missing * 100
+    ))
+})
+
+
+# =============================================================================
+# Issue #116: extract_rc_college_matric isn't pulling the matric number
+# https://github.com/almartin82/njschooldata/issues/116
+# =============================================================================
+
+# Issue #116: college matric missing enroll_any for certain years
+
+test_that("extract_rc_college_matric returns enroll_any for 2013", {
+  skip_if_offline()
+
+  rc_2013 <- tryCatch(
+    get_one_rc_database(2013),
+    error = function(e) NULL
+  )
+  skip_if(is.null(rc_2013), "2013 report card data not accessible")
+
+  matric <- extract_rc_college_matric(list(rc_2013))
+
+  expect_true("enroll_any" %in% names(matric),
+    info = "enroll_any column should be present for 2013")
+
+  # enroll_any should have actual values, not all NA
+  non_na <- sum(!is.na(matric$enroll_any))
+  expect_true(non_na > 0,
+    info = sprintf(
+      "enroll_any should have non-NA values for 2013 but all %d rows are NA",
+      nrow(matric)
+    ))
+})
+
+test_that("extract_rc_college_matric returns correct enroll_4yr for 2017", {
+  skip_if_offline()
+
+  rc_2017 <- tryCatch(
+    get_one_rc_database(2017),
+    error = function(e) NULL
+  )
+  skip_if(is.null(rc_2017), "2017 report card data not accessible")
+
+  matric <- extract_rc_college_matric(list(rc_2017))
+
+  expect_true("enroll_4yr" %in% names(matric),
+    info = "enroll_4yr column should be present for 2017")
+
+  # Per the issue comment: "2017 4yr is not the right number either"
+  # enroll_4yr values should be percentages between 0 and 100
+  valid <- matric %>%
+    dplyr::filter(!is.na(enroll_4yr))
+  expect_true(nrow(valid) > 0,
+    info = "enroll_4yr should have non-NA values for 2017")
+  expect_true(all(valid$enroll_4yr >= 0 & valid$enroll_4yr <= 100),
+    info = "enroll_4yr should be valid percentages between 0 and 100")
+})
+
+test_that("extract_rc_college_matric warns when expected columns not found", {
+  # Silent column drops are the root cause of this bug.
+  # The function should warn when gsub column name matching fails to find
+  # expected columns like enroll_any, enroll_4yr, enroll_2yr.
+
+  # Create a minimal mock list that has a post_sec table but with
+  # column names that don't match any gsub pattern
+  mock_pr <- list(
+    sch_header = data.frame(
+      county_code = "13", district_code = "3570",
+      school_code = "055", end_year = 2013,
+      stringsAsFactors = FALSE
+    ),
+    post_sec = data.frame(
+      county_code = "13", district_code = "3570",
+      school_code = "055", end_year = 2013,
+      subgroup = "Total Population",
+      unknown_col_name = 85.5,  # This should be enroll_any but won't match
+      stringsAsFactors = FALSE
+    )
+  )
+
+  # Currently the function silently returns without the column.
+  # After fix, it should either warn or handle gracefully.
+  result <- tryCatch(
+    extract_rc_college_matric(list(mock_pr)),
+    error = function(e) "error",
+    warning = function(w) "warning"
+  )
+
+  # The function should not silently drop columns - it should warn
+  expect_true(
+    is.character(result) && result == "warning",
+    info = "extract_rc_college_matric should warn when expected columns are not found"
+  )
+})
+
+
+# =============================================================================
+# Issue #97: collapse/clean up schools and districts field when aggregating
+# https://github.com/almartin82/njschooldata/issues/97
+# =============================================================================
+
+# Issue #97: aggregate name fields should be deduplicated
+
+test_that("collapse_agg_names deduplicates and counts repeated names", {
+  # The desired function should collapse:
+  # "School A, School A, School A, School B" => "School A (3), School B (1)"
+  # or similar compact format
+
+  # Test that the function exists (TDD: it doesn't yet)
+  expect_true(
+    exists("collapse_agg_names", where = asNamespace("njschooldata")),
+    info = "collapse_agg_names() function should exist in njschooldata"
+  )
+})
+
+test_that("collapse_agg_names handles basic deduplication", {
+  skip_if_not(
+    exists("collapse_agg_names", where = asNamespace("njschooldata")),
+    "collapse_agg_names not yet implemented"
+  )
+
+  # Single repeated name
+  input <- "School A, School A, School A"
+  result <- njschooldata::collapse_agg_names(input)
+  expect_true(grepl("School A", result))
+  expect_true(grepl("3", result),
+    info = "Should indicate count of 3 for repeated name")
+
+  # Mixed names
+  input2 <- "School A, School B, School A"
+  result2 <- njschooldata::collapse_agg_names(input2)
+  expect_true(grepl("School A", result2))
+  expect_true(grepl("School B", result2))
+  # Total schools should be 3 (2 unique)
+  expect_false(nchar(result2) > nchar(input2),
+    info = "Collapsed string should be shorter or equal to input")
+})
+
+test_that("parcc_aggregate_calcs produces clean school names", {
+  # When the same school appears multiple times (e.g., across grades),
+  # the aggregated schools field should not repeat the name
+  test_df <- tibble::tibble(
+    end_year = rep(2019, 6),
+    district_name = rep("NEWARK", 6),
+    school_name = rep(c("School A", "School A", "School B"), 2),
+    subgroup = rep("total population", 6),
+    testing_year = rep(2019, 6),
+    test_name = rep("ELA", 6),
+    grade = rep(c("03", "04", "05"), 2),
+    number_enrolled = rep(100, 6),
+    number_not_tested = rep(5, 6),
+    number_of_valid_scale_scores = rep(95, 6),
+    scale_score_mean = rep(750, 6),
+    pct_l1 = rep(10, 6),
+    pct_l2 = rep(20, 6),
+    pct_l3 = rep(30, 6),
+    pct_l4 = rep(25, 6),
+    pct_l5 = rep(15, 6),
+    is_charter = rep(TRUE, 6)
+  ) %>%
+    parcc_perf_level_counts()
+
+  result <- test_df %>%
+    dplyr::group_by(end_year, subgroup) %>%
+    parcc_aggregate_calcs()
+
+  schools_str <- result$schools[1]
+  school_parts <- trimws(strsplit(schools_str, ",")[[1]])
+
+  # "School A" appears 4 times in input but should be collapsed
+  school_a_count <- sum(school_parts == "School A")
+
+  # After fix: School A should appear once (with count annotation)
+  # Current behavior: School A appears 4 times
+  expect_equal(school_a_count, 1,
+    info = paste(
+      "School A appears", school_a_count,
+      "times in aggregate but should appear once.",
+      "Full string:", schools_str
+    ))
+})
+
+
+# =============================================================================
+# Issue #103: create full subgroups from grad count subgroups
+# https://github.com/almartin82/njschooldata/issues/103
+# =============================================================================
+
+# Issue #103: grad count should have combined gender x race subgroups
+
+test_that("fetch_grad_count includes gender x race subgroups for years that have them", {
+  skip_if_offline()
+
+  # Pre-2011 data should have gender x race subgroups like white_m, black_f
+  result <- tryCatch(
+    fetch_grad_count(2010),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "2010 grad count data not accessible")
+
+  subgroups <- unique(result$subgroup)
+
+  # Should have combined gender x race subgroups like enrollment does
+  gender_race <- c("white_m", "white_f", "black_m", "black_f",
+                   "hispanic_m", "hispanic_f")
+
+  has_gender_race <- any(gender_race %in% subgroups)
+  expect_true(has_gender_race,
+    info = paste(
+      "Pre-2011 grad count should have gender x race subgroups.",
+      "Available subgroups:", paste(subgroups, collapse = ", ")
+    ))
+})
+
+test_that("grad count subgroups parallel enrollment subgroups", {
+  # The issue says "similar to enr, wh_m + wh_f etc"
+  # Grad count subgroups should use the same naming convention as enrollment
+
+  skip_if_offline()
+
+  enr <- tryCatch(
+    fetch_enr(2019, tidy = TRUE),
+    error = function(e) NULL
+  )
+  gcount <- tryCatch(
+    fetch_grad_count(2019),
+    error = function(e) NULL
+  )
+  skip_if(is.null(enr) || is.null(gcount), "Data not accessible")
+
+  enr_subgroups <- unique(enr$subgroup)
+  gc_subgroups <- unique(gcount$subgroup)
+
+  # Core demographic subgroups should be named the same
+  core_subgroups <- c("white", "black", "hispanic", "asian",
+                      "male", "female")
+
+  for (sg in core_subgroups) {
+    in_enr <- sg %in% enr_subgroups
+    in_gc <- sg %in% gc_subgroups
+    if (in_enr) {
+      expect_true(in_gc,
+        info = sprintf(
+          "Subgroup '%s' is in enrollment but not in grad count. Names should match.",
+          sg
+        ))
+    }
+  }
+})
+
+
+# =============================================================================
+# Issue #106: better handling of raw 4 year and 5 year grad rate
+# https://github.com/almartin82/njschooldata/issues/106
+# =============================================================================
+
+# Issue #106: grad_rate and five_yr_grad_rate column handling
+
+test_that("fetch_grad_rate returns single grad_rate column for 5-year data", {
+  skip_if_offline()
+
+  result <- tryCatch(
+    fetch_grad_rate(2013, methodology = "5 year"),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "5-year grad rate data not accessible for 2013")
+
+  # Should have a single grad_rate column (not separate grad_rate and five_yr_grad_rate)
+  expect_true("grad_rate" %in% names(result),
+    info = "5-year data should have a 'grad_rate' column")
+
+  # The grad_rate column should contain the 5-year rate, not the 4-year rate
+  expect_true("methodology" %in% names(result))
+  expect_true(all(result$methodology == "5 year"),
+    info = "methodology column should indicate '5 year'")
+
+  # grad_rate should be the 5-year rate (generally higher than 4-year)
+  # Values should be valid proportions
+  valid <- result %>%
+    dplyr::filter(!is.na(grad_rate))
+  expect_true(nrow(valid) > 0)
+  expect_true(all(valid$grad_rate >= 0 & valid$grad_rate <= 1),
+    info = "grad_rate should be valid proportions between 0 and 1")
+})
+
+test_that("5-year grad rate values are plausible (higher than 4-year)", {
+  skip_if_offline()
+
+  grate_4yr <- tryCatch(
+    fetch_grad_rate(2013, methodology = "4 year"),
+    error = function(e) NULL
+  )
+  grate_5yr <- tryCatch(
+    fetch_grad_rate(2013, methodology = "5 year"),
+    error = function(e) NULL
+  )
+  skip_if(is.null(grate_4yr) || is.null(grate_5yr),
+    "Grad rate data not accessible for 2013")
+
+  # Join on district to compare
+  comparison <- grate_4yr %>%
+    dplyr::filter(is_district, subgroup == "total population") %>%
+    dplyr::select(district_id, grad_rate_4yr = grad_rate) %>%
+    dplyr::inner_join(
+      grate_5yr %>%
+        dplyr::filter(is_district, subgroup == "total population") %>%
+        dplyr::select(district_id, grad_rate_5yr = grad_rate),
+      by = "district_id"
+    ) %>%
+    dplyr::filter(!is.na(grad_rate_4yr) & !is.na(grad_rate_5yr))
+
+  skip_if(nrow(comparison) == 0, "No districts with both 4yr and 5yr rates")
+
+  # On average, 5-year rates should be >= 4-year rates
+  expect_true(
+    mean(comparison$grad_rate_5yr, na.rm = TRUE) >=
+      mean(comparison$grad_rate_4yr, na.rm = TRUE),
+    info = "Average 5-year grad rate should be >= average 4-year grad rate"
+  )
+
+  # The grad_rate field should NOT still contain the 4-year rate
+  # (this is the bug: the 5yr file has both columns and the wrong one may be used)
+  # At least 20% of districts should show 5yr > 4yr
+  pct_higher <- mean(comparison$grad_rate_5yr > comparison$grad_rate_4yr)
+  expect_true(pct_higher >= 0.2,
+    info = sprintf(
+      "Only %.1f%% of districts show 5yr > 4yr. The grad_rate column may contain 4yr values.",
+      pct_higher * 100
+    ))
+})
+
+
+# =============================================================================
+# Issue #69: charter_sector_aggs should return the number of charters
+# https://github.com/almartin82/njschooldata/issues/69
+# =============================================================================
+
+# Issue #69: charter sector aggregations should report charter count
+
+test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
+  skip_if_offline()
+
+  enr <- tryCatch(
+    fetch_enr(2019, tidy = TRUE),
+    error = function(e) NULL
+  )
+  skip_if(is.null(enr), "Enrollment data not accessible")
+
+  result <- tryCatch(
+    charter_sector_enr_aggs(enr),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Charter sector enrollment aggs failed")
+
+  # Should have a column indicating how many charters are in the sector
+  has_count_col <- any(c("n_schools", "n_charters", "n_charter_rows") %in% names(result))
+  expect_true(has_count_col,
+    info = paste(
+      "charter_sector_enr_aggs should include a charter count column.",
+      "Available columns:", paste(names(result), collapse = ", ")
+    ))
+
+  # The count should be > 0 for all rows (since these are charter sector aggs)
+  if ("n_schools" %in% names(result)) {
+    expect_true(all(result$n_schools > 0),
+      info = "n_schools should be > 0 for all charter sector rows")
+  }
+})
+
+test_that("charter_sector_grate_aggs includes n_charter_rows column", {
+  skip_if_offline()
+
+  grate <- tryCatch(
+    fetch_grad_rate(2019),
+    error = function(e) NULL
+  )
+  skip_if(is.null(grate), "Grad rate data not accessible")
+
+  result <- tryCatch(
+    charter_sector_grate_aggs(grate),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Charter sector grate aggs failed")
+
+  # The aggregate calc function creates n_charter_rows but it may be
+  # dropped by grate_column_order(). Issue #69 says it should be kept.
+  expect_true("n_charter_rows" %in% names(result),
+    info = paste(
+      "charter_sector_grate_aggs should retain n_charter_rows column.",
+      "Available columns:", paste(names(result), collapse = ", ")
+    ))
+})
+
+test_that("charter sector with single school is identifiable", {
+  # The issue says: "some city charter 'sectors' are only one school -
+  # make this easy to see"
+
+  skip_if_offline()
+
+  grate <- tryCatch(
+    fetch_grad_rate(2019),
+    error = function(e) NULL
+  )
+  skip_if(is.null(grate), "Grad rate data not accessible")
+
+  result <- tryCatch(
+    charter_sector_grate_aggs(grate),
+    error = function(e) NULL
+  )
+  skip_if(is.null(result), "Charter sector grate aggs failed")
+
+  # n_charter_rows should be present and allow identifying single-school sectors
+  skip_if_not("n_charter_rows" %in% names(result),
+    "n_charter_rows column not yet retained in output")
+
+  # There should be at least one sector with a small number of charters
+  min_charters <- min(result$n_charter_rows, na.rm = TRUE)
+  expect_true(is.finite(min_charters),
+    info = "n_charter_rows should have finite values")
+})
