@@ -425,11 +425,27 @@ extract_rc_college_matric <- function(
         'enroll_2yr', names(df)
       )
       names(df) <- gsub(
-        'grad_percent|post_sec_enrolled_percent|percent_enrolled|postsec_enrolled_percent|enrolled_percent', 
+        'grad_percent|grad_rate|post_sec_enrolled_percent|percent_enrolled|postsec_enrolled_percent|enrolled_percent',
         'enroll_any', names(df)
       )
       names(df) <- gsub('sub_group|student_group', 'subgroup', names(df))
-      
+
+      # Warn when expected matric columns are not found (#116)
+      expected_matric_cols <- c('enroll_any', 'enroll_4yr', 'enroll_2yr')
+      missing_cols <- setdiff(expected_matric_cols, names(df))
+      if (length(missing_cols) > 0) {
+        this_year <- unique(df$end_year)
+        warning(
+          sprintf(
+            "College matric columns not found for year %s: %s. ",
+            paste(this_year, collapse = "/"),
+            paste(missing_cols, collapse = ", ")
+          ),
+          "Raw column names: ", paste(names(df), collapse = ", "),
+          call. = FALSE
+        )
+      }
+
       #clean up messy data vectors, suppression codes, etc
       if ('enroll_any' %in% names(df)) {
         df$enroll_any <- rc_numeric_cleaner(df$enroll_any)

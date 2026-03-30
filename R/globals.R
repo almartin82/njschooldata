@@ -75,6 +75,7 @@ utils::globalVariables(c(
   "methodology", "grad_rate", "grad_count",
   "cohort_count", "graduated_count",
   "four_year_grad_rate", "five_year_grad_rate",
+  "four_yr_grad_rate", "five_yr_grad_rate",
   "group", "subgroup",
   "total_population", "postgrad_grad",
   "outcome_count", "num_grad",
