@@ -1,4 +1,41 @@
 
+#' Clean report card subgroup names to canonical lowercase form
+#'
+#' @description Standardizes subgroup names from NJ DOE report card data
+#' to the canonical lowercase names used across the package. Matches the
+#' output conventions of \code{\link{clean_spr_subgroups}} and
+#' \code{\link{grad_file_group_cleanup}}.
+#'
+#' @param group Character vector of subgroup names.
+#' @return Character vector of cleaned, lowercase canonical subgroup names.
+#'
+#' @export
+clean_rc_subgroups <- function(group) {
+  dplyr::case_when(
+    tolower(group) %in% c(
+      "schoolwide", "districtwide", "total population"
+    ) ~ "total population",
+    tolower(group) %in% c(
+      "african american", "black", "black or african american"
+    ) ~ "black",
+    tolower(group) %in% c(
+      "students with disability", "students with disabilities"
+    ) ~ "students with disabilities",
+    tolower(group) %in% c(
+      "limited english proficient students", "english language learners",
+      "english learners", "multilingual learners"
+    ) ~ "limited english proficiency",
+    tolower(group) %in% c(
+      "economically disadvantaged students", "economically disadvantaged"
+    ) ~ "economically disadvantaged",
+    tolower(group) == "american indian or alaska native" ~ "american indian",
+    tolower(group) == "two or more races" ~ "multiracial",
+    tolower(group) == "native hawaiian or other pacific islander" ~ "pacific islander",
+    TRUE ~ tolower(group)
+  )
+}
+
+
 #' Get Raw Report Card Database
 #'
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
@@ -415,18 +452,11 @@ extract_rc_college_matric <- function(
       #if there's no subgroup field, implicitly assume that means Schoolwide
       if (!'subgroup' %in% names(df)) {
         df <- df %>%
-          mutate(subgroup = 'Total Population')
+          mutate(subgroup = 'Schoolwide')
       }
-      
-      #make subgroups consistent
-      df$subgroup <- gsub('African American', 'Black', df$subgroup)
-      # above changes "Black or African American" to "Black or Black"
-      df$subgroup <- gsub('Black or Black', 'Black', df$subgroup)
-      df$subgroup <- gsub('Students with Disability', 'Students With Disabilities', df$subgroup)
-      df$subgroup <- gsub('Schoolwide', 'Total Population', df$subgroup)
-      df$subgroup <- gsub('Districtwide', 'Total Population', df$subgroup)
-      #df$subgroup <- gsub('Statewide', 'Total Population', df$subgroup)
-      df$subgroup <- gsub('Limited English Proficient Students', 'English Language Learners', df$subgroup)
+
+      #make subgroups consistent using canonical lowercase names
+      df$subgroup <- clean_rc_subgroups(df$subgroup)
       
       df <- df %>%
         filter(subgroup != "Statewide") %>%
