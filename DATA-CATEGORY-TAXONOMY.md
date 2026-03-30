@@ -1,5 +1,6 @@
 # Data Category Taxonomy
 
+Canonical taxonomy of school data categories published by state Departments of Education.
 
 ## Tier 1 -- Core (every state DOE publishes this)
 
@@ -36,6 +37,4 @@
 | # | Category | Function(s) | Years | Details |
 |---|----------|-------------|-------|---------|
 | 17 | **Course Enrollment** | `fetch_math_course_enrollment()`, `fetch_science_course_enrollment()`, `fetch_cs_enrollment()`, `fetch_arts_enrollment()`, `fetch_world_language_enrollment()` | Available | Math, science, CS, arts, world languages |
-
----
 
