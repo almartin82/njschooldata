@@ -71,7 +71,7 @@ clean_enr_data <- function(df) {
 
   # Make CDS_code
 
-  df$CDS_Code <- paste0(df$county_id, df$district_id, df$school_id)
+  df$cds_code <- paste0(df$county_id, df$district_id, df$school_id)
 
   return(df)
 }

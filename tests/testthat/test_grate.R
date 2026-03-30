@@ -396,7 +396,7 @@ test_that("6-year graduation subgroups are cleaned correctly", {
   expect_true("total population" %in% subgroups)
   expect_true("black" %in% subgroups)
   expect_true("economically disadvantaged" %in% subgroups)
-  expect_true("students with disability" %in% subgroups)
+  expect_true("students with disabilities" %in% subgroups)
 
   # Check that original names are NOT present
   expect_false("Schoolwide" %in% subgroups)

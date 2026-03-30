@@ -12,7 +12,7 @@ test_that("standardize_absence_subgroups maps NJ names to cross-state standards"
     "total population", "white", "black", "hispanic", "asian",
     "american indian", "pacific islander", "multiracial",
     "economically disadvantaged", "limited english proficiency",
-    "students with disability", "male", "female"
+    "students with disabilities", "male", "female"
   )
 
   expected <- c(

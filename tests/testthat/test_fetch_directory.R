@@ -96,7 +96,7 @@ test_that("fetch_directory school level returns correct schema", {
     "principal_name", "principal_email",
     "address", "city", "state", "zip", "phone",
     "grades_served", "nces_id",
-    "is_charter", "is_school", "is_district", "CDS_Code"
+    "is_charter", "is_school", "is_district", "cds_code"
   )
   for (col in required_cols) {
     expect_true(col %in% names(schools), info = paste("Missing column:", col))
@@ -120,7 +120,7 @@ test_that("fetch_directory district level returns correct schema", {
     "superintendent_name", "superintendent_email",
     "address", "city", "state", "zip", "phone",
     "website",
-    "is_charter", "is_school", "is_district", "CDS_Code"
+    "is_charter", "is_school", "is_district", "cds_code"
   )
   for (col in required_cols) {
     expect_true(col %in% names(districts), info = paste("Missing column:", col))
@@ -196,17 +196,17 @@ test_that("charter schools are correctly flagged", {
   expect_true(all(charters$county_id == "80"))
 })
 
-test_that("CDS_Code is correctly constructed", {
+test_that("cds_code is correctly constructed", {
   schools <- fetch_directory(level = "school", use_cache = TRUE)
   districts <- fetch_directory(level = "district", use_cache = TRUE)
 
   # School CDS = county_id + district_id + school_id
   expected_school_cds <- paste0(schools$county_id, schools$district_id, schools$school_id)
-  expect_equal(schools$CDS_Code, expected_school_cds)
+  expect_equal(schools$cds_code, expected_school_cds)
 
   # District CDS = county_id + district_id + "999"
   expected_dist_cds <- paste0(districts$county_id, districts$district_id, "999")
-  expect_equal(districts$CDS_Code, expected_dist_cds)
+  expect_equal(districts$cds_code, expected_dist_cds)
 })
 
 test_that("Excel formula padding is properly removed", {
@@ -262,11 +262,11 @@ test_that("fetch_directory school level matches get_school_directory columns", {
   schools_new <- fetch_directory(level = "school", use_cache = TRUE)
 
   # The old function returned: county_id, county_name, district_id,
-  # district_name, school_id, school_name, address, CDS_Code (plus raw cols)
+  # district_name, school_id, school_name, address, cds_code (plus raw cols)
   # New function should have all of these
   expect_true("county_id" %in% names(schools_new))
   expect_true("district_id" %in% names(schools_new))
   expect_true("school_id" %in% names(schools_new))
-  expect_true("CDS_Code" %in% names(schools_new))
+  expect_true("cds_code" %in% names(schools_new))
   expect_true("address" %in% names(schools_new))
 })
