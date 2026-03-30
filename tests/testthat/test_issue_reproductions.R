@@ -235,3 +235,225 @@ test_that("grad_file_group_cleanup and clean_grate_names produce same SWD name",
   expect_equal(tidy_result, "students with disabilities")
   expect_equal(grad_result, tidy_result)
 })
+
+
+# =============================================================================
+# Issue #125: county ids to names for sped data
+# https://github.com/almartin82/njschooldata/issues/125
+# =============================================================================
+
+# Issue #125: Historic sped data has county_name but not county_id.
+# Need a county_name_to_id() function that maps NJ county names to their
+# 2-digit county codes.
+
+test_that("county_name_to_id maps all 21 NJ counties correctly", {
+  # NJ has 21 counties, each with a unique 2-digit code (01-21)
+  nj_counties <- c(
+    "ATLANTIC", "BERGEN", "BURLINGTON", "CAMDEN", "CAPE MAY",
+    "CUMBERLAND", "ESSEX", "GLOUCESTER", "HUDSON", "HUNTERDON",
+    "MERCER", "MIDDLESEX", "MONMOUTH", "MORRIS", "OCEAN",
+    "PASSAIC", "SALEM", "SOMERSET", "SUSSEX", "UNION", "WARREN"
+  )
+
+  result <- county_name_to_id(nj_counties)
+
+  # Should return character codes, zero-padded to 2 digits
+  expect_true(is.character(result))
+  expect_equal(length(result), 21)
+  expect_true(all(nchar(result) == 2))
+
+  # Specific known mappings
+  expect_equal(county_name_to_id("ATLANTIC"), "01")
+  expect_equal(county_name_to_id("ESSEX"), "07")
+  expect_equal(county_name_to_id("HUDSON"), "09")
+  expect_equal(county_name_to_id("WARREN"), "21")
+})
+
+test_that("county_name_to_id is case-insensitive", {
+  expect_equal(county_name_to_id("essex"), "07")
+  expect_equal(county_name_to_id("Essex"), "07")
+  expect_equal(county_name_to_id("ESSEX"), "07")
+})
+
+test_that("county_name_to_id returns NA for unknown county names", {
+  expect_true(is.na(county_name_to_id("FAKE COUNTY")))
+  expect_true(is.na(county_name_to_id("")))
+})
+
+test_that("county_name_to_id handles vector input", {
+  input <- c("ESSEX", "HUDSON", "BERGEN", "FAKE")
+  result <- county_name_to_id(input)
+  expect_equal(result, c("07", "09", "03", NA_character_))
+})
+
+test_that("clean_sped_df adds county_id when only county_name is present", {
+  # Simulate historic sped data that has county_name but no county_id
+  fake_df <- data.frame(
+    end_year = 2018,
+    county_name = c("ESSEX", "HUDSON"),
+    district_id = c("3570", "0680"),
+    district_name = c("NEWARK", "HOBOKEN"),
+    gened_num = c(1000, 500),
+    sped_num = c(150, 75),
+    sped_rate = c(15.0, 15.0),
+    stringsAsFactors = FALSE
+  )
+
+  result <- clean_sped_df(fake_df, 2018)
+
+  # county_id should be present and correctly derived from county_name
+  expect_true("county_id" %in% names(result))
+  expect_equal(result$county_id, c("07", "09"))
+})
+
+
+# =============================================================================
+# Issue #148: subgroup inconsistencies in report card data
+# https://github.com/almartin82/njschooldata/issues/148
+# =============================================================================
+
+# Issue #148: Report card functions use mixed-case subgroup names
+# (e.g., "Total Population", "Black", "English Language Learners") while
+# SPR and graduation functions use lowercase canonical names
+# (e.g., "total population", "black", "limited english proficiency").
+# All modules should use the same canonical lowercase names.
+
+test_that("report card subgroup names match canonical lowercase standard", {
+  # The canonical standard (used by clean_spr_subgroups and grad_file_group_cleanup)
+  canonical_names <- c(
+    "total population",
+    "black",
+    "students with disabilities",
+    "limited english proficiency",
+    "economically disadvantaged"
+  )
+
+  # Report card inline gsub cleaning produces these (current broken behavior):
+  rc_names <- c(
+    "Total Population",         # should be "total population"
+    "Black",                    # should be "black"
+    "Students With Disabilities", # should be "students with disabilities"
+    "English Language Learners", # should be "limited english proficiency"
+    "Economically Disadvantaged Students" # should be "economically disadvantaged"
+  )
+
+  # There should be a single canonical function that all modules use.
+  # Test that report card names match canonical names after cleaning.
+  cleaned <- clean_rc_subgroups(rc_names)
+  expect_equal(cleaned, canonical_names)
+})
+
+test_that("clean_rc_subgroups produces same output as clean_spr_subgroups for shared inputs", {
+  # Both functions should map the same raw NJ DOE names to the same canonical output
+  shared_inputs <- c(
+    "Schoolwide", "Districtwide",
+    "Black or African American",
+    "Students with Disabilities", "Students with Disability",
+    "English Learners",
+    "Economically Disadvantaged Students",
+    "American Indian or Alaska Native",
+    "Two or More Races",
+    "Native Hawaiian or Other Pacific Islander"
+  )
+
+  spr_results <- clean_spr_subgroups(shared_inputs)
+  rc_results <- clean_rc_subgroups(shared_inputs)
+
+  expect_equal(rc_results, spr_results,
+    info = "Report card and SPR subgroup cleaning should produce identical canonical names")
+})
+
+test_that("extract_rc_college_matric uses lowercase canonical subgroup names", {
+  # Source code should not produce mixed-case subgroup values
+  rc_source <- readLines("../../R/report_card.R")
+
+  # Should NOT have mixed-case output values like 'Total Population' or 'Black'
+  # (These indicate the legacy inline gsub approach rather than canonical cleaning)
+  mixed_case_outputs <- grep(
+    "gsub\\(.*(Total Population|English Language Learners).*subgroup",
+    rc_source
+  )
+
+  expect_equal(length(mixed_case_outputs), 0,
+    info = paste(
+      "report_card.R should use clean_rc_subgroups() instead of inline gsub",
+      "with mixed-case output values"
+    ))
+})
+
+
+# =============================================================================
+# Issue #157: percentile rank aggregates don't include rank and n cols
+# https://github.com/almartin82/njschooldata/issues/157
+# =============================================================================
+
+# Issue #157: city_ecosystem_summary() and ecosystem_trend() drop the
+# _rank and _n columns that add_percentile_rank() creates. Users need
+# these to understand the context of the percentile (rank X out of N).
+
+test_that("city_ecosystem_summary includes rank and n columns", {
+  # Create minimal test data with required structure
+  test_data <- data.frame(
+    end_year = rep(2023, 10),
+    district_id = c("3570", "3570C", "3570A", paste0("d", 1:7)),
+    district_name = c("NEWARK", "NEWARK CHARTERS", "NEWARK ALL PUBLIC", paste0("District ", 1:7)),
+    grad_rate = c(75, 85, 80, seq(60, 90, length.out = 7)),
+    is_district = c(TRUE, FALSE, FALSE, rep(TRUE, 7)),
+    is_charter_sector = c(FALSE, TRUE, FALSE, rep(FALSE, 7)),
+    is_allpublic = c(FALSE, FALSE, TRUE, rep(FALSE, 7)),
+    stringsAsFactors = FALSE
+  )
+
+  result <- city_ecosystem_summary(
+    df = test_data,
+    host_district_id = "3570",
+    metric_col = "grad_rate"
+  )
+
+  # Should include _rank and _n alongside _percentile
+  expect_true("grad_rate_percentile" %in% names(result),
+    info = "city_ecosystem_summary should include percentile column")
+  expect_true("grad_rate_rank" %in% names(result),
+    info = "city_ecosystem_summary should include rank column")
+  expect_true("grad_rate_n" %in% names(result),
+    info = "city_ecosystem_summary should include n column")
+})
+
+test_that("ecosystem_trend includes rank and n columns for allpublic", {
+  # Create minimal enrollment data
+  test_enr <- data.frame(
+    end_year = rep(c(2022, 2023), each = 2),
+    district_id = rep(c("3570C", "3570A"), 2),
+    subgroup = "total_enrollment",
+    n_students = c(15000, 40000, 16000, 41000),
+    stringsAsFactors = FALSE
+  )
+
+  # Create minimal performance data
+  test_perf <- data.frame(
+    end_year = rep(c(2022, 2023), each = 10),
+    district_id = rep(c("3570", "3570C", "3570A", paste0("d", 1:7)), 2),
+    district_name = rep(c("NEWARK", "NEWARK CHARTERS", "NEWARK ALL PUBLIC", paste0("District ", 1:7)), 2),
+    grad_rate = c(75, 85, 80, seq(60, 90, length.out = 7),
+                  76, 86, 81, seq(61, 91, length.out = 7)),
+    is_district = rep(c(TRUE, FALSE, FALSE, rep(TRUE, 7)), 2),
+    is_charter_sector = rep(c(FALSE, TRUE, FALSE, rep(FALSE, 7)), 2),
+    is_allpublic = rep(c(FALSE, FALSE, TRUE, rep(FALSE, 7)), 2),
+    stringsAsFactors = FALSE
+  )
+
+  result <- ecosystem_trend(
+    df_enrollment = test_enr,
+    df_performance = test_perf,
+    host_district_id = "3570",
+    metric_col = "grad_rate"
+  )
+
+  # Should include rank and n for allpublic
+  expect_true("allpublic_percentile" %in% names(result),
+    info = "ecosystem_trend should include allpublic_percentile")
+  expect_true("allpublic_rank" %in% names(result),
+    info = "ecosystem_trend should include allpublic_rank")
+  expect_true("allpublic_n" %in% names(result),
+    info = "ecosystem_trend should include allpublic_n")
+})

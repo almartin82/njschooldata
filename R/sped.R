@@ -74,6 +74,34 @@ get_raw_sped <- function(end_year) {
 }
 
 
+#' Map NJ county names to 2-digit county ID codes
+#'
+#' @description Maps New Jersey county names to their standard 2-digit
+#' numeric codes (01-21). NJ counties are numbered alphabetically.
+#'
+#' @param county_name Character vector of county names (case-insensitive).
+#'
+#' @return Character vector of 2-digit zero-padded county codes.
+#'   Returns \code{NA_character_} for unrecognized names.
+#'
+#' @examples
+#' county_name_to_id("ESSEX")
+#' county_name_to_id(c("essex", "Hudson", "BERGEN"))
+#'
+#' @export
+county_name_to_id <- function(county_name) {
+  nj_counties <- c(
+    "ATLANTIC" = "01", "BERGEN" = "02", "BURLINGTON" = "03", "CAMDEN" = "04",
+    "CAPE MAY" = "05", "CUMBERLAND" = "06", "ESSEX" = "07", "GLOUCESTER" = "08",
+    "HUDSON" = "09", "HUNTERDON" = "10", "MERCER" = "11", "MIDDLESEX" = "12",
+    "MONMOUTH" = "13", "MORRIS" = "14", "OCEAN" = "15", "PASSAIC" = "16",
+    "SALEM" = "17", "SOMERSET" = "18", "SUSSEX" = "19", "UNION" = "20",
+    "WARREN" = "21"
+  )
+  unname(nj_counties[toupper(county_name)])
+}
+
+
 clean_sped_names <- function(df) {
 
   #data
@@ -153,6 +181,11 @@ clean_sped_df <- function(df, end_year) {
 
   # Remove rows with missing enrollment data (footer rows)
   df <- df %>% dplyr::filter(!is.na(gened_num))
+
+  # Derive county_id from county_name when missing (historic data)
+  if (!"county_id" %in% names(df) && "county_name" %in% names(df)) {
+    df$county_id <- county_name_to_id(df$county_name)
+  }
 
   # Return df with proper column order
   # Use any_of() to handle columns that may not exist in all years
