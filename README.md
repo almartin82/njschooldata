@@ -9,7 +9,6 @@
 
 1.4 million students. 580+ districts. 21 counties. 25+ years of data from the New Jersey Department of Education, in one clean R and Python interface.
 
-
 **[Full documentation](https://almartin82.github.io/njschooldata/)** -- all 15 stories with interactive charts, getting-started guide, and complete function reference.
 
 ## Highlights
