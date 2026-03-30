@@ -4,12 +4,6 @@
 from the New Jersey Department of Education, in one clean R and Python
 interface.
 
-Part of the [njschooldata](https://github.com/almartin82/njschooldata)
-family – **this is the mothership package** that inspired the
-[state-schooldata
-project](https://github.com/almartin82/state-schooldata) now covering
-all 50 states.
-
 **[Full documentation](https://almartin82.github.io/njschooldata/)** –
 all 15 stories with interactive charts, getting-started guide, and
 complete function reference.

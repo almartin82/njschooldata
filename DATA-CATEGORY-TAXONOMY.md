@@ -1,10 +1,7 @@
 # Data Category Taxonomy
 
 Canonical taxonomy of school data categories published by state
-Departments of Education. njschooldata is the mothership package and
-covers the most categories of any package in the
-[state-schooldata](https://github.com/almartin82/state-schooldata)
-project.
+Departments of Education.
 
 ## Tier 1 – Core (every state DOE publishes this)
 
@@ -41,9 +38,3 @@ project.
 | \#  | Category              | Function(s)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Years     | Details                                  |
 |-----|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|------------------------------------------|
 | 17  | **Course Enrollment** | [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md), [`fetch_science_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_science_course_enrollment.md), [`fetch_cs_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_cs_enrollment.md), [`fetch_arts_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_arts_enrollment.md), [`fetch_world_language_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_world_language_enrollment.md) | Available | Math, science, CS, arts, world languages |
-
-------------------------------------------------------------------------
-
-For the full cross-state taxonomy covering all 30 categories, see
-[DATA-CATEGORY-TAXONOMY.md](https://github.com/almartin82/state-schooldata/blob/main/docs/DATA-CATEGORY-TAXONOMY.md)
-in the parent project.
