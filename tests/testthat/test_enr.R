@@ -119,7 +119,7 @@ test_that("enr aggs correctly calculates known 2018 data", {
     clean_enr_data() %>%
     enr_aggs()
   
-  attales <- ex_2018 %>% filter(CDS_Code == '010010050') 
+  attales <- ex_2018 %>% filter(cds_code == '010010050') 
   
   expect_equal(attales[attales$grade_level == '05', ]$row_total, 91)
   expect_equal(attales[attales$grade_level == '06', ]$row_total, 93)
@@ -474,13 +474,13 @@ test_that("princeton data looks reasonable", {
   ex_raw <- get_raw_enr(end_year = 2000)
 
   filtered_fetch <- ex_fetch %>%
-    filter(CDS_Code == '214255999') %>%
+    filter(cds_code == '214255999') %>%
     filter(
       grade_level == 'TOTAL'
     )
 
   filtered_tidy <- ex_all %>%
-    filter(CDS_Code == '214255999') %>%
+    filter(cds_code == '214255999') %>%
     filter(
       grade_level == 'TOTAL' &
       subgroup == 'total_enrollment'
@@ -520,13 +520,13 @@ test_that("2007 princeton data looks reasonable", {
   ex_raw <- get_raw_enr(end_year = 2007)
   
   filtered_fetch <- ex_fetch %>%
-    filter(CDS_Code == '214255999') %>%
+    filter(cds_code == '214255999') %>%
     filter(
       grade_level == 'TOTAL'
     )
   
   filtered_tidy <- ex_all %>%
-    filter(CDS_Code == '214255999') %>%
+    filter(cds_code == '214255999') %>%
     filter(
       grade_level == 'TOTAL' &
         subgroup == 'total_enrollment'

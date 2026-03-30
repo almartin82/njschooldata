@@ -71,8 +71,8 @@ clean_spr_subgroups <- function(group) {
     tolower(group) %in% c("english learners", "multilingual learners") ~ "limited english proficiency",
     tolower(group) == "two or more races" ~ "multiracial",
     tolower(group) == "native hawaiian or other pacific islander" ~ "pacific islander",
-    tolower(group) == "students with disabilities" ~ "students with disability",
-    tolower(group) == "students with disability" ~ "students with disability",
+    tolower(group) == "students with disabilities" ~ "students with disabilities",
+    tolower(group) == "students with disability" ~ "students with disabilities",
     TRUE ~ tolower(group)
   )
 }

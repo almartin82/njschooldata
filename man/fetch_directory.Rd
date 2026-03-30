@@ -27,7 +27,7 @@ A data frame with directory data. The exact columns depend on the
     \item \code{address}, \code{city}, \code{state}, \code{zip}
     \item \code{phone}
     \item \code{is_charter}, \code{is_school}, \code{is_district} - Boolean flags
-    \item \code{CDS_Code} - Combined County-District-School code
+    \item \code{cds_code} - Combined County-District-School code
   }
 
   School-level data additionally includes:

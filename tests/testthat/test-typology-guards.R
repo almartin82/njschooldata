@@ -91,7 +91,7 @@ test_that("enrollment wide format column types are correct", {
 
   # Character columns
   char_cols <- c("county_id", "county_name", "district_id", "district_name",
-                 "school_id", "school_name", "CDS_Code")
+                 "school_id", "school_name", "cds_code")
   for (col in char_cols) {
     if (col %in% names(enr)) {
       expect_true(is.character(enr[[col]]),
@@ -384,13 +384,13 @@ test_that("enrollment tidy has unique rows per entity-program-grade-subgroup", {
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
-  # Each CDS_Code + program_code + grade_level + subgroup combination
+  # Each cds_code + program_code + grade_level + subgroup combination
   # should be unique. The key insight is that program_code distinguishes
   # half-day vs full-day K and PK programs.
   # Exclude "End of worksheet" garbage rows from NJ DOE Excel files
   dupes <- enr %>%
     dplyr::filter(!is.na(program_code), county_id != "End of worksheet") %>%
-    dplyr::count(CDS_Code, program_code, grade_level, subgroup) %>%
+    dplyr::count(cds_code, program_code, grade_level, subgroup) %>%
     dplyr::filter(n > 1)
 
   expect_equal(nrow(dupes), 0,
@@ -427,9 +427,9 @@ test_that("graduation rate has no duplicate rows per entity-subgroup", {
 })
 
 
-# -- CDS_Code format validation -----------------------------------------------
+# -- cds_code format validation -----------------------------------------------
 
-test_that("enrollment CDS_Code has consistent 9-char format for real data", {
+test_that("enrollment cds_code has consistent 9-char format for real data", {
   skip_on_cran()
   skip_if_offline()
 
@@ -438,10 +438,10 @@ test_that("enrollment CDS_Code has consistent 9-char format for real data", {
   # Exclude "End of worksheet" garbage rows from NJ DOE Excel files
   real_data <- enr %>% dplyr::filter(county_id != "End of worksheet")
 
-  # CDS_Code should be county_id + district_id + school_id = 2+4+3 = 9 chars
-  cds_lengths <- nchar(real_data$CDS_Code)
+  # cds_code should be county_id + district_id + school_id = 2+4+3 = 9 chars
+  cds_lengths <- nchar(real_data$cds_code)
   expect_true(all(cds_lengths == 9),
-    info = paste("CDS_Code not 9 chars. Lengths found:",
+    info = paste("cds_code not 9 chars. Lengths found:",
                  paste(unique(cds_lengths), collapse = ", ")))
 })
 

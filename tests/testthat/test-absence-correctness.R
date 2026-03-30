@@ -53,7 +53,7 @@ test_that("subgroup: 'limited english proficiency' maps to 'lep'", {
 })
 
 test_that("subgroup: 'students with disability' maps to 'special_ed'", {
-  expect_equal(standardize_absence_subgroups("students with disability"), "special_ed")
+  expect_equal(standardize_absence_subgroups("students with disabilities"), "special_ed")
 })
 
 test_that("subgroup: 'male' maps to 'male'", {
@@ -131,7 +131,7 @@ test_that("all 13 standard SPR names map correctly in one call", {
     "total population", "white", "black", "hispanic", "asian",
     "american indian", "pacific islander", "multiracial",
     "economically disadvantaged", "limited english proficiency",
-    "students with disability", "male", "female"
+    "students with disabilities", "male", "female"
   )
   expected <- c(
     "total", "white", "black", "hispanic", "asian",
@@ -167,7 +167,7 @@ test_that("tidy output subgroups are drawn from standard set", {
       "total population", "white", "black", "hispanic", "asian",
       "american indian", "pacific islander", "multiracial",
       "economically disadvantaged", "limited english proficiency",
-      "students with disability", "male", "female"
+      "students with disabilities", "male", "female"
     ),
     stringsAsFactors = FALSE
   )
@@ -180,7 +180,7 @@ test_that("no NJ raw subgroup names survive tidy_absence for known inputs", {
   raw_names <- c(
     "total population", "american indian", "pacific islander",
     "economically disadvantaged", "limited english proficiency",
-    "students with disability"
+    "students with disabilities"
   )
 
   df <- data.frame(subgroup = raw_names, stringsAsFactors = FALSE)
@@ -423,7 +423,7 @@ test_that("chronic type: no raw NJ names in tidy output", {
   raw_names <- c(
     "total population", "american indian", "pacific islander",
     "economically disadvantaged", "limited english proficiency",
-    "students with disability"
+    "students with disabilities"
   )
   expect_false(any(raw_names %in% df$subgroup))
 })

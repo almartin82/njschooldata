@@ -1,3 +1,41 @@
+# Street type abbreviation pairs for address normalization
+STREET_TYPE_PAIRS <- list(
+  c("street", "st"),
+  c("avenue", "ave"),
+  c("boulevard", "blvd"),
+  c("drive", "dr"),
+  c("road", "rd"),
+  c("court", "ct"),
+  c("lane", "ln"),
+  c("place", "pl")
+)
+
+#' Replace full street type words with abbreviations
+#' @param addr character vector of addresses
+#' @return character vector with abbreviated street types
+#' @keywords internal
+abbreviate_street_types <- function(addr) {
+  for (pair in STREET_TYPE_PAIRS) {
+    addr <- gsub(
+      paste0("\\b", pair[1], "\\b"), pair[2], addr
+    )
+  }
+  addr
+}
+
+#' Replace abbreviated street types with full words
+#' @param addr character vector of addresses
+#' @return character vector with expanded street types
+#' @keywords internal
+expand_street_types <- function(addr) {
+  for (pair in STREET_TYPE_PAIRS) {
+    addr <- gsub(
+      paste0("\\b", pair[2], "\\b"), pair[1], addr
+    )
+  }
+  addr
+}
+
 #' Enrich School Data with Lat / Long
 #'
 #' @param df dataframe to be enriched
@@ -78,16 +116,8 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
       address = gsub("\\s+", ' ', address),
       address = str_to_lower(address),
       address = str_replace_all(address, "-\\d{4}\\susa", " usa"),
-      address_2 = case_when(
-        str_detect(address, "street") ~ str_replace(address, "street", "st"),
-        str_detect(address, "avenue") ~ str_replace(address, "avenue", "ave"),
-        str_detect(address, "boulevard") ~ str_replace(address, "boulevard", "blvd"),
-        TRUE ~ address),
-      address_3 = case_when(
-        str_detect(address, "ave,") ~ str_replace(address, "ave,", "avenue,"),
-        str_detect(address, "st,") ~ str_replace(address, "st,", "street,"),
-        str_detect(address, "blvd,") ~ str_replace(address, "blvd,", "boulevard,"),
-        TRUE ~ address1)
+      address_2 = abbreviate_street_types(address),
+      address_3 = expand_street_types(address)
     ) %>%
     select(district_id, school_id, address, address_2, address_3) %>%
     left_join(geocoded_merge, by = 'address') %>%
@@ -195,7 +225,7 @@ ward_enr_aggs <- function(df) {
 
   df <- df %>%
     mutate(
-      CDS_Code = NA_character_,
+      cds_code = NA_character_,
       district_id = paste0(district_id, ' ', ward),
       district_name = paste0(district_name, ' ', ward),
       school_id = '999W',

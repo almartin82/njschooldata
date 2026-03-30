@@ -21,7 +21,7 @@ utils::globalVariables(c(
   "district_id", "district_name", "district_code",
   "district_id_full", "district_id_short",
   "school_id", "school_name", "school_code",
-  "CDS_Code",
+  "cds_code",
 
   # ========== Raw Column Names (with spaces/special chars) ==========
   "District Code", "School Code", "County Code",

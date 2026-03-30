@@ -182,7 +182,7 @@ process_school_directory <- function(raw) {
       is_charter = county_id == "80",
       is_school = TRUE,
       is_district = FALSE,
-      CDS_Code = paste0(county_id, district_id, school_id)
+      cds_code = paste0(county_id, district_id, school_id)
     )
 }
 
@@ -275,7 +275,7 @@ process_district_directory <- function(raw) {
       is_charter = county_id == "80",
       is_school = FALSE,
       is_district = TRUE,
-      CDS_Code = paste0(county_id, district_id, "999")
+      cds_code = paste0(county_id, district_id, "999")
     )
 }
 
@@ -307,7 +307,7 @@ process_district_directory <- function(raw) {
 #'     \item \code{address}, \code{city}, \code{state}, \code{zip}
 #'     \item \code{phone}
 #'     \item \code{is_charter}, \code{is_school}, \code{is_district} - Boolean flags
-#'     \item \code{CDS_Code} - Combined County-District-School code
+#'     \item \code{cds_code} - Combined County-District-School code
 #'   }
 #'
 #'   School-level data additionally includes:

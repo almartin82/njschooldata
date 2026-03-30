@@ -254,7 +254,7 @@ grad_file_group_cleanup <- function(group) {
     group %in% c("two or more race", "two_or_more_races", "two or more races") ~ "multiracial",
     group %in% c("native hawaiian or pacific islander", "pacific_islander", "native_hawaiian") ~ "pacific islander",
     group %in% c("asian, native hawaiian, or pacific islander") ~ "asian",
-    group %in% c("students with disabilities", "students_with_disability") ~ "students with disability",
+    group %in% c("students with disabilities", "students_with_disability") ~ "students with disabilities",
     group %in% c(
       "districtwide", "schoolwide",
       "statewide total", "statewide_total", "statewide",

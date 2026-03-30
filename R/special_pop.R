@@ -68,7 +68,7 @@ process_reportcard_special_pop <- function(df) {
       subgroup = case_when(
         subgroup %in% c(
           "Disability", "Students with Disabilities", "students_with_disabilities"
-        ) ~ 'IEP',
+        ) ~ 'students with disabilities',
         subgroup %in% c(
           "Econdis", "Economically Disadvantaged Students", 
           "economically_disadvantaged_students"
