@@ -263,9 +263,8 @@ names(schools)
 #> [41] "grade_9"                     "grade_10"                   
 #> [43] "grade_11"                    "grade_12"                   
 #> [45] "post_grad"                   "adult_ed"                   
-#> [47] "nces_code"                   "fb_url"                     
-#> [49] "instagram_url"               "x_url"                      
-#> [51] "address"                     "cds_code"
+#> [47] "nces_code"                   "address"                    
+#> [49] "cds_code"
 ```
 
 ## Data Coverage Summary
@@ -398,7 +397,7 @@ sessionInfo()
 #> [25] tools_4.5.3       downloader_0.4.1  tzdb_0.5.0        curl_7.0.0       
 #> [29] vctrs_0.7.2       R6_2.6.1          lifecycle_1.0.5   lubridate_1.9.5  
 #> [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_2.0.1         
-#> [37] vroom_1.7.0       ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
+#> [37] vroom_1.7.1       ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
 #> [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.10.0     
 #> [45] glue_1.8.0        systemfonts_1.3.2 xfun_0.57         tibble_3.3.1     
 #> [49] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   
