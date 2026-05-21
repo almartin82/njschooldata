@@ -10,6 +10,11 @@
 
 ## Bug fixes
 
+* Fixed `fetch_grad_rate()` for all years. In 2026 NJ DOE retired the
+  `/schoolperformance/grad/` tree and moved every cohort file to
+  `/spr/adddata/doc/acgrdocs/`; the old URLs began returning a 404 HTML page
+  that failed to open as xlsx. All 4-year (2011-2024) and 5-year (2012-2019)
+  URLs now point at the current location.
 * Fixed a long-standing state-level grade-8 dropout. NJ DOE ships the label
   "Eight Grade" (sic) as a *row value* on the State worksheet; the existing
   typo fix only corrected column names, so state 8th-grade enrollment (~100k
