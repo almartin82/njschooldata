@@ -4,7 +4,7 @@
 \alias{fetch_directory}
 \title{Fetch NJ School Directory Data}
 \usage{
-fetch_directory(level = "school", use_cache = TRUE)
+fetch_directory(level = "school", use_cache = FALSE)
 }
 \arguments{
 \item{level}{Character string specifying what to return. One of:

@@ -225,7 +225,7 @@ names(schools)
 
 | Data Type | Function | Years Available |
 |-----------|----------|-----------------|
-| Enrollment | `fetch_enr()` | 2000-2025 |
+| Enrollment | `fetch_enr()` | 2000-2026 |
 | NJSLA/PARCC | `fetch_parcc()` | 2015-2024 |
 | NJASK | `fetch_old_nj_assess()` | 2004-2014 |
 | Graduation Rates | `fetch_grad_rate()` | 2011-2024 |

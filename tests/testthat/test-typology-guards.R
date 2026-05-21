@@ -592,7 +592,7 @@ test_that("validate_end_year accepts valid PARCC years", {
 test_that("get_valid_years returns correct years for each data type", {
   enr_years <- get_valid_years("enrollment")
   expect_equal(min(enr_years), 2000)
-  expect_equal(max(enr_years), 2025)
+  expect_equal(max(enr_years), 2026)
 
   parcc_years <- get_valid_years("parcc")
   expect_false(2020 %in% parcc_years, info = "2020 should be excluded from PARCC")

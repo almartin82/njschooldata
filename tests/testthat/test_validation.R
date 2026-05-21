@@ -33,8 +33,18 @@ test_that("validate_end_year rejects years outside valid range", {
 
 test_that("validate_end_year accepts valid years", {
   expect_silent(validate_end_year(2024, "enrollment"))
-  expect_silent(validate_end_year(1999, "enrollment"))
+  # 2000 is the earliest valid enrollment year (1999 was removed from NJ DOE);
+  # 2026 is the newest (2025-26 fall enrollment).
+  expect_silent(validate_end_year(2000, "enrollment"))
+  expect_silent(validate_end_year(2026, "enrollment"))
   expect_silent(validate_end_year(2019, "parcc"))
+})
+
+test_that("validate_end_year rejects 1999 enrollment (removed from NJ DOE)", {
+  expect_error(
+    validate_end_year(1999, "enrollment"),
+    "not valid for enrollment"
+  )
 })
 
 test_that("validate_end_year rejects COVID year for PARCC", {
@@ -51,13 +61,13 @@ test_that("validate_end_year provides helpful error messages", {
   )
 
   expect_match(err$message, "Valid years")
-  expect_match(err$message, "1999")  # Should mention valid range
+  expect_match(err$message, "2000")  # Should mention valid range (starts 2000)
 })
 
 test_that("get_valid_years returns correct years", {
   enr_years <- get_valid_years("enrollment")
-  expect_equal(min(enr_years), 1999)
-  expect_equal(max(enr_years), 2025)
+  expect_equal(min(enr_years), 2000)
+  expect_equal(max(enr_years), 2026)
 
   parcc_years <- get_valid_years("parcc")
   expect_false(2020 %in% parcc_years)  # COVID year excluded

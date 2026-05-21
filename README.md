@@ -13,9 +13,9 @@
 
 ## Highlights
 
-### 1. Charter enrollment grew 15% in five years
+### 1. Charter enrollment grew 15% since 2020
 
-New Jersey's charter sector added 8,000+ students from 2020 to 2025, growing from 55,600 to over 63,800.
+New Jersey's charter sector added 8,400+ students from 2020 to 2026, growing from 55,600 to 64,000 - and it kept growing in 2026 even as statewide enrollment fell.
 
 ```r
 library(njschooldata)
@@ -23,7 +23,7 @@ library(ggplot2)
 library(dplyr)
 library(scales)
 
-years <- 2020:2025
+years <- 2020:2026
 enr_all <- purrr::map_df(years, ~{
   tryCatch(
     fetch_enr(.x, tidy = TRUE),
@@ -42,7 +42,7 @@ charter_trend <- enr_all %>%
 
 stopifnot(nrow(charter_trend) > 0)
 charter_trend
-#> # A tibble: 12 x 3
+#> # A tibble: 14 x 3
 #>    end_year sector      n_students
 #>       <dbl> <chr>            <dbl>
 #>  1     2020 Charter         55604.
@@ -57,15 +57,17 @@ charter_trend
 #> 10     2024 Traditional   1318693
 #> 11     2025 Charter         63810.
 #> 12     2025 Traditional   1317372.
+#> 13     2026 Charter         64037
+#> 14     2026 Traditional   1293412.
 ```
 
 ![Charter Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/charter-growth-1.png)
 
-[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#charter-enrollment-grew-15-in-five-years)
+[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#charter-enrollment-grew-15-since-2020)
 
 ### 2. White students dropped below 37%
 
-White students went from 42% to under 37% of NJ public school enrollment in just five years. NJ public schools are now decisively majority-minority.
+White students went from 42% to under 37% of NJ public school enrollment since 2020. NJ public schools are now decisively majority-minority.
 
 ```r
 # State-level summary aggregated from district totals for time-series consistency
@@ -91,7 +93,7 @@ stopifnot(nrow(demo) > 0)
 demo %>% select(end_year, subgroup, pct) %>%
   mutate(pct = round(pct * 100, 1)) %>%
   tidyr::pivot_wider(names_from = subgroup, values_from = pct)
-#> # A tibble: 6 x 5
+#> # A tibble: 7 x 5
 #>   end_year white hispanic black asian
 #>      <dbl> <dbl>    <dbl> <dbl> <dbl>
 #> 1     2020  42       30.3  14.6  10.3
@@ -100,6 +102,7 @@ demo %>% select(end_year, subgroup, pct) %>%
 #> 4     2023  38.5     33.2  14.6  10.3
 #> 5     2024  37.6     34.1  14.4  10.3
 #> 6     2025  36.7     35.0  14.3  10.3
+#> 7     2026  36.5     35.2  14.1  10.4
 ```
 
 ![Demographic Shift](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/demographic-shift-1.png)
@@ -108,7 +111,7 @@ demo %>% select(end_year, subgroup, pct) %>%
 
 ### 3. Kindergarten rebounded from COVID
 
-New Jersey lost 9% of kindergartners during COVID - but by 2025, K enrollment nearly recovered while Pre-K surged past pre-pandemic levels.
+New Jersey lost 9% of kindergartners during COVID. K enrollment recovered by 2024 but slipped again in 2026, while Pre-K kept surging past pre-pandemic levels.
 
 ```r
 k_trend <- state_summary %>%
@@ -127,7 +130,7 @@ stopifnot(nrow(k_trend) > 0)
 k_trend %>%
   filter(grade_level %in% c("K", "PK")) %>%
   select(end_year, grade_label, n_students)
-#> # A tibble: 12 x 3
+#> # A tibble: 14 x 3
 #>    end_year grade_label  n_students
 #>       <dbl> <chr>             <dbl>
 #>  1     2020 Kindergarten      90818
@@ -142,6 +145,8 @@ k_trend %>%
 #> 10     2024 Pre-K             83463
 #> 11     2025 Kindergarten      89428
 #> 12     2025 Pre-K             87231
+#> 13     2026 Kindergarten      86554
+#> 14     2026 Pre-K             88063
 ```
 
 ![COVID Kindergarten](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/covid-kindergarten-1.png)
@@ -152,7 +157,7 @@ k_trend %>%
 
 | Category | Years | Function | Details |
 |----------|-------|----------|---------|
-| **Enrollment** | 2000-2025 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant |
+| **Enrollment** | 2000-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant |
 | **Assessments** | 2004-2024 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-yr and 6-yr ACGR. District and school level |
 | **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
@@ -179,7 +184,7 @@ remotes::install_github("almartin82/njschooldata")
 library(njschooldata)
 
 # Enrollment data
-enr_2025 <- fetch_enr(2025, tidy = TRUE)
+enr_2026 <- fetch_enr(2026, tidy = TRUE)
 
 # Assessment data
 math_g4 <- fetch_parcc(2024, grade_or_subj = 4, subj = 'math')
@@ -205,7 +210,7 @@ pip install git+https://github.com/almartin82/njschooldata.git#subdirectory=pyth
 import njschooldata as njsd
 
 # Enrollment data
-enr_2025 = njsd.fetch_enr(2025)
+enr_2026 = njsd.fetch_enr(2026)
 
 # Assessment data
 math_g4 = njsd.fetch_parcc(2024, 4, 'math')
@@ -229,7 +234,7 @@ Full analysis with 15 stories:
 
 **Source:** [New Jersey Department of Education](https://www.nj.gov/education/doedata/) -- all data comes directly from NJ DOE, not federal sources.
 
-**Available years:** Enrollment data from 2000-2025. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).
+**Available years:** Enrollment data from 2000-2026. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).
 
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.
 
@@ -244,7 +249,7 @@ Full analysis with 15 stories:
 
 ### 4. New Jersey educates 1.4 million students
 
-New Jersey has one of the largest public school systems in the country, with enrollment holding steady through COVID and beyond.
+New Jersey has one of the largest public school systems in the country. Enrollment recovered from the COVID dip to a 2025 peak, then fell about 1.7% in 2026 - the first real decline in years.
 
 ```r
 state_total <- state_summary %>%
@@ -252,7 +257,7 @@ state_total <- state_summary %>%
 
 stopifnot(nrow(state_total) > 0)
 state_total
-#> # A tibble: 6 x 6
+#> # A tibble: 7 x 6
 #>   end_year subgroup         grade_level n_students   total   pct
 #>      <dbl> <chr>            <chr>            <dbl>   <dbl> <dbl>
 #> 1     2020 total_enrollment TOTAL         1375828. 1375828.    1
@@ -261,6 +266,7 @@ state_total
 #> 4     2023 total_enrollment TOTAL         1371921  1371921     1
 #> 5     2024 total_enrollment TOTAL         1379988  1379988     1
 #> 6     2025 total_enrollment TOTAL         1381182  1381182     1
+#> 7     2026 total_enrollment TOTAL         1357450. 1357450.    1
 ```
 
 ![Statewide Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
@@ -269,7 +275,7 @@ state_total
 
 ### 5. Hispanic students hit 35% and rising
 
-Hispanic enrollment surged from 30% to 35% of all NJ students in just five years, making it the fastest demographic shift in state history.
+Hispanic enrollment surged from 30% to 35% of all NJ students since 2020, one of the fastest demographic shifts in state history.
 
 ```r
 hispanic <- state_summary %>%
@@ -277,7 +283,7 @@ hispanic <- state_summary %>%
 
 stopifnot(nrow(hispanic) > 0)
 hispanic %>% select(end_year, n_students, pct)
-#> # A tibble: 6 x 3
+#> # A tibble: 7 x 3
 #>   end_year n_students   pct
 #>      <dbl>      <dbl> <dbl>
 #> 1     2020    417042. 0.303
@@ -286,6 +292,7 @@ hispanic %>% select(end_year, n_students, pct)
 #> 4     2023    455576. 0.332
 #> 5     2024    470906  0.341
 #> 6     2025    483504. 0.350
+#> 7     2026    477187  0.352
 ```
 
 ![Hispanic Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/hispanic-growth-1.png)
@@ -294,7 +301,7 @@ hispanic %>% select(end_year, n_students, pct)
 
 ### 6. The Big Three: Newark, Jersey City, and Paterson
 
-New Jersey's three largest districts educate over 93,000 students combined - nearly 7% of the state.
+New Jersey's three largest traditional districts educate over 90,000 students combined - nearly 7% of the state.
 
 ```r
 big_three_names <- c("Newark Public School District",
@@ -307,7 +314,7 @@ big_three_trend <- enr_all %>%
 
 stopifnot(nrow(big_three_trend) > 0)
 big_three_trend %>% select(end_year, district_name, n_students)
-#> # A tibble: 15 x 3
+#> # A tibble: 18 x 3
 #>    end_year district_name                   n_students
 #>       <dbl> <chr>                                <dbl>
 #>  1     2021 Newark Public School District        40085
@@ -325,6 +332,9 @@ big_three_trend %>% select(end_year, district_name, n_students)
 #> 13     2025 Newark Public School District        43980
 #> 14     2025 Jersey City Public Schools           25692
 #> 15     2025 Paterson Public School District      23609
+#> 16     2026 Newark Public School District        43216
+#> 17     2026 Jersey City Public Schools           25307
+#> 18     2026 Paterson Public School District      21849
 ```
 
 ![Big Three](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/big-three-1.png)
@@ -333,10 +343,10 @@ big_three_trend %>% select(end_year, district_name, n_students)
 
 ### 7. Free/reduced lunch ranges from 98% to under 5%
 
-Passaic City has 98% of students on free/reduced lunch while affluent suburbs like Millburn have under 5% - a stark measure of NJ's wealth divide.
+Urban districts like Passaic City (92%) have nearly all students on free/reduced lunch while affluent suburbs like Millburn (under 2%) have almost none - a stark measure of NJ's wealth divide.
 
 ```r
-enr_current <- fetch_enr(2025, tidy = TRUE)
+enr_current <- fetch_enr(2026, tidy = TRUE)
 
 frl <- enr_current %>%
   filter(is_district, !is_charter,
@@ -349,32 +359,32 @@ frl <- enr_current %>%
 stopifnot(nrow(frl) > 0)
 frl %>% select(district_name, n_students, pct)
 #> # A tibble: 15 x 3
-#>    district_name                                            n_students   pct
-#>    <chr>                                                         <dbl> <dbl>
-#>  1 Passaic City School District                              11540.    0.981
-#>  2 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation  2216.    0.972
-#>  3 Mastery Schools Of Camden, Inc.                            2735.    0.952
-#>  4 Camden Prep, Inc.                                          1402.    0.936
-#>  5 Bridgeton City School District                             5579.    0.923
-#>  6 Lakewood Township School District                          3783.    0.920
-#>  7 Atlantic City School District                              5577.    0.870
-#>  8 New Brunswick School District                              7584.    0.867
-#>  9 West New York School District                              6683.    0.848
-#> 10 Lindenwold Public School District                          2634.    0.842
-#> 11 Guttenberg School District                                  809.    0.828
-#> 12 Harrison Public Schools                                    2016.    0.826
-#> 13 Elizabeth Public Schools                                   22915.    0.819
-#> 14 Bound Brook School District                                1555.    0.813
-#> 15 Woodbine School District                                    200.    0.810
+#>    district_name                                             n_students   pct
+#>    <chr>                                                          <dbl> <dbl>
+#>  1 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation      2132. 0.98
+#>  2 Mastery Schools Of Camden, Inc.                                2788. 0.95
+#>  3 Camden Prep, Inc.                                              1425. 0.937
+#>  4 Passaic City School District                                  10132. 0.918
+#>  5 Lakewood Township School District                              3381. 0.898
+#>  6 Woodlynne School District                                       343  0.875
+#>  7 Union City School District                                    10409. 0.867
+#>  8 Seaside Heights School District                                 127. 0.847
+#>  9 Atlantic City School District                                  5104. 0.839
+#> 10 New Brunswick School District                                  6929. 0.838
+#> 11 Wildwood City School District                                   629. 0.831
+#> 12 Elizabeth Public Schools                                      22034. 0.825
+#> 13 West New York School District                                  6070. 0.821
+#> 14 Long Branch Public School District                             4069. 0.819
+#> 15 Bridgeton City School District                                 5013. 0.799
 ```
 
 ![FRL Distribution](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/frl-distribution-1.png)
 
 [(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#freereduced-lunch-ranges-from-98-to-under-5)
 
-### 8. English learners top 45% in some districts
+### 8. English learners approach 45% in some districts
 
-ELL students make up over 45% in Plainfield and Lakewood but under 1% in most suburban districts - a concentration driven by immigration patterns.
+ELL students make up nearly 45% in Lakewood and Plainfield but under 1% in most suburban districts - a concentration driven by immigration patterns.
 
 ```r
 ell <- enr_current %>%
@@ -388,32 +398,32 @@ ell <- enr_current %>%
 stopifnot(nrow(ell) > 0)
 ell %>% select(district_name, n_students, pct)
 #> # A tibble: 15 x 3
-#>    district_name                          n_students   pct
-#>    <chr>                                       <dbl> <dbl>
-#>  1 Plainfield Public School District           4486. 0.452
-#>  2 Lakewood Township School District           1842. 0.448
-#>  3 Dover Public School District                1462. 0.427
-#>  4 New Brunswick School District               3656. 0.418
-#>  5 Red Bank Borough Public School District      492. 0.417
-#>  6 Trenton Public School District              6437. 0.416
-#>  7 Irvington Public School District            3255. 0.403
-#>  8 Union City School District                  4971. 0.394
-#>  9 Bridgeton City School District              2381. 0.394
-#> 10 Elizabeth Public Schools                    10688. 0.382
-#> 11 East Newark School District                   82. 0.369
-#> 12 Perth Amboy Public School District          3703. 0.367
-#> 13 Passaic City School District                4294. 0.365
-#> 14 Paterson Public School District             8169. 0.346
-#> 15 Bound Brook School District                  645. 0.337
+#>    district_name                           n_students   pct
+#>    <chr>                                        <dbl> <dbl>
+#>  1 Lakewood Township School District            1691. 0.449
+#>  2 Plainfield Public School District            4153. 0.436
+#>  3 Dover Public School District                 1375. 0.434
+#>  4 Irvington Public School District             3315. 0.421
+#>  5 Elizabeth Public Schools                    11057. 0.414
+#>  6 New Brunswick School District                3365. 0.407
+#>  7 Paterson Public School District              8849. 0.405
+#>  8 Trenton Public School District               5795. 0.403
+#>  9 Red Bank Borough Public School District       453. 0.396
+#> 10 Union City School District                   4694. 0.391
+#> 11 Perth Amboy Public School District           3820. 0.383
+#> 12 Passaic City School District                 4084. 0.37
+#> 13 Bridgeton City School District               2309. 0.368
+#> 14 Bound Brook School District                   650. 0.343
+#> 15 Palisades Park School District                560. 0.331
 ```
 
 ![ELL Concentration](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
 
-[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#english-learners-top-45-in-some-districts)
+[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#english-learners-approach-45-in-some-districts)
 
 ### 9. Top 10 districts serve 15% of all students
 
-Just 10 out of 580+ districts educate nearly 1 in 6 NJ students. Newark alone has 44,000.
+Just 10 out of nearly 580 districts educate about 1 in 7 NJ students. Newark alone has 43,000.
 
 ```r
 top_10 <- enr_current %>%
@@ -428,16 +438,16 @@ top_10 %>% select(district_name, n_students)
 #> # A tibble: 10 x 2
 #>    district_name                            n_students
 #>    <chr>                                         <dbl>
-#>  1 Newark Public School District                43980
-#>  2 Elizabeth Public Schools                     27980.
-#>  3 Jersey City Public Schools                   25692
-#>  4 Paterson Public School District              23609
-#>  5 Edison Township School District              16708
-#>  6 Trenton Public School District               15474.
-#>  7 Toms River Regional School District          14118.
-#>  8 Woodbridge Township School District          13870.
-#>  9 Union City School District                   12617
-#> 10 Hamilton Township Public School District     12194.
+#>  1 Newark Public School District                43216
+#>  2 Elizabeth Public Schools                     26708
+#>  3 Jersey City Public Schools                   25307
+#>  4 Paterson Public School District              21849
+#>  5 Edison Township School District              16191
+#>  6 Trenton Public School District               14380.
+#>  7 Toms River Regional School District          13925
+#>  8 Woodbridge Township School District          13425
+#>  9 Hamilton Township Public School District     12112
+#> 10 Union City School District                   12006
 ```
 
 ![Top 10 Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
@@ -446,7 +456,7 @@ top_10 %>% select(district_name, n_students)
 
 ### 10. Multiracial students: fastest-growing category
 
-Multiracial students grew 39% in five years - from 2.4% to 3.3% of enrollment - making it the fastest-growing racial category in NJ.
+Multiracial students grew 46% since 2020 - from 2.4% to 3.5% of enrollment - making it the fastest-growing racial category in NJ.
 
 ```r
 multi <- state_summary %>%
@@ -454,7 +464,7 @@ multi <- state_summary %>%
 
 stopifnot(nrow(multi) > 0)
 multi %>% select(end_year, n_students, pct)
-#> # A tibble: 6 x 3
+#> # A tibble: 7 x 3
 #>   end_year n_students    pct
 #>      <dbl>      <dbl>  <dbl>
 #> 1     2020     32622  0.0237
@@ -463,6 +473,7 @@ multi %>% select(end_year, n_students, pct)
 #> 4     2023     40934. 0.0298
 #> 5     2024     43436. 0.0315
 #> 6     2025     45246. 0.0327
+#> 7     2026     47160  0.0347
 ```
 
 ![Multiracial Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/multiracial-growth-1.png)
@@ -471,7 +482,7 @@ multi %>% select(end_year, n_students, pct)
 
 ### 11. Pre-K nearly doubled since 2020
 
-NJ's Pre-K enrollment surged from 45,000 to 87,000 in five years - fueled by the state's expanding universal pre-K program.
+NJ's Pre-K enrollment surged from 45,000 to 88,000 since 2020 - nearly doubling, fueled by the state's expanding universal pre-K program.
 
 ```r
 prek <- state_summary %>%
@@ -479,7 +490,7 @@ prek <- state_summary %>%
 
 stopifnot(nrow(prek) > 0)
 prek %>% select(end_year, n_students)
-#> # A tibble: 6 x 2
+#> # A tibble: 7 x 2
 #>   end_year n_students
 #>      <dbl>      <dbl>
 #> 1     2020      45013
@@ -488,6 +499,7 @@ prek %>% select(end_year, n_students)
 #> 4     2023      71615
 #> 5     2024      83463
 #> 6     2025      87231
+#> 7     2026      88063
 ```
 
 ![Pre-K Surge](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/prek-surge-1.png)
@@ -496,7 +508,7 @@ prek %>% select(end_year, n_students)
 
 ### 12. Bergen County has more students than several US states
 
-With 132,000+ students, Bergen County alone has a larger public school system than Wyoming, Vermont, North Dakota, and other small states.
+With 130,000+ students, Bergen County alone has a larger public school system than entire states like Wyoming, Vermont, and North Dakota.
 
 ```r
 county_enr <- enr_current %>%
@@ -514,21 +526,21 @@ county_enr
 #> # A tibble: 15 x 4
 #>    county_name n_students n_districts county_label
 #>    <chr>            <dbl>       <int> <fct>
-#>  1 Bergen        132247           76 Bergen
-#>  2 Essex         127986.          23 Essex
-#>  3 Middlesex     124477           25 Middlesex
-#>  4 Union          98046.          23 Union
-#>  5 Monmouth       88726.          50 Monmouth
-#>  6 Hudson         82525           13 Hudson
-#>  7 Camden         79287           39 Camden
-#>  8 Passaic        75967           21 Passaic
-#>  9 Morris         72840.          40 Morris
-#> 10 Burlington     68975           39 Burlington
-#> 11 Ocean          65176.          28 Ocean
-#> 12 Mercer         60305           12 Mercer
-#> 13 Somerset       49703           19 Somerset
-#> 14 Gloucester     46682.          28 Gloucester
-#> 15 Atlantic       41422           24 Atlantic
+#>  1 Bergen        130172.          76 Bergen
+#>  2 Essex         125813           23 Essex
+#>  3 Middlesex     121810.          25 Middlesex
+#>  4 Union          95696.          23 Union
+#>  5 Monmouth       87674           51 Monmouth
+#>  6 Hudson         80614           13 Hudson
+#>  7 Camden         77633           39 Camden
+#>  8 Passaic        73151           20 Passaic
+#>  9 Morris         72082           40 Morris
+#> 10 Burlington     68970           39 Burlington
+#> 11 Ocean          63832.          28 Ocean
+#> 12 Mercer         58960           12 Mercer
+#> 13 Somerset       48696.          19 Somerset
+#> 14 Gloucester     46076.          28 Gloucester
+#> 15 Atlantic       40586           24 Atlantic
 ```
 
 ![County Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/county-enrollment-1.png)
@@ -546,13 +558,13 @@ dist_sizes <- enr_current %>%
 
 stopifnot(nrow(dist_sizes) > 0)
 cat("Districts:", nrow(dist_sizes), "\n")
-#> Districts: 580
+#> Districts: 579
 cat("Median:", median(dist_sizes$n_students, na.rm = TRUE), "\n")
-#> Median: 1180.5
+#> Median: 1162
 cat("Under 1000:", sum(dist_sizes$n_students < 1000, na.rm = TRUE), "\n")
-#> Under 1000: 264
+#> Under 1000: 266
 cat("Over 10000:", sum(dist_sizes$n_students > 10000, na.rm = TRUE), "\n")
-#> Over 10000: 16
+#> Over 10000: 14
 ```
 
 ![District Size Distribution](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/district-size-distribution-1.png)
@@ -561,11 +573,11 @@ cat("Over 10000:", sum(dist_sizes$n_students > 10000, na.rm = TRUE), "\n")
 
 ### 14. NJ's enrollment pyramid shows the pre-K boom
 
-The 2025 grade-level distribution reveals the pre-K surge: PK enrollment (87K) is approaching K (89K), reflecting NJ's universal pre-K push.
+The 2026 grade-level distribution reveals the pre-K surge: PK enrollment (88K) has now surpassed Kindergarten (87K), reflecting NJ's universal pre-K push.
 
 ```r
 grade_enr <- state_summary %>%
-  filter(end_year == 2025, subgroup == "total_enrollment",
+  filter(end_year == 2026, subgroup == "total_enrollment",
          grade_level != "TOTAL", !is.na(grade_level)) %>%
   mutate(grade_label = case_when(
     grade_level == "PK" ~ "Pre-K",
@@ -585,29 +597,29 @@ grade_enr %>% select(grade_label, n_students)
 #> # A tibble: 14 x 2
 #>    grade_label n_students
 #>    <fct>            <dbl>
-#>  1 Pre-K            87231
-#>  2 K                89428
-#>  3 Grade 01         94046
-#>  4 Grade 02         95059
-#>  5 Grade 03         97702
-#>  6 Grade 04         96802
-#>  7 Grade 05         98309
-#>  8 Grade 06         99016
-#>  9 Grade 07        100351
-#> 10 Grade 08        101570
-#> 11 Grade 09        104709
-#> 12 Grade 10        105414.
-#> 13 Grade 11        104496.
-#> 14 Grade 12        107048
+#>  1 Pre-K            88063
+#>  2 K                86554
+#>  3 Grade 01         91396
+#>  4 Grade 02         93705
+#>  5 Grade 03         94599
+#>  6 Grade 04         97367
+#>  7 Grade 05         96650
+#>  8 Grade 06         97968
+#>  9 Grade 07         98315
+#> 10 Grade 08         99814
+#> 11 Grade 09        102207
+#> 12 Grade 10        102068.
+#> 13 Grade 11        102865
+#> 14 Grade 12        105879
 ```
 
 ![Grade Pyramid](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/grade-pyramid-1.png)
 
 [(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#njs-enrollment-pyramid-shows-the-pre-k-boom)
 
-### 15. NJ's poverty gap: Passaic vs Westfield
+### 15. NJ's poverty gap: 96 points between districts
 
-Passaic City has 98% of students on free/reduced lunch. Nearby Westfield has under 2%. This 96-point gap captures NJ's extreme wealth inequality.
+The highest-poverty NJ districts have 98% of students on free/reduced lunch. Affluent Westfield has under 2%. This 96-point gap captures NJ's extreme wealth inequality.
 
 ```r
 frl_all <- enr_current %>%
@@ -624,23 +636,23 @@ frl_extremes <- bind_rows(top_5, bottom_5) %>%
 stopifnot(nrow(frl_extremes) > 0)
 frl_extremes %>% select(district_name, n_students, pct, group)
 #> # A tibble: 10 x 4
-#>    district_name                                            n_students   pct group
-#>    <chr>                                                         <dbl> <dbl> <chr>
-#>  1 Passaic City School District                              11540.    0.981 Highest FRL
-#>  2 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation  2216.    0.972 Highest FRL
-#>  3 Mastery Schools Of Camden, Inc.                            2735.    0.952 Highest FRL
-#>  4 Camden Prep, Inc.                                          1402.    0.936 Highest FRL
-#>  5 Bridgeton City School District                             5579.    0.923 Highest FRL
-#>  6 Tenafly Public School District                              112.    0.033 Lowest FRL
-#>  7 Ridgewood Public School District                            157.    0.029 Lowest FRL
-#>  8 Bernards Township School District                           111.    0.024 Lowest FRL
-#>  9 Livingston Board Of Education School District               140.    0.022 Lowest FRL
-#> 10 Westfield Public School District                            105.    0.018 Lowest FRL
+#>    district_name                                             n_students   pct group
+#>    <chr>                                                          <dbl> <dbl> <chr>
+#>  1 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation      2132. 0.98  Highest FRL
+#>  2 Mastery Schools Of Camden, Inc.                                2788. 0.95  Highest FRL
+#>  3 Camden Prep, Inc.                                              1425. 0.937 Highest FRL
+#>  4 Passaic City School District                                  10132. 0.918 Highest FRL
+#>  5 Lakewood Township School District                              3381. 0.898 Highest FRL
+#>  6 Pequannock Township School District                             100. 0.05  Lowest FRL
+#>  7 Scotch Plains-Fanwood School District                           269. 0.047 Lowest FRL
+#>  8 Bernards Township School District                               131. 0.029 Lowest FRL
+#>  9 Ridgewood Public School District                                129. 0.024 Lowest FRL
+#> 10 Livingston Board Of Education School District                   121. 0.019 Lowest FRL
 ```
 
 ![Poverty Gap](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/poverty-gap-1.png)
 
-[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#njs-poverty-gap-passaic-vs-westfield)
+[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#njs-poverty-gap-96-points-between-districts)
 
 ## Contributing
 
