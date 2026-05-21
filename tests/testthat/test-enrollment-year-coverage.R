@@ -21,7 +21,11 @@ wide_test_years <- list(
   # Post-2020 format: State/District/School sheets, ~57k rows, 26 cols
   list(year = 2020, min_rows = 50000, expected_cols = 26),
   list(year = 2021, min_rows = 50000, expected_cols = 26),
-  list(year = 2022, min_rows = 50000, expected_cols = 26)
+  list(year = 2022, min_rows = 50000, expected_cols = 26),
+  # 2024+ ships ~101k rows (Ungraded column dropped, more school rows)
+  list(year = 2025, min_rows = 50000, expected_cols = 26),
+  # 2025-26 file shipped as "Enrollment_2526.zip" (capital E - filename case flip)
+  list(year = 2026, min_rows = 50000, expected_cols = 26)
 )
 
 for (spec in wide_test_years) {
@@ -85,7 +89,10 @@ tidy_test_years <- list(
   list(year = 2022, state_total = 1360916, newark_total = 40607),
   list(year = 2023, state_total = 1371921, newark_total = 41430),
   list(year = 2024, state_total = 1379988, newark_total = 42600),
-  list(year = 2025, state_total = 1381182, newark_total = 43980)
+  list(year = 2025, state_total = 1381182, newark_total = 43980),
+  # 2026: NJ DOE publishes 1,357,450 (= 1357449.5 rounded; the State sheet
+  # carries a genuine half-student in Tenth Grade FTE). Newark = 43,216.
+  list(year = 2026, state_total = 1357449.5, newark_total = 43216)
 )
 
 for (spec in tidy_test_years) {
@@ -241,7 +248,7 @@ test_that("year-over-year state enrollment change is < 10%", {
   skip_if_offline()
 
   # Use years we know work reliably with tidy=TRUE
-  test_years <- c(2021, 2022, 2023, 2024, 2025)
+  test_years <- c(2021, 2022, 2023, 2024, 2025, 2026)
 
   state_totals <- numeric(length(test_years))
   for (i in seq_along(test_years)) {
@@ -267,7 +274,7 @@ test_that("tidy enrollment schema is consistent across years", {
 
   # All tidy years should have the same column names
   ref_cols <- NULL
-  consistent_years <- c(2021, 2022, 2023, 2024, 2025)
+  consistent_years <- c(2021, 2022, 2023, 2024, 2025, 2026)
 
   for (yr in consistent_years) {
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
@@ -278,4 +285,160 @@ test_that("tidy enrollment schema is consistent across years", {
         info = paste("Column schema mismatch in year", yr))
     }
   }
+})
+
+
+# -- Structural correctness invariants (modern format, 2020+) ------------------
+# These guard against silent definition/coverage changes that the coarse 10%
+# YoY band would miss. They encode relationships that must hold in every
+# faithful enrollment file regardless of demographic trend.
+
+invariant_years <- c(2022, 2023, 2024, 2025, 2026)
+
+for (yr in invariant_years) {
+
+  test_that(paste("state total equals sum of district totals for", yr), {
+    skip_on_cran()
+    skip_if_offline()
+
+    enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
+
+    state_total <- enr %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+      dplyr::pull(n_students)
+
+    district_sum <- enr %>%
+      dplyr::filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+      dplyr::summarize(s = sum(n_students, na.rm = TRUE)) %>%
+      dplyr::pull(s)
+
+    expect_equal(state_total, district_sum,
+      info = paste("State total != sum of districts in", yr))
+  })
+
+  test_that(paste("no state-level rows have NA grade_level for", yr), {
+    skip_on_cran()
+    skip_if_offline()
+
+    # Regression: NJ DOE ships "Eight Grade" (sic) as a row value on the State
+    # worksheet. Before the typo fix this failed to map to grade "08" and the
+    # ~100k 8th graders landed in an NA-grade row.
+    enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
+
+    na_grade_state <- enr %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", is.na(grade_level)) %>%
+      nrow()
+
+    expect_equal(na_grade_state, 0,
+      info = paste("State rows with NA grade_level in", yr))
+  })
+
+  test_that(paste("state grade-8 equals sum of district grade-8 for", yr), {
+    skip_on_cran()
+    skip_if_offline()
+
+    enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
+
+    state_g8 <- enr %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "08") %>%
+      dplyr::pull(n_students)
+
+    district_g8 <- enr %>%
+      dplyr::filter(is_district, subgroup == "total_enrollment", grade_level == "08") %>%
+      dplyr::summarize(s = sum(n_students, na.rm = TRUE)) %>%
+      dplyr::pull(s)
+
+    expect_length(state_g8, 1)
+    expect_equal(state_g8, district_g8,
+      info = paste("State grade-8 != district sum in", yr))
+  })
+
+  test_that(paste("state PK + K12UG equals total enrollment for", yr), {
+    skip_on_cran()
+    skip_if_offline()
+
+    # PreK + (K-12 inclusive of ungraded) must reconstruct the full state
+    # total. K12UG (not K12) is used so the identity holds for both pre-2024
+    # files (which carry an Ungraded category) and 2024+ files (which don't).
+    # This only holds once state grade-8 maps correctly (see grade-8 fix).
+    enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
+    aggs <- enr_grade_aggs(enr)
+
+    state_total <- enr %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+      dplyr::pull(n_students)
+    pk <- aggs %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "PK (Any)") %>%
+      dplyr::pull(n_students)
+    k12ug <- aggs %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "K12UG") %>%
+      dplyr::pull(n_students)
+
+    expect_equal(pk + k12ug, state_total,
+      info = paste("PK + K12UG != total in", yr))
+  })
+}
+
+
+# -- 2026 believability: cohort progression (definition-change canary) ---------
+# A genuine demographic decline shows up as smaller *entering* cohorts while
+# each existing cohort retains ~its size year over year. A definition or
+# coverage change instead shows up as a discontinuity in cohort retention.
+# 2025->2026 retention sits in [0.975, 1.013] for every grade pair, so the
+# headline -1.9% K-12 drop is real demographics, not an artifact.
+
+test_that("2025->2026 cohort retention is within believable bounds", {
+  skip_on_cran()
+  skip_if_offline()
+
+  e25 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
+  e26 <- fetch_enr(2026, tidy = TRUE, use_cache = TRUE)
+
+  state_grade <- function(df) {
+    df %>%
+      dplyr::filter(
+        is_state, subgroup == "total_enrollment",
+        grade_level %in% sprintf("%02d", 1:12)
+      ) %>%
+      dplyr::select(grade_level, n_students)
+  }
+
+  g25 <- state_grade(e25) %>% dplyr::rename(y25 = n_students)
+  g26 <- state_grade(e26) %>% dplyr::rename(y26 = n_students)
+
+  cohort <- g25 %>%
+    dplyr::mutate(next_grade = sprintf("%02d", as.integer(grade_level) + 1L)) %>%
+    dplyr::inner_join(g26, by = c("next_grade" = "grade_level")) %>%
+    dplyr::mutate(retention = y26 / y25)
+
+  # Grades 1->2 through 11->12 (11 cohort pairs)
+  expect_equal(nrow(cohort), 11)
+  expect_true(all(cohort$retention > 0.90),
+    info = "A cohort lost >10% year-over-year (possible definition change)")
+  expect_true(all(cohort$retention < 1.10),
+    info = "A cohort grew >10% year-over-year (possible definition change)")
+})
+
+test_that("2026 PreK rose while K-12 fell (documents the headline divergence)", {
+  skip_on_cran()
+  skip_if_offline()
+
+  e25 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
+  e26 <- fetch_enr(2026, tidy = TRUE, use_cache = TRUE)
+
+  pk <- function(df) {
+    enr_grade_aggs(df) %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "PK (Any)") %>%
+      dplyr::pull(n_students)
+  }
+  k12 <- function(df) {
+    enr_grade_aggs(df) %>%
+      dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "K12") %>%
+      dplyr::pull(n_students)
+  }
+
+  # PreK grew, K-12 declined: a file-wide coverage change would move both the
+  # same direction, so the divergence is itself evidence the data is genuine.
+  expect_gt(pk(e26), pk(e25))
+  expect_lt(k12(e26), k12(e25))
 })
