@@ -38,6 +38,13 @@
 * Fixed stale `test_validation.R` assertions that expected 1999 enrollment to
   be valid (1999 was removed from the NJ DOE website; the range starts at 2000).
 
+## Documentation
+
+* Refreshed the enrollment vignette and README to the 2020-2026 window, with all
+  15 stories recomputed and the committed `figure-html` charts regenerated so the
+  published site reflects 2026. Plot chunks now default to `cache = FALSE` to
+  prevent stale cached figures.
+
 # njschooldata 0.9.0
 
 ## New features
