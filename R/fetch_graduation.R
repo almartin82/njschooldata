@@ -20,6 +20,11 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
     stop("year not yet supported. Valid years are 1998-2024.")
   }
 
+  # In 2026 NJ DOE retired the /schoolperformance/grad/ tree (data/ and docs/)
+  # and consolidated every cohort file under /spr/adddata/doc/acgrdocs/. Most
+  # filenames are unchanged; a few lost their spaces. URLs below point at the
+  # current acgrdocs location.
+
   ########## 4 year ##########
   if (methodology == "4 year") {
     # Before cohort grad rate
@@ -36,7 +41,7 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
 
       # 2011 is insane, no other way to describe it
     } else if (end_year == 2011) {
-      grate_url <- "https://www.state.nj.us/education/data/grate/2012/gradrate.xls"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls"
       grate_file <- tempfile(fileext = ".xls")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file)
@@ -47,7 +52,7 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
 
       # 2012 they transition the format but post it in a weird location
     } else if (end_year == 2012) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2012_grd.xls"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_grd.xls"
       grate_file <- tempfile(fileext = ".xls")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file)
@@ -58,7 +63,7 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
       num_skip <- 0
 
       grate_url <- paste0(
-        "https://www.nj.gov/education/schoolperformance/grad/data/ACGR",
+        "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR",
         end_year, basic_suffix
       )
       grate_file <- tempfile(fileext = ".xlsx")
@@ -67,45 +72,45 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
 
       # Starting in 2018 the URLs are inconsistent, so hard code them
     } else if (end_year == 2018) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2018_4YearGraduation.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx"
       num_skip <- 3
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2019) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202019%204-Year%20Adjusted%20Cohort%20Graduation%20Rates%20by%20Student%20Group.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
       num_skip <- 3
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2020) {
-      # NJ DOE moved files to /docs/ folder in 2024 and now includes counts
-      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      # 2020+ files include graduate counts (hence the larger header skip)
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
       num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2021) {
-      # NJ DOE moved files to /docs/ folder in 2024 and now includes counts
-      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      # 2020+ files include graduate counts (hence the larger header skip)
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
       num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2022) {
-      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
       num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2023) {
-      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
       num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
       df <- readxl::read_excel(grate_file, skip = num_skip)
     } else if (end_year == 2024) {
-      grate_url <- "https://nj.gov/education/schoolperformance/grad/docs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
       num_skip <- 5
       grate_file <- tempfile(fileext = ".xlsx")
       httr::GET(url = grate_url, httr::write_disk(grate_file))
@@ -118,28 +123,28 @@ get_raw_grad_file <- function(end_year, methodology = "4 year") {
     if (end_year < 2012) {
       stop(paste0("5 year grad rate not available for ending year ", end_year))
     } else if (end_year == 2012) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2013_4And5YearCohort12.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4And5YearCohort12.xlsx"
       num_skip <- 0
     } else if (end_year == 2013) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2014_4And5YearCohort13.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4And5YearCohort13.xlsx"
       num_skip <- 0
     } else if (end_year == 2014) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2015_4And5YearCohort14.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4And5YearCohort14.xlsx"
       num_skip <- 0
     } else if (end_year == 2015) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2016_4And5YearCohort14.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4And5YearCohort14.xlsx"
       num_skip <- 0
     } else if (end_year == 2016) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2017_4And5YearCohort.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4And5YearCohort.xlsx"
       num_skip <- 0
     } else if (end_year == 2017) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2018_4and5YearGraduationRates.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4and5YearGraduationRates.xlsx"
       num_skip <- 3
     } else if (end_year == 2018) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/ACGR2019_Cohort%202018%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
       num_skip <- 3
     } else if (end_year == 2019) {
-      grate_url <- "https://www.nj.gov/education/schoolperformance/grad/data/Cohort%202019%204-Year%20and%205-Year%20Adjusted%20Cohort%20Graduation%20Rates.xlsx"
+      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
       num_skip <- 3
     }
 

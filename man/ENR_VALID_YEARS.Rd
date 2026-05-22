@@ -6,7 +6,7 @@
 \title{Enrollment data valid years
 Note: 1999 data was removed from NJ DOE website}
 \format{
-An object of class \code{integer} of length 26.
+An object of class \code{integer} of length 27.
 }
 \usage{
 ENR_VALID_YEARS

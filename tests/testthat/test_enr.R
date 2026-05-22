@@ -585,7 +585,7 @@ test_that("2020+ data includes racial subgroups when tidy = TRUE", {
 
 
 # NOTE: 1999 enrollment data was removed from NJ DOE website.
-# Valid enrollment years are now 2000-2025.
+# Valid enrollment years are now 2000-2026.
 
 
 test_that("2024-25 enrollment data fetches correctly", {
@@ -653,6 +653,74 @@ test_that("2024-25 enrollment data fetches correctly", {
                       subgroup == "asian") %>%
                  pull(n_students),
                970)
+})
+
+
+test_that("2025-26 enrollment data fetches correctly", {
+  enr_2026 <- fetch_enr(2026, tidy = TRUE)
+
+  # Newark total enrollment (verified against raw Excel file)
+  newark_total <- filter(enr_2026,
+                         district_id == '3570',
+                         school_id == '999',
+                         grade_level == "TOTAL",
+                         subgroup == "total_enrollment") %>%
+    pull(n_students)
+  expect_equal(newark_total, 43216)
+
+  # Newark racial subgroups
+  expect_equal(filter(enr_2026,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "black") %>%
+                 pull(n_students),
+               13418)
+
+  expect_equal(filter(enr_2026,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "hispanic") %>%
+                 pull(n_students),
+               26844)
+
+  expect_equal(filter(enr_2026,
+                      district_id == '3570',
+                      school_id == '999',
+                      subgroup == "white") %>%
+                 pull(n_students),
+               2158)
+
+  # Jersey City verification
+  expect_equal(filter(enr_2026,
+                      district_id == '2390',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               25307)
+
+  expect_equal(filter(enr_2026,
+                      district_id == '2390',
+                      school_id == '999',
+                      subgroup == "asian") %>%
+                 pull(n_students),
+               4650)
+
+  # Princeton verification
+  expect_equal(filter(enr_2026,
+                      district_id == '4255',
+                      school_id == '999',
+                      grade_level == "TOTAL",
+                      subgroup == "total_enrollment") %>%
+                 pull(n_students),
+               3683)
+
+  expect_equal(filter(enr_2026,
+                      district_id == '4255',
+                      school_id == '999',
+                      subgroup == "asian") %>%
+                 pull(n_students),
+               987)
 })
 
 

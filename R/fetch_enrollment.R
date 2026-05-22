@@ -10,7 +10,7 @@
 #' Read a zipped Excel fall enrollment file from the NJ state website
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 2000-2025.
+#' school year is year '2007'. Valid values are 2000-2026.
 #' @return Data frame with raw enrollment data
 #' @keywords internal
 get_raw_enr <- function(end_year) {
@@ -21,18 +21,31 @@ get_raw_enr <- function(end_year) {
 
   # Build URL
   yy <- substr(end_year, 3, 4)
+  prev_yy <- substr(end_year - 1, 3, 4)
   enr_folder <- paste0("enr", yy)
-
-  enr_filename <- paste0(
-    "enrollment_",
-    substr(end_year - 1, 3, 4),
-    yy,
-    ".zip"
+  base_url <- paste0(
+    "https://www.nj.gov/education/doedata/enr/", enr_folder, "/"
   )
 
-  enr_url <- paste0(
-    "https://www.nj.gov/education/doedata/enr/", enr_folder, "/", enr_filename
+  # NJ DOE is inconsistent about the leading-letter case of the zip filename.
+  # 2020-2025 used lowercase "enrollment_2425.zip"; the 2025-26 file ships as
+  # "Enrollment_2526.zip". Try known capitalizations and use the first that
+  # actually resolves so the fetcher survives future case flips either way.
+  enr_candidates <- paste0(
+    c("enrollment_", "Enrollment_"), prev_yy, yy, ".zip"
   )
+  enr_url <- NULL
+  for (candidate in paste0(base_url, enr_candidates)) {
+    if (check_url_accessible(candidate)) {
+      enr_url <- candidate
+      break
+    }
+  }
+  # Fall back to the conventional lowercase name so a genuinely missing file
+  # still produces an informative download error rather than a silent NULL.
+  if (is.null(enr_url)) {
+    enr_url <- paste0(base_url, enr_candidates[1])
+  }
 
   # Download and unzip
   tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
@@ -91,6 +104,19 @@ get_raw_enr <- function(end_year) {
       enr_state <- enr_state %>% typo_names()
       enr_dist <- enr_dist %>% typo_names()
       enr_sch <- enr_sch %>% typo_names()
+
+      # typo_names() only corrects column *names*. On the State worksheet the
+      # grade labels live in row *values* of the `Grade` column, where NJ DOE
+      # ships "Eight Grade" (sic). Left uncorrected this fails to map to grade
+      # level "08", so state-level 8th grade enrollment silently lands in an
+      # NA-grade row. District/School sheets are unaffected (grades are columns
+      # there and already corrected above). See issue: state grade-8 dropout.
+      if ("Grade" %in% names(enr_state)) {
+        enr_state <- enr_state %>%
+          dplyr::mutate(
+            Grade = dplyr::if_else(Grade == "Eight Grade", "Eighth Grade", Grade)
+          )
+      }
 
       # Set some constants
       enr_dist <- enr_dist %>%
@@ -198,7 +224,7 @@ get_raw_enr <- function(end_year) {
 #' downloads and cleans enrollment data for a given year.
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 2000-2025.
+#' school year is year '2007'. Valid values are 2000-2026.
 #' @param tidy If TRUE, takes the unwieldy wide data and normalizes into a
 #' long, tidy data frame with limited headers - constants (school/district name and code),
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
