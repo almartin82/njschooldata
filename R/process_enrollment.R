@@ -298,9 +298,16 @@ process_enr <- function(df) {
   }
 
   # Basic cleaning
+  # split_enr_cols() must run before the county/district/school id mutate
+  # below: pre-2010 files arrive with combined "01-ATLANTIC" strings in the
+  # COUNTY column (renamed by clean_enr_names() to county_name), and
+  # split_enr_cols() is what creates the county_id / district_id / school_id
+  # columns the mutate references. Running the mutate first errored out on
+  # the missing id columns for every pre-2010 year.
   cleaned <- df %>%
     dplyr::select(!dplyr::starts_with("%")) %>%
     clean_enr_names() %>%
+    split_enr_cols() %>%
     # Fill in state-level identifiers for rows from the State sheet
     # (these come through with NA county/district/school codes)
     dplyr::mutate(
@@ -311,7 +318,6 @@ process_enr <- function(df) {
       school_id = dplyr::if_else(is.na(school_id), "999", school_id),
       school_name = dplyr::if_else(is.na(school_name), "State Total", school_name)
     ) %>%
-    split_enr_cols() %>%
     clean_enr_data() %>%
     clean_enr_grade()
 
