@@ -1,6 +1,7 @@
 # SPR Data Dictionary
 
 ``` r
+
 library(njschooldata)
 library(dplyr)
 ```
@@ -19,6 +20,7 @@ how to use them.
 ### Using the Generic Extractor
 
 ``` r
+
 # Get chronic absenteeism data
 ca <- fetch_spr_data("ChronicAbsenteeism", 2024)
 
@@ -32,6 +34,7 @@ grad_dist <- fetch_spr_data("6YrGraduationCohortProfile", 2024, level = "distric
 ### Using Convenience Functions
 
 ``` r
+
 # Chronic absenteeism (convenience wrapper)
 ca <- fetch_chronic_absenteeism(2024)
 
@@ -46,14 +49,14 @@ days <- fetch_days_absent(2024)
 
 ### Attendance & Discipline
 
-| Sheet Name                        | Description                          | Years     |
-|-----------------------------------|--------------------------------------|-----------|
-| `ChronicAbsenteeism`              | Overall chronic absenteeism rates    | 2017-2024 |
-| `ChronicAbsenteeismByGrade`       | Chronic absenteeism by grade level   | 2017-2024 |
-| `DaysAbsent`                      | Days absent statistics (avg, median) | 2017-2024 |
-| `ViolenceVandalismHIBSubstanceOf` | Incident counts                      | 2017-2024 |
-| `HIBInvestigations`               | HIB investigation details            | 2017-2024 |
-| `DisciplinaryRemovals`            | Suspension/expulsion data            | 2017-2024 |
+| Sheet Name | Description | Years |
+|----|----|----|
+| `ChronicAbsenteeism` | Overall chronic absenteeism rates | 2017-2024 |
+| `ChronicAbsenteeismByGrade` | Chronic absenteeism by grade level | 2017-2024 |
+| `DaysAbsent` | Days absent statistics (avg, median) | 2017-2024 |
+| `ViolenceVandalismHIBSubstanceOf` | Incident counts | 2017-2024 |
+| `HIBInvestigations` | HIB investigation details | 2017-2024 |
+| `DisciplinaryRemovals` | Suspension/expulsion data | 2017-2024 |
 
 ### Staffing & Human Resources
 
@@ -70,19 +73,19 @@ days <- fetch_days_absent(2024)
 
 ### College & Career Readiness
 
-| Sheet Name                        | Description                       | Years     |
-|-----------------------------------|-----------------------------------|-----------|
-| `PSAT-SAT-ACTParticipation`       | SAT/ACT/PSAT participation rates  | 2017-2024 |
-| `PSAT-SAT-ACTPerformance`         | SAT/ACT/PSAT score distributions  | 2017-2024 |
-| `APIBCourseworkPartPerf`          | AP/IB performance (detailed)      | 2017-2024 |
-| `APIBDualEnrPartByStudentGrp`     | AP/IB dual enrollment by subgroup | 2017-2024 |
-| `APIBCoursesOffered`              | AP/IB course offerings            | 2017-2024 |
-| `CTE_SLEParticipation`            | Career/Technical Ed data          | 2017-2024 |
-| `CTEParticipationByStudentGroup`  | CTE by subgroup                   | 2017-2024 |
-| `IndustryValuedCredentialsEarned` | Industry credentials              | 2017-2024 |
-| `WorkbasedLearningByCareerClust`  | Work-based learning               | 2017-2024 |
-| `Apprenticeship`                  | Apprenticeship data               | 2017-2024 |
-| `SealofBiliteracy`                | Biliteracy seal earners           | 2017-2024 |
+| Sheet Name | Description | Years |
+|----|----|----|
+| `PSAT-SAT-ACTParticipation` | SAT/ACT/PSAT participation rates | 2017-2024 |
+| `PSAT-SAT-ACTPerformance` | SAT/ACT/PSAT score distributions | 2017-2024 |
+| `APIBCourseworkPartPerf` | AP/IB performance (detailed) | 2017-2024 |
+| `APIBDualEnrPartByStudentGrp` | AP/IB dual enrollment by subgroup | 2017-2024 |
+| `APIBCoursesOffered` | AP/IB course offerings | 2017-2024 |
+| `CTE_SLEParticipation` | Career/Technical Ed data | 2017-2024 |
+| `CTEParticipationByStudentGroup` | CTE by subgroup | 2017-2024 |
+| `IndustryValuedCredentialsEarned` | Industry credentials | 2017-2024 |
+| `WorkbasedLearningByCareerClust` | Work-based learning | 2017-2024 |
+| `Apprenticeship` | Apprenticeship data | 2017-2024 |
+| `SealofBiliteracy` | Biliteracy seal earners | 2017-2024 |
 
 ### Course Enrollment
 
@@ -116,14 +119,14 @@ days <- fetch_days_absent(2024)
 
 ### Enrollment & Demographics
 
-| Sheet Name                       | Description                       | Years     |
-|----------------------------------|-----------------------------------|-----------|
-| `EnrollmentTrendsbyGrade`        | Grade-level enrollment trends     | 2017-2024 |
-| `EnrollmentTrendsByStudentGroup` | Enrollment by subgroup trends     | 2017-2024 |
-| `EnrollmentByRacialEthnicGroup`  | Detailed racial/ethnic breakdowns | 2017-2024 |
-| `PreKAndK-FullDayHalfDay`        | Pre-K and K program detail        | 2017-2024 |
-| `EnrollmentTrendsFullSharedTime` | Full vs shared time               | 2017-2024 |
-| `EnrollmentByHomeLanguage`       | Home language data                | 2017-2024 |
+| Sheet Name | Description | Years |
+|----|----|----|
+| `EnrollmentTrendsbyGrade` | Grade-level enrollment trends | 2017-2024 |
+| `EnrollmentTrendsByStudentGroup` | Enrollment by subgroup trends | 2017-2024 |
+| `EnrollmentByRacialEthnicGroup` | Detailed racial/ethnic breakdowns | 2017-2024 |
+| `PreKAndK-FullDayHalfDay` | Pre-K and K program detail | 2017-2024 |
+| `EnrollmentTrendsFullSharedTime` | Full vs shared time | 2017-2024 |
+| `EnrollmentByHomeLanguage` | Home language data | 2017-2024 |
 
 ### Assessment Performance
 
@@ -165,6 +168,7 @@ days <- fetch_days_absent(2024)
 ### Chronic Absenteeism Analysis
 
 ``` r
+
 # Get school-level chronic absenteeism
 ca <- fetch_chronic_absenteeism(2024)
 
@@ -192,6 +196,7 @@ plot(multi_year$end_year, multi_year$chronically_absent_rate,
 ### Teacher Experience Analysis
 
 ``` r
+
 # Get teacher experience data
 teachers <- fetch_spr_data("TeachersExperience", 2024)
 
@@ -209,6 +214,7 @@ new_teacher_rates <- teachers %>%
 ### Course Access Analysis
 
 ``` r
+
 # Get math course enrollment
 math <- fetch_spr_data("MathCourseParticipation", 2024)
 
@@ -230,6 +236,7 @@ ap_access <- fetch_spr_data("APIBCoursesOffered", 2024) %>%
 ### Discipline Analysis
 
 ``` r
+
 # Get disciplinary removals data
 discipline <- fetch_spr_data("DisciplinaryRemovals", 2024)
 
@@ -291,8 +298,9 @@ Column names are automatically cleaned to snake_case.
   guide](https://almartin82.github.io/njschooldata/articles/getting-started.html)
 
 ``` r
+
 sessionInfo()
-#> R version 4.5.3 (2026-03-11)
+#> R version 4.6.0 (2026-04-24)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.4 LTS
 #> 
@@ -313,18 +321,18 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dplyr_1.2.0        njschooldata_0.9.0
+#> [1] dplyr_1.2.1        njschooldata_0.9.1
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] jsonlite_2.0.0    compiler_4.5.3    tidyselect_1.2.1  stringr_1.6.0    
+#>  [1] jsonlite_2.0.0    compiler_4.6.0    tidyselect_1.2.1  stringr_1.6.0    
 #>  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2
 #>  [9] textshaping_1.0.5 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      
 #> [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     
 #> [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       
-#> [21] bslib_0.10.0      pillar_1.11.1     rlang_1.1.7       cachem_1.1.0     
-#> [25] stringi_1.8.7     xfun_0.57         fs_2.0.1          sass_0.4.10      
-#> [29] timechange_0.4.0  cli_3.6.5         pkgdown_2.2.0     magrittr_2.0.4   
-#> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.2      
-#> [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.2        rmarkdown_2.31   
-#> [41] purrr_1.2.1       tools_4.5.3       pkgconfig_2.0.3   htmltools_0.5.9
+#> [21] bslib_0.11.0      pillar_1.11.1     rlang_1.2.0       cachem_1.1.0     
+#> [25] stringi_1.8.7     xfun_0.57         fs_2.1.0          sass_0.4.10      
+#> [29] timechange_0.4.0  cli_3.6.6         pkgdown_2.2.0     magrittr_2.0.5   
+#> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      
+#> [37] evaluate_1.0.5    glue_1.8.1        ragg_1.5.2        rmarkdown_2.31   
+#> [41] purrr_1.2.2       tools_4.6.0       pkgconfig_2.0.3   htmltools_0.5.9
 ```

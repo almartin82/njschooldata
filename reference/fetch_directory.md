@@ -8,7 +8,7 @@ personnel.
 ## Usage
 
 ``` r
-fetch_directory(level = "school", use_cache = TRUE)
+fetch_directory(level = "school", use_cache = FALSE)
 ```
 
 ## Arguments

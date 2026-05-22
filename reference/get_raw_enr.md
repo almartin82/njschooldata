@@ -13,7 +13,7 @@ get_raw_enr(end_year)
 - end_year:
 
   A school year. Year is the end of the academic year - eg 2006-07
-  school year is year '2007'. Valid values are 2000-2025.
+  school year is year '2007'. Valid values are 2000-2026.
 
 ## Value
 

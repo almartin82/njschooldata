@@ -368,12 +368,18 @@ Additional exported functions
   : Summarize sector performance within a city
 - [`clean_cds_fields()`](https://almartin82.github.io/njschooldata/reference/clean_cds_fields.md)
   : Clean up CDS field names
+- [`clean_rc_subgroups()`](https://almartin82.github.io/njschooldata/reference/clean_rc_subgroups.md)
+  : Clean report card subgroup names to canonical lowercase form
 - [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
   : Clean SPED data
 - [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
   : Clear directory data from session cache
+- [`collapse_agg_names()`](https://almartin82.github.io/njschooldata/reference/collapse_agg_names.md)
+  : Collapse repeated names in aggregation output
 - [`compare_discipline_across_years()`](https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.md)
   : Compare Discipline Across Years
+- [`county_name_to_id()`](https://almartin82.github.io/njschooldata/reference/county_name_to_id.md)
+  : Map NJ county names to 2-digit county ID codes
 - [`define_peer_group()`](https://almartin82.github.io/njschooldata/reference/define_peer_group.md)
   : Define a peer comparison group
 - [`dfg_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/dfg_percentile_rank.md)

@@ -1,5 +1,51 @@
 # Changelog
 
+## njschooldata 0.9.1
+
+### New features
+
+- [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  now supports 2026 (2025-26 fall enrollment). `ENR_VALID_YEARS` and the
+  enrollment `year_ranges` extend to 2026.
+- [`get_raw_enr()`](https://almartin82.github.io/njschooldata/reference/get_raw_enr.md)
+  is resilient to NJ DOE’s filename capitalization: the 2025-26 file
+  shipped as `Enrollment_2526.zip` (capital E) versus the historical
+  lowercase `enrollment_*.zip`. The fetcher now tries both.
+
+### Bug fixes
+
+- Fixed
+  [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
+  for all years. In 2026 NJ DOE retired the `/schoolperformance/grad/`
+  tree and moved every cohort file to `/spr/adddata/doc/acgrdocs/`; the
+  old URLs began returning a 404 HTML page that failed to open as xlsx.
+  All 4-year (2011-2024) and 5-year (2012-2019) URLs now point at the
+  current location.
+- Fixed a long-standing state-level grade-8 dropout. NJ DOE ships the
+  label “Eight Grade” (sic) as a *row value* on the State worksheet; the
+  existing typo fix only corrected column names, so state 8th-grade
+  enrollment (~100k students) silently landed in an NA-grade row for all
+  2020+ years. State grade-8 totals now map to “08” and match the sum of
+  district grade-8 totals. State and district/school totals are
+  unchanged.
+
+### Data notes
+
+- 2026 K-12 enrollment fell 1.90% (state total 1.72%) from 2025 - the
+  first real decline in years. Verified as genuine demographic change:
+  cohort retention 2025-\>2026 sits in \[0.975, 1.013\] for every grade,
+  PreK rose while K-12 fell, and the state total reproduces NJ DOE’s
+  published 1,357,450 exactly. No definition or coverage change.
+
+### Tests
+
+- Extended enrollment year-coverage tests with 2026 pins and added
+  structural invariants (state = sum of districts, PK + K12UG = total,
+  state grade-8 regression, cohort-retention believability).
+- Fixed stale `test_validation.R` assertions that expected 1999
+  enrollment to be valid (1999 was removed from the NJ DOE website; the
+  range starts at 2000).
+
 ## njschooldata 0.9.0
 
 ### New features

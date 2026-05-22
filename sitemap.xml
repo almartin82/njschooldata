@@ -38,6 +38,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/SUBGROUP_PAIRS.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/TOTAL_PROGRAM_CODE.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/WARD_SUFFIX.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/abbreviate_street_types.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/add_dfg.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/add_percentile_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/agg_enr_column_order.html</loc></url>
@@ -87,11 +88,14 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_name.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_name_vector.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_rc_enrollment.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/clean_rc_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_sped_df.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_spr_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clear_directory_cache.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/collapse_agg_names.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/common_fwf_req.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/county_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/define_peer_group.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/dfg_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/dfg_percentile_rank.html</loc></url>
@@ -106,6 +110,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/expand_street_types.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_AP.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_SAT.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_cds.html</loc></url>

@@ -58,3 +58,7 @@ Dataframe with yearly ecosystem metrics:
 - `sector_gap`: Charter - district performance difference
 
 - `allpublic_percentile`: City's overall percentile rank
+
+- `allpublic_rank`: City's rank within peer group
+
+- `allpublic_n`: Number of districts in peer group

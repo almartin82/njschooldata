@@ -20,6 +20,7 @@ This package solves that problem by:
 Install the package from GitHub:
 
 ``` r
+
 # Using remotes (recommended)
 remotes::install_github("almartin82/njschooldata")
 
@@ -30,6 +31,7 @@ devtools::install_github("almartin82/njschooldata")
 Load the package:
 
 ``` r
+
 library(njschooldata)
 library(dplyr)  # for data manipulation examples
 ```
@@ -57,6 +59,7 @@ New Jersey uses a County-District-School (CDS) identifier system:
   aggregate)
 
 ``` r
+
 # A complete CDS code example:
 # County 13 (Essex), District 3570 (Newark), School 050 (specific school)
 ```
@@ -66,17 +69,18 @@ New Jersey uses a County-District-School (CDS) identifier system:
 Data is provided at multiple aggregation levels, identified by boolean
 flags:
 
-| Level    | `is_state` | `is_district` | `is_school` | Description                         |
-|----------|------------|---------------|-------------|-------------------------------------|
-| State    | TRUE       | FALSE         | FALSE       | Statewide totals                    |
-| District | FALSE      | TRUE          | FALSE       | District totals (school_id = “999”) |
-| School   | FALSE      | FALSE         | TRUE        | Individual school data              |
+| Level | `is_state` | `is_district` | `is_school` | Description |
+|----|----|----|----|----|
+| State | TRUE | FALSE | FALSE | Statewide totals |
+| District | FALSE | TRUE | FALSE | District totals (school_id = “999”) |
+| School | FALSE | FALSE | TRUE | Individual school data |
 
 ## Quick Start: Enrollment Data
 
 ### Fetching Basic Enrollment
 
 ``` r
+
 # Get 2024 enrollment data (2023-24 school year)
 enr_2024 <- fetch_enr(2024)
 
@@ -121,6 +125,7 @@ dim(enr_2024)  # Rows and columns
 The `tidy` parameter transforms data for easier analysis:
 
 ``` r
+
 # Wide format (default) - one row per school, many demographic columns
 enr_wide <- fetch_enr(2024, tidy = FALSE)
 
@@ -134,6 +139,7 @@ Longitudinal analysis across years - Filtering to specific demographics
 ### Filtering to Specific Levels
 
 ``` r
+
 # Get only district-level totals
 district_totals <- enr_tidy %>%
   filter(is_district, subgroup == "total_enrollment")
@@ -156,6 +162,7 @@ Use
 for both NJSLA (2019+) and PARCC (2015-2018) data:
 
 ``` r
+
 # Get 2024 Grade 4 Math results
 math_g4_2024 <- fetch_parcc(
   end_year = 2024,
@@ -194,6 +201,7 @@ For historical data, use
 [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md):
 
 ``` r
+
 # Get 2010 Grade 5 NJASK results
 njask_2010 <- fetch_old_nj_assess(
   end_year = 2010,
@@ -207,6 +215,7 @@ njask_2010 <- fetch_old_nj_assess(
 ### Graduation Rates
 
 ``` r
+
 # Get 4-year graduation rates for 2024
 grad_rate_2024 <- fetch_grad_rate(
   end_year = 2024,
@@ -223,6 +232,7 @@ grad_rate_5yr <- fetch_grad_rate(
 ### Graduation Counts
 
 ``` r
+
 # Get graduation counts
 grad_count_2024 <- fetch_grad_count(end_year = 2024)
 ```
@@ -232,6 +242,7 @@ grad_count_2024 <- fetch_grad_count(end_year = 2024)
 Get metadata about schools and districts:
 
 ``` r
+
 # Current school directory with addresses, coordinates, grades served
 schools <- get_school_directory()
 
@@ -269,13 +280,13 @@ names(schools)
 
 ## Data Coverage Summary
 
-| Data Type         | Function                                                                                              | Years Available |
-|-------------------|-------------------------------------------------------------------------------------------------------|-----------------|
-| Enrollment        | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)                     | 2000-2025       |
-| NJSLA/PARCC       | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)                 | 2015-2024       |
-| NJASK             | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014       |
-| Graduation Rates  | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)         | 2011-2024       |
-| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)       | 2012-2024       |
+| Data Type | Function | Years Available |
+|----|----|----|
+| Enrollment | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | 2000-2026 |
+| NJSLA/PARCC | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) | 2015-2024 |
+| NJASK | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014 |
+| Graduation Rates | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) | 2011-2024 |
+| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 2012-2024 |
 
 ## Common Subgroups
 
@@ -305,6 +316,7 @@ not through enrollment subgroups.
 The package includes built-in session caching to avoid re-downloading:
 
 ``` r
+
 # Use session cache (avoids re-downloading within same session)
 enr_2024 <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -321,6 +333,7 @@ njsd_cache_info()
 Small cell sizes are suppressed with `*` or `NA`:
 
 ``` r
+
 # Filter out suppressed values before calculations
 reliable_data <- enr_tidy %>%
   filter(!is.na(n_students), n_students >= 10)
@@ -333,6 +346,7 @@ Use
 for combining multiple years:
 
 ``` r
+
 library(purrr)
 
 # Fetch 5 years of enrollment data
@@ -363,8 +377,9 @@ enrollment_trends <- multi_year_enr %>%
 - Email: <almartin@gmail.com>
 
 ``` r
+
 sessionInfo()
-#> R version 4.5.3 (2026-03-11)
+#> R version 4.6.0 (2026-04-24)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.4 LTS
 #> 
@@ -385,21 +400,21 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] purrr_1.2.1        dplyr_1.2.0        njschooldata_0.9.0
+#> [1] purrr_1.2.2        dplyr_1.2.1        njschooldata_0.9.1
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    
-#>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.4    evaluate_1.0.5   
+#>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.5    evaluate_1.0.5   
 #>  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   
 #> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  
-#> [17] cli_3.6.5         crayon_1.5.3      rlang_1.1.7       bit64_4.6.0-1    
-#> [21] withr_3.0.2       cachem_1.1.0      yaml_2.3.12       parallel_4.5.3   
-#> [25] tools_4.5.3       downloader_0.4.1  tzdb_0.5.0        curl_7.0.0       
-#> [29] vctrs_0.7.2       R6_2.6.1          lifecycle_1.0.5   lubridate_1.9.5  
-#> [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_2.0.1         
+#> [17] cli_3.6.6         crayon_1.5.3      rlang_1.2.0       bit64_4.8.2      
+#> [21] withr_3.0.2       cachem_1.1.0      yaml_2.3.12       parallel_4.6.0   
+#> [25] tools_4.6.0       downloader_0.4.1  tzdb_0.5.0        curl_7.1.0       
+#> [29] vctrs_0.7.3       R6_2.6.1          lifecycle_1.0.5   lubridate_1.9.5  
+#> [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_2.1.0         
 #> [37] vroom_1.7.1       ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
-#> [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.10.0     
-#> [45] glue_1.8.0        systemfonts_1.3.2 xfun_0.57         tibble_3.3.1     
+#> [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.11.0     
+#> [45] glue_1.8.1        systemfonts_1.3.2 xfun_0.57         tibble_3.3.1     
 #> [49] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   
-#> [53] readr_2.2.0       compiler_4.5.3    readxl_1.4.5
+#> [53] readr_2.2.0       compiler_4.6.0    readxl_1.5.0
 ```

@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>SPR Data Dictionary • njschooldata</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SPR Data Dictionary">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -765,7 +765,7 @@ started guide</a></li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.5.3 (2026-03-11)</span></span>
+<span><span class="co">#&gt; R version 4.6.0 (2026-04-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -786,20 +786,20 @@ started guide</a></li>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] dplyr_1.2.0        njschooldata_0.9.0</span></span>
+<span><span class="co">#&gt; [1] dplyr_1.2.1        njschooldata_0.9.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] jsonlite_2.0.0    compiler_4.5.3    tidyselect_1.2.1  stringr_1.6.0    </span></span>
+<span><span class="co">#&gt;  [1] jsonlite_2.0.0    compiler_4.6.0    tidyselect_1.2.1  stringr_1.6.0    </span></span>
 <span><span class="co">#&gt;  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2</span></span>
 <span><span class="co">#&gt;  [9] textshaping_1.0.5 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      </span></span>
 <span><span class="co">#&gt; [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     </span></span>
 <span><span class="co">#&gt; [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       </span></span>
-<span><span class="co">#&gt; [21] bslib_0.10.0      pillar_1.11.1     rlang_1.1.7       cachem_1.1.0     </span></span>
-<span><span class="co">#&gt; [25] stringi_1.8.7     xfun_0.57         fs_2.0.1          sass_0.4.10      </span></span>
-<span><span class="co">#&gt; [29] timechange_0.4.0  cli_3.6.5         pkgdown_2.2.0     magrittr_2.0.4   </span></span>
-<span><span class="co">#&gt; [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.2      </span></span>
-<span><span class="co">#&gt; [37] evaluate_1.0.5    glue_1.8.0        ragg_1.5.2        rmarkdown_2.31   </span></span>
-<span><span class="co">#&gt; [41] purrr_1.2.1       tools_4.5.3       pkgconfig_2.0.3   htmltools_0.5.9</span></span></code></pre></div>
+<span><span class="co">#&gt; [21] bslib_0.11.0      pillar_1.11.1     rlang_1.2.0       cachem_1.1.0     </span></span>
+<span><span class="co">#&gt; [25] stringi_1.8.7     xfun_0.57         fs_2.1.0          sass_0.4.10      </span></span>
+<span><span class="co">#&gt; [29] timechange_0.4.0  cli_3.6.6         pkgdown_2.2.0     magrittr_2.0.5   </span></span>
+<span><span class="co">#&gt; [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      </span></span>
+<span><span class="co">#&gt; [37] evaluate_1.0.5    glue_1.8.1        ragg_1.5.2        rmarkdown_2.31   </span></span>
+<span><span class="co">#&gt; [41] purrr_1.2.2       tools_4.6.0       pkgconfig_2.0.3   htmltools_0.5.9</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

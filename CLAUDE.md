@@ -54,10 +54,10 @@ Department of Education.
 infrastructure code belongs in the package itself (`R/`, `tests/`,
 etc.).
 
-| Location               | Visibility  | Purpose                                                                        |
-|------------------------|-------------|--------------------------------------------------------------------------------|
-| `R/`, `tests/`, `man/` | **PUBLIC**  | General-purpose functions for fetching/processing NJ school data               |
-| `research-private/`    | **PRIVATE** | Applied analyses of specific school districts (e.g., Newark MarGrady analysis) |
+| Location | Visibility | Purpose |
+|----|----|----|
+| `R/`, `tests/`, `man/` | **PUBLIC** | General-purpose functions for fetching/processing NJ school data |
+| `research-private/` | **PRIVATE** | Applied analyses of specific school districts (e.g., Newark MarGrady analysis) |
 
 **Guidelines:** - Code that could benefit any user of NJ school data →
 goes in `R/` - Code specific to a particular research question or
