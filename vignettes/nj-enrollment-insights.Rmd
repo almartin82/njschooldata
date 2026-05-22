@@ -16,7 +16,10 @@ knitr::opts_chunk$set(
   out.width = "100%",
   message = FALSE,
   warning = FALSE,
-  cache = TRUE
+  # Default OFF: only the expensive fetch chunk caches (see fetch-data below).
+  # Plot chunks must re-evaluate every build, otherwise knitr replays stale
+  # cached figures and the charts silently lag the data (caschooldata, 2026-03).
+  cache = FALSE
 )
 ```
 
