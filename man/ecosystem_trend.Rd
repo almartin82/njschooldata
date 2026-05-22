@@ -36,6 +36,8 @@ Dataframe with yearly ecosystem metrics:
     \item \code{charter_share}: Percent of students in charters
     \item \code{sector_gap}: Charter - district performance difference
     \item \code{allpublic_percentile}: City's overall percentile rank
+    \item \code{allpublic_rank}: City's rank within peer group
+    \item \code{allpublic_n}: Number of districts in peer group
   }
 }
 \description{

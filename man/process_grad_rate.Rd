@@ -7,7 +7,7 @@
 process_grad_rate(df, end_year, methodology)
 }
 \arguments{
-\item{df}{Output of get_grad_rate}
+\item{df}{Output of get_grad_rate (already passed through process_grate)}
 
 \item{end_year}{Ending academic year}
 
@@ -18,5 +18,11 @@ Data frame with normalized grad rate variables
 }
 \description{
 Custom processing for grad rate data beyond generic process_grate.
+}
+\details{
+For 5-year methodology, the raw files contain both 4-year and 5-year
+columns. This function ensures \code{grad_rate} contains the rate
+matching the requested methodology, and preserves the other rate
+as \code{four_yr_grad_rate} or \code{five_yr_grad_rate}.
 }
 \keyword{internal}

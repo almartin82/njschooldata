@@ -1096,7 +1096,7 @@ test_that("clean_cds_fields standardizes CDS column names", {
 test_that("get_valid_years returns correct enrollment range", {
   years <- get_valid_years("enrollment")
   expect_equal(min(years), 2000)
-  expect_equal(max(years), 2025)
+  expect_equal(max(years), 2026)
 })
 
 
