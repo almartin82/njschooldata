@@ -1,3 +1,26 @@
+# njschooldata 0.9.2
+
+## Bug fixes
+
+* `fetch_enr()` now works end-to-end for 1999-2009. Pre-2010 NJDOE files arrive
+  with combined "01-ATLANTIC" strings in the `COUNTY` / `DISTRICT` / `SCHOOL`
+  columns. `clean_enr_names()` renames those to `county_name` / `district_name`
+  / `school_name`, and `split_enr_cols()` is what creates the matching `*_id`
+  columns by splitting on `"-"`. `process_enr()` previously called the
+  `dplyr::mutate(county_id = ...)` cleanup step *before* `split_enr_cols()`,
+  so every pre-2010 year errored on "object 'county_id' not found." Reordered
+  so `split_enr_cols()` runs first.
+* `ENR_VALID_YEARS` extended back to 1999. The earlier note that "1999 was
+  removed from the NJ DOE website" turned out to be stale; the 1998-99 ZIP
+  is still hosted at `/education/doedata/enr/enr99/enrollment_9899.zip` and
+  parses cleanly after the fix above.
+
+## Data notes
+
+* The full enrollment panel is now 1999-2026 (28 years). State Hispanic
+  enrollment grew every single year from 1999-2025 and posted its first
+  decline (-6,318, -1.3%) in 2025-26.
+
 # njschooldata 0.9.1
 
 ## New features

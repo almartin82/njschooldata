@@ -817,3 +817,27 @@ test_that("historical enrollment data (2000-2010) still works", {
     nrow()
   expect_true(newark_2005 > 0)
 })
+
+
+test_that("1999 enrollment parses end-to-end and produces a valid state total", {
+  # Regression test for the process_enr() ordering bug: pre-2010 files store
+  # "01-ATLANTIC" in the COUNTY column, which clean_enr_names() renames to
+  # county_name. split_enr_cols() splits that into county_id + county_name,
+  # but it used to run AFTER the mutate(county_id = if_else(is.na(...), ...))
+  # step, so every pre-2010 year errored on "object 'county_id' not found."
+  enr_1999 <- fetch_enr(1999, tidy = TRUE)
+
+  expect_s3_class(enr_1999, 'data.frame')
+  expect_true(nrow(enr_1999) > 10000)
+  expect_true(all(c("county_id", "district_id", "school_id") %in% names(enr_1999)))
+
+  # State aggregate row reproduces NJ DOE's published 1998-99 statewide total
+  state_total_1999 <- enr_1999 %>%
+    dplyr::filter(is_state == TRUE,
+                  grade_level == "TOTAL",
+                  subgroup == "total_enrollment") %>%
+    dplyr::pull(n_students) %>%
+    sum()
+  # Published 1998-99 total via the PROG_CODE 55 row at COUNTY 99-NEW JERSEY
+  expect_equal(state_total_1999, 1264260, tolerance = 1)
+})
