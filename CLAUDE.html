@@ -125,6 +125,24 @@
 <p><strong>Configuration:</strong> - <code>_pkgdown.yml</code> - site config, reference sections, articles - All exported functions must be listed in reference sections (use <code>matches(".*")</code> as catch-all) - Vignettes in <code>vignettes/</code> appear as articles</p>
 <p><strong>To enable on a new repo:</strong> 1. Add workflow file and <code>_pkgdown.yml</code> 2. Push to master 3. Enable GitHub Pages via API or Settings: <code>bash    gh api repos/OWNER/REPO/pages -X POST --input - &lt;&lt;EOF    {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}    EOF</code></p>
 </div>
+<div class="section level2">
+<h2 id="vignette-charts-committed-figures-are-the-source-of-truth-required">Vignette Charts: Committed Figures Are the Source of Truth (REQUIRED)<a class="anchor" aria-label="anchor" href="#vignette-charts-committed-figures-are-the-source-of-truth-required"></a></h2>
+<p><strong>Vignette figures are pre-rendered and committed to git. Editing a vignette’s <code>.Rmd</code> does NOT update the published charts — you MUST regenerate and commit the figure PNGs.</strong></p>
+<ul><li>Rendered figures live in <code>vignettes/&lt;vignette&gt;_files/figure-html/*.png</code> and are <strong>tracked in git</strong>. The pkgdown build serves these committed binaries; it does not reliably re-knit them on every run.</li>
+<li>The README/home page chart images point at the deployed copies (<code>https://almartin82.github.io/njschooldata/articles/&lt;vignette&gt;_files/figure-html/&lt;chunk&gt;-1.png</code>), which come from those same committed PNGs.</li>
+</ul><p><strong>Workflow to update any chart (data refresh, new year, restyle):</strong> 1. Edit the vignette code/prose. 2. Re-render locally: <code>rmarkdown::render("vignettes/&lt;vignette&gt;.Rmd")</code>. 3. <strong>Copy the regenerated <code>figure-html/*.png</code> over the committed ones and <code>git add</code> them.</strong> This step is the one that actually moves the published chart. 4. Visually open the regenerated PNG and confirm it shows the new data before committing — do not trust a green pkgdown build; the build can succeed while serving stale committed figures.</p>
+<p><strong>Incident (2026-05, 2026 enrollment integration):</strong> the vignette prose and data tables were updated to 2026 and merged, and pkgdown deployed green three times, but the live charts kept showing the old 2020-2025 series. Root cause: the committed <code>statewide-enrollment-1.png</code> (and 14 others) were never replaced, and the build served them byte-for-byte. The fix was committing the freshly rendered 2026 PNGs. Two earlier attempts (changing <code>.Rmd</code> text, then <code>cache = FALSE</code>) failed because neither touched the committed figure binaries.</p>
+</div>
+<div class="section level2">
+<h2 id="vignette-knitr-cache-discipline-required">Vignette knitr Cache Discipline (REQUIRED)<a class="anchor" aria-label="anchor" href="#vignette-knitr-cache-discipline-required"></a></h2>
+<ul><li>Default the vignette chunk cache to <strong><code>cache = FALSE</code></strong> in the setup chunk.</li>
+<li>Enable <code>cache = TRUE</code> <strong>only</strong> on the expensive data-fetch chunk (e.g. <code>{r fetch-data, cache = TRUE}</code>), never on plot chunks.</li>
+<li>Do <strong>not</strong> commit <code>vignettes/&lt;vignette&gt;_cache/</code> directories. Cached plot chunks replay stale figures across build environments (the caschooldata 2026-03 incident); keeping plots un-cached forces a fresh render every time.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="data-source-urls-move-without-notice">Data Source URLs Move Without Notice<a class="anchor" aria-label="anchor" href="#data-source-urls-move-without-notice"></a></h2>
+<p>NJ DOE relocates and renames files frequently; the actual fetch URLs are built inside the fetch functions (not always <code>config_urls.R</code>). Two cases handled in code, kept here as a reminder to expect more: - <strong>Enrollment</strong> (<code>get_raw_enr</code>): the 2025-26 file shipped as <code>Enrollment_2526.zip</code> (capital E) vs the historical lowercase <code>enrollment_*.zip</code>; the fetcher tries both capitalizations. - <strong>Graduation</strong> (<code>get_raw_grad_file</code>): in 2026 the entire <code>/schoolperformance/grad/</code> tree was retired and files moved to <code>/spr/adddata/doc/acgrdocs/</code>. <code><a href="reference/fetch_postsecondary.html">fetch_postsecondary()</a></code> points at the old tree and its file did not move there — its new location is still unknown (open follow-up).</p>
+</div>
 </div>
 
 
