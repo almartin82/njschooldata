@@ -10,4 +10,4 @@ GRATE_4YR_VALID_YEARS
 
 ## Format
 
-An object of class `integer` of length 14.
+An object of class `integer` of length 15.

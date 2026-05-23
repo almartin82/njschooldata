@@ -4,6 +4,40 @@
 
 ### New features
 
+- School Performance Reports (SPR) fetchers now support SY2024-25
+  (`end_year` 2025). NJ DOE heavily restructured the 2024-25 SPR
+  workbooks: the column header row moved from row 1 to row 4, ~10 source
+  sheets were renamed, and many value columns gained `_School`/`_State`
+  suffixes.
+  [`get_spr_url()`](https://almartin82.github.io/njschooldata/reference/get_spr_url.md)
+  accepts 2017-2025, and
+  [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
+  skips the three preamble rows for 2025+.
+- Sheet renames are handled per source for 2025 while keeping 2017-2024
+  behavior intact: chronic absenteeism
+  (`ChronicAbsenteeismStudentGroup`), chronic absenteeism by grade
+  (`ChronicAbsenteeismGrade`), violence/vandalism/HIB
+  (`IncidentsbyType`), SAT/ACT/PSAT participation
+  (`PSATSATACT_Participation`), SAT/ACT/PSAT performance (joined from
+  `PSATSATACT_AverageScore` + `PSATSATACT_Benchmark`), CTE
+  (`CTEParticipants_*` columns), industry credentials
+  (`IndustryValuedCredClusters`), work-based learning
+  (`WorkBasedLearning`), social studies (`SocStudiesCoursePart`), world
+  languages (`WorldLanguagesCoursePart`), computer science
+  (`CompSciITCoursePart`), visual/performing arts
+  (`VisualPerformingArts`), seal of biliteracy
+  (`SealofBiliteracy_Language`), and ESSA progress
+  (`ESSAAccountabilityTrends`).
+- SAT participation and SAT performance 2025 sheets are now multi-year
+  trend tables; the fetchers filter to the requested academic year via
+  the new internal
+  [`filter_spr_to_year()`](https://almartin82.github.io/njschooldata/reference/filter_spr_to_year.md)
+  helper so the output keeps its historical single-year,
+  one-row-per-school shape.
+- [`clean_spr_subgroups()`](https://almartin82.github.io/njschooldata/reference/clean_spr_subgroups.md)
+  maps the new 2024-25 “All Students” total label to `total population`,
+  and the SPR statewide aggregate row (CDS code `State`/`State`) is now
+  correctly flagged with `is_state`.
 - Assessment fetchers
   ([`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)/NJSLA,
   [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md),
@@ -15,14 +49,51 @@
   (e.g. `ELA03%20NJSLA%20DATA%202024-25.xlsx`); the URL builders now use
   spaces for 2019 and 2025+ and underscores for 2022-2024.
   `PARCC_VALID_YEARS` extends to 2025. Schemas are unchanged from 2024.
+- Extend the 4-year and 6-year graduation fetchers to SY2024-25
+  (end_year 2025). `fetch_grad_rate(2025, "4 year")`,
+  `fetch_grad_count(2025)`, and `fetch_6yr_grad_rate(2025)` (school and
+  district) now work. NJ DOE restructured the SY2024-25 files: the
+  4-year ACGR file (`Cohort2025`) renamed `Graduation Rate` -\>
+  `Adjusted Cohort Graduation Rate` and `Cohort Count` -\>
+  `Adjusted Cohort Count`; the SPR 6-year cohort data moved from the
+  `6YrGraduationCohortProfile` sheet to the combined
+  `GraduationCohortProfile` sheet (filtered on `CohortType == "6-Year"`,
+  header on row 4, `_School`/`_District`/`_State` column suffixes,
+  percent-string rate values). Subgroup labels renamed by NJ DOE
+  (`Total` -\> `All Students`, `Hispanic` -\> `Hispanic/Latino`) are
+  normalized back to the package’s standard names so cross-year filters
+  keep working.
 
 ### Bug fixes
 
+- [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
+  was broken for every year: it requested a sheet
+  `"DisciplinaryRemovals"` that has never existed. It now selects the
+  real sheet per year (`DisciplinaryRemovalsByStudgroup` for 2017-2024,
+  `RemovalsStudentGroupGrade` for 2025) and standardizes the
+  student-group/grade column to `student_group_grade`.
+- [`fetch_apprenticeship_data()`](https://almartin82.github.io/njschooldata/reference/fetch_apprenticeship_data.md)
+  no longer errors on its year-column rename (the
+  [`dplyr::rename()`](https://dplyr.tidyverse.org/reference/rename.html)
+  mapping was inverted, naming columns that did not exist); the rename
+  is now correctly directed and skipped when the columns are absent.
+- [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
+  drops the trailing `"end of worksheet"` sentinel row that the 2024-25
+  sheets append.
 - [`get_raw_sla()`](https://almartin82.github.io/njschooldata/reference/get_raw_sla.md)
   now maps the Geometry math test code `GEO` to `GEO01`, which NJ DOE
   has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left
   `GEO` unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404’d
   for 2022-2024. Geometry results now fetch for all of 2022-2025.
+
+### Known follow-ups
+
+- [`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md)
+  is not yet available for 2025. The 2024-25 `AP_IB_Dual_Participation`
+  SPR sheet is malformed at the school level (many rows per school with
+  no disambiguating column), so a reliable one-row-per-school mapping
+  cannot be derived without fabricating data. The 2025 path raises an
+  informative error; 2017-2024 are unaffected.
 
 ## njschooldata 0.9.2
 

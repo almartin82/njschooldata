@@ -18,7 +18,7 @@ fetch_all_6yr_grad_rate(level = "school")
 
 ## Value
 
-A data frame with all 6-year graduation rate results (2021-2024)
+A data frame with all 6-year graduation rate results (2021-2025)
 
 ## Examples
 

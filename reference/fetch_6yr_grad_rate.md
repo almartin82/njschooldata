@@ -15,7 +15,7 @@ fetch_6yr_grad_rate(end_year, level = "school")
 - end_year:
 
   A school year. Year is the end of the academic year - eg 2020-21
-  school year is end_year '2021'. Valid values are 2021-2024.
+  school year is end_year '2021'. Valid values are 2021-2025.
 
 - level:
 

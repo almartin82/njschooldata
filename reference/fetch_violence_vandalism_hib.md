@@ -12,7 +12,7 @@ fetch_violence_vandalism_hib(end_year, level = "school")
 
 - end_year:
 
-  A school year (2017-2024)
+  A school year (2017-2025)
 
 - level:
 

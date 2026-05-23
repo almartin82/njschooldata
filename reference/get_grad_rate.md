@@ -13,7 +13,7 @@ get_grad_rate(end_year, methodology)
 - end_year:
 
   End of the academic year - 2011-2012 is 2012. Valid values are
-  2011-2024.
+  2011-2025.
 
 - methodology:
 

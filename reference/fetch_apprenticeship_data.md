@@ -13,7 +13,7 @@ fetch_apprenticeship_data(end_year, level = "school")
 
 - end_year:
 
-  A school year (2017-2024). Year is the end of the academic year - eg
+  A school year (2017-2025). Year is the end of the academic year - eg
   2020-21 school year is end_year '2021'.
 
 - level:

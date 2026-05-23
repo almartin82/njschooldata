@@ -13,7 +13,7 @@ get_grad_count(end_year)
 - end_year:
 
   End of the academic year - eg 2006-07 is 2007. Valid values are
-  2012-2024.
+  2012-2025.
 
 ## Value
 

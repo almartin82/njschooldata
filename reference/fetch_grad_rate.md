@@ -13,7 +13,7 @@ fetch_grad_rate(end_year, methodology = "4 year")
 - end_year:
 
   End of the academic year - eg 2006-07 is 2007. Valid values are
-  2011-2024.
+  2011-2025.
 
 - methodology:
 

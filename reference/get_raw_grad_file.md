@@ -13,7 +13,7 @@ get_raw_grad_file(end_year, methodology = "4 year")
 - end_year:
 
   End of the academic year - eg 2006-07 is 2007. Valid values are
-  1998-2024.
+  1998-2025.
 
 - methodology:
 
