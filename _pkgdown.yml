@@ -98,6 +98,13 @@ reference:
       - fetch_teacher_experience
       - fetch_staff_demographics
       - fetch_staff_ratios
+      - fetch_spr_admin_experience
+      - fetch_spr_staff_counts
+      - fetch_spr_staff_demo_subject
+      - fetch_spr_staff_education
+      - fetch_spr_staff_retention
+      - fetch_spr_teacher_exp_subject
+      - fetch_spr_educator_equity
       - fetch_dropout_rates
       - fetch_essa_status
       - fetch_spr_essa_targets

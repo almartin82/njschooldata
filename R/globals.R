@@ -211,6 +211,9 @@ utils::globalVariables(c(
   "portfolio_appeals", "alternate_requirements_in_iep",
   "test_year", "state_nation", "below_basic", "basic", "proficient", "advanced",
 
+  # ========== SPR Staff Sheets (2024-25) ==========
+  "school_year", "two_or_more_races",
+
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
   "gradespan",
