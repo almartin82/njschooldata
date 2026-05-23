@@ -433,6 +433,46 @@ test_that("fetch_essa_status returns expected structure", {
   expect_true(all(spr_cols %in% names(df)))
 })
 
+test_that("fetch_essa_status district level works for 2025 (sheet rename)", {
+  skip_on_cran()
+  skip_if_offline()
+
+  # The 2024-25 District/State DB removed the ESSAAccountabilityStatus sheet and
+  # replaced it with ESSAAccountabilityStatusList. fetch_essa_status() must map
+  # district-level 2025+ to that sheet rather than failing.
+  df <- fetch_essa_status(2025, level = "district")
+
+  expect_s3_class(df, "data.frame")
+  expect_gt(nrow(df), 0)
+  expect_true(all(spr_cols %in% names(df)))
+
+  # The List sheet carries the per-entity status columns that downstream
+  # functions (identify_focus_schools) require.
+  expect_true("category_of_identification" %in% names(df))
+  expect_true("status_for_sy" %in% names(df))
+
+  # All rows are district-total rows (school_id 999 in district files)
+  expect_true(all(df$school_id == "999"))
+})
+
+test_that("fetch_essa_status school level still uses ESSAAccountabilityStatus for 2025", {
+  skip_on_cran()
+  skip_if_offline()
+
+  # The 2024-25 School DB is ~352 MB; allow a generous download timeout so the
+  # large-file fetch does not trip R's 60s default.
+  old_timeout <- getOption("timeout")
+  options(timeout = 600)
+  on.exit(options(timeout = old_timeout), add = TRUE)
+
+  df <- fetch_essa_status(2025, level = "school")
+
+  expect_s3_class(df, "data.frame")
+  expect_gt(nrow(df), 0)
+  expect_true("category_of_identification" %in% names(df))
+  expect_true(all(spr_cols %in% names(df)))
+})
+
 
 # ==============================================================================
 # Multiple Sheet Type Tests

@@ -1,3 +1,33 @@
+# njschooldata 0.9.4
+
+## New features
+
+* New `fetch_sgp()` fetches NJ Student Growth Percentile (median SGP / mSGP)
+  data from the redesigned 2024-25 SPR databases. Three `type` options map to
+  the three source sheets: `"trends"` (`StudentGrowthTrends`, median SGP by
+  student group for ELA and Math, with statewide comparison columns),
+  `"by_grade"` (`StudentGrowthbyGrade`, by subject and grade), and
+  `"by_performance_level"` (`StudentGrowthByPerformLevel`, by subject and prior
+  NJSLA performance level). The entity median is normalized to a level-agnostic
+  `*_median_sgp` column (school value at `level = "school"`, district value at
+  `level = "district"`), and suppressed cells ("Fewer than 10 testers") are
+  mapped to `NA` with the reason retained in the companion `*_category` column.
+  Only `end_year = 2025` is supported for now; pre-2025 SPR databases store SGP
+  in differently-shaped, differently-named sheets, which is a documented
+  follow-up.
+
+## Bug fixes
+
+* `fetch_essa_status(end_year, level = "district")` works for SY2024-25
+  (`end_year = 2025`). The 2024-25 redesign removed the
+  `ESSAAccountabilityStatus` sheet from the District/State workbook and replaced
+  it with `ESSAAccountabilityStatusList` (per-entity status, the structural
+  analogue of the legacy sheet) and `ESSAAccountabilityStatusCounts` (aggregate
+  CSI/ATSI/TSI tallies). District-level 2025+ requests now map to
+  `ESSAAccountabilityStatusList`. School-level requests continue to use
+  `ESSAAccountabilityStatus` for all years, and pre-2025 behavior is unchanged.
+
+
 # njschooldata 0.9.3
 
 ## New features
