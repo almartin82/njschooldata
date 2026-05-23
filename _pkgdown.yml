@@ -100,6 +100,10 @@ reference:
       - fetch_staff_ratios
       - fetch_dropout_rates
       - fetch_essa_status
+      - fetch_spr_essa_targets
+      - fetch_spr_accountability_summative
+      - fetch_spr_tsi
+      - fetch_spr_essa_status_counts
       - fetch_sgp
       - fetch_math_course_enrollment
 
