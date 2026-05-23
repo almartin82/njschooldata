@@ -1,5 +1,44 @@
 # Changelog
 
+## njschooldata 0.9.5
+
+### Bug fixes
+
+- [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
+  now requests the correct discipline-removals sheet for every supported
+  year. The sheet has been renamed several times in the NJ DOE
+  Database_SchoolDetail workbooks: `DisciplinaryRemovals` for end_years
+  2018-2023, `DisciplinaryRemovalsByStudgroup` for end_year 2024, and
+  `RemovalsStudentGroupGrade` for end_year 2025+. Previously the
+  function asked for `DisciplinaryRemovalsByStudgroup` for all of
+  2017-2024, so it returned no data for 2018-2023 (the sheet does not
+  exist in those years). SY2016-17 (end_year 2017) has no
+  discipline-removals sheet at all.
+
+### Test fixes
+
+- SPR tests: corrected the stale year-range assertions to expect “SPR
+  data available for years 2017-2025” and to treat end_year 2026 (not
+  2025. as out of range, since 2025 is now valid.
+- SPR tests:
+  [`list_spr_sheets()`](https://almartin82.github.io/njschooldata/reference/list_spr_sheets.md)
+  returns a plain character vector, so the `list_spr_sheets` tests now
+  use `expect_type(x, "character")` instead of the incorrect
+  `expect_s3_class(x, "character")` (a character vector has no S3 class,
+  so the old assertion always failed when run online).
+- SPR tests: replaced the misspelled, nonexistent
+  `"GraduatonRateTrendsProgress"` sheet with the confirmed
+  `"GraduationRateTrendsProgress"` sheet from the 2023-24 workbook.
+- Fixed a self-comparison in
+  [`track_essa_progress_over_time()`](https://almartin82.github.io/njschooldata/reference/track_essa_progress_over_time.md):
+  the school_id filter used `dplyr::filter(school_id == school_id)`,
+  which data-masked both sides to the column and ignored the argument.
+  It now uses `.env$school_id`, and a new offline unit test covers both
+  the filtered and unfiltered paths.
+- Hardened the SPR test suite with `skip_on_cran()` +
+  `skip_if_offline()` guards on every networked block so the suite
+  degrades gracefully offline.
+
 ## njschooldata 0.9.4
 
 ### New features

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,24 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.5" id="njschooldata-095">njschooldata 0.9.5<a class="anchor" aria-label="anchor" href="#njschooldata-095"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-5"></a></h3>
+<ul><li>
+<code><a href="../reference/fetch_disciplinary_removals.html">fetch_disciplinary_removals()</a></code> now requests the correct discipline-removals sheet for every supported year. The sheet has been renamed several times in the NJ DOE Database_SchoolDetail workbooks: <code>DisciplinaryRemovals</code> for end_years 2018-2023, <code>DisciplinaryRemovalsByStudgroup</code> for end_year 2024, and <code>RemovalsStudentGroupGrade</code> for end_year 2025+. Previously the function asked for <code>DisciplinaryRemovalsByStudgroup</code> for all of 2017-2024, so it returned no data for 2018-2023 (the sheet does not exist in those years). SY2016-17 (end_year 2017) has no discipline-removals sheet at all.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="test-fixes-0-9-5">Test fixes<a class="anchor" aria-label="anchor" href="#test-fixes-0-9-5"></a></h3>
+<ul><li>SPR tests: corrected the stale year-range assertions to expect “SPR data available for years 2017-2025” and to treat end_year 2026 (not
+<ol start="2025" style="list-style-type: decimal"><li>as out of range, since 2025 is now valid.</li>
+</ol></li>
+<li>SPR tests: <code><a href="../reference/list_spr_sheets.html">list_spr_sheets()</a></code> returns a plain character vector, so the <code>list_spr_sheets</code> tests now use <code>expect_type(x, "character")</code> instead of the incorrect <code>expect_s3_class(x, "character")</code> (a character vector has no S3 class, so the old assertion always failed when run online).</li>
+<li>SPR tests: replaced the misspelled, nonexistent <code>"GraduatonRateTrendsProgress"</code> sheet with the confirmed <code>"GraduationRateTrendsProgress"</code> sheet from the 2023-24 workbook.</li>
+<li>Fixed a self-comparison in <code><a href="../reference/track_essa_progress_over_time.html">track_essa_progress_over_time()</a></code>: the school_id filter used <code>dplyr::filter(school_id == school_id)</code>, which data-masked both sides to the column and ignored the argument. It now uses <code>.env$school_id</code>, and a new offline unit test covers both the filtered and unfiltered paths.</li>
+<li>Hardened the SPR test suite with <code>skip_on_cran()</code> + <code>skip_if_offline()</code> guards on every networked block so the suite degrades gracefully offline.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.4" id="njschooldata-094">njschooldata 0.9.4<a class="anchor" aria-label="anchor" href="#njschooldata-094"></a></h2>
 <div class="section level3">
