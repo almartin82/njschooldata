@@ -39,13 +39,20 @@ expand_street_types <- function(addr) {
 #' Enrich School Data with Lat / Long
 #'
 #' @param df dataframe to be enriched
-#' @param use_cache if TRUE, will read from cache of school info / lat lng stored on TODO
-#' @param api_key optional, personal google maps API key
+#' @param use_cache if TRUE (the default), reads cached school info / lat lng
+#'   from the bundled `geocoded_cached` dataset and does not hit a geocoding
+#'   service. Set FALSE to geocode live via \pkg{tidygeocoder}.
+#' @param api_key optional Google Maps API key. When supplied (and
+#'   `use_cache=FALSE`), a Google geocoding pass is added to the cascade.
+#'   When empty, geocoding uses only the keyless US Census + OpenStreetMap
+#'   cascade.
 #'
 #' @return dataframe enriched with lat lng
 #'
-#' @note The `placement` package is required for geocoding when `use_cache=FALSE`.
-#'   Install with: `remotes::install_github('DerekYves/placement')`
+#' @note Live geocoding (`use_cache=FALSE`) requires the \pkg{tidygeocoder}
+#'   package. Install with: `install.packages('tidygeocoder')`. It uses the
+#'   keyless US Census geocoder with an OpenStreetMap (Nominatim) fallback, so
+#'   no API key is needed.
 #' @export
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
@@ -90,16 +97,34 @@ enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
     utils::data("geocoded_cached", package = "njschooldata", envir = environment())
     geocoded <- geocoded_cached
   } else {
-    if (!requireNamespace("placement", quietly = TRUE)) {
-      stop("Package 'placement' is required for geocoding. Install it with: install.packages('placement')")
+    if (!requireNamespace("tidygeocoder", quietly = TRUE)) {
+      stop("Package 'tidygeocoder' is required for live geocoding. Install it with: install.packages('tidygeocoder')")
     }
-    geocoded <- placement::geocode_url(
-      nj_sch$address,
-      auth='standard_api',
-      privkey=api_key,
-      clean=TRUE,
-      verbose=TRUE
+    # Cascade through keyless US-appropriate geocoders: the US Census geocoder
+    # first, then OpenStreetMap (Nominatim) for anything Census misses. When a
+    # Google API key is supplied, add a Google pass to the cascade. geo_combine()
+    # returns a tibble with columns: address, lat, long.
+    geo_queries <- list(
+      list(method = 'census'),
+      list(method = 'osm')
     )
+    if (nzchar(api_key)) {
+      geo_queries <- c(
+        geo_queries,
+        list(list(method = 'google', custom_query = list(key = api_key)))
+      )
+    }
+    geocoded <- tidygeocoder::geo_combine(
+      queries = geo_queries,
+      global_params = list(address = 'address'),
+      address = nj_sch$address,
+      lat = 'lat',
+      long = 'long'
+    ) %>%
+      # match the bundled cache schema: `locations` holds the input address,
+      # `lng` holds longitude, so the downstream select()/rename() is identical
+      # for both the cached and live paths.
+      rename(locations = address, lng = long)
   }
 
   geocoded_merge <- geocoded %>%

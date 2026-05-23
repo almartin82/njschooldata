@@ -1,3 +1,17 @@
+# njschooldata 0.9.6
+
+## Infrastructure
+
+* Live geocoding in `enrich_school_latlong(use_cache = FALSE)` now uses the
+  CRAN package `tidygeocoder` instead of the GitHub-only, CRAN-archived
+  `placement` package. The new path cascades through the keyless US Census
+  geocoder and OpenStreetMap (Nominatim), with an optional Google pass when an
+  `api_key` is supplied. This removes the `Remotes: DerekYves/placement` entry
+  from `DESCRIPTION`, so dependency resolution no longer touches a GitHub remote
+  (which had been intermittently failing CI with "Bad GitHub credentials").
+  The default cached path (`use_cache = TRUE`, the bundled `geocoded_cached`
+  dataset, itself built with tidygeocoder) is unchanged.
+
 # njschooldata 0.9.5
 
 ## Bug fixes
