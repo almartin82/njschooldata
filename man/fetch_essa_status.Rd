@@ -15,10 +15,42 @@ fetch_essa_status(end_year, level = "school")
 Data frame with ESSA status ratings
 }
 \description{
-Downloads ESSA accountability ratings from SPR database.
+Downloads ESSA accountability status/ratings (CSI/ATSI/TSI identification)
+from the SPR database. Each row carries the entity's status for the school
+year (\code{status_for_sy}), the \code{category_of_identification} that drove
+it, the year eligible to exit, and (for targeted statuses) the affected
+student group.
+}
+\details{
+The 2024-25 (end_year 2025) SPR redesign reorganized the accountability
+sheets per database file:
+\itemize{
+  \item \strong{School DB}: keeps the \code{ESSAAccountabilityStatus} sheet
+    (one row per identified school).
+  \item \strong{District/State DB}: the \code{ESSAAccountabilityStatus} sheet
+    was removed and replaced by two new sheets:
+    \code{ESSAAccountabilityStatusList} (one row per identified school, with
+    the same 12-column layout as the School DB sheet) and
+    \code{ESSAAccountabilityStatusCounts} (per-district CSI/ATSI/TSI tallies).
+    The \emph{List} sheet is the structural analogue of the legacy
+    \code{ESSAAccountabilityStatus} sheet -- it carries the per-entity status
+    and \code{category_of_identification} that downstream functions such as
+    \code{\link{identify_focus_schools}} require -- so this function maps
+    district-level 2025+ requests to \code{ESSAAccountabilityStatusList}.
+    The \emph{Counts} sheet holds only aggregate tallies and is not used here.
+}
 }
 \examples{
 \dontrun{
+# School-level status (all years use the ESSAAccountabilityStatus sheet)
 essa <- fetch_essa_status(2024)
+
+# District/State-level status for the redesigned 2024-25 database
+essa_dist <- fetch_essa_status(2025, level = "district")
+
+# Identify schools needing comprehensive support
+library(dplyr)
+fetch_essa_status(2025) \%>\%
+  filter(grepl("Comprehensive", status_for_sy))
 }
 }
