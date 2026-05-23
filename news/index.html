@@ -59,6 +59,10 @@
 <code><a href="../reference/fetch_spr_data.html">fetch_spr_data()</a></code> drops the trailing <code>"end of worksheet"</code> sentinel row that the 2024-25 sheets append.</li>
 <li>
 <code><a href="../reference/get_raw_sla.html">get_raw_sla()</a></code> now maps the Geometry math test code <code>GEO</code> to <code>GEO01</code>, which NJ DOE has used since 2022. The old <code>gsub("ALG", "ALG0", ...)</code> step left <code>GEO</code> unchanged, so <code>fetch_parcc(year, "GEO", "math")</code> silently 404’d for 2022-2024. Geometry results now fetch for all of 2022-2025.</li>
+<li>
+<code><a href="../reference/fetch_6yr_grad_rate.html">fetch_6yr_grad_rate()</a></code> no longer fabricates suppressed-district rates. The SPR cohort profiles repeat the statewide reference rate in <code>State:</code>/<code>_State</code> columns on every district row, and the 2025 district path filled those onto ordinary districts whose own rate was blank (suppressed, fewer than 10 students) via an unconditional <code>coalesce(..._District, ..._State)</code>. For 2024-25 this had assigned the statewide subgroup rate to ~2,700 suppressed district-subgroup rows. The fallback to the <code>State:</code>/<code>_State</code> columns is now restricted to the statewide aggregate row, so suppressed districts stay <code>NA</code>.</li>
+<li>
+<code><a href="../reference/fetch_6yr_grad_rate.html">fetch_6yr_grad_rate()</a></code> now flags the statewide aggregate row with <code>is_state</code> for 2017-2024 as well, and populates that row’s rate. Every SPR cohort profile stores the literal string <code>"State"</code> in the statewide row’s CountyCode/DistrictCode instead of the numeric <code>99</code>/<code>9999</code> codes; the normalization that was added for 2025 now runs for all years, and the legacy district path fills the statewide row’s rate from the <code>State:</code> columns, so the statewide 6-year rate is no longer silently dropped for older years.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="known-follow-ups-0-9-3">Known follow-ups<a class="anchor" aria-label="anchor" href="#known-follow-ups-0-9-3"></a></h3>
