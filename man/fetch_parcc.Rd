@@ -8,7 +8,7 @@ fetch_parcc(end_year, grade_or_subj, subj, tidy = FALSE)
 }
 \arguments{
 \item{end_year}{A school year. end_year is the end of the academic year - eg 2014-15
-school year is end_year 2015. Valid values are 2015-2024.}
+school year is end_year 2015. Valid values are 2015-2025.}
 
 \item{grade_or_subj}{Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2).
 For science, valid grades are 5, 8, and 11.}

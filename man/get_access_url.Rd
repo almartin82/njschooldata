@@ -7,7 +7,7 @@
 get_access_url(end_year)
 }
 \arguments{
-\item{end_year}{A school year (2022-2024)}
+\item{end_year}{A school year (2022-2025)}
 }
 \value{
 URL string
