@@ -13,7 +13,7 @@ get_raw_njgpa(end_year, subj)
 
 - end_year:
 
-  A school year. Valid values are 2022-2024.
+  A school year. Valid values are 2022-2025.
 
 - subj:
 

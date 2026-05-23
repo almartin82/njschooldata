@@ -16,7 +16,7 @@ process_access(access_file, end_year)
 
 - end_year:
 
-  A school year (2022-2024)
+  A school year (2022-2025)
 
 ## Value
 

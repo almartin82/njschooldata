@@ -14,7 +14,7 @@ fetch_access(end_year, grade = "all")
 
 - end_year:
 
-  A school year. Valid values are 2022-2024.
+  A school year. Valid values are 2022-2025.
 
 - grade:
 

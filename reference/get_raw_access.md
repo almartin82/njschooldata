@@ -12,7 +12,7 @@ get_raw_access(end_year, grade = "all")
 
 - end_year:
 
-  A school year (2022-2024)
+  A school year (2022-2025)
 
 - grade:
 

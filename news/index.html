@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,18 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.3" id="njschooldata-093">njschooldata 0.9.3<a class="anchor" aria-label="anchor" href="#njschooldata-093"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-3">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-3"></a></h3>
+<ul><li>Assessment fetchers (<code><a href="../reference/fetch_parcc.html">fetch_parcc()</a></code>/NJSLA, <code><a href="../reference/fetch_njgpa.html">fetch_njgpa()</a></code>, <code><a href="../reference/fetch_access.html">fetch_access()</a></code>, plus <code><a href="../reference/fetch_all_parcc.html">fetch_all_parcc()</a></code>/<code><a href="../reference/fetch_all_njgpa.html">fetch_all_njgpa()</a></code>/<code><a href="../reference/fetch_all_access.html">fetch_all_access()</a></code>) now cover SY2024-25 (<code>end_year = 2025</code>). NJ DOE reverted to the 2019-era space-encoded filenames for 2025 (e.g. <code>ELA03%20NJSLA%20DATA%202024-25.xlsx</code>); the URL builders now use spaces for 2019 and 2025+ and underscores for 2022-2024. <code>PARCC_VALID_YEARS</code> extends to 2025. Schemas are unchanged from 2024.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-3"></a></h3>
+<ul><li>
+<code><a href="../reference/get_raw_sla.html">get_raw_sla()</a></code> now maps the Geometry math test code <code>GEO</code> to <code>GEO01</code>, which NJ DOE has used since 2022. The old <code>gsub("ALG", "ALG0", ...)</code> step left <code>GEO</code> unchanged, so <code>fetch_parcc(year, "GEO", "math")</code> silently 404’d for 2022-2024. Geometry results now fetch for all of 2022-2025.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.2" id="njschooldata-092">njschooldata 0.9.2<a class="anchor" aria-label="anchor" href="#njschooldata-092"></a></h2>
 <div class="section level3">

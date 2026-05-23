@@ -10,4 +10,4 @@ PARCC_VALID_YEARS
 
 ## Format
 
-An object of class `integer` of length 9.
+An object of class `integer` of length 10.

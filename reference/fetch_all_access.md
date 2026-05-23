@@ -11,7 +11,7 @@ fetch_all_access()
 
 ## Value
 
-A data frame with all ACCESS results (2022-2024, all grades)
+A data frame with all ACCESS results (2022-2025, all grades)
 
 ## Examples
 

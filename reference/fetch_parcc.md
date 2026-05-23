@@ -14,7 +14,7 @@ fetch_parcc(end_year, grade_or_subj, subj, tidy = FALSE)
 - end_year:
 
   A school year. end_year is the end of the academic year - eg 2014-15
-  school year is end_year 2015. Valid values are 2015-2024.
+  school year is end_year 2015. Valid values are 2015-2025.
 
 - grade_or_subj:
 
