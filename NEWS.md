@@ -8,18 +8,6 @@
   filenames for 2025 (e.g. `ELA03%20NJSLA%20DATA%202024-25.xlsx`); the URL
   builders now use spaces for 2019 and 2025+ and underscores for 2022-2024.
   `PARCC_VALID_YEARS` extends to 2025. Schemas are unchanged from 2024.
-
-## Bug fixes
-
-* `get_raw_sla()` now maps the Geometry math test code `GEO` to `GEO01`, which
-  NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
-  unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
-  Geometry results now fetch for all of 2022-2025.
-
-# njschooldata 0.9.2
-
-## New features
-
 * Extend the 4-year and 6-year graduation fetchers to SY2024-25 (end_year
   2025). `fetch_grad_rate(2025, "4 year")`, `fetch_grad_count(2025)`, and
   `fetch_6yr_grad_rate(2025)` (school and district) now work. NJ DOE
@@ -32,6 +20,15 @@
   values). Subgroup labels renamed by NJ DOE (`Total` -> `All Students`,
   `Hispanic` -> `Hispanic/Latino`) are normalized back to the package's
   standard names so cross-year filters keep working.
+
+## Bug fixes
+
+* `get_raw_sla()` now maps the Geometry math test code `GEO` to `GEO01`, which
+  NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
+  unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
+  Geometry results now fetch for all of 2022-2025.
+
+# njschooldata 0.9.2
 
 ## Bug fixes
 
