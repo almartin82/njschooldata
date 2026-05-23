@@ -9,7 +9,7 @@ process_access(access_file, end_year)
 \arguments{
 \item{access_file}{Output of get_raw_access}
 
-\item{end_year}{A school year (2022-2024)}
+\item{end_year}{A school year (2022-2025)}
 }
 \value{
 Processed ACCESS dataframe
