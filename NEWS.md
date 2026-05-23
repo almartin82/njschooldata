@@ -1,4 +1,4 @@
-# njschooldata 0.9.2
+# njschooldata 0.9.3
 
 ## New features
 
@@ -15,6 +15,11 @@
   NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
   unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
   Geometry results now fetch for all of 2022-2025.
+
+# njschooldata 0.9.2
+
+## Bug fixes
+
 * `fetch_enr()` now works end-to-end for 1999-2009. Pre-2010 NJDOE files arrive
   with combined "01-ATLANTIC" strings in the `COUNTY` / `DISTRICT` / `SCHOOL`
   columns. `clean_enr_names()` renames those to `county_name` / `district_name`
