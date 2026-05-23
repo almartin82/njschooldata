@@ -853,9 +853,278 @@ fetch_dropout_rates <- function(end_year, level = "school") {
 }
 
 
+# ==============================================================================
+# Student Growth Percentile (SGP) Module
+# ==============================================================================
+#
+# Student Growth Percentiles (SGP) are NJ's measure of academic growth: each
+# tested student's growth is ranked (1-99) against academically similar peers,
+# and the school/district median (mSGP) summarizes that group. The redesigned
+# 2024-25 (end_year 2025) SPR databases expose SGP through three sheets, present
+# in both the School and District/State files:
+#
+#   StudentGrowthTrends          mSGP by StudentGroup, ELA + Math, 3-year trend
+#   StudentGrowthbyGrade         mSGP by Subject x Grade (2024-25 only)
+#   StudentGrowthByPerformLevel  mSGP by Subject x NJSLA performance level
+#                                (2024-25 only)
+#
+# IMPORTANT (years supported): only end_year 2025 is implemented. Pre-2025 SPR
+# databases ship SGP in differently-shaped, differently-named sheets
+# (StudentGrowthTrends with no StudentGroup column; a separate "StudentGrowth"
+# subgroup sheet with DistrictMedian/StateMedian; "StudentGrowthByGrade" with an
+# "ELA/Math" + "mSGP" layout). Mapping those onto the 2025 output without a
+# verified column correspondence would risk misrepresenting the data, so the
+# pre-2025 SGP layout is left as a documented follow-up rather than guessed.
+#
+# ==============================================================================
+
+#' Standardize an SGP median column to numeric
+#'
+#' SGP value columns hold either a numeric median (possibly with a half-point,
+#' e.g. \code{"70.5"}) or a suppression phrase (\code{"Fewer than 10 testers"}).
+#' This converts the column to numeric, mapping the suppression phrase to
+#' \code{NA} (the suppression reason is preserved in the companion
+#' \code{*_category} column). Real numbers, including half-points, are kept
+#' exactly.
+#'
+#' @param x Character vector from an SGP value column.
+#' @return Numeric vector.
+#' @keywords internal
+sgp_value_to_numeric <- function(x) {
+  if (is.numeric(x)) return(x)
+  suppressWarnings(as.numeric(x))
+}
+
+
+#' Fetch Student Growth Percentile (SGP) Data
+#'
+#' Downloads NJ Student Growth Percentile (median SGP / mSGP) data from the
+#' redesigned 2024-25 School Performance Reports databases. SGP measures how
+#' much students grew academically relative to peers with similar score
+#' histories; the median SGP (mSGP) summarizes a school's or district's growth.
+#'
+#' @details
+#' The \code{type} argument selects one of three SPR sheets:
+#' \itemize{
+#'   \item \code{"trends"} (default) -- \code{StudentGrowthTrends}: median SGP
+#'     broken out by student group, for ELA and Math, as a multi-year trend
+#'     (SY2022-23 through the requested year). One row per entity per student
+#'     group, filtered to the requested academic year.
+#'   \item \code{"by_grade"} -- \code{StudentGrowthbyGrade}: median SGP by
+#'     subject (ELA/Math) and grade (Grades 4-8). 2024-25 only.
+#'   \item \code{"by_performance_level"} --
+#'     \code{StudentGrowthByPerformLevel}: median SGP by subject and prior-year
+#'     NJSLA performance level (Levels 1-5). 2024-25 only.
+#' }
+#'
+#' Median SGP value columns are returned numeric; suppressed cells
+#' (\dQuote{Fewer than 10 testers}) become \code{NA}, with the suppression
+#' reason preserved in the companion \code{*_category} column.
+#'
+#' \strong{Supported years:} only \code{end_year = 2025} (SY2024-25) is
+#' available. Pre-2025 SPR databases store SGP in differently-shaped,
+#' differently-named sheets; supporting them is a documented follow-up.
+#'
+#' @param end_year A school year. Currently only \code{2025} (SY2024-25) is
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#' @param type One of \code{"trends"} (default), \code{"by_grade"}, or
+#'   \code{"by_performance_level"}. Selects which SGP sheet to fetch.
+#'
+#' @return Data frame with median SGP data. Columns vary by \code{type}:
+#'   \itemize{
+#'     \item \strong{All types}: end_year, county_id, county_name, district_id,
+#'       district_name, school_id, school_name, school_year, plus aggregation
+#'       flags (is_state, is_county, is_district, is_school, is_charter, ...).
+#'     \item \code{type = "trends"}: \code{subgroup}, and for ELA and Math the
+#'       entity median (\code{ela_median_sgp}, \code{math_median_sgp}) with its
+#'       \code{*_category} growth label, plus the statewide comparison
+#'       (\code{ela_median_sgp_state}, \code{math_median_sgp_state}) and its
+#'       category. At \code{level = "school"} the entity median is the school
+#'       value; at \code{level = "district"} it is the district value.
+#'     \item \code{type = "by_grade"}: \code{subject}, \code{grade},
+#'       \code{median_sgp}, \code{median_sgp_category}.
+#'     \item \code{type = "by_performance_level"}: \code{subject},
+#'       \code{njsla_performance_level}, \code{median_sgp},
+#'       \code{median_sgp_category}.
+#'   }
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level median SGP by student group (default type = "trends")
+#' sgp <- fetch_sgp(2025)
+#'
+#' # District/state-level growth trends
+#' sgp_dist <- fetch_sgp(2025, level = "district")
+#'
+#' # Median SGP by grade
+#' sgp_grade <- fetch_sgp(2025, type = "by_grade")
+#'
+#' # Median SGP by NJSLA performance level
+#' sgp_perf <- fetch_sgp(2025, type = "by_performance_level")
+#'
+#' # Compare a district's ELA growth to the statewide median
+#' library(dplyr)
+#' fetch_sgp(2025, level = "district") %>%
+#'   filter(is_district, subgroup == "total population") %>%
+#'   select(district_name, ela_median_sgp, ela_median_sgp_state)
+#' }
+fetch_sgp <- function(end_year, level = "school", type = "trends") {
+  valid_types <- c("trends", "by_grade", "by_performance_level")
+  if (!type %in% valid_types) {
+    stop(
+      "type must be one of: ",
+      paste0("'", valid_types, "'", collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  if (end_year < 2025) {
+    stop(
+      "fetch_sgp() currently supports only end_year 2025 (SY2024-25). ",
+      "Pre-2025 SPR databases store Student Growth Percentile data in ",
+      "differently-shaped, differently-named sheets (StudentGrowthTrends ",
+      "without a student-group column, a separate StudentGrowth subgroup ",
+      "sheet, and a StudentGrowthByGrade 'ELA/Math'+'mSGP' layout). Mapping ",
+      "those onto the redesigned output without a verified column ",
+      "correspondence would risk misrepresenting the data; this is a known ",
+      "follow-up.",
+      call. = FALSE
+    )
+  }
+
+  sheet_name <- switch(type,
+    trends = "StudentGrowthTrends",
+    by_grade = "StudentGrowthbyGrade",
+    by_performance_level = "StudentGrowthByPerformLevel"
+  )
+
+  df <- fetch_spr_data(
+    sheet_name = sheet_name,
+    end_year = end_year,
+    level = level
+  )
+
+  # All three sheets carry a multi-year SchoolYear column in StudentGrowthTrends
+  # (and a single year in the others). Keep only the requested academic year so
+  # the trend sheet collapses to one row per entity per student group.
+  df <- filter_spr_to_year(df, end_year)
+
+  if (type == "trends") {
+    # The entity-level mSGP column differs by file: the School DB carries
+    # *_school columns, the District/State DB carries *_district columns. Map
+    # whichever exists to a level-agnostic *_median_sgp so a row's value always
+    # means "this entity's median", mirroring fetch_sat_participation()'s
+    # school/state convention. The statewide comparison columns are preserved.
+    if ("ela_median_student_growth_percentile_school" %in% names(df)) {
+      df <- df %>%
+        dplyr::rename(
+          ela_median_sgp = ela_median_student_growth_percentile_school,
+          ela_median_sgp_category = ela_median_student_growth_percentile_school_category,
+          math_median_sgp = math_median_student_growth_percentile_school,
+          math_median_sgp_category = math_median_student_growth_percentile_school_category
+        )
+    } else {
+      df <- df %>%
+        dplyr::rename(
+          ela_median_sgp = ela_median_student_growth_percentile_district,
+          ela_median_sgp_category = ela_median_student_growth_percentile_district_category,
+          math_median_sgp = math_median_student_growth_percentile_district,
+          math_median_sgp_category = math_median_student_growth_percentile_district_category
+        )
+    }
+
+    df <- df %>%
+      dplyr::rename(
+        ela_median_sgp_state = ela_median_student_growth_percentile_state,
+        ela_median_sgp_state_category = ela_median_student_growth_percentile_state_category,
+        math_median_sgp_state = math_median_student_growth_percentile_state,
+        math_median_sgp_state_category = math_median_student_growth_percentile_state_category
+      )
+
+    # Convert the median columns to numeric (suppression -> NA, category kept).
+    df$ela_median_sgp <- sgp_value_to_numeric(df$ela_median_sgp)
+    df$math_median_sgp <- sgp_value_to_numeric(df$math_median_sgp)
+    df$ela_median_sgp_state <- sgp_value_to_numeric(df$ela_median_sgp_state)
+    df$math_median_sgp_state <- sgp_value_to_numeric(df$math_median_sgp_state)
+
+    df <- df %>%
+      dplyr::select(
+        end_year,
+        county_id, county_name,
+        district_id, district_name,
+        school_id, school_name,
+        dplyr::any_of("school_year"),
+        subgroup,
+        ela_median_sgp, ela_median_sgp_category,
+        ela_median_sgp_state, ela_median_sgp_state_category,
+        math_median_sgp, math_median_sgp_category,
+        math_median_sgp_state, math_median_sgp_state_category,
+        is_state, is_county, is_district, is_school,
+        is_charter, is_charter_sector, is_allpublic
+      )
+  } else {
+    # by_grade / by_performance_level share a single mSGP value + category and a
+    # Subject column, differing only in the dimension column (Grade vs
+    # NJSLA performance level).
+    df <- df %>%
+      dplyr::rename(
+        median_sgp = median_student_growth_percentile,
+        median_sgp_category = median_student_growth_percentile_category
+      )
+    df$median_sgp <- sgp_value_to_numeric(df$median_sgp)
+
+    dim_col <- if (type == "by_grade") "grade" else "njsla_performance_level"
+
+    df <- df %>%
+      dplyr::select(
+        end_year,
+        county_id, county_name,
+        district_id, district_name,
+        school_id, school_name,
+        dplyr::any_of("school_year"),
+        subject,
+        dplyr::all_of(dim_col),
+        median_sgp, median_sgp_category,
+        is_state, is_county, is_district, is_school,
+        is_charter, is_charter_sector, is_allpublic
+      )
+  }
+
+  df
+}
+
+
 #' Fetch ESSA Accountability Status
 #'
-#' Downloads ESSA accountability ratings from SPR database.
+#' Downloads ESSA accountability status/ratings (CSI/ATSI/TSI identification)
+#' from the SPR database. Each row carries the entity's status for the school
+#' year (\code{status_for_sy}), the \code{category_of_identification} that drove
+#' it, the year eligible to exit, and (for targeted statuses) the affected
+#' student group.
+#'
+#' @details
+#' The 2024-25 (end_year 2025) SPR redesign reorganized the accountability
+#' sheets per database file:
+#' \itemize{
+#'   \item \strong{School DB}: keeps the \code{ESSAAccountabilityStatus} sheet
+#'     (one row per identified school).
+#'   \item \strong{District/State DB}: the \code{ESSAAccountabilityStatus} sheet
+#'     was removed and replaced by two new sheets:
+#'     \code{ESSAAccountabilityStatusList} (one row per identified school, with
+#'     the same 12-column layout as the School DB sheet) and
+#'     \code{ESSAAccountabilityStatusCounts} (per-district CSI/ATSI/TSI tallies).
+#'     The \emph{List} sheet is the structural analogue of the legacy
+#'     \code{ESSAAccountabilityStatus} sheet -- it carries the per-entity status
+#'     and \code{category_of_identification} that downstream functions such as
+#'     \code{\link{identify_focus_schools}} require -- so this function maps
+#'     district-level 2025+ requests to \code{ESSAAccountabilityStatusList}.
+#'     The \emph{Counts} sheet holds only aggregate tallies and is not used here.
+#' }
 #'
 #' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
@@ -863,10 +1132,32 @@ fetch_dropout_rates <- function(end_year, level = "school") {
 #' @return Data frame with ESSA status ratings
 #' @export
 #' @examples \dontrun{
+#' # School-level status (all years use the ESSAAccountabilityStatus sheet)
 #' essa <- fetch_essa_status(2024)
+#'
+#' # District/State-level status for the redesigned 2024-25 database
+#' essa_dist <- fetch_essa_status(2025, level = "district")
+#'
+#' # Identify schools needing comprehensive support
+#' library(dplyr)
+#' fetch_essa_status(2025) %>%
+#'   filter(grepl("Comprehensive", status_for_sy))
 #' }
 fetch_essa_status <- function(end_year, level = "school") {
-  df <- fetch_spr_data("ESSAAccountabilityStatus", end_year, level)
+  # The 2024-25 redesign removed ESSAAccountabilityStatus from the
+  # District/State DB. Its per-entity analogue there is
+  # ESSAAccountabilityStatusList (identical 12-column layout, including
+  # CategoryOfIdentification). The School DB keeps the original sheet for all
+  # years; pre-2025 district behavior is unchanged.
+  sheet_name <- if (level == "district") {
+    spr_sheet_for_year(
+      end_year, "ESSAAccountabilityStatus", "ESSAAccountabilityStatusList"
+    )
+  } else {
+    "ESSAAccountabilityStatus"
+  }
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 
