@@ -167,7 +167,11 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sgp.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_data.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.html</loc></url>
@@ -319,8 +323,10 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_lookup_map.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_enr_cols.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/spr_require_redesign.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_for_year.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_mapping.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/spr_value_numeric.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standard_assess.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/statewide_peer_percentile.html</loc></url>

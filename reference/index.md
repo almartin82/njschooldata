@@ -143,6 +143,14 @@ Functions for SPR database data (2017-2024)
   : Fetch Dropout Rate Data
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
   : Fetch ESSA Accountability Status
+- [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
+  : Fetch ESSA Long-Term-Goal Targets
+- [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md)
+  : Fetch ESSA Summative Accountability Scores
+- [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md)
+  : Fetch Targeted Support and Improvement (TSI) Identification
+- [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
+  : Fetch ESSA Accountability Status Counts (district/state)
 - [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
   : Fetch Student Growth Percentile (SGP) Data
 - [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
@@ -517,8 +525,16 @@ Additional exported functions
   : Fetch Social Studies Enrollment Data
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
+- [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md)
+  : Fetch ESSA Summative Accountability Scores
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
   : Fetch SPR Data
+- [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
+  : Fetch ESSA Accountability Status Counts (district/state)
+- [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
+  : Fetch ESSA Long-Term-Goal Targets
+- [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md)
+  : Fetch Targeted Support and Improvement (TSI) Identification
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
   : Fetch Staff Demographics Data
 - [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
