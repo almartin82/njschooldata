@@ -10,7 +10,7 @@ fetch_spr_data(sheet_name, end_year, level = "school")
 \item{sheet_name}{Exact sheet name from SPR database (case-sensitive).
 You must know the exact sheet name. See vignette("spr-dictionary") for available sheets.}
 
-\item{end_year}{A school year (2017-2024). Year is the end of the academic
+\item{end_year}{A school year (2017-2025). Year is the end of the academic
 year - eg 2020-21 school year is end_year '2021'.}
 
 \item{level}{One of "school" or "district". "school" returns school-level

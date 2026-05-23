@@ -18,7 +18,7 @@
 #' Downloads and extracts college entrance exam participation rates from the
 #' SPR database. Includes SAT, ACT, and PSAT participation percentages.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -49,22 +49,47 @@
 #'   select(school_name, sat_participation, state_sat)
 #' }
 fetch_sat_participation <- function(end_year, level = "school") {
+  # Sheet renamed in 2024-25:
+  #   2017-2024: PSAT-SAT-ACTParticipation
+  #   2025+:     PSATSATACT_Participation
+  sheet_name <- spr_sheet_for_year(
+    end_year, "PSAT-SAT-ACTParticipation", "PSATSATACT_Participation"
+  )
+
   df <- njschooldata::fetch_spr_data(
-    sheet_name = "PSAT-SAT-ACTParticipation",
+    sheet_name = sheet_name,
     end_year = end_year,
     level = level
   )
 
-  # Rename participation columns (they come as SAT, ACT, PSAT)
+  # The 2024-25 sheet is a multi-year trend table (SchoolYear 2020-21..2024-25).
+  # Keep only the requested academic year so the output matches the historical
+  # single-year shape (one row per school).
+  df <- filter_spr_to_year(df, end_year)
+
+  # fetch_spr_data() has already snake_cased the column names, so the school /
+  # state participation columns arrive lowercased. Standardize to the canonical
+  # sat/act/psat + state_* names across years.
+  # 2017-2024 (cleaned): sat, act, psat, state_sat, state_act, state_psat
+  # 2025+     (cleaned): sat_school, act_school, psat_school, sat_state, ...
+  if ("sat_school" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(
+        sat = sat_school,
+        act = act_school,
+        psat = psat_school,
+        state_sat = sat_state,
+        state_act = act_state,
+        state_psat = psat_state
+      )
+  }
+
   df <- df %>%
     dplyr::rename(
-      sat_participation = SAT,
-      act_participation = ACT,
-      psat_participation = PSAT,
-      state_sat = STATE_SAT,
-      state_act = STATE_ACT,
-      state_psat = STATE_PSAT
-  ) %>%
+      sat_participation = sat,
+      act_participation = act,
+      psat_participation = psat
+    ) %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -94,7 +119,7 @@ fetch_sat_participation <- function(end_year, level = "school") {
 #' Downloads and extracts college entrance exam performance scores from the
 #' SPR database. Includes average scores and benchmark achievement rates.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -131,24 +156,65 @@ fetch_sat_participation <- function(end_year, level = "school") {
 #' sat_only <- fetch_sat_performance(2024, test_type = "SAT")
 #' }
 fetch_sat_performance <- function(end_year, level = "school", test_type = "all") {
-  df <- njschooldata::fetch_spr_data(
-    sheet_name = "PSAT-SAT-ACTPerformance",
-    end_year = end_year,
-    level = level
-  )
+  if (end_year >= 2025) {
+    # 2024-25 split the single performance sheet into two:
+    #   PSATSATACT_AverageScore: Test, Subject, AverageScore_School/District/State
+    #   PSATSATACT_Benchmark:    Test, Subject, Benchmark,
+    #                            StudentsMeetingBenchmark_School/District/State
+    # Recombine them on the location + Test + Subject keys to reproduce the
+    # historical one-row-per-test/subject shape.
+    avg <- njschooldata::fetch_spr_data(
+      sheet_name = "PSATSATACT_AverageScore", end_year = end_year, level = level
+    )
+    avg <- filter_spr_to_year(avg, end_year) %>%
+      dplyr::rename(
+        test_type = test,
+        subject = subject,
+        school_avg = average_score_school,
+        state_avg = average_score_state
+      )
 
-  # Rename and clean columns
-  df <- df %>%
-    dplyr::rename(
-      test_type = Test,
-      subject = Subject,
-      school_avg = School_Avg,
-      state_avg = State_avg,
-      benchmark = Benchmark,
-      pct_benchmark = BT_PCT,
-      state_pct_benchmark = STATE_BT_PCT
+    bm <- njschooldata::fetch_spr_data(
+      sheet_name = "PSATSATACT_Benchmark", end_year = end_year, level = level
+    )
+    bm <- filter_spr_to_year(bm, end_year) %>%
+      dplyr::rename(
+        test_type = test,
+        subject = subject,
+        pct_benchmark = students_meeting_benchmark_school,
+        state_pct_benchmark = students_meeting_benchmark_state
+      ) %>%
+      dplyr::select(
+        dplyr::any_of(c("county_id", "district_id", "school_id", "school_year",
+                        "test_type", "subject", "benchmark",
+                        "pct_benchmark", "state_pct_benchmark"))
+      )
+
+    join_keys <- intersect(
+      c("county_id", "district_id", "school_id", "school_year", "test_type", "subject"),
+      intersect(names(avg), names(bm))
+    )
+    df <- dplyr::left_join(avg, bm, by = join_keys)
+  } else {
+    # 2017-2024: single sheet, snake_cased columns from fetch_spr_data()
+    df <- njschooldata::fetch_spr_data(
+      sheet_name = "PSAT-SAT-ACTPerformance",
+      end_year = end_year,
+      level = level
     ) %>%
-    # Filter by test type if specified
+      dplyr::rename(
+        test_type = test,
+        subject = subject,
+        school_avg = school_avg,
+        state_avg = state_avg,
+        benchmark = benchmark,
+        pct_benchmark = bt_pct,
+        state_pct_benchmark = state_bt_pct
+      )
+  }
+
+  # Filter by test type if specified
+  df <- df %>%
     dplyr::filter(
       test_type %in% c(test_type, "All", toupper(test_type))
     )
@@ -166,7 +232,7 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
 #' Downloads and extracts Advanced Placement (AP) and International Baccalaureate (IB)
 #' coursework participation and exam performance from the SPR database.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -198,6 +264,30 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
 #'   select(school_name, apib_exam_school, ap3_ib4_school)
 #' }
 fetch_ap_participation <- function(end_year, level = "school") {
+  if (end_year >= 2025) {
+    # FOLLOW-UP / NOT YET SUPPORTED FOR 2025.
+    #
+    # The 2024-25 redesign replaced APIBCourseworkPartPerf with two sheets,
+    # AP_IB_Dual_Participation and AP_IB_Dual_PartStudentGroup. The
+    # AP_IB_Dual_Participation sheet is *malformed* at the school level: it
+    # declares a single 19-column table (CountyCode..Dual_State, no extra
+    # dimension column) yet emits thousands of rows per school per year where
+    # APIB_Enrolled_School is constant but APIB_Exams_School / AP3_IB4_School /
+    # Dual_School vary with no column to disambiguate them (e.g. Newark school
+    # 010, SY2024-25: 4,913 rows, 2,448 distinct value tuples). Without a
+    # verifiable key to collapse those rows to one-per-school, reconstructing
+    # the historical output would require guessing, which would fabricate data.
+    # Leaving the 2025 path unimplemented until the source sheet is corrected or
+    # a documented grouping key is identified.
+    stop(
+      "fetch_ap_participation() is not yet available for end_year 2025. ",
+      "The 2024-25 AP_IB_Dual_Participation SPR sheet is malformed at the ",
+      "school level (many rows per school with no disambiguating column), so a ",
+      "reliable one-row-per-school mapping cannot be derived. This is a known ",
+      "follow-up; 2017-2024 are unaffected."
+    )
+  }
+
   df <- njschooldata::fetch_spr_data(
     sheet_name = "APIBCourseworkPartPerf",
     end_year = end_year,
@@ -205,9 +295,9 @@ fetch_ap_participation <- function(end_year, level = "school") {
   )
 
   # Rename columns (after clean_name_vector conversion)
-  # APIB_COURSE_SCHOOL → apib_course_school
-  # AP3_IB4_SCHOOL → ap_3_ib_4_school
-  # DUAL_SCHOOL → dual_school
+  # APIB_COURSE_SCHOOL -> apib_course_school
+  # AP3_IB4_SCHOOL     -> ap_3_ib_4_school
+  # DUAL_SCHOOL        -> dual_school
   df <- df %>%
     dplyr::rename(
       apib_coursework_school = apib_course_school,
@@ -218,7 +308,9 @@ fetch_ap_participation <- function(end_year, level = "school") {
       ap3_ib4_state = ap_3_ib_4_state,
       dual_enrollment_school = dual_school,
       dual_enrollment_state = dual_state
-    ) %>%
+    )
+
+  df <- df %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -245,7 +337,7 @@ fetch_ap_participation <- function(end_year, level = "school") {
 #' Alias for \code{\link{fetch_ap_participation}}. Returns both participation
 #' and performance data for AP/IB coursework.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with AP/IB participation and performance metrics
@@ -271,7 +363,7 @@ fetch_ap_performance <- function(end_year, level = "school") {
 #' SPR database. Note: Most IB data is included in the AP/IB sheet, use
 #' \code{\link{fetch_ap_participation}} for comprehensive data.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -299,7 +391,7 @@ fetch_ib_participation <- function(end_year, level = "school") {
 #' Downloads and extracts Career and Technical Education (CTE) participation
 #' from the SPR database. Includes CTE participants and concentrators by subgroup.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -335,11 +427,21 @@ fetch_cte_participation <- function(end_year, level = "school") {
     level = level
   )
 
-  # Rename columns (after clean_name_vector conversion)
-  # SchoolCTEParticipants → school_cteparticipants
-  # SchoolCTEConcentrators → school_cteconcentrators
-  # StateCTEParticipants → state_cteparticipants
-  # StateCTEConcentrators → state_cteconcentrators
+  # Standardize column names across years (after clean_name_vector conversion).
+  # 2017-2024: SchoolCTEParticipants  -> school_cteparticipants
+  #            StateCTEConcentrators  -> state_cteconcentrators
+  # 2024-25:   CTEParticipants_School -> cteparticipants_school
+  #            CTEConcentrators_State -> cteconcentrators_state (+ _district)
+  if ("cteparticipants_school" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(
+        school_cteparticipants = cteparticipants_school,
+        school_cteconcentrators = cteconcentrators_school,
+        state_cteparticipants = cteparticipants_state,
+        state_cteconcentrators = cteconcentrators_state
+      )
+  }
+
   df <- df %>%
     dplyr::rename(
       cte_participants = school_cteparticipants,
@@ -374,7 +476,7 @@ fetch_cte_participation <- function(end_year, level = "school") {
 #' Downloads and extracts industry-valued credentials earned by students
 #' from the SPR database. Organized by career cluster.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -404,13 +506,22 @@ fetch_cte_participation <- function(end_year, level = "school") {
 #'   dplyr::arrange(desc(total_credentials))
 #' }
 fetch_industry_credentials <- function(end_year, level = "school") {
+  # Sheet renamed in 2024-25. The credentials-by-career-cluster breakdown moved
+  # to IndustryValuedCredClusters (the new IndustryValuedCredentials sheet only
+  # carries an aggregate school/district/state count without the cluster split).
+  #   2017-2024: IndustryValuedCredentialsEarned
+  #   2025+:     IndustryValuedCredClusters
+  sheet_name <- spr_sheet_for_year(
+    end_year, "IndustryValuedCredentialsEarned", "IndustryValuedCredClusters"
+  )
+
   df <- njschooldata::fetch_spr_data(
-    sheet_name = "IndustryValuedCredentialsEarned",
+    sheet_name = sheet_name,
     end_year = end_year,
     level = level
   )
 
-  # Rename columns (after clean_name_vector conversion)
+  # Columns are identical across years (after clean_name_vector conversion).
   df <- df %>%
     dplyr::rename(
       career_cluster = career_cluster,
@@ -444,7 +555,7 @@ fetch_industry_credentials <- function(end_year, level = "school") {
 #' Downloads and extracts work-based learning participation from the SPR
 #' database. Organized by career cluster.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -473,11 +584,31 @@ fetch_industry_credentials <- function(end_year, level = "school") {
 #'   dplyr::arrange(desc(avg_participation))
 #' }
 fetch_work_based_learning <- function(end_year, level = "school") {
+  # Sheet renamed in 2024-25:
+  #   2017-2024: WorkbasedLearningByCareerClust
+  #   2025+:     WorkBasedLearning
+  sheet_name <- spr_sheet_for_year(
+    end_year, "WorkbasedLearningByCareerClust", "WorkBasedLearning"
+  )
+
   df <- njschooldata::fetch_spr_data(
-    sheet_name = "WorkbasedLearningByCareerClust",
+    sheet_name = sheet_name,
     end_year = end_year,
     level = level
   )
+
+  # Standardize the participation columns across years (after clean_name_vector).
+  # 2017-2024: students_participating_in_work_based_learning,
+  #            perc_students_participating_learning_by_cluster
+  # 2024-25:   work_based_learning_count_school, work_based_learning_pct_school
+  #            (+ _district / _state variants)
+  if ("work_based_learning_count_school" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(
+        students_participating_in_work_based_learning = work_based_learning_count_school,
+        perc_students_participating_learning_by_cluster = work_based_learning_pct_school
+      )
+  }
 
   # Rename columns (after clean_name_vector conversion)
   df <- df %>%
@@ -511,7 +642,7 @@ fetch_work_based_learning <- function(end_year, level = "school") {
 #' Downloads and extracts apprenticeship participation data from the SPR
 #' database. Contains counts by year (2016-2023).
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -548,14 +679,19 @@ fetch_apprenticeship_data <- function(end_year, level = "school") {
     level = level
   )
 
-  # Apprenticeship sheet has year columns 2016-2023
-  # After clean_name_vector, they become x_2016, x_2017, etc.
-  # Rename them to year_2016, year_2017, etc.
+  # 2017-2024: the sheet had calendar-year columns 2016-2023 which
+  # clean_name_vector turns into x_2016, x_2017, ... Rename them to
+  # year_2016, year_2017, ... (dplyr::rename takes new_name = old_name).
+  #
+  # 2024-25: the sheet was restructured to a graduation-year layout
+  # (GraduationYear + Apprenticeships_1yr..8yr); there are no x_20NN columns,
+  # so this rename is a no-op and the restructured columns pass through as-is.
   year_cols <- grep("^x_20(1[6-9]|2[0-3])$", names(df), value = TRUE)
-  new_names <- gsub("^x_", "year_", year_cols)
-
-  df <- df %>%
-    dplyr::rename(!!setNames(new_names, year_cols))
+  if (length(year_cols) > 0) {
+    new_names <- gsub("^x_", "year_", year_cols)
+    df <- df %>%
+      dplyr::rename(!!!setNames(year_cols, new_names))
+  }
 
   df
 }
@@ -571,7 +707,7 @@ fetch_apprenticeship_data <- function(end_year, level = "school") {
 #' The Seal of Biliteracy recognizes students who attain proficiency in
 #' English and one or more world languages.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -606,18 +742,38 @@ fetch_apprenticeship_data <- function(end_year, level = "school") {
 #'   dplyr::arrange(desc(num_languages))
 #' }
 fetch_biliteracy_seal <- function(end_year, level = "school") {
+  # Sheet split in 2024-25; the per-language detail moved to a dedicated sheet:
+  #   2017-2024: SealofBiliteracy        (Language, SealsEarned, Perc12Graders)
+  #   2025+:     SealofBiliteracy_Language (Language, NumberSealsEarned,
+  #              PercentageSealsEarned)
+  sheet_name <- spr_sheet_for_year(
+    end_year, "SealofBiliteracy", "SealofBiliteracy_Language"
+  )
+
   df <- njschooldata::fetch_spr_data(
-    sheet_name = "SealofBiliteracy",
+    sheet_name = sheet_name,
     end_year = end_year,
     level = level
   )
 
+  # fetch_spr_data() has already snake_cased the column names. Standardize the
+  # seal-count / percentage columns across years.
+  # 2017-2024 (cleaned): seals_earned, perc_12_graders
+  # 2025+     (cleaned): number_seals_earned, percentage_seals_earned
+  if ("number_seals_earned" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(
+        seals_earned = number_seals_earned,
+        perc_12_graders = percentage_seals_earned
+      )
+  }
+
   # Rename columns
   df <- df %>%
     dplyr::rename(
-      language = Language,
-      seals_earned = SealsEarned,
-      pct_12th_graders = Perc12Graders
+      language = language,
+      seals_earned = seals_earned,
+      pct_12th_graders = perc_12_graders
     ) %>%
     dplyr::select(
       end_year,

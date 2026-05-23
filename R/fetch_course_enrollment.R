@@ -19,7 +19,7 @@
 #'
 #' Downloads science course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with science course enrollment by subject area (Biology,
@@ -43,7 +43,7 @@ fetch_science_course_enrollment <- function(end_year, level = "school") {
 #'
 #' Downloads social studies and history course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with social studies course enrollment by subject area
@@ -58,7 +58,13 @@ fetch_science_course_enrollment <- function(end_year, level = "school") {
 #'   dplyr::select(school_name, number_of_students)
 #' }
 fetch_social_studies_enrollment <- function(end_year, level = "school") {
-  df <- fetch_spr_data("SocStudiesHistoryCourseParticip", end_year, level)
+  # Sheet renamed in 2024-25:
+  #   2017-2024: SocStudiesHistoryCourseParticip
+  #   2025+:     SocStudiesCoursePart
+  sheet_name <- spr_sheet_for_year(
+    end_year, "SocStudiesHistoryCourseParticip", "SocStudiesCoursePart"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 
@@ -67,7 +73,7 @@ fetch_social_studies_enrollment <- function(end_year, level = "school") {
 #'
 #' Downloads world languages course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with world language course enrollment by language
@@ -82,7 +88,13 @@ fetch_social_studies_enrollment <- function(end_year, level = "school") {
 #'   dplyr::select(school_name, number_of_students)
 #' }
 fetch_world_language_enrollment <- function(end_year, level = "school") {
-  df <- fetch_spr_data("WorldLanguagesCourseParticipati", end_year, level)
+  # Sheet renamed in 2024-25 (2025 adds 9 more language columns, all additive):
+  #   2017-2024: WorldLanguagesCourseParticipati
+  #   2025+:     WorldLanguagesCoursePart
+  sheet_name <- spr_sheet_for_year(
+    end_year, "WorldLanguagesCourseParticipati", "WorldLanguagesCoursePart"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 
@@ -91,7 +103,7 @@ fetch_world_language_enrollment <- function(end_year, level = "school") {
 #'
 #' Downloads computer science course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with computer science course enrollment by course type
@@ -106,7 +118,13 @@ fetch_world_language_enrollment <- function(end_year, level = "school") {
 #'   dplyr::select(school_name, number_of_students)
 #' }
 fetch_cs_enrollment <- function(end_year, level = "school") {
-  df <- fetch_spr_data("ComputerScienceCourseParticipat", end_year, level)
+  # Sheet renamed in 2024-25 (now combines computer science and IT courses):
+  #   2017-2024: ComputerScienceCourseParticipat
+  #   2025+:     CompSciITCoursePart
+  sheet_name <- spr_sheet_for_year(
+    end_year, "ComputerScienceCourseParticipat", "CompSciITCoursePart"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 
@@ -115,7 +133,7 @@ fetch_cs_enrollment <- function(end_year, level = "school") {
 #'
 #' Downloads visual and performing arts course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with arts course enrollment by discipline
@@ -130,7 +148,13 @@ fetch_cs_enrollment <- function(end_year, level = "school") {
 #'   dplyr::select(school_name, number_of_students)
 #' }
 fetch_arts_enrollment <- function(end_year, level = "school") {
-  df <- fetch_spr_data("VisualAndPerformingArts", end_year, level)
+  # Sheet renamed in 2024-25:
+  #   2017-2024: VisualAndPerformingArts
+  #   2025+:     VisualPerformingArts
+  sheet_name <- spr_sheet_for_year(
+    end_year, "VisualAndPerformingArts", "VisualPerformingArts"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 

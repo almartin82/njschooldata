@@ -7,7 +7,7 @@
 fetch_chronic_absenteeism(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year (2017-2024). Year is the end of the academic
+\item{end_year}{A school year (2017-2025). Year is the end of the academic
 year - eg 2020-21 school year is end_year '2021'.}
 
 \item{level}{One of "school" or "district". "school" returns school-level
