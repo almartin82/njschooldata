@@ -5,7 +5,7 @@
 \alias{PARCC_VALID_YEARS}
 \title{PARCC/NJSLA assessment valid years (skip 2020 - no testing due to COVID)}
 \format{
-An object of class \code{integer} of length 9.
+An object of class \code{integer} of length 10.
 }
 \usage{
 PARCC_VALID_YEARS

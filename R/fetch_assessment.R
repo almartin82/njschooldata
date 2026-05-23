@@ -78,6 +78,8 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
     subj_prefix <- parse_parcc_subj(subj)
   } else if (grepl("ALG|GEO", grade_or_subj)) {
     parcc_grade <- gsub("ALG", "ALG0", grade_or_subj)
+    # NJ DOE has used GEO01 (not GEO) since 2022; map GEO -> GEO01
+    parcc_grade <- gsub("^GEO$", "GEO01", parcc_grade)
     subj_prefix <- ""
   } else {
     parcc_grade <- grade_or_subj
@@ -87,15 +89,16 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
   stem <- "https://www.nj.gov/education/assessment/results/reports/"
   year_suffix <- paste0(end_year - 1, "-", substr(end_year, 3, 4))
 
-  # URL format changed between 2019 and 2022
-  # 2019: ELA03%20NJSLA%20DATA%202018-19.xlsx (spaces)
-  # 2022+: ELA03_NJSLA_DATA_2021-22.xlsx (underscores)
-  if (end_year == 2019) {
+  # NJ DOE filename encoding has flip-flopped over the years:
+  #   2019:      ELA03%20NJSLA%20DATA%202018-19.xlsx (spaces)
+  #   2022-2024: ELA03_NJSLA_DATA_2021-22.xlsx       (underscores)
+  #   2025:      ELA03%20NJSLA%20DATA%202024-25.xlsx (spaces again)
+  if (end_year == 2019 || end_year >= 2025) {
     filename <- paste0(
       subj_prefix, parcc_grade, "%20NJSLA%20DATA%20", year_suffix, ".xlsx"
     )
   } else {
-    # 2022 and later use underscores
+    # 2022-2024 use underscores
     filename <- paste0(
       subj_prefix, parcc_grade, "_NJSLA_DATA_", year_suffix, ".xlsx"
     )
@@ -120,7 +123,7 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
 #' NJGPA (New Jersey Graduation Proficiency Assessment) is the graduation
 #' requirement assessment introduced in 2022.
 #'
-#' @param end_year A school year. Valid values are 2022-2024.
+#' @param end_year A school year. Valid values are 2022-2025.
 #' @param subj NJGPA subject. c('ela' or 'math')
 #' @return NJGPA dataframe
 #' @keywords internal
@@ -138,7 +141,14 @@ get_raw_njgpa <- function(end_year, subj) {
   stem <- "https://www.nj.gov/education/assessment/results/reports/"
   year_suffix <- paste0(end_year - 1, "-", substr(end_year, 3, 4))
 
-  filename <- paste0(subj_prefix, "_NJGPA_DATA_", year_suffix, ".xlsx")
+  # NJ DOE filename encoding flip-flopped, mirroring the NJSLA files:
+  #   2022-2024: ELAGP_NJGPA_DATA_2021-22.xlsx       (underscores)
+  #   2025:      ELAGP%20NJGPA%20DATA%202024-25.xlsx (spaces)
+  if (end_year >= 2025) {
+    filename <- paste0(subj_prefix, "%20NJGPA%20DATA%20", year_suffix, ".xlsx")
+  } else {
+    filename <- paste0(subj_prefix, "_NJGPA_DATA_", year_suffix, ".xlsx")
+  }
 
   target_url <- paste0(
     stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), "/njgpa/", filename
@@ -162,7 +172,7 @@ get_raw_njgpa <- function(end_year, subj) {
 #' that gets a parcc file and performs any cleanup.
 #'
 #' @param end_year A school year. end_year is the end of the academic year - eg 2014-15
-#' school year is end_year 2015. Valid values are 2015-2024.
+#' school year is end_year 2015. Valid values are 2015-2025.
 #' @param grade_or_subj Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2).
 #'   For science, valid grades are 5, 8, and 11.
 #' @param subj Assessment subject: 'ela', 'math', or 'science'.
@@ -220,7 +230,7 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' requirement assessment introduced in 2022, replacing the previous PARCC-based
 #' graduation pathway.
 #'
-#' @param end_year A school year. Valid values are 2022-2024.
+#' @param end_year A school year. Valid values are 2022-2025.
 #' @param subj Assessment subject: 'ela' or 'math'
 #' @param tidy Clean up the data frame? Default is FALSE.
 #' @return Processed NJGPA dataframe
@@ -276,7 +286,7 @@ fetch_all_parcc <- function(include_science = TRUE) {
 
   # Note: 2020 assessments cancelled due to COVID-19
   # Note: 2021 only has "Start Strong" pilot data, not standard NJSLA
-  valid_years <- c(2015:2019, 2022:2024)
+  valid_years <- c(2015:2019, 2022:2025)
 
   for (i in valid_years) {
     # Normal grade level tests
@@ -392,7 +402,7 @@ fetch_all_njgpa <- function() {
   njgpa_results <- list()
 
   # NJGPA started in 2022
-  valid_years <- c(2022:2024)
+  valid_years <- c(2022:2025)
 
   for (i in valid_years) {
     for (k in c("ela", "math")) {
@@ -425,7 +435,7 @@ fetch_all_njgpa <- function() {
 #' Builds the URL for a given year's ACCESS data file.
 #' URL structure changed between years.
 #'
-#' @param end_year A school year (2022-2024)
+#' @param end_year A school year (2022-2025)
 #' @return URL string
 #' @keywords internal
 get_access_url <- function(end_year) {
@@ -457,7 +467,7 @@ get_access_url <- function(end_year) {
 #'
 #' Downloads the ACCESS file and reads a specific grade sheet.
 #'
-#' @param end_year A school year (2022-2024)
+#' @param end_year A school year (2022-2025)
 #' @param grade Grade level: "K" or 0 for Kindergarten, or 1-12 for other grades.
 #'   Use "all" to get all grades combined.
 #' @return ACCESS dataframe for the specified grade
@@ -515,7 +525,7 @@ get_raw_access <- function(end_year, grade = "all") {
 #' Cleans and standardizes ACCESS data.
 #'
 #' @param access_file Output of get_raw_access
-#' @param end_year A school year (2022-2024)
+#' @param end_year A school year (2022-2025)
 #' @return Processed ACCESS dataframe
 #' @keywords internal
 process_access <- function(access_file, end_year) {
@@ -591,7 +601,7 @@ process_access <- function(access_file, end_year) {
 #' assessment results. ACCESS measures English language proficiency
 #' for ELL students across grades K-12.
 #'
-#' @param end_year A school year. Valid values are 2022-2024.
+#' @param end_year A school year. Valid values are 2022-2025.
 #' @param grade Grade level: "K" or 0 for Kindergarten, 1-12 for other grades,
 #'   or "all" (default) to get all grades combined.
 #' @return Processed ACCESS dataframe with columns including:
@@ -630,7 +640,7 @@ fetch_access <- function(end_year, grade = "all") {
 #' Convenience function to download and combine all available ACCESS
 #' for ELLs results into a single data frame.
 #'
-#' @return A data frame with all ACCESS results (2022-2024, all grades)
+#' @return A data frame with all ACCESS results (2022-2025, all grades)
 #' @export
 #' @examples
 #' \dontrun{
@@ -641,8 +651,8 @@ fetch_all_access <- function() {
 
   access_results <- list()
 
-  # ACCESS data available 2022-2024
-  valid_years <- c(2022:2024)
+  # ACCESS data available 2022-2025
+  valid_years <- c(2022:2025)
 
   for (year in valid_years) {
     result <- tryCatch(

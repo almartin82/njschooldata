@@ -1,3 +1,21 @@
+# njschooldata 0.9.3
+
+## New features
+
+* Assessment fetchers (`fetch_parcc()`/NJSLA, `fetch_njgpa()`, `fetch_access()`,
+  plus `fetch_all_parcc()`/`fetch_all_njgpa()`/`fetch_all_access()`) now cover
+  SY2024-25 (`end_year = 2025`). NJ DOE reverted to the 2019-era space-encoded
+  filenames for 2025 (e.g. `ELA03%20NJSLA%20DATA%202024-25.xlsx`); the URL
+  builders now use spaces for 2019 and 2025+ and underscores for 2022-2024.
+  `PARCC_VALID_YEARS` extends to 2025. Schemas are unchanged from 2024.
+
+## Bug fixes
+
+* `get_raw_sla()` now maps the Geometry math test code `GEO` to `GEO01`, which
+  NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
+  unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
+  Geometry results now fetch for all of 2022-2025.
+
 # njschooldata 0.9.2
 
 ## New features
