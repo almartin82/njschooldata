@@ -17,18 +17,18 @@
 #' Builds the URL for the School Performance Reports database containing
 #' multiple sheets of school performance data.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". Determines which database file
 #'   to download.
 #' @return URL string
 #' @keywords internal
 get_spr_url <- function(end_year, level = "school") {
-  valid_years <- 2017:2024
+  valid_years <- 2017:2025
 
   if (!end_year %in% valid_years) {
     stop(paste0(
-      "SPR data available for years 2017-2024. ",
+      "SPR data available for years 2017-2025. ",
       "Year ", end_year, " is not supported."
     ))
   }
@@ -50,6 +50,48 @@ get_spr_url <- function(end_year, level = "school") {
 }
 
 
+#' Pick an SPR sheet name by year
+#'
+#' Convenience helper for consumers whose source sheet was renamed in the
+#' 2024-25 (end_year 2025) SPR redesign. Returns \code{name_2025} when
+#' \code{end_year >= 2025}, otherwise \code{name_legacy}.
+#'
+#' @param end_year School year end.
+#' @param name_legacy Sheet name used for 2017-2024.
+#' @param name_2025 Sheet name used for 2025 onward.
+#' @return The appropriate sheet name string.
+#' @keywords internal
+spr_sheet_for_year <- function(end_year, name_legacy, name_2025) {
+  if (end_year >= 2025) name_2025 else name_legacy
+}
+
+
+#' Filter an SPR sheet to a single academic year
+#'
+#' Several 2024-25 SPR sheets ship as multi-year trend tables (a
+#' \code{school_year} column spanning, e.g., 2020-21..2024-25) where the
+#' pre-redesign sheet held a single year. When a \code{school_year} column is
+#' present, this keeps only the rows for the requested academic year so the
+#' output preserves the historical one-row-per-entity shape. Sheets without a
+#' \code{school_year} column are returned unchanged.
+#'
+#' @param df Data frame from \code{\link{fetch_spr_data}} (column names already
+#'   snake_cased).
+#' @param end_year School year end (e.g., 2025 for SY2024-25).
+#' @return The data frame filtered to the requested academic year, or unchanged
+#'   if no \code{school_year} column exists.
+#' @keywords internal
+filter_spr_to_year <- function(df, end_year) {
+  if (!"school_year" %in% names(df)) {
+    return(df)
+  }
+  # Academic-year label, e.g. end_year 2025 -> "2024-25".
+  academic_label <- paste0(end_year - 1, "-", substr(as.character(end_year), 3, 4))
+  keep <- !is.na(df[["school_year"]]) & df[["school_year"]] == academic_label
+  df[keep, , drop = FALSE]
+}
+
+
 # -----------------------------------------------------------------------------
 # Subgroup Name Cleaning
 # -----------------------------------------------------------------------------
@@ -64,7 +106,8 @@ get_spr_url <- function(end_year, level = "school") {
 #' @keywords internal
 clean_spr_subgroups <- function(group) {
   dplyr::case_when(
-    tolower(group) %in% c("schoolwide", "districtwide", "statewide") ~ "total population",
+    # "All Students" is the 2024-25 label for the schoolwide/statewide total.
+    tolower(group) %in% c("schoolwide", "districtwide", "statewide", "all students") ~ "total population",
     tolower(group) == "american indian or alaska native" ~ "american indian",
     tolower(group) == "black or african american" ~ "black",
     tolower(group) == "economically disadvantaged students" ~ "economically disadvantaged",
@@ -89,7 +132,7 @@ clean_spr_subgroups <- function(group) {
 #'
 #' @param sheet_name Exact sheet name from SPR database (case-sensitive).
 #'   You must know the exact sheet name. See vignette("spr-dictionary") for available sheets.
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -130,11 +173,18 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
   tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
   downloader::download(target_url, destfile = tname, mode = "wb")
 
+  # The 2024-25 (end_year 2025) redesign moved the column headers down: row 1
+  # holds a metadata note, rows 2-3 hold sheet/source notes, and the real header
+  # row is row 4. Skip the three preamble rows for 2025+. Earlier years keep
+  # headers on row 1 (no skip).
+  header_skip <- if (end_year >= 2025) 3 else 0
+
   # Read specific sheet
   df <- tryCatch(
     readxl::read_excel(
       path = tname,
       sheet = sheet_name,
+      skip = header_skip,
       na = c("*", "N", "NA", "", "-"),
       guess_max = 10000
     ),
@@ -175,6 +225,11 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
   df$district_id <- kill_padformulas(df$district_id)
   df$school_id <- kill_padformulas(df$school_id)
 
+  # Drop the trailing sentinel row that 2024-25 sheets append (a single row with
+  # county_id "end of worksheet" and all other identifiers blank).
+  df <- df %>%
+    dplyr::filter(!grepl("end of worksheet", county_id, ignore.case = TRUE))
+
   # Add end_year
   df$end_year <- end_year
 
@@ -187,11 +242,16 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
     df$subgroup <- clean_spr_subgroups(df$subgroup)
   }
 
-  # Add aggregation flags
+  # Add aggregation flags.
+  # The SPR District/State file marks its statewide aggregate row with the
+  # literal CDS codes county_id == "State" / district_id == "State" (it does NOT
+  # use the 99 / 9999 convention seen elsewhere). Recognize both so the state
+  # row is correctly flagged across all years and file layouts.
   df <- df %>%
     dplyr::mutate(
-      is_state = district_id == "9999" & county_id == "99",
-      is_county = district_id == "9999" & !county_id == "99",
+      is_state = (district_id == "9999" & county_id == "99") |
+        (toupper(county_id) == "STATE"),
+      is_county = (district_id == "9999" & county_id != "99") & !is_state,
       is_district = school_id %in% c("888", "997", "999") & !is_state,
       is_school = !school_id %in% c("888", "997", "999") & !is_state,
       is_charter = county_id == "80",
@@ -233,15 +293,25 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
 #' @keywords internal
 process_chronic_absenteeism_cols <- function(df) {
   # Detect chronic absenteeism rate column (name may vary)
-  # Main sheet: "Chronic_Abs_Pct"
-  # Grade-level sheet: "SchoolPercent"
+  # 2017-2024 subgroup sheet:    "Chronic_Abs_Pct"
+  # 2017-2024 grade-level sheet: "SchoolPercent"
+  # 2024-25 school file:         "ChronicAbsenteeismRate_School"
+  # 2024-25 district/state file: "ChronicAbsenteeismRate_District" (the school
+  #                              file has no per-school value for district/state
+  #                              aggregate rows)
   rate_cols <- grep("chronic|absent|percent", names(df), value = TRUE, ignore.case = TRUE)
 
   # Filter to find the actual rate column (exclude names with "Number", "Count", etc.)
   rate_cols <- rate_cols[!grepl("number|count|enrollment|n_|state", rate_cols, ignore.case = TRUE)]
 
-  # Prefer Chronic_Abs_Pct over SchoolPercent if both exist
-  if ("chronic_abs_pct" %in% names(df)) {
+  # Prefer the explicit school-rate column, falling back across naming variants
+  if ("chronic_absenteeism_rate_school" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(chronically_absent_rate = chronic_absenteeism_rate_school)
+  } else if ("chronic_absenteeism_rate_district" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(chronically_absent_rate = chronic_absenteeism_rate_district)
+  } else if ("chronic_abs_pct" %in% names(df)) {
     df <- df %>%
       dplyr::rename(chronically_absent_rate = chronic_abs_pct)
   } else if ("school_percent" %in% names(df)) {
@@ -318,7 +388,7 @@ process_days_absent_cols <- function(df) {
 #' Downloads and extracts chronic absenteeism data from the SPR database.
 #' Chronic absenteeism is defined as missing 10% or more of school days.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -348,9 +418,14 @@ process_days_absent_cols <- function(df) {
 #'   filter(subgroup == "total population")
 #' }
 fetch_chronic_absenteeism <- function(end_year, level = "school") {
+  # Sheet renamed in 2024-25: ChronicAbsenteeism -> ChronicAbsenteeismStudentGroup
+  sheet_name <- spr_sheet_for_year(
+    end_year, "ChronicAbsenteeism", "ChronicAbsenteeismStudentGroup"
+  )
+
   # Use generic extractor
   df <- fetch_spr_data(
-    sheet_name = "ChronicAbsenteeism",
+    sheet_name = sheet_name,
     end_year = end_year,
     level = level
   )
@@ -378,7 +453,7 @@ fetch_chronic_absenteeism <- function(end_year, level = "school") {
 #' Downloads and extracts chronic absenteeism data broken down by grade level
 #' from the SPR database.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -406,10 +481,13 @@ fetch_chronic_absenteeism <- function(end_year, level = "school") {
 #' }
 fetch_absenteeism_by_grade <- function(end_year, level = "school") {
   # Determine sheet name (changed over time)
-  # 2018-2019: ChronicAbsByGrade
-  # 2020+: ChronicAbsenteeismByGrade
+  # 2018-2019:  ChronicAbsByGrade
+  # 2020-2024:  ChronicAbsenteeismByGrade
+  # 2025+:      ChronicAbsenteeismGrade
   sheet_name <- if (end_year %in% c(2018, 2019)) {
     "ChronicAbsByGrade"
+  } else if (end_year >= 2025) {
+    "ChronicAbsenteeismGrade"
   } else {
     "ChronicAbsenteeismByGrade"
   }
@@ -459,7 +537,7 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #' Downloads and extracts days absent statistics from the SPR database.
 #' This includes percentage distributions of students by absence ranges.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -517,7 +595,7 @@ fetch_days_absent <- function(end_year, level = "school") {
 #' Returns a vector of all sheet names available in the SPR database for a
 #' given year and level. Useful for discovering what data is available.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". Determines which database file
 #'   to query.
@@ -625,7 +703,7 @@ get_mapped_sheet_name <- function(canonical_name, end_year) {
 #'
 #' Downloads teacher experience data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with teacher experience breakdown
@@ -643,7 +721,7 @@ fetch_teacher_experience <- function(end_year, level = "school") {
 #'
 #' Downloads teacher/administrator demographic data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with staff race/gender breakdowns
@@ -659,18 +737,39 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 
 #' Fetch Disciplinary Removals Data
 #'
-#' Downloads discipline data (suspensions/expulsions) from SPR database.
+#' Downloads discipline data (suspensions/expulsions/removals) from the SPR
+#' database, broken down by student group and grade level.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
-#' @return Data frame with disciplinary actions
+#' @return Data frame with disciplinary actions. Includes a
+#'   \code{student_group_grade} column identifying the student group / grade
+#'   row, plus suspension, removal, and expulsion counts and percentages.
 #' @export
 #' @examples \dontrun{
 #' discipline <- fetch_disciplinary_removals(2024)
 #' }
 fetch_disciplinary_removals <- function(end_year, level = "school") {
-  df <- fetch_spr_data("DisciplinaryRemovals", end_year, level)
+  # NOTE: prior versions requested a sheet "DisciplinaryRemovals" that has never
+  # existed in any SPR database, so this function was broken for all years. The
+  # real sheet was renamed in 2024-25:
+  #   2017-2024: DisciplinaryRemovalsByStudgroup (col StudentGroup/GradeLevel)
+  #   2025+:     RemovalsStudentGroupGrade       (col StudentGroupGrade)
+  sheet_name <- spr_sheet_for_year(
+    end_year, "DisciplinaryRemovalsByStudgroup", "RemovalsStudentGroupGrade"
+  )
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
+
+  # Standardize the student-group/grade column name across years.
+  # 2017-2024: "StudentGroup/GradeLevel" -> student_group_grade_level
+  # 2025+:     "StudentGroupGrade"        -> student_group_grade
+  if ("student_group_grade_level" %in% names(df) &&
+      !"student_group_grade" %in% names(df)) {
+    df <- dplyr::rename(df, student_group_grade = student_group_grade_level)
+  }
+
   df
 }
 
@@ -679,7 +778,7 @@ fetch_disciplinary_removals <- function(end_year, level = "school") {
 #'
 #' Downloads incident data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with incident counts
@@ -688,7 +787,14 @@ fetch_disciplinary_removals <- function(end_year, level = "school") {
 #' incidents <- fetch_violence_vandalism_hib(2024)
 #' }
 fetch_violence_vandalism_hib <- function(end_year, level = "school") {
-  df <- fetch_spr_data("ViolenceVandalismHIBSubstanceOf", end_year, level)
+  # Sheet renamed in 2024-25:
+  #   2017-2024: ViolenceVandalismHIBSubstanceOf
+  #   2025+:     IncidentsbyType
+  sheet_name <- spr_sheet_for_year(
+    end_year, "ViolenceVandalismHIBSubstanceOf", "IncidentsbyType"
+  )
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 
@@ -697,7 +803,7 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school") {
 #'
 #' Downloads student-to-staff ratio data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with staff ratios
@@ -715,7 +821,7 @@ fetch_staff_ratios <- function(end_year, level = "school") {
 #'
 #' Downloads math course participation data from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with math course enrollment
@@ -733,7 +839,7 @@ fetch_math_course_enrollment <- function(end_year, level = "school") {
 #'
 #' Downloads dropout rate trends from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with dropout rates
@@ -751,7 +857,7 @@ fetch_dropout_rates <- function(end_year, level = "school") {
 #'
 #' Downloads ESSA accountability ratings from SPR database.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with ESSA status ratings
@@ -771,7 +877,7 @@ fetch_essa_status <- function(end_year, level = "school") {
 #' Includes metrics on academic proficiency, growth, graduation rates, and
 #' chronic absenteeism.
 #'
-#' @param end_year A school year (2017-2024)
+#' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with ESSA progress indicators including:
@@ -792,7 +898,15 @@ fetch_essa_status <- function(end_year, level = "school") {
 #' progress <- fetch_essa_progress(2024)
 #' }
 fetch_essa_progress <- function(end_year, level = "school") {
-  df <- fetch_spr_data("ESSAAccountabilityProgress", end_year, level)
+  # The ESSAAccountabilityProgress sheet was renamed in 2024-25 to
+  # ESSAAccountabilityTrends. The 2025 sheet carries the same progress
+  # indicators (proficiency, growth, graduation, ELP progress, chronic
+  # absenteeism) plus additive 6-year graduation, HS persistence, and a
+  # StudentGroup breakdown.
+  sheet_name <- spr_sheet_for_year(
+    end_year, "ESSAAccountabilityProgress", "ESSAAccountabilityTrends"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
   df
 }
 

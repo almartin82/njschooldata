@@ -1,3 +1,54 @@
+# njschooldata 0.9.3
+
+## New features
+
+* School Performance Reports (SPR) fetchers now support SY2024-25 (`end_year`
+  2025). NJ DOE heavily restructured the 2024-25 SPR workbooks: the column
+  header row moved from row 1 to row 4, ~10 source sheets were renamed, and many
+  value columns gained `_School`/`_State` suffixes. `get_spr_url()` accepts
+  2017-2025, and `fetch_spr_data()` skips the three preamble rows for 2025+.
+* Sheet renames are handled per source for 2025 while keeping 2017-2024
+  behavior intact: chronic absenteeism (`ChronicAbsenteeismStudentGroup`),
+  chronic absenteeism by grade (`ChronicAbsenteeismGrade`),
+  violence/vandalism/HIB (`IncidentsbyType`), SAT/ACT/PSAT participation
+  (`PSATSATACT_Participation`), SAT/ACT/PSAT performance (joined from
+  `PSATSATACT_AverageScore` + `PSATSATACT_Benchmark`), CTE
+  (`CTEParticipants_*` columns), industry credentials
+  (`IndustryValuedCredClusters`), work-based learning (`WorkBasedLearning`),
+  social studies (`SocStudiesCoursePart`), world languages
+  (`WorldLanguagesCoursePart`), computer science (`CompSciITCoursePart`),
+  visual/performing arts (`VisualPerformingArts`), seal of biliteracy
+  (`SealofBiliteracy_Language`), and ESSA progress (`ESSAAccountabilityTrends`).
+* SAT participation and SAT performance 2025 sheets are now multi-year trend
+  tables; the fetchers filter to the requested academic year via the new
+  internal `filter_spr_to_year()` helper so the output keeps its historical
+  single-year, one-row-per-school shape.
+* `clean_spr_subgroups()` maps the new 2024-25 "All Students" total label to
+  `total population`, and the SPR statewide aggregate row (CDS code
+  `State`/`State`) is now correctly flagged with `is_state`.
+
+## Bug fixes
+
+* `fetch_disciplinary_removals()` was broken for every year: it requested a
+  sheet `"DisciplinaryRemovals"` that has never existed. It now selects the real
+  sheet per year (`DisciplinaryRemovalsByStudgroup` for 2017-2024,
+  `RemovalsStudentGroupGrade` for 2025) and standardizes the student-group/grade
+  column to `student_group_grade`.
+* `fetch_apprenticeship_data()` no longer errors on its year-column rename
+  (the `dplyr::rename()` mapping was inverted, naming columns that did not
+  exist); the rename is now correctly directed and skipped when the columns are
+  absent.
+* `fetch_spr_data()` drops the trailing `"end of worksheet"` sentinel row that
+  the 2024-25 sheets append.
+
+## Known follow-ups
+
+* `fetch_ap_participation()` is not yet available for 2025. The 2024-25
+  `AP_IB_Dual_Participation` SPR sheet is malformed at the school level (many
+  rows per school with no disambiguating column), so a reliable
+  one-row-per-school mapping cannot be derived without fabricating data. The
+  2025 path raises an informative error; 2017-2024 are unaffected.
+
 # njschooldata 0.9.2
 
 ## Bug fixes

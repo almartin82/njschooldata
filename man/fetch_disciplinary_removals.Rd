@@ -7,15 +7,18 @@
 fetch_disciplinary_removals(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year (2017-2024)}
+\item{end_year}{A school year (2017-2025)}
 
 \item{level}{One of "school" or "district"}
 }
 \value{
-Data frame with disciplinary actions
+Data frame with disciplinary actions. Includes a
+  \code{student_group_grade} column identifying the student group / grade
+  row, plus suspension, removal, and expulsion counts and percentages.
 }
 \description{
-Downloads discipline data (suspensions/expulsions) from SPR database.
+Downloads discipline data (suspensions/expulsions/removals) from the SPR
+database, broken down by student group and grade level.
 }
 \examples{
 \dontrun{
