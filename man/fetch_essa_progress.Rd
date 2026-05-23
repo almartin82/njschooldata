@@ -7,7 +7,7 @@
 fetch_essa_progress(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year (2017-2024)}
+\item{end_year}{A school year (2017-2025)}
 
 \item{level}{One of "school" or "district"}
 }
