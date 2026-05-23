@@ -4,7 +4,7 @@ Title: A Simple Interface for Accessing NJ DOE School Data in R and Python
 Description: R functions (with Python bindings) to import NJ school data,
     including assessment, enrollment, and accountability data from the
     New Jersey Department of Education.
-Version: 0.9.5
+Version: 0.9.6
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
     email = "almartin@gmail.com")
 License: MIT + file LICENSE
@@ -37,15 +37,13 @@ Suggests:
     geojsonio,
     ggplot2,
     knitr,
-    placement,
     rmarkdown,
     scales,
     sf,
     sp,
     testthat (>= 3.0.0),
+    tidygeocoder,
     withr
-Remotes:
-    DerekYves/placement
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
