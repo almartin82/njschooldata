@@ -48,6 +48,19 @@ Construction status — not fake data.
 R package for fetching and processing New Jersey school data from the NJ
 Department of Education.
 
+## Reference Docs (`dev-docs/`)
+
+Detailed reference lives in `dev-docs/`. This file holds the always-on
+rules; load the relevant doc only when the trigger applies, to keep
+context lean.
+
+| Doc | Load when |
+|----|----|
+| [`dev-docs/enrollment-filter-values.md`](https://almartin82.github.io/njschooldata/dev-docs/enrollment-filter-values.md) | Writing [`filter()`](https://rdrr.io/r/stats/filter.html) calls against `fetch_enr(tidy = TRUE)`, authoring enrollment stories, or a filter silently returns 0 rows |
+| [`dev-docs/vignette-authoring.md`](https://almartin82.github.io/njschooldata/dev-docs/vignette-authoring.md) | Editing any vignette `.Rmd`, regenerating/restyling charts, or debugging stale/missing charts (committed-PNG + knitr cache rules) |
+| [`dev-docs/pkgdown-deploy.md`](https://almartin82.github.io/njschooldata/dev-docs/pkgdown-deploy.md) | Configuring or debugging the pkgdown deploy, editing `_pkgdown.yml`, or enabling Pages on a new repo |
+| [`dev-docs/data-source-urls.md`](https://almartin82.github.io/njschooldata/dev-docs/data-source-urls.md) | A fetcher 404s / returns HTML, a download is empty, or a fetch URL needs updating for a new year |
+
 ## Project Structure - PUBLIC vs PRIVATE
 
 **njschooldata is a PUBLIC, OPEN SOURCE project.** Only general-purpose
@@ -57,7 +70,6 @@ etc.).
 | Location | Visibility | Purpose |
 |----|----|----|
 | `R/`, `tests/`, `man/` | **PUBLIC** | General-purpose functions for fetching/processing NJ school data |
-| `research-private/` | **PRIVATE** | Applied analyses of specific school districts (e.g., Newark MarGrady analysis) |
 
 **Guidelines:** - Code that could benefit any user of NJ school data →
 goes in `R/` - Code specific to a particular research question or
@@ -96,112 +108,3 @@ clear cache - `njsd_cache_enable(FALSE)` - disable caching
 
 The cache validates responses and will NOT cache network errors or bot
 protection pages.
-
-## Valid Filter Values (tidy enrollment via `fetch_enr(tidy = TRUE)`)
-
-### subgroup
-
-`total_enrollment`, `male`, `female`, `white`, `black`, `hispanic`,
-`asian`, `native_american`, `pacific_islander`, `multiracial`,
-`white_m`, `white_f`, `black_m`, `black_f`, `hispanic_m`, `hispanic_f`,
-`asian_m`, `asian_f`, `native_american_m`, `native_american_f`,
-`pacific_islander_m`, `pacific_islander_f`, `free_lunch`,
-`reduced_lunch`, `free_reduced_lunch`, `lep`, `migrant`
-
-**NOT in tidy enrollment:** `econ_disadv`, `lep_current`,
-`special_education` – these live in
-[`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
-or report card data, not
-[`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
-
-### grade_level
-
-`PK`, `K` (normalized from KF/KH/KG), `01`-`12`, `TOTAL`
-
-Aggregates from
-[`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md):
-`PK (Any)`, `K (Any)`, `K12`, `K12UG`, `K8`, `HS`
-
-**Common trap:** Raw data uses `KF` for kindergarten, but
-[`clean_enr_grade()`](https://almartin82.github.io/njschooldata/reference/clean_enr_grade.md)
-normalizes to `K`. Always filter on `K`, never `KF`.
-
-### entity flags
-
-`is_state`, `is_county`, `is_district`, `is_charter`, `is_school`,
-`is_subprogram`
-
-## pkgdown / GitHub Pages
-
-Site: <https://almartin82.github.io/njschooldata/>
-
-**Setup:** - GitHub Action (`.github/workflows/pkgdown.yml`) builds on
-push to master - Deploys to `gh-pages` branch automatically - `docs/` is
-gitignored on master (build artifacts only)
-
-**Configuration:** - `_pkgdown.yml` - site config, reference sections,
-articles - All exported functions must be listed in reference sections
-(use `matches(".*")` as catch-all) - Vignettes in `vignettes/` appear as
-articles
-
-**To enable on a new repo:** 1. Add workflow file and `_pkgdown.yml` 2.
-Push to master 3. Enable GitHub Pages via API or Settings:
-`bash gh api repos/OWNER/REPO/pages -X POST --input - <<EOF {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}} EOF`
-
-## Vignette Charts: Committed Figures Are the Source of Truth (REQUIRED)
-
-**Vignette figures are pre-rendered and committed to git. Editing a
-vignette’s `.Rmd` does NOT update the published charts — you MUST
-regenerate and commit the figure PNGs.**
-
-- Rendered figures live in
-  `vignettes/<vignette>_files/figure-html/*.png` and are **tracked in
-  git**. The pkgdown build serves these committed binaries; it does not
-  reliably re-knit them on every run.
-- The README/home page chart images point at the deployed copies
-  (`https://almartin82.github.io/njschooldata/articles/<vignette>_files/figure-html/<chunk>-1.png`),
-  which come from those same committed PNGs.
-
-**Workflow to update any chart (data refresh, new year, restyle):** 1.
-Edit the vignette code/prose. 2. Re-render locally:
-`rmarkdown::render("vignettes/<vignette>.Rmd")`. 3. **Copy the
-regenerated `figure-html/*.png` over the committed ones and `git add`
-them.** This step is the one that actually moves the published chart. 4.
-Visually open the regenerated PNG and confirm it shows the new data
-before committing — do not trust a green pkgdown build; the build can
-succeed while serving stale committed figures.
-
-**Incident (2026-05, 2026 enrollment integration):** the vignette prose
-and data tables were updated to 2026 and merged, and pkgdown deployed
-green three times, but the live charts kept showing the old 2020-2025
-series. Root cause: the committed `statewide-enrollment-1.png` (and 14
-others) were never replaced, and the build served them byte-for-byte.
-The fix was committing the freshly rendered 2026 PNGs. Two earlier
-attempts (changing `.Rmd` text, then `cache = FALSE`) failed because
-neither touched the committed figure binaries.
-
-## Vignette knitr Cache Discipline (REQUIRED)
-
-- Default the vignette chunk cache to **`cache = FALSE`** in the setup
-  chunk.
-- Enable `cache = TRUE` **only** on the expensive data-fetch chunk (e.g.
-  `{r fetch-data, cache = TRUE}`), never on plot chunks.
-- Do **not** commit `vignettes/<vignette>_cache/` directories. Cached
-  plot chunks replay stale figures across build environments (the
-  caschooldata 2026-03 incident); keeping plots un-cached forces a fresh
-  render every time.
-
-## Data Source URLs Move Without Notice
-
-NJ DOE relocates and renames files frequently; the actual fetch URLs are
-built inside the fetch functions (not always `config_urls.R`). Two cases
-handled in code, kept here as a reminder to expect more: -
-**Enrollment** (`get_raw_enr`): the 2025-26 file shipped as
-`Enrollment_2526.zip` (capital E) vs the historical lowercase
-`enrollment_*.zip`; the fetcher tries both capitalizations. -
-**Graduation** (`get_raw_grad_file`): in 2026 the entire
-`/schoolperformance/grad/` tree was retired and files moved to
-`/spr/adddata/doc/acgrdocs/`.
-[`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
-points at the old tree and its file did not move there — its new
-location is still unknown (open follow-up).

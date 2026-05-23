@@ -63,6 +63,20 @@
 <p>R package for fetching and processing New Jersey school data from the NJ Department of Education.</p>
 </div>
 <div class="section level2">
+<h2 id="reference-docs-dev-docs">Reference Docs (<code>dev-docs/</code>)<a class="anchor" aria-label="anchor" href="#reference-docs-dev-docs"></a></h2>
+<p>Detailed reference lives in <code>dev-docs/</code>. This file holds the always-on rules; load the relevant doc only when the trigger applies, to keep context lean.</p>
+<table class="table"><colgroup><col width="31%"><col width="68%"></colgroup><thead><tr><th>Doc</th>
+<th>Load when</th>
+</tr></thead><tbody><tr><td><a href="dev-docs/enrollment-filter-values.html"><code>dev-docs/enrollment-filter-values.md</code></a></td>
+<td>Writing <code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter()</a></code> calls against <code>fetch_enr(tidy = TRUE)</code>, authoring enrollment stories, or a filter silently returns 0 rows</td>
+</tr><tr><td><a href="dev-docs/vignette-authoring.html"><code>dev-docs/vignette-authoring.md</code></a></td>
+<td>Editing any vignette <code>.Rmd</code>, regenerating/restyling charts, or debugging stale/missing charts (committed-PNG + knitr cache rules)</td>
+</tr><tr><td><a href="dev-docs/pkgdown-deploy.html"><code>dev-docs/pkgdown-deploy.md</code></a></td>
+<td>Configuring or debugging the pkgdown deploy, editing <code>_pkgdown.yml</code>, or enabling Pages on a new repo</td>
+</tr><tr><td><a href="dev-docs/data-source-urls.html"><code>dev-docs/data-source-urls.md</code></a></td>
+<td>A fetcher 404s / returns HTML, a download is empty, or a fetch URL needs updating for a new year</td>
+</tr></tbody></table></div>
+<div class="section level2">
 <h2 id="project-structure---public-vs-private">Project Structure - PUBLIC vs PRIVATE<a class="anchor" aria-label="anchor" href="#project-structure---public-vs-private"></a></h2>
 <p><strong>njschooldata is a PUBLIC, OPEN SOURCE project.</strong> Only general-purpose infrastructure code belongs in the package itself (<code>R/</code>, <code>tests/</code>, etc.).</p>
 <table class="table"><colgroup><col width="32%"><col width="38%"><col width="29%"></colgroup><thead><tr><th>Location</th>
@@ -73,9 +87,6 @@
 </td>
 <td><strong>PUBLIC</strong></td>
 <td>General-purpose functions for fetching/processing NJ school data</td>
-</tr><tr><td><code>research-private/</code></td>
-<td><strong>PRIVATE</strong></td>
-<td>Applied analyses of specific school districts (e.g., Newark MarGrady analysis)</td>
 </tr></tbody></table><p><strong>Guidelines:</strong> - Code that could benefit any user of NJ school data → goes in <code>R/</code> - Code specific to a particular research question or district → goes in <code>research-private/</code> - Helper functions created during research that are general-purpose → refactor into <code>R/</code> - District-specific constants, analysis scripts, cached data → stay in <code>research-private/</code></p>
 </div>
 <div class="section level2">
@@ -99,49 +110,6 @@
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>
 <p>Session caching is enabled by default to avoid hitting NJ DOE bot protection: - <code><a href="reference/njsd_cache_info.html">njsd_cache_info()</a></code> - view cache status - <code><a href="reference/njsd_cache_clear.html">njsd_cache_clear()</a></code> - clear cache - <code>njsd_cache_enable(FALSE)</code> - disable caching</p>
 <p>The cache validates responses and will NOT cache network errors or bot protection pages.</p>
-</div>
-<div class="section level2">
-<h2 id="valid-filter-values-tidy-enrollment-via-fetch_enrtidy--true">Valid Filter Values (tidy enrollment via <code>fetch_enr(tidy = TRUE)</code>)<a class="anchor" aria-label="anchor" href="#valid-filter-values-tidy-enrollment-via-fetch_enrtidy--true"></a></h2>
-<div class="section level3">
-<h3 id="subgroup">subgroup<a class="anchor" aria-label="anchor" href="#subgroup"></a></h3>
-<p><code>total_enrollment</code>, <code>male</code>, <code>female</code>, <code>white</code>, <code>black</code>, <code>hispanic</code>, <code>asian</code>, <code>native_american</code>, <code>pacific_islander</code>, <code>multiracial</code>, <code>white_m</code>, <code>white_f</code>, <code>black_m</code>, <code>black_f</code>, <code>hispanic_m</code>, <code>hispanic_f</code>, <code>asian_m</code>, <code>asian_f</code>, <code>native_american_m</code>, <code>native_american_f</code>, <code>pacific_islander_m</code>, <code>pacific_islander_f</code>, <code>free_lunch</code>, <code>reduced_lunch</code>, <code>free_reduced_lunch</code>, <code>lep</code>, <code>migrant</code></p>
-<p><strong>NOT in tidy enrollment:</strong> <code>econ_disadv</code>, <code>lep_current</code>, <code>special_education</code> – these live in <code><a href="reference/fetch_sped.html">fetch_sped()</a></code> or report card data, not <code><a href="reference/fetch_enr.html">fetch_enr()</a></code></p>
-</div>
-<div class="section level3">
-<h3 id="grade_level">grade_level<a class="anchor" aria-label="anchor" href="#grade_level"></a></h3>
-<p><code>PK</code>, <code>K</code> (normalized from KF/KH/KG), <code>01</code>-<code>12</code>, <code>TOTAL</code></p>
-<p>Aggregates from <code><a href="reference/enr_grade_aggs.html">enr_grade_aggs()</a></code>: <code>PK (Any)</code>, <code>K (Any)</code>, <code>K12</code>, <code>K12UG</code>, <code>K8</code>, <code>HS</code></p>
-<p><strong>Common trap:</strong> Raw data uses <code>KF</code> for kindergarten, but <code><a href="reference/clean_enr_grade.html">clean_enr_grade()</a></code> normalizes to <code>K</code>. Always filter on <code>K</code>, never <code>KF</code>.</p>
-</div>
-<div class="section level3">
-<h3 id="entity-flags">entity flags<a class="anchor" aria-label="anchor" href="#entity-flags"></a></h3>
-<p><code>is_state</code>, <code>is_county</code>, <code>is_district</code>, <code>is_charter</code>, <code>is_school</code>, <code>is_subprogram</code></p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="pkgdown--github-pages">pkgdown / GitHub Pages<a class="anchor" aria-label="anchor" href="#pkgdown--github-pages"></a></h2>
-<p>Site: <a href="https://almartin82.github.io/njschooldata/" class="uri">https://almartin82.github.io/njschooldata/</a></p>
-<p><strong>Setup:</strong> - GitHub Action (<code>.github/workflows/pkgdown.yml</code>) builds on push to master - Deploys to <code>gh-pages</code> branch automatically - <code>docs/</code> is gitignored on master (build artifacts only)</p>
-<p><strong>Configuration:</strong> - <code>_pkgdown.yml</code> - site config, reference sections, articles - All exported functions must be listed in reference sections (use <code>matches(".*")</code> as catch-all) - Vignettes in <code>vignettes/</code> appear as articles</p>
-<p><strong>To enable on a new repo:</strong> 1. Add workflow file and <code>_pkgdown.yml</code> 2. Push to master 3. Enable GitHub Pages via API or Settings: <code>bash    gh api repos/OWNER/REPO/pages -X POST --input - &lt;&lt;EOF    {"build_type": "legacy", "source": {"branch": "gh-pages", "path": "/"}}    EOF</code></p>
-</div>
-<div class="section level2">
-<h2 id="vignette-charts-committed-figures-are-the-source-of-truth-required">Vignette Charts: Committed Figures Are the Source of Truth (REQUIRED)<a class="anchor" aria-label="anchor" href="#vignette-charts-committed-figures-are-the-source-of-truth-required"></a></h2>
-<p><strong>Vignette figures are pre-rendered and committed to git. Editing a vignette’s <code>.Rmd</code> does NOT update the published charts — you MUST regenerate and commit the figure PNGs.</strong></p>
-<ul><li>Rendered figures live in <code>vignettes/&lt;vignette&gt;_files/figure-html/*.png</code> and are <strong>tracked in git</strong>. The pkgdown build serves these committed binaries; it does not reliably re-knit them on every run.</li>
-<li>The README/home page chart images point at the deployed copies (<code>https://almartin82.github.io/njschooldata/articles/&lt;vignette&gt;_files/figure-html/&lt;chunk&gt;-1.png</code>), which come from those same committed PNGs.</li>
-</ul><p><strong>Workflow to update any chart (data refresh, new year, restyle):</strong> 1. Edit the vignette code/prose. 2. Re-render locally: <code>rmarkdown::render("vignettes/&lt;vignette&gt;.Rmd")</code>. 3. <strong>Copy the regenerated <code>figure-html/*.png</code> over the committed ones and <code>git add</code> them.</strong> This step is the one that actually moves the published chart. 4. Visually open the regenerated PNG and confirm it shows the new data before committing — do not trust a green pkgdown build; the build can succeed while serving stale committed figures.</p>
-<p><strong>Incident (2026-05, 2026 enrollment integration):</strong> the vignette prose and data tables were updated to 2026 and merged, and pkgdown deployed green three times, but the live charts kept showing the old 2020-2025 series. Root cause: the committed <code>statewide-enrollment-1.png</code> (and 14 others) were never replaced, and the build served them byte-for-byte. The fix was committing the freshly rendered 2026 PNGs. Two earlier attempts (changing <code>.Rmd</code> text, then <code>cache = FALSE</code>) failed because neither touched the committed figure binaries.</p>
-</div>
-<div class="section level2">
-<h2 id="vignette-knitr-cache-discipline-required">Vignette knitr Cache Discipline (REQUIRED)<a class="anchor" aria-label="anchor" href="#vignette-knitr-cache-discipline-required"></a></h2>
-<ul><li>Default the vignette chunk cache to <strong><code>cache = FALSE</code></strong> in the setup chunk.</li>
-<li>Enable <code>cache = TRUE</code> <strong>only</strong> on the expensive data-fetch chunk (e.g. <code>{r fetch-data, cache = TRUE}</code>), never on plot chunks.</li>
-<li>Do <strong>not</strong> commit <code>vignettes/&lt;vignette&gt;_cache/</code> directories. Cached plot chunks replay stale figures across build environments (the caschooldata 2026-03 incident); keeping plots un-cached forces a fresh render every time.</li>
-</ul></div>
-<div class="section level2">
-<h2 id="data-source-urls-move-without-notice">Data Source URLs Move Without Notice<a class="anchor" aria-label="anchor" href="#data-source-urls-move-without-notice"></a></h2>
-<p>NJ DOE relocates and renames files frequently; the actual fetch URLs are built inside the fetch functions (not always <code>config_urls.R</code>). Two cases handled in code, kept here as a reminder to expect more: - <strong>Enrollment</strong> (<code>get_raw_enr</code>): the 2025-26 file shipped as <code>Enrollment_2526.zip</code> (capital E) vs the historical lowercase <code>enrollment_*.zip</code>; the fetcher tries both capitalizations. - <strong>Graduation</strong> (<code>get_raw_grad_file</code>): in 2026 the entire <code>/schoolperformance/grad/</code> tree was retired and files moved to <code>/spr/adddata/doc/acgrdocs/</code>. <code><a href="reference/fetch_postsecondary.html">fetch_postsecondary()</a></code> points at the old tree and its file did not move there — its new location is still unknown (open follow-up).</p>
 </div>
 </div>
 
