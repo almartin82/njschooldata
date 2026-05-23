@@ -7,7 +7,8 @@
 fetch_disciplinary_removals(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year (2017-2025)}
+\item{end_year}{A school year (2018-2025). SY2016-17 (end_year 2017) has no
+discipline-removals sheet in the SPR database.}
 
 \item{level}{One of "school" or "district"}
 }
