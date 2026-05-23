@@ -62,6 +62,21 @@
   NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
   unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
   Geometry results now fetch for all of 2022-2025.
+* `fetch_6yr_grad_rate()` no longer fabricates suppressed-district rates. The
+  SPR cohort profiles repeat the statewide reference rate in `State:`/`_State`
+  columns on every district row, and the 2025 district path filled those onto
+  ordinary districts whose own rate was blank (suppressed, fewer than 10
+  students) via an unconditional `coalesce(..._District, ..._State)`. For 2024-25
+  this had assigned the statewide subgroup rate to ~2,700 suppressed
+  district-subgroup rows. The fallback to the `State:`/`_State` columns is now
+  restricted to the statewide aggregate row, so suppressed districts stay `NA`.
+* `fetch_6yr_grad_rate()` now flags the statewide aggregate row with `is_state`
+  for 2017-2024 as well, and populates that row's rate. Every SPR cohort profile
+  stores the literal string `"State"` in the statewide row's
+  CountyCode/DistrictCode instead of the numeric `99`/`9999` codes; the
+  normalization that was added for 2025 now runs for all years, and the legacy
+  district path fills the statewide row's rate from the `State:` columns, so the
+  statewide 6-year rate is no longer silently dropped for older years.
 
 ## Known follow-ups
 
