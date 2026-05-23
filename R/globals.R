@@ -205,6 +205,12 @@ utils::globalVariables(c(
   # ========== SPR ESSA Accountability Suite (2024-25) ==========
   "measure", "indicator_performance",
 
+  # ========== SPR Grad Pathways / Home Language / NAEP (2024-25) ==========
+  "home_language", "percent_of_students",
+  "statewide_assessment", "substitute_competency_test",
+  "portfolio_appeals", "alternate_requirements_in_iep",
+  "test_year", "state_nation", "below_basic", "basic", "proficient", "advanced",
+
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
   "gradespan",
