@@ -740,7 +740,8 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 #' Downloads discipline data (suspensions/expulsions/removals) from the SPR
 #' database, broken down by student group and grade level.
 #'
-#' @param end_year A school year (2017-2025)
+#' @param end_year A school year (2018-2025). SY2016-17 (end_year 2017) has no
+#'   discipline-removals sheet in the SPR database.
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with disciplinary actions. Includes a
@@ -751,14 +752,22 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 #' discipline <- fetch_disciplinary_removals(2024)
 #' }
 fetch_disciplinary_removals <- function(end_year, level = "school") {
-  # NOTE: prior versions requested a sheet "DisciplinaryRemovals" that has never
-  # existed in any SPR database, so this function was broken for all years. The
-  # real sheet was renamed in 2024-25:
-  #   2017-2024: DisciplinaryRemovalsByStudgroup (col StudentGroup/GradeLevel)
+  # The discipline-removals sheet has been renamed several times. Names below
+  # are confirmed against the downloaded NJ DOE Database_SchoolDetail.xlsx for
+  # each year:
+  #   2018-2023: DisciplinaryRemovals            (no StudentGroup breakdown)
+  #   2024:      DisciplinaryRemovalsByStudgroup (col StudentGroup/GradeLevel)
   #   2025+:     RemovalsStudentGroupGrade       (col StudentGroupGrade)
-  sheet_name <- spr_sheet_for_year(
-    end_year, "DisciplinaryRemovalsByStudgroup", "RemovalsStudentGroupGrade"
-  )
+  # SY2016-17 (end_year 2017) has no discipline-removals sheet (it shipped
+  # separate StudentSuspensionRates / StudentExpulsions sheets with a different
+  # structure), so this function supports end_year 2018-2025.
+  sheet_name <- if (end_year >= 2025) {
+    "RemovalsStudentGroupGrade"
+  } else if (end_year == 2024) {
+    "DisciplinaryRemovalsByStudgroup"
+  } else {
+    "DisciplinaryRemovals"
+  }
 
   df <- fetch_spr_data(sheet_name, end_year, level)
 
@@ -1408,10 +1417,13 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
     df <- df_list[[year_name]]
     df$end_year <- as.numeric(year_name)
 
-    # Filter to specific school if requested
+    # Filter to specific school if requested.
+    # Use .env$school_id so the comparison is column == function argument;
+    # a bare `school_id == school_id` would data-mask both sides to the column
+    # and silently match every row (the argument would be ignored).
     if (!is.null(school_id)) {
       df <- df %>%
-        dplyr::filter(school_id == school_id)
+        dplyr::filter(school_id == .env$school_id)
     }
 
     df
