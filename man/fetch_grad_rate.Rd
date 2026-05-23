@@ -8,7 +8,7 @@ fetch_grad_rate(end_year, methodology = "4 year")
 }
 \arguments{
 \item{end_year}{End of the academic year - eg 2006-07 is 2007.
-Valid values are 2011-2024.}
+Valid values are 2011-2025.}
 
 \item{methodology}{Character string specifying calculation methodology.
 One of "4 year" or "5 year".}

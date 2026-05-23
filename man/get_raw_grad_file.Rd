@@ -8,7 +8,7 @@ get_raw_grad_file(end_year, methodology = "4 year")
 }
 \arguments{
 \item{end_year}{End of the academic year - eg 2006-07 is 2007.
-Valid values are 1998-2024.}
+Valid values are 1998-2025.}
 
 \item{methodology}{One of c('4 year', '5 year')}
 }

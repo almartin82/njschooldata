@@ -5,7 +5,7 @@
 \alias{GRATE_4YR_VALID_YEARS}
 \title{4-year graduation rate valid years}
 \format{
-An object of class \code{integer} of length 14.
+An object of class \code{integer} of length 15.
 }
 \usage{
 GRATE_4YR_VALID_YEARS
