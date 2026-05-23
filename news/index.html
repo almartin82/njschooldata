@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,13 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.6" id="njschooldata-096">njschooldata 0.9.6<a class="anchor" aria-label="anchor" href="#njschooldata-096"></a></h2>
+<div class="section level3">
+<h3 id="infrastructure-0-9-6">Infrastructure<a class="anchor" aria-label="anchor" href="#infrastructure-0-9-6"></a></h3>
+<ul><li>Live geocoding in <code>enrich_school_latlong(use_cache = FALSE)</code> now uses the CRAN package <code>tidygeocoder</code> instead of the GitHub-only, CRAN-archived <code>placement</code> package. The new path cascades through the keyless US Census geocoder and OpenStreetMap (Nominatim), with an optional Google pass when an <code>api_key</code> is supplied. This removes the <code>Remotes: DerekYves/placement</code> entry from <code>DESCRIPTION</code>, so dependency resolution no longer touches a GitHub remote (which had been intermittently failing CI with “Bad GitHub credentials”). The default cached path (<code>use_cache = TRUE</code>, the bundled <code>geocoded_cached</code> dataset, itself built with tidygeocoder) is unchanged.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.5" id="njschooldata-095">njschooldata 0.9.5<a class="anchor" aria-label="anchor" href="#njschooldata-095"></a></h2>
 <div class="section level3">

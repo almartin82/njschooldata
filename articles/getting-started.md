@@ -400,7 +400,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] purrr_1.2.2        dplyr_1.2.1        njschooldata_0.9.5
+#> [1] purrr_1.2.2        dplyr_1.2.1        njschooldata_0.9.6
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    

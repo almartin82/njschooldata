@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,11 +56,16 @@
 
 
 <dt id="arg-use-cache">use_cache<a class="anchor" aria-label="anchor" href="#arg-use-cache"></a></dt>
-<dd><p>if TRUE, will read from cache of school info / lat lng stored on TODO</p></dd>
+<dd><p>if TRUE (the default), reads cached school info / lat lng
+from the bundled `geocoded_cached` dataset and does not hit a geocoding
+service. Set FALSE to geocode live via <span class="pkg">tidygeocoder</span>.</p></dd>
 
 
 <dt id="arg-api-key">api_key<a class="anchor" aria-label="anchor" href="#arg-api-key"></a></dt>
-<dd><p>optional, personal google maps API key</p></dd>
+<dd><p>optional Google Maps API key. When supplied (and
+`use_cache=FALSE`), a Google geocoding pass is added to the cascade.
+When empty, geocoding uses only the keyless US Census + OpenStreetMap
+cascade.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -69,8 +74,10 @@
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>The `placement` package is required for geocoding when `use_cache=FALSE`.
-  Install with: `remotes::install_github('DerekYves/placement')`</p>
+    <p>Live geocoding (`use_cache=FALSE`) requires the <span class="pkg">tidygeocoder</span>
+  package. Install with: `install.packages('tidygeocoder')`. It uses the
+  keyless US Census geocoder with an OpenStreetMap (Nominatim) fallback, so
+  no API key is needed.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
