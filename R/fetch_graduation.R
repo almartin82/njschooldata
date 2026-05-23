@@ -470,7 +470,10 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
     } else {
       # District file has no SchoolCode/SchoolName. Real district rows carry
       # their rate in the _District columns; the statewide aggregate row leaves
-      # _District blank and only populates _State, so coalesce District -> State.
+      # _District blank and only populates _State. The _State columns are
+      # repeated on every district row as a reference, so we pull from them ONLY
+      # for the statewide row -- using them as a general fallback would fabricate
+      # the statewide value onto suppressed districts (whose _District is NA).
       df <- df %>%
         dplyr::rename(
           county_id = CountyCode,
@@ -480,10 +483,11 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           subgroup = StudentGroup
         ) %>%
         dplyr::mutate(
-          grad_rate_6yr = dplyr::coalesce(Graduated_District, Graduated_State),
-          continuing_rate = dplyr::coalesce(Continuing_District, Continuing_State),
-          non_continuing_rate = dplyr::coalesce(NonContinuing_District, NonContinuing_State),
-          persistence_rate = dplyr::coalesce(Persisting_District, Persisting_State),
+          .is_state_row = !is.na(county_id) & county_id == "State",
+          grad_rate_6yr = dplyr::if_else(.is_state_row, Graduated_State, Graduated_District),
+          continuing_rate = dplyr::if_else(.is_state_row, Continuing_State, Continuing_District),
+          non_continuing_rate = dplyr::if_else(.is_state_row, NonContinuing_State, NonContinuing_District),
+          persistence_rate = dplyr::if_else(.is_state_row, Persisting_State, Persisting_District),
           school_id = "999",
           school_name = "District Total"
         ) %>%
@@ -501,16 +505,6 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
     for (col in rate_cols) {
       df[[col]] <- gsub("%", "", as.character(df[[col]]), fixed = TRUE)
     }
-
-    # In the 2024-25 GraduationCohortProfile sheet the statewide row carries the
-    # literal string "State" in CountyCode/DistrictCode rather than the numeric
-    # 99/9999 codes used elsewhere. Normalize so the aggregation flags below
-    # (is_state, is_district, ...) classify it correctly.
-    df <- df %>%
-      dplyr::mutate(
-        district_id = dplyr::if_else(district_id == "State", "9999", district_id),
-        county_id = dplyr::if_else(county_id == "State", "99", county_id)
-      )
   } else {
     # 2017-2024: legacy "6YrGraduationCohortProfile" sheet, headers on row 1,
     # numeric rate columns named Graduates / Continuing Students /
@@ -559,30 +553,41 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           grad_rate_6yr, continuing_rate, non_continuing_rate, persistence_rate
         )
     } else {
-      # District file doesn't have SchoolCode/SchoolName
+      # District/state file: no SchoolCode/SchoolName. The statewide aggregate
+      # row (CountyCode == "State") leaves the base rate columns blank and stores
+      # its values in parallel "State: <col>" columns -- but those "State:"
+      # columns are repeated on *every* district row as a reference, so we pull
+      # from them ONLY for the statewide row. Filling NA base values for ordinary
+      # (suppressed) districts from the "State:" columns would fabricate data.
+      is_state_row <- !is.na(df$CountyCode) & df$CountyCode == "State"
+      fill_state <- function(base_col, state_col) {
+        base <- df[[base_col]]
+        if (state_col %in% names(df)) {
+          dplyr::if_else(is_state_row, df[[state_col]], base)
+        } else {
+          base
+        }
+      }
+
       df <- df %>%
+        dplyr::mutate(
+          grad_rate_6yr = fill_state("Graduates", "State: Graduates"),
+          continuing_rate = fill_state("Continuing Students", "State: Continuing Students"),
+          non_continuing_rate = fill_state("Non-Continuing Student", "State: Non-Continuing Student"),
+          persistence_rate = if (has_persistence) {
+            fill_state("HighSchoolPersistance", "State: HighSchoolPersistance")
+          } else {
+            NA_real_
+          },
+          school_id = "999",
+          school_name = "District Total"
+        ) %>%
         dplyr::rename(
           county_id = CountyCode,
           county_name = CountyName,
           district_id = DistrictCode,
           district_name = DistrictName,
-          subgroup = StudentGroup,
-          grad_rate_6yr = Graduates,
-          continuing_rate = `Continuing Students`,
-          non_continuing_rate = `Non-Continuing Student`
-        )
-
-      # Add persistence_rate if available, otherwise set NA
-      if (has_persistence) {
-        df <- df %>% dplyr::rename(persistence_rate = HighSchoolPersistance)
-      } else {
-        df <- df %>% dplyr::mutate(persistence_rate = NA_real_)
-      }
-
-      df <- df %>%
-        dplyr::mutate(
-          school_id = "999",
-          school_name = "District Total"
+          subgroup = StudentGroup
         ) %>%
         dplyr::select(
           county_id, county_name,
@@ -610,6 +615,18 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
   # Remove rows without county_id
   df <- df %>%
     dplyr::filter(!is.na(county_id))
+
+  # Every year's SPR cohort profile -- the legacy "6YrGraduationCohortProfile"
+  # (2017-2024) and the 2024-25 "GraduationCohortProfile" -- puts the literal
+  # string "State" in the CountyCode/DistrictCode of the statewide aggregate row
+  # rather than the numeric 99/9999 codes used elsewhere. Normalize so the
+  # aggregation flags below classify the statewide row as is_state (it was
+  # silently FALSE for 2017-2024 before this).
+  df <- df %>%
+    dplyr::mutate(
+      district_id = dplyr::if_else(district_id == "State", "9999", district_id),
+      county_id = dplyr::if_else(county_id == "State", "99", county_id)
+    )
 
   # Add aggregation flags
   df <- df %>%

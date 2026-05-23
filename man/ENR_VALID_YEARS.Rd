@@ -4,15 +4,21 @@
 \name{ENR_VALID_YEARS}
 \alias{ENR_VALID_YEARS}
 \title{Enrollment data valid years
-Note: 1999 data was removed from NJ DOE website}
+Note: 1999 (1998-99 school year) is the earliest file NJ DOE still hosts,
+at enr/enr99/enrollment_9899.zip. Comment in this file used to claim 1999
+was removed, but the ZIP is still served and now parses through
+process_enr() after the split_enr_cols() ordering fix.}
 \format{
-An object of class \code{integer} of length 27.
+An object of class \code{integer} of length 28.
 }
 \usage{
 ENR_VALID_YEARS
 }
 \description{
 Enrollment data valid years
-Note: 1999 data was removed from NJ DOE website
+Note: 1999 (1998-99 school year) is the earliest file NJ DOE still hosts,
+at enr/enr99/enrollment_9899.zip. Comment in this file used to claim 1999
+was removed, but the ZIP is still served and now parses through
+process_enr() after the split_enr_cols() ordering fix.
 }
 \keyword{internal}
