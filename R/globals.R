@@ -266,7 +266,7 @@ utils::globalVariables(c(
 
 
   # ========== Common Tidyverse ==========
-  ".", "value", "name", "n",
+  ".", ".env", "value", "name", "n",
   "everything", "where", "one_of", "any_of", "all_of",
   "starts_with", "ends_with", "contains", "matches"
 ))
