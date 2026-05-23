@@ -202,6 +202,9 @@ utils::globalVariables(c(
   "attendance_multiracial", "attendance_swd", "attendance_white", "attendance_total",
   "chronic_abs_pct", "chronically_absent_rate",
 
+  # ========== SPR ESSA Accountability Suite (2024-25) ==========
+  "measure", "indicator_performance",
+
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "n_charter_rows",
   "gradespan",

@@ -1558,3 +1558,402 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
     summary = summary_stats
   )
 }
+
+
+# ==============================================================================
+# ESSA Accountability: Long-Term Goals, Summative Scores, TSI, Status Counts
+# ==============================================================================
+#
+# The redesigned 2024-25 (end_year 2025) SPR databases added a family of ESSA
+# accountability sheets that have no pre-2025 equivalent:
+#
+#   ProficiencyTargets / GrowthTargets / GraduationTargets /
+#   ProgresstowardELPTargets / ChronicAbsenteeismTargets / HSPersistenceTargets
+#                                  -> long-term-goal targets vs. actuals
+#   AccountabilitySummative        -> per-indicator summative score components
+#   TSIIdentification              -> Targeted Support & Improvement identification
+#   ESSAAccountabilityStatusCounts -> per-district CSI/ATSI/TSI tallies
+#
+# These sheets did not exist (or had an incompatible structure) before the
+# redesign, so the fetchers below support only end_year >= 2025 and stop rather
+# than guess a mapping for earlier years.
+#
+# ==============================================================================
+
+#' Require the redesigned (2024-25+) SPR databases
+#'
+#' Several SPR sheets were introduced in the 2024-25 redesign and have no
+#' pre-2025 equivalent. This guard stops with an informative error rather than
+#' fabricating a mapping for earlier years.
+#'
+#' @param end_year School year end.
+#' @param what Human-readable description of the data being requested.
+#' @keywords internal
+spr_require_redesign <- function(end_year, what) {
+  if (end_year < 2025) {
+    stop(
+      what, " is available only for end_year >= 2025 (the redesigned ",
+      "SY2024-25 School Performance Reports). Earlier SPR databases do not ",
+      "include this sheet.",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
+
+#' Coerce an SPR value column to numeric
+#'
+#' SPR value columns mix plain numbers, percent strings (e.g. \code{"56.2\%"}),
+#' and suppression phrases (e.g. \code{"Data was available for less than 10
+#' students"}, \code{"n/a - Below ESSA N-Size"}). This strips percent signs and
+#' maps every non-numeric token to \code{NA}, preserving real numbers (including
+#' decimals and half-points) exactly. Already-numeric columns pass through
+#' untouched.
+#'
+#' @param x A character or numeric vector from an SPR value column.
+#' @return A numeric vector.
+#' @keywords internal
+spr_value_numeric <- function(x) {
+  if (is.numeric(x)) return(x)
+  suppressWarnings(rc_numeric_cleaner(x))
+}
+
+
+#' Fetch ESSA Long-Term-Goal Targets
+#'
+#' Downloads the ESSA accountability long-term-goal target sheets from the
+#' redesigned 2024-25 School Performance Reports. Each sheet reports, per entity
+#' and student group, an indicator's actual performance against its annual
+#' target (or state standard) and, where applicable, the federal long-term goal.
+#'
+#' @details
+#' The \code{indicator} argument selects one of six target sheets, which share a
+#' common backbone (entity identifiers, \code{school_year}, \code{subgroup},
+#' \code{measure}, \code{indicator_performance}) but differ in their target
+#' columns:
+#' \itemize{
+#'   \item \code{"proficiency"} -- \code{ProficiencyTargets}: ELA and Math
+#'     NJSLA proficiency. Columns: \code{annual_target}, \code{long_term_goal},
+#'     \code{target_status}.
+#'   \item \code{"growth"} -- \code{GrowthTargets}: ELA and Math median student
+#'     growth. Columns: \code{state_standard_growth}, \code{target_status}.
+#'   \item \code{"graduation"} -- \code{GraduationTargets}: 4-, 5-, and 6-year
+#'     graduation rates. Columns: \code{annual_target}, \code{long_term_goal},
+#'     \code{target_status}.
+#'   \item \code{"elp"} -- \code{ProgresstowardELPTargets}: progress toward
+#'     English language proficiency. Columns: \code{annual_target},
+#'     \code{long_term_goal}, \code{target_status}.
+#'   \item \code{"absenteeism"} -- \code{ChronicAbsenteeismTargets}: chronic
+#'     absenteeism. Columns: \code{target_state_average}, \code{target_status}.
+#'   \item \code{"persistence"} -- \code{HSPersistenceTargets}: high-school
+#'     persistence. No target/status columns (performance only).
+#' }
+#'
+#' \code{measure} holds the sheet's own breakdown (e.g. \code{"ELA Proficiency"}
+#' vs. \code{"Math Proficiency"}, or \code{"4-Year Graduation"} vs.
+#' \code{"5-Year Graduation"}). \code{indicator} is added as a constant column
+#' equal to the requested value so results from several indicators can be
+#' row-bound and told apart.
+#'
+#' Value columns (\code{indicator_performance}, \code{annual_target},
+#' \code{long_term_goal}, \code{state_standard_growth},
+#' \code{target_state_average}) are returned numeric; suppressed or
+#' below-N-size cells become \code{NA}. \code{target_status} is kept as the raw
+#' status label (e.g. \code{"Met Target"}, \code{"Met with CI"},
+#' \code{"Below N-Size"}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
+#' SY2024-25 SPR). Earlier databases do not include these sheets.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param indicator One of \code{"proficiency"} (default), \code{"growth"},
+#'   \code{"graduation"}, \code{"elp"}, \code{"absenteeism"}, or
+#'   \code{"persistence"}.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#'
+#' @return Data frame with columns: end_year, county_id, county_name,
+#'   district_id, district_name, school_id, school_name, school_year,
+#'   subgroup, indicator, measure, indicator_performance, the
+#'   indicator-specific target columns described above, target_status (except
+#'   for \code{"persistence"}), and the aggregation flags (is_state, is_county,
+#'   is_district, is_school, is_charter, is_charter_sector, is_allpublic).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level proficiency targets (default indicator)
+#' prof <- fetch_spr_essa_targets(2025)
+#'
+#' # District/state-level graduation targets
+#' grad <- fetch_spr_essa_targets(2025, indicator = "graduation", level = "district")
+#'
+#' # Which schools missed their ELA proficiency long-term goal?
+#' library(dplyr)
+#' fetch_spr_essa_targets(2025, indicator = "proficiency") %>%
+#'   filter(is_school, subgroup == "total population", measure == "ELA Proficiency") %>%
+#'   filter(target_status == "Did Not Meet Target") %>%
+#'   select(district_name, school_name, indicator_performance, long_term_goal)
+#' }
+fetch_spr_essa_targets <- function(end_year, indicator = "proficiency",
+                                   level = "school") {
+  valid_indicators <- c(
+    "proficiency", "growth", "graduation", "elp", "absenteeism", "persistence"
+  )
+  if (!indicator %in% valid_indicators) {
+    stop(
+      "indicator must be one of: ",
+      paste0("'", valid_indicators, "'", collapse = ", "),
+      call. = FALSE
+    )
+  }
+  spr_require_redesign(end_year, "ESSA long-term-goal targets data")
+
+  sheet_name <- switch(indicator,
+    proficiency = "ProficiencyTargets",
+    growth      = "GrowthTargets",
+    graduation  = "GraduationTargets",
+    elp         = "ProgresstowardELPTargets",
+    absenteeism = "ChronicAbsenteeismTargets",
+    persistence = "HSPersistenceTargets"
+  )
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  # The sheet's own breakdown column ("Indicator": ELA Proficiency, 4-Year
+  # Graduation, ...) is renamed to `measure` so the function's `indicator`
+  # argument can be surfaced as its own constant column without collision.
+  df <- dplyr::rename(df, measure = indicator)
+  df$indicator <- indicator
+
+  # Value columns -> numeric (percent strings stripped, suppression -> NA).
+  value_cols <- intersect(
+    c("indicator_performance", "annual_target", "long_term_goal",
+      "state_standard_growth", "target_state_average"),
+    names(df)
+  )
+  for (col in value_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subgroup, indicator, measure,
+      indicator_performance,
+      dplyr::any_of(c("annual_target", "long_term_goal",
+                      "state_standard_growth", "target_state_average")),
+      dplyr::any_of("target_status"),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch ESSA Summative Accountability Scores
+#'
+#' Downloads the \code{AccountabilitySummative} sheet from the redesigned
+#' 2024-25 School Performance Reports. This is the school-level ESSA summative
+#' accountability record: for each indicator (ELA/Math proficiency, ELA/Math
+#' growth, 4/5/6-year graduation, progress toward English language proficiency,
+#' chronic absenteeism, high-school persistence) it reports the actual
+#' performance, the weighted indicator score, and the indicator's weight, and
+#' rolls them up into a \code{summative_score} and \code{summative_rating}.
+#'
+#' @details
+#' This sheet exists only in the School database, so this function always reads
+#' school-level data (there is no \code{level} argument). Performance, score,
+#' weight, and summative columns are returned numeric (percent signs stripped,
+#' \code{"n/a"}/suppressed cells set to \code{NA}); \code{title_i} and
+#' \code{school_configuration} are kept as labels. \code{subgroup} is
+#' standardized via the SPR subgroup cleaner.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#'
+#' @return Data frame with entity identifiers, school_year, subgroup, title_i,
+#'   school_configuration, the per-indicator \code{*_actual_performance},
+#'   \code{*_indicator_score}, and \code{*_weight} columns, \code{summative_score},
+#'   \code{summative_rating}, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level summative scores
+#' summ <- fetch_spr_accountability_summative(2025)
+#'
+#' # Lowest summative scores among schoolwide (total population) rows
+#' library(dplyr)
+#' fetch_spr_accountability_summative(2025) %>%
+#'   filter(subgroup == "total population", !is.na(summative_score)) %>%
+#'   slice_min(summative_score, n = 10) %>%
+#'   select(district_name, school_name, summative_score, summative_rating)
+#'
+#' # ELA vs Math proficiency contribution to the score
+#' fetch_spr_accountability_summative(2025) %>%
+#'   filter(subgroup == "total population") %>%
+#'   select(school_name, ela_proficiency_indicator_score,
+#'          math_proficiency_indicator_score)
+#' }
+fetch_spr_accountability_summative <- function(end_year) {
+  spr_require_redesign(end_year, "ESSA summative accountability data")
+
+  df <- fetch_spr_data("AccountabilitySummative", end_year, level = "school")
+  df <- filter_spr_to_year(df, end_year)
+
+  # Numeric-clean every performance / score / weight / summative column; leave
+  # the descriptive label columns (title_i, school_configuration) as-is.
+  num_cols <- grep(
+    "actual_performance|indicator_score|weight|^summative_",
+    names(df), value = TRUE
+  )
+  for (col in num_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
+}
+
+
+#' Fetch Targeted Support and Improvement (TSI) Identification
+#'
+#' Downloads the \code{TSIIdentification} sheet from the redesigned 2024-25
+#' School Performance Reports. Each row reports, for a school / student group /
+#' indicator, whether the school is identified for Targeted Support and
+#' Improvement and the two-year target history (SY2023-24 and SY2024-25) that
+#' drove the determination.
+#'
+#' @details
+#' This sheet exists only in the School database, so this function always reads
+#' school-level data (there is no \code{level} argument). For readability a few
+#' raw column names are normalized: \code{IdentifiedforTSI} ->
+#' \code{identified_for_tsi}, \code{TSICriteriaMet} -> \code{tsi_criteria_met},
+#' and \code{AllTargetsNotMetBelowStatus24-25} ->
+#' \code{all_targets_not_met_below_status_2425}. The \code{actual_value_*} and
+#' \code{target_*} value columns are returned numeric (percent signs stripped,
+#' suppressed/below-N-size cells set to \code{NA}); the \code{*_status_*} and
+#' note columns are kept as labels. \code{subgroup} is standardized via the SPR
+#' subgroup cleaner.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#'
+#' @return Data frame with entity identifiers, identified_for_tsi,
+#'   student_groups_tsi, subgroup, indicator, the SY2023-24 and SY2024-25
+#'   value/target/status columns, tsi_criteria_met, identification_note, and the
+#'   aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level TSI identification
+#' tsi <- fetch_spr_tsi(2025)
+#'
+#' # Schools identified for TSI and the indicators that triggered it
+#' library(dplyr)
+#' fetch_spr_tsi(2025) %>%
+#'   filter(identified_for_tsi == "Yes", tsi_criteria_met == "Yes") %>%
+#'   select(district_name, school_name, subgroup, indicator)
+#'
+#' # Distinct schools identified for TSI
+#' fetch_spr_tsi(2025) %>%
+#'   filter(identified_for_tsi == "Yes") %>%
+#'   distinct(county_id, district_id, school_id, school_name)
+#' }
+fetch_spr_tsi <- function(end_year) {
+  spr_require_redesign(end_year, "TSI identification data")
+
+  df <- fetch_spr_data("TSIIdentification", end_year, level = "school")
+
+  # Normalize the awkward raw names produced by snake-casing the source headers.
+  renames <- c(
+    identified_for_tsi = "identifiedfor_tsi",
+    tsi_criteria_met = "tsicriteria_met",
+    all_targets_not_met_below_status_2425 = "all_targets_not_met_below_status_24_25"
+  )
+  for (new_nm in names(renames)) {
+    old_nm <- renames[[new_nm]]
+    if (old_nm %in% names(df) && !new_nm %in% names(df)) {
+      df <- dplyr::rename(df, !!new_nm := !!rlang::sym(old_nm))
+    }
+  }
+
+  # Value columns -> numeric; status / note columns stay as labels.
+  value_cols <- grep("^actual_value_|^target_2", names(df), value = TRUE)
+  for (col in value_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
+}
+
+
+#' Fetch ESSA Accountability Status Counts (district/state)
+#'
+#' Downloads the \code{ESSAAccountabilityStatusCounts} sheet from the redesigned
+#' 2024-25 School Performance Reports. Each row tallies, for a district (and the
+#' statewide total), how many of its schools are identified as Comprehensive
+#' Support and Improvement (CSI), Additional Targeted Support and Improvement
+#' (ATSI), and Targeted Support and Improvement (TSI).
+#'
+#' @details
+#' This sheet exists only in the District/State database, so this function
+#' always reads district-level data (there is no \code{level} argument). The
+#' three count columns are returned numeric. The per-school identification
+#' detail behind these tallies is available from \code{\link{fetch_essa_status}}
+#' (the \code{ESSAAccountabilityStatusList} sheet).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. The pre-2025
+#' District/State database stored accountability status in a single sheet that
+#' \code{\link{fetch_essa_status}} reads; the separate counts sheet is new in
+#' the redesign.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#'
+#' @return Data frame with county_id, county_name, district_id, district_name,
+#'   school_id, school_name, comprehensive_csi, additional_targeted_atsi,
+#'   targeted_tsi, end_year, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # District/state CSI/ATSI/TSI tallies
+#' counts <- fetch_spr_essa_status_counts(2025)
+#'
+#' # Statewide totals
+#' library(dplyr)
+#' fetch_spr_essa_status_counts(2025) %>%
+#'   filter(is_state) %>%
+#'   select(comprehensive_csi, additional_targeted_atsi, targeted_tsi)
+#'
+#' # Districts with the most CSI schools
+#' fetch_spr_essa_status_counts(2025) %>%
+#'   filter(is_district) %>%
+#'   slice_max(comprehensive_csi, n = 10) %>%
+#'   select(county_name, district_name, comprehensive_csi)
+#' }
+fetch_spr_essa_status_counts <- function(end_year) {
+  spr_require_redesign(end_year, "ESSA accountability status counts")
+
+  df <- fetch_spr_data("ESSAAccountabilityStatusCounts", end_year,
+                       level = "district")
+
+  count_cols <- intersect(
+    c("comprehensive_csi", "additional_targeted_atsi", "targeted_tsi"),
+    names(df)
+  )
+  for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
+}
