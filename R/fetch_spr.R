@@ -1957,3 +1957,296 @@ fetch_spr_essa_status_counts <- function(end_year) {
 
   df
 }
+
+
+# ==============================================================================
+# Graduation Pathways, Home-Language Enrollment, and NAEP (2024-25)
+# ==============================================================================
+#
+# Three further sheets that are new (or newly structured) in the redesigned
+# 2024-25 (end_year 2025) SPR databases:
+#
+#   GraduationPathways       -> % of graduates meeting the requirement by pathway
+#   EnrollmentByHomeLanguage -> enrollment share by home language
+#   NAEP (District/State DB) -> NAEP 4th/8th-grade reading & math achievement
+#
+# GraduationPathways and EnrollmentByHomeLanguage carry the standard CDS layout
+# and route through fetch_spr_data(). NAEP is a state/national summary table
+# with no county/district/school identifiers, so it uses a lighter raw reader.
+#
+# ==============================================================================
+
+#' Read an SPR sheet without CDS / aggregation-flag processing
+#'
+#' A lighter-weight sibling of \code{\link{fetch_spr_data}} for SPR sheets that
+#' do not carry the standard county/district/school identifier columns (e.g.
+#' \code{NAEP}, \code{StatewideEducatorEquity}), which are state/national summary
+#' tables. Downloads the workbook, reads the requested sheet (skipping the
+#' 2024-25 preamble rows), snake-cases the column names, and stamps
+#' \code{end_year}. No CDS renaming, subgroup cleaning, or aggregation flags are
+#' applied.
+#'
+#' @param sheet_name Exact sheet name (case-sensitive).
+#' @param end_year A school year (2017-2025).
+#' @param level One of "school" or "district". Determines which database file
+#'   to download.
+#' @return Data frame with snake_cased column names plus \code{end_year}.
+#' @keywords internal
+fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
+  target_url <- get_spr_url(end_year, level)
+
+  cache_key <- make_cache_key("fetch_spr_sheet_raw", sheet_name, end_year, level)
+  cached <- cache_get(cache_key)
+  if (!is.null(cached)) {
+    return(cached)
+  }
+
+  tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
+  downloader::download(target_url, destfile = tname, mode = "wb")
+
+  header_skip <- if (end_year >= 2025) 3 else 0
+
+  df <- tryCatch(
+    readxl::read_excel(
+      path = tname,
+      sheet = sheet_name,
+      skip = header_skip,
+      na = c("*", "N", "NA", "", "-"),
+      guess_max = 10000
+    ),
+    error = function(e) {
+      available_sheets <- paste(readxl::excel_sheets(tname), collapse = ", ")
+      stop(paste0(
+        "Sheet '", sheet_name, "' not found in ", end_year, " SPR database. ",
+        "Available sheets: ", available_sheets
+      ))
+    }
+  )
+
+  names(df) <- clean_name_vector(names(df))
+  df$end_year <- end_year
+
+  cache_set(cache_key, df)
+  df
+}
+
+
+#' Fetch Graduation Pathways
+#'
+#' Downloads the \code{GraduationPathways} sheet from the redesigned 2024-25
+#' School Performance Reports. For each entity and subject (ELA and Math), it
+#' reports the percentage of graduates who satisfied the graduation-assessment
+#' requirement through each available pathway.
+#'
+#' @details
+#' Pathways (columns, each a percentage on a 0-100 scale):
+#' \itemize{
+#'   \item \code{statewide_assessment} -- met via the statewide NJSLA/NJGPA
+#'     assessment.
+#'   \item \code{substitute_competency_test} -- met via an approved substitute
+#'     competency test (e.g. SAT, ACT, PSAT, ASVAB).
+#'   \item \code{portfolio_appeals} -- met via the portfolio appeals process.
+#'   \item \code{alternate_requirements_in_iep} -- met via alternate
+#'     requirements specified in the student's IEP.
+#' }
+#' Percentages are returned numeric (suppressed cells become \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
+#' SY2024-25 SPR). Earlier databases do not include this sheet.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year, subject, the four
+#'   pathway percentage columns, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level graduation pathways
+#' gp <- fetch_spr_grad_pathways(2025)
+#'
+#' # Statewide ELA pathway mix
+#' library(dplyr)
+#' fetch_spr_grad_pathways(2025, level = "district") %>%
+#'   filter(is_state, subject == "ELA") %>%
+#'   select(statewide_assessment, substitute_competency_test,
+#'          portfolio_appeals, alternate_requirements_in_iep)
+#'
+#' # Schools leaning hardest on portfolio appeals for Math
+#' fetch_spr_grad_pathways(2025) %>%
+#'   filter(is_school, subject == "Math") %>%
+#'   slice_max(portfolio_appeals, n = 10) %>%
+#'   select(district_name, school_name, portfolio_appeals)
+#' }
+fetch_spr_grad_pathways <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "graduation pathways data")
+
+  df <- fetch_spr_data("GraduationPathways", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  # Normalize the awkward snake-cased name for the IEP pathway (done via a
+  # direct name assignment to avoid a spurious global-variable NOTE).
+  names(df)[names(df) == "alternate_requirementsin_iep"] <-
+    "alternate_requirements_in_iep"
+
+  pathway_cols <- intersect(
+    c("statewide_assessment", "substitute_competency_test",
+      "portfolio_appeals", "alternate_requirements_in_iep"),
+    names(df)
+  )
+  for (col in pathway_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subject,
+      dplyr::any_of(c("statewide_assessment", "substitute_competency_test",
+                      "portfolio_appeals", "alternate_requirements_in_iep")),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Enrollment by Home Language
+#'
+#' Downloads the \code{EnrollmentByHomeLanguage} sheet from the redesigned
+#' 2024-25 School Performance Reports. For each entity it reports the percentage
+#' of students by reported home language (e.g. English, Spanish, and an "Others"
+#' catch-all). This breakdown is not available through \code{\link{fetch_enr}}.
+#'
+#' @details
+#' \code{percent_of_students} is returned numeric on a 0-100 scale (suppressed
+#' cells become \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
+#' SY2024-25 SPR). Earlier databases do not include this sheet.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year, home_language,
+#'   percent_of_students, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level home-language shares
+#' hl <- fetch_spr_home_language(2025)
+#'
+#' # Statewide home-language distribution
+#' library(dplyr)
+#' fetch_spr_home_language(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   arrange(desc(percent_of_students)) %>%
+#'   select(home_language, percent_of_students)
+#'
+#' # Schools with the highest Spanish home-language share
+#' fetch_spr_home_language(2025) %>%
+#'   filter(is_school, home_language == "Spanish") %>%
+#'   slice_max(percent_of_students, n = 10) %>%
+#'   select(district_name, school_name, percent_of_students)
+#' }
+fetch_spr_home_language <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "SPR home-language enrollment data")
+
+  df <- fetch_spr_data("EnrollmentByHomeLanguage", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  if ("percent_of_students" %in% names(df)) {
+    df$percent_of_students <- spr_value_numeric(df$percent_of_students)
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      home_language, percent_of_students,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch NAEP Achievement Results
+#'
+#' Downloads the \code{NAEP} sheet from the redesigned 2024-25 School
+#' Performance Reports (District/State database only). This is the National
+#' Assessment of Educational Progress: the percentage of New Jersey (and,
+#' for comparison, national) students at each achievement level (Below Basic,
+#' Basic, Proficient, Advanced) for 4th- and 8th-grade reading and mathematics,
+#' across the NAEP administration years reported in the workbook.
+#'
+#' @details
+#' NAEP is a state/national summary table with no county/district/school
+#' breakdown, so this function returns no CDS identifiers or aggregation flags.
+#' The \code{state_nation} column distinguishes \code{"New Jersey"} from
+#' \code{"Nation"}; \code{test_year} is the NAEP administration year (NAEP is
+#' given periodically, so multiple years appear). The four achievement-level
+#' columns are returned numeric on a 0-100 scale.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
+#' SY2024-25 SPR). Always reads the District/State database (the School database
+#' has no NAEP sheet).
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#'
+#' @return Data frame with end_year (the SPR publication year), test_year (the
+#'   NAEP administration year), state_nation, subject, grade, student_group, and
+#'   the achievement-level percentages below_basic, basic, proficient, advanced.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # NAEP results as published in the 2024-25 SPR
+#' naep <- fetch_spr_naep(2025)
+#'
+#' # New Jersey vs. the nation, Grade 4 Math, most recent administration
+#' library(dplyr)
+#' fetch_spr_naep(2025) %>%
+#'   filter(subject == "Mathematics", grade == "4",
+#'          student_group == "All Students") %>%
+#'   filter(test_year == max(test_year)) %>%
+#'   select(state_nation, below_basic, basic, proficient, advanced)
+#' }
+fetch_spr_naep <- function(end_year) {
+  spr_require_redesign(end_year, "NAEP data")
+
+  df <- fetch_spr_sheet_raw("NAEP", end_year, level = "district")
+
+  # Drop the trailing "end of worksheet" sentinel and any all-blank rows.
+  df <- df %>%
+    dplyr::filter(
+      !is.na(test_year),
+      !grepl("end of worksheet", test_year, ignore.case = TRUE)
+    )
+
+  # test_year is the NAEP administration year; store it as an integer.
+  df$test_year <- suppressWarnings(as.integer(df$test_year))
+  df <- df %>% dplyr::filter(!is.na(test_year))
+
+  for (col in intersect(c("below_basic", "basic", "proficient", "advanced"),
+                        names(df))) {
+    df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df %>%
+    dplyr::select(
+      end_year, test_year, state_nation, subject, grade, student_group,
+      below_basic, basic, proficient, advanced
+    )
+}
