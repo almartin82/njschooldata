@@ -7,7 +7,7 @@
 fetch_access(end_year, grade = "all")
 }
 \arguments{
-\item{end_year}{A school year. Valid values are 2022-2024.}
+\item{end_year}{A school year. Valid values are 2022-2025.}
 
 \item{grade}{Grade level: "K" or 0 for Kindergarten, 1-12 for other grades,
 or "all" (default) to get all grades combined.}

@@ -29,7 +29,8 @@ grate_4yr_pins <- list(
   list(year = 2021, state_rate = 0.906, state_cohort = 106508, state_grads = 96514),
   list(year = 2022, state_rate = 0.909, state_cohort = 106822, state_grads = 97079),
   list(year = 2023, state_rate = 0.911, state_cohort = 106157, state_grads = 96683),
-  list(year = 2024, state_rate = 0.913, state_cohort = 107713, state_grads = 98300)
+  list(year = 2024, state_rate = 0.913, state_cohort = 107713, state_grads = 98300),
+  list(year = 2025, state_rate = 0.918, state_cohort = 110955, state_grads = 101904)
 )
 
 for (spec in grate_4yr_pins) {
@@ -161,7 +162,8 @@ gcount_pins <- list(
   list(year = 2015, state_grads = 95149),
   list(year = 2019, state_grads = 96591),
   list(year = 2020, state_grads = 96084),
-  list(year = 2024, state_grads = 98300)
+  list(year = 2024, state_grads = 98300),
+  list(year = 2025, state_grads = 101904)
 )
 
 for (spec in gcount_pins) {

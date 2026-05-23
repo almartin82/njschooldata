@@ -26,6 +26,24 @@
 * `clean_spr_subgroups()` maps the new 2024-25 "All Students" total label to
   `total population`, and the SPR statewide aggregate row (CDS code
   `State`/`State`) is now correctly flagged with `is_state`.
+* Assessment fetchers (`fetch_parcc()`/NJSLA, `fetch_njgpa()`, `fetch_access()`,
+  plus `fetch_all_parcc()`/`fetch_all_njgpa()`/`fetch_all_access()`) now cover
+  SY2024-25 (`end_year = 2025`). NJ DOE reverted to the 2019-era space-encoded
+  filenames for 2025 (e.g. `ELA03%20NJSLA%20DATA%202024-25.xlsx`); the URL
+  builders now use spaces for 2019 and 2025+ and underscores for 2022-2024.
+  `PARCC_VALID_YEARS` extends to 2025. Schemas are unchanged from 2024.
+* Extend the 4-year and 6-year graduation fetchers to SY2024-25 (end_year
+  2025). `fetch_grad_rate(2025, "4 year")`, `fetch_grad_count(2025)`, and
+  `fetch_6yr_grad_rate(2025)` (school and district) now work. NJ DOE
+  restructured the SY2024-25 files: the 4-year ACGR file (`Cohort2025`)
+  renamed `Graduation Rate` -> `Adjusted Cohort Graduation Rate` and
+  `Cohort Count` -> `Adjusted Cohort Count`; the SPR 6-year cohort data moved
+  from the `6YrGraduationCohortProfile` sheet to the combined
+  `GraduationCohortProfile` sheet (filtered on `CohortType == "6-Year"`, header
+  on row 4, `_School`/`_District`/`_State` column suffixes, percent-string rate
+  values). Subgroup labels renamed by NJ DOE (`Total` -> `All Students`,
+  `Hispanic` -> `Hispanic/Latino`) are normalized back to the package's
+  standard names so cross-year filters keep working.
 
 ## Bug fixes
 
@@ -40,6 +58,10 @@
   absent.
 * `fetch_spr_data()` drops the trailing `"end of worksheet"` sentinel row that
   the 2024-25 sheets append.
+* `get_raw_sla()` now maps the Geometry math test code `GEO` to `GEO01`, which
+  NJ DOE has used since 2022. The old `gsub("ALG", "ALG0", ...)` step left `GEO`
+  unchanged, so `fetch_parcc(year, "GEO", "math")` silently 404'd for 2022-2024.
+  Geometry results now fetch for all of 2022-2025.
 
 ## Known follow-ups
 

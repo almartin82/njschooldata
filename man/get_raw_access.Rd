@@ -7,7 +7,7 @@
 get_raw_access(end_year, grade = "all")
 }
 \arguments{
-\item{end_year}{A school year (2022-2024)}
+\item{end_year}{A school year (2022-2025)}
 
 \item{grade}{Grade level: "K" or 0 for Kindergarten, or 1-12 for other grades.
 Use "all" to get all grades combined.}

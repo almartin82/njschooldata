@@ -7,7 +7,7 @@
 fetch_njgpa(end_year, subj, tidy = FALSE)
 }
 \arguments{
-\item{end_year}{A school year. Valid values are 2022-2024.}
+\item{end_year}{A school year. Valid values are 2022-2025.}
 
 \item{subj}{Assessment subject: 'ela' or 'math'}
 
