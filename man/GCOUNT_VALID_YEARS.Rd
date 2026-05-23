@@ -5,7 +5,7 @@
 \alias{GCOUNT_VALID_YEARS}
 \title{Graduation count valid years}
 \format{
-An object of class \code{integer} of length 27.
+An object of class \code{integer} of length 28.
 }
 \usage{
 GCOUNT_VALID_YEARS
