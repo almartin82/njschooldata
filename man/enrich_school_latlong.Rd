@@ -9,9 +9,14 @@ enrich_school_latlong(df, use_cache = TRUE, api_key = "")
 \arguments{
 \item{df}{dataframe to be enriched}
 
-\item{use_cache}{if TRUE, will read from cache of school info / lat lng stored on TODO}
+\item{use_cache}{if TRUE (the default), reads cached school info / lat lng
+from the bundled `geocoded_cached` dataset and does not hit a geocoding
+service. Set FALSE to geocode live via \pkg{tidygeocoder}.}
 
-\item{api_key}{optional, personal google maps API key}
+\item{api_key}{optional Google Maps API key. When supplied (and
+`use_cache=FALSE`), a Google geocoding pass is added to the cascade.
+When empty, geocoding uses only the keyless US Census + OpenStreetMap
+cascade.}
 }
 \value{
 dataframe enriched with lat lng
@@ -20,6 +25,8 @@ dataframe enriched with lat lng
 Enrich School Data with Lat / Long
 }
 \note{
-The `placement` package is required for geocoding when `use_cache=FALSE`.
-  Install with: `remotes::install_github('DerekYves/placement')`
+Live geocoding (`use_cache=FALSE`) requires the \pkg{tidygeocoder}
+  package. Install with: `install.packages('tidygeocoder')`. It uses the
+  keyless US Census geocoder with an OpenStreetMap (Nominatim) fallback, so
+  no API key is needed.
 }

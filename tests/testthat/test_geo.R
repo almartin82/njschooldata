@@ -224,3 +224,28 @@ test_that("ground truth values for gcount ward aggregations", {
 })
 
 
+# LIVE smoke test: the tidygeocoder cascade used by enrich_school_latlong()
+# (use_cache = FALSE) returns real coordinates for a known NJ address. This
+# hits a live geocoding service, so it is skipped on CRAN and when offline.
+test_that("tidygeocoder cascade geocodes a known NJ address to plausible coords", {
+  skip_on_cran()
+  skip_if_offline()
+  skip_if_not_installed("tidygeocoder")
+
+  # NJ DOE building: 100 Riverview Plaza, Trenton, NJ 08625
+  geo <- tidygeocoder::geo_combine(
+    queries = list(list(method = "census"), list(method = "osm")),
+    global_params = list(address = "address"),
+    address = "100 Riverview Plaza, Trenton, NJ 08625 USA",
+    lat = "lat",
+    long = "long"
+  )
+
+  expect_true(all(c("address", "lat", "long") %in% names(geo)))
+  expect_equal(nrow(geo), 1)
+  # Plausible NJ bounding box: lat ~38.9-41.4, lng ~ -75.6 to -73.9
+  expect_true(!is.na(geo$lat) && geo$lat >= 38.9 && geo$lat <= 41.4)
+  expect_true(!is.na(geo$long) && geo$long >= -75.6 && geo$long <= -73.9)
+})
+
+
