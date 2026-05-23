@@ -909,6 +909,12 @@ Functions for SPR database data (2017-2024)
   : Fetch Targeted Support and Improvement (TSI) Identification
 - [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
   : Fetch ESSA Accountability Status Counts (district/state)
+- [`fetch_spr_grad_pathways()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_pathways.md)
+  : Fetch Graduation Pathways
+- [`fetch_spr_home_language()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_home_language.md)
+  : Fetch Enrollment by Home Language
+- [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
+  : Fetch NAEP Achievement Results
 - [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
   : Fetch Student Growth Percentile (SGP) Data
 - [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
@@ -1291,6 +1297,12 @@ Additional exported functions
   : Fetch ESSA Accountability Status Counts (district/state)
 - [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
   : Fetch ESSA Long-Term-Goal Targets
+- [`fetch_spr_grad_pathways()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_pathways.md)
+  : Fetch Graduation Pathways
+- [`fetch_spr_home_language()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_home_language.md)
+  : Fetch Enrollment by Home Language
+- [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
+  : Fetch NAEP Achievement Results
 - [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md)
   : Fetch Targeted Support and Improvement (TSI) Identification
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
