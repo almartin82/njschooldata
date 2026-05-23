@@ -26,7 +26,7 @@ PARCC_VALID_YEARS <- c(2015:2019, 2021:2024)
 
 #' 4-year graduation rate valid years
 #' @keywords internal
-GRATE_4YR_VALID_YEARS <- 2011:2024
+GRATE_4YR_VALID_YEARS <- 2011:2025
 
 #' 5-year graduation rate valid years
 #' @keywords internal
@@ -34,7 +34,7 @@ GRATE_5YR_VALID_YEARS <- 2012:2019
 
 #' Graduation count valid years
 #' @keywords internal
-GCOUNT_VALID_YEARS <- 1998:2024
+GCOUNT_VALID_YEARS <- 1998:2025
 
 #' Legacy assessment (NJASK/HSPA/GEPA) valid years
 #' @keywords internal

@@ -11,7 +11,7 @@ fetch_all_6yr_grad_rate(level = "school")
 school and district data. Default is "school".}
 }
 \value{
-A data frame with all 6-year graduation rate results (2021-2024)
+A data frame with all 6-year graduation rate results (2021-2025)
 }
 \description{
 Convenience function to download and combine all available 6-year

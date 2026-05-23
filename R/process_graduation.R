@@ -63,10 +63,13 @@ process_grate <- function(df, end_year) {
     "2011 Adjusted Cohort Grad Rate",
     "2012 Adjusted Cohort Grad Rate",
     "FOUR_YR_GRAD_RATE",
-    "Graduation Rate"
+    "Graduation Rate",
+    # 2024-25 (Cohort2025) renamed the rate column
+    "Adjusted Cohort Graduation Rate"
   )] <- "grad_rate"
-  # 2021+ files use "Cohort Count" and "Graduated" instead of full names
-  names(df)[names(df) %in% c("Four Year Adjusted Cohort Count", "FOUR_YR_ADJ_COHORT_COUNT", "Cohort Count")] <- "cohort_count"
+  # 2021+ files use "Cohort Count" and "Graduated" instead of full names;
+  # 2024-25 (Cohort2025) renamed "Cohort Count" -> "Adjusted Cohort Count"
+  names(df)[names(df) %in% c("Four Year Adjusted Cohort Count", "FOUR_YR_ADJ_COHORT_COUNT", "Cohort Count", "Adjusted Cohort Count")] <- "cohort_count"
   names(df)[names(df) %in% c("Four Year Graduates Count", "GRADUATED_COUNT", "Graduated")] <- "graduated_count"
 
   names(df) <- names(df) %>% tolower()
@@ -321,6 +324,8 @@ grad_file_group_cleanup <- function(group) {
   dplyr::case_when(
     group %in% c("american indian or alaska native", "american_indian") ~ "american indian",
     group %in% c("black or african american") ~ "black",
+    # 2024-25 (Cohort2025) renamed "Hispanic" -> "Hispanic/Latino"
+    group %in% c("hispanic/latino", "hispanic_latino") ~ "hispanic",
     group %in% c(
       "economically_disadvantaged",
       "economically disadvantaged students"
@@ -330,6 +335,9 @@ grad_file_group_cleanup <- function(group) {
     group %in% c("native hawaiian or pacific islander", "pacific_islander", "native_hawaiian") ~ "pacific islander",
     group %in% c("asian, native hawaiian, or pacific islander") ~ "asian",
     group %in% c("students with disabilities", "students_with_disability") ~ "students with disabilities",
+    # 2024-25 (Cohort2025) renamed the total row "Total" -> "All Students";
+    # map to "total" to stay consistent with prior-year files
+    group %in% c("all students", "all_students") ~ "total",
     group %in% c(
       "districtwide", "schoolwide",
       "statewide total", "statewide_total", "statewide",

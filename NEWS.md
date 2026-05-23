@@ -1,5 +1,20 @@
 # njschooldata 0.9.2
 
+## New features
+
+* Extend the 4-year and 6-year graduation fetchers to SY2024-25 (end_year
+  2025). `fetch_grad_rate(2025, "4 year")`, `fetch_grad_count(2025)`, and
+  `fetch_6yr_grad_rate(2025)` (school and district) now work. NJ DOE
+  restructured the SY2024-25 files: the 4-year ACGR file (`Cohort2025`)
+  renamed `Graduation Rate` -> `Adjusted Cohort Graduation Rate` and
+  `Cohort Count` -> `Adjusted Cohort Count`; the SPR 6-year cohort data moved
+  from the `6YrGraduationCohortProfile` sheet to the combined
+  `GraduationCohortProfile` sheet (filtered on `CohortType == "6-Year"`, header
+  on row 4, `_School`/`_District`/`_State` column suffixes, percent-string rate
+  values). Subgroup labels renamed by NJ DOE (`Total` -> `All Students`,
+  `Hispanic` -> `Hispanic/Latino`) are normalized back to the package's
+  standard names so cross-year filters keep working.
+
 ## Bug fixes
 
 * `fetch_enr()` now works end-to-end for 1999-2009. Pre-2010 NJDOE files arrive
