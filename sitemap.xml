@@ -164,6 +164,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sat_performance.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_science_course_enrollment.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sgp.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_data.html</loc></url>
@@ -312,6 +313,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/school_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_gap.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_percentile_comparison.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_value_to_numeric.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/slugify_district.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.html</loc></url>

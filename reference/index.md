@@ -143,6 +143,8 @@ Functions for SPR database data (2017-2024)
   : Fetch Dropout Rate Data
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
   : Fetch ESSA Accountability Status
+- [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
+  : Fetch Student Growth Percentile (SGP) Data
 - [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
   : Fetch Math Course Enrollment Data
 
@@ -509,6 +511,8 @@ Additional exported functions
   : Fetch SAT/ACT/PSAT Performance Data
 - [`fetch_science_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_science_course_enrollment.md)
   : Fetch Science Course Enrollment Data
+- [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
+  : Fetch Student Growth Percentile (SGP) Data
 - [`fetch_social_studies_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.md)
   : Fetch Social Studies Enrollment Data
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)

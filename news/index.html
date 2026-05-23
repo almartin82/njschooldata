@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,18 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.4" id="njschooldata-094">njschooldata 0.9.4<a class="anchor" aria-label="anchor" href="#njschooldata-094"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-4">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-4"></a></h3>
+<ul><li>New <code><a href="../reference/fetch_sgp.html">fetch_sgp()</a></code> fetches NJ Student Growth Percentile (median SGP / mSGP) data from the redesigned 2024-25 SPR databases. Three <code>type</code> options map to the three source sheets: <code>"trends"</code> (<code>StudentGrowthTrends</code>, median SGP by student group for ELA and Math, with statewide comparison columns), <code>"by_grade"</code> (<code>StudentGrowthbyGrade</code>, by subject and grade), and <code>"by_performance_level"</code> (<code>StudentGrowthByPerformLevel</code>, by subject and prior NJSLA performance level). The entity median is normalized to a level-agnostic <code>*_median_sgp</code> column (school value at <code>level = "school"</code>, district value at <code>level = "district"</code>), and suppressed cells (“Fewer than 10 testers”) are mapped to <code>NA</code> with the reason retained in the companion <code>*_category</code> column. Only <code>end_year = 2025</code> is supported for now; pre-2025 SPR databases store SGP in differently-shaped, differently-named sheets, which is a documented follow-up.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-4"></a></h3>
+<ul><li>
+<code>fetch_essa_status(end_year, level = "district")</code> works for SY2024-25 (<code>end_year = 2025</code>). The 2024-25 redesign removed the <code>ESSAAccountabilityStatus</code> sheet from the District/State workbook and replaced it with <code>ESSAAccountabilityStatusList</code> (per-entity status, the structural analogue of the legacy sheet) and <code>ESSAAccountabilityStatusCounts</code> (aggregate CSI/ATSI/TSI tallies). District-level 2025+ requests now map to <code>ESSAAccountabilityStatusList</code>. School-level requests continue to use <code>ESSAAccountabilityStatus</code> for all years, and pre-2025 behavior is unchanged.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.3" id="njschooldata-093">njschooldata 0.9.3<a class="anchor" aria-label="anchor" href="#njschooldata-093"></a></h2>
 <div class="section level3">
