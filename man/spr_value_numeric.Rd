@@ -14,10 +14,12 @@ A numeric vector.
 }
 \description{
 SPR value columns mix plain numbers, percent strings (e.g. \code{"56.2\%"}),
-and suppression phrases (e.g. \code{"Data was available for less than 10
-students"}, \code{"n/a - Below ESSA N-Size"}). This strips percent signs and
-maps every non-numeric token to \code{NA}, preserving real numbers (including
-decimals and half-points) exactly. Already-numeric columns pass through
-untouched.
+thousands-separated counts (e.g. \code{"10,238"}), and suppression phrases
+(e.g. \code{"Data was available for less than 10 students"},
+\code{"n/a - Below ESSA N-Size"}, \code{"There is no data available for this
+school year."}). This strips thousands commas and percent signs and maps
+every remaining non-numeric token to \code{NA}, preserving real numbers
+(including decimals and half-points) exactly. Already-numeric columns pass
+through untouched.
 }
 \keyword{internal}

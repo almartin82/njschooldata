@@ -1605,17 +1605,20 @@ spr_require_redesign <- function(end_year, what) {
 #' Coerce an SPR value column to numeric
 #'
 #' SPR value columns mix plain numbers, percent strings (e.g. \code{"56.2\%"}),
-#' and suppression phrases (e.g. \code{"Data was available for less than 10
-#' students"}, \code{"n/a - Below ESSA N-Size"}). This strips percent signs and
-#' maps every non-numeric token to \code{NA}, preserving real numbers (including
-#' decimals and half-points) exactly. Already-numeric columns pass through
-#' untouched.
+#' thousands-separated counts (e.g. \code{"10,238"}), and suppression phrases
+#' (e.g. \code{"Data was available for less than 10 students"},
+#' \code{"n/a - Below ESSA N-Size"}, \code{"There is no data available for this
+#' school year."}). This strips thousands commas and percent signs and maps
+#' every remaining non-numeric token to \code{NA}, preserving real numbers
+#' (including decimals and half-points) exactly. Already-numeric columns pass
+#' through untouched.
 #'
 #' @param x A character or numeric vector from an SPR value column.
 #' @return A numeric vector.
 #' @keywords internal
 spr_value_numeric <- function(x) {
   if (is.numeric(x)) return(x)
+  x <- gsub(",", "", x, fixed = TRUE)
   suppressWarnings(rc_numeric_cleaner(x))
 }
 
@@ -2249,4 +2252,426 @@ fetch_spr_naep <- function(end_year) {
       end_year, test_year, state_nation, subject, grade, student_group,
       below_basic, basic, proficient, advanced
     )
+}
+
+
+# ==============================================================================
+# Expanded Staff Sheets (2024-25)
+# ==============================================================================
+#
+# The redesigned 2024-25 (end_year 2025) SPR databases broke staffing detail out
+# across several new sheets. The fetchers below expose them:
+#
+#   AdministratorsExperience       -> administrator experience distribution
+#   StaffCounts                    -> staff counts by role
+#   TeachersAdminsDemoSubjectArea  -> teacher demographics by subject area
+#   TeachersAdminsEducation        -> teacher/admin highest-degree distribution
+#   TeachersAdminsOneYearRetention -> one-year retention rates
+#   TeacherExperienceSubjArea      -> teacher experience/degree by subject area
+#   StatewideEducatorEquity (D/S)  -> statewide out-of-field / equity metrics
+#
+# A note on privacy ranges: for the by-subject-area demographic sheet, NJ DOE
+# reports small-cell percentages as ranges (e.g. "70-80%", "<=10%"). Those
+# columns are kept as character to preserve the published values exactly rather
+# than coercing a range to a single fabricated number.
+#
+# ==============================================================================
+
+#' Blank out the "no data available" sentinel in a character column
+#'
+#' Several 2024-25 staff sheets use the literal phrase \dQuote{There is no data
+#' available for this school year.} in place of a value. For character columns
+#' (where it cannot be caught by numeric coercion) this maps that sentinel to
+#' \code{NA} while leaving every other value untouched.
+#'
+#' @param x A character vector.
+#' @return The vector with the no-data sentinel set to \code{NA}.
+#' @keywords internal
+spr_blank_no_data <- function(x) {
+  if (!is.character(x)) return(x)
+  x[grepl("no data available", x, ignore.case = TRUE)] <- NA_character_
+  x
+}
+
+
+#' Fetch Administrator Experience
+#'
+#' Downloads the \code{AdministratorsExperience} sheet from the redesigned
+#' 2024-25 School Performance Reports: administrator counts and experience
+#' summaries for the entity alongside the statewide comparison.
+#'
+#' @details
+#' Reported measures (each with a \code{*_school} entity value and a
+#' \code{*_state} statewide comparison): administrator count, average years of
+#' experience in public schools, average years of experience in the district,
+#' and the number and percentage of administrators with 4+ years of experience.
+#' All value columns are returned numeric (thousands commas and percent signs
+#' stripped; suppressed cells set to \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, the administrator experience
+#'   measures, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' admin <- fetch_spr_admin_experience(2025)
+#'
+#' # Schools where every administrator has 4+ years of experience
+#' library(dplyr)
+#' fetch_spr_admin_experience(2025) %>%
+#'   filter(is_school, percentage_admins_with_4_or_more_years_exp_school == 100) %>%
+#'   select(district_name, school_name, admin_count_school)
+#'
+#' # District-level average administrator experience
+#' fetch_spr_admin_experience(2025, level = "district") %>%
+#'   filter(is_district) %>%
+#'   select(district_name, average_years_exp_in_public_schools_school)
+#' }
+fetch_spr_admin_experience <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "administrator experience data")
+
+  df <- fetch_spr_data("AdministratorsExperience", end_year, level)
+
+  # Every non-identifier column on this sheet is a numeric measure. Convert
+  # those, leaving CDS identifiers and aggregation flags untouched (a name-
+  # pattern match would wrongly catch "county_id"/"county_name" via "count").
+  id_flag_cols <- c(
+    "county_id", "county_name", "district_id", "district_name",
+    "school_id", "school_name", "end_year",
+    "is_state", "is_county", "is_district", "is_school",
+    "is_charter", "is_charter_sector", "is_allpublic"
+  )
+  num_cols <- setdiff(names(df), id_flag_cols)
+  for (col in num_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
+}
+
+
+#' Fetch Staff Counts
+#'
+#' Downloads the \code{StaffCounts} sheet from the redesigned 2024-25 School
+#' Performance Reports: counts of staff by role (\code{staff_category}, e.g.
+#' Administrators, Teachers, Child Study Team Members) for the school, district,
+#' and state.
+#'
+#' @details
+#' The three count columns (\code{school_total_staff},
+#' \code{district_total_staff_members}, \code{state_total_staff_members}) are
+#' returned numeric (thousands commas stripped; cells reading \dQuote{There is no
+#' data available for this school year.} set to \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, staff_category, the three staff
+#'   count columns, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' staff <- fetch_spr_staff_counts(2025)
+#'
+#' # Teacher counts by school
+#' library(dplyr)
+#' fetch_spr_staff_counts(2025) %>%
+#'   filter(is_school, staff_category == "Teachers") %>%
+#'   select(district_name, school_name, school_total_staff)
+#'
+#' # Statewide staff by role
+#' fetch_spr_staff_counts(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   select(staff_category, state_total_staff_members)
+#' }
+fetch_spr_staff_counts <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "staff counts data")
+
+  df <- fetch_spr_data("StaffCounts", end_year, level)
+
+  count_cols <- grep("total_staff", names(df), value = TRUE)
+  for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
+}
+
+
+#' Fetch Teacher Demographics by Subject Area
+#'
+#' Downloads the \code{TeachersAdminsDemoSubjectArea} sheet from the redesigned
+#' 2024-25 School Performance Reports: teacher racial/ethnic and gender
+#' composition by subject area.
+#'
+#' @details
+#' \code{teacher_count} is returned numeric. The racial/ethnic and gender
+#' percentage columns are kept as \strong{character} on purpose: NJ DOE reports
+#' small-cell percentages as privacy-protected ranges (e.g. \code{"70-80\%"},
+#' \code{"<=10\%"}), and coercing a range to a single number would fabricate
+#' precision. Exact percentages (e.g. \code{"91.9\%"}) are likewise preserved as
+#' published. Cells reading \dQuote{There is no data available for this school
+#' year.} are set to \code{NA}. The \code{TwoorMoreRaces} column is renamed to
+#' \code{two_or_more_races}.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, subject_area, teacher_count, the
+#'   racial/ethnic and gender composition columns (character), and the
+#'   aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' demo <- fetch_spr_staff_demo_subject(2025)
+#'
+#' # All-teacher racial composition for a school
+#' library(dplyr)
+#' fetch_spr_staff_demo_subject(2025) %>%
+#'   filter(is_school, subject_area == "All Teachers") %>%
+#'   select(district_name, school_name, white, black_african_american,
+#'          hispanic_latino, asian)
+#' }
+fetch_spr_staff_demo_subject <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "teacher demographics by subject area data")
+
+  df <- fetch_spr_data("TeachersAdminsDemoSubjectArea", end_year, level)
+
+  if ("teacher_count" %in% names(df)) {
+    df$teacher_count <- spr_value_numeric(df$teacher_count)
+  }
+
+  # Normalize the awkward snake-cased race column name.
+  names(df)[names(df) == "twoor_more_races"] <- "two_or_more_races"
+
+  # Composition columns stay character (ranges + exact percents); only the
+  # "no data" sentinel is mapped to NA.
+  demo_cols <- intersect(
+    c("american_indian_alaska_native", "asian", "black_african_american",
+      "hispanic_latino", "native_hawaiian_pacific_islander",
+      "two_or_more_races", "white", "female", "male",
+      "non_binary_undesignated_gender"),
+    names(df)
+  )
+  for (col in demo_cols) df[[col]] <- spr_blank_no_data(df[[col]])
+
+  df
+}
+
+
+#' Fetch Teacher and Administrator Education
+#'
+#' Downloads the \code{TeachersAdminsEducation} sheet from the redesigned
+#' 2024-25 School Performance Reports: the highest-degree distribution
+#' (Bachelor's, Master's, Doctoral) for teachers and for administrators.
+#'
+#' @details
+#' \code{teachers_admins} labels the group (\code{"Teachers"} or
+#' \code{"Administrators"}). The degree columns are returned numeric percentages
+#' (suppressed/non-numeric cells, including the administrator note that
+#' administrators must hold a Master's or higher, set to \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, teachers_admins, bachelors,
+#'   masters, doctoral, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' edu <- fetch_spr_staff_education(2025)
+#'
+#' # Share of teachers with a Master's degree, by school
+#' library(dplyr)
+#' fetch_spr_staff_education(2025) %>%
+#'   filter(is_school, teachers_admins == "Teachers") %>%
+#'   select(district_name, school_name, masters, doctoral)
+#' }
+fetch_spr_staff_education <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "teacher/administrator education data")
+
+  df <- fetch_spr_data("TeachersAdminsEducation", end_year, level)
+
+  for (col in intersect(c("bachelors", "masters", "doctoral"), names(df))) {
+    df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df
+}
+
+
+#' Fetch Teacher and Administrator One-Year Retention
+#'
+#' Downloads the \code{TeachersAdminsOneYearRetention} sheet from the redesigned
+#' 2024-25 School Performance Reports: the one-year retention rate for teachers
+#' and for administrators, for the district and the state.
+#'
+#' @details
+#' \code{teachers_admins} labels the group. \code{retention_pct_district} and
+#' \code{retention_pct_state} are returned numeric percentages (suppressed cells
+#' set to \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, teachers_admins,
+#'   retention_pct_district, retention_pct_state, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' ret <- fetch_spr_staff_retention(2025)
+#'
+#' # Districts with the lowest teacher retention
+#' library(dplyr)
+#' fetch_spr_staff_retention(2025, level = "district") %>%
+#'   filter(is_district, teachers_admins == "Teachers") %>%
+#'   slice_min(retention_pct_district, n = 10) %>%
+#'   select(district_name, retention_pct_district, retention_pct_state)
+#' }
+fetch_spr_staff_retention <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "staff retention data")
+
+  df <- fetch_spr_data("TeachersAdminsOneYearRetention", end_year, level)
+
+  for (col in intersect(c("retention_pct_district", "retention_pct_state"),
+                        names(df))) {
+    df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df
+}
+
+
+#' Fetch Teacher Experience by Subject Area
+#'
+#' Downloads the \code{TeacherExperienceSubjArea} sheet from the redesigned
+#' 2024-25 School Performance Reports: by subject area, the percentage of
+#' teachers with 4+ years of experience and the highest-degree distribution.
+#'
+#' @details
+#' \code{teacher_count} is returned numeric. \code{fourormoreyearsexp},
+#' \code{bachelors}, \code{masters}, and \code{doctoral} are returned numeric
+#' percentages (cells reading \dQuote{There is no data available for this school
+#' year.} set to \code{NA}).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, subject_area, teacher_count,
+#'   fourormoreyearsexp, bachelors, masters, doctoral, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' exp <- fetch_spr_teacher_exp_subject(2025)
+#'
+#' # Experience of math teachers by school
+#' library(dplyr)
+#' fetch_spr_teacher_exp_subject(2025) %>%
+#'   filter(is_school, subject_area == "Mathematics") %>%
+#'   select(district_name, school_name, teacher_count, fourormoreyearsexp)
+#' }
+fetch_spr_teacher_exp_subject <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "teacher experience by subject area data")
+
+  df <- fetch_spr_data("TeacherExperienceSubjArea", end_year, level)
+
+  for (col in intersect(
+    c("teacher_count", "fourormoreyearsexp", "bachelors", "masters", "doctoral"),
+    names(df))) {
+    df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df
+}
+
+
+#' Fetch Statewide Educator Equity Metrics
+#'
+#' Downloads the \code{StatewideEducatorEquity} sheet from the redesigned
+#' 2024-25 School Performance Reports (District/State database only). This is a
+#' statewide summary table comparing high-need student groups (economically
+#' disadvantaged students in Title I schools, minority students in Title I
+#' schools) against their counterparts on educator-equity measures such as the
+#' share of students taught by out-of-field or inexperienced teachers.
+#'
+#' @details
+#' This is a statewide summary table with no county/district/school identifiers,
+#' so it returns no CDS columns or aggregation flags. Each row is a
+#' \code{category} (the equity measure) for a set of \code{classes_included}
+#' (e.g. Core Classes vs. All Classes); the five metric columns hold the
+#' proportion (0-1 scale, as published) for All Students and for each compared
+#' student group.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. Always reads the
+#' District/State database.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#'
+#' @return Data frame with end_year, school_year, category, classes_included,
+#'   and the metric columns (all_students plus the compared student groups).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' equity <- fetch_spr_educator_equity(2025)
+#'
+#' # Out-of-field teaching gap, core classes
+#' library(dplyr)
+#' fetch_spr_educator_equity(2025) %>%
+#'   filter(grepl("out-of-field", category, ignore.case = TRUE),
+#'          classes_included == "Core Classes") %>%
+#'   select(category, all_students,
+#'          economically_disadvantaged_students_in_title_i_schools)
+#' }
+fetch_spr_educator_equity <- function(end_year) {
+  spr_require_redesign(end_year, "statewide educator equity data")
+
+  df <- fetch_spr_sheet_raw("StatewideEducatorEquity", end_year,
+                            level = "district")
+
+  # Drop any trailing sentinel / all-blank rows.
+  if ("school_year" %in% names(df)) {
+    df <- df %>%
+      dplyr::filter(
+        !is.na(school_year),
+        !grepl("end of worksheet", school_year, ignore.case = TRUE)
+      )
+  }
+
+  metric_cols <- setdiff(
+    names(df), c("end_year", "school_year", "category", "classes_included")
+  )
+  for (col in metric_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df
 }
