@@ -21,6 +21,35 @@ This doc catalogues every uncovered sheet by domain, flags priority, and propose
 
 ---
 
+## Already Implemented
+
+The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250, #251, #252). All are gated to `end_year >= 2025` and error rather than guess a mapping for earlier years.
+
+| Sheet(s) | Fetcher | PR |
+|---|---|---|
+| StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel | `fetch_sgp(type=)` | #247 |
+| ProficiencyTargets / GrowthTargets / GraduationTargets / ProgresstowardELPTargets / ChronicAbsenteeismTargets / HSPersistenceTargets | `fetch_spr_essa_targets(indicator=)` | #250 |
+| AccountabilitySummative | `fetch_spr_accountability_summative()` | #250 |
+| TSIIdentification | `fetch_spr_tsi()` | #250 |
+| ESSAAccountabilityStatusList (district) | `fetch_essa_status(level="district")` | #248 |
+| ESSAAccountabilityStatusCounts | `fetch_spr_essa_status_counts()` | #250 |
+| GraduationPathways | `fetch_spr_grad_pathways()` | #251 |
+| EnrollmentByHomeLanguage | `fetch_spr_home_language()` | #251 |
+| NAEP (district/state) | `fetch_spr_naep()` | #251 |
+| AdministratorsExperience | `fetch_spr_admin_experience()` | #252 |
+| StaffCounts | `fetch_spr_staff_counts()` | #252 |
+| TeachersAdminsDemoSubjectArea | `fetch_spr_staff_demo_subject()` | #252 |
+| TeachersAdminsEducation | `fetch_spr_staff_education()` | #252 |
+| TeachersAdminsOneYearRetention | `fetch_spr_staff_retention()` | #252 |
+| TeacherExperienceSubjArea | `fetch_spr_teacher_exp_subject()` | #252 |
+| StatewideEducatorEquity (district/state) | `fetch_spr_educator_equity()` | #252 |
+
+Notes: NAEP and StatewideEducatorEquity carry no CDS codes (state/national summary tables), so they read through the internal `fetch_spr_sheet_raw()` helper (no CDS/flag machinery). `fetch_spr_staff_demo_subject()` deliberately keeps its racial/ethnic and gender composition columns as character — NJ DOE reports small-cell percentages as privacy-protected ranges (e.g. `"70-80%"`), and coercing them to a single number would fabricate precision.
+
+The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW items not yet picked up (school environment, Seal of Biliteracy detail, college/career breakdowns, and the redundant-low SPR mirror views).
+
+---
+
 ## Domain Tables
 
 ### Enrollment
@@ -179,7 +208,7 @@ This doc catalogues every uncovered sheet by domain, flags priority, and propose
 
 Candidates that are genuinely new data (no standalone fetcher equivalent) and have broad policy relevance:
 
-### Tier 1 — Implement first
+### Tier 1 — Implement first ✅ DONE (see "Already Implemented" above)
 
 1. **StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel** — SGP is entirely absent from the package. Three related sheets; ship as one `fetch_spr_sgp()` family.
 2. **AccountabilitySummative + TSIIdentification** (school only) — ESSA summative score and TSI flags are central accountability outputs. High demand from researchers.
@@ -188,7 +217,9 @@ Candidates that are genuinely new data (no standalone fetcher equivalent) and ha
 5. **HIBInvestigations** — HIB data is high-profile in NJ; currently only removal/incident data is covered.
 6. **PoliceNotifications + PoliceNotificationsGroupGrade + ArrestsStudentGroupGrade** — safety data not available anywhere else in the package.
 
-### Tier 2 — Implement next
+### Tier 2 — Mostly done (items 7-10 implemented; see "Already Implemented" above)
+
+> Still open: **#11 SchoolDay + DeviceRatios** (school-only environment data) is not yet implemented.
 
 7. **NAEP** (district/state only) — only source of NAEP data in the package; limited to district/state level.
 8. **GraduationPathways** — pathway breakdown (diploma type, alternative routes) not in existing grad fetchers.
