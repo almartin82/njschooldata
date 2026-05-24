@@ -61,8 +61,8 @@ histories; the median SGP (mSGP) summarizes a school's or district's growth.</p>
 
 
 <dl><dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
-<dd><p>A school year. Currently only <code>2025</code> (SY2024-25) is
-supported.</p></dd>
+<dd><p>A school year. Supported years depend on <code>type</code>; see
+<strong>Supported years</strong> above.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
@@ -99,17 +99,24 @@ state-level data.</p></dd>
     broken out by student group, for ELA and Math, as a multi-year trend
     (SY2022-23 through the requested year). One row per entity per student
     group, filtered to the requested academic year.</p></li>
-<li><p><code>"by_grade"</code> – <code>StudentGrowthbyGrade</code>: median SGP by
-    subject (ELA/Math) and grade (Grades 4-8). 2024-25 only.</p></li>
+<li><p><code>"by_grade"</code> – <code>StudentGrowthbyGrade</code> (legacy
+    <code>StudentGrowthByGrade</code>): median SGP by subject (ELA/Math) and grade
+    (Grades 4-8). The growth category is reported only from 2023; earlier
+    years return <code>NA</code> for <code>median_sgp_category</code>.</p></li>
 <li><p><code>"by_performance_level"</code> –
     <code>StudentGrowthByPerformLevel</code>: median SGP by subject and prior-year
-    NJSLA performance level (Levels 1-5). 2024-25 only.</p></li>
+    NJSLA performance level (Levels 1-5). The 2017-2019 sheet reports a
+    different statistic (a growth-band percentage distribution) and is not
+    supported.</p></li>
 </ul><p>Median SGP value columns are returned numeric; suppressed cells
 (“Fewer than 10 testers”) become <code>NA</code>, with the suppression
 reason preserved in the companion <code>*_category</code> column.</p>
-<p><strong>Supported years:</strong> only <code>end_year = 2025</code> (SY2024-25) is
-available. Pre-2025 SPR databases store SGP in differently-shaped,
-differently-named sheets; supporting them is a documented follow-up.</p>
+<p><strong>Supported years (vary by type):</strong> <code>by_grade</code>: 2018, 2019, 2023,
+2024, 2025. <code>by_performance_level</code>: 2023, 2024, 2025. <code>trends</code>:
+2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
+through SY2021-22 (end_year 2020-2022) are unavailable for every type – NJ
+produced no Student Growth Percentiles during the COVID statewide-assessment
+pause.</p>
     </div>
 
     <div class="section level2">

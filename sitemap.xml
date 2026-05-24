@@ -328,6 +328,11 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/school_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_gap.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_percentile_comparison.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_check_year.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_legacy_by_grade.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_legacy_by_perf.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_sheet_name.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sgp_supported_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sgp_value_to_numeric.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/slugify_district.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.html</loc></url>
