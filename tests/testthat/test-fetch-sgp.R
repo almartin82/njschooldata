@@ -43,11 +43,21 @@ test_that("fetch_sgp rejects invalid type", {
   )
 })
 
-test_that("fetch_sgp errors (does not fabricate) for pre-2025 years", {
-  # Pre-2025 SPR databases store SGP in differently-shaped, differently-named
-  # sheets. fetch_sgp must stop rather than guess a mapping.
-  expect_error(fetch_sgp(2024), "only end_year 2025")
-  expect_error(fetch_sgp(2020, level = "district"), "only end_year 2025")
+test_that("fetch_sgp gates each type at its real first year (no fabrication)", {
+  # trends backfill (legacy StudentGrowth subgroup sheet) is a follow-up; this
+  # release still serves trends for 2025 only.
+  expect_error(fetch_sgp(2024, type = "trends"), "type = 'trends'")
+  # COVID gap: NJ produced no SGP for SY2019-20..SY2021-22 (any type).
+  expect_error(fetch_sgp(2021, type = "by_grade"), "COVID")
+  expect_error(fetch_sgp(2022, type = "by_performance_level"), "COVID")
+  # by_grade omits SY2016-17 (the sheet has no county/district name columns).
+  expect_error(fetch_sgp(2017, type = "by_grade"), "end_year >= 2018")
+  # by_performance_level before 2023 is a different statistic (growth-band
+  # percentage distribution by PARCC level), not a median SGP.
+  expect_error(
+    fetch_sgp(2019, type = "by_performance_level"),
+    "different statistic"
+  )
 })
 
 
@@ -173,4 +183,72 @@ test_that("fetch_sgp by_performance_level returns expected structure", {
 
   # NJSLA performance levels run 1-5
   expect_true(any(grepl("Performance Level", df$njsla_performance_level)))
+})
+
+
+# ==============================================================================
+# Pre-2025 backfill (legacy StudentGrowthByGrade / StudentGrowthByPerformLevel)
+# ==============================================================================
+#
+# Pinned against the NJ DOE District/State workbooks; reference district is
+# Absecon (county 01, district 0010). by_grade is backfilled to 2018, 2019,
+# 2023, 2024; by_performance_level to 2023, 2024.
+
+test_that("fetch_sgp by_grade backfill matches the raw legacy file (2024)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2024, level = "district", type = "by_grade")
+
+  expect_true(all(c(
+    "subject", "grade", "median_sgp", "median_sgp_category"
+  ) %in% names(df)))
+  expect_true(all(c("ELA", "Math") %in% df$subject))
+
+  ref <- df %>%
+    dplyr::filter(district_id == "0010", subject == "ELA", grade == "Grade 6")
+  expect_equal(nrow(ref), 1)
+  # Pinned from StudentGrowthByGrade SY2023-24: mSGP 74.5, Level "High".
+  expect_equal(ref$median_sgp, 74.5)
+  expect_equal(ref$median_sgp_category, "High")
+})
+
+test_that("fetch_sgp by_grade has no growth category before 2023", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2019, level = "district", type = "by_grade")
+
+  # The 2018-19 sheet carries no Level column; category is NA, medians are real.
+  expect_true(all(is.na(df$median_sgp_category)))
+  expect_true(any(!is.na(df$median_sgp)))
+})
+
+test_that("fetch_sgp by_performance_level backfill matches the raw file (2024)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2024, level = "district", type = "by_performance_level")
+
+  ref <- df %>%
+    dplyr::filter(
+      district_id == "0010", subject == "ELA",
+      njsla_performance_level == "Performance Level 1"
+    )
+  expect_equal(nrow(ref), 1)
+  # Pinned from StudentGrowthByPerformLevel SY2023-24: mSGP 54, Level "Typical".
+  expect_equal(ref$median_sgp, 54)
+  expect_equal(ref$median_sgp_category, "Typical")
+})
+
+test_that("fetch_sgp by_performance_level normalizes the level label (2023)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2023, level = "district", type = "by_performance_level")
+  expect_true(all(grepl("Performance Level", unique(df$njsla_performance_level))))
 })
