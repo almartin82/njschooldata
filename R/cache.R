@@ -224,6 +224,174 @@ njsd_cache_remove <- function(key) {
 }
 
 # -----------------------------------------------------------------------------
+# On-Disk Workbook Cache (SPR databases)
+# -----------------------------------------------------------------------------
+#
+# The SPR Excel databases are large (the 2024-25 District file is ~119 MB, the
+# School file ~350 MB) and each holds dozens of sheets. The session cache above
+# stores parsed *sheets*, so reading two different sheets from the same workbook
+# -- or rerunning in a fresh session -- used to re-download the entire file.
+# This disk cache stores the downloaded workbook itself, keyed by year + level,
+# so a workbook is fetched from NJ DOE at most once and reused across calls and
+# across sessions.
+
+#' Directory holding cached SPR workbooks
+#'
+#' On-disk location where downloaded SPR Excel databases are cached. Defaults to
+#' a per-user cache directory (\code{tools::R_user_dir("njschooldata", "cache")});
+#' override with \code{options(njschooldata.cache_dir = "/path")}.
+#'
+#' @return Absolute path to the workbook cache directory (it is not created by
+#'   this getter).
+#' @export
+#' @examples
+#' njsd_workbook_cache_dir()
+njsd_workbook_cache_dir <- function() {
+  base <- getOption(
+    "njschooldata.cache_dir",
+    tools::R_user_dir("njschooldata", which = "cache")
+  )
+  file.path(base, "spr-workbooks")
+}
+
+#' Is a file a real .xlsx (ZIP) rather than an HTTP error / bot page?
+#'
+#' \code{.xlsx} files are ZIP archives and begin with the bytes \code{PK}
+#' (\code{0x50 0x4B}). Error pages begin with \code{<} or are tiny. This guard
+#' prevents a failed download from being cached or parsed as data.
+#'
+#' @param path File path to check.
+#' @return \code{TRUE} if the file looks like a valid workbook.
+#' @keywords internal
+is_valid_xlsx <- function(path) {
+  if (!file.exists(path)) return(FALSE)
+  if (isTRUE(file.info(path)$size < 1000)) return(FALSE)
+  con <- file(path, "rb")
+  on.exit(close(con))
+  sig <- readBin(con, what = "raw", n = 2L)
+  length(sig) == 2L && identical(sig, as.raw(c(0x50, 0x4B)))
+}
+
+#' Download an SPR workbook, caching it on disk
+#'
+#' Returns a local path to the SPR Excel database for \code{end_year} /
+#' \code{level}, downloading it from NJ DOE on first use and reusing the cached
+#' copy thereafter. The download is validated as a real \code{.xlsx} (see
+#' \code{\link{is_valid_xlsx}}) before it is cached or returned, so an HTTP error
+#' or bot-protection page is never silently treated as data.
+#'
+#' Disk caching is on by default. Disable it with
+#' \code{options(njschooldata.workbook_cache = FALSE)} or by turning off the
+#' session cache (\code{\link{njsd_cache_enable}(FALSE)}); in either case the
+#' workbook is downloaded to a temporary file each call.
+#'
+#' @param end_year SPR school year end (2017-2025).
+#' @param level One of \code{"school"} or \code{"district"}.
+#' @return Path to a local, validated \code{.xlsx} file.
+#' @keywords internal
+spr_cached_workbook <- function(end_year, level) {
+  url <- get_spr_url(end_year, level)  # also validates end_year / level
+
+  use_cache <- isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
+    njsd_cache_enabled()
+
+  if (use_cache) {
+    cache_dir <- njsd_workbook_cache_dir()
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+    dest <- file.path(cache_dir, sprintf("SPR_%s_%d.xlsx", level, end_year))
+    if (is_valid_xlsx(dest)) {
+      return(dest)
+    }
+    dl_dir <- cache_dir
+  } else {
+    dest <- tempfile(pattern = "spr_", fileext = ".xlsx")
+    dl_dir <- dirname(dest)
+  }
+
+  # Download to a sibling temp file, validate, then move into place so an
+  # interrupted or failed download never leaves a corrupt file in the cache.
+  tmp <- tempfile(pattern = "spr_dl_", tmpdir = dl_dir, fileext = ".xlsx")
+  on.exit(unlink(tmp), add = TRUE)
+  downloader::download(url, destfile = tmp, mode = "wb")
+
+  if (!is_valid_xlsx(tmp)) {
+    stop(sprintf(
+      paste0(
+        "Downloaded SPR workbook for %d (%s) is not a valid .xlsx file -- the ",
+        "NJ DOE source may be unavailable or returned an error page.\n  URL: %s"
+      ),
+      end_year, level, url
+    ), call. = FALSE)
+  }
+
+  if (!file.rename(tmp, dest)) {
+    # rename() can fail across filesystems; fall back to copy.
+    file.copy(tmp, dest, overwrite = TRUE)
+  }
+  dest
+}
+
+#' Inspect the on-disk SPR workbook cache
+#'
+#' @return A data frame (one row per cached workbook) with \code{file},
+#'   \code{size_mb}, and \code{modified}; returned invisibly after printing a
+#'   one-line summary. Empty if nothing is cached.
+#' @export
+#' @seealso \code{\link{njsd_workbook_cache_clear}}, \code{\link{njsd_workbook_cache_dir}}
+#' @examples
+#' njsd_workbook_cache_info()
+njsd_workbook_cache_info <- function() {
+  cache_dir <- njsd_workbook_cache_dir()
+  files <- list.files(cache_dir, pattern = "\\.xlsx$", full.names = TRUE)
+  if (length(files) == 0) {
+    message(sprintf("No cached SPR workbooks in %s", cache_dir))
+    return(invisible(data.frame()))
+  }
+  info <- file.info(files)
+  out <- data.frame(
+    file = basename(files),
+    size_mb = round(info$size / 1024 / 1024, 1),
+    modified = info$mtime,
+    row.names = NULL,
+    stringsAsFactors = FALSE
+  )
+  message(sprintf(
+    "%d cached SPR workbook(s), %.1f MB total, in %s",
+    nrow(out), sum(out$size_mb), cache_dir
+  ))
+  out
+}
+
+#' Clear cached SPR workbooks from disk
+#'
+#' @param end_year Optional school year; clear only that year's workbooks (both
+#'   levels). Default \code{NULL} removes all cached workbooks.
+#' @return Number of files removed (invisibly).
+#' @export
+#' @seealso \code{\link{njsd_workbook_cache_info}}
+#' @examples
+#' \dontrun{
+#' njsd_workbook_cache_clear()      # remove all
+#' njsd_workbook_cache_clear(2025)  # remove just SY2024-25
+#' }
+njsd_workbook_cache_clear <- function(end_year = NULL) {
+  cache_dir <- njsd_workbook_cache_dir()
+  pattern <- if (is.null(end_year)) {
+    "\\.xlsx$"
+  } else {
+    sprintf("_%d\\.xlsx$", end_year)
+  }
+  files <- list.files(cache_dir, pattern = pattern, full.names = TRUE)
+  bytes <- if (length(files) > 0) sum(file.info(files)$size) else 0
+  unlink(files)
+  message(sprintf(
+    "Removed %d cached SPR workbook(s) (%.1f MB).",
+    length(files), bytes / 1024 / 1024
+  ))
+  invisible(length(files))
+}
+
+# -----------------------------------------------------------------------------
 # Cached Fetch Wrapper
 # -----------------------------------------------------------------------------
 

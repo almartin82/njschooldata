@@ -159,19 +159,15 @@ clean_spr_subgroups <- function(group) {
 #' teachers <- fetch_spr_data("TeachersExperience", 2023)
 #' }
 fetch_spr_data <- function(sheet_name, end_year, level = "school") {
-  # Build URL
-  target_url <- get_spr_url(end_year, level)
-
-  # Check cache
+  # Check the parsed-sheet session cache first.
   cache_key <- make_cache_key("fetch_spr_data", sheet_name, end_year, level)
   cached <- cache_get(cache_key)
   if (!is.null(cached)) {
     return(cached)
   }
 
-  # Download to temp file
-  tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
+  # Get the workbook (downloaded once, then cached on disk across sessions).
+  tname <- spr_cached_workbook(end_year, level)
 
   # The 2024-25 (end_year 2025) redesign moved the column headers down: row 1
   # holds a metadata note, rows 2-3 hold sheet/source notes, and the real header
@@ -616,12 +612,8 @@ fetch_days_absent <- function(end_year, level = "school") {
 #' attendance_sheets <- sheets[grepl("Absent|Attendance", sheets, ignore.case = TRUE)]
 #' }
 list_spr_sheets <- function(end_year, level = "school") {
-  # Build URL
-  target_url <- get_spr_url(end_year, level)
-
-  # Download to temp file
-  tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
+  # Get the workbook (downloaded once, then cached on disk across sessions).
+  tname <- spr_cached_workbook(end_year, level)
 
   # Get sheet names
   sheets <- readxl::excel_sheets(tname)
@@ -2234,16 +2226,13 @@ fetch_spr_essa_status_counts <- function(end_year) {
 #' @return Data frame with snake_cased column names plus \code{end_year}.
 #' @keywords internal
 fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
-  target_url <- get_spr_url(end_year, level)
-
   cache_key <- make_cache_key("fetch_spr_sheet_raw", sheet_name, end_year, level)
   cached <- cache_get(cache_key)
   if (!is.null(cached)) {
     return(cached)
   }
 
-  tname <- tempfile(pattern = "spr_", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
+  tname <- spr_cached_workbook(end_year, level)
 
   header_skip <- if (end_year >= 2025) 3 else 0
 
