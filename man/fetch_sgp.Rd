@@ -7,8 +7,8 @@
 fetch_sgp(end_year, level = "school", type = "trends")
 }
 \arguments{
-\item{end_year}{A school year. Currently only \code{2025} (SY2024-25) is
-supported.}
+\item{end_year}{A school year. Supported years depend on \code{type}; see
+\strong{Supported years} above.}
 
 \item{level}{One of \code{"school"} or \code{"district"}. \code{"school"}
 returns school-level data; \code{"district"} returns district and
@@ -49,20 +49,27 @@ The \code{type} argument selects one of three SPR sheets:
     broken out by student group, for ELA and Math, as a multi-year trend
     (SY2022-23 through the requested year). One row per entity per student
     group, filtered to the requested academic year.
-  \item \code{"by_grade"} -- \code{StudentGrowthbyGrade}: median SGP by
-    subject (ELA/Math) and grade (Grades 4-8). 2024-25 only.
+  \item \code{"by_grade"} -- \code{StudentGrowthbyGrade} (legacy
+    \code{StudentGrowthByGrade}): median SGP by subject (ELA/Math) and grade
+    (Grades 4-8). The growth category is reported only from 2023; earlier
+    years return \code{NA} for \code{median_sgp_category}.
   \item \code{"by_performance_level"} --
     \code{StudentGrowthByPerformLevel}: median SGP by subject and prior-year
-    NJSLA performance level (Levels 1-5). 2024-25 only.
+    NJSLA performance level (Levels 1-5). The 2017-2019 sheet reports a
+    different statistic (a growth-band percentage distribution) and is not
+    supported.
 }
 
 Median SGP value columns are returned numeric; suppressed cells
 (\dQuote{Fewer than 10 testers}) become \code{NA}, with the suppression
 reason preserved in the companion \code{*_category} column.
 
-\strong{Supported years:} only \code{end_year = 2025} (SY2024-25) is
-available. Pre-2025 SPR databases store SGP in differently-shaped,
-differently-named sheets; supporting them is a documented follow-up.
+\strong{Supported years (vary by type):} \code{by_grade}: 2018, 2019, 2023,
+2024, 2025. \code{by_performance_level}: 2023, 2024, 2025. \code{trends}:
+2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
+through SY2021-22 (end_year 2020-2022) are unavailable for every type -- NJ
+produced no Student Growth Percentiles during the COVID statewide-assessment
+pause.
 }
 \examples{
 \dontrun{
