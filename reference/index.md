@@ -139,6 +139,20 @@ Functions for SPR database data (2017-2024)
   : Fetch Staff Demographics Data
 - [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
   : Fetch Student-Staff Ratio Data
+- [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md)
+  : Fetch Administrator Experience
+- [`fetch_spr_staff_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_counts.md)
+  : Fetch Staff Counts
+- [`fetch_spr_staff_demo_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_demo_subject.md)
+  : Fetch Teacher Demographics by Subject Area
+- [`fetch_spr_staff_education()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_education.md)
+  : Fetch Teacher and Administrator Education
+- [`fetch_spr_staff_retention()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_retention.md)
+  : Fetch Teacher and Administrator One-Year Retention
+- [`fetch_spr_teacher_exp_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_teacher_exp_subject.md)
+  : Fetch Teacher Experience by Subject Area
+- [`fetch_spr_educator_equity()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_educator_equity.md)
+  : Fetch Statewide Educator Equity Metrics
 - [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
   : Fetch Dropout Rate Data
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
@@ -533,8 +547,12 @@ Additional exported functions
   : Fetch Special Education Classification Data
 - [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md)
   : Fetch ESSA Summative Accountability Scores
+- [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md)
+  : Fetch Administrator Experience
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
   : Fetch SPR Data
+- [`fetch_spr_educator_equity()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_educator_equity.md)
+  : Fetch Statewide Educator Equity Metrics
 - [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
   : Fetch ESSA Accountability Status Counts (district/state)
 - [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
@@ -545,6 +563,16 @@ Additional exported functions
   : Fetch Enrollment by Home Language
 - [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
   : Fetch NAEP Achievement Results
+- [`fetch_spr_staff_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_counts.md)
+  : Fetch Staff Counts
+- [`fetch_spr_staff_demo_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_demo_subject.md)
+  : Fetch Teacher Demographics by Subject Area
+- [`fetch_spr_staff_education()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_education.md)
+  : Fetch Teacher and Administrator Education
+- [`fetch_spr_staff_retention()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_retention.md)
+  : Fetch Teacher and Administrator One-Year Retention
+- [`fetch_spr_teacher_exp_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_teacher_exp_subject.md)
+  : Fetch Teacher Experience by Subject Area
 - [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md)
   : Fetch Targeted Support and Improvement (TSI) Identification
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
