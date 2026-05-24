@@ -110,8 +110,11 @@
 </div>
 <div class="section level2">
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>
-<p>Session caching is enabled by default to avoid hitting NJ DOE bot protection: - <code><a href="reference/njsd_cache_info.html">njsd_cache_info()</a></code> - view cache status - <code><a href="reference/njsd_cache_clear.html">njsd_cache_clear()</a></code> - clear cache - <code>njsd_cache_enable(FALSE)</code> - disable caching</p>
+<p>Two layers, both on by default.</p>
+<p><strong>1. Session cache (in-memory, per parsed sheet)</strong> — avoids re-parsing within a session: - <code><a href="reference/njsd_cache_info.html">njsd_cache_info()</a></code> - view cache status - <code><a href="reference/njsd_cache_clear.html">njsd_cache_clear()</a></code> - clear cache - <code>njsd_cache_enable(FALSE)</code> - disable caching</p>
 <p>The cache validates responses and will NOT cache network errors or bot protection pages.</p>
+<p><strong>2. SPR workbook cache (on-disk, per year+level)</strong> — the SPR Excel databases are large (the 2024-25 District file is ~119 MB, the School file ~350 MB) and hold dozens of sheets. <code><a href="reference/fetch_spr_data.html">fetch_spr_data()</a></code>, <code><a href="reference/fetch_spr_sheet_raw.html">fetch_spr_sheet_raw()</a></code>, and <code><a href="reference/list_spr_sheets.html">list_spr_sheets()</a></code> download each workbook at most once and reuse the cached copy across sheet reads and across sessions (reading a second sheet from the same workbook drops from ~12s to ~0.1s): - <code><a href="reference/njsd_workbook_cache_dir.html">njsd_workbook_cache_dir()</a></code> - cache location (defaults to <code>tools::R_user_dir("njschooldata", "cache")</code>; override with <code>options(njschooldata.cache_dir=)</code>) - <code><a href="reference/njsd_workbook_cache_info.html">njsd_workbook_cache_info()</a></code> - list cached workbooks and sizes - <code><a href="reference/njsd_workbook_cache_clear.html">njsd_workbook_cache_clear()</a></code> / <code>njsd_workbook_cache_clear(end_year)</code> - delete cached workbooks - disable with <code>options(njschooldata.workbook_cache = FALSE)</code></p>
+<p>Downloads are validated as real <code>.xlsx</code> (ZIP magic bytes) before being cached, so an HTTP error or bot-protection page is never written to the cache or parsed as data. SPR workbooks for past years are static snapshots; clear the cache to force a refresh.</p>
 </div>
 </div>
 
