@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,24 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.7" id="njschooldata-097">njschooldata 0.9.7<a class="anchor" aria-label="anchor" href="#njschooldata-097"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-7">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-7"></a></h3>
+<ul><li>
+<p>New School Performance Report (SPR) fetchers for the redesigned 2024-25 databases:</p>
+<ul><li>ESSA accountability: <code><a href="../reference/fetch_spr_essa_targets.html">fetch_spr_essa_targets()</a></code> (six long-term-goal indicators), <code><a href="../reference/fetch_spr_accountability_summative.html">fetch_spr_accountability_summative()</a></code>, <code><a href="../reference/fetch_spr_tsi.html">fetch_spr_tsi()</a></code>, <code><a href="../reference/fetch_spr_essa_status_counts.html">fetch_spr_essa_status_counts()</a></code>, and a fixed district-level <code><a href="../reference/fetch_essa_status.html">fetch_essa_status()</a></code>.</li>
+<li>Graduation, language, and assessment: <code><a href="../reference/fetch_spr_grad_pathways.html">fetch_spr_grad_pathways()</a></code>, <code><a href="../reference/fetch_spr_home_language.html">fetch_spr_home_language()</a></code>, <code><a href="../reference/fetch_spr_naep.html">fetch_spr_naep()</a></code>.</li>
+<li>Staff: <code><a href="../reference/fetch_spr_admin_experience.html">fetch_spr_admin_experience()</a></code>, <code><a href="../reference/fetch_spr_staff_counts.html">fetch_spr_staff_counts()</a></code>, <code><a href="../reference/fetch_spr_staff_demo_subject.html">fetch_spr_staff_demo_subject()</a></code>, <code><a href="../reference/fetch_spr_staff_education.html">fetch_spr_staff_education()</a></code>, <code><a href="../reference/fetch_spr_staff_retention.html">fetch_spr_staff_retention()</a></code>, <code><a href="../reference/fetch_spr_teacher_exp_subject.html">fetch_spr_teacher_exp_subject()</a></code>, <code><a href="../reference/fetch_spr_educator_equity.html">fetch_spr_educator_equity()</a></code>.</li>
+</ul></li>
+<li><p>Historical coverage: the 2024-25 SPR fetchers were extended backward to the earliest year each source sheet exists with a structure that maps to the redesigned shape without fabrication (e.g. <code><a href="../reference/fetch_spr_home_language.html">fetch_spr_home_language()</a></code> and <code><a href="../reference/fetch_spr_staff_education.html">fetch_spr_staff_education()</a></code> to 2018, <code><a href="../reference/fetch_spr_naep.html">fetch_spr_naep()</a></code> to 2017, <code><a href="../reference/fetch_spr_grad_pathways.html">fetch_spr_grad_pathways()</a></code> across 2018-2022 and 2024). Years where the underlying sheet is absent or reports a different measure error with an explanatory message rather than guessing a mapping.</p></li>
+<li><p><code><a href="../reference/fetch_sgp.html">fetch_sgp()</a></code> (median Student Growth Percentiles) now supports pre-2025 years: <code>type = "by_grade"</code> and <code>type = "trends"</code> back to 2018, and <code>type = "by_performance_level"</code> to 2023. SY2019-20 through SY2021-22 remain unavailable (NJ produced no SGP during the COVID assessment pause), and the pre-2020 by-performance-level sheet (a growth-band percentage distribution, not a median SGP) stays gated. Pre-2025 <code>trends</code> rows preserve the legacy <code>MetTarget</code> flag in new <code>ela_met_target</code> / <code>math_met_target</code> columns.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-0-9-7">Performance<a class="anchor" aria-label="anchor" href="#performance-0-9-7"></a></h3>
+<ul><li>SPR Excel workbooks are now cached on disk (per year + level), so a workbook is downloaded from NJ DOE at most once and reused across sheet reads and across sessions – reading a second sheet from the 2024-25 District file drops from ~12s to ~0.1s. New helpers: <code><a href="../reference/njsd_workbook_cache_dir.html">njsd_workbook_cache_dir()</a></code>, <code><a href="../reference/njsd_workbook_cache_info.html">njsd_workbook_cache_info()</a></code>, <code><a href="../reference/njsd_workbook_cache_clear.html">njsd_workbook_cache_clear()</a></code>. Relocate the cache with <code>options(njschooldata.cache_dir =)</code> or disable it with <code>options(njschooldata.workbook_cache = FALSE)</code>. Downloads are validated as real <code>.xlsx</code> files (ZIP signature) before caching, so an HTTP error or bot-protection page is never cached or parsed as data.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.6" id="njschooldata-096">njschooldata 0.9.6<a class="anchor" aria-label="anchor" href="#njschooldata-096"></a></h2>
 <div class="section level3">

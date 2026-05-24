@@ -1,5 +1,71 @@
 # Changelog
 
+## njschooldata 0.9.7
+
+### New features
+
+- New School Performance Report (SPR) fetchers for the redesigned
+  2024-25 databases:
+
+  - ESSA accountability:
+    [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
+    (six long-term-goal indicators),
+    [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md),
+    [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md),
+    [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md),
+    and a fixed district-level
+    [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md).
+  - Graduation, language, and assessment:
+    [`fetch_spr_grad_pathways()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_pathways.md),
+    [`fetch_spr_home_language()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_home_language.md),
+    [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md).
+  - Staff:
+    [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md),
+    [`fetch_spr_staff_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_counts.md),
+    [`fetch_spr_staff_demo_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_demo_subject.md),
+    [`fetch_spr_staff_education()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_education.md),
+    [`fetch_spr_staff_retention()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_retention.md),
+    [`fetch_spr_teacher_exp_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_teacher_exp_subject.md),
+    [`fetch_spr_educator_equity()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_educator_equity.md).
+
+- Historical coverage: the 2024-25 SPR fetchers were extended backward
+  to the earliest year each source sheet exists with a structure that
+  maps to the redesigned shape without fabrication
+  (e.g. [`fetch_spr_home_language()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_home_language.md)
+  and
+  [`fetch_spr_staff_education()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_education.md)
+  to 2018,
+  [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
+  to 2017,
+  [`fetch_spr_grad_pathways()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_pathways.md)
+  across 2018-2022 and 2024). Years where the underlying sheet is absent
+  or reports a different measure error with an explanatory message
+  rather than guessing a mapping.
+
+- [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
+  (median Student Growth Percentiles) now supports pre-2025 years:
+  `type = "by_grade"` and `type = "trends"` back to 2018, and
+  `type = "by_performance_level"` to 2023. SY2019-20 through SY2021-22
+  remain unavailable (NJ produced no SGP during the COVID assessment
+  pause), and the pre-2020 by-performance-level sheet (a growth-band
+  percentage distribution, not a median SGP) stays gated. Pre-2025
+  `trends` rows preserve the legacy `MetTarget` flag in new
+  `ela_met_target` / `math_met_target` columns.
+
+### Performance
+
+- SPR Excel workbooks are now cached on disk (per year + level), so a
+  workbook is downloaded from NJ DOE at most once and reused across
+  sheet reads and across sessions – reading a second sheet from the
+  2024-25 District file drops from ~12s to ~0.1s. New helpers:
+  [`njsd_workbook_cache_dir()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_dir.md),
+  [`njsd_workbook_cache_info()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_info.md),
+  [`njsd_workbook_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_clear.md).
+  Relocate the cache with `options(njschooldata.cache_dir =)` or disable
+  it with `options(njschooldata.workbook_cache = FALSE)`. Downloads are
+  validated as real `.xlsx` files (ZIP signature) before caching, so an
+  HTTP error or bot-protection page is never cached or parsed as data.
+
 ## njschooldata 0.9.6
 
 ### Infrastructure
