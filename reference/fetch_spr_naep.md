@@ -18,7 +18,9 @@ fetch_spr_naep(end_year)
 
 - end_year:
 
-  A school year. Only `2025` (SY2024-25) and later are supported.
+  A school year (2017-2025). Year is the end of the academic year - e.g.
+  the 2024-25 school year is `end_year` 2025. Note this is the SPR
+  publication year, not the NAEP administration year (see `test_year`).
 
 ## Value
 
@@ -36,9 +38,15 @@ flags. The `state_nation` column distinguishes `"New Jersey"` from
 periodically, so multiple years appear). The four achievement-level
 columns are returned numeric on a 0-100 scale.
 
-**Supported years:** only `end_year >= 2025` (the redesigned SY2024-25
-SPR). Always reads the District/State database (the School database has
-no NAEP sheet).
+**Supported years:** `end_year >= 2017`. Always reads the District/State
+database (the School database has no NAEP sheet). Before the 2024-25
+redesign the sheet used a leaner layout (`Year`, `Test`, `Grade` and the
+four achievement levels) with no student-group breakdown; this function
+maps it to the redesigned shape: `Year -> test_year`, `Test -> subject`,
+the legacy `"State (NJ)"` label is normalized to `"New Jersey"`, and
+`student_group` is set to the constant `"All Students"` (the legacy
+sheet reports the all-students summary only; the per-subgroup breakdown
+was added in 2024-25).
 
 ## Examples
 
@@ -46,6 +54,9 @@ no NAEP sheet).
 if (FALSE) { # \dontrun{
 # NAEP results as published in the 2024-25 SPR
 naep <- fetch_spr_naep(2025)
+
+# NAEP as published in an earlier SPR (all-students summary only)
+naep_2024 <- fetch_spr_naep(2024)
 
 # New Jersey vs. the nation, Grade 4 Math, most recent administration
 library(dplyr)

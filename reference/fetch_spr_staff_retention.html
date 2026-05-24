@@ -58,8 +58,9 @@ and for administrators, for the district and the state.</p>
 
 
 <dl><dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
-<dd><p>A school year. Only <code>2025</code> (SY2024-25) and later are
-supported.</p></dd>
+<dd><p>A school year. <code>level = "district"</code> accepts 2018-2025;
+<code>level = "school"</code> accepts 2025 only. Year is the end of the academic
+year - e.g. the 2020-21 school year is <code>end_year</code> 2021.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
@@ -76,7 +77,13 @@ supported.</p></dd>
     <p><code>teachers_admins</code> labels the group. <code>retention_pct_district</code> and
 <code>retention_pct_state</code> are returned numeric percentages (suppressed cells
 set to <code>NA</code>).</p>
-<p><strong>Supported years:</strong> only <code>end_year &gt;= 2025</code>.</p>
+<p><strong>Supported years:</strong> <code>level = "district"</code> is supported for
+<code>end_year &gt;= 2018</code>; <code>level = "school"</code> only for
+<code>end_year &gt;= 2025</code>. The retention measure is reported at
+district/state granularity (no <code>SchoolCode</code>) in every SPR database
+through SY2023-24; the 2024-25 redesign was the first to add per-school
+retention rows. For earlier years, use <code>level = "district"</code>. (The
+SY2016-17 sheet additionally omits entity-name columns and is not supported.)</p>
     </div>
 
     <div class="section level2">
@@ -90,6 +97,9 @@ set to <code>NA</code>).</p>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">teachers_admins</span> <span class="op">==</span> <span class="st">"Teachers"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_min</a></span><span class="op">(</span><span class="va">retention_pct_district</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">retention_pct_district</span>, <span class="va">retention_pct_state</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># District/state retention back to SY2017-18</span></span></span>
+<span class="r-in"><span><span class="va">ret_2018</span> <span class="op">&lt;-</span> <span class="fu">fetch_spr_staff_retention</span><span class="op">(</span><span class="fl">2018</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

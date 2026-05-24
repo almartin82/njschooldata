@@ -16,7 +16,8 @@ fetch_spr_home_language(end_year, level = "school")
 
 - end_year:
 
-  A school year. Only `2025` (SY2024-25) and later are supported.
+  A school year (2018-2025). Year is the end of the academic year - e.g.
+  the 2020-21 school year is `end_year` 2021.
 
 - level:
 
@@ -32,8 +33,11 @@ percent_of_students, and the aggregation flags.
 `percent_of_students` is returned numeric on a 0-100 scale (suppressed
 cells become `NA`).
 
-**Supported years:** only `end_year >= 2025` (the redesigned SY2024-25
-SPR). Earlier databases do not include this sheet.
+**Supported years:** `end_year >= 2018`. The `EnrollmentByHomeLanguage`
+sheet is present back to SY2017-18 with an identical layout (the 2024-25
+redesign only added a `SchoolYear` column, handled transparently). The
+SY2016-17 sheet omits the county/district/school name columns and is not
+supported.
 
 ## Examples
 
@@ -41,6 +45,9 @@ SPR). Earlier databases do not include this sheet.
 if (FALSE) { # \dontrun{
 # School-level home-language shares
 hl <- fetch_spr_home_language(2025)
+
+# The same breakdown back to SY2017-18
+hl_2018 <- fetch_spr_home_language(2018)
 
 # Statewide home-language distribution
 library(dplyr)

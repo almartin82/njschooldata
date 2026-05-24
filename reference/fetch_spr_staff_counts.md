@@ -15,7 +15,8 @@ fetch_spr_staff_counts(end_year, level = "school")
 
 - end_year:
 
-  A school year. Only `2025` (SY2024-25) and later are supported.
+  A school year (2021-2025). Year is the end of the academic year - e.g.
+  the 2020-21 school year is `end_year` 2021.
 
 - level:
 
@@ -33,13 +34,18 @@ The three count columns (`school_total_staff`,
 returned numeric (thousands commas stripped; cells reading “There is no
 data available for this school year.” set to `NA`).
 
-**Supported years:** only `end_year >= 2025`.
+**Supported years:** `end_year >= 2021`. The `StaffCounts` sheet first
+appears in the SY2020-21 SPR and has the same layout through the
+redesign. Earlier databases have no equivalent sheet.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
 staff <- fetch_spr_staff_counts(2025)
+
+# The same counts back to SY2020-21
+staff_2021 <- fetch_spr_staff_counts(2021)
 
 # Teacher counts by school
 library(dplyr)
