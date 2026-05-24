@@ -28,7 +28,11 @@ Data frame with median SGP data. Columns vary by \code{type}:
       \code{*_category} growth label, plus the statewide comparison
       (\code{ela_median_sgp_state}, \code{math_median_sgp_state}) and its
       category. At \code{level = "school"} the entity median is the school
-      value; at \code{level = "district"} it is the district value.
+      value; at \code{level = "district"} it is the district value. Pre-2025
+      years additionally carry \code{ela_met_target}/\code{math_met_target}
+      and have \code{NA} in the \code{*_category} columns. The 2025 sheet is a
+      multi-year trend filtered to the requested year and adds a
+      \code{school_year} column; legacy sheets are single-year.
     \item \code{type = "by_grade"}: \code{subject}, \code{grade},
       \code{median_sgp}, \code{median_sgp_category}.
     \item \code{type = "by_performance_level"}: \code{subject},
@@ -45,10 +49,11 @@ histories; the median SGP (mSGP) summarizes a school's or district's growth.
 \details{
 The \code{type} argument selects one of three SPR sheets:
 \itemize{
-  \item \code{"trends"} (default) -- \code{StudentGrowthTrends}: median SGP
-    broken out by student group, for ELA and Math, as a multi-year trend
-    (SY2022-23 through the requested year). One row per entity per student
-    group, filtered to the requested academic year.
+  \item \code{"trends"} (default) -- \code{StudentGrowthTrends} (legacy
+    \code{StudentGrowth}): median SGP broken out by student group, for ELA and
+    Math. One row per entity per student group. Pre-2025 years carry the
+    legacy \code{MetTarget} flag in \code{ela_met_target}/\code{math_met_target}
+    and \code{NA} \code{*_category} (the growth-category labels are new in 2025).
   \item \code{"by_grade"} -- \code{StudentGrowthbyGrade} (legacy
     \code{StudentGrowthByGrade}): median SGP by subject (ELA/Math) and grade
     (Grades 4-8). The growth category is reported only from 2023; earlier
@@ -64,12 +69,11 @@ Median SGP value columns are returned numeric; suppressed cells
 (\dQuote{Fewer than 10 testers}) become \code{NA}, with the suppression
 reason preserved in the companion \code{*_category} column.
 
-\strong{Supported years (vary by type):} \code{by_grade}: 2018, 2019, 2023,
-2024, 2025. \code{by_performance_level}: 2023, 2024, 2025. \code{trends}:
-2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
-through SY2021-22 (end_year 2020-2022) are unavailable for every type -- NJ
-produced no Student Growth Percentiles during the COVID statewide-assessment
-pause.
+\strong{Supported years (vary by type):} \code{trends}: 2018, 2019, 2023,
+2024, 2025. \code{by_grade}: 2018, 2019, 2023, 2024, 2025.
+\code{by_performance_level}: 2023, 2024, 2025. SY2019-20 through SY2021-22
+(end_year 2020-2022) are unavailable for every type -- NJ produced no Student
+Growth Percentiles during the COVID statewide-assessment pause.
 }
 \examples{
 \dontrun{

@@ -44,12 +44,12 @@ test_that("fetch_sgp rejects invalid type", {
 })
 
 test_that("fetch_sgp gates each type at its real first year (no fabrication)", {
-  # trends backfill (legacy StudentGrowth subgroup sheet) is a follow-up; this
-  # release still serves trends for 2025 only.
-  expect_error(fetch_sgp(2024, type = "trends"), "type = 'trends'")
   # COVID gap: NJ produced no SGP for SY2019-20..SY2021-22 (any type).
+  expect_error(fetch_sgp(2020, type = "trends"), "COVID")
   expect_error(fetch_sgp(2021, type = "by_grade"), "COVID")
   expect_error(fetch_sgp(2022, type = "by_performance_level"), "COVID")
+  # trends omits SY2016-17 (the sheet has no county/district name columns).
+  expect_error(fetch_sgp(2017, type = "trends"), "end_year >= 2018")
   # by_grade omits SY2016-17 (the sheet has no county/district name columns).
   expect_error(fetch_sgp(2017, type = "by_grade"), "end_year >= 2018")
   # by_performance_level before 2023 is a different statistic (growth-band
@@ -251,4 +251,74 @@ test_that("fetch_sgp by_performance_level normalizes the level label (2023)", {
 
   df <- fetch_sgp(2023, level = "district", type = "by_performance_level")
   expect_true(all(grepl("Performance Level", unique(df$njsla_performance_level))))
+})
+
+
+# ==============================================================================
+# Pre-2025 trends backfill (legacy StudentGrowth subgroup sheet)
+# ==============================================================================
+#
+# trends is backfilled to 2018, 2019, 2023, 2024. Legacy sheets carry MetTarget
+# (preserved in ela/math_met_target) and have NA *_category. The school file
+# mislabels its subgroup column "SchoolYear"; the reshaper handles it.
+
+test_that("fetch_sgp trends backfill matches the raw file, district (2024)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2024, level = "district", type = "trends")
+
+  expect_true(all(c(
+    "subgroup",
+    "ela_median_sgp", "ela_median_sgp_state", "ela_met_target",
+    "math_median_sgp", "math_median_sgp_state", "math_met_target"
+  ) %in% names(df)))
+  # Legacy years predate the growth-category labels.
+  expect_true(all(is.na(df$ela_median_sgp_category)))
+
+  ref <- df %>%
+    dplyr::filter(district_id == "0010", subgroup == "total population")
+  expect_equal(nrow(ref), 1)  # one row per entity per subgroup (ELA/Math pivoted)
+  # Pinned from StudentGrowth SY2023-24, Districtwide:
+  expect_equal(ref$ela_median_sgp, 55)
+  expect_equal(ref$ela_median_sgp_state, 50)
+  expect_equal(ref$ela_met_target, "Met Standard")
+})
+
+test_that("fetch_sgp trends backfill keeps school subgroups (mislabeled column)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2024, level = "school", type = "trends")
+
+  # The school sheet's subgroup column is mislabeled "SchoolYear"; the reshaper
+  # recovers the full subgroup breakdown rather than collapsing to total.
+  expect_gt(length(unique(df$subgroup)), 5)
+
+  ref <- df %>%
+    dplyr::filter(
+      county_id == "01", district_id == "0010", school_id == "050",
+      subgroup == "total population"
+    )
+  expect_equal(nrow(ref), 1)
+  # Entity median is the school's own (SchoolMedian = 59 for Emma C Attales ELA).
+  expect_equal(ref$ela_median_sgp, 59)
+  expect_equal(ref$ela_median_sgp_state, 50)
+})
+
+test_that("fetch_sgp trends backfill matches the raw file, district (2019)", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_sgp(2019, level = "district", type = "trends")
+
+  ref <- df %>%
+    dplyr::filter(district_id == "0010", subgroup == "total population")
+  expect_equal(nrow(ref), 1)
+  # Pinned from StudentGrowth SY2018-19, Districtwide ELA: 39 / state 50 / Not Met.
+  expect_equal(ref$ela_median_sgp, 39)
+  expect_equal(ref$ela_met_target, "Not Met")
 })

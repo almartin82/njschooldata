@@ -916,9 +916,7 @@ sgp_value_to_numeric <- function(x) {
 #' @keywords internal
 sgp_supported_years <- function(type) {
   switch(type,
-    # trends is extended to the legacy StudentGrowth subgroup sheet in a
-    # follow-up; until then only the redesigned 2025 sheet is wired up.
-    trends = 2025L,
+    trends = c(2018L, 2019L, 2023L, 2024L, 2025L),
     by_grade = c(2018L, 2019L, 2023L, 2024L, 2025L),
     by_performance_level = c(2023L, 2024L, 2025L)
   )
@@ -1058,6 +1056,86 @@ sgp_legacy_by_perf <- function(df) {
 }
 
 
+#' Reshape a legacy (pre-2025) StudentGrowth subgroup sheet to 2025 trends shape
+#'
+#' The redesigned 2025 \code{StudentGrowthTrends} sheet is the successor to the
+#' legacy \code{StudentGrowth} sheet, which is long-by-subject with one row per
+#' entity per student group. This pivots ELA/Math wide to match the 2025 output.
+#'
+#' Two legacy quirks are handled: (1) the subgroup column header varies
+#' (\code{SubGroup}/\code{StudentGroup} in the district file, mislabeled
+#' \code{SchoolYear} in the school file), so it is identified structurally as the
+#' column immediately before \code{subject}; (2) legacy sheets carry a
+#' \code{MetTarget} flag ("Met Standard"/"Not Met"/...) rather than the 2025
+#' growth/suppression \code{*_category}. The \code{*_category} columns are
+#' therefore \code{NA} and the real MetTarget value is preserved verbatim in
+#' \code{ela_met_target}/\code{math_met_target}.
+#'
+#' @param df Output of \code{\link{fetch_spr_data}} for a legacy StudentGrowth sheet.
+#' @param level "school" or "district" (selects the entity median column).
+#' @return Data frame matching the 2025 \code{type = "trends"} output, plus
+#'   \code{ela_met_target}/\code{math_met_target}.
+#' @keywords internal
+sgp_legacy_trends <- function(df, level) {
+  # Subgroup = the column immediately before `subject` (its header varies, and
+  # in the school file it is mislabeled "SchoolYear" by NJ DOE). Standardize
+  # and clean it.
+  subj_idx <- which(names(df) == "subject")
+  subgroup_col <- names(df)[subj_idx - 1L]
+  names(df)[names(df) == subgroup_col] <- "subgroup"
+  df$subgroup <- clean_spr_subgroups(df$subgroup)
+
+  # Entity median: the school file carries school_median; the district/state
+  # file carries district_median (each row's own median).
+  entity_col <- if ("school_median" %in% names(df)) "school_median" else "district_median"
+
+  key_cols <- c(
+    "end_year", "county_id", "county_name", "district_id", "district_name",
+    "school_id", "school_name", "subgroup",
+    "is_state", "is_county", "is_district", "is_school",
+    "is_charter", "is_charter_sector", "is_allpublic"
+  )
+
+  one_subject <- function(subj, prefix) {
+    sub <- df[df$subject == subj, , drop = FALSE]
+    out <- sub[, key_cols, drop = FALSE]
+    out[[paste0(prefix, "_median_sgp")]] <- sgp_value_to_numeric(sub[[entity_col]])
+    out[[paste0(prefix, "_median_sgp_state")]] <- sgp_value_to_numeric(sub[["state_median"]])
+    out[[paste0(prefix, "_met_target")]] <- as.character(sub[["met_target"]])
+    out
+  }
+
+  out <- dplyr::full_join(
+    one_subject("ELA", "ela"),
+    one_subject("Math", "math"),
+    by = key_cols
+  )
+
+  # Legacy sheets predate the 2025 growth/suppression category labels.
+  out$ela_median_sgp_category <- NA_character_
+  out$ela_median_sgp_state_category <- NA_character_
+  out$math_median_sgp_category <- NA_character_
+  out$math_median_sgp_state_category <- NA_character_
+
+  out %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subgroup,
+      ela_median_sgp, ela_median_sgp_category,
+      ela_median_sgp_state, ela_median_sgp_state_category,
+      ela_met_target,
+      math_median_sgp, math_median_sgp_category,
+      math_median_sgp_state, math_median_sgp_state_category,
+      math_met_target,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
 #' Fetch Student Growth Percentile (SGP) Data
 #'
 #' Downloads NJ Student Growth Percentile (median SGP / mSGP) data from the
@@ -1068,10 +1146,11 @@ sgp_legacy_by_perf <- function(df) {
 #' @details
 #' The \code{type} argument selects one of three SPR sheets:
 #' \itemize{
-#'   \item \code{"trends"} (default) -- \code{StudentGrowthTrends}: median SGP
-#'     broken out by student group, for ELA and Math, as a multi-year trend
-#'     (SY2022-23 through the requested year). One row per entity per student
-#'     group, filtered to the requested academic year.
+#'   \item \code{"trends"} (default) -- \code{StudentGrowthTrends} (legacy
+#'     \code{StudentGrowth}): median SGP broken out by student group, for ELA and
+#'     Math. One row per entity per student group. Pre-2025 years carry the
+#'     legacy \code{MetTarget} flag in \code{ela_met_target}/\code{math_met_target}
+#'     and \code{NA} \code{*_category} (the growth-category labels are new in 2025).
 #'   \item \code{"by_grade"} -- \code{StudentGrowthbyGrade} (legacy
 #'     \code{StudentGrowthByGrade}): median SGP by subject (ELA/Math) and grade
 #'     (Grades 4-8). The growth category is reported only from 2023; earlier
@@ -1087,12 +1166,11 @@ sgp_legacy_by_perf <- function(df) {
 #' (\dQuote{Fewer than 10 testers}) become \code{NA}, with the suppression
 #' reason preserved in the companion \code{*_category} column.
 #'
-#' \strong{Supported years (vary by type):} \code{by_grade}: 2018, 2019, 2023,
-#' 2024, 2025. \code{by_performance_level}: 2023, 2024, 2025. \code{trends}:
-#' 2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
-#' through SY2021-22 (end_year 2020-2022) are unavailable for every type -- NJ
-#' produced no Student Growth Percentiles during the COVID statewide-assessment
-#' pause.
+#' \strong{Supported years (vary by type):} \code{trends}: 2018, 2019, 2023,
+#' 2024, 2025. \code{by_grade}: 2018, 2019, 2023, 2024, 2025.
+#' \code{by_performance_level}: 2023, 2024, 2025. SY2019-20 through SY2021-22
+#' (end_year 2020-2022) are unavailable for every type -- NJ produced no Student
+#' Growth Percentiles during the COVID statewide-assessment pause.
 #'
 #' @param end_year A school year. Supported years depend on \code{type}; see
 #'   \strong{Supported years} above.
@@ -1112,7 +1190,11 @@ sgp_legacy_by_perf <- function(df) {
 #'       \code{*_category} growth label, plus the statewide comparison
 #'       (\code{ela_median_sgp_state}, \code{math_median_sgp_state}) and its
 #'       category. At \code{level = "school"} the entity median is the school
-#'       value; at \code{level = "district"} it is the district value.
+#'       value; at \code{level = "district"} it is the district value. Pre-2025
+#'       years additionally carry \code{ela_met_target}/\code{math_met_target}
+#'       and have \code{NA} in the \code{*_category} columns. The 2025 sheet is a
+#'       multi-year trend filtered to the requested year and adds a
+#'       \code{school_year} column; legacy sheets are single-year.
 #'     \item \code{type = "by_grade"}: \code{subject}, \code{grade},
 #'       \code{median_sgp}, \code{median_sgp_category}.
 #'     \item \code{type = "by_performance_level"}: \code{subject},
@@ -1164,6 +1246,7 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
   # map them to the 2025 output via verified per-type reshapers.
   if (end_year < 2025) {
     return(switch(type,
+      trends = sgp_legacy_trends(df, level),
       by_grade = sgp_legacy_by_grade(df),
       by_performance_level = sgp_legacy_by_perf(df)
     ))

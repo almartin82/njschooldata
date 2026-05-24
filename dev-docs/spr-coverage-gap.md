@@ -27,7 +27,7 @@ The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250
 
 | Sheet(s) | Fetcher | Years | PR |
 |---|---|---|---|
-| StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel | `fetch_sgp(type=)` | 2025+ | #247 |
+| StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel | `fetch_sgp(type=)` | **trends/by_grade: 2018-2019, 2023-2025; by_performance_level: 2023-2025** | #247, backfill |
 | ProficiencyTargets / GrowthTargets / GraduationTargets / ProgresstowardELPTargets / ChronicAbsenteeismTargets / HSPersistenceTargets | `fetch_spr_essa_targets(indicator=)` | 2025+ | #250 |
 | AccountabilitySummative | `fetch_spr_accountability_summative()` | 2025+ | #250 |
 | TSIIdentification | `fetch_spr_tsi()` | 2025+ | #250 |
@@ -60,6 +60,11 @@ in earlier databases. Each fetcher was extended to its real first year:
 | `fetch_spr_staff_retention()` | 2018 (district only) | Identical columns, but the measure is district-granularity (no `SchoolCode`) before 2025; school-level rows are 2025+. |
 | `fetch_spr_naep()` | 2017 | Legacy layout (`Year`/`Test`/`Grade`, no subgroup) mapped: `Year->test_year`, `Test->subject`, `"State (NJ)"->"New Jersey"`, `student_group="All Students"` (legacy is all-students only). |
 | `fetch_spr_grad_pathways()` | 2018-2022, 2024 | Legacy column names harmonized (`ELA/Math->subject` uppercased; `PARCCAssessment`/`SubstituteCompetency`/`PortfolioAppealsProcess`/`AlternateReqIEP` -> redesigned names; COVID waiver column dropped). **Absent in SY2016-17 and SY2022-23** (those years error). |
+| `fetch_sgp(type="trends")` | 2018, 2019, 2023, 2024 | The redesigned `StudentGrowthTrends` (subgroup × wide ELA/Math) succeeds the legacy **`StudentGrowth`** sheet (long-by-subject). Pivot ELA/Math wide; subgroup is the column before `subject` (the school file mislabels it `SchoolYear`). Legacy `MetTarget` kept in `ela_met_target`/`math_met_target`; `*_category` is `NA` (the growth labels are new in 2025). |
+| `fetch_sgp(type="by_grade")` | 2018, 2019, 2023, 2024 | Legacy `StudentGrowthByGrade` (capital B); median column name churns (`mSGP`/`mSGP_School`); growth category (`Level`) only from 2023, else `NA`. |
+| `fetch_sgp(type="by_performance_level")` | 2023, 2024 | Same sheet name; clean `mSGP`+`Level` map. **2017-2019 stays gated** — that sheet is a Low/Typical/High growth-band percentage distribution, a different statistic, not a median SGP. |
+
+**COVID gap (all SGP types):** SY2019-20 through SY2021-22 (end_year 2020-2022) carry no Student Growth Percentiles (no spring 2020/2021 statewide testing; the legacy `StudentGrowthTrends` sheet in those databases only re-displays stale pre-COVID years). Those years error rather than return stale or 0-row data. SY2016-17 is excluded from `trends`/`by_grade` (no county/district name columns).
 
 **Confirmed 2025-only (gate retained):** `fetch_spr_essa_targets` (×6), `fetch_spr_accountability_summative`, `fetch_spr_tsi`, `fetch_spr_essa_status_counts`, `fetch_spr_staff_demo_subject`, `fetch_spr_teacher_exp_subject` — their sheets are absent from every 2017-2024 workbook. `fetch_spr_admin_experience` exists earlier but across four incompatible layouts (granularity + column-name churn); `fetch_spr_educator_equity` exists earlier but on a different scale (legacy percentages vs 2025 proportions) and without the `Classes Included` dimension. Forcing either into the 2025 shape would mis-scale or fabricate, so both stay gated.
 
@@ -92,7 +97,7 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 | StudentGrowthbyGrade | both | SGP broken out by grade level | NEW-high | `fetch_spr_sgp_grade()` |
 | StudentGrowthByPerformLevel | both | SGP broken out by prior performance level | NEW-high | `fetch_spr_sgp_perf_level()` |
 
-**Note:** Student Growth Percentiles are entirely absent from the package. These three sheets are the only source of SGP data in the SPR databases.
+**Note:** Implemented as `fetch_sgp(type = "trends" | "by_grade" | "by_performance_level")` (PR #247 + backfill — see "Already Implemented" above). These three sheets are the only source of SGP data in the SPR databases.
 
 ---
 
