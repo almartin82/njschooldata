@@ -1,3 +1,48 @@
+# njschooldata 0.9.7
+
+## New features
+
+* New School Performance Report (SPR) fetchers for the redesigned 2024-25
+  databases:
+  - ESSA accountability: `fetch_spr_essa_targets()` (six long-term-goal
+    indicators), `fetch_spr_accountability_summative()`, `fetch_spr_tsi()`,
+    `fetch_spr_essa_status_counts()`, and a fixed district-level
+    `fetch_essa_status()`.
+  - Graduation, language, and assessment: `fetch_spr_grad_pathways()`,
+    `fetch_spr_home_language()`, `fetch_spr_naep()`.
+  - Staff: `fetch_spr_admin_experience()`, `fetch_spr_staff_counts()`,
+    `fetch_spr_staff_demo_subject()`, `fetch_spr_staff_education()`,
+    `fetch_spr_staff_retention()`, `fetch_spr_teacher_exp_subject()`,
+    `fetch_spr_educator_equity()`.
+
+* Historical coverage: the 2024-25 SPR fetchers were extended backward to the
+  earliest year each source sheet exists with a structure that maps to the
+  redesigned shape without fabrication (e.g. `fetch_spr_home_language()` and
+  `fetch_spr_staff_education()` to 2018, `fetch_spr_naep()` to 2017,
+  `fetch_spr_grad_pathways()` across 2018-2022 and 2024). Years where the
+  underlying sheet is absent or reports a different measure error with an
+  explanatory message rather than guessing a mapping.
+
+* `fetch_sgp()` (median Student Growth Percentiles) now supports pre-2025 years:
+  `type = "by_grade"` and `type = "trends"` back to 2018, and
+  `type = "by_performance_level"` to 2023. SY2019-20 through SY2021-22 remain
+  unavailable (NJ produced no SGP during the COVID assessment pause), and the
+  pre-2020 by-performance-level sheet (a growth-band percentage distribution,
+  not a median SGP) stays gated. Pre-2025 `trends` rows preserve the legacy
+  `MetTarget` flag in new `ela_met_target` / `math_met_target` columns.
+
+## Performance
+
+* SPR Excel workbooks are now cached on disk (per year + level), so a workbook
+  is downloaded from NJ DOE at most once and reused across sheet reads and
+  across sessions -- reading a second sheet from the 2024-25 District file drops
+  from ~12s to ~0.1s. New helpers: `njsd_workbook_cache_dir()`,
+  `njsd_workbook_cache_info()`, `njsd_workbook_cache_clear()`. Relocate the
+  cache with `options(njschooldata.cache_dir =)` or disable it with
+  `options(njschooldata.workbook_cache = FALSE)`. Downloads are validated as
+  real `.xlsx` files (ZIP signature) before caching, so an HTTP error or
+  bot-protection page is never cached or parsed as data.
+
 # njschooldata 0.9.6
 
 ## Infrastructure
