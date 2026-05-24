@@ -86,7 +86,11 @@ state-level data.</p></dd>
       <code>*_category</code> growth label, plus the statewide comparison
       (<code>ela_median_sgp_state</code>, <code>math_median_sgp_state</code>) and its
       category. At <code>level = "school"</code> the entity median is the school
-      value; at <code>level = "district"</code> it is the district value.</p></li>
+      value; at <code>level = "district"</code> it is the district value. Pre-2025
+      years additionally carry <code>ela_met_target</code>/<code>math_met_target</code>
+      and have <code>NA</code> in the <code>*_category</code> columns. The 2025 sheet is a
+      multi-year trend filtered to the requested year and adds a
+      <code>school_year</code> column; legacy sheets are single-year.</p></li>
 <li><p><code>type = "by_grade"</code>: <code>subject</code>, <code>grade</code>,
       <code>median_sgp</code>, <code>median_sgp_category</code>.</p></li>
 <li><p><code>type = "by_performance_level"</code>: <code>subject</code>,
@@ -95,10 +99,11 @@ state-level data.</p></dd>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The <code>type</code> argument selects one of three SPR sheets:</p><ul><li><p><code>"trends"</code> (default) – <code>StudentGrowthTrends</code>: median SGP
-    broken out by student group, for ELA and Math, as a multi-year trend
-    (SY2022-23 through the requested year). One row per entity per student
-    group, filtered to the requested academic year.</p></li>
+    <p>The <code>type</code> argument selects one of three SPR sheets:</p><ul><li><p><code>"trends"</code> (default) – <code>StudentGrowthTrends</code> (legacy
+    <code>StudentGrowth</code>): median SGP broken out by student group, for ELA and
+    Math. One row per entity per student group. Pre-2025 years carry the
+    legacy <code>MetTarget</code> flag in <code>ela_met_target</code>/<code>math_met_target</code>
+    and <code>NA</code> <code>*_category</code> (the growth-category labels are new in 2025).</p></li>
 <li><p><code>"by_grade"</code> – <code>StudentGrowthbyGrade</code> (legacy
     <code>StudentGrowthByGrade</code>): median SGP by subject (ELA/Math) and grade
     (Grades 4-8). The growth category is reported only from 2023; earlier
@@ -111,12 +116,11 @@ state-level data.</p></dd>
 </ul><p>Median SGP value columns are returned numeric; suppressed cells
 (“Fewer than 10 testers”) become <code>NA</code>, with the suppression
 reason preserved in the companion <code>*_category</code> column.</p>
-<p><strong>Supported years (vary by type):</strong> <code>by_grade</code>: 2018, 2019, 2023,
-2024, 2025. <code>by_performance_level</code>: 2023, 2024, 2025. <code>trends</code>:
-2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
-through SY2021-22 (end_year 2020-2022) are unavailable for every type – NJ
-produced no Student Growth Percentiles during the COVID statewide-assessment
-pause.</p>
+<p><strong>Supported years (vary by type):</strong> <code>trends</code>: 2018, 2019, 2023,
+2024, 2025. <code>by_grade</code>: 2018, 2019, 2023, 2024, 2025.
+<code>by_performance_level</code>: 2023, 2024, 2025. SY2019-20 through SY2021-22
+(end_year 2020-2022) are unavailable for every type – NJ produced no Student
+Growth Percentiles during the COVID statewide-assessment pause.</p>
     </div>
 
     <div class="section level2">

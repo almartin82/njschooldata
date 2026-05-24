@@ -42,7 +42,11 @@ Data frame with median SGP data. Columns vary by `type`:
   label, plus the statewide comparison (`ela_median_sgp_state`,
   `math_median_sgp_state`) and its category. At `level = "school"` the
   entity median is the school value; at `level = "district"` it is the
-  district value.
+  district value. Pre-2025 years additionally carry
+  `ela_met_target`/`math_met_target` and have `NA` in the `*_category`
+  columns. The 2025 sheet is a multi-year trend filtered to the
+  requested year and adds a `school_year` column; legacy sheets are
+  single-year.
 
 - `type = "by_grade"`: `subject`, `grade`, `median_sgp`,
   `median_sgp_category`.
@@ -54,10 +58,11 @@ Data frame with median SGP data. Columns vary by `type`:
 
 The `type` argument selects one of three SPR sheets:
 
-- `"trends"` (default) – `StudentGrowthTrends`: median SGP broken out by
-  student group, for ELA and Math, as a multi-year trend (SY2022-23
-  through the requested year). One row per entity per student group,
-  filtered to the requested academic year.
+- `"trends"` (default) – `StudentGrowthTrends` (legacy `StudentGrowth`):
+  median SGP broken out by student group, for ELA and Math. One row per
+  entity per student group. Pre-2025 years carry the legacy `MetTarget`
+  flag in `ela_met_target`/`math_met_target` and `NA` `*_category` (the
+  growth-category labels are new in 2025).
 
 - `"by_grade"` – `StudentGrowthbyGrade` (legacy `StudentGrowthByGrade`):
   median SGP by subject (ELA/Math) and grade (Grades 4-8). The growth
@@ -73,12 +78,11 @@ Median SGP value columns are returned numeric; suppressed cells (“Fewer
 than 10 testers”) become `NA`, with the suppression reason preserved in
 the companion `*_category` column.
 
-**Supported years (vary by type):** `by_grade`: 2018, 2019, 2023, 2024,
-2025. `by_performance_level`: 2023, 2024, 2025. `trends`: 2025 only (the
-legacy subgroup-trend backfill is a follow-up). SY2019-20 through
-SY2021-22 (end_year 2020-2022) are unavailable for every type – NJ
-produced no Student Growth Percentiles during the COVID
-statewide-assessment pause.
+**Supported years (vary by type):** `trends`: 2018, 2019, 2023, 2024,
+2025. `by_grade`: 2018, 2019, 2023, 2024, 2025. `by_performance_level`:
+2023, 2024, 2025. SY2019-20 through SY2021-22 (end_year 2020-2022) are
+unavailable for every type – NJ produced no Student Growth Percentiles
+during the COVID statewide-assessment pause.
 
 ## Examples
 
