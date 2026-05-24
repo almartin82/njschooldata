@@ -43,14 +43,26 @@ ref_emma <- function(df) {
 # Argument validation (no network)
 # ==============================================================================
 
-test_that("staff fetchers error (no fabrication) for pre-2025 years", {
+# These sheets are genuinely new in (or materially restructured for) the
+# 2024-25 redesign, so their fetchers stay gated at end_year >= 2025.
+test_that("redesign-only staff fetchers error (no fabrication) for pre-2025", {
   expect_error(fetch_spr_admin_experience(2024), "end_year >= 2025")
-  expect_error(fetch_spr_staff_counts(2024), "end_year >= 2025")
   expect_error(fetch_spr_staff_demo_subject(2024), "end_year >= 2025")
-  expect_error(fetch_spr_staff_education(2024), "end_year >= 2025")
-  expect_error(fetch_spr_staff_retention(2024), "end_year >= 2025")
   expect_error(fetch_spr_teacher_exp_subject(2024), "end_year >= 2025")
   expect_error(fetch_spr_educator_equity(2024), "end_year >= 2025")
+})
+
+# These sheets exist in earlier databases, so their fetchers were extended
+# backward. They error only below each sheet's real first year.
+test_that("backfilled staff fetchers error only below their real floor", {
+  # StaffCounts first appears in SY2020-21.
+  expect_error(fetch_spr_staff_counts(2020), "end_year >= 2021")
+  # TeachersAdminsLevelOfEducation: SY2016-17 uses a different layout.
+  expect_error(fetch_spr_staff_education(2017), "end_year >= 2018")
+  # Retention is district-granularity before 2025; school-level is 2025+.
+  expect_error(fetch_spr_staff_retention(2024), "level = 'district'")
+  expect_error(fetch_spr_staff_retention(2017, level = "district"),
+               "end_year >= 2018")
 })
 
 
@@ -238,4 +250,74 @@ test_that("fetch_spr_educator_equity returns the statewide summary (no CDS)", {
   expect_equal(nrow(oof), 1)
   # Pinned: 5.69% of students taught by an out-of-field teacher (core classes).
   expect_equal(oof$all_students, 0.0569)
+})
+
+
+# ==============================================================================
+# Backfill to earlier years (pre-redesign databases)
+# ==============================================================================
+#
+# Values pinned against the NJ DOE SY2023-24 SPR workbooks:
+#   https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/
+# Reference school: Absecon (county 01, district 0010), Emma C Attales
+# (school 050). Note retention is district-granularity before 2025.
+# ==============================================================================
+
+test_that("fetch_spr_staff_counts backfills to SY2020-21 with matching values", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_staff_counts(2024)
+  expect_true(all(spr_cols %in% names(df)))
+  expect_true("staff_category" %in% names(df))
+
+  ref <- ref_emma(df)
+  # Pinned: Emma C Attales has 1 administrator and 37 teachers in SY2023-24.
+  expect_equal(ref$school_total_staff[ref$staff_category == "Administrators"], 1)
+  expect_equal(ref$school_total_staff[ref$staff_category == "Teachers"], 37)
+  # A role with no school-level value reads "N" -> NA.
+  expect_true(is.na(
+    ref$school_total_staff[ref$staff_category == "Child Study Team Members"]
+  ))
+
+  # The sheet first appears in SY2020-21.
+  expect_gt(nrow(fetch_spr_staff_counts(2021, level = "district")), 0)
+})
+
+test_that("fetch_spr_staff_education backfills via TeachersAdminsLevelOfEducation", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_staff_education(2024)
+  expect_true(all(c("teachers_admins", "bachelors", "masters", "doctoral")
+                  %in% names(df)))
+  expect_type(df$masters, "double")
+
+  ref <- ref_emma(df)
+  # Pinned: Emma C Attales teachers 56.8% Bachelor's, 40.5% Master's,
+  # 2.7% Doctoral in SY2023-24.
+  expect_equal(ref$bachelors[ref$teachers_admins == "Teachers"], 56.8)
+  expect_equal(ref$masters[ref$teachers_admins == "Teachers"], 40.5)
+  expect_equal(ref$doctoral[ref$teachers_admins == "Teachers"], 2.7)
+  # The legacy "Admin" label is normalized to "Administrators".
+  expect_true("Administrators" %in% df$teachers_admins)
+  expect_false("Admin" %in% df$teachers_admins)
+})
+
+test_that("fetch_spr_staff_retention backfills at district level", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_staff_retention(2024, level = "district")
+  expect_true(all(c("teachers_admins", "retention_pct_district",
+                    "retention_pct_state") %in% names(df)))
+  expect_type(df$retention_pct_district, "double")
+
+  ref <- dplyr::filter(df, county_id == "01", district_id == "0010")
+  # Pinned: Absecon teacher retention 93.5% (district), 89.5% (state) in SY2023-24.
+  expect_equal(ref$retention_pct_district[ref$teachers_admins == "Teachers"], 93.5)
+  expect_equal(ref$retention_pct_state[ref$teachers_admins == "Teachers"], 89.5)
 })

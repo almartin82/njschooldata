@@ -7,8 +7,8 @@
 fetch_spr_grad_pathways(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year (2018-2022, 2024, or 2025). Year is the end of
+the academic year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
@@ -35,13 +35,24 @@ Pathways (columns, each a percentage on a 0-100 scale):
 }
 Percentages are returned numeric (suppressed cells become \code{NA}).
 
-\strong{Supported years:} only \code{end_year >= 2025} (the redesigned
-SY2024-25 SPR). Earlier databases do not include this sheet.
+\strong{Supported years:} 2018-2022, 2024, and 2025. The
+\code{GraduationPathways} sheet is present in those SPR databases (it is
+\strong{absent} from the SY2016-17 and SY2022-23 databases, which therefore
+error). Before the 2024-25 redesign the columns were named slightly
+differently (\code{ELA/Math}, \code{PARCCAssessment}/\code{StatewideAssessment},
+\code{SubstituteCompetency}, \code{PortfolioAppealsProcess},
+\code{AlternateReqIEP}); this function harmonizes them to the redesigned
+names and uppercases the subject label. The COVID-era executive-order waiver
+column present in the 2020 and 2021 sheets is not part of the four-pathway
+schema and is dropped.
 }
 \examples{
 \dontrun{
 # School-level graduation pathways
 gp <- fetch_spr_grad_pathways(2025)
+
+# The same pathway mix back to SY2017-18
+gp_2018 <- fetch_spr_grad_pathways(2018)
 
 # Statewide ELA pathway mix
 library(dplyr)

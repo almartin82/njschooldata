@@ -7,8 +7,9 @@
 fetch_spr_staff_retention(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year. \code{level = "district"} accepts 2018-2025;
+\code{level = "school"} accepts 2025 only. Year is the end of the academic
+year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
@@ -26,7 +27,13 @@ and for administrators, for the district and the state.
 \code{retention_pct_state} are returned numeric percentages (suppressed cells
 set to \code{NA}).
 
-\strong{Supported years:} only \code{end_year >= 2025}.
+\strong{Supported years:} \code{level = "district"} is supported for
+\code{end_year >= 2018}; \code{level = "school"} only for
+\code{end_year >= 2025}. The retention measure is reported at
+district/state granularity (no \code{SchoolCode}) in every SPR database
+through SY2023-24; the 2024-25 redesign was the first to add per-school
+retention rows. For earlier years, use \code{level = "district"}. (The
+SY2016-17 sheet additionally omits entity-name columns and is not supported.)
 }
 \examples{
 \dontrun{
@@ -38,5 +45,8 @@ fetch_spr_staff_retention(2025, level = "district") \%>\%
   filter(is_district, teachers_admins == "Teachers") \%>\%
   slice_min(retention_pct_district, n = 10) \%>\%
   select(district_name, retention_pct_district, retention_pct_state)
+
+# District/state retention back to SY2017-18
+ret_2018 <- fetch_spr_staff_retention(2018, level = "district")
 }
 }
