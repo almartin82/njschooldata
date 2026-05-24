@@ -7,8 +7,8 @@
 fetch_spr_staff_counts(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year (2021-2025). Year is the end of the academic
+year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
@@ -28,11 +28,16 @@ The three count columns (\code{school_total_staff},
 returned numeric (thousands commas stripped; cells reading \dQuote{There is no
 data available for this school year.} set to \code{NA}).
 
-\strong{Supported years:} only \code{end_year >= 2025}.
+\strong{Supported years:} \code{end_year >= 2021}. The \code{StaffCounts}
+sheet first appears in the SY2020-21 SPR and has the same layout through the
+redesign. Earlier databases have no equivalent sheet.
 }
 \examples{
 \dontrun{
 staff <- fetch_spr_staff_counts(2025)
+
+# The same counts back to SY2020-21
+staff_2021 <- fetch_spr_staff_counts(2021)
 
 # Teacher counts by school
 library(dplyr)

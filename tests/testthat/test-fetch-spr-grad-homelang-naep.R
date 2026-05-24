@@ -35,10 +35,16 @@ local_big_download_timeout <- function(seconds = 600, env = parent.frame()) {
 # Argument validation (no network)
 # ==============================================================================
 
-test_that("grad-pathways/home-language/NAEP error (no fabrication) for pre-2025", {
-  expect_error(fetch_spr_grad_pathways(2024), "end_year >= 2025")
-  expect_error(fetch_spr_home_language(2023), "end_year >= 2025")
-  expect_error(fetch_spr_naep(2020), "end_year >= 2025")
+# These sheets exist in earlier databases, so their fetchers were extended
+# backward. They error only below each sheet's real first available year.
+test_that("grad-pathways/home-language/NAEP error only below their real floor", {
+  # GraduationPathways: absent from SY2016-17 and SY2022-23 databases.
+  expect_error(fetch_spr_grad_pathways(2017), "end_year >= 2018")
+  expect_error(fetch_spr_grad_pathways(2023), "not available for end_year 2023")
+  # EnrollmentByHomeLanguage: SY2016-17 omits entity-name columns.
+  expect_error(fetch_spr_home_language(2017), "end_year >= 2018")
+  # NAEP is available back to SY2016-17.
+  expect_error(fetch_spr_naep(2016), "end_year >= 2017")
 })
 
 
@@ -168,4 +174,91 @@ test_that("fetch_spr_naep values match the raw NJ DOE file", {
   # Pinned from NAEP, 2024 administration, Grade 4 Mathematics, All Students:
   expect_equal(nj$proficient, 33)
   expect_equal(nation$below_basic, 24)
+})
+
+
+# ==============================================================================
+# Backfill to earlier years (pre-redesign databases)
+# ==============================================================================
+#
+# Values pinned against the NJ DOE SY2023-24 SPR workbooks:
+#   https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/
+# ==============================================================================
+
+test_that("fetch_spr_home_language backfills to SY2017-18 with matching values", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_home_language(2024)
+  expect_true(all(spr_cols %in% names(df)))
+  expect_true(all(c("home_language", "percent_of_students") %in% names(df)))
+  expect_type(df$percent_of_students, "double")
+
+  ref <- df %>%
+    dplyr::filter(county_id == "01", district_id == "0010", school_id == "050")
+  # Pinned from EnrollmentByHomeLanguage, Emma C Attales, SY2023-24:
+  expect_equal(ref$percent_of_students[ref$home_language == "English"], 75.3)
+  expect_equal(ref$percent_of_students[ref$home_language == "Spanish"], 17.0)
+
+  # The sheet exists back to SY2017-18.
+  expect_gt(nrow(fetch_spr_home_language(2018, level = "district")), 0)
+})
+
+test_that("fetch_spr_naep backfills to SY2016-17 and maps the legacy layout", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_naep(2024)
+  expect_true(all(c(
+    "end_year", "test_year", "state_nation", "subject", "grade",
+    "student_group", "below_basic", "basic", "proficient", "advanced"
+  ) %in% names(df)))
+  expect_false("county_id" %in% names(df))
+
+  # Legacy state label normalized; legacy sheet is all-students only.
+  expect_true(all(c("New Jersey", "Nation") %in% df$state_nation))
+  expect_false("State (NJ)" %in% df$state_nation)
+  expect_true(all(df$student_group == "All Students"))
+  expect_type(df$test_year, "integer")
+
+  g4math <- df %>%
+    dplyr::filter(test_year == 2024, subject == "Mathematics", grade == "4")
+  # Pinned from NAEP as published in the SY2023-24 SPR, 2024 administration:
+  expect_equal(g4math$proficient[g4math$state_nation == "New Jersey"], 33)
+  expect_equal(g4math$below_basic[g4math$state_nation == "Nation"], 24)
+
+  expect_gt(nrow(fetch_spr_naep(2017)), 0)
+})
+
+test_that("fetch_spr_grad_pathways backfills and harmonizes legacy columns", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  df <- fetch_spr_grad_pathways(2024)
+  expect_true(all(spr_cols %in% names(df)))
+  expect_true(all(c(
+    "subject", "statewide_assessment", "substitute_competency_test",
+    "portfolio_appeals", "alternate_requirements_in_iep"
+  ) %in% names(df)))
+  # Subject label uppercased to match the redesigned sheet.
+  expect_true(all(c("ELA", "Math") %in% df$subject))
+  expect_false(any(c("ela", "math") %in% df$subject))
+
+  ref <- df %>%
+    dplyr::filter(county_id == "01", district_id == "0110", school_id == "010",
+                  subject == "ELA")
+  # Pinned from GraduationPathways, Atlantic City High School, ELA, SY2023-24:
+  expect_equal(ref$statewide_assessment, 62.1)
+  expect_equal(ref$substitute_competency_test, 4.4)
+  expect_equal(ref$portfolio_appeals, 20.0)
+  expect_equal(ref$alternate_requirements_in_iep, 13.0)
+
+  # 2018 maps the legacy PARCCAssessment column onto statewide_assessment.
+  gp18 <- fetch_spr_grad_pathways(2018, level = "district")
+  ac18 <- gp18 %>%
+    dplyr::filter(county_id == "01", district_id == "0110", subject == "ELA")
+  expect_equal(ac18$statewide_assessment, 97.3)
 })

@@ -23,28 +23,45 @@ This doc catalogues every uncovered sheet by domain, flags priority, and propose
 
 ## Already Implemented
 
-The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250, #251, #252). All are gated to `end_year >= 2025` and error rather than guess a mapping for earlier years.
+The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250, #251, #252). The **Years** column reflects the backfill work (below): six fetchers were extended to the earliest year their source sheet exists with a structure that maps to the redesigned shape without fabrication; the rest stay gated at `end_year >= 2025` and error rather than guess a mapping for earlier years.
 
-| Sheet(s) | Fetcher | PR |
-|---|---|---|
-| StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel | `fetch_sgp(type=)` | #247 |
-| ProficiencyTargets / GrowthTargets / GraduationTargets / ProgresstowardELPTargets / ChronicAbsenteeismTargets / HSPersistenceTargets | `fetch_spr_essa_targets(indicator=)` | #250 |
-| AccountabilitySummative | `fetch_spr_accountability_summative()` | #250 |
-| TSIIdentification | `fetch_spr_tsi()` | #250 |
-| ESSAAccountabilityStatusList (district) | `fetch_essa_status(level="district")` | #248 |
-| ESSAAccountabilityStatusCounts | `fetch_spr_essa_status_counts()` | #250 |
-| GraduationPathways | `fetch_spr_grad_pathways()` | #251 |
-| EnrollmentByHomeLanguage | `fetch_spr_home_language()` | #251 |
-| NAEP (district/state) | `fetch_spr_naep()` | #251 |
-| AdministratorsExperience | `fetch_spr_admin_experience()` | #252 |
-| StaffCounts | `fetch_spr_staff_counts()` | #252 |
-| TeachersAdminsDemoSubjectArea | `fetch_spr_staff_demo_subject()` | #252 |
-| TeachersAdminsEducation | `fetch_spr_staff_education()` | #252 |
-| TeachersAdminsOneYearRetention | `fetch_spr_staff_retention()` | #252 |
-| TeacherExperienceSubjArea | `fetch_spr_teacher_exp_subject()` | #252 |
-| StatewideEducatorEquity (district/state) | `fetch_spr_educator_equity()` | #252 |
+| Sheet(s) | Fetcher | Years | PR |
+|---|---|---|---|
+| StudentGrowthTrends / StudentGrowthbyGrade / StudentGrowthByPerformLevel | `fetch_sgp(type=)` | 2025+ | #247 |
+| ProficiencyTargets / GrowthTargets / GraduationTargets / ProgresstowardELPTargets / ChronicAbsenteeismTargets / HSPersistenceTargets | `fetch_spr_essa_targets(indicator=)` | 2025+ | #250 |
+| AccountabilitySummative | `fetch_spr_accountability_summative()` | 2025+ | #250 |
+| TSIIdentification | `fetch_spr_tsi()` | 2025+ | #250 |
+| ESSAAccountabilityStatusList (district) | `fetch_essa_status(level="district")` | 2025+ | #248 |
+| ESSAAccountabilityStatusCounts | `fetch_spr_essa_status_counts()` | 2025+ | #250 |
+| GraduationPathways | `fetch_spr_grad_pathways()` | **2018-2022, 2024-2025** | #251, backfill |
+| EnrollmentByHomeLanguage | `fetch_spr_home_language()` | **2018-2025** | #251, backfill |
+| NAEP (district/state) | `fetch_spr_naep()` | **2017-2025** | #251, backfill |
+| AdministratorsExperience | `fetch_spr_admin_experience()` | 2025+ | #252 |
+| StaffCounts | `fetch_spr_staff_counts()` | **2021-2025** | #252, backfill |
+| TeachersAdminsDemoSubjectArea | `fetch_spr_staff_demo_subject()` | 2025+ | #252 |
+| TeachersAdminsEducation (legacy: TeachersAdminsLevelOfEducation) | `fetch_spr_staff_education()` | **2018-2025** | #252, backfill |
+| TeachersAdminsOneYearRetention | `fetch_spr_staff_retention()` | **2018-2025 (district); 2025+ (school)** | #252, backfill |
+| TeacherExperienceSubjArea | `fetch_spr_teacher_exp_subject()` | 2025+ | #252 |
+| StatewideEducatorEquity (district/state) | `fetch_spr_educator_equity()` | 2025+ | #252 |
 
 Notes: NAEP and StatewideEducatorEquity carry no CDS codes (state/national summary tables), so they read through the internal `fetch_spr_sheet_raw()` helper (no CDS/flag machinery). `fetch_spr_staff_demo_subject()` deliberately keeps its racial/ethnic and gender composition columns as character — NJ DOE reports small-cell percentages as privacy-protected ranges (e.g. `"70-80%"`), and coercing them to a single number would fabricate precision.
+
+### Backfill to pre-redesign databases (2026-05)
+
+The 14 redesign fetchers were all originally gated at `end_year >= 2025`. An audit of
+the 2017-2024 workbooks (`scratch/spr-backfill/`) found that several target sheets exist
+in earlier databases. Each fetcher was extended to its real first year:
+
+| Fetcher | Backfilled to | How |
+|---|---|---|
+| `fetch_spr_home_language()` | 2018 | Same sheet; identical columns minus the 2025-only `SchoolYear`. 2017 omits name columns. |
+| `fetch_spr_staff_counts()` | 2021 | `StaffCounts` first appears SY2020-21; identical columns. |
+| `fetch_spr_staff_education()` | 2018 | Sheet renamed; reads legacy `TeachersAdminsLevelOfEducation`. Legacy `Admin` label normalized to `Administrators`. 2017 is long-format. |
+| `fetch_spr_staff_retention()` | 2018 (district only) | Identical columns, but the measure is district-granularity (no `SchoolCode`) before 2025; school-level rows are 2025+. |
+| `fetch_spr_naep()` | 2017 | Legacy layout (`Year`/`Test`/`Grade`, no subgroup) mapped: `Year->test_year`, `Test->subject`, `"State (NJ)"->"New Jersey"`, `student_group="All Students"` (legacy is all-students only). |
+| `fetch_spr_grad_pathways()` | 2018-2022, 2024 | Legacy column names harmonized (`ELA/Math->subject` uppercased; `PARCCAssessment`/`SubstituteCompetency`/`PortfolioAppealsProcess`/`AlternateReqIEP` -> redesigned names; COVID waiver column dropped). **Absent in SY2016-17 and SY2022-23** (those years error). |
+
+**Confirmed 2025-only (gate retained):** `fetch_spr_essa_targets` (×6), `fetch_spr_accountability_summative`, `fetch_spr_tsi`, `fetch_spr_essa_status_counts`, `fetch_spr_staff_demo_subject`, `fetch_spr_teacher_exp_subject` — their sheets are absent from every 2017-2024 workbook. `fetch_spr_admin_experience` exists earlier but across four incompatible layouts (granularity + column-name churn); `fetch_spr_educator_equity` exists earlier but on a different scale (legacy percentages vs 2025 proportions) and without the `Classes Included` dimension. Forcing either into the 2025 shape would mis-scale or fabricate, so both stay gated.
 
 The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW items not yet picked up (school environment, Seal of Biliteracy detail, college/career breakdowns, and the redundant-low SPR mirror views).
 

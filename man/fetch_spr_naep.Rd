@@ -7,8 +7,10 @@
 fetch_spr_naep(end_year)
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year (2017-2025). Year is the end of the academic
+year - e.g. the 2024-25 school year is \code{end_year} 2025. Note this is
+the SPR publication year, not the NAEP administration year (see
+\code{test_year}).}
 }
 \value{
 Data frame with end_year (the SPR publication year), test_year (the
@@ -31,14 +33,23 @@ The \code{state_nation} column distinguishes \code{"New Jersey"} from
 given periodically, so multiple years appear). The four achievement-level
 columns are returned numeric on a 0-100 scale.
 
-\strong{Supported years:} only \code{end_year >= 2025} (the redesigned
-SY2024-25 SPR). Always reads the District/State database (the School database
-has no NAEP sheet).
+\strong{Supported years:} \code{end_year >= 2017}. Always reads the
+District/State database (the School database has no NAEP sheet). Before the
+2024-25 redesign the sheet used a leaner layout (\code{Year}, \code{Test},
+\code{Grade} and the four achievement levels) with no student-group
+breakdown; this function maps it to the redesigned shape: \code{Year ->
+test_year}, \code{Test -> subject}, the legacy \code{"State (NJ)"} label is
+normalized to \code{"New Jersey"}, and \code{student_group} is set to the
+constant \code{"All Students"} (the legacy sheet reports the all-students
+summary only; the per-subgroup breakdown was added in 2024-25).
 }
 \examples{
 \dontrun{
 # NAEP results as published in the 2024-25 SPR
 naep <- fetch_spr_naep(2025)
+
+# NAEP as published in an earlier SPR (all-students summary only)
+naep_2024 <- fetch_spr_naep(2024)
 
 # New Jersey vs. the nation, Grade 4 Math, most recent administration
 library(dplyr)
