@@ -7,8 +7,8 @@
 fetch_spr_staff_education(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year (2018-2025). Year is the end of the academic
+year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
@@ -27,11 +27,20 @@ Downloads the \code{TeachersAdminsEducation} sheet from the redesigned
 (suppressed/non-numeric cells, including the administrator note that
 administrators must hold a Master's or higher, set to \code{NA}).
 
-\strong{Supported years:} only \code{end_year >= 2025}.
+\strong{Supported years:} \code{end_year >= 2018}. Before the 2024-25
+redesign this sheet was named \code{TeachersAdminsLevelOfEducation}; the
+Bachelor's/Master's/Doctoral layout is identical from SY2017-18 on (this
+function selects the right sheet by year). The legacy sheet labels the
+administrator row \code{"Admin"}; it is normalized to \code{"Administrators"}
+for cross-year consistency. The SY2016-17 sheet uses a different long-format
+layout and is not supported.
 }
 \examples{
 \dontrun{
 edu <- fetch_spr_staff_education(2025)
+
+# The same degree distribution back to SY2017-18
+edu_2018 <- fetch_spr_staff_education(2018)
 
 # Share of teachers with a Master's degree, by school
 library(dplyr)

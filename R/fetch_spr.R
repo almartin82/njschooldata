@@ -1963,19 +1963,23 @@ fetch_spr_essa_status_counts <- function(end_year) {
 
 
 # ==============================================================================
-# Graduation Pathways, Home-Language Enrollment, and NAEP (2024-25)
+# Graduation Pathways, Home-Language Enrollment, and NAEP
 # ==============================================================================
 #
-# Three further sheets that are new (or newly structured) in the redesigned
-# 2024-25 (end_year 2025) SPR databases:
+# Three sheets first exposed via the redesigned 2024-25 databases and since
+# extended backward to the earliest pre-redesign year each one exists:
 #
 #   GraduationPathways       -> % of graduates meeting the requirement by pathway
-#   EnrollmentByHomeLanguage -> enrollment share by home language
+#                               (2018-2022, 2024-2025; absent SY2016-17/SY2022-23)
+#   EnrollmentByHomeLanguage -> enrollment share by home language (2018-2025)
 #   NAEP (District/State DB) -> NAEP 4th/8th-grade reading & math achievement
+#                               (2017-2025; legacy layout mapped to 2025 shape)
 #
 # GraduationPathways and EnrollmentByHomeLanguage carry the standard CDS layout
 # and route through fetch_spr_data(). NAEP is a state/national summary table
 # with no county/district/school identifiers, so it uses a lighter raw reader.
+# Pre-2025 column names are harmonized to the redesigned shape inside each
+# fetcher; see the per-function docs for the exact mapping.
 #
 # ==============================================================================
 
@@ -2054,11 +2058,19 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
 #' }
 #' Percentages are returned numeric (suppressed cells become \code{NA}).
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
-#' SY2024-25 SPR). Earlier databases do not include this sheet.
+#' \strong{Supported years:} 2018-2022, 2024, and 2025. The
+#' \code{GraduationPathways} sheet is present in those SPR databases (it is
+#' \strong{absent} from the SY2016-17 and SY2022-23 databases, which therefore
+#' error). Before the 2024-25 redesign the columns were named slightly
+#' differently (\code{ELA/Math}, \code{PARCCAssessment}/\code{StatewideAssessment},
+#' \code{SubstituteCompetency}, \code{PortfolioAppealsProcess},
+#' \code{AlternateReqIEP}); this function harmonizes them to the redesigned
+#' names and uppercases the subject label. The COVID-era executive-order waiver
+#' column present in the 2020 and 2021 sheets is not part of the four-pathway
+#' schema and is dropped.
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year (2018-2022, 2024, or 2025). Year is the end of
+#'   the academic year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
 #' @return Data frame with entity identifiers, school_year, subject, the four
@@ -2070,6 +2082,9 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
 #' \dontrun{
 #' # School-level graduation pathways
 #' gp <- fetch_spr_grad_pathways(2025)
+#'
+#' # The same pathway mix back to SY2017-18
+#' gp_2018 <- fetch_spr_grad_pathways(2018)
 #'
 #' # Statewide ELA pathway mix
 #' library(dplyr)
@@ -2085,7 +2100,20 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
 #'   select(district_name, school_name, portfolio_appeals)
 #' }
 fetch_spr_grad_pathways <- function(end_year, level = "school") {
-  spr_require_redesign(end_year, "graduation pathways data")
+  if (end_year < 2018) {
+    stop(
+      "graduation pathways data is available for end_year >= 2018 (the ",
+      "GraduationPathways sheet is absent from the SY2016-17 SPR database).",
+      call. = FALSE
+    )
+  }
+  if (end_year == 2023) {
+    stop(
+      "graduation pathways data is not available for end_year 2023 - the ",
+      "GraduationPathways sheet is absent from the SY2022-23 SPR database.",
+      call. = FALSE
+    )
+  }
 
   df <- fetch_spr_data("GraduationPathways", end_year, level)
   df <- filter_spr_to_year(df, end_year)
@@ -2094,6 +2122,31 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
   # direct name assignment to avoid a spurious global-variable NOTE).
   names(df)[names(df) == "alternate_requirementsin_iep"] <-
     "alternate_requirements_in_iep"
+
+  # Harmonize the pre-2025 column names to the redesigned (2024-25) names. Each
+  # rename only fires when the legacy column is present and the target is not,
+  # so the 2025 layout passes through untouched.
+  legacy_renames <- c(
+    subject = "ela_math",
+    # "PARCCAssessment" (2018) snake-cases to a single token (no underscore).
+    statewide_assessment = "parccassessment",
+    substitute_competency_test = "substitute_competency",
+    portfolio_appeals = "portfolio_appeals_process",
+    alternate_requirements_in_iep = "alternate_req_iep"
+  )
+  for (new_nm in names(legacy_renames)) {
+    old_nm <- legacy_renames[[new_nm]]
+    if (old_nm %in% names(df) && !new_nm %in% names(df)) {
+      names(df)[names(df) == old_nm] <- new_nm
+    }
+  }
+
+  # The legacy ELA/Math column carries lowercase labels; uppercase them to match
+  # the redesigned Subject column ("ELA", "Math").
+  if ("subject" %in% names(df)) {
+    df$subject[df$subject == "ela"] <- "ELA"
+    df$subject[df$subject == "math"] <- "Math"
+  }
 
   pathway_cols <- intersect(
     c("statewide_assessment", "substitute_competency_test",
@@ -2129,11 +2182,14 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
 #' \code{percent_of_students} is returned numeric on a 0-100 scale (suppressed
 #' cells become \code{NA}).
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
-#' SY2024-25 SPR). Earlier databases do not include this sheet.
+#' \strong{Supported years:} \code{end_year >= 2018}. The
+#' \code{EnrollmentByHomeLanguage} sheet is present back to SY2017-18 with an
+#' identical layout (the 2024-25 redesign only added a \code{SchoolYear} column,
+#' handled transparently). The SY2016-17 sheet omits the county/district/school
+#' name columns and is not supported.
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year (2018-2025). Year is the end of the academic
+#'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
 #' @return Data frame with entity identifiers, school_year, home_language,
@@ -2145,6 +2201,9 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
 #' \dontrun{
 #' # School-level home-language shares
 #' hl <- fetch_spr_home_language(2025)
+#'
+#' # The same breakdown back to SY2017-18
+#' hl_2018 <- fetch_spr_home_language(2018)
 #'
 #' # Statewide home-language distribution
 #' library(dplyr)
@@ -2160,7 +2219,14 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
 #'   select(district_name, school_name, percent_of_students)
 #' }
 fetch_spr_home_language <- function(end_year, level = "school") {
-  spr_require_redesign(end_year, "SPR home-language enrollment data")
+  if (end_year < 2018) {
+    stop(
+      "SPR home-language enrollment data is available for end_year >= 2018. ",
+      "The SY2016-17 EnrollmentByHomeLanguage sheet omits the ",
+      "county/district/school name columns.",
+      call. = FALSE
+    )
+  }
 
   df <- fetch_spr_data("EnrollmentByHomeLanguage", end_year, level)
   df <- filter_spr_to_year(df, end_year)
@@ -2200,12 +2266,20 @@ fetch_spr_home_language <- function(end_year, level = "school") {
 #' given periodically, so multiple years appear). The four achievement-level
 #' columns are returned numeric on a 0-100 scale.
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025} (the redesigned
-#' SY2024-25 SPR). Always reads the District/State database (the School database
-#' has no NAEP sheet).
+#' \strong{Supported years:} \code{end_year >= 2017}. Always reads the
+#' District/State database (the School database has no NAEP sheet). Before the
+#' 2024-25 redesign the sheet used a leaner layout (\code{Year}, \code{Test},
+#' \code{Grade} and the four achievement levels) with no student-group
+#' breakdown; this function maps it to the redesigned shape: \code{Year ->
+#' test_year}, \code{Test -> subject}, the legacy \code{"State (NJ)"} label is
+#' normalized to \code{"New Jersey"}, and \code{student_group} is set to the
+#' constant \code{"All Students"} (the legacy sheet reports the all-students
+#' summary only; the per-subgroup breakdown was added in 2024-25).
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year (2017-2025). Year is the end of the academic
+#'   year - e.g. the 2024-25 school year is \code{end_year} 2025. Note this is
+#'   the SPR publication year, not the NAEP administration year (see
+#'   \code{test_year}).
 #'
 #' @return Data frame with end_year (the SPR publication year), test_year (the
 #'   NAEP administration year), state_nation, subject, grade, student_group, and
@@ -2218,6 +2292,9 @@ fetch_spr_home_language <- function(end_year, level = "school") {
 #' # NAEP results as published in the 2024-25 SPR
 #' naep <- fetch_spr_naep(2025)
 #'
+#' # NAEP as published in an earlier SPR (all-students summary only)
+#' naep_2024 <- fetch_spr_naep(2024)
+#'
 #' # New Jersey vs. the nation, Grade 4 Math, most recent administration
 #' library(dplyr)
 #' fetch_spr_naep(2025) %>%
@@ -2227,9 +2304,29 @@ fetch_spr_home_language <- function(end_year, level = "school") {
 #'   select(state_nation, below_basic, basic, proficient, advanced)
 #' }
 fetch_spr_naep <- function(end_year) {
-  spr_require_redesign(end_year, "NAEP data")
+  if (end_year < 2017) {
+    stop("NAEP data is available for end_year >= 2017.", call. = FALSE)
+  }
 
   df <- fetch_spr_sheet_raw("NAEP", end_year, level = "district")
+
+  # Pre-2025 layout: Year | StateNation | Test | Grade | <achievement levels>,
+  # with no Subject or StudentGroup column. Map it onto the redesigned shape.
+  if (!"test_year" %in% names(df) && "year" %in% names(df)) {
+    df <- dplyr::rename(df, test_year = "year")
+  }
+  if (!"subject" %in% names(df) && "test" %in% names(df)) {
+    df <- dplyr::rename(df, subject = "test")
+  }
+  if (!"student_group" %in% names(df)) {
+    # The legacy sheet reports the all-students summary only (the per-subgroup
+    # breakdown was added in the 2024-25 redesign).
+    df$student_group <- "All Students"
+  }
+  # Normalize the legacy state label to the redesigned form.
+  if ("state_nation" %in% names(df)) {
+    df$state_nation[df$state_nation == "State (NJ)"] <- "New Jersey"
+  }
 
   # Drop the trailing "end of worksheet" sentinel and any all-blank rows.
   df <- df %>%
@@ -2256,19 +2353,23 @@ fetch_spr_naep <- function(end_year) {
 
 
 # ==============================================================================
-# Expanded Staff Sheets (2024-25)
+# Expanded Staff Sheets
 # ==============================================================================
 #
 # The redesigned 2024-25 (end_year 2025) SPR databases broke staffing detail out
-# across several new sheets. The fetchers below expose them:
+# across several sheets. The fetchers below expose them; the "years" note marks
+# how far each one has been extended backward into the pre-redesign databases
+# (see each function's docs for the mapping / granularity caveats):
 #
-#   AdministratorsExperience       -> administrator experience distribution
-#   StaffCounts                    -> staff counts by role
-#   TeachersAdminsDemoSubjectArea  -> teacher demographics by subject area
+#   AdministratorsExperience       -> administrator experience distribution (2025+)
+#   StaffCounts                    -> staff counts by role (2021+)
+#   TeachersAdminsDemoSubjectArea  -> teacher demographics by subject area (2025+)
 #   TeachersAdminsEducation        -> teacher/admin highest-degree distribution
+#                                     (2018+; legacy TeachersAdminsLevelOfEducation)
 #   TeachersAdminsOneYearRetention -> one-year retention rates
-#   TeacherExperienceSubjArea      -> teacher experience/degree by subject area
-#   StatewideEducatorEquity (D/S)  -> statewide out-of-field / equity metrics
+#                                     (2018+ district; 2025+ school)
+#   TeacherExperienceSubjArea      -> teacher experience/degree by subject area (2025+)
+#   StatewideEducatorEquity (D/S)  -> statewide out-of-field / equity metrics (2025+)
 #
 # A note on privacy ranges: for the by-subject-area demographic sheet, NJ DOE
 # reports small-cell percentages as ranges (e.g. "70-80%", "<=10%"). Those
@@ -2368,10 +2469,12 @@ fetch_spr_admin_experience <- function(end_year, level = "school") {
 #' returned numeric (thousands commas stripped; cells reading \dQuote{There is no
 #' data available for this school year.} set to \code{NA}).
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025}.
+#' \strong{Supported years:} \code{end_year >= 2021}. The \code{StaffCounts}
+#' sheet first appears in the SY2020-21 SPR and has the same layout through the
+#' redesign. Earlier databases have no equivalent sheet.
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year (2021-2025). Year is the end of the academic
+#'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
 #' @return Data frame with entity identifiers, staff_category, the three staff
@@ -2382,6 +2485,9 @@ fetch_spr_admin_experience <- function(end_year, level = "school") {
 #' @examples
 #' \dontrun{
 #' staff <- fetch_spr_staff_counts(2025)
+#'
+#' # The same counts back to SY2020-21
+#' staff_2021 <- fetch_spr_staff_counts(2021)
 #'
 #' # Teacher counts by school
 #' library(dplyr)
@@ -2395,7 +2501,13 @@ fetch_spr_admin_experience <- function(end_year, level = "school") {
 #'   select(staff_category, state_total_staff_members)
 #' }
 fetch_spr_staff_counts <- function(end_year, level = "school") {
-  spr_require_redesign(end_year, "staff counts data")
+  if (end_year < 2021) {
+    stop(
+      "staff counts data is available for end_year >= 2021. The StaffCounts ",
+      "sheet first appears in the SY2020-21 School Performance Reports.",
+      call. = FALSE
+    )
+  }
 
   df <- fetch_spr_data("StaffCounts", end_year, level)
 
@@ -2484,10 +2596,16 @@ fetch_spr_staff_demo_subject <- function(end_year, level = "school") {
 #' (suppressed/non-numeric cells, including the administrator note that
 #' administrators must hold a Master's or higher, set to \code{NA}).
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025}.
+#' \strong{Supported years:} \code{end_year >= 2018}. Before the 2024-25
+#' redesign this sheet was named \code{TeachersAdminsLevelOfEducation}; the
+#' Bachelor's/Master's/Doctoral layout is identical from SY2017-18 on (this
+#' function selects the right sheet by year). The legacy sheet labels the
+#' administrator row \code{"Admin"}; it is normalized to \code{"Administrators"}
+#' for cross-year consistency. The SY2016-17 sheet uses a different long-format
+#' layout and is not supported.
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year (2018-2025). Year is the end of the academic
+#'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
 #' @return Data frame with entity identifiers, teachers_admins, bachelors,
@@ -2499,6 +2617,9 @@ fetch_spr_staff_demo_subject <- function(end_year, level = "school") {
 #' \dontrun{
 #' edu <- fetch_spr_staff_education(2025)
 #'
+#' # The same degree distribution back to SY2017-18
+#' edu_2018 <- fetch_spr_staff_education(2018)
+#'
 #' # Share of teachers with a Master's degree, by school
 #' library(dplyr)
 #' fetch_spr_staff_education(2025) %>%
@@ -2506,9 +2627,26 @@ fetch_spr_staff_demo_subject <- function(end_year, level = "school") {
 #'   select(district_name, school_name, masters, doctoral)
 #' }
 fetch_spr_staff_education <- function(end_year, level = "school") {
-  spr_require_redesign(end_year, "teacher/administrator education data")
+  if (end_year < 2018) {
+    stop(
+      "teacher/administrator education data is available for end_year >= 2018. ",
+      "The SY2016-17 sheet uses a different long-format layout.",
+      call. = FALSE
+    )
+  }
 
-  df <- fetch_spr_data("TeachersAdminsEducation", end_year, level)
+  # The sheet was renamed TeachersAdminsLevelOfEducation -> TeachersAdminsEducation
+  # in the 2024-25 redesign; the degree-column layout is otherwise identical.
+  sheet_name <- spr_sheet_for_year(
+    end_year, "TeachersAdminsLevelOfEducation", "TeachersAdminsEducation"
+  )
+  df <- fetch_spr_data(sheet_name, end_year, level)
+
+  # Legacy sheets label the administrator row "Admin"; the 2024-25 sheet uses
+  # "Administrators". Normalize so a single value works across all years.
+  if ("teachers_admins" %in% names(df)) {
+    df$teachers_admins[df$teachers_admins == "Admin"] <- "Administrators"
+  }
 
   for (col in intersect(c("bachelors", "masters", "doctoral"), names(df))) {
     df[[col]] <- spr_value_numeric(df[[col]])
@@ -2529,10 +2667,17 @@ fetch_spr_staff_education <- function(end_year, level = "school") {
 #' \code{retention_pct_state} are returned numeric percentages (suppressed cells
 #' set to \code{NA}).
 #'
-#' \strong{Supported years:} only \code{end_year >= 2025}.
+#' \strong{Supported years:} \code{level = "district"} is supported for
+#' \code{end_year >= 2018}; \code{level = "school"} only for
+#' \code{end_year >= 2025}. The retention measure is reported at
+#' district/state granularity (no \code{SchoolCode}) in every SPR database
+#' through SY2023-24; the 2024-25 redesign was the first to add per-school
+#' retention rows. For earlier years, use \code{level = "district"}. (The
+#' SY2016-17 sheet additionally omits entity-name columns and is not supported.)
 #'
-#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
-#'   supported.
+#' @param end_year A school year. \code{level = "district"} accepts 2018-2025;
+#'   \code{level = "school"} accepts 2025 only. Year is the end of the academic
+#'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
 #' @return Data frame with entity identifiers, teachers_admins,
@@ -2550,9 +2695,26 @@ fetch_spr_staff_education <- function(end_year, level = "school") {
 #'   filter(is_district, teachers_admins == "Teachers") %>%
 #'   slice_min(retention_pct_district, n = 10) %>%
 #'   select(district_name, retention_pct_district, retention_pct_state)
+#'
+#' # District/state retention back to SY2017-18
+#' ret_2018 <- fetch_spr_staff_retention(2018, level = "district")
 #' }
 fetch_spr_staff_retention <- function(end_year, level = "school") {
-  spr_require_redesign(end_year, "staff retention data")
+  if (end_year < 2025 && level == "school") {
+    stop(
+      "school-level staff retention is available only for end_year >= 2025. ",
+      "Through SY2023-24 the TeachersAdminsOneYearRetention sheet is reported ",
+      "at district/state granularity - use level = 'district' for earlier years.",
+      call. = FALSE
+    )
+  }
+  if (end_year < 2018) {
+    stop(
+      "staff retention data is available for end_year >= 2018. The SY2016-17 ",
+      "sheet omits entity-name columns.",
+      call. = FALSE
+    )
+  }
 
   df <- fetch_spr_data("TeachersAdminsOneYearRetention", end_year, level)
 
