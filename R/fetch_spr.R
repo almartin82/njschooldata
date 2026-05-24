@@ -905,6 +905,159 @@ sgp_value_to_numeric <- function(x) {
 }
 
 
+#' Supported SGP years by type
+#'
+#' SGP coverage differs per \code{type} because the pre-redesign databases store
+#' each measure in a differently-shaped sheet with a different history. See
+#' \code{\link{fetch_sgp}} for the empirical basis.
+#'
+#' @param type One of "trends", "by_grade", "by_performance_level".
+#' @return Integer vector of supported \code{end_year}s.
+#' @keywords internal
+sgp_supported_years <- function(type) {
+  switch(type,
+    # trends is extended to the legacy StudentGrowth subgroup sheet in a
+    # follow-up; until then only the redesigned 2025 sheet is wired up.
+    trends = 2025L,
+    by_grade = c(2018L, 2019L, 2023L, 2024L, 2025L),
+    by_performance_level = c(2023L, 2024L, 2025L)
+  )
+}
+
+
+#' Validate an SGP request year, with a type-specific explanation
+#'
+#' @param end_year School year end.
+#' @param type SGP measure type.
+#' @return Invisibly \code{NULL}; \code{stop()}s for unsupported combinations.
+#' @keywords internal
+sgp_check_year <- function(end_year, type) {
+  if (end_year %in% sgp_supported_years(type)) {
+    return(invisible(NULL))
+  }
+
+  covid <- paste0(
+    "SY2019-20 through SY2021-22 (end_year 2020-2022) are unavailable for every ",
+    "type: NJ produced no Student Growth Percentiles during the COVID ",
+    "statewide-assessment pause (no spring 2020/2021 testing, and SY2021-22 ",
+    "lacks the consecutive prior scores SGP requires)."
+  )
+  supported <- paste(sgp_supported_years(type), collapse = ", ")
+
+  msg <- if (type == "by_performance_level" && end_year %in% 2017:2019) {
+    paste0(
+      "Median SGP by NJSLA performance level is available for end_year ",
+      supported, ". The 2017-2019 StudentGrowthByPerformLevel sheet reports a ",
+      "different statistic (the Low/Typical/High growth-band percentage ",
+      "distribution by PARCC level), not a median SGP, so mapping it would ",
+      "misrepresent the data."
+    )
+  } else if (end_year %in% 2020:2022) {
+    paste0(covid, " Supported years for type = '", type, "': ", supported, ".")
+  } else if (end_year == 2017) {
+    paste0(
+      "Student growth data is available for end_year >= 2018; the SY2016-17 ",
+      "sheet omits county/district name columns. Supported years for type = '",
+      type, "': ", supported, "."
+    )
+  } else {
+    paste0("fetch_sgp(type = '", type, "') supports end_year ", supported, ".")
+  }
+
+  stop(msg, call. = FALSE)
+}
+
+
+#' Year-aware SGP sheet name
+#'
+#' @param end_year School year end.
+#' @param type SGP measure type.
+#' @return The SPR sheet name to read for that year/type.
+#' @keywords internal
+sgp_sheet_name <- function(end_year, type) {
+  switch(type,
+    # The redesigned 2024-25 subgroup trend (StudentGrowthTrends) is the
+    # successor to the legacy subgroup sheet, which was named StudentGrowth.
+    trends = spr_sheet_for_year(end_year, "StudentGrowth", "StudentGrowthTrends"),
+    # Capital-B legacy name vs lowercase-b 2025 name.
+    by_grade = spr_sheet_for_year(end_year, "StudentGrowthByGrade", "StudentGrowthbyGrade"),
+    # Same sheet name across years (the measure, not the name, changed pre-2020).
+    by_performance_level = "StudentGrowthByPerformLevel"
+  )
+}
+
+
+#' Reshape a legacy (pre-2025) StudentGrowthByGrade sheet to the 2025 shape
+#'
+#' Legacy columns: \code{ela_math}, \code{grade}, a single median column whose
+#' name churns by year (\code{m_sgp} for 2023-24, \code{m_sgp_school} for
+#' 2018-19), and \code{level} (the growth category, present only 2023-24).
+#'
+#' @param df Output of \code{\link{fetch_spr_data}} for a legacy by-grade sheet.
+#' @return Data frame matching the 2025 \code{type = "by_grade"} output.
+#' @keywords internal
+sgp_legacy_by_grade <- function(df) {
+  df <- dplyr::rename(df, subject = ela_math)
+  median_col <- intersect(c("m_sgp", "m_sgp_school", "m_sgp_district"), names(df))[1]
+  df$median_sgp <- sgp_value_to_numeric(df[[median_col]])
+  df$median_sgp_category <- if ("level" %in% names(df)) {
+    as.character(df$level)
+  } else {
+    NA_character_
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subject, grade,
+      median_sgp, median_sgp_category,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Reshape a legacy (2023-24) StudentGrowthByPerformLevel sheet to 2025 shape
+#'
+#' Legacy columns: \code{ela_math}, the prior-performance-level column (named
+#' \code{njsla_performance_level} in the district file, \code{parcc_performance_level}
+#' in the school file -- both carry "Performance Level 1".."5" values),
+#' \code{m_sgp}, and \code{level} (the growth category). Only 2023 and 2024 carry
+#' this median-by-level measure; \code{\link{sgp_check_year}} rejects earlier years.
+#'
+#' @param df Output of \code{\link{fetch_spr_data}} for a legacy by-perf-level sheet.
+#' @return Data frame matching the 2025 \code{type = "by_performance_level"} output.
+#' @keywords internal
+sgp_legacy_by_perf <- function(df) {
+  df <- dplyr::rename(df, subject = ela_math)
+  pl_col <- intersect(
+    c("njsla_performance_level", "parcc_performance_level"), names(df)
+  )[1]
+  names(df)[names(df) == pl_col] <- "njsla_performance_level"
+  df$median_sgp <- sgp_value_to_numeric(df$m_sgp)
+  df$median_sgp_category <- if ("level" %in% names(df)) {
+    as.character(df$level)
+  } else {
+    NA_character_
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      subject, njsla_performance_level,
+      median_sgp, median_sgp_category,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
 #' Fetch Student Growth Percentile (SGP) Data
 #'
 #' Downloads NJ Student Growth Percentile (median SGP / mSGP) data from the
@@ -919,23 +1072,30 @@ sgp_value_to_numeric <- function(x) {
 #'     broken out by student group, for ELA and Math, as a multi-year trend
 #'     (SY2022-23 through the requested year). One row per entity per student
 #'     group, filtered to the requested academic year.
-#'   \item \code{"by_grade"} -- \code{StudentGrowthbyGrade}: median SGP by
-#'     subject (ELA/Math) and grade (Grades 4-8). 2024-25 only.
+#'   \item \code{"by_grade"} -- \code{StudentGrowthbyGrade} (legacy
+#'     \code{StudentGrowthByGrade}): median SGP by subject (ELA/Math) and grade
+#'     (Grades 4-8). The growth category is reported only from 2023; earlier
+#'     years return \code{NA} for \code{median_sgp_category}.
 #'   \item \code{"by_performance_level"} --
 #'     \code{StudentGrowthByPerformLevel}: median SGP by subject and prior-year
-#'     NJSLA performance level (Levels 1-5). 2024-25 only.
+#'     NJSLA performance level (Levels 1-5). The 2017-2019 sheet reports a
+#'     different statistic (a growth-band percentage distribution) and is not
+#'     supported.
 #' }
 #'
 #' Median SGP value columns are returned numeric; suppressed cells
 #' (\dQuote{Fewer than 10 testers}) become \code{NA}, with the suppression
 #' reason preserved in the companion \code{*_category} column.
 #'
-#' \strong{Supported years:} only \code{end_year = 2025} (SY2024-25) is
-#' available. Pre-2025 SPR databases store SGP in differently-shaped,
-#' differently-named sheets; supporting them is a documented follow-up.
+#' \strong{Supported years (vary by type):} \code{by_grade}: 2018, 2019, 2023,
+#' 2024, 2025. \code{by_performance_level}: 2023, 2024, 2025. \code{trends}:
+#' 2025 only (the legacy subgroup-trend backfill is a follow-up). SY2019-20
+#' through SY2021-22 (end_year 2020-2022) are unavailable for every type -- NJ
+#' produced no Student Growth Percentiles during the COVID statewide-assessment
+#' pause.
 #'
-#' @param end_year A school year. Currently only \code{2025} (SY2024-25) is
-#'   supported.
+#' @param end_year A school year. Supported years depend on \code{type}; see
+#'   \strong{Supported years} above.
 #' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
 #'   returns school-level data; \code{"district"} returns district and
 #'   state-level data.
@@ -992,31 +1152,22 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
     )
   }
 
-  if (end_year < 2025) {
-    stop(
-      "fetch_sgp() currently supports only end_year 2025 (SY2024-25). ",
-      "Pre-2025 SPR databases store Student Growth Percentile data in ",
-      "differently-shaped, differently-named sheets (StudentGrowthTrends ",
-      "without a student-group column, a separate StudentGrowth subgroup ",
-      "sheet, and a StudentGrowthByGrade 'ELA/Math'+'mSGP' layout). Mapping ",
-      "those onto the redesigned output without a verified column ",
-      "correspondence would risk misrepresenting the data; this is a known ",
-      "follow-up.",
-      call. = FALSE
-    )
-  }
-
-  sheet_name <- switch(type,
-    trends = "StudentGrowthTrends",
-    by_grade = "StudentGrowthbyGrade",
-    by_performance_level = "StudentGrowthByPerformLevel"
-  )
+  sgp_check_year(end_year, type)
 
   df <- fetch_spr_data(
-    sheet_name = sheet_name,
+    sheet_name = sgp_sheet_name(end_year, type),
     end_year = end_year,
     level = level
   )
+
+  # Pre-2025 sheets are differently shaped and reuse names for different data;
+  # map them to the 2025 output via verified per-type reshapers.
+  if (end_year < 2025) {
+    return(switch(type,
+      by_grade = sgp_legacy_by_grade(df),
+      by_performance_level = sgp_legacy_by_perf(df)
+    ))
+  }
 
   # All three sheets carry a multi-year SchoolYear column in StudentGrowthTrends
   # (and a single year in the others). Keep only the requested academic year so
