@@ -62,9 +62,26 @@ Run tests with: `devtools::test()` or `Rscript -e "devtools::test()"`
 **Note:** Tests are disabled in CI/CD due to NJ DOE network dependencies. Run locally before deploying.
 
 ## Caching
-Session caching is enabled by default to avoid hitting NJ DOE bot protection:
+
+Two layers, both on by default.
+
+**1. Session cache (in-memory, per parsed sheet)** — avoids re-parsing within a session:
 - `njsd_cache_info()` - view cache status
 - `njsd_cache_clear()` - clear cache
 - `njsd_cache_enable(FALSE)` - disable caching
 
 The cache validates responses and will NOT cache network errors or bot protection pages.
+
+**2. SPR workbook cache (on-disk, per year+level)** — the SPR Excel databases are
+large (the 2024-25 District file is ~119 MB, the School file ~350 MB) and hold dozens
+of sheets. `fetch_spr_data()`, `fetch_spr_sheet_raw()`, and `list_spr_sheets()` download
+each workbook at most once and reuse the cached copy across sheet reads and across
+sessions (reading a second sheet from the same workbook drops from ~12s to ~0.1s):
+- `njsd_workbook_cache_dir()` - cache location (defaults to `tools::R_user_dir("njschooldata", "cache")`; override with `options(njschooldata.cache_dir=)`)
+- `njsd_workbook_cache_info()` - list cached workbooks and sizes
+- `njsd_workbook_cache_clear()` / `njsd_workbook_cache_clear(end_year)` - delete cached workbooks
+- disable with `options(njschooldata.workbook_cache = FALSE)`
+
+Downloads are validated as real `.xlsx` (ZIP magic bytes) before being cached, so an
+HTTP error or bot-protection page is never written to the cache or parsed as data.
+SPR workbooks for past years are static snapshots; clear the cache to force a refresh.
