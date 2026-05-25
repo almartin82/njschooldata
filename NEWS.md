@@ -26,6 +26,34 @@
 * Missing-data markers ("N.R." Not Reported, "N.A." Not Applicable) coerce
   cleanly to NA without warnings.
 
+## New features
+
+* A comparative fiscal-analysis toolkit in `R/tges_analysis.R` points the
+  peer-benchmarking engine (built for outcomes) at dollars. Three core functions:
+  - `tges_composition()` reshapes the per-category indicators into one row per
+    district-year with each category as a per-pupil dollar plus its share of
+    budgetary per-pupil cost.
+  - `tges_percentile_rank()` ranks any TGES metric within a peer group
+    (TGES enrollment band, DFG, county, or statewide).
+  - `tges_efficiency()` joins per-pupil spend to a caller-supplied outcome
+    percentile and labels the spend-vs-outcome quadrant.
+* Six comparative helpers on top of those:
+  - `tges_revenue_mix()` decomposes VITSTAT into revenue shares and per-pupil
+    dollar attribution (local property tax vs. state aid vs. federal).
+  - `tges_fund_balance_health()` joins CSG20/CSG21 and flags structural deficit
+    (declining actual balance) and excess surplus over the statutory cap.
+  - `tges_federal_exposure()` screens the ESSER cliff off the federal revenue
+    share: pre-pandemic baseline vs. ESSER-window peak, flagged when per-pupil
+    spending grew during the surge.
+  - `tges_staffing()` reshapes CSG16-19 and CSG14 into a negotiation dashboard
+    (student/teacher, student/administrator, faculty/administrator ratios, median
+    salaries, and benefits as a share of salaries).
+  - `tges_red_flags()` loops the rank wrapper across every major indicator and
+    surfaces a district's top/bottom-decile placements within its peers.
+  - `tges_real_growth()` decomposes per-pupil spending growth into a real-cost
+    component and an enrollment (denominator) component that sum to the total,
+    with optional caller-supplied price deflator for real-terms growth.
+
 ## Articles
 
 * New "Following the Money" spending deep-dives built entirely on `fetch_tges()`:
@@ -33,6 +61,10 @@
   where state aid funds ~80% of the budget). Each traces 25 years of per-pupil
   spending, revenue mix, benefits, facilities, and the classroom dollar; the
   Newark article also compares the district to its largest charter networks.
+* "What Did Newark's Gains Cost? A DFG A Fiscal Brief" applies the comparative
+  toolkit to benchmark Newark against its 37 highest-need DFG A peers on revenue
+  mix, classroom share, real vs. enrollment-driven cost growth, ESSER exposure,
+  staffing, and a one-page red-flag scan.
 
 ## Tests
 
@@ -40,6 +72,9 @@
   parser plus live ground-truth and round-trip fidelity tests that pin real
   district values and verify the wide-to-long reshape neither invents nor drops
   rows across the full 2001-2025 range.
+* The comparative toolkit is covered by `test-tges-analysis.R` (synthetic-fixture
+  unit tests for the reshape/rank/join/decomposition math plus live integration),
+  at 96%+ line coverage of `R/tges_analysis.R`.
 
 # njschooldata 0.9.7
 

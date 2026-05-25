@@ -157,6 +157,21 @@ reference:
       - get_dfg_districts
       - get_dfg_a_districts
 
+  - title: TGES Fiscal Analysis
+    desc: >
+      Comparative-fiscal helpers built on fetch_tges(): reshape spending,
+      rank within peer groups, and screen for fiscal red flags.
+    contents:
+      - tges_composition
+      - tges_percentile_rank
+      - tges_efficiency
+      - tges_revenue_mix
+      - tges_fund_balance_health
+      - tges_federal_exposure
+      - tges_staffing
+      - tges_red_flags
+      - tges_real_growth
+
   - title: Utilities
     desc: Helper functions and lookups
     contents:
@@ -193,6 +208,7 @@ articles:
     contents:
       - somsd-school-spending
       - newark-school-spending
+      - newark-fiscal-brief
   - title: School Performance Reports
     navbar: ~
     contents:
