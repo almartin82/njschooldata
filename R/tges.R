@@ -1,50 +1,86 @@
+#' Parse a TGES rank value to an integer
+#'
+#' @description Through ~2015 a rank is a plain integer (eg "34").  From 2019 on
+#' NJ DOE encodes it as "rank|out_of" (eg "33|57", ie 33rd of 57 in the peer
+#' group).  This keeps the rank itself; the peer-group size is not retained.
+#' Non-numeric markers ("N.R." Not Reported, "N.A." Not Applicable, blanks)
+#' become NA.
+#'
+#' @param x character vector of rank values
+#'
+#' @return integer vector
+#' @keywords internal
+parse_rank <- function(x) {
+  suppressWarnings(as.integer(sub("[|].*$", "", as.character(x))))
+}
+
+
+#' Build the download URL for a TGES/CSG year
+#'
+#' @description NJ DOE relocated the guide files under
+#' \code{/education/guide/docs/} (and moved the domain from state.nj.us to
+#' nj.gov).  2001-2010 ship as \code{{year}_CSG.zip}, 2011-2023 as
+#' \code{{year}_TGES.zip}, and 2024 onward as a per-year subfolder containing an
+#' irregularly named bundle zip.
+#'
+#' @param end_year reporting year
+#'
+#' @return character URL
+#' @keywords internal
+tges_url_for_year <- function(end_year) {
+  end_year <- as.integer(end_year)
+  base <- "https://www.nj.gov/education/guide/docs"
+
+  #2024 onward live in a per-year subfolder with non-uniform bundle names
+  special_urls <- list(
+    "2024" = paste0(base, "/2024/TGES24_Zipped.zip"),
+    "2025" = paste0(base, "/2025/TGES2025_Zipped.zip")
+  )
+
+  if (as.character(end_year) %in% names(special_urls)) {
+    special_urls[[as.character(end_year)]]
+  } else if (end_year >= 2011 && end_year <= 2023) {
+    paste0(base, "/", end_year, "_TGES.zip")
+  } else if (end_year >= 2001 && end_year <= 2010) {
+    paste0(base, "/", end_year, "_CSG.zip")
+  } else {
+    stop(
+      "No TGES download is available for end_year ", end_year,
+      ". Valid values are 2001-2025.", call. = FALSE
+    )
+  }
+}
+
+
 #' Get Raw Taxpayer's Guide to Educational Spending
 #'
-#' @param end_year a school year.  end_year is the end of the academic year - eg 2016-17
-#' school year is end_year 2017.  valid values are 1999-2017
+#' @description Downloads and unpacks one year of the NJ DOE Taxpayers' Guide to
+#' Educational Spending (TGES; branded the "Comparative Spending Guide" / CSG
+#' before 2011).  Each year is published as a single zip.
+#'
+#' @param end_year a school year.  end_year is the end of the academic year - eg
+#' the 2016-17 school year is end_year 2017.  Valid values are 2001-2025.  (NJ DOE
+#' links 1999 and 2000 but those downloads 404 on the state site.)
 #'
 #' @return list of data frames
 #' @keywords internal
 get_raw_tges <- function(end_year) {
-  tges_urls <- list(
-    "2019" = "https://www.state.nj.us/education/guide/2019/TGES-2019.zip",
-    "2018" = "https://www.state.nj.us/education/guide/2018/tges.zip",
-    "2017" = "https://www.state.nj.us/education/guide/2017/TGES.zip",
-    "2016" = "https://www.state.nj.us/education/guide/2016/TGES.zip",
-    "2015" = "https://www.state.nj.us/education/guide/2015/TGES.zip",
-    "2014" = "https://www.state.nj.us/education/guide/2014/TGES.zip",
-    "2013" = "https://www.state.nj.us/education/guide/2013/TGES.zip",
-    "2012" = "https://www.state.nj.us/education/guide/2012/TGES.zip",
-    "2011" = "https://www.state.nj.us/education/guide/2011/TGES.zip",
-    "2010" = "https://www.state.nj.us/education/guide/2010/csg2010.zip",
-    "2009" = "https://www.state.nj.us/education/guide/2009/csg2009.zip",
-    "2008" = "https://www.state.nj.us/education/guide/2008/csg2008.zip",
-    "2007" = "https://www.state.nj.us/education/guide/2007/csg2007.zip",
-    "2006" = "https://www.state.nj.us/education/guide/2006/csg2006.zip",
-    "2005" = "https://www.state.nj.us/education/guide/2005/csg05.zip",
-    "2004" = "https://www.state.nj.us/education/guide/2004/csg2004.zip",
-    "2003" = "https://www.state.nj.us/education/guide/2003/csg2003.zip",
-    "2002" = "https://www.state.nj.us/education/guide/2002/csg2002.zip",
-    "2001" = "https://www.state.nj.us/education/guide/2001/csg01.zip",
-    "2000" = "https://www.state.nj.us/education/guide/2000/csg2000.zip",
-    "1999" = "https://www.state.nj.us/education/guide/1999/csg99.zip"
+  tges_url <- tges_url_for_year(end_year)
 
-  )
-  tges_url <- tges_urls[[as.character(end_year)]]
-  
   #download and unzip
   tname <- tempfile(pattern = "tges", tmpdir = tempdir(), fileext = ".zip")
-  tdir <- tempdir()
-  downloader::download(tges_url, dest = tname, mode = "wb") 
+  downloader::download(tges_url, dest = tname, mode = "wb")
   unzip_loc <- paste0(tempfile(pattern = 'subfolder'))
   dir.create(unzip_loc)
-  utils::unzip(tname, exdir = unzip_loc)  
-  
-  #tag csv or xlsx
-  tges_files <- utils::unzip(tname, exdir = ".", list = TRUE) %>%
-    separate(
-      col = Name, into = c('file', 'extension'), sep = '\\.', remove = FALSE
-    )
+  utils::unzip(tname, exdir = unzip_loc)
+
+  #tag csv or xlsx.  Zip members sit under a per-year subfolder
+  #(eg "2011_TGES/CSG1.CSV"), so key off the bare file name to keep the
+  #tidy_tges_data() lookups (CSG1, VITSTAT_TOTAL, ...) matching.
+  tges_files <- utils::unzip(tname, exdir = ".", list = TRUE)
+  tges_files$file <- tools::file_path_sans_ext(basename(tges_files$Name))
+  tges_files$extension <- tools::file_ext(tges_files$Name)
+  tges_files <- tges_files[tges_files$extension != "", , drop = FALSE]
   
   tges_csv <- tges_files %>%
     filter(extension %in% c('CSV', 'csv'))
@@ -69,11 +105,13 @@ get_raw_tges <- function(end_year) {
       
       df <- clean_cds_fields(df, tges = TRUE)
       
+      #state/group average rows carry non-numeric codes; padding NAs them, which
+      #is expected, so quiet the "NAs introduced by coercion" coercion warning
       if ('county_code' %in% names(df)) {
-        df$county_code <- pad_leading(df$county_code, 2)
-      }      
+        df$county_code <- suppressWarnings(pad_leading(df$county_code, 2))
+      }
       if ('district_code' %in% names(df)) {
-        df$district_code <- pad_leading(df$district_code, 4)
+        df$district_code <- suppressWarnings(pad_leading(df$district_code, 4))
       }
       df
     }
@@ -183,7 +221,24 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
-  
+
+  #coerce numeric columns so a "Not Reported" (N.R.) marker in one year doesn't
+  #flip that column to character and break the bind_rows type match (eg 2025)
+  force_avgs_types <- function(df) {
+    num_cols <- c(
+      "Total Expenditures, actual costs",
+      "Average Daily Enrollment plus Sent Pupils",
+      "Per Pupil Total Expenditures",
+      "Per Pupil Rank"
+    )
+    for (nm in intersect(num_cols, names(df))) {
+      df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
+    }
+    df
+  }
+  y1_df <- force_avgs_types(y1_df)
+  y2_df <- force_avgs_types(y2_df)
+
   bind_rows(y1_df, y2_df)
 }
 
@@ -212,14 +267,22 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     year_1 <- grepl('[[:alpha:]]1+[[:digit:]]|sba+[[:digit:]]', names(df)) | all_years
     year_2 <- grepl('[[:alpha:]]2+[[:digit:]]|sbb+[[:digit:]]', names(df)) | all_years
     year_3 <- grepl('[[:alpha:]]3+[[:digit:]]|sbc+[[:digit:]]', names(df)) | all_years
-  #headers slightly different for comparative guide years
+  #headers slightly different for comparative guide years.  The 2001-2002 DBF
+  #files label rank "rk0X" rather than "rank0X", so match both or the rank column
+  #is dropped.
   } else if (end_year < 2011) {
     all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
-    year_1 <- grepl('pp01|rank01|pct01|pct201', names(df)) | all_years
-    year_2 <- grepl('pp02|rank02|pct02|pct202', names(df)) | all_years
-    year_3 <- grepl('pp03|rank03|pct03|pct203', names(df)) | all_years
+    year_1 <- grepl('pp01|rank01|rk01|pct01|pct201', names(df)) | all_years
+    year_2 <- grepl('pp02|rank02|rk02|pct02|pct202', names(df)) | all_years
+    year_3 <- grepl('pp03|rank03|rk03|pct03|pct203', names(df)) | all_years
   }
   
+  #pre-2011 files store the salaries-% as pct20X alongside the budget-% pct0X;
+  #map pct2X -> sbX so the two stay distinct (mirroring the 2011+ pct/sb split).
+  #2011+ "pct2X" is a YEAR-2 budget %, not a salaries %, so leave it untouched.
+  #Masks above were computed on the original names, so renaming here is safe.
+  if (end_year < 2011) names(df) <- gsub('pct2', 'sb', names(df))
+
   #reshape wide to long
   y1_df <- df[, year_1 & !grepl('sbb|sbc', names(df))]
   y2_df <- df[, year_2]
@@ -234,13 +297,15 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
     "sb" = "Cost as a percentage of Total Salaries and Benefits"  
   )
   
-  #force types to resolve bind_row conflicts when all NA
+  #force types to resolve bind_row conflicts when all NA.  Coercion warnings are
+  #expected: "N.R."/"N.A." missing markers become NA, and ranks may arrive in the
+  #"rank|out_of" format (2019+), so parse_rank() keeps the rank integer.
   force_indicator_types <- function(df) {
-    if ('pp' %in% names(df)) df$pp <- as.numeric(df$pp)
-    if ('rk' %in% names(df)) df$rk <- as.integer(df$rk)
-    if ('pct' %in% names(df)) df$pct <- as.numeric(df$pct)
-    if ('sb' %in% names(df)) df$sb <- as.numeric(df$sb)
-    
+    if ('pp' %in% names(df)) df$pp <- suppressWarnings(as.numeric(df$pp))
+    if ('rk' %in% names(df)) df$rk <- parse_rank(df$rk)
+    if ('pct' %in% names(df)) df$pct <- suppressWarnings(as.numeric(df$pct))
+    if ('sb' %in% names(df)) df$sb <- suppressWarnings(as.numeric(df$sb))
+
     df
   }
   
@@ -254,7 +319,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y1_df$end_year <- end_year - 2
   y1_df$calc_type <- 'Actuals'
   y1_df$report_year <- end_year
-  
+
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
   names(y2_df) <- gsub('sbb', 'sb', names(y2_df))
   names(y2_df) <- gsub('a$', '', names(y2_df))
@@ -264,7 +329,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   y2_df$end_year <- end_year - 1
   y2_df$calc_type <- 'Actuals'
   y2_df$report_year <- end_year
-  
+
   names(y3_df) <- gsub('[[:digit:]]', '', names(y3_df))
   names(y3_df) <- gsub('sbc', 'sb', names(y3_df))
   names(y3_df) <- gsub('a$', '', names(y3_df))
@@ -322,23 +387,54 @@ year_variable_converter <- function(df, end_year) {
 #' @return long, tidy data frame
 #' @keywords internal
 tidy_generic_personnel <- function(df, end_year, indicator) {
-  
+
   df$indicator <- indicator
-  
+
+  #2003 personnel files label the two ranks rk{yy}_{col} (eg rk01_6 ratio rank,
+  #rk01_8 salary rank).  Both collapse to "rk_" once digits are stripped, so
+  #relabel them first: within each year the lowest column index is the ratio rank
+  #(rk), the next is the salary rank (rksal).
+  legacy_rk <- grepl('^rk[0-9]+_[0-9]+$', names(df))
+  if (any(legacy_rk)) {
+    nm <- names(df)
+    yy <- sub('^rk([0-9]+)_[0-9]+$', '\\1', nm[legacy_rk])
+    idx <- as.integer(sub('^rk[0-9]+_([0-9]+)$', '\\1', nm[legacy_rk]))
+    sel_all <- which(legacy_rk)
+    for (y in unique(yy)) {
+      sel <- sel_all[yy == y][order(idx[yy == y])]
+      nm[sel] <- paste0(c('rk', rep('rksal', length(sel) - 1L)), y)
+    }
+    names(df) <- nm
+  }
+
   #for 1999 through 2003 y1, y2, y3 changed per-year
   if (end_year <= 2003) {
     df <- year_variable_converter(df, end_year)
   }
   
-  #masks to break out y1, y2, y3 data
+  #masks to break out y1, y2 data
   if (end_year >= 2011) {
-    all_years <- !grepl('00|01', names(df))
-    year_1 <- grepl('00', names(df)) | all_years
-    year_2 <- grepl('01', names(df)) | all_years
+    #2011+ codes are {var}{00|01}{table#}, eg "strat0016" (year 00) /
+    #"strat0116" (year 01).  Anchor the year to the two digits right after the
+    #variable name so the trailing table number (eg "16") is not mistaken for the
+    #other year - grepl('01', 'strat0016') would wrongly match both.
+    yr <- sub('^[[:alpha:]]+(00|01)[[:digit:]]*$', '\\1', names(df))
+    all_years <- !(yr %in% c('00', '01'))
+    year_1 <- (yr == '00') | all_years
+    year_2 <- (yr == '01') | all_years
   } else if (end_year < 2011) {
-    all_years <- !grepl('02|03', names(df))
-    year_1 <- grepl('02', names(df)) | all_years
-    year_2 <- grepl('03', names(df)) | all_years
+    #CSG-era files are inconsistent across tables: CSG16-18 suffix the two years
+    #02/03 while CSG19 uses 01/02.  Derive the two year tokens from the data
+    #columns (the two digits right after the variable name) instead of hardcoding
+    #them, so every table splits correctly.
+    tok <- sub('^[[:alpha:]]+([0-9]{2}).*$', '\\1', names(df))
+    has_tok <- grepl('^[0-9]{2}$', tok)
+    yrs <- sort(unique(tok[has_tok]))
+    y1tok <- yrs[1]
+    y2tok <- yrs[length(yrs)]
+    all_years <- !has_tok
+    year_1 <- (tok == y1tok) | all_years
+    year_2 <- (tok == y2tok) | all_years
   }
 
   indicator_fields <- list(
@@ -362,19 +458,34 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   #reshape wide to long
   y1_df <- df[, year_1]
   y2_df <- df[, year_2]
-  
+
+  #coerce values: ranks via parse_rank() (handles the 2019+ "rank|out_of"
+  #format), every other non-id column to numeric.  Operates on the bare codes
+  #(strat, rk, salt, rksal, ...) before they are relabeled.
+  coerce_personnel <- function(df) {
+    rank_codes <- intersect(c('rk', 'rksal', 'rrk', 'srk'), names(df))
+    for (nm in rank_codes) df[[nm]] <- parse_rank(df[[nm]])
+    id_codes <- c('group', 'county_name', 'district_code', 'district_name',
+                  'file_name', 'indicator')
+    num_codes <- setdiff(names(df), c(id_codes, rank_codes))
+    for (nm in num_codes) df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
+    df
+  }
+
   #clean up names
   names(y1_df) <- gsub('[[:digit:]]', '', names(y1_df))
+  y1_df <- coerce_personnel(y1_df)
   y1_df$end_year <- end_year - 1
   y1_df$report_year <- end_year
   names(y1_df) <- tges_name_cleaner(y1_df, indicator_fields)
-  
+
   #clean up names
   names(y2_df) <- gsub('[[:digit:]]', '', names(y2_df))
+  y2_df <- coerce_personnel(y2_df)
   y2_df$end_year <- end_year
   y2_df$report_year <- end_year
   names(y2_df) <- tges_name_cleaner(y2_df, indicator_fields)
-  
+
   bind_rows(y1_df, y2_df)
 }
 
@@ -487,8 +598,12 @@ tidy_vitstat <- function(df, end_year) {
     'pctsevv' = 'Percent Special Education Students'
   )
   names(df) <- tges_name_cleaner(df, indicator_fields)
-  
-  df  
+
+  #coerce the reported metrics to numeric (N.A. markers -> NA); ids stay as-is
+  metric_cols <- intersect(unlist(indicator_fields, use.names = FALSE), names(df))
+  for (nm in metric_cols) df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
+
+  df
 }
 
 
@@ -667,9 +782,16 @@ tidy_extracurricular <- function(df, end_year) {
 #' @keywords internal
 
 tidy_personal_services_benefits <- function(df, end_year) {
-  #CSG 14 IS DIFFERENT
-  names(df) <- gsub('pp|pct', 'pctsalary', names(df))
-  tidy_generic_personnel(df, end_year, 'Personal Services - Employee Benefits')
+  #CSG14 IS DIFFERENT: it reports employee benefits as a share of total salaries
+  #(a fraction, eg 0.31), not a dollar per-pupil cost, but it has the same 3-year
+  #wide layout as the budget indicators (pp114/pp214/pp314, or pct98/99/00 in the
+  #early percentage-era files).  Reshape it with the 3-year budget tidier, then
+  #relabel the single value column to reflect that it is a salary share.
+  out <- tidy_generic_budget_indicator(df, end_year, 'Personal Services - Employee Benefits')
+  value_cols <- c('Per Pupil costs',
+                  'Cost as a percentage of the Total Budgetary Cost Per Pupil')
+  names(out)[names(out) %in% value_cols] <- '% of Total Salaries'
+  out
 }
 
 
@@ -735,8 +857,8 @@ tidy_ratio_faculty_to_administrators <- function(df, end_year) {
 
 #' Tidy list of TGES data frames
 #'
-#' @param list_of_dfs list of TGES data frames, eg output of 
-#' get_raw_tges(). Current valid values are 2011 to 2017. 
+#' @param list_of_dfs list of TGES data frames, eg output of
+#' get_raw_tges(). Current valid values are 2001 to 2025.
 #' @param end_year year that the report was published
 #'
 #' @return list of cleaned (wide to long, tidy) dataframes
@@ -824,8 +946,8 @@ fetch_tges <- function(end_year) {
 
 #' Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
 #'
-#' @param end_year_vector vector of years.  Current valid values 
-#' are 2011 to 2017. 
+#' @param end_year_vector vector of years.  Current valid values
+#' are 2001 to 2025.
 #'
 #' @return list of lists of data frames
 #' @export

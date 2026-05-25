@@ -14,3 +14,10 @@ code, kept here as a reminder to expect more:
   `/schoolperformance/grad/` tree was retired and files moved to
   `/spr/adddata/doc/acgrdocs/`. `fetch_postsecondary()` points at the old tree and
   its file did not move there — its new location is still unknown (open follow-up).
+- **TGES / Comparative Spending Guide** (`tges_url_for_year`): the old
+  `state.nj.us/education/guide/{year}/*.zip` URLs all 404. Files now live under
+  `nj.gov/education/guide/docs/`: `{year}_CSG.zip` for 2001-2010, `{year}_TGES.zip`
+  for 2011-2023, and a per-year subfolder bundle `{year}/TGES{nn}_Zipped.zip` for
+  2024+. 1999/2000 are linked on the NJ index page but 404 at the source. The
+  download zips wrap members in a per-year subfolder (`2011_TGES/CSG1.CSV`), so the
+  parser keys off the bare file name.
