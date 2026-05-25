@@ -188,6 +188,10 @@ articles:
     navbar: ~
     contents:
       - nj-enrollment-insights
+  - title: School Finance
+    navbar: ~
+    contents:
+      - somsd-school-spending
   - title: School Performance Reports
     navbar: ~
     contents:
