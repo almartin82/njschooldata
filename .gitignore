@@ -11,6 +11,8 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+# knitr cache dirs replay stale figures across builds; never commit them
+vignettes/*_cache/
 .Rproj.user
 .Rdata
 #one off
