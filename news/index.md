@@ -1,5 +1,48 @@
 # Changelog
 
+## njschooldata 0.9.8
+
+### Bug fixes
+
+- The Taxpayers’ Guide to Educational Spending (TGES) fetchers work
+  again. NJ DOE retired the old `state.nj.us/education/guide/{year}/`
+  URLs (every one now returns a 404) and moved the files under
+  `nj.gov/education/guide/docs/`.
+  [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)
+  and
+  [`get_raw_tges()`](https://almartin82.github.io/njschooldata/reference/get_raw_tges.md)
+  build the current URLs and cover 2001-2025, adding 2020-2025
+  (including the 2024/2025 per-year bundle layout). 1999 and 2000 are
+  dropped because NJ links them but the downloads 404 at the source.
+
+### Other TGES parsing fixes (surfaced while restoring the fetcher)
+
+- District ranks no longer vanish. From 2019 on, ranks ship as
+  “rank\|out_of” (e.g. “33\|57”) and were being coerced to all-NA; they
+  are now parsed to the integer rank via
+  [`parse_rank()`](https://almartin82.github.io/njschooldata/reference/parse_rank.md).
+- Personnel tables (CSG16-19) no longer emit duplicate columns. The year
+  mask mis-split the modern 4-digit codes (`strat0016`/`strat0116`) and
+  CSG19’s `farat01`/`farat02` suffixes.
+- Budget tables (CSG3/7/9/11) keep both percentage columns distinct
+  (cost as a share of total budget vs. of salaries) instead of
+  collapsing them into one.
+- CSG14 (employee benefits as a share of salaries) reshapes over its
+  full 3-year window instead of being squeezed into a 2-year personnel
+  layout.
+- [`tidy_vitstat()`](https://almartin82.github.io/njschooldata/reference/tidy_vitstat.md)
+  returns spending, revenue mix, and ratios as numbers rather than
+  character.
+- Missing-data markers (“N.R.” Not Reported, “N.A.” Not Applicable)
+  coerce cleanly to NA without warnings.
+
+### Tests
+
+- Added a comprehensive TGES test suite: unit tests for the URL builder
+  and rank parser plus live ground-truth and round-trip fidelity tests
+  that pin real district values and verify the wide-to-long reshape
+  neither invents nor drops rows across the full 2001-2025 range.
+
 ## njschooldata 0.9.7
 
 ### New features

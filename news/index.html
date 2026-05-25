@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,30 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/v0.9.7/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.8" id="njschooldata-098">njschooldata 0.9.8<a class="anchor" aria-label="anchor" href="#njschooldata-098"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-8">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-8"></a></h3>
+<ul><li>The Taxpayers’ Guide to Educational Spending (TGES) fetchers work again. NJ DOE retired the old <code>state.nj.us/education/guide/{year}/</code> URLs (every one now returns a 404) and moved the files under <code>nj.gov/education/guide/docs/</code>. <code><a href="../reference/fetch_tges.html">fetch_tges()</a></code> and <code><a href="../reference/get_raw_tges.html">get_raw_tges()</a></code> build the current URLs and cover 2001-2025, adding 2020-2025 (including the 2024/2025 per-year bundle layout). 1999 and 2000 are dropped because NJ links them but the downloads 404 at the source.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-tges-parsing-fixes-surfaced-while-restoring-the-fetcher-0-9-8">Other TGES parsing fixes (surfaced while restoring the fetcher)<a class="anchor" aria-label="anchor" href="#other-tges-parsing-fixes-surfaced-while-restoring-the-fetcher-0-9-8"></a></h3>
+<ul><li>District ranks no longer vanish. From 2019 on, ranks ship as “rank|out_of” (e.g. “33|57”) and were being coerced to all-NA; they are now parsed to the integer rank via <code><a href="../reference/parse_rank.html">parse_rank()</a></code>.</li>
+<li>Personnel tables (CSG16-19) no longer emit duplicate columns. The year mask mis-split the modern 4-digit codes (<code>strat0016</code>/<code>strat0116</code>) and CSG19’s <code>farat01</code>/<code>farat02</code> suffixes.</li>
+<li>Budget tables (CSG3/7/9/11) keep both percentage columns distinct (cost as a share of total budget vs. of salaries) instead of collapsing them into one.</li>
+<li>CSG14 (employee benefits as a share of salaries) reshapes over its full 3-year window instead of being squeezed into a 2-year personnel layout.</li>
+<li>
+<code><a href="../reference/tidy_vitstat.html">tidy_vitstat()</a></code> returns spending, revenue mix, and ratios as numbers rather than character.</li>
+<li>Missing-data markers (“N.R.” Not Reported, “N.A.” Not Applicable) coerce cleanly to NA without warnings.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tests-0-9-8">Tests<a class="anchor" aria-label="anchor" href="#tests-0-9-8"></a></h3>
+<ul><li>Added a comprehensive TGES test suite: unit tests for the URL builder and rank parser plus live ground-truth and round-trip fidelity tests that pin real district values and verify the wide-to-long reshape neither invents nor drops rows across the full 2001-2025 range.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.7" id="njschooldata-097">njschooldata 0.9.7<a class="anchor" aria-label="anchor" href="#njschooldata-097"></a></h2>
 <div class="section level3">

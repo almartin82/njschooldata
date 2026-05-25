@@ -306,6 +306,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/parcc_perf_level_counts.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_parcc_subj.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_postsec_range.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/parse_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/peek.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/percentile_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/percentile_rank_trend.html</loc></url>
@@ -354,6 +355,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/statewide_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_name_cleaner.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tges_url_for_year.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_absence.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_admin_salaries.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_administrative_costs.html</loc></url>
