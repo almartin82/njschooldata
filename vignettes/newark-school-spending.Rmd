@@ -1,0 +1,553 @@
+---
+title: "Following the Money: 25 Years of Spending in Newark"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Following the Money: 25 Years of Spending in Newark}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  # Default OFF: only the expensive fetch chunks cache. Plot chunks must
+  # re-evaluate every build, or knitr replays stale figures (caschooldata, 2026-03).
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(purrr)
+library(tibble)
+
+# The arts section reads a School Performance Report workbook (~100 MB), so give
+# the download more than R's stingy 60-second default.
+options(timeout = max(600, getOption("timeout")))
+```
+
+```{r theme}
+theme_nj <- function() {
+  theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(color = "gray40"),
+      plot.caption = element_text(color = "gray55", size = 9),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom"
+    )
+}
+
+nwk_navy   <- "#16356B"
+nwk_gold   <- "#C8A14B"
+nwk_teal   <- "#16A085"
+nwk_red    <- "#B83227"
+nwk_purple <- "#6C3483"
+```
+
+The [Taxpayers' Guide to Educational Spending](https://www.nj.gov/education/guide/)
+(TGES) is the New Jersey Department of Education's annual report on what every
+district spends, broken down per pupil into classroom instruction, support
+services, administration, plant operations, and more. `njschooldata` pulls it
+straight from the state for every year back to 2001 (the pre-2011 editions were
+branded the "Comparative Spending Guide").
+
+This article follows one district, **Newark**, over a quarter century. Newark is
+the state's largest school district, roughly 43,000 students and a budget near
+\$1.5 billion. It is also one of the original *Abbott v. Burke* districts, where
+a decades-long school-funding lawsuit forced the state to pour money into New
+Jersey's poorest cities, and it spent more than 20 years under state control
+before local control returned in 2018. The result is a spending story almost the
+mirror image of a wealthy suburb like
+[South Orange-Maplewood](somsd-school-spending.html): in Newark the *state*, not
+the local taxpayer, writes most of the checks.
+
+`fetch_tges(year)` returns one tidy data frame per spending indicator:
+
+```{r intro-example, cache = TRUE}
+spending_2025 <- fetch_tges(2025)
+
+# one tidy table per TGES indicator (CSG1 = total budgetary cost per pupil)
+names(spending_2025)
+```
+
+Each table is district-level and long, with a three-year window per report:
+two finalized `Actuals` years plus the current `Budgeted` year. Newark is
+district code `3570`.
+
+```{r intro-glimpse}
+spending_2025[["CSG1"]] %>%
+  filter(district_code == "3570") %>%
+  select(district_name, end_year, calc_type, `Per Pupil costs`, `District rank`)
+```
+
+```{r fetch-data, cache = TRUE}
+# Pull every published guide, 2001-2025. fetch_tges(2025) was already fetched
+# above, so reuse it and download the rest. Drop (with a visible warning) any
+# year that fails rather than letting one network hiccup kill the whole build.
+reports <- list("2025" = spending_2025)
+for (y in 2001:2024) {
+  reports[[as.character(y)]] <- tryCatch(
+    fetch_tges(y),
+    error = function(e) {
+      warning(paste("TGES", y, "failed:", conditionMessage(e)))
+      NULL
+    }
+  )
+}
+reports <- reports[!vapply(reports, is.null, logical(1))]
+reports <- reports[order(as.integer(names(reports)))]
+```
+
+```{r helpers}
+NEWARK <- "3570"
+
+# Pull one Newark value column across every report and keep one row per school
+# year. Each actual recurs in consecutive guides; we keep the most recent
+# (most finalized) report's figure. VITSTAT/CSG16 carry no calc_type, so the
+# calc filter is skipped for them.
+nwk_series <- function(table, value_col, calc = "Actuals") {
+  map_dfr(names(reports), function(y) {
+    d <- reports[[y]][[table]]
+    if (is.null(d) || !value_col %in% names(d)) return(NULL)
+    r <- filter(d, !is.na(district_code), district_code == NEWARK)
+    if ("calc_type" %in% names(r)) r <- filter(r, calc_type == calc)
+    if (nrow(r) == 0) return(NULL)
+    tibble(report_year = as.integer(y), end_year = r$end_year, value = r[[value_col]])
+  }) %>%
+    group_by(end_year) %>%
+    slice_max(report_year, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    arrange(end_year)
+}
+```
+
+## 1. The Abbott surge, then a post-2020 climb
+
+Newark's actual budgetary cost per pupil sat near \$10,000 at the turn of the
+century. Then it jumped: from \$13,687 (2004) to \$16,758 (2005), a 22% rise in
+a single year. That surge lines up with the *Abbott v. Burke* parity remedy, in
+which the state Supreme Court ordered New Jersey to fund its poorest districts
+at the level of its wealthiest. Spending then plateaued in the \$16,000-\$18,000
+range for the entire 2010s before climbing again after 2020, to \$21,202 in 2024.
+The 2025 budget pushes it to **\$27,050**.
+
+```{r pp-data}
+pp <- nwk_series("CSG1", "Per Pupil costs", "Actuals")
+pp_budget_2025 <- nwk_series("CSG1", "Per Pupil costs", "Budgeted") %>%
+  filter(end_year == 2025)
+
+stopifnot(nrow(pp) > 0, nrow(pp_budget_2025) == 1)
+pp
+```
+
+The comparative "budgetary cost per pupil" above is the figure TGES uses to line
+districts up against each other; it excludes things like capital construction
+and debt service. Newark's *total* expenditures run far higher, about \$1.49
+billion in 2024, or roughly \$34,000 per pupil once every fund is counted.
+
+```{r total-spend}
+reports[["2025"]][["CSG1AA_AVGS"]] %>%
+  filter(district_code == NEWARK, calc_type == "Actuals", end_year == 2024) %>%
+  transmute(end_year,
+            total_expenditures = `Total Expenditures, actual costs`,
+            enrollment = `Average Daily Enrollment plus Sent Pupils`,
+            per_pupil_all_funds = `Per Pupil Total Expenditures`)
+```
+
+```{r pp-chart}
+ggplot(pp, aes(end_year, value)) +
+  annotate("rect", xmin = 2004, xmax = 2005, ymin = -Inf, ymax = Inf,
+           fill = nwk_gold, alpha = 0.30) +
+  annotate("text", x = 2004.5, y = 25500, label = "Abbott\nparity",
+           color = "gray35", fontface = "italic", size = 3.3) +
+  geom_line(color = nwk_navy, linewidth = 1.2) +
+  geom_point(color = nwk_navy, size = 2) +
+  geom_point(data = pp_budget_2025, aes(end_year, value),
+             color = nwk_red, size = 3, shape = 17) +
+  annotate("text", x = 2023.2, y = pp_budget_2025$value + 1100,
+           label = "2025\nbudgeted", color = nwk_red, size = 3.3) +
+  scale_y_continuous(labels = dollar) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "Newark per-pupil spending: the Abbott jump, then a post-2020 climb",
+       subtitle = "Budgetary cost per pupil, actuals (2025 is budgeted)",
+       x = NULL, y = "Cost per pupil",
+       caption = "Source: NJ DOE Taxpayers' Guide to Educational Spending") +
+  theme_nj()
+```
+
+## 2. The state pays the bill
+
+This is the heart of Newark's finances and the cleanest contrast with a
+property-tax suburb. In South Orange-Maplewood, local taxpayers fund about 70-85%
+of the budget. In Newark it is the reverse: **state aid covers roughly 80%** and
+the local property-tax share has never topped 16%, drifting down to under 10% by
+2024. The federal line spikes in a crisis (the 2010 stimulus, the 2023 pandemic
+ESSER money) and recedes.
+
+```{r revenue-data}
+revenue <- bind_rows(
+  nwk_series("VITSTAT_TOTAL", "Revenue: Local %")   %>% mutate(source = "Local taxes"),
+  nwk_series("VITSTAT_TOTAL", "Revenue: State %")   %>% mutate(source = "State aid"),
+  nwk_series("VITSTAT_TOTAL", "Revenue: Federal %") %>% mutate(source = "Federal")
+)
+stopifnot(nrow(revenue) > 0)
+
+revenue %>%
+  tidyr::pivot_wider(id_cols = end_year, names_from = source, values_from = value)
+```
+
+```{r revenue-chart}
+ggplot(revenue, aes(end_year, value, color = source)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("Local taxes" = nwk_navy,
+                                "State aid" = nwk_teal,
+                                "Federal" = nwk_gold)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2010, 2024, 4)) +
+  labs(title = "In Newark, the state writes most of the checks",
+       subtitle = "Share of revenue by source",
+       x = NULL, y = "Share of revenue", color = NULL,
+       caption = "Source: NJ DOE TGES Vital Statistics") +
+  theme_nj()
+```
+
+## 3. Newark Public Schools outspends its charter rivals
+
+Newark is one of the country's most-watched charter battlegrounds, the city of
+Mark Zuckerberg's \$100 million gift and Dale Russakoff's book *The Prize*. About
+a third of Newark's public-school students now attend charters. TGES reports
+those charters as their own districts, so we can line them up against the
+district. The two largest networks, **North Star Academy** (Uncommon Schools)
+and **TEAM Academy** (KIPP), each spend close to \$18,000 per pupil, below the
+district's \$21,202.
+
+A caveat: the district and the charters do not carry identical cost burdens.
+Newark Public Schools provides district-wide transportation and absorbs many of
+the highest-cost special-education placements, expenses that never appear on a
+charter's per-pupil line. The comparison is real, but it is not apples to apples.
+
+```{r charter-data}
+# major Newark charter networks, selected by district code so the comparison is
+# explicit and reproducible
+nwk_charters <- tribble(
+  ~code,   ~name,
+  "7320",  "North Star (Uncommon)",
+  "7325",  "TEAM (KIPP)",
+  "6053",  "Great Oaks Legacy",
+  "7210",  "Marion P. Thomas",
+  "6099",  "Link Community",
+  "7730",  "Robert Treat Academy"
+)
+
+csg1_2024 <- reports[["2025"]][["CSG1"]] %>%
+  filter(calc_type == "Actuals", end_year == 2024)
+
+charter_cmp <- bind_rows(
+  csg1_2024 %>% filter(district_code == NEWARK) %>%
+    transmute(name = "Newark Public Schools", per_pupil = `Per Pupil costs`,
+              kind = "District"),
+  csg1_2024 %>% filter(district_code %in% nwk_charters$code) %>%
+    left_join(nwk_charters, by = c("district_code" = "code")) %>%
+    transmute(name, per_pupil = `Per Pupil costs`, kind = "Charter")
+)
+stopifnot(nrow(charter_cmp) > 0, all(!is.na(charter_cmp$per_pupil)))
+charter_cmp %>% arrange(desc(per_pupil))
+```
+
+```{r charter-chart}
+ggplot(charter_cmp, aes(reorder(name, per_pupil), per_pupil, fill = kind)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = dollar(per_pupil)), hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_fill_manual(values = c("District" = nwk_navy, "Charter" = nwk_gold)) +
+  scale_y_continuous(labels = dollar, expand = expansion(mult = c(0, 0.18))) +
+  labs(title = "The district spends more per pupil than Newark's big charters",
+       subtitle = "Budgetary cost per pupil, 2024 actuals",
+       x = NULL, y = "Cost per pupil", fill = NULL,
+       caption = "Source: NJ DOE TGES (CSG1). Charters and the district do not carry identical cost burdens.") +
+  theme_nj()
+```
+
+## 4. Benefits ate the salary line
+
+Here is the trend that drives every contentious school budget meeting: employee
+benefits as a share of salaries. In Newark it **roughly tripled**, from 10.9% in
+2000 to 30.6% in 2024. Health-plan premiums are the main driver, and they keep
+climbing faster than pay, the same pressure squeezing districts statewide.
+
+```{r benefits-data}
+# the 1999 figure is a known decimal artifact in the early files; start at 2000
+benefits <- nwk_series("CSG14", "% of Total Salaries", "Actuals") %>%
+  filter(end_year >= 2000)
+stopifnot(nrow(benefits) > 0)
+benefits
+```
+
+```{r benefits-chart}
+ggplot(benefits, aes(end_year, value)) +
+  geom_area(fill = nwk_gold, alpha = 0.25) +
+  geom_line(color = nwk_gold, linewidth = 1.2) +
+  geom_point(color = nwk_gold, size = 2) +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "Employee benefits as a share of salaries tripled",
+       subtitle = "Newark benefit costs divided by total salaries, 2000-2024",
+       x = NULL, y = "Benefits / salaries",
+       caption = "Source: NJ DOE TGES (CSG14)") +
+  theme_nj()
+```
+
+## 5. Where each dollar goes
+
+TGES breaks the budgetary cost per pupil into its components. In the 2025 budget,
+classroom instruction is the biggest slice, but the striking number is plant
+operations: Newark budgets nearly as much to run and maintain its buildings
+(\$4,818 per pupil) as it spends on all support services combined (\$4,999),
+a footprint you rarely see in a younger suburban district.
+
+```{r category-data}
+category_tables <- tribble(
+  ~category,                  ~table,
+  "Classroom instruction",    "CSG2",
+  "Support services",         "CSG6",
+  "Plant ops & maintenance",  "CSG10",
+  "Administration",           "CSG8",
+  "Extracurricular",          "CSG13"
+)
+
+categories <- map_dfr(seq_len(nrow(category_tables)), function(i) {
+  d <- reports[["2025"]][[category_tables$table[i]]]
+  r <- filter(d, district_code == NEWARK, end_year == 2025)
+  tibble(category = category_tables$category[i],
+         per_pupil = r[["Per Pupil costs"]][1])
+})
+
+stopifnot(nrow(categories) > 0, all(!is.na(categories$per_pupil)))
+categories %>% arrange(desc(per_pupil))
+```
+
+```{r category-chart}
+ggplot(categories, aes(reorder(category, per_pupil), per_pupil)) +
+  geom_col(fill = nwk_navy) +
+  geom_text(aes(label = dollar(per_pupil)), hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(labels = dollar, expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Where Newark spends, per pupil (2025 budget)",
+       subtitle = "Plant operations nearly matches all support services",
+       x = NULL, y = "Cost per pupil",
+       caption = "Source: NJ DOE TGES (CSG2, CSG6, CSG8, CSG10, CSG13)") +
+  theme_nj()
+```
+
+## 6. Facilities: a heavy, growing line on aging buildings
+
+In the wealthy suburbs, plant operations are a frozen line whose share of the
+budget *shrinks* over time. Newark is the opposite. Heating, cleaning, and
+repairing some of the oldest school buildings in the state cost \$1,528 per pupil
+in 1999 and **\$3,899 by 2024**, and the facilities share of the budget held
+between 15% and 19% the whole time, drifting *up* after 2020. (TGES tracks
+operating cost only; the separate state-funded SDA capital program that rebuilds
+Abbott-district schools is not in these numbers.)
+
+```{r facilities-data}
+facilities <- nwk_series("CSG10", "Per Pupil costs") %>%
+  select(end_year, facilities = value) %>%
+  inner_join(nwk_series("CSG1", "Per Pupil costs") %>% select(end_year, total = value),
+             by = "end_year") %>%
+  mutate(share = facilities / total)
+stopifnot(nrow(facilities) > 0)
+facilities
+```
+
+```{r facilities-share-chart}
+ggplot(facilities, aes(end_year, share)) +
+  geom_line(color = nwk_red, linewidth = 1.2) +
+  geom_point(color = nwk_red, size = 2) +
+  scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2000, 2024, 6)) +
+  labs(title = "Facilities keep a heavy, steady claim on Newark's budget",
+       subtitle = "Plant operations & maintenance as a share of budgetary cost per pupil",
+       x = NULL, y = "Facilities share of budget",
+       caption = "Source: NJ DOE TGES (CSG10 / CSG1)") +
+  theme_nj()
+```
+
+## 7. A closer look at the classroom dollar
+
+TGES splits classroom instruction into three pieces: salaries and benefits,
+supplies and textbooks, and "purchased services and other." Salaries and benefits
+dominate and nearly doubled, from \$5,095 per pupil in 2000 to \$10,038 in 2024.
+Supplies and textbooks stayed frozen near \$200-\$400 the entire period, a deep
+real-terms cut. And purchased services, contracted and out-of-district
+instruction, tell the reverse of the suburban story: they ballooned to \$1,589
+per pupil in 2008, then collapsed back to \$154 by 2024 as Newark brought
+services back in-house.
+
+```{r classroom-data}
+classroom_parts <- bind_rows(
+  nwk_series("CSG3", "Per Pupil costs") %>% mutate(part = "Salaries & benefits"),
+  nwk_series("CSG4", "Per Pupil costs") %>% mutate(part = "Supplies & textbooks"),
+  nwk_series("CSG5", "Per Pupil costs") %>% mutate(part = "Purchased services & other")
+) %>%
+  mutate(part = factor(part, levels = c("Salaries & benefits",
+                                        "Supplies & textbooks",
+                                        "Purchased services & other")))
+stopifnot(nrow(classroom_parts) > 0)
+
+classroom_parts %>%
+  filter(end_year %in% c(2000, 2008, 2016, 2024)) %>%
+  select(end_year, part, value) %>%
+  arrange(end_year, part)
+```
+
+```{r classroom-dollar-chart}
+ggplot(classroom_parts, aes(end_year, value, fill = part)) +
+  geom_area(alpha = 0.9) +
+  scale_fill_manual(values = c("Salaries & benefits" = nwk_navy,
+                               "Supplies & textbooks" = nwk_teal,
+                               "Purchased services & other" = nwk_gold)) +
+  scale_y_continuous(labels = dollar) +
+  scale_x_continuous(breaks = seq(2000, 2024, 6)) +
+  labs(title = "The classroom dollar: salaries up, contracted services in and out",
+       subtitle = "Newark classroom cost per pupil by component",
+       x = NULL, y = "Cost per pupil", fill = NULL,
+       caption = "Source: NJ DOE TGES (CSG3, CSG4, CSG5)") +
+  theme_nj()
+```
+
+## 8. From the top of the pack toward the middle
+
+TGES ranks each district against its peer group. Newark sits with the large K-12
+districts (3,500+ students). In this ranking, **1 = the lowest spender**, so a
+higher number means spending more than peers. Through the Abbott years Newark was
+ranked 104th or 105th out of about 105 districts, essentially the highest-spending
+big district in the state. It has since slid toward the top quartile (rank in the
+70s and 80s out of about 95) as its budget flattened in the recession years while
+other districts caught up and the 2018 funding formula redistributed aid.
+
+```{r rank-data}
+rank <- nwk_series("CSG1", "District rank", "Actuals")
+stopifnot(nrow(rank) > 0)
+
+# size of the peer group in the most recent guide, for context
+n_peers <- reports[["2025"]][["CSG1"]] %>%
+  filter(group == "G. K-12 / 3501 +", end_year == 2024,
+         !is.na(district_code), district_code != "00NA") %>%
+  distinct(district_code) %>%
+  nrow()
+n_peers
+
+rank
+```
+
+```{r rank-chart}
+ggplot(rank, aes(end_year, value)) +
+  geom_line(color = nwk_purple, linewidth = 1.2) +
+  geom_point(color = nwk_purple, size = 2) +
+  scale_x_continuous(breaks = seq(2000, 2024, 4)) +
+  labs(title = "Newark's spending rank among large K-12 districts",
+       subtitle = paste0("Rank within the roughly ", n_peers,
+                          "-district peer group (1 = lowest spender)"),
+       x = NULL, y = "Spending rank",
+       caption = "Source: NJ DOE TGES (CSG1). Peer-group composition shifts year to year.") +
+  theme_nj()
+```
+
+## 9. What the spending buys: the arts
+
+TGES tells you what a district spends; the School Performance Report tells you
+what students actually take. Newark has a deep arts-education tradition, home to
+the nation's first public arts high school (Arts High School, founded 1931) and
+the New Jersey Performing Arts Center. `fetch_arts_enrollment()` pulls visual and
+performing arts participation, and Newark runs ahead of the state at every grade
+band: arts enrollment is effectively universal in its elementary schools.
+
+```{r fetch-arts, cache = TRUE}
+arts_raw <- fetch_arts_enrollment(2024, level = "district") %>%
+  filter(district_id == "3570")
+stopifnot(nrow(arts_raw) > 0)
+```
+
+```{r arts-any-data}
+arts_any <- arts_raw %>%
+  transmute(grades,
+            Newark = as.numeric(any_visual_perf_art_district),
+            `New Jersey` = as.numeric(any_visual_perf_art_state)) %>%
+  tidyr::pivot_longer(c(Newark, `New Jersey`), names_to = "geo", values_to = "pct")
+stopifnot(nrow(arts_any) > 0)
+arts_any
+```
+
+```{r arts-grade-chart}
+ggplot(arts_any, aes(grades, pct, fill = geo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = paste0(round(pct), "%")),
+            position = position_dodge(width = 0.75), vjust = -0.4, size = 3.3) +
+  scale_fill_manual(values = c("Newark" = nwk_navy, "New Jersey" = "gray65")) +
+  scale_y_continuous(labels = percent_format(scale = 1), limits = c(0, 112)) +
+  labs(title = "Newark students take the arts at above-state rates",
+       subtitle = "Share taking any visual or performing arts course, 2023-24",
+       x = NULL, y = "Students taking an arts course", fill = NULL,
+       caption = "Source: NJ DOE School Performance Report (Visual & Performing Arts)") +
+  theme_nj()
+```
+
+The standout is dance. Across every grade band Newark enrolls students in dance
+at many times the state rate, peaking at **38% of elementary students against a
+statewide 4%**, a legacy of the city's performing-arts programs.
+
+```{r arts-dance-data}
+arts_dance <- arts_raw %>%
+  transmute(grades,
+            Newark = as.numeric(dance_district),
+            `New Jersey` = as.numeric(dance_state)) %>%
+  tidyr::pivot_longer(c(Newark, `New Jersey`), names_to = "geo", values_to = "pct")
+stopifnot(nrow(arts_dance) > 0)
+arts_dance
+```
+
+```{r arts-dance-chart}
+ggplot(arts_dance, aes(grades, pct, fill = geo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = paste0(round(pct), "%")),
+            position = position_dodge(width = 0.75), vjust = -0.4, size = 3.3) +
+  scale_fill_manual(values = c("Newark" = nwk_red, "New Jersey" = "gray65")) +
+  scale_y_continuous(labels = percent_format(scale = 1), limits = c(0, 45)) +
+  labs(title = "Newark dance enrollment dwarfs the state rate",
+       subtitle = "Share of students taking a dance course, 2023-24",
+       x = NULL, y = "Students taking dance", fill = NULL,
+       caption = "Source: NJ DOE School Performance Report (Visual & Performing Arts)") +
+  theme_nj()
+```
+
+## Reproduce this yourself
+
+Every chart above comes from `fetch_tges()`. Once you have a year's tables
+(`spending_2025 <- fetch_tges(2025)`), pulling Newark's revenue mix is two lines:
+
+```{r reproduce}
+spending_2025[["VITSTAT_TOTAL"]] %>%
+  filter(district_code == "3570") %>%
+  select(district_name, end_year, `Revenue: State %`, `Revenue: Local %`, `Revenue: Federal %`)
+```
+
+Swap the district code for any NJ district, or loop `fetch_many_tges(2001:2025)`
+for the full history.
+
+```{r session-info}
+sessionInfo()
+```
+</content>
+</invoke>
