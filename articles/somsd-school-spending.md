@@ -8,6 +8,10 @@ library(dplyr)
 library(scales)
 library(purrr)
 library(tibble)
+
+# The arts section reads a School Performance Report workbook (~100 MB), so give
+# the download more than R's stingy 60-second default.
+options(timeout = max(600, getOption("timeout")))
 ```
 
 ``` r
@@ -451,6 +455,220 @@ ggplot(rank, aes(end_year, value)) +
 ```
 
 ![](somsd-school-spending_files/figure-html/rank-chart-1.png)
+
+## 7. A closer look at the classroom dollar
+
+TGES splits classroom instruction into three pieces: salaries and
+benefits, supplies and textbooks, and “purchased services and other.”
+Two things jump out. Spending on books and supplies has been frozen near
+\$200 per pupil for 25 years, a steep real-terms cut. Meanwhile
+purchased services, contracted and out-of-district instruction, went
+from a rounding error (\$7 per pupil in 1999) to \$1,804 in 2024, about
+15 cents of every classroom dollar.
+
+``` r
+
+classroom_parts <- bind_rows(
+  somsd_series("CSG3", "Per Pupil costs") %>% mutate(part = "Salaries & benefits"),
+  somsd_series("CSG4", "Per Pupil costs") %>% mutate(part = "Supplies & textbooks"),
+  somsd_series("CSG5", "Per Pupil costs") %>% mutate(part = "Purchased services & other")
+) %>%
+  mutate(part = factor(part, levels = c("Salaries & benefits",
+                                        "Supplies & textbooks",
+                                        "Purchased services & other")))
+stopifnot(nrow(classroom_parts) > 0)
+
+classroom_parts %>%
+  filter(end_year %in% c(1999, 2008, 2016, 2024)) %>%
+  select(end_year, part, value) %>%
+  arrange(end_year, part)
+#> # A tibble: 12 × 3
+#>    end_year part                       value
+#>       <dbl> <fct>                      <dbl>
+#>  1     1999 Salaries & benefits         4316
+#>  2     1999 Supplies & textbooks         161
+#>  3     1999 Purchased services & other     7
+#>  4     2008 Salaries & benefits         7065
+#>  5     2008 Supplies & textbooks         198
+#>  6     2008 Purchased services & other    35
+#>  7     2016 Salaries & benefits         7646
+#>  8     2016 Supplies & textbooks         195
+#>  9     2016 Purchased services & other   736
+#> 10     2024 Salaries & benefits         9753
+#> 11     2024 Supplies & textbooks         229
+#> 12     2024 Purchased services & other  1804
+```
+
+``` r
+
+ggplot(classroom_parts, aes(end_year, value, fill = part)) +
+  geom_area(alpha = 0.9) +
+  scale_fill_manual(values = c("Salaries & benefits" = somsd_navy,
+                               "Supplies & textbooks" = somsd_teal,
+                               "Purchased services & other" = somsd_orange)) +
+  scale_y_continuous(labels = dollar) +
+  scale_x_continuous(breaks = seq(2000, 2024, 6)) +
+  labs(title = "The classroom dollar: contracted services moved in",
+       subtitle = "SOMSD classroom cost per pupil by component",
+       x = NULL, y = "Cost per pupil", fill = NULL,
+       caption = "Source: NJ DOE TGES (CSG3, CSG4, CSG5)") +
+  theme_nj()
+```
+
+![](somsd-school-spending_files/figure-html/classroom-dollar-chart-1.png)
+
+## 8. Facilities: a frozen line on aging buildings
+
+Plant operations and maintenance, the cost of heating, cleaning, and
+repairing school buildings, barely budged for over a decade. It hovered
+around \$1,800 to \$2,000 per pupil from 2008 through 2022 even as total
+spending climbed, so its **share of the budget fell from about 16% to
+12%**. That is the kind of deferred upkeep that eventually shows up as a
+capital referendum. (TGES tracks operating cost, not the separate
+capital bonds districts float to rebuild.)
+
+``` r
+
+facilities <- somsd_series("CSG10", "Per Pupil costs") %>%
+  select(end_year, facilities = value) %>%
+  inner_join(somsd_series("CSG1", "Per Pupil costs") %>% select(end_year, total = value),
+             by = "end_year") %>%
+  mutate(share = facilities / total)
+stopifnot(nrow(facilities) > 0)
+facilities
+#> # A tibble: 26 × 4
+#>    end_year facilities total share
+#>       <dbl>      <dbl> <dbl> <dbl>
+#>  1     1999       1110  7946 0.140
+#>  2     2000       1127  8260 0.136
+#>  3     2001       1123  8691 0.129
+#>  4     2002       1289  9219 0.140
+#>  5     2003       1413  9626 0.147
+#>  6     2004       1693 10271 0.165
+#>  7     2005       1750 11101 0.158
+#>  8     2006       1831 11366 0.161
+#>  9     2007       1806 12594 0.143
+#> 10     2008       2062 12983 0.159
+#> # ℹ 16 more rows
+```
+
+``` r
+
+ggplot(facilities, aes(end_year, share)) +
+  geom_line(color = somsd_red, linewidth = 1.2) +
+  geom_point(color = somsd_red, size = 2) +
+  scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2000, 2024, 6)) +
+  labs(title = "Facilities' slice of the budget shrank",
+       subtitle = "Plant operations & maintenance as a share of budgetary cost per pupil",
+       x = NULL, y = "Facilities share of budget",
+       caption = "Source: NJ DOE TGES (CSG10 / CSG1)") +
+  theme_nj()
+```
+
+![](somsd-school-spending_files/figure-html/facilities-share-chart-1.png)
+
+## 9. What the spending buys: the arts
+
+TGES tells you what a district spends; the School Performance Report
+tells you what students actually take. In a town known for its arts
+scene, that second question matters.
+[`fetch_arts_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_arts_enrollment.md)
+pulls visual and performing arts participation, and SOMSD runs well
+ahead of the state at every grade level. The gap is widest in middle
+school: nearly every 6th-8th grader takes an arts course, 86% take music
+(vs 64% statewide), and **30% take dance against a state rate of just
+4%**.
+
+``` r
+
+arts_raw <- fetch_arts_enrollment(2024, level = "district") %>%
+  filter(district_id == "4900")
+stopifnot(nrow(arts_raw) > 0)
+```
+
+``` r
+
+arts_any <- arts_raw %>%
+  transmute(grades,
+            SOMSD = as.numeric(any_visual_perf_art_district),
+            `New Jersey` = as.numeric(any_visual_perf_art_state)) %>%
+  tidyr::pivot_longer(c(SOMSD, `New Jersey`), names_to = "geo", values_to = "pct")
+stopifnot(nrow(arts_any) > 0)
+arts_any
+#> # A tibble: 6 × 3
+#>   grades      geo          pct
+#>   <chr>       <chr>      <dbl>
+#> 1 Grades 6-8  SOMSD       99.7
+#> 2 Grades 6-8  New Jersey  90  
+#> 3 Grades 9-12 SOMSD       63.4
+#> 4 Grades 9-12 New Jersey  51.3
+#> 5 Grades KG-5 SOMSD       99.4
+#> 6 Grades KG-5 New Jersey  93.6
+```
+
+``` r
+
+ggplot(arts_any, aes(grades, pct, fill = geo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = paste0(round(pct), "%")),
+            position = position_dodge(width = 0.75), vjust = -0.4, size = 3.3) +
+  scale_fill_manual(values = c("SOMSD" = somsd_navy, "New Jersey" = "gray65")) +
+  scale_y_continuous(labels = percent_format(scale = 1), limits = c(0, 108)) +
+  labs(title = "SOMSD students take the arts at above-state rates",
+       subtitle = "Share taking any visual or performing arts course, 2023-24",
+       x = NULL, y = "Students taking an arts course", fill = NULL,
+       caption = "Source: NJ DOE School Performance Report (Visual & Performing Arts)") +
+  theme_nj()
+```
+
+![](somsd-school-spending_files/figure-html/arts-grade-chart-1.png)
+
+``` r
+
+arts_disc <- arts_raw %>%
+  filter(grades == "Grades 6-8") %>%
+  select(music_district, music_state, dance_district, dance_state,
+         drama_district, drama_state, vis_arts_district, vis_arts_state) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  tidyr::pivot_longer(everything(),
+                      names_to = c("discipline", "geo"),
+                      names_pattern = "(.*)_(district|state)",
+                      values_to = "pct") %>%
+  mutate(geo = recode(geo, district = "SOMSD", state = "New Jersey"),
+         discipline = recode(discipline, music = "Music", dance = "Dance",
+                             drama = "Drama/Theater", vis_arts = "Visual arts"))
+stopifnot(nrow(arts_disc) > 0)
+arts_disc
+#> # A tibble: 8 × 3
+#>   discipline    geo          pct
+#>   <chr>         <chr>      <dbl>
+#> 1 Music         SOMSD       85.6
+#> 2 Music         New Jersey  64.3
+#> 3 Dance         SOMSD       29.5
+#> 4 Dance         New Jersey   4.3
+#> 5 Drama/Theater SOMSD       15.3
+#> 6 Drama/Theater New Jersey   7.7
+#> 7 Visual arts   SOMSD       78.3
+#> 8 Visual arts   New Jersey  68.9
+```
+
+``` r
+
+ggplot(arts_disc, aes(reorder(discipline, -pct), pct, fill = geo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = paste0(round(pct), "%")),
+            position = position_dodge(width = 0.75), vjust = -0.4, size = 3.3) +
+  scale_fill_manual(values = c("SOMSD" = somsd_navy, "New Jersey" = "gray65")) +
+  scale_y_continuous(labels = percent_format(scale = 1), limits = c(0, 100)) +
+  labs(title = "Middle-school arts: SOMSD vs New Jersey",
+       subtitle = "Share of grade 6-8 students taking each art form, 2023-24",
+       x = NULL, y = "Students participating", fill = NULL,
+       caption = "Source: NJ DOE School Performance Report (Visual & Performing Arts)") +
+  theme_nj()
+```
+
+![](somsd-school-spending_files/figure-html/arts-discipline-chart-1.png)
 
 ## Reproduce this yourself
 
