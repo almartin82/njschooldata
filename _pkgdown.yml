@@ -192,6 +192,7 @@ articles:
     navbar: ~
     contents:
       - somsd-school-spending
+      - newark-school-spending
   - title: School Performance Reports
     navbar: ~
     contents:

@@ -26,6 +26,14 @@
 * Missing-data markers ("N.R." Not Reported, "N.A." Not Applicable) coerce
   cleanly to NA without warnings.
 
+## Articles
+
+* New "Following the Money" spending deep-dives built entirely on `fetch_tges()`:
+  South Orange-Maplewood (a property-tax suburb) and Newark (an *Abbott* district
+  where state aid funds ~80% of the budget). Each traces 25 years of per-pupil
+  spending, revenue mix, benefits, facilities, and the classroom dollar; the
+  Newark article also compares the district to its largest charter networks.
+
 ## Tests
 
 * Added a comprehensive TGES test suite: unit tests for the URL builder and rank
