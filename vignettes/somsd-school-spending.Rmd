@@ -1,0 +1,353 @@
+---
+title: "Following the Money: 25 Years of Spending in South Orange-Maplewood"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Following the Money: 25 Years of Spending in South Orange-Maplewood}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  # Default OFF: only the expensive fetch chunks cache. Plot chunks must
+  # re-evaluate every build, or knitr replays stale figures (caschooldata, 2026-03).
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(purrr)
+library(tibble)
+```
+
+```{r theme}
+theme_nj <- function() {
+  theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(color = "gray40"),
+      plot.caption = element_text(color = "gray55", size = 9),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom"
+    )
+}
+
+somsd_navy   <- "#1F3A5F"
+somsd_orange <- "#E67E22"
+somsd_teal   <- "#16A085"
+somsd_red    <- "#C0392B"
+somsd_purple <- "#8E44AD"
+```
+
+The [Taxpayers' Guide to Educational Spending](https://www.nj.gov/education/guide/)
+(TGES) is the New Jersey Department of Education's annual report on what every
+district spends, broken down per pupil into classroom instruction, support
+services, administration, plant operations, and more. `njschooldata` pulls it
+straight from the state for every year back to 2001 (the pre-2011 editions were
+branded the "Comparative Spending Guide").
+
+This article follows one district, **South Orange-Maplewood (SOMSD)**, over a
+quarter century. It's a single mid-sized K-12 district in Essex County, but the
+patterns are the kind every NJ taxpayer eventually asks about: where the money
+goes, why the benefits line keeps climbing, and who actually pays the bill.
+
+`fetch_tges(year)` returns one tidy data frame per spending indicator:
+
+```{r intro-example, cache = TRUE}
+spending_2025 <- fetch_tges(2025)
+
+# one tidy table per TGES indicator (CSG1 = total budgetary cost per pupil)
+names(spending_2025)
+```
+
+Each table is district-level and long, with a three-year window per report:
+two finalized `Actuals` years plus the current `Budgeted` year. SOMSD is
+district code `4900`.
+
+```{r intro-glimpse}
+spending_2025[["CSG1"]] %>%
+  filter(district_code == "4900") %>%
+  select(district_name, end_year, calc_type, `Per Pupil costs`, `District rank`)
+```
+
+```{r fetch-data, cache = TRUE}
+# Pull every published guide, 2001-2025. fetch_tges(2025) was already fetched
+# above, so reuse it and download the rest. Drop (with a visible warning) any
+# year that fails rather than letting one network hiccup kill the whole build.
+reports <- list("2025" = spending_2025)
+for (y in 2001:2024) {
+  reports[[as.character(y)]] <- tryCatch(
+    fetch_tges(y),
+    error = function(e) {
+      warning(paste("TGES", y, "failed:", conditionMessage(e)))
+      NULL
+    }
+  )
+}
+reports <- reports[!vapply(reports, is.null, logical(1))]
+reports <- reports[order(as.integer(names(reports)))]
+```
+
+```{r helpers}
+SOMSD <- "4900"
+
+# Pull one SOMSD value column across every report and keep one row per school
+# year. Each actual recurs in consecutive guides; we keep the most recent
+# (most finalized) report's figure. VITSTAT/CSG16 carry no calc_type, so the
+# calc filter is skipped for them.
+somsd_series <- function(table, value_col, calc = "Actuals") {
+  map_dfr(names(reports), function(y) {
+    d <- reports[[y]][[table]]
+    if (is.null(d) || !value_col %in% names(d)) return(NULL)
+    r <- filter(d, !is.na(district_code), district_code == SOMSD)
+    if ("calc_type" %in% names(r)) r <- filter(r, calc_type == calc)
+    if (nrow(r) == 0) return(NULL)
+    tibble(report_year = as.integer(y), end_year = r$end_year, value = r[[value_col]])
+  }) %>%
+    group_by(end_year) %>%
+    slice_max(report_year, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    arrange(end_year)
+}
+```
+
+## 1. A decade of flat spending, then a sharp surge
+
+For most of the 2010s, SOMSD's actual budgetary cost per pupil barely moved:
+about \$14,300 in 2010 and \$14,700 in 2019, a real-terms decline once you
+account for inflation. Then it broke loose. Actuals jumped from \$14,660 (2020)
+to \$18,952 (2024), and the 2025 budget sets it at \$20,066.
+
+```{r pp-data}
+pp <- somsd_series("CSG1", "Per Pupil costs", "Actuals")
+pp_budget_2025 <- somsd_series("CSG1", "Per Pupil costs", "Budgeted") %>%
+  filter(end_year == 2025)
+
+stopifnot(nrow(pp) > 0, nrow(pp_budget_2025) == 1)
+pp
+```
+
+```{r pp-chart}
+ggplot(pp, aes(end_year, value)) +
+  annotate("rect", xmin = 2010, xmax = 2019, ymin = -Inf, ymax = Inf,
+           fill = "gray85", alpha = 0.5) +
+  annotate("text", x = 2014.5, y = 19500, label = "flat decade",
+           color = "gray45", fontface = "italic") +
+  geom_line(color = somsd_navy, linewidth = 1.2) +
+  geom_point(color = somsd_navy, size = 2) +
+  geom_point(data = pp_budget_2025, aes(end_year, value),
+             color = somsd_orange, size = 3, shape = 17) +
+  annotate("text", x = 2024.7, y = pp_budget_2025$value + 900,
+           label = "2025\nbudgeted", color = somsd_orange, size = 3.3) +
+  scale_y_continuous(labels = dollar) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "SOMSD per-pupil spending: flat, then a post-2020 surge",
+       subtitle = "Budgetary cost per pupil, actuals (2025 is budgeted)",
+       x = NULL, y = "Cost per pupil",
+       caption = "Source: NJ DOE Taxpayers' Guide to Educational Spending") +
+  theme_nj()
+```
+
+## 2. Benefits ate the salary line
+
+Here's the trend that drives every contentious school budget meeting: employee
+benefits as a share of salaries. In SOMSD it has **more than doubled**, from
+11.8% in 1999 to 24.4% in 2024. Health-plan premiums (SEHBP) are the main
+driver, and they keep climbing faster than pay.
+
+```{r benefits-data}
+benefits <- somsd_series("CSG14", "% of Total Salaries", "Actuals")
+stopifnot(nrow(benefits) > 0)
+benefits
+```
+
+```{r benefits-chart}
+ggplot(benefits, aes(end_year, value)) +
+  geom_area(fill = somsd_orange, alpha = 0.25) +
+  geom_line(color = somsd_orange, linewidth = 1.2) +
+  geom_point(color = somsd_orange, size = 2) +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "Employee benefits as a share of salaries doubled",
+       subtitle = "SOMSD benefit costs divided by total salaries, 1999-2024",
+       x = NULL, y = "Benefits / salaries",
+       caption = "Source: NJ DOE TGES (CSG14)") +
+  theme_nj()
+```
+
+## 3. Who pays the bill is shifting
+
+SOMSD is a property-tax town: local taxpayers funded about **85%** of the budget
+in 2010. But the state's share has roughly doubled since then (from 12% to 26%),
+while the local share fell to 70%. Federal money never tops a few percent.
+
+```{r revenue-data}
+revenue <- bind_rows(
+  somsd_series("VITSTAT_TOTAL", "Revenue: Local %") %>% mutate(source = "Local taxes"),
+  somsd_series("VITSTAT_TOTAL", "Revenue: State %")  %>% mutate(source = "State aid")
+)
+stopifnot(nrow(revenue) > 0)
+
+revenue %>%
+  tidyr::pivot_wider(id_cols = end_year, names_from = source, values_from = value)
+```
+
+```{r revenue-chart}
+ggplot(revenue, aes(end_year, value, color = source)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("Local taxes" = somsd_navy, "State aid" = somsd_teal)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = seq(2010, 2024, 4)) +
+  labs(title = "Local taxpayers still carry SOMSD, but state aid is rising",
+       subtitle = "Share of revenue by source",
+       x = NULL, y = "Share of revenue", color = NULL,
+       caption = "Source: NJ DOE TGES Vital Statistics") +
+  theme_nj()
+```
+
+## 4. Teacher pay up, class sizes down
+
+The median teacher salary nearly doubled over the period, from about \$45,000 to
+roughly \$84,000. Over the same stretch the student-to-teacher ratio drifted down
+from 14:1 toward 11:1, so the district is paying more teachers, more.
+
+```{r salary-data}
+salary <- somsd_series("CSG16", "Teacher Salary")
+ratio  <- somsd_series("CSG16", "Student/Teacher ratio")
+stopifnot(nrow(salary) > 0, nrow(ratio) > 0)
+salary %>%
+  inner_join(ratio, by = "end_year", suffix = c("_salary", "_ratio")) %>%
+  transmute(end_year, median_salary = value_salary, students_per_teacher = value_ratio)
+```
+
+```{r salary-chart}
+ggplot(salary, aes(end_year, value)) +
+  geom_line(color = somsd_purple, linewidth = 1.2) +
+  geom_point(color = somsd_purple, size = 2) +
+  scale_y_continuous(labels = dollar) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "Median teacher salary nearly doubled",
+       subtitle = "SOMSD median classroom-teacher salary",
+       x = NULL, y = "Median salary",
+       caption = "Source: NJ DOE TGES (CSG16)") +
+  theme_nj()
+```
+
+```{r ratio-chart}
+ggplot(ratio, aes(end_year, value)) +
+  geom_line(color = somsd_teal, linewidth = 1.2) +
+  geom_point(color = somsd_teal, size = 2) +
+  scale_x_continuous(breaks = seq(2000, 2025, 5)) +
+  labs(title = "...while the student-to-teacher ratio fell",
+       subtitle = "Students per teacher",
+       x = NULL, y = "Students per teacher",
+       caption = "Source: NJ DOE TGES (CSG16)") +
+  theme_nj()
+```
+
+## 5. Where each dollar goes
+
+TGES breaks the budgetary cost per pupil into its components. In the 2025 budget,
+classroom instruction is by far the biggest slice (about 61 cents of every
+dollar), followed by support services, plant operations, and administration.
+
+```{r category-data}
+category_tables <- tribble(
+  ~category,                  ~table,
+  "Classroom instruction",    "CSG2",
+  "Support services",         "CSG6",
+  "Plant ops & maintenance",  "CSG10",
+  "Administration",           "CSG8",
+  "Extracurricular",          "CSG13"
+)
+
+categories <- map_dfr(seq_len(nrow(category_tables)), function(i) {
+  d <- reports[["2025"]][[category_tables$table[i]]]
+  r <- filter(d, district_code == SOMSD, end_year == 2025)
+  tibble(category = category_tables$category[i],
+         per_pupil = r[["Per Pupil costs"]][1])
+})
+
+stopifnot(nrow(categories) > 0, all(!is.na(categories$per_pupil)))
+categories %>% arrange(desc(per_pupil))
+```
+
+```{r category-chart}
+ggplot(categories, aes(reorder(category, per_pupil), per_pupil)) +
+  geom_col(fill = somsd_navy) +
+  geom_text(aes(label = dollar(per_pupil)), hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(labels = dollar, expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Where SOMSD spends, per pupil (2025 budget)",
+       subtitle = "Classroom instruction dominates the budgetary cost per pupil",
+       x = NULL, y = "Cost per pupil",
+       caption = "Source: NJ DOE TGES (CSG2, CSG6, CSG8, CSG10, CSG13)") +
+  theme_nj()
+```
+
+## 6. Drifting through the pack of big districts
+
+TGES ranks each district against its peer group. SOMSD sits with the large K-12
+districts (3,500+ students). In this ranking, **1 = the lowest spender**, so a
+higher number means spending more than peers. SOMSD climbed toward the top of
+the pack by 2010, slid to near the bottom during its flat decade as peers kept
+growing, then recovered to mid-pack after the post-2020 surge.
+
+```{r rank-data}
+rank <- somsd_series("CSG1", "District rank", "Actuals")
+stopifnot(nrow(rank) > 0)
+
+# size of the peer group in the most recent guide, for context
+n_peers <- reports[["2025"]][["CSG1"]] %>%
+  filter(group == "G. K-12 / 3501 +", end_year == 2025,
+         !is.na(district_code), district_code != "00NA") %>%
+  nrow()
+n_peers
+
+rank
+```
+
+```{r rank-chart}
+ggplot(rank, aes(end_year, value)) +
+  geom_line(color = somsd_red, linewidth = 1.2) +
+  geom_point(color = somsd_red, size = 2) +
+  scale_x_continuous(breaks = seq(2000, 2024, 4)) +
+  labs(title = "SOMSD's spending rank among large K-12 districts",
+       subtitle = paste0("Rank within the ", n_peers,
+                          "-district peer group (1 = lowest spender)"),
+       x = NULL, y = "Spending rank",
+       caption = "Source: NJ DOE TGES (CSG1). Peer-group composition shifts modestly year to year.") +
+  theme_nj()
+```
+
+## Reproduce this yourself
+
+Every chart above comes from `fetch_tges()`. Once you have a year's tables
+(`spending_2025 <- fetch_tges(2025)`), pulling SOMSD's benefits trend is two
+lines:
+
+```{r reproduce}
+spending_2025[["CSG14"]] %>%
+  filter(district_code == "4900", calc_type == "Actuals") %>%
+  select(district_name, end_year, `% of Total Salaries`)
+```
+
+Swap the district code for any NJ district, or loop `fetch_many_tges(2001:2025)`
+for the full history.
+
+```{r session-info}
+sessionInfo()
+```
