@@ -1547,6 +1547,11 @@ Additional exported functions
 - [New Jersey Enrollment
   Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.md):
 
+### School Finance
+
+- [Following the Money: 25 Years of Spending in South
+  Orange-Maplewood](https://almartin82.github.io/njschooldata/articles/somsd-school-spending.md):
+
 ### School Performance Reports
 
 - [SPR Data
