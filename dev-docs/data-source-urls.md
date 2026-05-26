@@ -21,3 +21,14 @@ code, kept here as a reminder to expect more:
   2024+. 1999/2000 are linked on the NJ index page but 404 at the source. The
   download zips wrap members in a per-year subfolder (`2011_TGES/CSG1.CSV`), so the
   parser keys off the bare file name.
+- **State Aid** (`get_raw_state_aid`, `R/state_aid.R`): per-district K-12 aid by
+  category, under `nj.gov/education/stateaid/`. Two access paths, tried in order:
+  the current year is a direct workbook `{code}/FY{yy}_GBM_District_Details.xlsx`
+  (where `code` is the two-year span, e.g. FY26 = "2526"); prior years are bundled
+  in `zippedfiles/{code}.zip`. The district-details member name drifts across
+  years ("FY25 GBM District Details Rev.xlsx", "District Details FY20 Revised.xlsx",
+  "district.xlsx"), so the parser locates it by a fuzzy name match and detects the
+  header row (first row carrying both "County" and "Dist"; usually row 5). Aid
+  category labels also drift and are normalized in `normalize_state_aid_category()`.
+  Supported 2019+; FY2016 and earlier use a layout the parser does not handle, and
+  FY2010 has no per-district workbook at all.
