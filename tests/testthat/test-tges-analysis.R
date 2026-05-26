@@ -1132,3 +1132,113 @@ test_that("tges_frontier runs on live spend joined to grad outcomes", {
   # excess spend is non-negative (you never beat the frontier)
   expect_true(all(fr$excess_spend >= -1e-6, na.rm = TRUE))
 })
+
+
+# ==============================================================================
+# tges_excluded_costs()
+# ==============================================================================
+
+# a fetch_tges()-shaped list with a tidied Total Spending Detail table + CSG1.
+# Synthetic: exercises the join/difference/flag math only; not NJ DOE figures.
+fake_tges_detail <- function() {
+  list(
+    DETAIL_FY24 = tibble::tibble(
+      county_name   = "Test",
+      district_code = c("3570", "0680", "00NA"),
+      district_name = c("Newark", "Camden", "GROUP AVG"),
+      end_year      = 2024L,
+      calc_type     = "Actuals",
+      report_year   = 2025L,
+      general_current_expense_pp = c(24000, 22000, NA),
+      capital_outlay_pp          = c(  500,   400, NA),
+      grants_entitlements_pp     = c( 3000,  2500, NA),
+      food_services_pp           = c(  700,   600, NA),
+      debt_service_local_pp      = c(  400,   300, NA),
+      debt_service_sda_pp        = c(  100,    50, NA),
+      total_spending_pp          = c(28700, 25850, NA),  # = sum of the six
+      enrollment_plus_sent       = c(40000,  8000, NA)
+    ),
+    CSG1 = tibble::tibble(
+      county_name   = "Test",
+      district_code = c("3570", "0680", "00NA"),
+      district_name = c("Newark", "Camden", "GROUP AVG"),
+      group         = "G. K-12 / 3501 +",
+      `Per Pupil costs`  = c(21000, 20000, NA),
+      `Enrollment (ADE)` = c(39800,  6000, NA),  # Newark self-contained; Camden sends
+      indicator     = "Budgetary Per Pupil Cost",
+      end_year      = 2024L,
+      calc_type     = "Actuals"
+    )
+  )
+}
+
+test_that("tges_excluded_costs computes the wedge and drops average rows", {
+  ec <- tges_excluded_costs(fake_tges_detail())
+
+  expect_equal(nrow(ec), 2L)                       # 00NA average row dropped
+  expect_false(any(ec$district_code == "00NA"))
+
+  nwk <- ec[ec$district_code == "3570", ]
+  expect_equal(nwk$gce_excess_pp, 24000 - 21000)     # GCE - budgetary
+  expect_equal(nwk$excluded_total_pp, 28700 - 21000) # total - budgetary
+})
+
+test_that("tges_excluded_costs flags sending districts via sent_pupil_share", {
+  ec <- tges_excluded_costs(fake_tges_detail())
+  nwk <- ec[ec$district_code == "3570", ]
+  cmd <- ec[ec$district_code == "0680", ]
+
+  # Newark: (40000-39800)/40000 = 0.005 <= 0.02 -> reliable
+  expect_equal(round(nwk$sent_pupil_share, 4), 0.005)
+  expect_true(nwk$residual_reliable)
+
+  # Camden: (8000-6000)/8000 = 0.25 -> not reliable
+  expect_equal(cmd$sent_pupil_share, 0.25)
+  expect_false(cmd$residual_reliable)
+})
+
+test_that("tges_excluded_costs honors reliable_max_sent_share", {
+  ec <- tges_excluded_costs(fake_tges_detail(), reliable_max_sent_share = 0.30)
+  # at a 0.30 threshold Camden (0.25) now counts as reliable
+  expect_true(ec[ec$district_code == "0680", ]$residual_reliable)
+})
+
+test_that("tges_excluded_costs errors without the detail or CSG1 tables", {
+  expect_error(
+    tges_excluded_costs(list(CSG1 = tibble::tibble(x = 1))),
+    "Total Spending Detail"
+  )
+  expect_error(
+    tges_excluded_costs(list(DETAIL_FY24 = fake_tges_detail()$DETAIL_FY24)),
+    "CSG1"
+  )
+})
+
+test_that("tidy_total_spending_detail + tges_excluded_costs run on the live 2025 guide", {
+  skip_on_cran()
+  skip_if_offline()
+  tg <- fetch_tges(2025)
+
+  # the Detail workbook parsed into clean component columns (banner skipped)
+  det <- tg[["DETAIL_FY24"]]
+  expect_true(all(c("general_current_expense_pp", "capital_outlay_pp",
+                    "total_spending_pp", "enrollment_plus_sent") %in% names(det)))
+  expect_true(all(grepl("^[0-9]{4}$", det$district_code[!is.na(det$district_code)])))
+  expect_true(all(det$end_year == 2024))
+
+  ec <- tges_excluded_costs(tg)
+  expect_gt(nrow(ec), 0L)
+  expect_setequal(sort(unique(ec$end_year)), c(2023, 2024))
+
+  # the six components reconstruct the published per-pupil total (rounding only)
+  recon <- with(ec,
+    total_spending_pp - (general_current_expense_pp + capital_outlay_pp +
+      grants_entitlements_pp + food_services_pp + debt_service_local_pp +
+      debt_service_sda_pp))
+  expect_true(stats::median(abs(recon), na.rm = TRUE) < 2)
+
+  # both flags appear, and reliable districts have a near-zero sent share
+  expect_true(any(ec$residual_reliable, na.rm = TRUE))
+  expect_true(any(!ec$residual_reliable, na.rm = TRUE))
+  expect_true(all(ec$sent_pupil_share[ec$residual_reliable] <= 0.02, na.rm = TRUE))
+})
