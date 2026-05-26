@@ -172,6 +172,21 @@ reference:
       - tges_red_flags
       - tges_real_growth
 
+  - title: TGES Cross-District Comparison
+    desc: >
+      The comparative layer that reasons across districts and over time:
+      build data-driven peer sets, score the spend-versus-outcome efficiency
+      frontier, test convergence, track budget drift, price gaps in dollars,
+      measure funding volatility, and assemble multi-district scorecards.
+    contents:
+      - tges_find_peers
+      - tges_frontier
+      - tges_convergence
+      - tges_composition_drift
+      - tges_gap_cost
+      - tges_volatility
+      - tges_compare
+
   - title: Utilities
     desc: Helper functions and lookups
     contents:
@@ -209,6 +224,7 @@ articles:
       - somsd-school-spending
       - newark-school-spending
       - newark-fiscal-brief
+      - newark-efficiency-frontier
   - title: School Performance Reports
     navbar: ~
     contents:

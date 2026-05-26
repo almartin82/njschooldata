@@ -7,10 +7,11 @@
 tges_percentile_rank(
   df,
   metric_col = "Per Pupil costs",
-  peer = c("tges_group", "dfg", "county", "statewide"),
+  peer = c("tges_group", "dfg", "county", "statewide", "custom"),
   year_col = "end_year",
   prefix = "peer",
-  dfg_revision = 2000
+  dfg_revision = 2000,
+  custom_ids = NULL
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ of \code{tges_composition()}.}
   \item \code{"dfg"}: District Factor Group (fetches DFG data over the network)
   \item \code{"county"}: within \code{county_name} (the "town next door" set)
   \item \code{"statewide"}: all districts
+  \item \code{"custom"}: a caller-supplied set of district codes (see
+    \code{custom_ids}); ranks within that set only. This is the hook for
+    \code{tges_find_peers()} output.
 }}
 
 \item{year_col}{Character. Year column. Default \code{"end_year"}.}
@@ -33,6 +37,10 @@ of \code{tges_composition()}.}
 \item{prefix}{Character. Prefix for the output columns. Default \code{"peer"}.}
 
 \item{dfg_revision}{Numeric. DFG revision when \code{peer = "dfg"}. Default 2000.}
+
+\item{custom_ids}{Character vector of \code{district_code}s. Required when
+\code{peer = "custom"}; the frame is restricted to these codes and ranked
+within them. Ignored otherwise.}
 }
 \value{
 \code{df} (ungrouped) with the three percentile columns added.

@@ -56,12 +56,13 @@ means more outcome than the spending would predict.
 library(dplyr)
 
 # Graduation outcomes ranked within DFG A, joined to per-pupil spend
-grate <- load_grate_multi(2018:2024) \%>\%
+grate <- fetch_grad_rate(2023, methodology = "4 year") \%>\%
   add_dfg() \%>\%
-  filter(dfg == "A", is_district, subgroup == "total population") \%>\%
+  filter(dfg == "A", is_district, subgroup == "total") \%>\%
   grate_percentile_rank(peer_type = "dfg")
 
-spend <- fetch_tges(2024)$CSG1 \%>\% filter(calc_type == "Actuals")
+spend <- fetch_tges(2024)$CSG1 \%>\%
+  filter(calc_type == "Actuals", end_year == 2023)
 
 tges_efficiency(
   spend, grate,
