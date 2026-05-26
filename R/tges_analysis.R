@@ -56,6 +56,21 @@
   df
 }
 
+# stack every Total Spending Detail table (DETAIL_FY24, DETAIL_FY23, ...) across
+# one or many guides. Each is already tidied with its own data-year `end_year`.
+.tges_get_detail <- function(tges) {
+  grab <- function(yr_list) {
+    keys <- grep("^DETAIL_FY", names(yr_list), value = TRUE)
+    if (!length(keys)) return(NULL)
+    purrr::map_dfr(keys, function(k) tibble::as_tibble(yr_list[[k]]))
+  }
+  if (.tges_is_many(tges)) {
+    purrr::map_dfr(tges, grab)
+  } else {
+    grab(tges)
+  }
+}
+
 
 # -----------------------------------------------------------------------------
 # tges_composition()
@@ -2316,4 +2331,159 @@ tges_compare <- function(tges,
   }
   base %>%
     dplyr::arrange(match(.data$district_code, district_codes))
+}
+
+
+# -----------------------------------------------------------------------------
+# tges_excluded_costs()
+# -----------------------------------------------------------------------------
+
+#' What the budgetary per-pupil figure leaves out (incl. on-behalf TPAF pension)
+#'
+#' @description NJ's headline comparative measure, \emph{Budgetary Per Pupil Cost}
+#' (CSG1), deliberately excludes a long list of spending, most notably the
+#' state-paid on-behalf TPAF pension, post-retirement medical, and social
+#' security contributions, which by law are paid by the state and never appear in
+#' a district's own budget.  This helper joins the Total Spending Detail workbook
+#' (a 2024+ TGES table) to CSG1 so you can see, per district-year, every component
+#' that sits between budgetary cost and total spending.
+#'
+#' @details
+#' The Detail workbook splits \emph{Total Spending Per Pupil} into six components
+#' that sum to the published total; this helper returns them as clean per-pupil
+#' columns:
+#' \itemize{
+#'   \item \code{general_current_expense_pp} -- general-fund current expense
+#'     (this is where on-behalf TPAF, transportation, tuition, and judgments live)
+#'   \item \code{capital_outlay_pp}, \code{grants_entitlements_pp},
+#'     \code{food_services_pp}, \code{debt_service_local_pp},
+#'     \code{debt_service_sda_pp} -- the other five components
+#' }
+#'
+#' It then computes two differences against the budgetary per-pupil cost:
+#' \itemize{
+#'   \item \code{excluded_total_pp} = \code{total_spending_pp - budgetary_pp}.
+#'     This is the full wedge of \emph{everything} excluded from the budgetary
+#'     figure: on-behalf TPAF pension/PRM/social security \strong{plus}
+#'     transportation, capital outlay, grants/entitlements, food service, tuition,
+#'     debt service, and judgments.
+#'   \item \code{gce_excess_pp} = \code{general_current_expense_pp - budgetary_pp}.
+#'     A narrower residual: general-fund items excluded from budgetary cost, i.e.
+#'     roughly \emph{transportation + on-behalf TPAF + tuition + judgments}.
+#' }
+#'
+#' \strong{Neither difference isolates pension.}  No public TGES file breaks out
+#' the on-behalf TPAF line; it is buried inside General Current Expense alongside
+#' transportation and tuition.  An itemized per-district pension figure exists
+#' only in NJDOE's login-gated AudSum submission.  Treat \code{gce_excess_pp} as
+#' an upper bound on pension, not a measurement of it.
+#'
+#' \strong{Denominator caveat.}  Budgetary per-pupil cost divides by resident
+#' enrollment; the Detail per-pupil amounts divide by enrollment \emph{plus sent
+#' pupils}.  For districts that educate all their own pupils the two agree within
+#' ~1\%, but for sending districts (including big cities that place special-ed or
+#' vocational pupils out of district) the denominators diverge and the per-pupil
+#' subtraction breaks down.  \code{sent_pupil_share} reports
+#' \code{(enrollment_plus_sent - resident_enrollment) / enrollment_plus_sent}, and
+#' \code{residual_reliable} is \code{TRUE} only when that share is at or below
+#' \code{reliable_max_sent_share}.  Filter to \code{residual_reliable} before
+#' reading anything into \code{gce_excess_pp}.
+#'
+#' Total Spending Detail tables ship only in the 2024 guide onward, so this needs
+#' \code{fetch_tges(2024)} or later (each guide carries two prior fiscal years).
+#'
+#' @param tges Output of \code{fetch_tges()} or \code{fetch_many_tges()} for a
+#'   2024+ guide.
+#' @param years Optional numeric vector. Keep only these \code{end_year} values.
+#' @param reliable_max_sent_share Numeric in [0, 1]; the maximum sent-pupil share
+#'   for which the per-pupil differences are treated as reliable. Default 0.02.
+#'
+#' @return A tibble with one row per district-year: entity columns,
+#'   \code{end_year}, \code{budgetary_pp}, the six Detail components,
+#'   \code{total_spending_pp}, \code{excluded_total_pp}, \code{gce_excess_pp},
+#'   \code{enrollment_plus_sent}, \code{budgetary_denom}, \code{sent_pupil_share},
+#'   and the logical \code{residual_reliable}.
+#'
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#'
+#' # All excluded-cost components for the latest two fiscal years
+#' tges_excluded_costs(fetch_tges(2025)) %>%
+#'   select(district_name, end_year, budgetary_pp, total_spending_pp,
+#'          excluded_total_pp, gce_excess_pp)
+#'
+#' # Only districts where the residual is denominator-reliable (self-contained),
+#' # ranked by the general-fund excess (~ transportation + on-behalf TPAF)
+#' tges_excluded_costs(fetch_tges(2025)) %>%
+#'   filter(residual_reliable, end_year == 2024) %>%
+#'   arrange(desc(gce_excess_pp)) %>%
+#'   select(district_name, budgetary_pp, gce_excess_pp, sent_pupil_share)
+#'
+#' # Track one district's excluded-cost wedge across guides
+#' tges_excluded_costs(fetch_many_tges(2024:2025)) %>%
+#'   filter(district_code == "3570") %>%
+#'   select(end_year, budgetary_pp, gce_excess_pp, excluded_total_pp)
+#' }
+#'
+#' @export
+tges_excluded_costs <- function(tges, years = NULL,
+                                reliable_max_sent_share = 0.02) {
+
+  detail <- .tges_get_detail(tges)
+  if (is.null(detail) || !nrow(detail)) {
+    stop("No Total Spending Detail table (DETAIL_FY##) found in `tges`. These ",
+         "ship only in 2024+ guides; pass fetch_tges(2024) or later.",
+         call. = FALSE)
+  }
+  detail <- .tges_real_districts(detail)
+
+  budg <- .tges_get_table(tges, "CSG1")
+  if (is.null(budg) || !nrow(budg)) {
+    stop("No CSG1 (budgetary per-pupil cost) table found in `tges`.",
+         call. = FALSE)
+  }
+  budg <- budg %>%
+    dplyr::filter(.data$calc_type == "Actuals") %>%
+    .tges_real_districts() %>%
+    dplyr::transmute(
+      county_name   = .data$county_name,
+      district_code = .data$district_code,
+      end_year      = .data$end_year,
+      budgetary_pp    = suppressWarnings(as.numeric(.data[["Per Pupil costs"]])),
+      budgetary_denom = suppressWarnings(as.numeric(.data[["Enrollment (ADE)"]]))
+    ) %>%
+    dplyr::distinct()
+
+  out <- detail %>%
+    dplyr::inner_join(budg, by = c("county_name", "district_code", "end_year")) %>%
+    dplyr::mutate(
+      excluded_total_pp = .data$total_spending_pp - .data$budgetary_pp,
+      gce_excess_pp     = .data$general_current_expense_pp - .data$budgetary_pp,
+      sent_pupil_share  = dplyr::if_else(
+        is.finite(.data$enrollment_plus_sent) & .data$enrollment_plus_sent > 0,
+        (.data$enrollment_plus_sent - .data$budgetary_denom) /
+          .data$enrollment_plus_sent,
+        NA_real_
+      ),
+      residual_reliable = is.finite(.data$sent_pupil_share) &
+        .data$sent_pupil_share <= reliable_max_sent_share
+    )
+
+  if (!is.null(years)) {
+    out <- out[out$end_year %in% years, , drop = FALSE]
+  }
+
+  out$file_name <- NULL
+
+  lead <- intersect(
+    c("county_name", "district_code", "district_name", "end_year",
+      "budgetary_pp", "general_current_expense_pp", "capital_outlay_pp",
+      "grants_entitlements_pp", "food_services_pp", "debt_service_local_pp",
+      "debt_service_sda_pp", "total_spending_pp", "excluded_total_pp",
+      "gce_excess_pp", "enrollment_plus_sent", "budgetary_denom",
+      "sent_pupil_share", "residual_reliable"),
+    names(out)
+  )
+  out %>% dplyr::select(dplyr::all_of(lead), dplyr::everything())
 }

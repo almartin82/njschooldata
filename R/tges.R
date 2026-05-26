@@ -123,14 +123,19 @@ get_raw_tges <- function(end_year) {
     .x = tges_excel$Name,
     .y = tges_excel$file,
     .f = function(.x, .y) {
+      #the Total Spending Detail workbooks (Detail_FY##.xlsx, 2024+ bundles) lead
+      #with a two-row description/title banner; the real header is on row 3.  Skip
+      #the banner so the 12 component columns parse, rather than the banner text.
+      skip_rows <- if (grepl('^Detail_FY', .y, ignore.case = TRUE)) 2L else 0L
       df <- readxl::read_excel(
-        path = file.path(unzip_loc, .x)
+        path = file.path(unzip_loc, .x),
+        skip = skip_rows
       ) %>%
       mutate(
         file_name = .y
       ) %>%
       janitor::clean_names()
-      
+
       df <- clean_cds_fields(df, tges = TRUE)
       df
     }
@@ -240,6 +245,85 @@ tidy_total_spending_per_pupil <- function(df, end_year) {
   y2_df <- force_avgs_types(y2_df)
 
   bind_rows(y1_df, y2_df)
+}
+
+
+#' tidy Total Spending Detail
+#'
+#' @description Cleans the Total Spending Detail workbooks (\code{Detail_FY##.xlsx})
+#' that ship inside the 2024+ TGES bundles.  These break a district's
+#' \emph{Total Spending Per Pupil} into the six components that, summed, equal the
+#' published per-pupil total: General Current Expense, Capital Outlay, Grants &
+#' Entitlements, Food Services, Debt Service on locally issued bonds, and Debt
+#' Service on School Development Authority (SDA) bonds.
+#'
+#' Unlike the budget indicators (CSG1-15), the per-pupil amounts here are divided
+#' by \emph{daily enrollment plus sent pupils}, not resident enrollment, so they
+#' are only directly comparable to CSG1's budgetary per-pupil cost for districts
+#' that educate all of their own pupils.  \code{tges_excluded_costs()} carries the
+#' enrollment denominator through and flags sending districts for this reason.
+#'
+#' The data year is taken from the \code{FY##} token in the file name (the 2025
+#' guide ships \code{Detail_FY24} = end_year 2024 and \code{Detail_FY23} =
+#' end_year 2023), not from the report \code{end_year}.
+#'
+#' @param df a raw Total Spending Detail data frame from \code{get_raw_tges()}
+#'   (read with the two-row banner skipped, so column names are the row-3 headers)
+#' @param end_year the report year the bundle was published under (used as
+#'   \code{report_year}; the row's \code{end_year} comes from the file name)
+#'
+#' @return long, tidy data frame
+#' @keywords internal
+tidy_total_spending_detail <- function(df, end_year) {
+
+  #data year comes from the FY token in the file name (Detail_FY24 -> 2024), not
+  #the report year.  Fall back to report end_year - 1 if the token is missing.
+  data_end_year <- end_year - 1L
+  if ('file_name' %in% names(df)) {
+    fy <- suppressWarnings(as.integer(sub('^.*FY', '', df$file_name[1])))
+    if (!is.na(fy)) data_end_year <- 2000L + fy
+  }
+
+  rename_map <- c(
+    general_current_expense_per_pupil                            = 'general_current_expense_pp',
+    total_capital_outlay_per_pupil                               = 'capital_outlay_pp',
+    total_grants_entitlements_per_pupil                          = 'grants_entitlements_pp',
+    total_food_services_per_pupil                                = 'food_services_pp',
+    debt_service_on_locally_issued_bonds_per_pupil               = 'debt_service_local_pp',
+    debt_service_on_school_development_authority_bonds_per_pupil  = 'debt_service_sda_pp',
+    total_spending                                               = 'total_spending',
+    daily_enrollment_plus_sent_pupils                            = 'enrollment_plus_sent',
+    calculated_per_pupil_amount                                  = 'total_spending_pp'
+  )
+  for (old in names(rename_map)) {
+    if (old %in% names(df)) names(df)[names(df) == old] <- rename_map[[old]]
+  }
+
+  num_cols <- c('general_current_expense_pp', 'capital_outlay_pp',
+                'grants_entitlements_pp', 'food_services_pp',
+                'debt_service_local_pp', 'debt_service_sda_pp',
+                'total_spending', 'enrollment_plus_sent', 'total_spending_pp')
+  for (nm in intersect(num_cols, names(df))) {
+    df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
+  }
+
+  if ('district_code' %in% names(df)) {
+    df$district_code <- suppressWarnings(pad_leading(df$district_code, 4))
+  }
+
+  df$end_year    <- data_end_year
+  df$calc_type   <- 'Actuals'
+  df$report_year <- end_year
+
+  lead <- intersect(
+    c('county_name', 'district_code', 'district_name', 'end_year', 'calc_type',
+      'report_year', 'general_current_expense_pp', 'capital_outlay_pp',
+      'grants_entitlements_pp', 'food_services_pp', 'debt_service_local_pp',
+      'debt_service_sda_pp', 'total_spending_pp', 'total_spending',
+      'enrollment_plus_sent'),
+    names(df)
+  )
+  df[, c(lead, setdiff(names(df), lead)), drop = FALSE]
 }
 
 
@@ -901,6 +985,11 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
     .f = function(.x, .y) {
       #look up the table name and see if we know how to clean it
       cleaning_function <- tges_cleaners %>% extract2(.y)
+      #Total Spending Detail tables are year-stamped (DETAIL_FY24, DETAIL_FY23,
+      #...), so match them by prefix rather than enumerating every year.
+      if (is.null(cleaning_function) && grepl('^DETAIL_FY', .y)) {
+        cleaning_function <- 'tidy_total_spending_detail'
+      }
       if (!is.null(cleaning_function)) {
         out <- do.call(cleaning_function, list(.x, end_year))
         

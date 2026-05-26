@@ -73,6 +73,7 @@ tables** in the historical (2001-2023) set.
 | `CSG20` | `tidy_budgeted_vs_actual_fund_balance` | Budgeted general fund balance vs. actual |
 | `CSG21` | `tidy_excess_unreserved_general_fund` | Excess unreserved general fund balances |
 | `VITSTAT_TOTAL` | `tidy_vitstat` | Spending per pupil, revenue mix (state/local/federal/tuition/free-balance/other %), student-staff ratios, % SpEd |
+| `DETAIL_FY##` | `tidy_total_spending_detail` | **2024+ bundles only.** Total Spending split into 6 per-pupil components (general current expense, capital outlay, grants & entitlements, food service, local debt service, SDA debt service) that sum to the published total. Header sits on row 3 under a banner; `get_raw_tges()` skips it. Data year comes from the `FY##` token (`Detail_FY24` = end_year 2024), not the report year. |
 
 Internally, CSG1-CSG15 (budget indicators) all share `tidy_generic_budget_indicator()`
 and CSG16-CSG19 (personnel) share `tidy_generic_personnel()`; CSG14 is the one
@@ -118,7 +119,7 @@ limitations, not unbuilt fetchers:
 | Item | Status | Notes |
 |---|---|---|
 | **1999, 2000** | Not retrievable | NJ DOE links these years but the downloads 404 at the source. `tges_url_for_year()` errors for them. Not a code gap — the data isn't available. The DBF-reading path is already in place if they ever reappear. |
-| **Unknown tables in 2024/2025 bundles** | Passes through raw, untested | If the per-year bundle zips ever add a new table type, `tidy_tges_data()` returns it un-tidied (cleaner lookup falls through). The structure test (`test-tges-structure.R`) only pins the historical CSG set, so a new sheet would not fail loudly. This is the one untested edge — re-audit the member list when adding a new year. |
+| **`SUMMARY` / `SUMYR3-5` / `October####_DRTRS` in 2024/2025 bundles** | Passes through raw, untested | These bundle members still fall through `tidy_tges_data()` un-tidied. `DRTRS` is a transportation **efficiency ratio** (DRTRS Utility), not a dollar cost. If a per-year bundle adds a new table type it returns raw; the structure test (`test-tges-structure.R`) only pins the historical CSG set, so re-audit the member list when adding a new year. (`Detail_FY##` is now covered — see the coverage table.) |
 | **Peer-group size (`out_of` in ranks)** | Intentionally dropped | `parse_rank()` keeps only the rank integer. Retaining the denominator would need a schema change. Low demand. |
 
 ### When adding a new year
@@ -152,10 +153,68 @@ group-average rows (`district_code` NA / `"00NA"`):
 | `tges_staffing()` | CSG16-19 ratios + median salaries + CSG14 benefits share, one row per district-year |
 | `tges_red_flags()` | loops the rank wrapper across indicators; surfaces a district's top/bottom-decile placements |
 | `tges_real_growth()` | decomposes per-pupil growth (CSG1AA) into real-cost vs enrollment-denominator components |
+| `tges_excluded_costs()` | joins `DETAIL_FY##` to CSG1: the 6 spending components excluded from budgetary cost + `excluded_total_pp` / `gce_excess_pp` differences, with a `residual_reliable` flag for the denominator caveat (see Pension coverage below) |
+
+(A further cross-district layer — `tges_find_peers()`, `tges_frontier()`,
+`tges_convergence()`, `tges_composition_drift()`, `tges_gap_cost()`,
+`tges_volatility()`, `tges_compare()` — sits on top of these; see `_pkgdown.yml`.)
 
 Tested in `tests/testthat/test-tges-analysis.R` (synthetic unit + live). Design
 notes and the persona-by-persona product map live in
 `research-private/analysis/tges-fiscal-analysis-roadmap.md`.
+
+## Pension / on-behalf TPAF coverage (and why subtraction can't isolate it)
+
+**The question:** can TGES tell us per-district teacher-pension cost? In NJ the
+state pays TPAF pension, post-retirement medical (PRM), and the employer share of
+social security **on behalf of districts** — by law these never hit a district's
+own budget. So they are excluded from the headline **Budgetary Per Pupil Cost**
+(CSG1) and from CSG2-15. They *are* folded into **Total Spending Per Pupil**
+(CSG1AA / VITSTAT), but only lumped with eight other excluded categories.
+
+**Per NJDOE's 2025 guide, Total Spending minus Budgetary cost spans nine
+categories:** (1) on-behalf TPAF pension + PRM + social security, (2)
+transportation, (3) judgments, (4) food service, (5) capital outlay, (6) special
+revenues / grants (preschool, IDEA, Title I), (7) tuition to other districts, (8)
+local debt service, (9) SDA construction debt service. Pension is one slice.
+
+**What the public files let us peel off.** The `Detail_FY##` workbook itemizes
+capital outlay, grants & entitlements, food service, and both debt-service lines
+per district. That leaves the on-behalf TPAF buried inside **General Current
+Expense** alongside transportation, tuition, and judgments. `tges_excluded_costs()`
+computes `gce_excess_pp = general_current_expense_pp − budgetary_pp` as the
+narrowest residual we can reach (≈ transportation + on-behalf TPAF + tuition +
+judgments). **It is an upper bound on pension, not a measurement.**
+
+**Two reasons subtraction can't get to clean pension:**
+1. *No itemization.* Neither the `Detail_FY##` file, the TGES bundle, nor the
+   NJDOE per-district State Aid file (`FY##_GBM_District_Details.xlsx`) breaks out
+   the TPAF lines. The State Aid file line-items Transportation **Aid** (a
+   formula subsidy, not cost) and has no pension column. The TGES transportation
+   members (`Website efficiency.xlsx`, `October####_DRTRS.xlsx`) are a DRTRS
+   **efficiency ratio**, not dollars — so transportation cost can't be netted out
+   either.
+2. *Denominator mismatch.* Budgetary cost divides by **resident enrollment**;
+   the Detail per-pupil figures divide by **enrollment + sent pupils**. For
+   self-contained districts these agree within ~1%, but for sending districts
+   (including big cities placing special-ed / vocational pupils out, e.g. Newark
+   ~9%, Jersey City ~8%) the per-pupil subtraction is invalid. Hence
+   `sent_pupil_share` + `residual_reliable` (default threshold 2%); ~40% of
+   districts fail it.
+
+**The only clean source is AudSum.** NJDOE's Audit Summary (the audited financial
+filing every district submits, and the source data behind TGES) carries on-behalf
+TPAF pension/PRM/SS as explicit GASB on-behalf revenue **and** expenditure lines,
+district-keyed. But AudSum is login-gated behind the Homeroom portal with **no
+public bulk download**. Getting itemized per-district pension would require an
+OPRA request or a data-desk ask (`audsum@doe.nj.gov`). Fund-level TPAF health
+(funded ratio, UAAL, employer contribution) is public at
+`nj.gov/treasury/pensions/actuarial-valuations.shtml` but is not district-allocable.
+
+> Bottom line: `tges_excluded_costs()` is the honest ceiling reachable from public
+> data. Treat `gce_excess_pp` as "transportation + pension + tuition," reliable
+> only for self-contained districts, never as pension alone. Clean per-district
+> pension needs an AudSum data request.
 
 ## Related
 
