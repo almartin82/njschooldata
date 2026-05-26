@@ -36,6 +36,7 @@ Suggests:
     forcats,
     geojsonio,
     ggplot2,
+    ggrepel,
     knitr,
     rmarkdown,
     scales,
