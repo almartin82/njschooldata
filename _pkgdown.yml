@@ -171,6 +171,7 @@ reference:
       - tges_staffing
       - tges_red_flags
       - tges_real_growth
+      - tges_excluded_costs
 
   - title: TGES Cross-District Comparison
     desc: >
