@@ -188,9 +188,10 @@ judgments). **It is an upper bound on pension, not a measurement.**
 
 **Two reasons subtraction can't get to clean pension:**
 1. *No itemization.* Neither the `Detail_FY##` file, the TGES bundle, nor the
-   NJDOE per-district State Aid file (`FY##_GBM_District_Details.xlsx`) breaks out
-   the TPAF lines. The State Aid file line-items Transportation **Aid** (a
-   formula subsidy, not cost) and has no pension column. The TGES transportation
+   NJDOE per-district State Aid file (`FY##_GBM_District_Details.xlsx`, now
+   exposed via `fetch_state_aid()`) breaks out the TPAF lines. The State Aid file
+   line-items Transportation **Aid** (a formula subsidy, not cost) and has no
+   pension column. The TGES transportation
    members (`Website efficiency.xlsx`, `October####_DRTRS.xlsx`) are a DRTRS
    **efficiency ratio**, not dollars — so transportation cost can't be netted out
    either.

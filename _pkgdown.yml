@@ -157,6 +157,15 @@ reference:
       - get_dfg_districts
       - get_dfg_a_districts
 
+  - title: State Aid
+    desc: >
+      Per-district K-12 state aid by category (equalization, special education,
+      transportation, security, school choice, ...) from the NJ DOE Office of
+      School Finance. The revenue-subsidy counterpart to the TGES spending data.
+    contents:
+      - fetch_state_aid
+      - fetch_many_state_aid
+
   - title: TGES Fiscal Analysis
     desc: >
       Comparative-fiscal helpers built on fetch_tges(): reshape spending,
