@@ -268,6 +268,55 @@ Additional NJ DOE data functions
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 
+## TGES Fiscal Analysis
+
+Comparative-fiscal helpers built on fetch_tges(): reshape spending, rank
+within peer groups, and screen for fiscal red flags.
+
+- [`tges_composition()`](https://almartin82.github.io/njschooldata/reference/tges_composition.md)
+  : Build a per-pupil spending composition table
+- [`tges_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/tges_percentile_rank.md)
+  : Percentile-rank a TGES metric within a peer group
+- [`tges_efficiency()`](https://almartin82.github.io/njschooldata/reference/tges_efficiency.md)
+  : Spend-versus-outcome efficiency frontier
+- [`tges_revenue_mix()`](https://almartin82.github.io/njschooldata/reference/tges_revenue_mix.md)
+  : Decompose where a district's school dollars come from
+- [`tges_fund_balance_health()`](https://almartin82.github.io/njschooldata/reference/tges_fund_balance_health.md)
+  : Fund-balance health: budgeted vs actual and excess surplus
+- [`tges_federal_exposure()`](https://almartin82.github.io/njschooldata/reference/tges_federal_exposure.md)
+  : ESSER-cliff exposure: did recurring spending ride one-time federal
+  money?
+- [`tges_staffing()`](https://almartin82.github.io/njschooldata/reference/tges_staffing.md)
+  : Staffing ratios, median salaries, and the benefits squeeze
+- [`tges_red_flags()`](https://almartin82.github.io/njschooldata/reference/tges_red_flags.md)
+  : Red-flag scan: where a district sits in the top or bottom decile of
+  peers
+- [`tges_real_growth()`](https://almartin82.github.io/njschooldata/reference/tges_real_growth.md)
+  : Decompose per-pupil spending growth into real cost vs the enrollment
+  effect
+
+## TGES Cross-District Comparison
+
+The comparative layer that reasons across districts and over time: build
+data-driven peer sets, score the spend-versus-outcome efficiency
+frontier, test convergence, track budget drift, price gaps in dollars,
+measure funding volatility, and assemble multi-district scorecards.
+
+- [`tges_find_peers()`](https://almartin82.github.io/njschooldata/reference/tges_find_peers.md)
+  : Find a district's data-driven structural peers
+- [`tges_frontier()`](https://almartin82.github.io/njschooldata/reference/tges_frontier.md)
+  : Spend-versus-outcome efficiency frontier (free-disposal hull)
+- [`tges_convergence()`](https://almartin82.github.io/njschooldata/reference/tges_convergence.md)
+  : Beta-convergence of spending across a peer group
+- [`tges_composition_drift()`](https://almartin82.github.io/njschooldata/reference/tges_composition_drift.md)
+  : Ranked composition-share drift versus peers
+- [`tges_gap_cost()`](https://almartin82.github.io/njschooldata/reference/tges_gap_cost.md)
+  : Translate a peer gap into per-pupil and total dollars
+- [`tges_volatility()`](https://almartin82.github.io/njschooldata/reference/tges_volatility.md)
+  : Year-to-year funding volatility, ranked against peers
+- [`tges_compare()`](https://almartin82.github.io/njschooldata/reference/tges_compare.md)
+  : A side-by-side fiscal scorecard for a named set of districts
+
 ## Utilities
 
 Helper functions and lookups
@@ -736,8 +785,43 @@ Additional exported functions
   : Aggregate multiple sped rows and produce summary statistics
 - [`sped_lookup_map`](https://almartin82.github.io/njschooldata/reference/sped_lookup_map.md)
   : Special Education District Lookup Map
+- [`tges_compare()`](https://almartin82.github.io/njschooldata/reference/tges_compare.md)
+  : A side-by-side fiscal scorecard for a named set of districts
+- [`tges_composition()`](https://almartin82.github.io/njschooldata/reference/tges_composition.md)
+  : Build a per-pupil spending composition table
+- [`tges_composition_drift()`](https://almartin82.github.io/njschooldata/reference/tges_composition_drift.md)
+  : Ranked composition-share drift versus peers
+- [`tges_convergence()`](https://almartin82.github.io/njschooldata/reference/tges_convergence.md)
+  : Beta-convergence of spending across a peer group
+- [`tges_efficiency()`](https://almartin82.github.io/njschooldata/reference/tges_efficiency.md)
+  : Spend-versus-outcome efficiency frontier
+- [`tges_federal_exposure()`](https://almartin82.github.io/njschooldata/reference/tges_federal_exposure.md)
+  : ESSER-cliff exposure: did recurring spending ride one-time federal
+  money?
+- [`tges_find_peers()`](https://almartin82.github.io/njschooldata/reference/tges_find_peers.md)
+  : Find a district's data-driven structural peers
+- [`tges_frontier()`](https://almartin82.github.io/njschooldata/reference/tges_frontier.md)
+  : Spend-versus-outcome efficiency frontier (free-disposal hull)
+- [`tges_fund_balance_health()`](https://almartin82.github.io/njschooldata/reference/tges_fund_balance_health.md)
+  : Fund-balance health: budgeted vs actual and excess surplus
+- [`tges_gap_cost()`](https://almartin82.github.io/njschooldata/reference/tges_gap_cost.md)
+  : Translate a peer gap into per-pupil and total dollars
 - [`tges_name_cleaner()`](https://almartin82.github.io/njschooldata/reference/tges_name_cleaner.md)
   : TGES name cleaner
+- [`tges_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/tges_percentile_rank.md)
+  : Percentile-rank a TGES metric within a peer group
+- [`tges_real_growth()`](https://almartin82.github.io/njschooldata/reference/tges_real_growth.md)
+  : Decompose per-pupil spending growth into real cost vs the enrollment
+  effect
+- [`tges_red_flags()`](https://almartin82.github.io/njschooldata/reference/tges_red_flags.md)
+  : Red-flag scan: where a district sits in the top or bottom decile of
+  peers
+- [`tges_revenue_mix()`](https://almartin82.github.io/njschooldata/reference/tges_revenue_mix.md)
+  : Decompose where a district's school dollars come from
+- [`tges_staffing()`](https://almartin82.github.io/njschooldata/reference/tges_staffing.md)
+  : Staffing ratios, median salaries, and the benefits squeeze
+- [`tges_volatility()`](https://almartin82.github.io/njschooldata/reference/tges_volatility.md)
+  : Year-to-year funding volatility, ranked against peers
 - [`tidy_absence()`](https://almartin82.github.io/njschooldata/reference/tidy_absence.md)
   : Tidy chronic absenteeism data
 - [`tidy_budgetary_per_pupil_cost()`](https://almartin82.github.io/njschooldata/reference/tidy_budgetary_per_pupil_cost.md)

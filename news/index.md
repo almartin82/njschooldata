@@ -36,6 +36,71 @@
 - Missing-data markers (“N.R.” Not Reported, “N.A.” Not Applicable)
   coerce cleanly to NA without warnings.
 
+### New features
+
+- A comparative fiscal-analysis toolkit in `R/tges_analysis.R` points
+  the peer-benchmarking engine (built for outcomes) at dollars. Three
+  core functions:
+  - [`tges_composition()`](https://almartin82.github.io/njschooldata/reference/tges_composition.md)
+    reshapes the per-category indicators into one row per district-year
+    with each category as a per-pupil dollar plus its share of budgetary
+    per-pupil cost.
+  - [`tges_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/tges_percentile_rank.md)
+    ranks any TGES metric within a peer group (TGES enrollment band,
+    DFG, county, or statewide).
+  - [`tges_efficiency()`](https://almartin82.github.io/njschooldata/reference/tges_efficiency.md)
+    joins per-pupil spend to a caller-supplied outcome percentile and
+    labels the spend-vs-outcome quadrant.
+- Six comparative helpers on top of those:
+  - [`tges_revenue_mix()`](https://almartin82.github.io/njschooldata/reference/tges_revenue_mix.md)
+    decomposes VITSTAT into revenue shares and per-pupil dollar
+    attribution (local property tax vs. state aid vs. federal).
+  - [`tges_fund_balance_health()`](https://almartin82.github.io/njschooldata/reference/tges_fund_balance_health.md)
+    joins CSG20/CSG21 and flags structural deficit (declining actual
+    balance) and excess surplus over the statutory cap.
+  - [`tges_federal_exposure()`](https://almartin82.github.io/njschooldata/reference/tges_federal_exposure.md)
+    screens the ESSER cliff off the federal revenue share: pre-pandemic
+    baseline vs. ESSER-window peak, flagged when per-pupil spending grew
+    during the surge.
+  - [`tges_staffing()`](https://almartin82.github.io/njschooldata/reference/tges_staffing.md)
+    reshapes CSG16-19 and CSG14 into a negotiation dashboard
+    (student/teacher, student/administrator, faculty/administrator
+    ratios, median salaries, and benefits as a share of salaries).
+  - [`tges_red_flags()`](https://almartin82.github.io/njschooldata/reference/tges_red_flags.md)
+    loops the rank wrapper across every major indicator and surfaces a
+    district’s top/bottom-decile placements within its peers.
+  - [`tges_real_growth()`](https://almartin82.github.io/njschooldata/reference/tges_real_growth.md)
+    decomposes per-pupil spending growth into a real-cost component and
+    an enrollment (denominator) component that sum to the total, with
+    optional caller-supplied price deflator for real-terms growth.
+- A cross-district comparative layer that reasons across districts (and
+  over time) rather than one rank at a time:
+  - [`tges_find_peers()`](https://almartin82.github.io/njschooldata/reference/tges_find_peers.md)
+    builds a data-driven peer set by scaled Euclidean distance over
+    enrollment, per-pupil cost, composition, and revenue mix, and feeds
+    the new `peer = "custom"` mode of
+    [`tges_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/tges_percentile_rank.md).
+  - [`tges_frontier()`](https://almartin82.github.io/njschooldata/reference/tges_frontier.md)
+    scores each district against the free-disposal-hull
+    spend-versus-outcome efficiency frontier (0-1) and names the
+    district that reaches at least its outcome for less money (no solver
+    dependency).
+  - [`tges_convergence()`](https://almartin82.github.io/njschooldata/reference/tges_convergence.md)
+    regresses spending growth on starting level within a peer group to
+    test beta-convergence (are the gaps closing or widening?).
+  - [`tges_composition_drift()`](https://almartin82.github.io/njschooldata/reference/tges_composition_drift.md)
+    measures how each spending share moved between two years and ranks
+    the move against peers.
+  - [`tges_gap_cost()`](https://almartin82.github.io/njschooldata/reference/tges_gap_cost.md)
+    translates a peer gap (e.g. classroom share vs. the DFG A median)
+    into per-pupil and district-wide dollars.
+  - [`tges_volatility()`](https://almartin82.github.io/njschooldata/reference/tges_volatility.md)
+    measures year-to-year funding volatility (coefficient of variation
+    plus typical/worst swing) and ranks it within the peer group.
+  - [`tges_compare()`](https://almartin82.github.io/njschooldata/reference/tges_compare.md)
+    assembles a side-by-side fiscal scorecard for a named set of
+    districts (the counterfactual-cities table).
+
 ### Articles
 
 - New “Following the Money” spending deep-dives built entirely on
@@ -45,6 +110,17 @@
   years of per-pupil spending, revenue mix, benefits, facilities, and
   the classroom dollar; the Newark article also compares the district to
   its largest charter networks.
+- “What Did Newark’s Gains Cost? A DFG A Fiscal Brief” applies the
+  comparative toolkit to benchmark Newark against its 37 highest-need
+  DFG A peers on revenue mix, classroom share, real
+  vs. enrollment-driven cost growth, ESSER exposure, staffing, and a
+  one-page red-flag scan.
+- “Newark on the Efficiency Frontier: Do the Dollars Pay Off?” works the
+  new cross-district layer end to end: data-driven peers, the
+  spend-versus-graduation efficiency frontier, the dollar cost of
+  closing the classroom-share gap, DFG A spending convergence,
+  composition drift, federal-funding volatility, and a five-city
+  scorecard.
 
 ### Tests
 
@@ -52,6 +128,14 @@
   and rank parser plus live ground-truth and round-trip fidelity tests
   that pin real district values and verify the wide-to-long reshape
   neither invents nor drops rows across the full 2001-2025 range.
+- The comparative toolkit is covered by `test-tges-analysis.R`
+  (synthetic-fixture unit tests for the reshape/rank/join/decomposition
+  math plus live integration). The cross-district layer adds 34 more
+  cases that pin the free-disposal-hull scores and references,
+  convergence/divergence signs, signed composition drift, the
+  share-to-dollars gap math, volatility ranking, and the scorecard
+  assembly, with live checks against the 2024 guide and DFG A graduation
+  outcomes.
 
 ## njschooldata 0.9.7
 

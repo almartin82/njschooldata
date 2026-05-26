@@ -22,6 +22,8 @@
     <li><a class="dropdown-item" href="../articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
     <li><a class="dropdown-item" href="../articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="../articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
+    <li><a class="dropdown-item" href="../articles/newark-fiscal-brief.html">What Did Newark's Gains Cost? A DFG A Fiscal Brief</a></li>
+    <li><a class="dropdown-item" href="../articles/newark-efficiency-frontier.html">Newark on the Efficiency Frontier: Do the Dollars Pay Off?</a></li>
     <li><a class="dropdown-item" href="../articles/spr-dictionary.html">SPR Data Dictionary</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -884,6 +886,136 @@
 
         </dt>
         <dd>Get DFG A districts (highest-need peer group)</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tges-fiscal-analysis">TGES Fiscal Analysis<a class="anchor" aria-label="anchor" href="#tges-fiscal-analysis"></a></h2>
+
+      <div class="section-desc"><p>Comparative-fiscal helpers built on fetch_tges(): reshape spending, rank within peer groups, and screen for fiscal red flags.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="tges_composition.html">tges_composition()</a></code>
+
+        </dt>
+        <dd>Build a per-pupil spending composition table</dd>
+
+        <dt>
+
+          <code><a href="tges_percentile_rank.html">tges_percentile_rank()</a></code>
+
+        </dt>
+        <dd>Percentile-rank a TGES metric within a peer group</dd>
+
+        <dt>
+
+          <code><a href="tges_efficiency.html">tges_efficiency()</a></code>
+
+        </dt>
+        <dd>Spend-versus-outcome efficiency frontier</dd>
+
+        <dt>
+
+          <code><a href="tges_revenue_mix.html">tges_revenue_mix()</a></code>
+
+        </dt>
+        <dd>Decompose where a district's school dollars come from</dd>
+
+        <dt>
+
+          <code><a href="tges_fund_balance_health.html">tges_fund_balance_health()</a></code>
+
+        </dt>
+        <dd>Fund-balance health: budgeted vs actual and excess surplus</dd>
+
+        <dt>
+
+          <code><a href="tges_federal_exposure.html">tges_federal_exposure()</a></code>
+
+        </dt>
+        <dd>ESSER-cliff exposure: did recurring spending ride one-time federal money?</dd>
+
+        <dt>
+
+          <code><a href="tges_staffing.html">tges_staffing()</a></code>
+
+        </dt>
+        <dd>Staffing ratios, median salaries, and the benefits squeeze</dd>
+
+        <dt>
+
+          <code><a href="tges_red_flags.html">tges_red_flags()</a></code>
+
+        </dt>
+        <dd>Red-flag scan: where a district sits in the top or bottom decile of peers</dd>
+
+        <dt>
+
+          <code><a href="tges_real_growth.html">tges_real_growth()</a></code>
+
+        </dt>
+        <dd>Decompose per-pupil spending growth into real cost vs the enrollment effect</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tges-cross-district-comparison">TGES Cross-District Comparison<a class="anchor" aria-label="anchor" href="#tges-cross-district-comparison"></a></h2>
+
+      <div class="section-desc"><p>The comparative layer that reasons across districts and over time: build data-driven peer sets, score the spend-versus-outcome efficiency frontier, test convergence, track budget drift, price gaps in dollars, measure funding volatility, and assemble multi-district scorecards.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="tges_find_peers.html">tges_find_peers()</a></code>
+
+        </dt>
+        <dd>Find a district's data-driven structural peers</dd>
+
+        <dt>
+
+          <code><a href="tges_frontier.html">tges_frontier()</a></code>
+
+        </dt>
+        <dd>Spend-versus-outcome efficiency frontier (free-disposal hull)</dd>
+
+        <dt>
+
+          <code><a href="tges_convergence.html">tges_convergence()</a></code>
+
+        </dt>
+        <dd>Beta-convergence of spending across a peer group</dd>
+
+        <dt>
+
+          <code><a href="tges_composition_drift.html">tges_composition_drift()</a></code>
+
+        </dt>
+        <dd>Ranked composition-share drift versus peers</dd>
+
+        <dt>
+
+          <code><a href="tges_gap_cost.html">tges_gap_cost()</a></code>
+
+        </dt>
+        <dd>Translate a peer gap into per-pupil and total dollars</dd>
+
+        <dt>
+
+          <code><a href="tges_volatility.html">tges_volatility()</a></code>
+
+        </dt>
+        <dd>Year-to-year funding volatility, ranked against peers</dd>
+
+        <dt>
+
+          <code><a href="tges_compare.html">tges_compare()</a></code>
+
+        </dt>
+        <dd>A side-by-side fiscal scorecard for a named set of districts</dd>
       </dl></div><div class="section level2">
       <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
 
@@ -2475,10 +2607,122 @@
 
         <dt>
 
+          <code><a href="tges_compare.html">tges_compare()</a></code>
+
+        </dt>
+        <dd>A side-by-side fiscal scorecard for a named set of districts</dd>
+
+        <dt>
+
+          <code><a href="tges_composition.html">tges_composition()</a></code>
+
+        </dt>
+        <dd>Build a per-pupil spending composition table</dd>
+
+        <dt>
+
+          <code><a href="tges_composition_drift.html">tges_composition_drift()</a></code>
+
+        </dt>
+        <dd>Ranked composition-share drift versus peers</dd>
+
+        <dt>
+
+          <code><a href="tges_convergence.html">tges_convergence()</a></code>
+
+        </dt>
+        <dd>Beta-convergence of spending across a peer group</dd>
+
+        <dt>
+
+          <code><a href="tges_efficiency.html">tges_efficiency()</a></code>
+
+        </dt>
+        <dd>Spend-versus-outcome efficiency frontier</dd>
+
+        <dt>
+
+          <code><a href="tges_federal_exposure.html">tges_federal_exposure()</a></code>
+
+        </dt>
+        <dd>ESSER-cliff exposure: did recurring spending ride one-time federal money?</dd>
+
+        <dt>
+
+          <code><a href="tges_find_peers.html">tges_find_peers()</a></code>
+
+        </dt>
+        <dd>Find a district's data-driven structural peers</dd>
+
+        <dt>
+
+          <code><a href="tges_frontier.html">tges_frontier()</a></code>
+
+        </dt>
+        <dd>Spend-versus-outcome efficiency frontier (free-disposal hull)</dd>
+
+        <dt>
+
+          <code><a href="tges_fund_balance_health.html">tges_fund_balance_health()</a></code>
+
+        </dt>
+        <dd>Fund-balance health: budgeted vs actual and excess surplus</dd>
+
+        <dt>
+
+          <code><a href="tges_gap_cost.html">tges_gap_cost()</a></code>
+
+        </dt>
+        <dd>Translate a peer gap into per-pupil and total dollars</dd>
+
+        <dt>
+
           <code><a href="tges_name_cleaner.html">tges_name_cleaner()</a></code>
 
         </dt>
         <dd>TGES name cleaner</dd>
+
+        <dt>
+
+          <code><a href="tges_percentile_rank.html">tges_percentile_rank()</a></code>
+
+        </dt>
+        <dd>Percentile-rank a TGES metric within a peer group</dd>
+
+        <dt>
+
+          <code><a href="tges_real_growth.html">tges_real_growth()</a></code>
+
+        </dt>
+        <dd>Decompose per-pupil spending growth into real cost vs the enrollment effect</dd>
+
+        <dt>
+
+          <code><a href="tges_red_flags.html">tges_red_flags()</a></code>
+
+        </dt>
+        <dd>Red-flag scan: where a district sits in the top or bottom decile of peers</dd>
+
+        <dt>
+
+          <code><a href="tges_revenue_mix.html">tges_revenue_mix()</a></code>
+
+        </dt>
+        <dd>Decompose where a district's school dollars come from</dd>
+
+        <dt>
+
+          <code><a href="tges_staffing.html">tges_staffing()</a></code>
+
+        </dt>
+        <dd>Staffing ratios, median salaries, and the benefits squeeze</dd>
+
+        <dt>
+
+          <code><a href="tges_volatility.html">tges_volatility()</a></code>
+
+        </dt>
+        <dd>Year-to-year funding volatility, ranked against peers</dd>
 
         <dt>
 
