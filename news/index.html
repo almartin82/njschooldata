@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,18 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.10" id="njschooldata-0910">njschooldata 0.9.10<a class="anchor" aria-label="anchor" href="#njschooldata-0910"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-10">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-10"></a></h3>
+<ul><li>
+<code><a href="../reference/fetch_state_aid.html">fetch_state_aid()</a></code> and <code><a href="../reference/fetch_many_state_aid.html">fetch_many_state_aid()</a></code> pull the NJ DOE Office of School Finance K-12 State Aid “District Details” workbook: per-district aid by category (equalization, educational adequacy, school choice, transportation, special education, security, adjustment, vocational expansion stabilization, military impact) plus the year totals. Output is long/tidy, one row per district per category, with <code>is_aid_category</code> distinguishing the categories from the totals/difference columns. This is the state-aid (revenue subsidy) counterpart to the spending data in <code><a href="../reference/fetch_tges.html">fetch_tges()</a></code>.
+<ul><li>Category names are normalized across years, so the label drift in the source (“Choice Aid” vs “School Choice Aid”; “Special Education Categorical Aid” vs “Special Education Aid”) collapses to one cross-year name.</li>
+<li>The fetcher tries the current-year direct workbook URL first, then falls back to the archived per-year zip bundle and locates the district-details member by name (which also drifts across years). Valid years are 2019 and later.</li>
+<li>Note: <code>transportation_aid</code> is a formula subsidy, not transportation cost, and runs well below a district’s actual spending; see the TGES dev-doc.</li>
+</ul></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.9" id="njschooldata-099">njschooldata 0.9.9<a class="anchor" aria-label="anchor" href="#njschooldata-099"></a></h2>
 <div class="section level3">

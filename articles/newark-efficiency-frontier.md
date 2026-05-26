@@ -493,8 +493,8 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scales_1.4.0       tidyr_1.3.2        dplyr_1.2.1        ggplot2_4.0.3     
-#> [5] njschooldata_0.9.9
+#> [1] scales_1.4.0        tidyr_1.3.2         dplyr_1.2.1        
+#> [4] ggplot2_4.0.3       njschooldata_0.9.10
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       xfun_0.57          bslib_0.11.0       ggrepel_0.9.8     

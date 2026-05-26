@@ -156,6 +156,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_hspa.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_ib_participation.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_many_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_many_tges.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_msgp.html</loc></url>
@@ -189,6 +190,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_tges.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.html</loc></url>
@@ -235,6 +237,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_school_directory.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sla.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_tges.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_rc_databases.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_reportcard_special_pop.html</loc></url>
@@ -300,6 +303,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_clear.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_dir.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_info.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/normalize_state_aid_category.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/nwk_address_addendum.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/pad_cds.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/pad_grade.html</loc></url>
@@ -404,6 +408,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_administrators.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_special_service.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_teachers.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_support_services_salaries.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_tges_data.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_total_classroom_instruction.html</loc></url>

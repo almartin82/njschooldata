@@ -1026,6 +1026,18 @@ Additional NJ DOE data functions
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 
+## State Aid
+
+Per-district K-12 state aid by category (equalization, special
+education, transportation, security, school choice, …) from the NJ DOE
+Office of School Finance. The revenue-subsidy counterpart to the TGES
+spending data.
+
+- [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md)
+  : Fetch NJ K-12 State Aid by District and Category
+- [`fetch_many_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_many_state_aid.md)
+  : Fetch Multiple Years of NJ K-12 State Aid
+
 ## TGES Fiscal Analysis
 
 Comparative-fiscal helpers built on fetch_tges(): reshape spending, rank
@@ -1325,6 +1337,8 @@ Additional exported functions
   : Fetch IB Participation Data
 - [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md)
   : Fetch Industry Valued Credentials Data
+- [`fetch_many_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_many_state_aid.md)
+  : Fetch Multiple Years of NJ K-12 State Aid
 - [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md)
   : Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending
 - [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
@@ -1389,6 +1403,8 @@ Additional exported functions
   : Fetch Staff Demographics Data
 - [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
   : Fetch Student-Staff Ratio Data
+- [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md)
+  : Fetch NJ K-12 State Aid by District and Category
 - [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md)
   : Fetch Teacher Experience Data
 - [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)

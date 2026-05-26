@@ -1,5 +1,33 @@
 # Changelog
 
+## njschooldata 0.9.10
+
+### New features
+
+- [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md)
+  and
+  [`fetch_many_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_many_state_aid.md)
+  pull the NJ DOE Office of School Finance K-12 State Aid “District
+  Details” workbook: per-district aid by category (equalization,
+  educational adequacy, school choice, transportation, special
+  education, security, adjustment, vocational expansion stabilization,
+  military impact) plus the year totals. Output is long/tidy, one row
+  per district per category, with `is_aid_category` distinguishing the
+  categories from the totals/difference columns. This is the state-aid
+  (revenue subsidy) counterpart to the spending data in
+  [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md).
+  - Category names are normalized across years, so the label drift in
+    the source (“Choice Aid” vs “School Choice Aid”; “Special Education
+    Categorical Aid” vs “Special Education Aid”) collapses to one
+    cross-year name.
+  - The fetcher tries the current-year direct workbook URL first, then
+    falls back to the archived per-year zip bundle and locates the
+    district-details member by name (which also drifts across years).
+    Valid years are 2019 and later.
+  - Note: `transportation_aid` is a formula subsidy, not transportation
+    cost, and runs well below a district’s actual spending; see the TGES
+    dev-doc.
+
 ## njschooldata 0.9.9
 
 ### New features
