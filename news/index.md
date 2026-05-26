@@ -1,5 +1,35 @@
 # Changelog
 
+## njschooldata 0.9.9
+
+### New features
+
+- Total Spending Detail is now parsed. The `Detail_FY##.xlsx` workbooks
+  that ship inside the 2024+ TGES bundles were passing through un-tidied
+  (their real header sits on row 3 under a description banner).
+  [`get_raw_tges()`](https://almartin82.github.io/njschooldata/reference/get_raw_tges.md)
+  now skips the banner and
+  [`tidy_total_spending_detail()`](https://almartin82.github.io/njschooldata/reference/tidy_total_spending_detail.md)
+  cleans them into six per-pupil component columns (general current
+  expense, capital outlay, grants & entitlements, food service,
+  locally-issued debt service, SDA debt service) that sum to the
+  published total. Tables surface as `DETAIL_FY24` / `DETAIL_FY23` in
+  [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)
+  output.
+- [`tges_excluded_costs()`](https://almartin82.github.io/njschooldata/reference/tges_excluded_costs.md)
+  joins Total Spending Detail to CSG1 to expose, per district-year,
+  everything the budgetary per-pupil figure leaves out, including the
+  state-paid on-behalf TPAF pension. It returns the six components plus
+  two differences: `excluded_total_pp` (total spending minus budgetary,
+  the full wedge) and `gce_excess_pp` (general current expense minus
+  budgetary, roughly transportation + on-behalf TPAF + tuition +
+  judgments). Because budgetary cost divides by resident enrollment
+  while the Detail figures divide by enrollment plus sent pupils, the
+  helper carries `sent_pupil_share` and a `residual_reliable` flag so
+  sending districts (where the per-pupil subtraction breaks down) are
+  marked. Neither difference isolates pension on its own; no public TGES
+  file breaks out the on-behalf TPAF line.
+
 ## njschooldata 0.9.8
 
 ### Bug fixes

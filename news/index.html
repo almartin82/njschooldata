@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,15 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.9" id="njschooldata-099">njschooldata 0.9.9<a class="anchor" aria-label="anchor" href="#njschooldata-099"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-9">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-9"></a></h3>
+<ul><li>Total Spending Detail is now parsed. The <code>Detail_FY##.xlsx</code> workbooks that ship inside the 2024+ TGES bundles were passing through un-tidied (their real header sits on row 3 under a description banner). <code><a href="../reference/get_raw_tges.html">get_raw_tges()</a></code> now skips the banner and <code><a href="../reference/tidy_total_spending_detail.html">tidy_total_spending_detail()</a></code> cleans them into six per-pupil component columns (general current expense, capital outlay, grants &amp; entitlements, food service, locally-issued debt service, SDA debt service) that sum to the published total. Tables surface as <code>DETAIL_FY24</code> / <code>DETAIL_FY23</code> in <code><a href="../reference/fetch_tges.html">fetch_tges()</a></code> output.</li>
+<li>
+<code><a href="../reference/tges_excluded_costs.html">tges_excluded_costs()</a></code> joins Total Spending Detail to CSG1 to expose, per district-year, everything the budgetary per-pupil figure leaves out, including the state-paid on-behalf TPAF pension. It returns the six components plus two differences: <code>excluded_total_pp</code> (total spending minus budgetary, the full wedge) and <code>gce_excess_pp</code> (general current expense minus budgetary, roughly transportation + on-behalf TPAF + tuition + judgments). Because budgetary cost divides by resident enrollment while the Detail figures divide by enrollment plus sent pupils, the helper carries <code>sent_pupil_share</code> and a <code>residual_reliable</code> flag so sending districts (where the per-pupil subtraction breaks down) are marked. Neither difference isolates pension on its own; no public TGES file breaks out the on-behalf TPAF line.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.8" id="njschooldata-098">njschooldata 0.9.8<a class="anchor" aria-label="anchor" href="#njschooldata-098"></a></h2>
 <div class="section level3">

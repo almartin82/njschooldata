@@ -1052,6 +1052,9 @@ within peer groups, and screen for fiscal red flags.
 - [`tges_real_growth()`](https://almartin82.github.io/njschooldata/reference/tges_real_growth.md)
   : Decompose per-pupil spending growth into real cost vs the enrollment
   effect
+- [`tges_excluded_costs()`](https://almartin82.github.io/njschooldata/reference/tges_excluded_costs.md)
+  : What the budgetary per-pupil figure leaves out (incl. on-behalf TPAF
+  pension)
 
 ## TGES Cross-District Comparison
 
@@ -1553,6 +1556,9 @@ Additional exported functions
   : Beta-convergence of spending across a peer group
 - [`tges_efficiency()`](https://almartin82.github.io/njschooldata/reference/tges_efficiency.md)
   : Spend-versus-outcome efficiency frontier
+- [`tges_excluded_costs()`](https://almartin82.github.io/njschooldata/reference/tges_excluded_costs.md)
+  : What the budgetary per-pupil figure leaves out (incl. on-behalf TPAF
+  pension)
 - [`tges_federal_exposure()`](https://almartin82.github.io/njschooldata/reference/tges_federal_exposure.md)
   : ESSER-cliff exposure: did recurring spending ride one-time federal
   money?

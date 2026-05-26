@@ -525,7 +525,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] scales_1.4.0       tidyr_1.3.2        dplyr_1.2.1        ggplot2_4.0.3     
-#> [5] njschooldata_0.9.8
+#> [5] njschooldata_0.9.9
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     stringi_1.8.7     
