@@ -33,6 +33,7 @@ the relevant doc only when the trigger applies, to keep context lean.
 | [`dev-docs/pkgdown-deploy.md`](dev-docs/pkgdown-deploy.md) | Configuring or debugging the pkgdown deploy, editing `_pkgdown.yml`, or enabling Pages on a new repo |
 | [`dev-docs/data-source-urls.md`](dev-docs/data-source-urls.md) | A fetcher 404s / returns HTML, a download is empty, or a fetch URL needs updating for a new year |
 | [`dev-docs/spr-coverage-gap.md`](dev-docs/spr-coverage-gap.md) | Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work |
+| [`dev-docs/tges-coverage.md`](dev-docs/tges-coverage.md) | Working on `fetch_tges()`/`get_raw_tges()`/`tidy_tges_data()`, adding a new TGES year, a TGES download 404s, or scoping TGES coverage |
 
 ## Project Structure - PUBLIC vs PRIVATE
 

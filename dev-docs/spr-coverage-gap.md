@@ -132,7 +132,9 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 | SLE_Participation | both | Student Learning Expectations participation | NEW-med | `fetch_spr_sle()` |
 | IndustryValuedCredentials | both | Industry-valued credentials earned (overall) | NEW-med | `fetch_spr_ivc()` |
 
-**Note on AP_IB_Dual_Participation:** `fetch_ap_participation()` intentionally stops for 2025 because the school-level sheet is malformed in the 2024-25 database. A fix is tracked in PR fix/spr-redesign-followups-2025. Once fixed, this sheet moves to "covered."
+**Note on AP_IB_Dual_Participation:** `fetch_ap_participation()` intentionally stops (errors) for end_year 2025 because the school-level sheet is malformed in the 2024-25 database (pre-2025 works). This remains open — the malformation is at the source. Once NJ DOE reissues a clean sheet (or a row-level workaround is written), this moves to "covered."
+
+**Note on CTE / Industry-Valued Credentials:** Overall CTE participation and industry-valued credentials are already accessible via the standalone `fetch_cte_participation()` (reads `CTEParticipationByStudentGroup`) and `fetch_industry_credentials()` (reads `IndustryValuedCredentialsEarned` / `IndustryValuedCredClusters`). The plain `CTEParticipation` / `IndustryValuedCredentials` summary rows above are lower priority given that coverage.
 
 ---
 
@@ -185,13 +187,15 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 
 | Sheet name | DB | What it holds | Status | Proposed fetcher |
 |---|---|---|---|---|
-| AdministratorsExperience | both | Administrator experience distribution | NEW-med | `fetch_spr_admin_experience()` |
-| StaffCounts | both | Counts of staff by role | NEW-med | `fetch_spr_staff_counts()` |
-| TeachersAdminsDemoSubjectArea | both | Teacher/admin demographics by subject area | NEW-med | `fetch_spr_staff_demo_subject()` |
-| TeachersAdminsEducation | both | Teacher/admin education level distribution | NEW-med | `fetch_spr_staff_education()` |
-| TeachersAdminsOneYearRetention | both | One-year retention rates for teachers and admins | NEW-high | `fetch_spr_staff_retention()` |
-| TeacherExperienceSubjArea | both | Teacher experience broken out by subject area | NEW-med | `fetch_spr_teacher_exp_subject()` |
-| StatewideEducatorEquity | district/state only | Statewide educator equity metrics | NEW-high | `fetch_spr_educator_equity()` |
+| AdministratorsExperience | both | Administrator experience distribution | ✅ done | `fetch_spr_admin_experience()` |
+| StaffCounts | both | Counts of staff by role | ✅ done | `fetch_spr_staff_counts()` |
+| TeachersAdminsDemoSubjectArea | both | Teacher/admin demographics by subject area | ✅ done | `fetch_spr_staff_demo_subject()` |
+| TeachersAdminsEducation | both | Teacher/admin education level distribution | ✅ done | `fetch_spr_staff_education()` |
+| TeachersAdminsOneYearRetention | both | One-year retention rates for teachers and admins | ✅ done | `fetch_spr_staff_retention()` |
+| TeacherExperienceSubjArea | both | Teacher experience broken out by subject area | ✅ done | `fetch_spr_teacher_exp_subject()` |
+| StatewideEducatorEquity | district/state only | Statewide educator equity metrics | ✅ done | `fetch_spr_educator_equity()` |
+
+**All Staff sheets are implemented** (PR #252 + backfill — see "Already Implemented"). The proposed fetcher names above became the actual function names. No staff sheets remain uncovered.
 
 ---
 
@@ -213,7 +217,7 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 
 **Redundant-low explanation:** `ChronicAbsenteeismTrends` duplicates what `fetch_absence()` provides via a standalone fetcher.
 
-**Note on ESSAAccountabilityStatusList/Counts:** `fetch_essa_status(2025, level="district")` is currently broken because these sheets replaced the prior district-level sheet. A fix is tracked in PR fix/spr-redesign-followups-2025. Once fixed, these two sheets will be covered.
+**Note on ESSAAccountabilityStatusList/Counts:** Covered. `fetch_essa_status(2025, level="district")` now routes to `ESSAAccountabilityStatusList` — the 2024-25 redesign replaced the prior district-level `ESSAAccountabilityStatus` sheet with this per-entity analogue (identical 12-column layout, including `CategoryOfIdentification`); pre-2025 district behavior is unchanged. `ESSAAccountabilityStatusCounts` is covered by `fetch_spr_essa_status_counts()` (see "Already Implemented").
 
 ---
 
@@ -221,8 +225,9 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 
 | Fetcher | Sheet affected | Symptom | Fix status |
 |---|---|---|---|
-| `fetch_essa_status(2025, level="district")` | `ESSAAccountabilityStatusList` / `ESSAAccountabilityStatusCounts` replaced prior sheet | Error / wrong data | In progress — PR fix/spr-redesign-followups-2025 |
-| `fetch_ap_participation(2025)` | `AP_IB_Dual_Participation` malformed at school level | Intentionally returns NA / stops | In progress — PR fix/spr-redesign-followups-2025 |
+| `fetch_ap_participation(2025)` | `AP_IB_Dual_Participation` malformed at school level | Intentionally stops (errors) for end_year 2025 | Open — pre-2025 works; the 2024-25 school sheet is malformed at the source |
+
+**Resolved:** `fetch_essa_status(2025, level="district")` — fixed. It now routes 2025 district requests to `ESSAAccountabilityStatusList` (the redesign's per-entity replacement for the district `ESSAAccountabilityStatus` sheet). No longer a break.
 
 ---
 
@@ -251,8 +256,8 @@ Candidates that are genuinely new data (no standalone fetcher equivalent) and ha
 
 ### Tier 3 — Lower priority
 
-- Remaining staff sheets (AdministratorsExperience, StaffCounts, TeachersAdminsDemoSubjectArea, TeachersAdminsEducation, TeacherExperienceSubjArea)
+- ~~Remaining staff sheets~~ — **done** (all 7 staff sheets implemented in PR #252 + backfill)
 - Enrollment SPR views (redundant with `fetch_enr()` but useful for consistent SPR-sourced pipelines)
-- Seal of Biliteracy Summary/Trends/StudentGroup (language sheet already covered; these add breadth)
-- College/career additions (AP_IB_Dual_PartStudentGroup, ABIBCoursesOffered, CTEParticipation, SLE_Participation, IndustryValuedCredentials)
-- Assessment SPR views marked redundant-low (ELAPerformanceByTest / MathPerformancebyTest have some new value via test-variant breakdown)
+- Seal of Biliteracy Summary/Trends/StudentGroup (language sheet already covered via `fetch_biliteracy_seal()`; these add breadth)
+- College/career additions (AP_IB_Dual_PartStudentGroup, ABIBCoursesOffered, SLE_Participation) — note: overall CTE participation and industry-valued credentials are already covered by `fetch_cte_participation()` / `fetch_industry_credentials()`
+- Assessment SPR views marked redundant-low (ELAPerformanceByTest / MathPerformancebyTest have some new value via test-variant breakdown); plus `DLMTrends` (alternate assessment — no standalone equivalent)
