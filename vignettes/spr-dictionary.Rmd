@@ -15,13 +15,16 @@ knitr::opts_chunk$set(
   fig.height = 6,
   out.width = "100%",
   message = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  cache = FALSE
 )
 ```
 
 ```{r load-packages}
 library(njschooldata)
 library(dplyr)
+library(purrr)
+library(ggplot2)
 ```
 
 ## School Performance Reports (SPR) Database
@@ -34,28 +37,34 @@ This document provides a dictionary of available sheets and examples of how to u
 
 ### Using the Generic Extractor
 
-```r
-# Get chronic absenteeism data
-ca <- fetch_spr_data("ChronicAbsenteeism", 2024)
-
-# Get teacher experience data
-teachers <- fetch_spr_data("TeachersExperience", 2024)
-
-# Get district-level data
+```{r generic-extractor, cache = TRUE}
+# The generic extractor pulls any sheet by its NJ DOE name.
+# level = "district" returns district + state aggregates from one ~30 MB
+# workbook; level = "school" returns school-level rows (a much larger download).
+ca        <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "district")
+teachers  <- fetch_spr_data("TeachersExperience", 2024, level = "district")
 grad_dist <- fetch_spr_data("6YrGraduationCohortProfile", 2024, level = "district")
+```
+
+```{r generic-extractor-show}
+# Every sheet comes back as a tidy data frame with cleaned snake_case columns
+dim(ca)
+head(names(ca), 9)
 ```
 
 ### Using Convenience Functions
 
-```r
-# Chronic absenteeism (convenience wrapper)
-ca <- fetch_chronic_absenteeism(2024)
+```{r convenience-fns, cache = TRUE}
+# Convenience wrappers track the sheet renames NJ DOE makes across years,
+# so you do not have to remember which name a given year uses.
+ca       <- fetch_chronic_absenteeism(2024, level = "district")
+ca_grade <- fetch_absenteeism_by_grade(2024, level = "district")
+days     <- fetch_days_absent(2024, level = "district")
+```
 
-# By grade level
-ca_grade <- fetch_absenteeism_by_grade(2024)
-
-# Days absent statistics
-days <- fetch_days_absent(2024)
+```{r convenience-fns-show}
+# fetch_absenteeism_by_grade() adds a grade_level column (PK, KG, 1-12)
+sort(unique(ca_grade$grade_level))
 ```
 
 ## Available SPR Sheets
@@ -180,85 +189,135 @@ days <- fetch_days_absent(2024)
 
 ### Chronic Absenteeism Analysis
 
-```r
-# Get school-level chronic absenteeism
-ca <- fetch_chronic_absenteeism(2024)
+Which districts have the highest chronic absenteeism, and how has the
+statewide rate moved since COVID?
 
-# Filter for high-absenteeism schools
+```{r ca-analysis-fetch, cache = TRUE}
+ca <- fetch_chronic_absenteeism(2024, level = "district")
+```
+
+```{r ca-analysis-districts}
+# Districts where more than 30% of students are chronically absent
 high_absent <- ca %>%
-  filter(
-    subgroup == "total population",
-    chronically_absent_rate > 20
-  ) %>%
-  arrange(desc(chronically_absent_rate))
+  filter(is_district,
+         subgroup == "total population",
+         chronically_absent_rate > 30) %>%
+  arrange(desc(chronically_absent_rate)) %>%
+  select(district_name, chronically_absent_rate)
 
-# Compare across years
-library(purrr)
+stopifnot(nrow(high_absent) > 0)
+head(high_absent, 8)
+```
 
-multi_year <- map_dfr(2018:2024, ~{
-  fetch_chronic_absenteeism(.x) %>%
-    filter(is_state, subgroup == "total population")
+Compare the statewide rate before and after the pandemic. Wrapping each
+year's fetch means a missing year surfaces as a warning, not a silent gap.
+
+```{r ca-trend-fetch, cache = TRUE}
+ca_trend <- map_dfr(c(2019, 2022, 2024), function(yr) {
+  tryCatch(
+    fetch_chronic_absenteeism(yr, level = "district") %>%
+      filter(is_state, subgroup == "total population") %>%
+      transmute(end_year, chronically_absent_rate),
+    error = function(e) {
+      warning("chronic absenteeism ", yr, " failed: ", conditionMessage(e))
+      NULL
+    }
+  )
 })
+```
 
-# Plot trend
-plot(multi_year$end_year, multi_year$chronically_absent_rate,
-     type = "b", xlab = "Year", ylab = "Chronic Absenteeism Rate")
+```{r ca-trend-show}
+stopifnot(nrow(ca_trend) == 3)
+ca_trend
+```
+
+```{r ca-trend-chart}
+ggplot(ca_trend, aes(end_year, chronically_absent_rate)) +
+  geom_line(color = "#c0392b", linewidth = 1) +
+  geom_point(color = "#c0392b", size = 3) +
+  geom_text(aes(label = paste0(chronically_absent_rate, "%")), vjust = -1.1) +
+  scale_x_continuous(breaks = c(2019, 2022, 2024)) +
+  labs(
+    title = "NJ chronic absenteeism spiked after COVID and is still elevated",
+    subtitle = "Statewide share of students chronically absent (total population)",
+    x = NULL, y = "Chronically absent (%)"
+  ) +
+  theme_minimal()
 ```
 
 ### Teacher Experience Analysis
 
-```r
-# Get teacher experience data
-teachers <- fetch_spr_data("TeachersExperience", 2024)
+Which districts rely most on out-of-field teachers? Several SPR numeric
+columns arrive as character text, so coerce them before sorting.
 
-# Analyze new teacher rates
-new_teacher_rates <- teachers %>%
-  filter(subgroup == "total population") %>%
-  mutate(
-    new_teacher_rate = as.numeric(`0-3 Years`) /
-      as.numeric(`0-3 Years`) + as.numeric(`4-10 Years`) +
-      as.numeric(`11-20 Years`) + as.numeric(`20+ Years`)
+```{r teacher-exp-fetch, cache = TRUE}
+teachers <- fetch_spr_data("TeachersExperience", 2024, level = "district")
+```
+
+```{r teacher-exp-show}
+out_of_field <- teachers %>%
+  filter(is_district) %>%
+  transmute(
+    district_name,
+    avg_years_exp    = as.numeric(teacher_avg_years_exp_school),
+    pct_out_of_field = as.numeric(percentage_of_out_of_field_teachers)
   ) %>%
-  arrange(desc(new_teacher_rate))
+  arrange(desc(pct_out_of_field))
+
+stopifnot(nrow(out_of_field) > 0)
+head(out_of_field, 8)
 ```
 
 ### Course Access Analysis
 
-```r
-# Get math course enrollment
-math <- fetch_spr_data("MathCourseParticipation", 2024)
+`APIBCoursesOffered` lists one row per course with enrollment counts. The
+counts are stored as character, so coerce before ranking.
 
-# Check for AP Calculus access
-schools_with_calc <- math %>%
-  filter(grepl("AP Calculus", math_course, ignore.case = TRUE)) %>%
-  pull(school_name) %>%
-  unique()
+```{r course-access-fetch, cache = TRUE}
+ap <- fetch_spr_data("APIBCoursesOffered", 2024, level = "district")
+```
 
-# Compare AP access across districts
-ap_access <- fetch_spr_data("APIBCoursesOffered", 2024) %>%
-  filter(is_district) %>%
-  mutate(
-    has_ap_math = grepl("AP Calculus", courses_offered, ignore.case = TRUE),
-    has_ap_science = grepl("AP.*Science", courses_offered, ignore.case = TRUE)
-  )
+```{r course-access-show}
+# Most-enrolled AP/IB courses statewide
+top_ap <- ap %>%
+  filter(is_state) %>%
+  transmute(course_name, enrolled = as.numeric(student_enroll_count)) %>%
+  arrange(desc(enrolled))
+
+stopifnot(nrow(top_ap) > 0)
+head(top_ap, 8)
 ```
 
 ### Discipline Analysis
 
-```r
-# Get disciplinary removals data
-discipline <- fetch_spr_data("DisciplinaryRemovals", 2024)
+For 2024 the discipline sheet is `DisciplinaryRemovalsByStudgroup`;
+`fetch_disciplinary_removals()` picks the right sheet name for each year.
+The grouping column is `student_group_grade`, and the sheet reports
+suspension and expulsion percentages directly (no enrollment denominator).
 
-# Analyze suspension rates by subgroup
-discipline %>%
-  filter(subgroup %in% c("black", "white", "hispanic", "total population")) %>%
-  group_by(subgroup) %>%
-  summarize(
-    total_suspended = sum(suspended_count, na.rm = TRUE),
-    total_enrolled = sum(enrollment_count, na.rm = TRUE),
-    suspension_rate = total_suspended / total_enrolled,
-    .groups = "drop"
-  )
+```{r discipline-fetch, cache = TRUE}
+discipline <- fetch_disciplinary_removals(2024, level = "district")
+```
+
+```{r discipline-show}
+# Suspension and expulsion rates by student group, statewide
+susp_by_group <- discipline %>%
+  filter(
+    is_state,
+    student_group_grade %in% c(
+      "Statewide", "Black or African American", "Hispanic", "White",
+      "Students with disabilities", "Economically Disadvantaged Students"
+    )
+  ) %>%
+  transmute(
+    student_group_grade,
+    pct_any_suspension = as.numeric(percent_students_any_suspension),
+    pct_expulsions     = as.numeric(percent_students_expulsions)
+  ) %>%
+  arrange(desc(pct_any_suspension))
+
+stopifnot(nrow(susp_by_group) > 0)
+susp_by_group
 ```
 
 ## Data Structure
