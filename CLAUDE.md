@@ -35,6 +35,10 @@ the relevant doc only when the trigger applies, to keep context lean.
 | [`dev-docs/spr-coverage-gap.md`](dev-docs/spr-coverage-gap.md) | Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work |
 | [`dev-docs/tges-coverage.md`](dev-docs/tges-coverage.md) | Working on `fetch_tges()`/`get_raw_tges()`/`tidy_tges_data()`, adding a new TGES year, a TGES download 404s, or scoping TGES coverage |
 
+## Vignette Code Must Run
+
+Vignette analysis code MUST live in executable ` ```{r} ` chunks that run during the build and print real output — never static ` ```r ` fences, which render code with no output and ship unverified (this hid wrong sheet/column names for years in `spr-dictionary.Rmd`). Validate every sheet name, column, and filter value against actual function output before committing; reserve `eval = FALSE` for install commands, disk-writing examples, and intentionally-skipped slow network calls.
+
 ## Project Structure - PUBLIC vs PRIVATE
 
 **njschooldata is a PUBLIC, OPEN SOURCE project.** Only general-purpose infrastructure code belongs in the package itself (`R/`, `tests/`, etc.).
