@@ -61,6 +61,7 @@ context lean.
 | [`dev-docs/pkgdown-deploy.md`](https://almartin82.github.io/njschooldata/dev-docs/pkgdown-deploy.md) | Configuring or debugging the pkgdown deploy, editing `_pkgdown.yml`, or enabling Pages on a new repo |
 | [`dev-docs/data-source-urls.md`](https://almartin82.github.io/njschooldata/dev-docs/data-source-urls.md) | A fetcher 404s / returns HTML, a download is empty, or a fetch URL needs updating for a new year |
 | [`dev-docs/spr-coverage-gap.md`](https://almartin82.github.io/njschooldata/dev-docs/spr-coverage-gap.md) | Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work |
+| [`dev-docs/tges-coverage.md`](https://almartin82.github.io/njschooldata/dev-docs/tges-coverage.md) | Working on [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)/[`get_raw_tges()`](https://almartin82.github.io/njschooldata/reference/get_raw_tges.md)/[`tidy_tges_data()`](https://almartin82.github.io/njschooldata/reference/tidy_tges_data.md), adding a new TGES year, a TGES download 404s, or scoping TGES coverage |
 
 ## Project Structure - PUBLIC vs PRIVATE
 

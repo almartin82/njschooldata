@@ -20,6 +20,8 @@
   Brief](https://almartin82.github.io/njschooldata/articles/newark-fiscal-brief.md):
 - [Newark on the Efficiency Frontier: Do the Dollars Pay
   Off?](https://almartin82.github.io/njschooldata/articles/newark-efficiency-frontier.md):
+- [The Head First Analyst's Guide to NJ
+  TGES](https://almartin82.github.io/njschooldata/articles/tges-analyst-guide.md):
 
 ### School Performance Reports
 
