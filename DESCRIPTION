@@ -8,7 +8,7 @@ Version: 0.9.11
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
     email = "almartin@gmail.com")
 License: MIT + file LICENSE
-URL: https://github.com/almartin82/njschooldata
+URL: https://github.com/almartin82/njschooldata, https://almartin82.github.io/njschooldata/
 BugReports: https://github.com/almartin82/njschooldata/issues
 Depends:
     R (>= 4.1.0)
