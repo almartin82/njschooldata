@@ -57,7 +57,7 @@ test_that("VITSTAT total spending and revenue mix match the DOE file (pinned, 20
   skip_on_cran()
   skip_if_offline()
   v <- tges_tidy(2025)[["VITSTAT_TOTAL"]]
-  row <- v[!is.na(v$district_code) & v$district_code == "0010", , drop = FALSE]
+  row <- v[!is.na(v$district_id) & v$district_id == "0010", , drop = FALSE]
   expect_equal(nrow(row), 1L)
   expect_equal(row[["Total Spending Per Pupil"]][1], 26470)
   expect_equal(row[["Revenue: State %"]][1], 0.494)
@@ -70,7 +70,7 @@ test_that("the 2025 guide covers the expected number of NJ districts", {
   skip_on_cran()
   skip_if_offline()
   c1 <- tges_tidy(2025)[["CSG1"]]
-  codes <- unique(c1$district_code[!is.na(c1$district_code) & c1$district_code != "00NA"])
+  codes <- unique(c1$district_id[!is.na(c1$district_id) & c1$district_id != "00NA"])
   # NJ has ~600 reporting districts; guard against a parser that loses rows
   expect_gt(length(codes), 500)
   expect_lt(length(codes), 800)
@@ -96,13 +96,13 @@ test_that("tidy CSG1 per-pupil values trace back to the raw wide file", {
     raw <- tges_raw(y)[["CSG1"]]
     tidy <- tges_tidy(y)[["CSG1"]]
     codes <- utils::head(
-      unique(tidy$district_code[!is.na(tidy$district_code) &
-                                  tidy$district_code != "00NA"]), 6)
+      unique(tidy$district_id[!is.na(tidy$district_id) &
+                                  tidy$district_id != "00NA"]), 6)
     for (dc in codes) {
-      raw_row <- raw[!is.na(raw$district_code) & raw$district_code == dc, , drop = FALSE]
+      raw_row <- raw[!is.na(raw$district_id) & raw$district_id == dc, , drop = FALSE]
       raw_pp <- unlist(raw_row[grep("^pp", names(raw_row))], use.names = FALSE)
-      tidy_pp <- tidy[["Per Pupil costs"]][!is.na(tidy$district_code) &
-                                             tidy$district_code == dc]
+      tidy_pp <- tidy[["Per Pupil costs"]][!is.na(tidy$district_id) &
+                                             tidy$district_id == dc]
       expect_true(traces_to_raw(tidy_pp, raw_pp),
                   info = paste("year", y, "district", dc))
     }
@@ -115,8 +115,8 @@ test_that("each district contributes exactly one row per reported year in CSG1",
   skip_if_offline()
   for (y in c(2025, 2015, 2010, 2003, 2001)) {
     c1 <- tges_tidy(y)[["CSG1"]]
-    real <- c1[!is.na(c1$district_code) & c1$district_code != "00NA", ]
-    counts <- table(real$district_code, real$end_year)
+    real <- c1[!is.na(c1$district_id) & c1$district_id != "00NA", ]
+    counts <- table(real$district_id, real$end_year)
     expect_true(all(counts <= 1),
                 info = paste("year", y, "has a district duplicated within a year"))
   }

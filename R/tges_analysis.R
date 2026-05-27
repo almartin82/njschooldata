@@ -14,7 +14,7 @@
 #                           the spend-vs-outcome efficiency quadrant
 #
 # Design notes (see dev-docs/tges-coverage.md for the source schema):
-#   - TGES rows key on a 4-digit `district_code` (Newark = "3570"), which lines up
+#   - TGES rows key on a 4-digit `district_id` (Newark = "3570"), which lines up
 #     directly with the `district_id` used by grate/parcc data. Group-average rows
 #     carry no real code (NA or "00NA") and are dropped.
 #   - Budget indicators carry `calc_type` ("Actuals"/"Budgeted"); compare like with
@@ -49,9 +49,9 @@
 
 # real district rows only (drop group-average / sentinel rows)
 .tges_real_districts <- function(df) {
-  if ("district_code" %in% names(df)) {
+  if ("district_id" %in% names(df)) {
     df <- df %>%
-      dplyr::filter(!is.na(.data$district_code), .data$district_code != "00NA")
+      dplyr::filter(!is.na(.data$district_id), .data$district_id != "00NA")
   }
   df
 }
@@ -104,7 +104,7 @@
 #' @param calc_type Optional character. Keep only this calc type, e.g.
 #'   \code{"Actuals"} or \code{"Budgeted"}.
 #'
-#' @return A tibble with entity columns (\code{county_name}, \code{district_code},
+#' @return A tibble with entity columns (\code{county_name}, \code{district_id},
 #'   \code{district_name}, \code{group}), \code{end_year}, \code{calc_type}, the
 #'   per-pupil category columns, and the matching \code{*_share} columns.
 #'
@@ -116,7 +116,7 @@
 #' # Classroom share for Newark, actuals only
 #' library(dplyr)
 #' tges_composition(fetch_many_tges(2020:2024), calc_type = "Actuals") %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, classroom, budgetary_pp, classroom_share)
 #'
 #' # Lowest classroom-share districts in 2024
@@ -130,7 +130,7 @@
 tges_composition <- function(tges, years = NULL, calc_type = NULL) {
 
   value_col <- "Per Pupil costs"
-  keys <- c("county_name", "district_code", "district_name", "group",
+  keys <- c("county_name", "district_id", "district_name", "group",
             "end_year", "calc_type")
 
   # table code -> friendly category column
@@ -172,7 +172,7 @@ tges_composition <- function(tges, years = NULL, calc_type = NULL) {
   aa_col <- "Per Pupil Total Expenditures"
   if (!is.null(aa) && aa_col %in% names(aa)) {
     aa_keys <- intersect(
-      c("county_name", "district_code", "district_name", "end_year", "calc_type"),
+      c("county_name", "district_id", "district_name", "end_year", "calc_type"),
       names(aa)
     )
     aa_keys <- intersect(aa_keys, names(out))
@@ -212,7 +212,7 @@ tges_composition <- function(tges, years = NULL, calc_type = NULL) {
   }
 
   # stable column order: keys, totals, categories, shares
-  lead <- intersect(c("county_name", "district_code", "district_name", "group",
+  lead <- intersect(c("county_name", "district_id", "district_name", "group",
                       "end_year", "calc_type", "total_pp", "budgetary_pp"),
                     names(out))
   cat_cols <- intersect(names(budget_map)[-1], names(out))
@@ -254,7 +254,7 @@ tges_composition <- function(tges, years = NULL, calc_type = NULL) {
 #' @param year_col Character. Year column. Default \code{"end_year"}.
 #' @param prefix Character. Prefix for the output columns. Default \code{"peer"}.
 #' @param dfg_revision Numeric. DFG revision when \code{peer = "dfg"}. Default 2000.
-#' @param custom_ids Character vector of \code{district_code}s. Required when
+#' @param custom_ids Character vector of \code{district_id}s. Required when
 #'   \code{peer = "custom"}; the frame is restricted to these codes and ranked
 #'   within them. Ignored otherwise.
 #'
@@ -267,7 +267,7 @@ tges_composition <- function(tges, years = NULL, calc_type = NULL) {
 #' # Rank budgetary per-pupil cost within each TGES enrollment band
 #' fetch_tges(2024)$CSG1 %>%
 #'   tges_percentile_rank() %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, `Per Pupil costs`, peer_percentile)
 #'
 #' # Rank classroom share within DFG peers
@@ -300,21 +300,21 @@ tges_percentile_rank <- function(df,
     if (is.null(custom_ids) || length(custom_ids) == 0) {
       stop("peer = 'custom' requires a non-empty `custom_ids` vector.")
     }
-    if (!"district_code" %in% names(df)) {
-      stop("peer = 'custom' needs a `district_code` column.")
+    if (!"district_id" %in% names(df)) {
+      stop("peer = 'custom' needs a `district_id` column.")
     }
-    df <- df[df$district_code %in% custom_ids, , drop = FALSE]
+    df <- df[df$district_id %in% custom_ids, , drop = FALSE]
   }
 
-  # attach DFG if needed (join 4-digit district_code straight to DFG's padded code)
+  # attach DFG if needed (join 4-digit district_id straight to DFG's padded code)
   if (peer == "dfg" && !"dfg" %in% names(df)) {
-    if (!"district_code" %in% names(df)) {
-      stop("peer = 'dfg' needs a `district_code` column to attach DFG.")
+    if (!"district_id" %in% names(df)) {
+      stop("peer = 'dfg' needs a `district_id` column to attach DFG.")
     }
     dfg_lk <- fetch_dfg(revision = dfg_revision) %>%
-      dplyr::group_by(.data$district_code) %>%
+      dplyr::group_by(.data$district_id) %>%
       dplyr::summarise(dfg = dplyr::first(.data$dfg), .groups = "drop")
-    df <- dplyr::left_join(df, dfg_lk, by = "district_code")
+    df <- dplyr::left_join(df, dfg_lk, by = "district_id")
   }
 
   peer_col <- switch(peer,
@@ -377,7 +377,7 @@ tges_percentile_rank <- function(df,
 #' means more outcome than the spending would predict.
 #'
 #' @param spend_df A tidied TGES table (one report year, ideally filtered to a
-#'   single \code{calc_type}) carrying \code{district_code} and \code{spend_col}.
+#'   single \code{calc_type}) carrying \code{district_id} and \code{spend_col}.
 #' @param outcome_df A district-level frame with \code{district_id}, the year
 #'   column, and \code{outcome_percentile_col} (a 0-100 percentile).
 #' @param spend_col Character. Spend column in \code{spend_df}. Default
@@ -410,7 +410,7 @@ tges_percentile_rank <- function(df,
 #'   outcome_percentile_col = "grad_rate_percentile",
 #'   spend_peer = "dfg"
 #' ) %>%
-#'   filter(district_code == "3570")
+#'   filter(district_id == "3570")
 #'
 #' # The "watch" quadrant: high spend, low outcome
 #' eff <- tges_efficiency(spend, grate,
@@ -452,7 +452,7 @@ tges_efficiency <- function(spend_df,
     ) %>%
     dplyr::distinct()
 
-  by_vec <- stats::setNames(c("district_id", year_col), c("district_code", year_col))
+  by_vec <- stats::setNames(c("district_id", year_col), c("district_id", year_col))
 
   joined <- ranked %>%
     dplyr::inner_join(out, by = by_vec) %>%
@@ -474,7 +474,7 @@ tges_efficiency <- function(spend_df,
     )
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "group", year_col,
+    c("county_name", "district_id", "district_name", "group", year_col,
       "calc_type", spend_col, "spend_percentile", "outcome_percentile",
       "efficiency_residual", "quadrant"),
     names(joined)
@@ -519,7 +519,7 @@ tges_efficiency <- function(spend_df,
 #'
 #' # Newark: what share is local property tax?
 #' tges_revenue_mix(fetch_tges(2024)) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, total_pp, local_share, state_share, federal_share)
 #'
 #' # The most local-tax-dependent districts in the latest year
@@ -540,7 +540,7 @@ tges_revenue_mix <- function(tges, years = NULL) {
   vs <- .tges_real_districts(vs)
 
   keys <- intersect(
-    c("county_name", "district_code", "district_name", "group", "end_year"),
+    c("county_name", "district_id", "district_name", "group", "end_year"),
     names(vs)
   )
 
@@ -634,7 +634,7 @@ tges_revenue_mix <- function(tges, years = NULL) {
 #'
 #' # Newark fund-balance health over the available window
 #' tges_fund_balance_health(fetch_many_tges(2022:2024)) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, budgeted_fund_balance, actual_fund_balance,
 #'          excess_unreserved, excess_surplus_flag)
 #'
@@ -653,7 +653,7 @@ tges_fund_balance_health <- function(tges, years = NULL) {
          "fetch_tges()/fetch_many_tges()?")
   }
 
-  keys <- c("county_name", "district_code", "district_name", "group", "end_year")
+  keys <- c("county_name", "district_id", "district_name", "group", "end_year")
 
   if (!is.null(fb)) {
     fb <- .tges_real_districts(fb)
@@ -698,7 +698,7 @@ tges_fund_balance_health <- function(tges, years = NULL) {
   # year-over-year change in actual balance (structural-deficit signal)
   if ("actual_fund_balance" %in% names(out) && "end_year" %in% names(out)) {
     out <- out %>%
-      dplyr::group_by(.data$district_code) %>%
+      dplyr::group_by(.data$district_id) %>%
       dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
       dplyr::mutate(
         balance_yoy_change = .data$actual_fund_balance -
@@ -714,7 +714,7 @@ tges_fund_balance_health <- function(tges, years = NULL) {
   }
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "group", "end_year",
+    c("county_name", "district_id", "district_name", "group", "end_year",
       "budgeted_fund_balance", "actual_fund_balance", "fund_balance_variance",
       "excess_unreserved", "balance_yoy_change", "excess_surplus_flag",
       "declining_balance_flag"),
@@ -804,7 +804,7 @@ tges_federal_exposure <- function(tges,
   }
 
   rev %>%
-    dplyr::group_by(.data$county_name, .data$district_code, .data$district_name) %>%
+    dplyr::group_by(.data$county_name, .data$district_id, .data$district_name) %>%
     dplyr::summarise(
       baseline_federal_share = mean(
         .data$federal_share[.data$end_year %in% baseline_years], na.rm = TRUE),
@@ -869,7 +869,7 @@ tges_federal_exposure <- function(tges,
 #'
 #' # Is Newark administratively heavy, and competitive on teacher pay?
 #' tges_staffing(fetch_tges(2024)) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, student_admin_ratio, faculty_admin_ratio,
 #'          teacher_salary, admin_salary, benefits_pct_salary)
 #'
@@ -881,7 +881,7 @@ tges_federal_exposure <- function(tges,
 #' @export
 tges_staffing <- function(tges, years = NULL) {
 
-  keys <- c("county_name", "district_code", "district_name", "group", "end_year")
+  keys <- c("county_name", "district_id", "district_name", "group", "end_year")
 
   pull_sel <- function(table, mapping) {
     tbl <- .tges_get_table(tges, table)
@@ -974,7 +974,7 @@ tges_staffing <- function(tges, years = NULL) {
 #'
 #' @param tges Output of \code{fetch_tges()} (a single guide) or
 #'   \code{fetch_many_tges()}.
-#' @param district_code Character. The 4-digit focal district code (Newark =
+#' @param district_id Character. The 4-digit focal district code (Newark =
 #'   "3570").
 #' @param peer Character. Peer group. See \code{tges_percentile_rank()}. Default
 #'   \code{"tges_group"}.
@@ -997,16 +997,16 @@ tges_staffing <- function(tges, years = NULL) {
 #' library(dplyr)
 #'
 #' # Newark's red flags within its enrollment-band peers
-#' tges_red_flags(fetch_tges(2024), district_code = "3570")
+#' tges_red_flags(fetch_tges(2024), district_id = "3570")
 #'
 #' # Full profile within DFG A peers, nothing hidden
-#' tges_red_flags(fetch_tges(2024), district_code = "3570",
+#' tges_red_flags(fetch_tges(2024), district_id = "3570",
 #'                peer = "dfg", only_flagged = FALSE)
 #' }
 #'
 #' @export
 tges_red_flags <- function(tges,
-                           district_code,
+                           district_id,
                            peer = c("tges_group", "dfg", "county", "statewide"),
                            year = NULL,
                            calc_type = "Budgeted",
@@ -1015,7 +1015,7 @@ tges_red_flags <- function(tges,
                            dfg_revision = 2000) {
 
   peer <- match.arg(peer)
-  if (missing(district_code)) stop("`district_code` is required.")
+  if (missing(district_id)) stop("`district_id` is required.")
   spec <- .tges_red_flag_indicators()
 
   # the composition frame, ranked per share, is reused across composition rows
@@ -1042,7 +1042,7 @@ tges_red_flags <- function(tges,
 
     ranked <- tges_percentile_rank(df, metric_col = metric, peer = peer,
                                    prefix = "peer", dfg_revision = dfg_revision)
-    row <- ranked[ranked$district_code == district_code, , drop = FALSE]
+    row <- ranked[ranked$district_id == district_id, , drop = FALSE]
     if (nrow(row) == 0) return(NULL)
     row <- row[1, , drop = FALSE]
 
@@ -1061,7 +1061,7 @@ tges_red_flags <- function(tges,
     rank_one
   )
   if (nrow(out) == 0) {
-    stop("No indicators could be ranked for district ", district_code,
+    stop("No indicators could be ranked for district ", district_id,
          " (check the code, year, and that the guide carries these tables).")
   }
 
@@ -1133,7 +1133,7 @@ tges_red_flags <- function(tges,
 #'
 #' # Newark: how much of per-pupil growth is just falling enrollment?
 #' rg %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, per_pupil_growth, real_cost_component,
 #'          enrollment_component, enrollment_effect_share)
 #'
@@ -1141,7 +1141,7 @@ tges_red_flags <- function(tges,
 #' cpi <- data.frame(end_year = 2018:2024,
 #'                   price_index = c(251.1, 255.7, 258.8, 271.0, 292.7, 304.7, 313.7))
 #' tges_real_growth(fetch_many_tges(2018:2024), deflator = cpi) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, per_pupil_growth, real_pp_growth)
 #' }
 #'
@@ -1162,7 +1162,7 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
     stop("CSG1AA_AVGS is missing total expenditures and/or ADE columns.")
   }
 
-  keys <- intersect(c("county_name", "district_code", "district_name"), names(aa))
+  keys <- intersect(c("county_name", "district_id", "district_name"), names(aa))
 
   base <- aa %>%
     dplyr::transmute(
@@ -1178,7 +1178,7 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
       }
     ) %>%
     # collapse overlapping reports of the same actual year
-    dplyr::distinct(.data$district_code, .data$end_year, .keep_all = TRUE)
+    dplyr::distinct(.data$district_id, .data$end_year, .keep_all = TRUE)
 
   # optional real deflator (caller-supplied; never fabricated here)
   if (!is.null(deflator)) {
@@ -1196,7 +1196,7 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
   }
 
   out <- base %>%
-    dplyr::group_by(.data$district_code) %>%
+    dplyr::group_by(.data$district_id) %>%
     dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
     dplyr::mutate(
       total_exp_growth  = .data$total_exp / dplyr::lag(.data$total_exp) - 1,
@@ -1257,13 +1257,13 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
 .tges_attach_peer <- function(df, peer, dfg_revision = 2000) {
   if (peer == "dfg") {
     if (!"dfg" %in% names(df)) {
-      if (!"district_code" %in% names(df)) {
-        stop("peer = 'dfg' needs a `district_code` column to attach DFG.")
+      if (!"district_id" %in% names(df)) {
+        stop("peer = 'dfg' needs a `district_id` column to attach DFG.")
       }
       dfg_lk <- fetch_dfg(revision = dfg_revision) %>%
-        dplyr::group_by(.data$district_code) %>%
+        dplyr::group_by(.data$district_id) %>%
         dplyr::summarise(dfg = dplyr::first(.data$dfg), .groups = "drop")
-      df <- dplyr::left_join(df, dfg_lk, by = "district_code")
+      df <- dplyr::left_join(df, dfg_lk, by = "district_id")
     }
     df$peer_group <- df$dfg
   } else if (peer == "tges_group") {
@@ -1290,12 +1290,12 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
   aa %>%
     .tges_real_districts() %>%
     dplyr::transmute(
-      .data$district_code,
+      .data$district_id,
       end_year = .data$end_year,
       ade = suppressWarnings(as.numeric(.data[[ade_col]]))
     ) %>%
     dplyr::filter(is.finite(.data$ade)) %>%
-    dplyr::group_by(.data$district_code) %>%
+    dplyr::group_by(.data$district_id) %>%
     dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
     dplyr::summarise(ade = dplyr::last(.data$ade),
                      ade_year = dplyr::last(.data$end_year), .groups = "drop")
@@ -1326,7 +1326,7 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
 #' warning. \code{dfg} is reported for context but is not part of the distance.
 #'
 #' @param tges Output of \code{fetch_tges()} or \code{fetch_many_tges()}.
-#' @param district_code Character. The 4-digit focal district code (Newark = "3570").
+#' @param district_id Character. The 4-digit focal district code (Newark = "3570").
 #' @param n Integer. Number of peers to return (besides the focal row). Default 10.
 #' @param year Numeric. Composition report year to anchor on. Default: latest present.
 #' @param features Character vector of feature columns to match on. Default
@@ -1339,7 +1339,7 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
 #'
 #' @return A tibble sorted by \code{distance} ascending, with the focal district
 #'   first (\code{is_focal = TRUE}, \code{distance = 0}) followed by the \code{n}
-#'   nearest peers: \code{district_code}, \code{district_name}, \code{county_name},
+#'   nearest peers: \code{district_id}, \code{district_name}, \code{county_name},
 #'   \code{group}, \code{dfg}, \code{is_focal}, \code{distance}, and the raw
 #'   feature columns.
 #'
@@ -1348,20 +1348,20 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
 #' library(dplyr)
 #'
 #' # Newark's data-driven fiscal twins
-#' peers <- tges_find_peers(fetch_tges(2024), district_code = "3570")
+#' peers <- tges_find_peers(fetch_tges(2024), district_id = "3570")
 #' peers %>% select(district_name, dfg, distance, ade, budgetary_pp, local_share)
 #'
 #' # Use them as the peer set for an honest rank
-#' twin_ids <- peers$district_code
+#' twin_ids <- peers$district_id
 #' fetch_tges(2024)$CSG1 %>%
 #'   tges_percentile_rank(peer = "custom", custom_ids = twin_ids) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(`Per Pupil costs`, peer_percentile, peer_n)
 #' }
 #'
 #' @export
 tges_find_peers <- function(tges,
-                            district_code,
+                            district_id,
                             n = 10,
                             year = NULL,
                             features = c("ade", "budgetary_pp", "classroom_share",
@@ -1370,7 +1370,7 @@ tges_find_peers <- function(tges,
                             calc_type = "Budgeted",
                             dfg_revision = 2000) {
 
-  if (missing(district_code)) stop("`district_code` is required.")
+  if (missing(district_id)) stop("`district_id` is required.")
 
   comp <- tges_composition(tges, calc_type = calc_type)
   if (!"end_year" %in% names(comp) || nrow(comp) == 0) {
@@ -1386,14 +1386,14 @@ tges_find_peers <- function(tges,
     names(comp1)
   )
   feat <- comp1 %>%
-    dplyr::select(dplyr::all_of(c("county_name", "district_code", "district_name",
+    dplyr::select(dplyr::all_of(c("county_name", "district_id", "district_name",
                                   "group")),
                   dplyr::all_of(comp_cols))
 
   ade_lk <- .tges_latest_ade(tges)
   if (!is.null(ade_lk)) {
-    feat <- dplyr::left_join(feat, ade_lk[, c("district_code", "ade")],
-                             by = "district_code")
+    feat <- dplyr::left_join(feat, ade_lk[, c("district_id", "ade")],
+                             by = "district_id")
   }
 
   rev <- tryCatch(tges_revenue_mix(tges), error = function(e) NULL)
@@ -1402,22 +1402,22 @@ tges_find_peers <- function(tges,
                           names(rev))
     if (length(rev_cols)) {
       rev_lk <- rev %>%
-        dplyr::group_by(.data$district_code) %>%
+        dplyr::group_by(.data$district_id) %>%
         dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
         dplyr::summarise(dplyr::across(dplyr::all_of(rev_cols), dplyr::last),
                          .groups = "drop")
-      feat <- dplyr::left_join(feat, rev_lk, by = "district_code")
+      feat <- dplyr::left_join(feat, rev_lk, by = "district_id")
     }
   }
 
   # informational DFG (not part of the distance)
   dfg_lk <- tryCatch(
     fetch_dfg(revision = dfg_revision) %>%
-      dplyr::group_by(.data$district_code) %>%
+      dplyr::group_by(.data$district_id) %>%
       dplyr::summarise(dfg = dplyr::first(.data$dfg), .groups = "drop"),
     error = function(e) NULL
   )
-  if (!is.null(dfg_lk)) feat <- dplyr::left_join(feat, dfg_lk, by = "district_code")
+  if (!is.null(dfg_lk)) feat <- dplyr::left_join(feat, dfg_lk, by = "district_id")
   if (!"dfg" %in% names(feat)) feat$dfg <- NA_character_
 
   missing_feats <- setdiff(features, names(feat))
@@ -1425,11 +1425,11 @@ tges_find_peers <- function(tges,
     stop("Requested feature(s) not available: ",
          paste(missing_feats, collapse = ", "),
          ". Available: ", paste(setdiff(names(feat),
-           c("county_name", "district_code", "district_name", "group", "dfg")),
+           c("county_name", "district_id", "district_name", "group", "dfg")),
            collapse = ", "))
   }
-  if (!district_code %in% feat$district_code) {
-    stop("District ", district_code, " not found for year ", yr, ".")
+  if (!district_id %in% feat$district_id) {
+    stop("District ", district_id, " not found for year ", yr, ".")
   }
 
   fmat <- as.data.frame(feat[, features, drop = FALSE])
@@ -1446,9 +1446,9 @@ tges_find_peers <- function(tges,
   if (ncol(fmat) == 0) stop("No usable (non-constant) features remain.")
 
   cc <- stats::complete.cases(fmat)
-  focal_row <- which(feat$district_code == district_code)[1]
+  focal_row <- which(feat$district_id == district_id)[1]
   if (!cc[focal_row]) {
-    stop("District ", district_code, " is missing one or more of the requested ",
+    stop("District ", district_id, " is missing one or more of the requested ",
          "features; cannot place it. Drop the feature or pick another district.")
   }
 
@@ -1459,11 +1459,11 @@ tges_find_peers <- function(tges,
   diff <- sweep(z, 2, focal_z, "-")
   distance <- sqrt(rowSums(diff^2))
 
-  feat$is_focal <- feat$district_code == district_code
+  feat$is_focal <- feat$district_id == district_id
   feat$distance <- round(distance, 4)
   feat <- feat[cc | feat$is_focal, , drop = FALSE]
 
-  lead <- c("district_code", "district_name", "county_name", "group", "dfg",
+  lead <- c("district_id", "district_name", "county_name", "group", "dfg",
             "is_focal", "distance")
   out <- feat %>%
     dplyr::arrange(dplyr::desc(.data$is_focal == FALSE), .data$distance) %>%
@@ -1485,7 +1485,7 @@ tges_find_peers <- function(tges,
 .tges_fdh_group <- function(d) {
   spend   <- d$.spend
   outcome <- d$.outcome
-  code <- d$district_code
+  code <- d$district_id
   name <- if ("district_name" %in% names(d)) d$district_name else code
   k <- nrow(d)
   score    <- rep(NA_real_, k)
@@ -1503,7 +1503,7 @@ tges_find_peers <- function(tges,
     ref_name[i] <- name[best]
   }
   d$efficiency_score         <- round(score, 4)
-  d$reference_district_code  <- ref_code
+  d$reference_district_id  <- ref_code
   d$reference_district_name  <- ref_name
   d$reference_spend          <- ref_spd
   d$excess_spend             <- d$.spend - ref_spd
@@ -1538,7 +1538,7 @@ tges_find_peers <- function(tges,
 #' group, most land on the frontier by default.
 #'
 #' @param spend_df A tidied TGES table (one report year, one \code{calc_type})
-#'   carrying \code{district_code} and \code{spend_col}.
+#'   carrying \code{district_id} and \code{spend_col}.
 #' @param outcome_df A district-level frame with \code{district_id}, the year
 #'   column, and \code{outcome_col} (higher = better).
 #' @param spend_col Character. Spend column in \code{spend_df}. Default
@@ -1552,7 +1552,7 @@ tges_find_peers <- function(tges,
 #'
 #' @return A tibble: entity columns, \code{peer_group}, the year, \code{spend},
 #'   \code{outcome}, \code{efficiency_score}, \code{on_frontier},
-#'   \code{reference_district_code}, \code{reference_district_name},
+#'   \code{reference_district_id}, \code{reference_district_name},
 #'   \code{reference_spend}, and \code{excess_spend}.
 #'
 #' @examples
@@ -1569,7 +1569,7 @@ tges_find_peers <- function(tges,
 #'
 #' fr <- tges_frontier(spend, grate, outcome_col = "grad_rate_percentile",
 #'                     peer = "dfg")
-#' fr %>% filter(district_code == "3570") %>%
+#' fr %>% filter(district_id == "3570") %>%
 #'   select(district_name, efficiency_score, reference_district_name, excess_spend)
 #' }
 #'
@@ -1595,8 +1595,8 @@ tges_frontier <- function(spend_df,
   if (!"district_id" %in% names(outcome_df)) {
     stop("outcome_df must contain a `district_id` column.")
   }
-  if (!all(c("district_code", year_col) %in% names(spend_df))) {
-    stop(sprintf("spend_df must contain `district_code` and '%s'.", year_col))
+  if (!all(c("district_id", year_col) %in% names(spend_df))) {
+    stop(sprintf("spend_df must contain `district_id` and '%s'.", year_col))
   }
 
   sp <- spend_df %>%
@@ -1611,11 +1611,11 @@ tges_frontier <- function(spend_df,
     ) %>%
     dplyr::distinct()
 
-  by_vec <- stats::setNames(c("district_id", year_col), c("district_code", year_col))
+  by_vec <- stats::setNames(c("district_id", year_col), c("district_id", year_col))
 
   joined <- dplyr::inner_join(sp, oc, by = by_vec)
   if (nrow(joined) == 0) {
-    stop("No district_code/", year_col, " rows matched between spend_df and ",
+    stop("No district_id/", year_col, " rows matched between spend_df and ",
          "outcome_df.")
   }
 
@@ -1626,9 +1626,9 @@ tges_frontier <- function(spend_df,
     dplyr::rename(spend = ".spend", outcome = ".outcome")
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "peer_group", year_col,
+    c("county_name", "district_id", "district_name", "peer_group", year_col,
       "calc_type", "spend", "outcome", "efficiency_score", "on_frontier",
-      "reference_district_code", "reference_district_name", "reference_spend",
+      "reference_district_id", "reference_district_name", "reference_spend",
       "excess_spend"),
     names(out)
   )
@@ -1735,7 +1735,7 @@ tges_convergence <- function(tges,
   ey <- if (is.null(end_year))   max(yrs) else end_year
   if (sy == ey) stop("start_year and end_year must differ (got ", sy, ").")
 
-  keys <- intersect(c("county_name", "district_code", "district_name", "group"),
+  keys <- intersect(c("county_name", "district_id", "district_name", "group"),
                     names(tbl))
   vals <- tbl %>%
     dplyr::filter(.data$end_year %in% c(sy, ey)) %>%
@@ -1744,7 +1744,7 @@ tges_convergence <- function(tges,
       end_year = .data$end_year,
       .v = suppressWarnings(as.numeric(.data[[metric_col]]))
     ) %>%
-    dplyr::distinct(.data$district_code, .data$end_year, .keep_all = TRUE)
+    dplyr::distinct(.data$district_id, .data$end_year, .keep_all = TRUE)
 
   wide <- vals %>%
     dplyr::mutate(.which = dplyr::if_else(.data$end_year == sy, "start_value",
@@ -1786,7 +1786,7 @@ tges_convergence <- function(tges,
     )
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "peer_group",
+    c("county_name", "district_id", "district_name", "peer_group",
       "start_year", "end_year", "start_value", "end_value", "log_start_value",
       "growth", "beta", "beta_pvalue", "r_squared", "n_districts", "converging"),
     names(out)
@@ -1870,22 +1870,22 @@ tges_composition_drift <- function(tges,
   ey <- if (is.null(end_year))   max(yrs) else end_year
   if (sy == ey) stop("start_year and end_year must differ (got ", sy, ").")
 
-  keys <- intersect(c("county_name", "district_code", "district_name", "group"),
+  keys <- intersect(c("county_name", "district_id", "district_name", "group"),
                     names(comp))
 
   two <- comp %>%
     dplyr::filter(.data$end_year %in% c(sy, ey)) %>%
     dplyr::select(dplyr::all_of(keys), "end_year", dplyr::all_of(shares)) %>%
-    dplyr::distinct(.data$district_code, .data$end_year, .keep_all = TRUE)
+    dplyr::distinct(.data$district_id, .data$end_year, .keep_all = TRUE)
 
   start_df <- two %>% dplyr::filter(.data$end_year == sy) %>%
     dplyr::select(-"end_year") %>%
     dplyr::rename_with(~ paste0(.x, "_start"), dplyr::all_of(shares))
   end_df <- two %>% dplyr::filter(.data$end_year == ey) %>%
-    dplyr::select(dplyr::all_of(c("district_code", shares))) %>%
+    dplyr::select(dplyr::all_of(c("district_id", shares))) %>%
     dplyr::rename_with(~ paste0(.x, "_end"), dplyr::all_of(shares))
 
-  out <- dplyr::inner_join(start_df, end_df, by = "district_code")
+  out <- dplyr::inner_join(start_df, end_df, by = "district_id")
   if (nrow(out) == 0) {
     stop("No districts have both ", sy, " and ", ey, " composition rows.")
   }
@@ -1939,7 +1939,7 @@ tges_composition_drift <- function(tges,
 #' benchmark.
 #'
 #' @param tges Output of \code{fetch_tges()} or \code{fetch_many_tges()}.
-#' @param district_code Character. The 4-digit focal district code.
+#' @param district_id Character. The 4-digit focal district code.
 #' @param metric Character. A column from \code{tges_composition()}. Default
 #'   \code{"classroom_share"}.
 #' @param target Benchmark within the peer group: \code{"median"} (default),
@@ -1960,13 +1960,13 @@ tges_composition_drift <- function(tges,
 #' library(dplyr)
 #'
 #' # What would it cost Newark to reach the DFG A median classroom share?
-#' tges_gap_cost(fetch_tges(2024), district_code = "3570",
+#' tges_gap_cost(fetch_tges(2024), district_id = "3570",
 #'               metric = "classroom_share", target = "median", peer = "dfg")
 #' }
 #'
 #' @export
 tges_gap_cost <- function(tges,
-                          district_code,
+                          district_id,
                           metric = "classroom_share",
                           target = "median",
                           peer = c("tges_group", "dfg", "county", "statewide"),
@@ -1975,7 +1975,7 @@ tges_gap_cost <- function(tges,
                           dfg_revision = 2000) {
 
   peer <- match.arg(peer)
-  if (missing(district_code)) stop("`district_code` is required.")
+  if (missing(district_id)) stop("`district_id` is required.")
 
   comp <- tges_composition(tges, calc_type = calc_type)
   if (!metric %in% names(comp)) {
@@ -1985,9 +1985,9 @@ tges_gap_cost <- function(tges,
   comp1 <- comp[comp$end_year == yr, , drop = FALSE] %>%
     .tges_attach_peer(peer, dfg_revision = dfg_revision)
 
-  focal <- comp1[comp1$district_code == district_code, , drop = FALSE]
+  focal <- comp1[comp1$district_id == district_id, , drop = FALSE]
   if (nrow(focal) == 0) {
-    stop("District ", district_code, " not found for year ", yr, ".")
+    stop("District ", district_id, " not found for year ", yr, ".")
   }
   focal <- focal[1, , drop = FALSE]
   pg <- focal$peer_group
@@ -2022,13 +2022,13 @@ tges_gap_cost <- function(tges,
   ade_lk <- .tges_latest_ade(tges)
   ade <- NA_real_; ade_year <- NA_real_
   if (!is.null(ade_lk)) {
-    row <- ade_lk[ade_lk$district_code == district_code, , drop = FALSE]
+    row <- ade_lk[ade_lk$district_id == district_id, , drop = FALSE]
     if (nrow(row)) { ade <- row$ade[1]; ade_year <- row$ade_year[1] }
   }
 
   tibble::tibble(
     county_name   = focal$county_name,
-    district_code = district_code,
+    district_id = district_id,
     district_name = focal$district_name,
     peer_group    = pg,
     n_peers       = length(vals),
@@ -2114,7 +2114,7 @@ tges_volatility <- function(tges,
   if (!is.null(rev) && metric %in% names(rev)) {
     series <- rev %>%
       dplyr::transmute(
-        dplyr::across(dplyr::any_of(c("county_name", "district_code",
+        dplyr::across(dplyr::any_of(c("county_name", "district_id",
                                       "district_name", "group"))),
         end_year = .data$end_year,
         .v = suppressWarnings(as.numeric(.data[[metric]]))
@@ -2126,7 +2126,7 @@ tges_volatility <- function(tges,
     if (!is.null(comp) && metric %in% names(comp)) {
       series <- comp %>%
         dplyr::transmute(
-          dplyr::across(dplyr::any_of(c("county_name", "district_code",
+          dplyr::across(dplyr::any_of(c("county_name", "district_id",
                                         "district_name", "group"))),
           end_year = .data$end_year,
           .v = suppressWarnings(as.numeric(.data[[metric]]))
@@ -2142,7 +2142,7 @@ tges_volatility <- function(tges,
       }
       series <- tbl %>%
         dplyr::transmute(
-          dplyr::across(dplyr::any_of(c("county_name", "district_code",
+          dplyr::across(dplyr::any_of(c("county_name", "district_id",
                                         "district_name", "group"))),
           end_year = .data$end_year,
           .v = suppressWarnings(as.numeric(.data[[metric]]))
@@ -2156,16 +2156,16 @@ tges_volatility <- function(tges,
 
   series <- series %>%
     dplyr::filter(is.finite(.data$.v)) %>%
-    dplyr::distinct(.data$district_code, .data$end_year, .keep_all = TRUE)
+    dplyr::distinct(.data$district_id, .data$end_year, .keep_all = TRUE)
 
   meta <- series %>%
-    dplyr::group_by(.data$district_code) %>%
+    dplyr::group_by(.data$district_id) %>%
     dplyr::summarise(dplyr::across(dplyr::any_of(c("county_name", "district_name",
                                                    "group")), dplyr::first),
                      .groups = "drop")
 
   stats_df <- series %>%
-    dplyr::group_by(.data$district_code) %>%
+    dplyr::group_by(.data$district_id) %>%
     dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
     dplyr::summarise(
       n_years    = dplyr::n(),
@@ -2189,14 +2189,14 @@ tges_volatility <- function(tges,
   }
 
   out <- stats_df %>%
-    dplyr::left_join(meta, by = "district_code") %>%
+    dplyr::left_join(meta, by = "district_id") %>%
     .tges_attach_peer(peer, dfg_revision = dfg_revision) %>%
     dplyr::group_by(.data$peer_group) %>%
     add_percentile_rank("cv", prefix = "vol") %>%
     dplyr::ungroup()
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "peer_group",
+    c("county_name", "district_id", "district_name", "peer_group",
       "n_years", "mean_value", "sd_value", "cv", "mean_abs_yoy", "max_abs_yoy",
       "vol_rank", "vol_n", "vol_percentile"),
     names(out)
@@ -2260,14 +2260,14 @@ tges_compare <- function(tges,
 
   # pick the row at `year` if present, else the latest year, per district
   pick <- function(df, cols, codes, prefer_year) {
-    if (is.null(df) || !all(c("district_code", "end_year") %in% names(df))) {
+    if (is.null(df) || !all(c("district_id", "end_year") %in% names(df))) {
       return(NULL)
     }
     have <- intersect(cols, names(df))
     if (length(have) == 0) return(NULL)
     df %>%
-      dplyr::filter(.data$district_code %in% codes, is.finite(.data$end_year)) %>%
-      dplyr::group_by(.data$district_code) %>%
+      dplyr::filter(.data$district_id %in% codes, is.finite(.data$end_year)) %>%
+      dplyr::group_by(.data$district_id) %>%
       dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
       dplyr::slice(if (!is.null(prefer_year) && any(.data$end_year == prefer_year)) {
         utils::tail(which(.data$end_year == prefer_year), 1)
@@ -2275,7 +2275,7 @@ tges_compare <- function(tges,
         dplyr::n()
       }) %>%
       dplyr::ungroup() %>%
-      dplyr::select(dplyr::all_of(c("district_code", have)),
+      dplyr::select(dplyr::all_of(c("district_id", have)),
                     dplyr::any_of("end_year"))
   }
 
@@ -2283,15 +2283,15 @@ tges_compare <- function(tges,
   cy <- if (is.null(year)) max(comp$end_year, na.rm = TRUE) else year
 
   base <- comp %>%
-    dplyr::filter(.data$district_code %in% district_codes) %>%
-    dplyr::group_by(.data$district_code) %>%
+    dplyr::filter(.data$district_id %in% district_codes) %>%
+    dplyr::group_by(.data$district_id) %>%
     dplyr::arrange(.data$end_year, .by_group = TRUE) %>%
     dplyr::slice(if (any(.data$end_year == cy)) {
       utils::tail(which(.data$end_year == cy), 1)
     } else dplyr::n()) %>%
     dplyr::ungroup() %>%
     dplyr::transmute(
-      .data$county_name, .data$district_code, .data$district_name, .data$group,
+      .data$county_name, .data$district_id, .data$district_name, .data$group,
       comp_year = .data$end_year,
       budgetary_pp = .data$budgetary_pp,
       classroom_share = .data$classroom_share,
@@ -2305,7 +2305,7 @@ tges_compare <- function(tges,
                district_codes, year)
   if (!is.null(rev1)) {
     names(rev1)[names(rev1) == "end_year"] <- "revenue_year"
-    base <- dplyr::left_join(base, rev1, by = "district_code")
+    base <- dplyr::left_join(base, rev1, by = "district_id")
   }
 
   st <- tryCatch(tges_staffing(tges), error = function(e) NULL)
@@ -2314,23 +2314,23 @@ tges_compare <- function(tges,
               district_codes, year)
   if (!is.null(st1)) {
     names(st1)[names(st1) == "end_year"] <- "staffing_year"
-    base <- dplyr::left_join(base, st1, by = "district_code")
+    base <- dplyr::left_join(base, st1, by = "district_id")
   }
 
   fb <- tryCatch(tges_fund_balance_health(tges), error = function(e) NULL)
   fb1 <- pick(fb, c("excess_surplus_flag"), district_codes, year)
   if (!is.null(fb1)) {
     fb1$end_year <- NULL
-    base <- dplyr::left_join(base, fb1, by = "district_code")
+    base <- dplyr::left_join(base, fb1, by = "district_id")
   }
 
   # keep the requested order, warn on any not found
-  missing_codes <- setdiff(district_codes, base$district_code)
+  missing_codes <- setdiff(district_codes, base$district_id)
   if (length(missing_codes)) {
     warning("No data for district code(s): ", paste(missing_codes, collapse = ", "))
   }
   base %>%
-    dplyr::arrange(match(.data$district_code, district_codes))
+    dplyr::arrange(match(.data$district_id, district_codes))
 }
 
 
@@ -2422,7 +2422,7 @@ tges_compare <- function(tges,
 #'
 #' # Track one district's excluded-cost wedge across guides
 #' tges_excluded_costs(fetch_many_tges(2024:2025)) %>%
-#'   filter(district_code == "3570") %>%
+#'   filter(district_id == "3570") %>%
 #'   select(end_year, budgetary_pp, gce_excess_pp, excluded_total_pp)
 #' }
 #'
@@ -2448,7 +2448,7 @@ tges_excluded_costs <- function(tges, years = NULL,
     .tges_real_districts() %>%
     dplyr::transmute(
       county_name   = .data$county_name,
-      district_code = .data$district_code,
+      district_id = .data$district_id,
       end_year      = .data$end_year,
       budgetary_pp    = suppressWarnings(as.numeric(.data[["Per Pupil costs"]])),
       budgetary_denom = suppressWarnings(as.numeric(.data[["Enrollment (ADE)"]]))
@@ -2456,7 +2456,7 @@ tges_excluded_costs <- function(tges, years = NULL,
     dplyr::distinct()
 
   out <- detail %>%
-    dplyr::inner_join(budg, by = c("county_name", "district_code", "end_year")) %>%
+    dplyr::inner_join(budg, by = c("county_name", "district_id", "end_year")) %>%
     dplyr::mutate(
       excluded_total_pp = .data$total_spending_pp - .data$budgetary_pp,
       gce_excess_pp     = .data$general_current_expense_pp - .data$budgetary_pp,
@@ -2477,7 +2477,7 @@ tges_excluded_costs <- function(tges, years = NULL,
   out$file_name <- NULL
 
   lead <- intersect(
-    c("county_name", "district_code", "district_name", "end_year",
+    c("county_name", "district_id", "district_name", "end_year",
       "budgetary_pp", "general_current_expense_pp", "capital_outlay_pp",
       "grants_entitlements_pp", "food_services_pp", "debt_service_local_pp",
       "debt_service_sda_pp", "total_spending_pp", "excluded_total_pp",

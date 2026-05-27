@@ -53,7 +53,7 @@ test_that("tidy_state_aid melts long, normalizes, and flags categories", {
 
   # 3 entities x 6 value columns
   expect_equal(nrow(out), 18L)
-  expect_true(all(c("county_name", "district_code", "district_name",
+  expect_true(all(c("county_name", "district_id", "district_name",
                     "aid_category", "is_aid_category", "amount") %in% names(out)))
 
   # the two drifting labels normalized to standard names
@@ -68,7 +68,7 @@ test_that("tidy_state_aid melts long, normalizes, and flags categories", {
 
   # the character percent column was coerced ("5%" -> 5)
   pct <- out %>%
-    dplyr::filter(district_code == "3570", aid_category == "aid_percent_difference") %>%
+    dplyr::filter(district_id == "3570", aid_category == "aid_percent_difference") %>%
     dplyr::pull(amount)
   expect_equal(pct, 5)
 })
@@ -77,13 +77,13 @@ test_that("tidy_state_aid pads codes and sets entity flags", {
   out <- tidy_state_aid(fake_raw_state_aid(), 2025)
 
   nwk <- out %>%
-    dplyr::filter(district_code == "3570", aid_category == "equalization_aid")
+    dplyr::filter(district_id == "3570", aid_category == "equalization_aid")
   expect_equal(nwk$amount, 1000)
   expect_true(nwk$is_district)
   expect_false(nwk$is_state)
 
   cmd <- out %>%
-    dplyr::filter(district_code == "0680", aid_category == "equalization_aid")
+    dplyr::filter(district_id == "0680", aid_category == "equalization_aid")
   expect_equal(nrow(cmd), 1L)  # 680 padded to 0680
 
   tot <- out %>%
@@ -104,10 +104,10 @@ test_that("fetch_state_aid pulls the current-year direct workbook", {
   skip_if_offline()
   sa <- fetch_state_aid(2027)
 
-  expect_gt(dplyr::n_distinct(sa$district_code[sa$is_district]), 500L)
+  expect_gt(dplyr::n_distinct(sa$district_id[sa$is_district]), 500L)
   expect_true("transportation_aid" %in% sa$aid_category)
   nwk_transp <- sa %>%
-    dplyr::filter(district_code == "3570", aid_category == "transportation_aid") %>%
+    dplyr::filter(district_id == "3570", aid_category == "transportation_aid") %>%
     dplyr::pull(amount)
   expect_true(is.finite(nwk_transp) && nwk_transp > 0)
 
@@ -115,10 +115,10 @@ test_that("fetch_state_aid pulls the current-year direct workbook", {
   totcol <- grep("fy_?0*27_k_12_aid$", unique(sa$aid_category), value = TRUE)[1]
   expect_false(is.na(totcol))
   cat_sum <- sa %>%
-    dplyr::filter(district_code == "3570", is_aid_category) %>%
+    dplyr::filter(district_id == "3570", is_aid_category) %>%
     dplyr::pull(amount) %>% sum(na.rm = TRUE)
   published <- sa %>%
-    dplyr::filter(district_code == "3570", aid_category == totcol) %>%
+    dplyr::filter(district_id == "3570", aid_category == totcol) %>%
     dplyr::pull(amount)
   expect_equal(cat_sum, published)
 })
@@ -128,7 +128,7 @@ test_that("fetch_state_aid falls back to the zip bundle for prior years", {
   skip_if_offline()
   # FY25 has no direct URL; this exercises the zip fallback + spaced member name
   sa <- fetch_state_aid(2025)
-  expect_gt(dplyr::n_distinct(sa$district_code[sa$is_district]), 500L)
+  expect_gt(dplyr::n_distinct(sa$district_id[sa$is_district]), 500L)
   expect_true(all(c("equalization_aid", "special_education_aid",
                     "transportation_aid") %in% sa$aid_category))
 })

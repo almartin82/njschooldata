@@ -175,14 +175,14 @@ tidy_state_aid <- function(df, end_year) {
 
   # rename the three id columns (always County / Dist / District, in that order)
   if ("county"   %in% names(df)) names(df)[names(df) == "county"]   <- "county_name"
-  if ("dist"     %in% names(df)) names(df)[names(df) == "dist"]     <- "district_code"
+  if ("dist"     %in% names(df)) names(df)[names(df) == "dist"]     <- "district_id"
   if ("district" %in% names(df)) names(df)[names(df) == "district"] <- "district_name"
   # positional fallback if labels ever drift
   if (!"county_name" %in% names(df))   names(df)[1] <- "county_name"
-  if (!"district_code" %in% names(df)) names(df)[2] <- "district_code"
+  if (!"district_id" %in% names(df)) names(df)[2] <- "district_id"
   if (!"district_name" %in% names(df)) names(df)[3] <- "district_name"
 
-  id_cols    <- c("county_name", "district_code", "district_name")
+  id_cols    <- c("county_name", "district_id", "district_name")
   value_cols <- setdiff(names(df), c(id_cols, "report_year"))
 
   # coerce every melted column to numeric up front: some years carry a character
@@ -204,19 +204,19 @@ tidy_state_aid <- function(df, end_year) {
   long$aid_category    <- normalize_state_aid_category(long$aid_category_raw)
   long$is_aid_category <- long$aid_category %in% .state_aid_known_categories
 
-  dc <- as.character(long$district_code)
+  dc <- as.character(long$district_id)
   has_code <- !is.na(dc) & grepl("[0-9]", dc)
   dc[has_code] <- pad_leading(dc[has_code], 4)
-  long$district_code <- dc
+  long$district_id <- dc
 
-  long$is_district <- grepl("^[0-9]{3,4}$", long$district_code)
+  long$is_district <- grepl("^[0-9]{3,4}$", long$district_id)
   # the workbook ends in a grand-total row (blank/non-numeric code)
   long$is_state <- !long$is_district &
     (is.na(long$county_name) | grepl("total|state", long$district_name, ignore.case = TRUE))
 
   long$end_year <- end_year
 
-  lead <- c("county_name", "district_code", "district_name", "end_year",
+  lead <- c("county_name", "district_id", "district_name", "end_year",
             "is_state", "is_district", "aid_category", "is_aid_category",
             "amount", "aid_category_raw")
   lead <- intersect(lead, names(long))
@@ -254,7 +254,7 @@ tidy_state_aid <- function(df, end_year) {
 #'   (state FY2026) is \code{end_year = 2026}.
 #'
 #' @return A tibble with one row per district per aid category:
-#'   \code{county_name}, \code{district_code}, \code{district_name},
+#'   \code{county_name}, \code{district_id}, \code{district_name},
 #'   \code{end_year}, \code{is_state}, \code{is_district}, \code{aid_category},
 #'   \code{is_aid_category}, \code{amount}, and the raw label \code{aid_category_raw}.
 #'
@@ -275,7 +275,7 @@ tidy_state_aid <- function(df, end_year) {
 #'
 #' # One district's aid mix
 #' fetch_state_aid(2026) %>%
-#'   filter(district_code == "3570", is_aid_category) %>%
+#'   filter(district_id == "3570", is_aid_category) %>%
 #'   select(aid_category, amount)
 #' }
 #'
@@ -300,7 +300,7 @@ fetch_state_aid <- function(end_year) {
 #'
 #' # Transportation aid trend for one district across years
 #' fetch_many_state_aid(2022:2026) %>%
-#'   filter(district_code == "3570", aid_category == "transportation_aid") %>%
+#'   filter(district_id == "3570", aid_category == "transportation_aid") %>%
 #'   select(end_year, amount)
 #' }
 #'

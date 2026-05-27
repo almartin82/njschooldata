@@ -6,7 +6,7 @@
 \usage{
 tges_find_peers(
   tges,
-  district_code,
+  district_id,
   n = 10,
   year = NULL,
   features = c("ade", "budgetary_pp", "classroom_share", "administration_share",
@@ -18,7 +18,7 @@ tges_find_peers(
 \arguments{
 \item{tges}{Output of \code{fetch_tges()} or \code{fetch_many_tges()}.}
 
-\item{district_code}{Character. The 4-digit focal district code (Newark = "3570").}
+\item{district_id}{Character. The 4-digit focal district code (Newark = "3570").}
 
 \item{n}{Integer. Number of peers to return (besides the focal row). Default 10.}
 
@@ -37,7 +37,7 @@ allowed (e.g. \code{total_pp}, \code{federal_share},
 \value{
 A tibble sorted by \code{distance} ascending, with the focal district
   first (\code{is_focal = TRUE}, \code{distance = 0}) followed by the \code{n}
-  nearest peers: \code{district_code}, \code{district_name}, \code{county_name},
+  nearest peers: \code{district_id}, \code{district_name}, \code{county_name},
   \code{group}, \code{dfg}, \code{is_focal}, \code{distance}, and the raw
   feature columns.
 }
@@ -65,14 +65,14 @@ warning. \code{dfg} is reported for context but is not part of the distance.
 library(dplyr)
 
 # Newark's data-driven fiscal twins
-peers <- tges_find_peers(fetch_tges(2024), district_code = "3570")
+peers <- tges_find_peers(fetch_tges(2024), district_id = "3570")
 peers \%>\% select(district_name, dfg, distance, ade, budgetary_pp, local_share)
 
 # Use them as the peer set for an honest rank
-twin_ids <- peers$district_code
+twin_ids <- peers$district_id
 fetch_tges(2024)$CSG1 \%>\%
   tges_percentile_rank(peer = "custom", custom_ids = twin_ids) \%>\%
-  filter(district_code == "3570") \%>\%
+  filter(district_id == "3570") \%>\%
   select(`Per Pupil costs`, peer_percentile, peer_n)
 }
 

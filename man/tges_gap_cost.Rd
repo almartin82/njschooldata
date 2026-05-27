@@ -6,7 +6,7 @@
 \usage{
 tges_gap_cost(
   tges,
-  district_code,
+  district_id,
   metric = "classroom_share",
   target = "median",
   peer = c("tges_group", "dfg", "county", "statewide"),
@@ -18,7 +18,7 @@ tges_gap_cost(
 \arguments{
 \item{tges}{Output of \code{fetch_tges()} or \code{fetch_many_tges()}.}
 
-\item{district_code}{Character. The 4-digit focal district code.}
+\item{district_id}{Character. The 4-digit focal district code.}
 
 \item{metric}{Character. A column from \code{tges_composition()}. Default
 \code{"classroom_share"}.}
@@ -64,7 +64,7 @@ benchmark.
 library(dplyr)
 
 # What would it cost Newark to reach the DFG A median classroom share?
-tges_gap_cost(fetch_tges(2024), district_code = "3570",
+tges_gap_cost(fetch_tges(2024), district_id = "3570",
               metric = "classroom_share", target = "median", peer = "dfg")
 }
 

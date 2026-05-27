@@ -52,11 +52,11 @@ tges_tidy <- function(end_year) {
 }
 
 # One district's tidy row for a given table + reporting year
-tges_district_row <- function(end_year, district_code, table = "CSG1",
+tges_district_row <- function(end_year, district_id, table = "CSG1",
                               row_year = end_year) {
   d <- tges_tidy(end_year)[[table]]
-  d[!is.na(d$district_code) &
-      d$district_code == district_code &
+  d[!is.na(d$district_id) &
+      d$district_id == district_id &
       d$end_year == row_year, , drop = FALSE]
 }
 
@@ -64,7 +64,7 @@ tges_district_row <- function(end_year, district_code, table = "CSG1",
 # https://www.nj.gov/education/guide/ (Absecon City = county 01, district 0010;
 # Alpine Boro = district 0080).  Values are the budgeted-year figures.
 tges_anchor_csg1 <- list(
-  # end_year, district_code, per_pupil, rank
+  # end_year, district_id, per_pupil, rank
   list(2025, "0010", 22164, 47L),
   list(2024, "0010", 19098, 25L),
   list(2015, "0010", 11463,  7L),

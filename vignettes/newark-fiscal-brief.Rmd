@@ -77,13 +77,13 @@ tgm <- fetch_many_tges(2018:2025)
 ```
 
 ```{r dfg-lookup}
-# Attach DFG to any TGES frame by its 4-digit district_code (the same join
+# Attach DFG to any TGES frame by its 4-digit district_id (the same join
 # tges_percentile_rank(peer = "dfg") uses internally). DFG A = highest need.
 dfg_lk <- fetch_dfg() %>%
-  group_by(district_code) %>%
+  group_by(district_id) %>%
   summarise(dfg = first(dfg), .groups = "drop")
 
-with_dfg <- function(df) left_join(df, dfg_lk, by = "district_code")
+with_dfg <- function(df) left_join(df, dfg_lk, by = "district_id")
 ```
 
 ## 1. Whose money is it? Newark runs on state aid, not property tax
@@ -97,7 +97,7 @@ rev <- tges_revenue_mix(tgm) %>% with_dfg()
 
 # Newark's latest-year mix, in cents-on-the-dollar and per-pupil dollars
 newark_rev_latest <- rev %>%
-  filter(district_code == NEWARK, end_year == max(end_year)) %>%
+  filter(district_id == NEWARK, end_year == max(end_year)) %>%
   select(end_year, total_pp, local_share, state_share, federal_share,
          local_pp, state_pp, federal_pp)
 stopifnot(nrow(newark_rev_latest) == 1)
@@ -108,7 +108,7 @@ dfg_a_local <- rev %>%
   filter(dfg == "A", end_year == max(end_year)) %>%
   summarise(
     n = n(),
-    newark_local = local_share[district_code == NEWARK][1],
+    newark_local = local_share[district_id == NEWARK][1],
     dfg_a_median_local = median(local_share, na.rm = TRUE)
   )
 dfg_a_local
@@ -116,7 +116,7 @@ dfg_a_local
 
 ```{r rev-chart}
 rev_long <- rev %>%
-  filter(district_code == NEWARK) %>%
+  filter(district_id == NEWARK) %>%
   select(end_year, Local = local_share, State = state_share,
          Federal = federal_share) %>%
   pivot_longer(-end_year, names_to = "source", values_to = "share")
@@ -161,7 +161,7 @@ classroom_ranked <- comp %>%
 stopifnot(nrow(classroom_ranked) > 0)
 
 newark_classroom <- classroom_ranked %>%
-  filter(district_code == NEWARK) %>%
+  filter(district_id == NEWARK) %>%
   select(end_year, classroom_share, peer_percentile, peer_n)
 newark_classroom
 
@@ -170,14 +170,14 @@ spend_ranked <- tges_percentile_rank(
   comp %>% filter(end_year == latest_yr),
   "budgetary_pp", peer = "dfg"
 ) %>%
-  filter(dfg == "A", district_code == NEWARK) %>%
+  filter(dfg == "A", district_id == NEWARK) %>%
   select(budgetary_pp, peer_percentile, peer_n)
 spend_ranked
 ```
 
 ```{r classroom-chart}
 plot_df <- classroom_ranked %>%
-  mutate(is_newark = district_code == NEWARK) %>%
+  mutate(is_newark = district_id == NEWARK) %>%
   arrange(classroom_share) %>%
   mutate(rank_order = row_number())
 stopifnot(sum(plot_df$is_newark) == 1)
@@ -216,7 +216,7 @@ sum to the total.
 
 ```{r growth-compute}
 rg <- tges_real_growth(tgm) %>%
-  filter(district_code == NEWARK) %>%
+  filter(district_id == NEWARK) %>%
   arrange(end_year)
 stopifnot(nrow(rg) > 1)
 
@@ -266,7 +266,7 @@ during the surge, the structural set-up for a funding cliff.
 fe <- tges_federal_exposure(tgm) %>% with_dfg()
 
 fe %>%
-  filter(district_code == NEWARK) %>%
+  filter(district_id == NEWARK) %>%
   select(baseline_federal_share, peak_federal_share, federal_bump,
          pp_growth, cliff_exposure)
 
@@ -279,7 +279,7 @@ fe %>%
 ```{r esser-chart}
 fed_series <- rev %>%
   mutate(grp = case_when(
-    district_code == NEWARK ~ "Newark",
+    district_id == NEWARK ~ "Newark",
     dfg == "A" ~ "DFG A peers",
     TRUE ~ NA_character_
   )) %>%
@@ -318,7 +318,7 @@ staff <- tges_staffing(tgm) %>% with_dfg()
 # Newark's latest staffing line, ranked within DFG A on the bloat axis
 staff_latest_yr <- max(staff$end_year[is.finite(staff$student_admin_ratio)])
 newark_staff <- staff %>%
-  filter(district_code == NEWARK, end_year == staff_latest_yr) %>%
+  filter(district_id == NEWARK, end_year == staff_latest_yr) %>%
   select(end_year, student_teacher_ratio, student_admin_ratio,
          faculty_admin_ratio, teacher_salary, admin_salary, benefits_pct_salary)
 newark_staff
@@ -327,7 +327,7 @@ newark_staff
 admin_rank <- staff %>%
   filter(end_year == staff_latest_yr) %>%
   tges_percentile_rank("student_admin_ratio", peer = "dfg") %>%
-  filter(dfg == "A", district_code == NEWARK) %>%
+  filter(dfg == "A", district_id == NEWARK) %>%
   select(student_admin_ratio, peer_percentile, peer_n)
 admin_rank
 ```
@@ -336,7 +336,7 @@ admin_rank
 benefits_series <- staff %>%
   filter(is.finite(benefits_pct_salary)) %>%
   mutate(grp = case_when(
-    district_code == NEWARK ~ "Newark",
+    district_id == NEWARK ~ "Newark",
     dfg == "A" ~ "DFG A peers",
     TRUE ~ NA_character_
   )) %>%
@@ -372,7 +372,7 @@ Finally, the product a board member actually wants before a budget vote.
 surfaces where Newark lands in the top or bottom decile of DFG A.
 
 ```{r redflags-compute}
-flags <- tges_red_flags(tgm, district_code = NEWARK, peer = "dfg",
+flags <- tges_red_flags(tgm, district_id = NEWARK, peer = "dfg",
                         only_flagged = FALSE)
 flags
 ```

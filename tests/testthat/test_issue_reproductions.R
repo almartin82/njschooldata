@@ -151,7 +151,7 @@ test_that("charter.R does not coerce district_id to numeric", {
 
 test_that("config_peer_groups.R pads codes before concatenation", {
   peer_code <- readLines("../../R/config_peer_groups.R")
-  concat_lines <- grep("paste0.*county_code.*district_code", peer_code)
+  concat_lines <- grep("paste0.*county_id.*district_id", peer_code)
 
   for (line_num in concat_lines) {
     line_text <- peer_code[line_num]

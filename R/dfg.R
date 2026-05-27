@@ -9,7 +9,7 @@
 #'
 #' @param revision c(2000, 1990) Which census revision to use. Default 2000.
 #'
-#' @return data.frame with columns: county_code, county_name, district_code,
+#' @return data.frame with columns: county_id, county_name, district_id,
 #'   district_name, dfg
 #'
 #' @references
@@ -33,8 +33,9 @@ fetch_dfg <- function(revision = 2000) {
     dplyr::filter(!is.na(county_name))
 
   df <- clean_cds_fields(df)
-  df$county_code <- pad_leading(df$county_code, 2)
-  df$district_code <- pad_leading(df$district_code, 4)
+  df <- cds_codes_to_ids(df)
+  df$county_id <- pad_leading(df$county_id, 2)
+  df$district_id <- pad_leading(df$district_id, 4)
 
   if (revision == 2000) {
     df <- df %>%
