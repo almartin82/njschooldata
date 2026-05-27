@@ -53,3 +53,4 @@ venv/
 
 # Local dev scratch (large SPR workbooks, inspection scripts)
 scratch/
+.gstack/
