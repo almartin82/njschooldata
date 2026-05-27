@@ -1,3 +1,17 @@
+# njschooldata 0.9.11
+
+## Documentation
+
+* New vignette, "The Head First Analyst's Guide to NJ TGES" (also in
+  `dev-docs/tges-analyst-guide.md`). Ten common analytical traps in the
+  Taxpayers' Guide to Education Spending and how to avoid them: the three
+  different "per pupil" numbers, the resident-vs-sent-pupil denominator that
+  breaks cross-district subtraction, county special-services outliers, nominal
+  vs real dollars, actuals vs budgeted years, within-peer-group ranks, the ESSER
+  cliff inside Total Spending, why state aid does not predict spending, the
+  guide-year vs `end_year` mismatch, and average-row / district-code hygiene.
+  Each points at the relevant analysis helper.
+
 # njschooldata 0.9.10
 
 ## New features
