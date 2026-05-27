@@ -73,7 +73,9 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="school-performance-reports-spr-database">School Performance Reports (SPR) Database<a class="anchor" aria-label="anchor" href="#school-performance-reports-spr-database"></a>
 </h2>
@@ -91,27 +93,34 @@ of how to use them.</p>
 <h3 id="using-the-generic-extractor">Using the Generic Extractor<a class="anchor" aria-label="anchor" href="#using-the-generic-extractor"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get chronic absenteeism data</span></span>
-<span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"ChronicAbsenteeism"</span>, <span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get teacher experience data</span></span>
-<span><span class="va">teachers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"TeachersExperience"</span>, <span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get district-level data</span></span>
+<code class="sourceCode R"><span><span class="co"># The generic extractor pulls any sheet by its NJ DOE name.</span></span>
+<span><span class="co"># level = "district" returns district + state aggregates from one ~30 MB</span></span>
+<span><span class="co"># workbook; level = "school" returns school-level rows (a much larger download).</span></span>
+<span><span class="va">ca</span>        <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"ChronicAbsenteeism"</span>, <span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span>
+<span><span class="va">teachers</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"TeachersExperience"</span>, <span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span>
 <span><span class="va">grad_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"6YrGraduationCohortProfile"</span>, <span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Every sheet comes back as a tidy data frame with cleaned snake_case columns</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ca</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 11050    19</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ca</span><span class="op">)</span>, <span class="fl">9</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "county_id"         "county_name"       "district_id"      </span></span>
+<span><span class="co">#&gt; [4] "district_name"     "subgroup"          "chronic_abs_count"</span></span>
+<span><span class="co">#&gt; [7] "chronic_abs_pct"   "target"            "met_target"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-convenience-functions">Using Convenience Functions<a class="anchor" aria-label="anchor" href="#using-convenience-functions"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Chronic absenteeism (convenience wrapper)</span></span>
-<span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># By grade level</span></span>
-<span><span class="va">ca_grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_absenteeism_by_grade.html">fetch_absenteeism_by_grade</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Days absent statistics</span></span>
-<span><span class="va">days</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_days_absent.html">fetch_days_absent</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Convenience wrappers track the sheet renames NJ DOE makes across years,</span></span>
+<span><span class="co"># so you do not have to remember which name a given year uses.</span></span>
+<span><span class="va">ca</span>       <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span>
+<span><span class="va">ca_grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_absenteeism_by_grade.html">fetch_absenteeism_by_grade</a></span><span class="op">(</span><span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span>
+<span><span class="va">days</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_days_absent.html">fetch_days_absent</a></span><span class="op">(</span><span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># fetch_absenteeism_by_grade() adds a grade_level column (PK, KG, 1-12)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ca_grade</span><span class="op">$</span><span class="va">grade_level</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "1"  "10" "11" "12" "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "KG" "PK"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -612,85 +621,171 @@ of how to use them.</p>
 <div class="section level3">
 <h3 id="chronic-absenteeism-analysis">Chronic Absenteeism Analysis<a class="anchor" aria-label="anchor" href="#chronic-absenteeism-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get school-level chronic absenteeism</span></span>
-<span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Filter for high-absenteeism schools</span></span>
+<p>Which districts have the highest chronic absenteeism, and how has the
+statewide rate moved since COVID?</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Districts where more than 30% of students are chronically absent</span></span>
 <span><span class="va">high_absent</span> <span class="op">&lt;-</span> <span class="va">ca</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>    <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span>,</span>
-<span>    <span class="va">chronically_absent_rate</span> <span class="op">&gt;</span> <span class="fl">20</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">chronically_absent_rate</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span>,</span>
+<span>         <span class="va">chronically_absent_rate</span> <span class="op">&gt;</span> <span class="fl">30</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">chronically_absent_rate</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">chronically_absent_rate</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Compare across years</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">multi_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span><span class="fl">2018</span><span class="op">:</span><span class="fl">2024</span>, <span class="op">~</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Plot trend</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">multi_year</span><span class="op">$</span><span class="va">end_year</span>, <span class="va">multi_year</span><span class="op">$</span><span class="va">chronically_absent_rate</span>,</span>
-<span>     type <span class="op">=</span> <span class="st">"b"</span>, xlab <span class="op">=</span> <span class="st">"Year"</span>, ylab <span class="op">=</span> <span class="st">"Chronic Absenteeism Rate"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">high_absent</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">high_absent</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 2</span></span></span>
+<span><span class="co">#&gt;   district_name                                           chronically_absent_r…¹</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> LEAD Charter School                                                       71.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Camden Prep, Inc.                                                         50.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Camden City School District                                               46.9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> KIPP: Cooper Norcross, A New Jersey Nonprofit Corporat…                   45.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Ocean Gate School District                                                43  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Roseville Community Charter School                                        39.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Seaside Heights School District                                           39.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> TEAM Academy Charter School                                               37.7</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​chronically_absent_rate</span></span></span></code></pre></div>
+<p>Compare the statewide rate before and after the pandemic. Wrapping
+each year’s fetch means a missing year surfaces as a warning, not a
+silent gap.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ca_trend</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2022</span>, <span class="fl">2024</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">yr</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/fetch_chronic_absenteeism.html">fetch_chronic_absenteeism</a></span><span class="op">(</span><span class="va">yr</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">chronically_absent_rate</span><span class="op">)</span>,</span>
+<span>    error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></span><span class="op">(</span><span class="st">"chronic absenteeism "</span>, <span class="va">yr</span>, <span class="st">" failed: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="cn">NULL</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ca_trend</span><span class="op">)</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">ca_trend</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   end_year chronically_absent_rate</span></span>
+<span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     <span style="text-decoration: underline;">2</span>019                    10.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     <span style="text-decoration: underline;">2</span>022                    18.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     <span style="text-decoration: underline;">2</span>024                    14.9</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ca_trend</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">chronically_absent_rate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#c0392b"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">chronically_absent_rate</span>, <span class="st">"%"</span><span class="op">)</span><span class="op">)</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">1.1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2022</span>, <span class="fl">2024</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"NJ chronic absenteeism spiked after COVID and is still elevated"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Statewide share of students chronically absent (total population)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Chronically absent (%)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spr-dictionary_files/figure-html/ca-trend-chart-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="teacher-experience-analysis">Teacher Experience Analysis<a class="anchor" aria-label="anchor" href="#teacher-experience-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get teacher experience data</span></span>
-<span><span class="va">teachers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"TeachersExperience"</span>, <span class="fl">2024</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Analyze new teacher rates</span></span>
-<span><span class="va">new_teacher_rates</span> <span class="op">&lt;-</span> <span class="va">teachers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    new_teacher_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`0-3 Years`</span><span class="op">)</span> <span class="op">/</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`0-3 Years`</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`4-10 Years`</span><span class="op">)</span> <span class="op">+</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`11-20 Years`</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">`20+ Years`</span><span class="op">)</span></span>
+<p>Which districts rely most on out-of-field teachers? Several SPR
+numeric columns arrive as character text, so coerce them before
+sorting.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">teachers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"TeachersExperience"</span>, <span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_of_field</span> <span class="op">&lt;-</span> <span class="va">teachers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="va">district_name</span>,</span>
+<span>    avg_years_exp    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">teacher_avg_years_exp_school</span><span class="op">)</span>,</span>
+<span>    pct_out_of_field <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">percentage_of_out_of_field_teachers</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">new_teacher_rate</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">pct_out_of_field</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">out_of_field</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_of_field</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
+<span><span class="co">#&gt;   district_name                                   avg_years_exp pct_out_of_field</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Kindle Education Public Charter School                    6.3             58.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Achievers Early College Prep Charter School               1.5             50  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Great Oaks Legacy Charter School                          7.4             40.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sussex County Educational Services Commission             2.4             35.7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Pride Academy Charter School District                    10               34.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Northern Region Educational Services Commission           4.6             34  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> People's Achieve Community Charter School                 4.6             33.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Community Charter School of Paterson                     11.4             30.6</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="course-access-analysis">Course Access Analysis<a class="anchor" aria-label="anchor" href="#course-access-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get math course enrollment</span></span>
-<span><span class="va">math</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"MathCourseParticipation"</span>, <span class="fl">2024</span><span class="op">)</span></span>
+<p><code>APIBCoursesOffered</code> lists one row per course with
+enrollment counts. The counts are stored as character, so coerce before
+ranking.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"APIBCoursesOffered"</span>, <span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Most-enrolled AP/IB courses statewide</span></span>
+<span><span class="va">top_ap</span> <span class="op">&lt;-</span> <span class="va">ap</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">course_name</span>, enrolled <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">student_enroll_count</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">enrolled</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Check for AP Calculus access</span></span>
-<span><span class="va">schools_with_calc</span> <span class="op">&lt;-</span> <span class="va">math</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"AP Calculus"</span>, <span class="va">math_course</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">school_name</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compare AP access across districts</span></span>
-<span><span class="va">ap_access</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"APIBCoursesOffered"</span>, <span class="fl">2024</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    has_ap_math <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"AP Calculus"</span>, <span class="va">courses_offered</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    has_ap_science <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"AP.*Science"</span>, <span class="va">courses_offered</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">top_ap</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">top_ap</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 2</span></span></span>
+<span><span class="co">#&gt;   course_name                           enrolled</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> AP U.S. History                          <span style="text-decoration: underline;">20</span>003</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> AP English Language and Composition      <span style="text-decoration: underline;">19</span>956</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> AP English Literature and Composition    <span style="text-decoration: underline;">15</span>717</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> AP Psychology                            <span style="text-decoration: underline;">13</span>709</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> AP Statistics                            <span style="text-decoration: underline;">11</span>029</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> AP Calculus AB                            <span style="text-decoration: underline;">9</span>988</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> AP Biology                                <span style="text-decoration: underline;">9</span>044</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> AP Environmental Science                  <span style="text-decoration: underline;">8</span>337</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="discipline-analysis">Discipline Analysis<a class="anchor" aria-label="anchor" href="#discipline-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get disciplinary removals data</span></span>
-<span><span class="va">discipline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_data.html">fetch_spr_data</a></span><span class="op">(</span><span class="st">"DisciplinaryRemovals"</span>, <span class="fl">2024</span><span class="op">)</span></span>
+<p>For 2024 the discipline sheet is
+<code>DisciplinaryRemovalsByStudgroup</code>;
+<code><a href="../reference/fetch_disciplinary_removals.html">fetch_disciplinary_removals()</a></code> picks the right sheet name
+for each year. The grouping column is <code>student_group_grade</code>,
+and the sheet reports suspension and expulsion percentages directly (no
+enrollment denominator).</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">discipline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_disciplinary_removals.html">fetch_disciplinary_removals</a></span><span class="op">(</span><span class="fl">2024</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Suspension and expulsion rates by student group, statewide</span></span>
+<span><span class="va">susp_by_group</span> <span class="op">&lt;-</span> <span class="va">discipline</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">is_state</span>,</span>
+<span>    <span class="va">student_group_grade</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"Statewide"</span>, <span class="st">"Black or African American"</span>, <span class="st">"Hispanic"</span>, <span class="st">"White"</span>,</span>
+<span>      <span class="st">"Students with disabilities"</span>, <span class="st">"Economically Disadvantaged Students"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="va">student_group_grade</span>,</span>
+<span>    pct_any_suspension <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">percent_students_any_suspension</span><span class="op">)</span>,</span>
+<span>    pct_expulsions     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">percent_students_expulsions</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">pct_any_suspension</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Analyze suspension rates by subgroup</span></span>
-<span><span class="va">discipline</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"white"</span>, <span class="st">"hispanic"</span>, <span class="st">"total population"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">subgroup</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    total_suspended <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">suspended_count</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    total_enrolled <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">enrollment_count</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    suspension_rate <span class="op">=</span> <span class="va">total_suspended</span> <span class="op">/</span> <span class="va">total_enrolled</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">susp_by_group</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">susp_by_group</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   student_group_grade                 pct_any_suspension pct_expulsions</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Black or African American                         9.02           0.01</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Students with disabilities                        6.56           0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Economically Disadvantaged Students               6.24           0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Hispanic                                          4.56           0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Statewide                                         4.26           0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> White                                             2.78           0</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -768,7 +863,7 @@ reference</a></li>
 <li><a href="https://almartin82.github.io/njschooldata/articles/getting-started.html">Getting
 started guide</a></li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.0 (2026-04-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -791,20 +886,24 @@ started guide</a></li>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] dplyr_1.2.1         njschooldata_0.9.11</span></span>
+<span><span class="co">#&gt; [1] ggplot2_4.0.3       purrr_1.2.2         dplyr_1.2.1        </span></span>
+<span><span class="co">#&gt; [4] njschooldata_0.9.11</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] jsonlite_2.0.0    compiler_4.6.0    tidyselect_1.2.1  stringr_1.6.0    </span></span>
-<span><span class="co">#&gt;  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2</span></span>
-<span><span class="co">#&gt;  [9] textshaping_1.0.5 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      </span></span>
-<span><span class="co">#&gt; [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     </span></span>
-<span><span class="co">#&gt; [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       </span></span>
-<span><span class="co">#&gt; [21] bslib_0.11.0      pillar_1.11.1     rlang_1.2.0       cachem_1.1.0     </span></span>
-<span><span class="co">#&gt; [25] stringi_1.8.7     xfun_0.57         fs_2.1.0          sass_0.4.10      </span></span>
-<span><span class="co">#&gt; [29] timechange_0.4.0  cli_3.6.6         pkgdown_2.2.0     magrittr_2.0.5   </span></span>
-<span><span class="co">#&gt; [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      </span></span>
-<span><span class="co">#&gt; [37] evaluate_1.0.5    glue_1.8.1        ragg_1.5.2        rmarkdown_2.31   </span></span>
-<span><span class="co">#&gt; [41] purrr_1.2.2       tools_4.6.0       pkgconfig_2.0.3   htmltools_0.5.9</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       </span></span>
+<span><span class="co">#&gt;  [5] stringi_1.8.7      hms_1.1.4          digest_0.6.39      magrittr_2.0.5    </span></span>
+<span><span class="co">#&gt;  [9] evaluate_1.0.5     grid_4.6.0         timechange_0.4.0   RColorBrewer_1.1-3</span></span>
+<span><span class="co">#&gt; [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     scales_1.4.0      </span></span>
+<span><span class="co">#&gt; [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         </span></span>
+<span><span class="co">#&gt; [21] rlang_1.2.0        withr_3.0.2        cachem_1.1.0       yaml_2.3.12       </span></span>
+<span><span class="co">#&gt; [25] downloader_0.4.1   tools_4.6.0        tzdb_0.5.0         vctrs_0.7.3       </span></span>
+<span><span class="co">#&gt; [29] R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1  </span></span>
+<span><span class="co">#&gt; [33] stringr_1.6.0      fs_2.1.0           ragg_1.5.2         janitor_2.2.1     </span></span>
+<span><span class="co">#&gt; [37] pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1     </span></span>
+<span><span class="co">#&gt; [41] bslib_0.11.0       gtable_0.3.6       glue_1.8.1         systemfonts_1.3.2 </span></span>
+<span><span class="co">#&gt; [45] xfun_0.57          tibble_3.3.1       tidyselect_1.2.1   knitr_1.51        </span></span>
+<span><span class="co">#&gt; [49] farver_2.1.2       htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.31    </span></span>
+<span><span class="co">#&gt; [53] readr_2.2.0        compiler_4.6.0     S7_0.2.2           readxl_1.5.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

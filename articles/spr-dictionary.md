@@ -4,6 +4,8 @@
 
 library(njschooldata)
 library(dplyr)
+library(purrr)
+library(ggplot2)
 ```
 
 ## School Performance Reports (SPR) Database
@@ -21,28 +23,41 @@ how to use them.
 
 ``` r
 
-# Get chronic absenteeism data
-ca <- fetch_spr_data("ChronicAbsenteeism", 2024)
-
-# Get teacher experience data
-teachers <- fetch_spr_data("TeachersExperience", 2024)
-
-# Get district-level data
+# The generic extractor pulls any sheet by its NJ DOE name.
+# level = "district" returns district + state aggregates from one ~30 MB
+# workbook; level = "school" returns school-level rows (a much larger download).
+ca        <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "district")
+teachers  <- fetch_spr_data("TeachersExperience", 2024, level = "district")
 grad_dist <- fetch_spr_data("6YrGraduationCohortProfile", 2024, level = "district")
+```
+
+``` r
+
+# Every sheet comes back as a tidy data frame with cleaned snake_case columns
+dim(ca)
+#> [1] 11050    19
+head(names(ca), 9)
+#> [1] "county_id"         "county_name"       "district_id"      
+#> [4] "district_name"     "subgroup"          "chronic_abs_count"
+#> [7] "chronic_abs_pct"   "target"            "met_target"
 ```
 
 ### Using Convenience Functions
 
 ``` r
 
-# Chronic absenteeism (convenience wrapper)
-ca <- fetch_chronic_absenteeism(2024)
+# Convenience wrappers track the sheet renames NJ DOE makes across years,
+# so you do not have to remember which name a given year uses.
+ca       <- fetch_chronic_absenteeism(2024, level = "district")
+ca_grade <- fetch_absenteeism_by_grade(2024, level = "district")
+days     <- fetch_days_absent(2024, level = "district")
+```
 
-# By grade level
-ca_grade <- fetch_absenteeism_by_grade(2024)
+``` r
 
-# Days absent statistics
-days <- fetch_days_absent(2024)
+# fetch_absenteeism_by_grade() adds a grade_level column (PK, KG, 1-12)
+sort(unique(ca_grade$grade_level))
+#>  [1] "1"  "10" "11" "12" "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "KG" "PK"
 ```
 
 ## Available SPR Sheets
@@ -167,89 +182,199 @@ days <- fetch_days_absent(2024)
 
 ### Chronic Absenteeism Analysis
 
+Which districts have the highest chronic absenteeism, and how has the
+statewide rate moved since COVID?
+
 ``` r
 
-# Get school-level chronic absenteeism
-ca <- fetch_chronic_absenteeism(2024)
-
-# Filter for high-absenteeism schools
-high_absent <- ca %>%
-  filter(
-    subgroup == "total population",
-    chronically_absent_rate > 20
-  ) %>%
-  arrange(desc(chronically_absent_rate))
-
-# Compare across years
-library(purrr)
-
-multi_year <- map_dfr(2018:2024, ~{
-  fetch_chronic_absenteeism(.x) %>%
-    filter(is_state, subgroup == "total population")
-})
-
-# Plot trend
-plot(multi_year$end_year, multi_year$chronically_absent_rate,
-     type = "b", xlab = "Year", ylab = "Chronic Absenteeism Rate")
+ca <- fetch_chronic_absenteeism(2024, level = "district")
 ```
+
+``` r
+
+# Districts where more than 30% of students are chronically absent
+high_absent <- ca %>%
+  filter(is_district,
+         subgroup == "total population",
+         chronically_absent_rate > 30) %>%
+  arrange(desc(chronically_absent_rate)) %>%
+  select(district_name, chronically_absent_rate)
+
+stopifnot(nrow(high_absent) > 0)
+head(high_absent, 8)
+#> # A tibble: 8 × 2
+#>   district_name                                           chronically_absent_r…¹
+#>   <chr>                                                                    <dbl>
+#> 1 LEAD Charter School                                                       71.4
+#> 2 Camden Prep, Inc.                                                         50.2
+#> 3 Camden City School District                                               46.9
+#> 4 KIPP: Cooper Norcross, A New Jersey Nonprofit Corporat…                   45.5
+#> 5 Ocean Gate School District                                                43  
+#> 6 Roseville Community Charter School                                        39.4
+#> 7 Seaside Heights School District                                           39.1
+#> 8 TEAM Academy Charter School                                               37.7
+#> # ℹ abbreviated name: ¹​chronically_absent_rate
+```
+
+Compare the statewide rate before and after the pandemic. Wrapping each
+year’s fetch means a missing year surfaces as a warning, not a silent
+gap.
+
+``` r
+
+ca_trend <- map_dfr(c(2019, 2022, 2024), function(yr) {
+  tryCatch(
+    fetch_chronic_absenteeism(yr, level = "district") %>%
+      filter(is_state, subgroup == "total population") %>%
+      transmute(end_year, chronically_absent_rate),
+    error = function(e) {
+      warning("chronic absenteeism ", yr, " failed: ", conditionMessage(e))
+      NULL
+    }
+  )
+})
+```
+
+``` r
+
+stopifnot(nrow(ca_trend) == 3)
+ca_trend
+#> # A tibble: 3 × 2
+#>   end_year chronically_absent_rate
+#>      <dbl>                   <dbl>
+#> 1     2019                    10.6
+#> 2     2022                    18.1
+#> 3     2024                    14.9
+```
+
+``` r
+
+ggplot(ca_trend, aes(end_year, chronically_absent_rate)) +
+  geom_line(color = "#c0392b", linewidth = 1) +
+  geom_point(color = "#c0392b", size = 3) +
+  geom_text(aes(label = paste0(chronically_absent_rate, "%")), vjust = -1.1) +
+  scale_x_continuous(breaks = c(2019, 2022, 2024)) +
+  labs(
+    title = "NJ chronic absenteeism spiked after COVID and is still elevated",
+    subtitle = "Statewide share of students chronically absent (total population)",
+    x = NULL, y = "Chronically absent (%)"
+  ) +
+  theme_minimal()
+```
+
+![](spr-dictionary_files/figure-html/ca-trend-chart-1.png)
 
 ### Teacher Experience Analysis
 
+Which districts rely most on out-of-field teachers? Several SPR numeric
+columns arrive as character text, so coerce them before sorting.
+
 ``` r
 
-# Get teacher experience data
-teachers <- fetch_spr_data("TeachersExperience", 2024)
+teachers <- fetch_spr_data("TeachersExperience", 2024, level = "district")
+```
 
-# Analyze new teacher rates
-new_teacher_rates <- teachers %>%
-  filter(subgroup == "total population") %>%
-  mutate(
-    new_teacher_rate = as.numeric(`0-3 Years`) /
-      as.numeric(`0-3 Years`) + as.numeric(`4-10 Years`) +
-      as.numeric(`11-20 Years`) + as.numeric(`20+ Years`)
+``` r
+
+out_of_field <- teachers %>%
+  filter(is_district) %>%
+  transmute(
+    district_name,
+    avg_years_exp    = as.numeric(teacher_avg_years_exp_school),
+    pct_out_of_field = as.numeric(percentage_of_out_of_field_teachers)
   ) %>%
-  arrange(desc(new_teacher_rate))
+  arrange(desc(pct_out_of_field))
+
+stopifnot(nrow(out_of_field) > 0)
+head(out_of_field, 8)
+#> # A tibble: 8 × 3
+#>   district_name                                   avg_years_exp pct_out_of_field
+#>   <chr>                                                   <dbl>            <dbl>
+#> 1 Kindle Education Public Charter School                    6.3             58.3
+#> 2 Achievers Early College Prep Charter School               1.5             50  
+#> 3 Great Oaks Legacy Charter School                          7.4             40.7
+#> 4 Sussex County Educational Services Commission             2.4             35.7
+#> 5 Pride Academy Charter School District                    10               34.8
+#> 6 Northern Region Educational Services Commission           4.6             34  
+#> 7 People's Achieve Community Charter School                 4.6             33.3
+#> 8 Community Charter School of Paterson                     11.4             30.6
 ```
 
 ### Course Access Analysis
 
+`APIBCoursesOffered` lists one row per course with enrollment counts.
+The counts are stored as character, so coerce before ranking.
+
 ``` r
 
-# Get math course enrollment
-math <- fetch_spr_data("MathCourseParticipation", 2024)
+ap <- fetch_spr_data("APIBCoursesOffered", 2024, level = "district")
+```
 
-# Check for AP Calculus access
-schools_with_calc <- math %>%
-  filter(grepl("AP Calculus", math_course, ignore.case = TRUE)) %>%
-  pull(school_name) %>%
-  unique()
+``` r
 
-# Compare AP access across districts
-ap_access <- fetch_spr_data("APIBCoursesOffered", 2024) %>%
-  filter(is_district) %>%
-  mutate(
-    has_ap_math = grepl("AP Calculus", courses_offered, ignore.case = TRUE),
-    has_ap_science = grepl("AP.*Science", courses_offered, ignore.case = TRUE)
-  )
+# Most-enrolled AP/IB courses statewide
+top_ap <- ap %>%
+  filter(is_state) %>%
+  transmute(course_name, enrolled = as.numeric(student_enroll_count)) %>%
+  arrange(desc(enrolled))
+
+stopifnot(nrow(top_ap) > 0)
+head(top_ap, 8)
+#> # A tibble: 8 × 2
+#>   course_name                           enrolled
+#>   <chr>                                    <dbl>
+#> 1 AP U.S. History                          20003
+#> 2 AP English Language and Composition      19956
+#> 3 AP English Literature and Composition    15717
+#> 4 AP Psychology                            13709
+#> 5 AP Statistics                            11029
+#> 6 AP Calculus AB                            9988
+#> 7 AP Biology                                9044
+#> 8 AP Environmental Science                  8337
 ```
 
 ### Discipline Analysis
 
+For 2024 the discipline sheet is `DisciplinaryRemovalsByStudgroup`;
+[`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
+picks the right sheet name for each year. The grouping column is
+`student_group_grade`, and the sheet reports suspension and expulsion
+percentages directly (no enrollment denominator).
+
 ``` r
 
-# Get disciplinary removals data
-discipline <- fetch_spr_data("DisciplinaryRemovals", 2024)
+discipline <- fetch_disciplinary_removals(2024, level = "district")
+```
 
-# Analyze suspension rates by subgroup
-discipline %>%
-  filter(subgroup %in% c("black", "white", "hispanic", "total population")) %>%
-  group_by(subgroup) %>%
-  summarize(
-    total_suspended = sum(suspended_count, na.rm = TRUE),
-    total_enrolled = sum(enrollment_count, na.rm = TRUE),
-    suspension_rate = total_suspended / total_enrolled,
-    .groups = "drop"
-  )
+``` r
+
+# Suspension and expulsion rates by student group, statewide
+susp_by_group <- discipline %>%
+  filter(
+    is_state,
+    student_group_grade %in% c(
+      "Statewide", "Black or African American", "Hispanic", "White",
+      "Students with disabilities", "Economically Disadvantaged Students"
+    )
+  ) %>%
+  transmute(
+    student_group_grade,
+    pct_any_suspension = as.numeric(percent_students_any_suspension),
+    pct_expulsions     = as.numeric(percent_students_expulsions)
+  ) %>%
+  arrange(desc(pct_any_suspension))
+
+stopifnot(nrow(susp_by_group) > 0)
+susp_by_group
+#> # A tibble: 6 × 3
+#>   student_group_grade                 pct_any_suspension pct_expulsions
+#>   <chr>                                            <dbl>          <dbl>
+#> 1 Black or African American                         9.02           0.01
+#> 2 Students with disabilities                        6.56           0   
+#> 3 Economically Disadvantaged Students               6.24           0   
+#> 4 Hispanic                                          4.56           0   
+#> 5 Statewide                                         4.26           0   
+#> 6 White                                             2.78           0
 ```
 
 ## Data Structure
@@ -321,18 +446,22 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dplyr_1.2.1         njschooldata_0.9.11
+#> [1] ggplot2_4.0.3       purrr_1.2.2         dplyr_1.2.1        
+#> [4] njschooldata_0.9.11
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] jsonlite_2.0.0    compiler_4.6.0    tidyselect_1.2.1  stringr_1.6.0    
-#>  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2
-#>  [9] textshaping_1.0.5 yaml_2.3.12       fastmap_1.2.0     readr_2.2.0      
-#> [13] R6_2.6.1          generics_0.1.4    knitr_1.51        tibble_3.3.1     
-#> [17] janitor_2.2.1     desc_1.4.3        lubridate_1.9.5   tzdb_0.5.0       
-#> [21] bslib_0.11.0      pillar_1.11.1     rlang_1.2.0       cachem_1.1.0     
-#> [25] stringi_1.8.7     xfun_0.57         fs_2.1.0          sass_0.4.10      
-#> [29] timechange_0.4.0  cli_3.6.6         pkgdown_2.2.0     magrittr_2.0.5   
-#> [33] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      
-#> [37] evaluate_1.0.5    glue_1.8.1        ragg_1.5.2        rmarkdown_2.31   
-#> [41] purrr_1.2.2       tools_4.6.0       pkgconfig_2.0.3   htmltools_0.5.9
+#>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       
+#>  [5] stringi_1.8.7      hms_1.1.4          digest_0.6.39      magrittr_2.0.5    
+#>  [9] evaluate_1.0.5     grid_4.6.0         timechange_0.4.0   RColorBrewer_1.1-3
+#> [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     scales_1.4.0      
+#> [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         
+#> [21] rlang_1.2.0        withr_3.0.2        cachem_1.1.0       yaml_2.3.12       
+#> [25] downloader_0.4.1   tools_4.6.0        tzdb_0.5.0         vctrs_0.7.3       
+#> [29] R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1  
+#> [33] stringr_1.6.0      fs_2.1.0           ragg_1.5.2         janitor_2.2.1     
+#> [37] pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1     
+#> [41] bslib_0.11.0       gtable_0.3.6       glue_1.8.1         systemfonts_1.3.2 
+#> [45] xfun_0.57          tibble_3.3.1       tidyselect_1.2.1   knitr_1.51        
+#> [49] farver_2.1.2       htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.31    
+#> [53] readr_2.2.0        compiler_4.6.0     S7_0.2.2           readxl_1.5.0
 ```
