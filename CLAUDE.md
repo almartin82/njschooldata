@@ -63,6 +63,17 @@ context lean.
 | [`dev-docs/spr-coverage-gap.md`](https://almartin82.github.io/njschooldata/dev-docs/spr-coverage-gap.md) | Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work |
 | [`dev-docs/tges-coverage.md`](https://almartin82.github.io/njschooldata/dev-docs/tges-coverage.md) | Working on [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md)/[`get_raw_tges()`](https://almartin82.github.io/njschooldata/reference/get_raw_tges.md)/[`tidy_tges_data()`](https://almartin82.github.io/njschooldata/reference/tidy_tges_data.md), adding a new TGES year, a TGES download 404s, or scoping TGES coverage |
 
+## Vignette Code Must Run
+
+Vignette analysis code MUST live in executable ```` ```{r} ```` chunks
+that run during the build and print real output — never static
+```` ```r ```` fences, which render code with no output and ship
+unverified (this hid wrong sheet/column names for years in
+`spr-dictionary.Rmd`). Validate every sheet name, column, and filter
+value against actual function output before committing; reserve
+`eval = FALSE` for install commands, disk-writing examples, and
+intentionally-skipped slow network calls.
+
 ## Project Structure - PUBLIC vs PRIVATE
 
 **njschooldata is a PUBLIC, OPEN SOURCE project.** Only general-purpose

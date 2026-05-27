@@ -86,6 +86,10 @@
 <td>Working on <code><a href="reference/fetch_tges.html">fetch_tges()</a></code>/<code><a href="reference/get_raw_tges.html">get_raw_tges()</a></code>/<code><a href="reference/tidy_tges_data.html">tidy_tges_data()</a></code>, adding a new TGES year, a TGES download 404s, or scoping TGES coverage</td>
 </tr></tbody></table></div>
 <div class="section level2">
+<h2 id="vignette-code-must-run">Vignette Code Must Run<a class="anchor" aria-label="anchor" href="#vignette-code-must-run"></a></h2>
+<p>Vignette analysis code MUST live in executable <code>```{r}</code> chunks that run during the build and print real output — never static <code>```r</code> fences, which render code with no output and ship unverified (this hid wrong sheet/column names for years in <code>spr-dictionary.Rmd</code>). Validate every sheet name, column, and filter value against actual function output before committing; reserve <code>eval = FALSE</code> for install commands, disk-writing examples, and intentionally-skipped slow network calls.</p>
+</div>
+<div class="section level2">
 <h2 id="project-structure---public-vs-private">Project Structure - PUBLIC vs PRIVATE<a class="anchor" aria-label="anchor" href="#project-structure---public-vs-private"></a></h2>
 <p><strong>njschooldata is a PUBLIC, OPEN SOURCE project.</strong> Only general-purpose infrastructure code belongs in the package itself (<code>R/</code>, <code>tests/</code>, etc.).</p>
 <table class="table"><colgroup><col width="32%"><col width="38%"><col width="29%"></colgroup><thead><tr><th>Location</th>
