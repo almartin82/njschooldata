@@ -32,6 +32,29 @@
   per-subgroup behavior. Pairs naturally with the new Group/Grade detail
   fetchers for disproportionality analysis.
 
+### Bug fixes
+
+- [`common_fwf_req()`](https://almartin82.github.io/njschooldata/reference/common_fwf_req.md)
+  (the workhorse fixed-width parser behind
+  [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md),
+  [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md),
+  [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md),
+  and
+  [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md))
+  no longer fails with `"Overlapping specification not supported"` on
+  the legacy NJASK/HSPA/GEPA layouts. Every layout encodes the composite
+  county- district-school identifier (positions 1-9) alongside its
+  decomposed parts (`County_Code` 1-2, `District_Code` 3-6,
+  `School_Code` 7-9), and several also carry a `RECORD_KEY` (1-9). The
+  parser now detects these redundant composites, drops them before
+  calling
+  [`readr::fwf_positions()`](https://readr.tidyverse.org/reference/read_fwf.html),
+  and reconstructs them post-parse by concatenating the component parts.
+  The on-disk layout metadata is untouched, so it remains a faithful
+  description of the upstream NJ DOE file format.
+  ([\#47](https://github.com/almartin82/njschooldata/issues/47),
+  [\#53](https://github.com/almartin82/njschooldata/issues/53))
+
 ### Improvements
 
 - [`tidy_nj_assess()`](https://almartin82.github.io/njschooldata/reference/tidy_nj_assess.md)
