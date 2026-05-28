@@ -16,5 +16,11 @@ layout layout to use
 }
 \description{
 common fwf logic across various assessment types.  DRY.
+
+Detects redundant composite fields (see `find_redundant_overlaps()`),
+parses the deduplicated layout via `readr::read_fwf()`, then reconstructs
+the dropped composites from their component parts so that downstream
+code receives a data frame with the same column count and order as the
+full layout.
 }
 \keyword{internal}

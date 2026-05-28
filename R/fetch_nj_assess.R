@@ -381,9 +381,138 @@ nj_coltype_parser <- function(datatypes) {
 }
 
 
+#' Detect redundant composite fields in a fixed-width layout
+#'
+#' A field is "redundant" if its `[field_start_position, field_end_position]`
+#' interval is the exact, disjoint union of two or more OTHER fields with
+#' strictly narrower intervals. The canonical case in the NJASK/HSPA/GEPA
+#' layouts is the composite county-district-school identifier (positions
+#' 1-9), which decomposes into `County_Code` (1-2), `District_Code` (3-6),
+#' and `School_Code` (7-9). Several layouts also carry a `RECORD_KEY`
+#' (positions 1-9) that overlaps the same range.
+#'
+#' `readr::fwf_positions()` rejects layouts with any overlap, so these
+#' composite rows must be dropped before parsing and then reconstructed
+#' from their components afterward.
+#'
+#' @param layout A data frame with `field_start_position`,
+#'   `field_end_position`, and `final_name` columns.
+#' @return A logical vector of length `nrow(layout)`; `TRUE` marks rows to
+#'   drop before calling `readr::fwf_positions()`. Rows with the same
+#'   interval as another redundant composite (e.g. both `RECORD_KEY` and
+#'   the composite identifier both covering 1-9) are all flagged.
+#' @keywords internal
+#' @noRd
+find_redundant_overlaps <- function(layout) {
+  n <- nrow(layout)
+  redundant <- logical(n)
+  if (n < 2) return(redundant)
+
+  starts <- layout$field_start_position
+  ends   <- layout$field_end_position
+  widths <- ends - starts + 1L
+
+  for (i in seq_len(n)) {
+    width_i <- widths[i]
+    # Candidate component rows: strictly inside row i's interval AND
+    # strictly narrower (so a composite cannot "decompose" itself, and
+    # two identical-interval composites do not absorb each other).
+    candidate <- which(
+      starts >= starts[i] & ends <= ends[i] & widths < width_i
+    )
+    if (length(candidate) < 2L) next
+
+    # Sort candidates by start, then check that they (a) are pairwise
+    # disjoint and (b) their union exactly covers row i.
+    ord <- order(starts[candidate])
+    cs <- starts[candidate][ord]
+    ce <- ends[candidate][ord]
+
+    # First candidate must start where row i starts; last must end where it
+    # ends; consecutive candidates must abut without gap or overlap.
+    if (cs[1] != starts[i]) next
+    if (ce[length(ce)] != ends[i]) next
+    if (length(cs) > 1L && !all(ce[-length(ce)] + 1L == cs[-1])) next
+
+    redundant[i] <- TRUE
+  }
+
+  redundant
+}
+
+
+#' Reconstruct a composite fixed-width field from its component parts
+#'
+#' Used after `readr::read_fwf()` to rebuild a composite identifier
+#' (e.g. the legacy assessment composite county-district-school code or
+#' `RECORD_KEY`) that was dropped via `find_redundant_overlaps()`.
+#' Components are pasted together in positional order with zero-width
+#' concatenation; if any component is `NA` for a given row, the composite
+#' is `NA` for that row.
+#'
+#' The reconstructed column is inserted into `df` at the positional index
+#' implied by the row's original placement in the full layout, so that
+#' downstream code addressing `df` by column position (e.g.
+#' `process_nj_assess()`) continues to align with the layout.
+#'
+#' @param df Data frame produced by `readr::read_fwf()` against
+#'   `parse_layout`.
+#' @param composite_row A one-row data frame slice from the original layout
+#'   describing the composite (`field_start_position`,
+#'   `field_end_position`, `final_name`, and a numeric `..orig_index`
+#'   column giving its row number in the full layout).
+#' @param parse_layout The deduplicated layout that was passed to
+#'   `readr::read_fwf()`.
+#' @return `df` with the composite column added back.
+#' @keywords internal
+#' @noRd
+reconstruct_composite_field <- function(df, composite_row, parse_layout) {
+  composite_name  <- composite_row$final_name[[1]]
+  composite_start <- composite_row$field_start_position[[1]]
+  composite_end   <- composite_row$field_end_position[[1]]
+
+  component_idx <- which(
+    parse_layout$field_start_position >= composite_start &
+      parse_layout$field_end_position <= composite_end
+  )
+  if (length(component_idx) == 0L) {
+    stop(
+      "Cannot reconstruct composite field '", composite_name,
+      "': no component fields found inside [", composite_start, ", ",
+      composite_end, "]."
+    )
+  }
+
+  # Order component rows positionally so concatenation matches the
+  # composite's byte order.
+  component_idx <- component_idx[
+    order(parse_layout$field_start_position[component_idx])
+  ]
+  component_names <- parse_layout$final_name[component_idx]
+
+  parts <- lapply(component_names, function(nm) as.character(df[[nm]]))
+  composite_value <- do.call(paste0, parts)
+
+  # paste0() turns NA into the literal string "NA"; honour the documented
+  # contract that any-NA-component yields NA composite.
+  any_na <- Reduce(`|`, lapply(parts, is.na))
+  composite_value[any_na] <- NA_character_
+
+  df[[composite_name]] <- composite_value
+  df
+}
+
+
 #' @title common_fwf_req
 #'
 #' @description common fwf logic across various assessment types.  DRY.
+#'
+#' Detects redundant composite fields (see `find_redundant_overlaps()`),
+#' parses the deduplicated layout via `readr::read_fwf()`, then reconstructs
+#' the dropped composites from their component parts so that downstream
+#' code receives a data frame with the same column count and order as the
+#' full layout.
+#'
 #' @param url file location
 #' @param layout data frame containing fixed-width file column specifications
 #' @return layout layout to use
@@ -396,37 +525,56 @@ common_fwf_req <- function(url, layout) {
   raw_fwf <- iconv(raw_fwf, "LATIN2", "UTF-8")
   num_lines <- lapply(raw_fwf, nchar) %>% unlist()
 
-  #if everything is consistent, great.  if the fwf is ragged, trim whitespace.  
+  #if everything is consistent, great.  if the fwf is ragged, trim whitespace.
   if (any(num_lines < max(num_lines))) {
     raw_fwf <- raw_fwf %>% gsub("[[:space:]]*$","", .)
   }
-  
+
   #check that incoming response (when cleaned) is of consistent length.
   if (!nchar(raw_fwf) %>% unique() %>% length() == 1) {
     warning("the fixed width input file is not fixed - rows are of different length.")
-    warning("truncating rows that are too wide, and padding rows that are too short...")    
+    warning("truncating rows that are too wide, and padding rows that are too short...")
   }
-  
+
   #sometimes the raw response is too short.  that wrecks havoc with read_fwf
-  #additionally, some layouts call for data that there is data that really isnt there.  
-  #(aka science).      
+  #additionally, some layouts call for data that there is data that really isnt there.
+  #(aka science).
   #right pad them to the full extent of the array OR layout
   max_extent <- max(nchar(raw_fwf), max(layout$field_end_position))
   raw_fwf <- sprintf(paste0('%-', max_extent, 's'), raw_fwf)
-  
+
+  # Detect and drop redundant composite fields (the composite county-
+  # district-school identifier, plus any RECORD_KEY) that overlap their
+  # decomposed parts. readr::fwf_positions() rejects any overlap; we
+  # reconstruct the composites post-parse from their parts.
+  redundant <- find_redundant_overlaps(layout)
+  parse_layout <- layout[!redundant, , drop = FALSE]
+
   #read_fwf
   df <- readr::read_fwf(
     file = raw_fwf %>% paste(collapse = '\n'),
     col_positions = readr::fwf_positions(
-      start = layout$field_start_position,
-      end = layout$field_end_position,
-      col_names = layout$final_name
+      start = parse_layout$field_start_position,
+      end = parse_layout$field_end_position,
+      col_names = parse_layout$final_name
     ),
-    col_types = nj_coltype_parser(layout$data_type),
+    col_types = nj_coltype_parser(parse_layout$data_type),
     na = "*",
     progress = TRUE
   )
-  
+
+  # Reconstruct dropped composite fields by concatenating their component
+  # parts, then reorder columns to match the full layout so downstream
+  # positional indexing (e.g. process_nj_assess() implied-decimal mask)
+  # still aligns.
+  redundant_idx <- which(redundant)
+  for (i in redundant_idx) {
+    df <- reconstruct_composite_field(df, layout[i, , drop = FALSE], parse_layout)
+  }
+  if (length(redundant_idx) > 0L) {
+    df <- df[, layout$final_name, drop = FALSE]
+  }
+
   if (!nrow(df) == length(raw_fwf)) {
     paste('read_fwf is', nrow(df), 'lines') %>% print()
     paste('raw response', length(raw_fwf), 'lines') %>% print()
