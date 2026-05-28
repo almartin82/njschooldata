@@ -62,8 +62,30 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>df with aggregate stats for whatever grouping was provided</p>
-    </div>
+    <p>df with aggregate stats for whatever grouping was provided. In
+  addition to the rolled-up counts and recomputed percentages, the output
+  records provenance of each aggregate row:</p><dl><dt>districts</dt>
+<dd><p>collapsed list of the district names rolled up</p></dd>
+
+    <dt>schools</dt>
+<dd><p>collapsed list of the school names rolled up</p></dd>
+
+    <dt>tests</dt>
+<dd><p>collapsed list of the test(s) (<code>test_name</code>, e.g.
+      "math"/"ela"/"science") rolled into the row, so callers can see which
+      assessment(s) an aggregate combines (issue #98)</p></dd>
+
+    <dt>n_schools</dt>
+<dd><p>number of distinct schools contributing to the row.
+      Uses <code>n_distinct(school_name)</code> because the grouped input holds one
+      row per (school, grade/course) – e.g. a 3-8 school appears as six rows
+      – so <code><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n()</a></code> would overcount. (issue #70)</p></dd>
+
+    <dt>n_charter_rows</dt>
+<dd><p>number of input rows flagged <code>is_charter</code></p></dd>
+
+
+</dl></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
