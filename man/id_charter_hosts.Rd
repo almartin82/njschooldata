@@ -7,11 +7,39 @@
 id_charter_hosts(df)
 }
 \arguments{
-\item{df}{dataframe of NJ school data containing `district_id` column}
+\item{df}{dataframe of NJ school data containing a \code{district_id} (or
+\code{district_code}) column. If an \code{end_year} column is present,
+apportionment is applied year-aware; otherwise the apportionment shares are
+matched on \code{district_id} alone (use a year column for correct results
+when shares vary by year).}
 }
 \value{
-df with host district id and name for every matching record
+df with host district id/name plus a \code{share} column (1.0 for
+  single-host charters and non-charters; fractional for apportioned
+  multi-campus charters) and an \code{is_apportioned} logical flag. Rows for
+  apportioned charters are duplicated, one per host city.
 }
 \description{
-Identify charter host districts
+Joins NJ school data to the 1:1 \code{charter_city} host map, attaching
+\code{host_county_id}, \code{host_county_name}, \code{host_district_id} and
+\code{host_district_name} for every charter record.
+}
+\details{
+\strong{Multi-campus charters.} NJ DOE assigns one \code{district_id} per
+charter and does NOT report charter campuses separately, but a few charters
+operate campuses in more than one host city under a single \code{district_id}
+(e.g. M.E.T.S. Charter School, district 6068, which ran a Jersey City campus
+and later a Newark campus). For those, the \code{charter_host_apportionment}
+table splits the charter's NJ-reported totals across host cities by a
+\code{share} fraction that sums to 1.0 per \code{district_id} per
+\code{end_year}. When a charter has an apportionment entry for the relevant
+year, its single input row is expanded into one row per host city, the host
+columns are overwritten from the apportionment table, and \code{share} is set
+accordingly so downstream aggregations can multiply summed counts by
+\code{share} before summing. The charter total is preserved exactly.
+
+The apportioned host assignment for these charters is an explicit, documented
+apportionment of real NJ-reported totals (the 50/50 METS split is a
+PLACEHOLDER), never an NJ-reported campus count. See
+\code{\link{charter_host_apportionment}}.
 }

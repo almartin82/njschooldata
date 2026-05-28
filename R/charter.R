@@ -1,8 +1,37 @@
 #' Identify charter host districts
 #'
-#' @param df dataframe of NJ school data containing `district_id` column
+#' Joins NJ school data to the 1:1 \code{charter_city} host map, attaching
+#' \code{host_county_id}, \code{host_county_name}, \code{host_district_id} and
+#' \code{host_district_name} for every charter record.
 #'
-#' @return df with host district id and name for every matching record
+#' \strong{Multi-campus charters.} NJ DOE assigns one \code{district_id} per
+#' charter and does NOT report charter campuses separately, but a few charters
+#' operate campuses in more than one host city under a single \code{district_id}
+#' (e.g. M.E.T.S. Charter School, district 6068, which ran a Jersey City campus
+#' and later a Newark campus). For those, the \code{charter_host_apportionment}
+#' table splits the charter's NJ-reported totals across host cities by a
+#' \code{share} fraction that sums to 1.0 per \code{district_id} per
+#' \code{end_year}. When a charter has an apportionment entry for the relevant
+#' year, its single input row is expanded into one row per host city, the host
+#' columns are overwritten from the apportionment table, and \code{share} is set
+#' accordingly so downstream aggregations can multiply summed counts by
+#' \code{share} before summing. The charter total is preserved exactly.
+#'
+#' The apportioned host assignment for these charters is an explicit, documented
+#' apportionment of real NJ-reported totals (the 50/50 METS split is a
+#' PLACEHOLDER), never an NJ-reported campus count. See
+#' \code{\link{charter_host_apportionment}}.
+#'
+#' @param df dataframe of NJ school data containing a \code{district_id} (or
+#'   \code{district_code}) column. If an \code{end_year} column is present,
+#'   apportionment is applied year-aware; otherwise the apportionment shares are
+#'   matched on \code{district_id} alone (use a year column for correct results
+#'   when shares vary by year).
+#'
+#' @return df with host district id/name plus a \code{share} column (1.0 for
+#'   single-host charters and non-charters; fractional for apportioned
+#'   multi-campus charters) and an \code{is_apportioned} logical flag. Rows for
+#'   apportioned charters are duplicated, one per host city.
 #' @export
 
 id_charter_hosts <- function(df) {
@@ -10,20 +39,126 @@ id_charter_hosts <- function(df) {
     stop("supplied dataframe must contain 'district_id' or 'district_code'")
   }
 
+  id_col <- if ('district_id' %in% names(df)) 'district_id' else 'district_code'
+
   charter_city_slim <- charter_city %>% select(-district_name)
-  
-  if ('district_id' %in% names(df)) {
-    df_new <- df %>% left_join(charter_city_slim, by = 'district_id')
-  } else if ('district_code' %in% names(df)) {
+  if (id_col == 'district_code') {
     names(charter_city_slim)[1] <- 'district_code'
-    df_new <- df %>% left_join(charter_city_slim, by = 'district_code')
   }
 
+  # 1:1 host join (unchanged behavior for single-host charters / non-charters)
+  df_new <- df %>% left_join(charter_city_slim, by = id_col)
+
+  # guard the 1:1 join: it must NOT change the row count. Multi-host expansion
+  # happens deliberately below, share-weighted, never via this join.
   if (nrow(df) != nrow(df_new)) {
     stop('joining to the charter hosts data set changed the size of your input dataframe.  this could be an issue with the `charter_city` dataframe included in this package.')
   }
 
+  # default share = 1.0 (single host) and not-apportioned
+  df_new <- df_new %>%
+    mutate(share = 1.0, is_apportioned = FALSE)
+
+  df_new <- apply_charter_apportionment(df_new, id_col = id_col)
+
   return(df_new)
+}
+
+
+#' Apply multi-campus charter host apportionment
+#'
+#' Internal helper for \code{\link{id_charter_hosts}}. For charters present in
+#' \code{charter_host_apportionment}, expands the single NJ-reported row into one
+#' row per host city (year-aware when \code{end_year} is present), overwriting
+#' the host columns and setting \code{share}. Rows for charters without an
+#' apportionment entry pass through unchanged with \code{share == 1.0}.
+#'
+#' The expansion is share-preserving: the shares for the rows produced from a
+#' single input row always sum to 1.0, so multiplying any summed count by
+#' \code{share} before aggregating preserves the charter's total.
+#'
+#' @param df output of the 1:1 host join, already carrying \code{share == 1.0}
+#'   and \code{is_apportioned == FALSE}
+#' @param id_col name of the district identifier column (\code{"district_id"} or
+#'   \code{"district_code"})
+#'
+#' @return df with apportioned charters expanded share-weighted
+#' @keywords internal
+
+apply_charter_apportionment <- function(df, id_col = 'district_id') {
+
+  appt <- charter_host_apportionment
+  if (id_col == 'district_code') {
+    names(appt)[names(appt) == 'district_id'] <- 'district_code'
+  }
+
+  has_year <- 'end_year' %in% names(df)
+  appt_ids <- unique(appt[[id_col]])
+
+  # rows that may be apportioned: charter rows whose id is in the table
+  is_candidate <- df[[id_col]] %in% appt_ids
+  if (!any(is_candidate)) {
+    return(df)
+  }
+
+  passthrough <- df[!is_candidate, , drop = FALSE]
+  candidates  <- df[is_candidate, , drop = FALSE]
+
+  # join key: id (+ end_year when available so shares are year-correct)
+  join_by <- id_col
+  appt_slim <- appt %>%
+    select(
+      dplyr::all_of(id_col), end_year,
+      host_county_id, host_county_name,
+      host_district_id, host_district_name,
+      share
+    )
+  if (has_year) {
+    join_by <- c(id_col, 'end_year')
+  } else {
+    # no year column on input: apportionment shares may vary by year, so we
+    # cannot pick a year. Fall back to the unapportioned 1:1 host assignment
+    # (share == 1.0) rather than guess a year. This keeps results correct,
+    # just unapportioned, for year-less inputs.
+    return(df)
+  }
+
+  # tag each candidate input row so we can validate share-preservation per row
+  candidates <- candidates %>%
+    mutate(.appt_row_id = dplyr::row_number())
+
+  # drop the placeholder host columns / share so the apportionment supplies them
+  host_cols <- c('host_county_id', 'host_county_name',
+                 'host_district_id', 'host_district_name', 'share')
+  candidates_base <- candidates %>% select(-dplyr::all_of(host_cols))
+
+  expanded <- candidates_base %>%
+    dplyr::inner_join(appt_slim, by = join_by) %>%
+    mutate(is_apportioned = TRUE)
+
+  # candidate rows that had NO matching apportionment year keep their original
+  # 1:1 host assignment (share == 1.0, is_apportioned == FALSE)
+  matched_ids <- unique(expanded$.appt_row_id)
+  unmatched <- candidates %>%
+    dplyr::filter(!.appt_row_id %in% matched_ids) %>%
+    select(-.appt_row_id)
+
+  expanded <- expanded %>% select(-.appt_row_id)
+
+  out <- dplyr::bind_rows(passthrough, unmatched, expanded)
+
+  # share-preservation guard: for every apportioned input row the shares must
+  # sum to 1.0. (Computed against the table to avoid carrying the row id out.)
+  bad <- appt %>%
+    group_by(dplyr::across(dplyr::all_of(join_by))) %>%
+    summarize(total_share = sum(share), .groups = 'drop') %>%
+    dplyr::filter(abs(total_share - 1.0) > 1e-9)
+  if (nrow(bad) > 0) {
+    stop('charter_host_apportionment shares do not sum to 1.0 for: ',
+         paste(apply(bad, 1, paste, collapse = '/'), collapse = ', '))
+  }
+
+  out
 }
 
 
@@ -126,19 +261,25 @@ charter_sector_enr_aggs <- function(df) {
       )
    
    df <- bind_rows(df_modern, df_old)
-   
-   # group by - host city and summarize
-   df <- df %>% 
+
+   # group by - host city and summarize.
+   # multi-campus charters are share-weighted: each apportioned charter
+   # contributes share * n_students to each host city, so the charter total is
+   # preserved exactly across host cities (e.g. METS 1000 -> 500 Jersey City +
+   # 500 Newark). single-host charters and non-charters have share == 1.0.
+   # n_schools is likewise share-weighted (fractional school-equivalents per
+   # host city) so the sum across hosts equals the unapportioned school count.
+   df <- df %>%
       group_by(
-         end_year, 
+         end_year,
          host_county_id, host_county_name,
          host_district_id, host_district_name,
          program_code, program_name, grade_level,
          subgroup
       ) %>%
       summarize(
-         n_students = sum(n_students, na.rm = TRUE),
-         n_schools = n()
+         n_students = sum(n_students * share, na.rm = TRUE),
+         n_schools = sum(share, na.rm = TRUE)
       ) %>%
       ungroup()
    
@@ -198,18 +339,21 @@ allpublic_enr_aggs <- function(df) {
     )
   
   # take only district level rows (not school)
-  # group by - newly modified county_id, district_id and summarize
-  df <- df %>% 
+  # group by - newly modified county_id, district_id and summarize.
+  # multi-campus charters are share-weighted into each host district so the
+  # charter total is preserved across host cities; single-host charters and
+  # non-charters have share == 1.0. n_schools is share-weighted likewise.
+  df <- df %>%
     filter(is_district) %>%
     group_by(
-      end_year, 
+      end_year,
       county_id, district_id,
       program_code, program_name, grade_level,
       subgroup
     ) %>%
     summarize(
-      n_students = sum(n_students, na.rm = TRUE),
-      n_schools = n(),
+      n_students = sum(n_students * share, na.rm = TRUE),
+      n_schools = sum(share, na.rm = TRUE),
       n_charter = sum(is_charter, na.rm = TRUE)
     ) %>%
     ungroup()

@@ -10,7 +10,8 @@ utils::globalVariables(c(
   "Pre-K Halfday", "Ungraded",
 
   # ========== Package Data Objects ==========
-  "charter_city", "sped_lookup_map", "nwk_address_addendum", "geocoded_cached",
+  "charter_city", "charter_host_apportionment",
+  "sped_lookup_map", "nwk_address_addendum", "geocoded_cached",
   "layout_gepa", "layout_gepa05", "layout_gepa06",
   "layout_hspa", "layout_hspa04", "layout_hspa05", "layout_hspa06", "layout_hspa10",
   "layout_njask", "layout_njask04", "layout_njask05", "layout_njask06gr3",
@@ -130,6 +131,8 @@ utils::globalVariables(c(
   # ========== Host District (Charter Aggregations) ==========
   "host_county_id", "host_county_name",
   "host_district_id", "host_district_name",
+  # Multi-campus charter host apportionment (charter_host_apportionment)
+  "share", "share_basis", "is_apportioned", ".appt_row_id", "total_share",
 
   # ========== Matriculation Columns ==========
   "enroll_any", "enroll_2yr", "enroll_4yr",
