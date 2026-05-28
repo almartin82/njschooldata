@@ -222,6 +222,24 @@ utils::globalVariables(c(
   "harassment_intimidation_bullying_hib",
   "hib_nature", "hib_alleged", "hib_confirmed", "total_hib_investigations",
 
+  # ========== SPR Group/Grade Detail (Police Notifications / Arrests) ==========
+  "student_group_grade", "student_group_grade_level",
+  "police_count", "police_percent",
+  "violent_count", "violent_percent",
+  "vandalism_count", "vandalism_percent",
+  "substance_count", "substance_percent",
+  "weapons_count", "weapons_percent",
+  "hibcount", "hibpercent",
+  "other_count", "other_percent",
+  "arrested_count", "arrested_percent",
+  "arrested_violent_count", "arrested_violent_percent",
+  "arrested_vandalism_count", "arrested_vandalism_percent",
+  "arrested_substance_count", "arrested_substance_percent",
+  "arrested_weapons_count", "arrested_weapons_percent",
+  "arrested_hibcount", "arrested_hibpercent",
+  "arrested_other_count", "arrested_other_percent",
+  "total_pop_rate", "total_incidents",
+
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "tests", "n_charter_rows",
   "gradespan",

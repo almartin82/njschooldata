@@ -45,6 +45,8 @@ The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250
 | StatewideEducatorEquity (district/state) | `fetch_spr_educator_equity()` | 2025+ | #252 |
 | PoliceNotifications | `fetch_police_notifications()` | **2018-2025** | #191 |
 | HIBInvestigations | `fetch_hib_investigations()` | **2018-2025** | #191 |
+| PoliceNotificationsGroupGrade (alias: PoliceNotificationByStuGroup in 2024) | `fetch_police_notifications_detail()` | **2024-2025** | #191 |
+| ArrestsStudentGroupGrade (alias: StuArrestbyStudentGroupGradelev in 2024) | `fetch_arrests()` | **2024-2025** | #191 |
 
 Notes: NAEP and StatewideEducatorEquity carry no CDS codes (state/national summary tables), so they read through the internal `fetch_spr_sheet_raw()` helper (no CDS/flag machinery). `fetch_spr_staff_demo_subject()` deliberately keeps its racial/ethnic and gender composition columns as character — NJ DOE reports small-cell percentages as privacy-protected ranges (e.g. `"70-80%"`), and coercing them to a single number would fabricate precision.
 
@@ -171,8 +173,8 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 |---|---|---|---|---|
 | PoliceNotifications | both | Count of police notifications by school/district | ✅ done | `fetch_police_notifications()` (2018-2025) |
 | HIBInvestigations | both | Harassment, intimidation, bullying investigation counts | ✅ done | `fetch_hib_investigations()` (2018-2025) |
-| PoliceNotificationsGroupGrade | both | Police notifications by student group and grade | NEW-high | `fetch_spr_police_notifications_detail()` |
-| ArrestsStudentGroupGrade | both | Arrests by student group and grade | NEW-high | `fetch_spr_arrests()` |
+| PoliceNotificationsGroupGrade (alias: PoliceNotificationByStuGroup in 2024) | both | Police notifications by student group and grade | ✅ done | `fetch_police_notifications_detail()` (2024-2025) |
+| ArrestsStudentGroupGrade (alias: StuArrestbyStudentGroupGradelev in 2024) | both | Arrests by student group and grade | ✅ done | `fetch_arrests()` (2024-2025) |
 
 **Note on `fetch_police_notifications()` / `fetch_hib_investigations()`:** Both
 sheets are present in the SPR databases for end_year 2018-2025 (absent from
@@ -181,6 +183,23 @@ SY2016-17). The 2024-25 redesign rebranded the HIB column on
 added a single-value `school_year` column to both sheets; the fetchers
 harmonize the legacy and redesigned layouts. `HIBInvestigations` is
 long-format with eight HIB-nature categories per entity.
+
+**Note on `fetch_police_notifications_detail()` / `fetch_arrests()`:** Both
+detail sheets first appear in SY2023-24 (end_year 2024) under legacy aliases
+(`PoliceNotificationByStuGroup`, `StuArrestbyStudentGroupGradelev`); the
+2024-25 redesign renamed them to `PoliceNotificationsGroupGrade` /
+`ArrestsStudentGroupGrade` and added a `school_year` column. Each row is one
+entity x one label, where the label is either a subgroup (e.g. "Black or
+African American") or a grade ("Grade 9", "Grade KG"). The fetchers preserve
+the raw label as `student_group_grade` and additionally split it into
+normalized `subgroup` + `grade_level` columns ("PK", "K", "01"-"12", or
+"TOTAL" for subgroup marginals). The 2024-25 `ArrestsStudentGroupGrade`
+sheet ships with column headers `Police_Count`, `Violent_Count`, etc. — a
+copy-paste from the police-notifications detail sheet — but the values are
+arrest counts; `fetch_arrests()` renames those columns to the canonical
+`arrested_*` prefix used by the 2024 sheet so the public API is consistent
+across years. Pair with `calc_discipline_rates_by_subgroup(..., by_grade =
+TRUE)` for disproportionality analysis at the (entity x grade) level.
 
 ---
 

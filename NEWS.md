@@ -1,5 +1,29 @@
 # njschooldata 0.9.11
 
+## New features
+
+* `fetch_police_notifications_detail()` and `fetch_arrests()` expose the SPR
+  StudentGroup x Grade detail sheets that report police-notification and
+  arrest counts by student subgroup (race, gender, ED, SwD) and by grade
+  level. Both first appear in SY2023-24 (end_year 2024) under legacy aliases
+  (`PoliceNotificationByStuGroup`, `StuArrestbyStudentGroupGradelev`) and
+  carry through to SY2024-25 (end_year 2025) under the redesigned names
+  (`PoliceNotificationsGroupGrade`, `ArrestsStudentGroupGrade`). Each row
+  preserves the raw `student_group_grade` label and adds normalized
+  `subgroup` + `grade_level` columns ("PK", "K", "01"-"12", or "TOTAL" for
+  subgroup marginals) so downstream code can filter on the two dimensions
+  independently. The 2024-25 `ArrestsStudentGroupGrade` sheet ships with
+  column headers mistakenly copy-pasted from the Police Notifications detail
+  sheet (`Police_Count` etc.); `fetch_arrests()` renames those to the
+  canonical `arrested_*` prefix used by the 2024 sheet, so the public API is
+  consistent across years. Fully closes #191.
+* `calc_discipline_rates_by_subgroup()` gains a `by_grade = FALSE` argument.
+  When `TRUE` and the input carries a `grade_level` column,
+  `grade_level` is added to the per-entity grouping keys so discipline rates
+  and risk ratios are computed within each (entity x grade) cell. Default
+  `FALSE` preserves the existing per-subgroup behavior. Pairs naturally with
+  the new Group/Grade detail fetchers for disproportionality analysis.
+
 ## Improvements
 
 * `tidy_nj_assess()` (used by `fetch_old_nj_assess(tidy = TRUE)` for
