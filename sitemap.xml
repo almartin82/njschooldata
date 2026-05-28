@@ -59,6 +59,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/allpublic_sped_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/analyze_course_access_equity.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/analyze_retention_patterns.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/apply_charter_apportionment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/arrange_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assessment_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/build_sped_url.html</loc></url>
@@ -75,6 +76,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/calculate_subgroup_gap.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/cds_codes_to_ids.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/charter_city.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/charter_host_apportionment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/charter_market_share.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/charter_sector_enr_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/charter_sector_gcount_aggs.html</loc></url>
@@ -116,6 +118,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ensure_appt_share.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/expand_street_types.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_AP.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_SAT.html</loc></url>

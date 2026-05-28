@@ -1198,6 +1198,8 @@ Additional exported functions
   : Calculate achievement gap between two subgroups
 - [`charter_city`](https://almartin82.github.io/njschooldata/reference/charter_city.md)
   : Charter School Host District Mapping
+- [`charter_host_apportionment`](https://almartin82.github.io/njschooldata/reference/charter_host_apportionment.md)
+  : Multi-Campus Charter Host-City Apportionment
 - [`charter_market_share()`](https://almartin82.github.io/njschooldata/reference/charter_market_share.md)
   : Calculate charter market share for host cities
 - [`charter_sector_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/charter_sector_enr_aggs.md)
