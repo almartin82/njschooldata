@@ -104,14 +104,15 @@ get_raw_tges <- function(end_year) {
       janitor::clean_names()
       
       df <- clean_cds_fields(df, tges = TRUE)
+      df <- cds_codes_to_ids(df)
       
       #state/group average rows carry non-numeric codes; padding NAs them, which
       #is expected, so quiet the "NAs introduced by coercion" coercion warning
-      if ('county_code' %in% names(df)) {
-        df$county_code <- suppressWarnings(pad_leading(df$county_code, 2))
+      if ('county_id' %in% names(df)) {
+        df$county_id <- suppressWarnings(pad_leading(df$county_id, 2))
       }
-      if ('district_code' %in% names(df)) {
-        df$district_code <- suppressWarnings(pad_leading(df$district_code, 4))
+      if ('district_id' %in% names(df)) {
+        df$district_id <- suppressWarnings(pad_leading(df$district_id, 4))
       }
       df
     }
@@ -137,6 +138,7 @@ get_raw_tges <- function(end_year) {
       janitor::clean_names()
 
       df <- clean_cds_fields(df, tges = TRUE)
+      df <- cds_codes_to_ids(df)
       df
     }
   )
@@ -157,6 +159,7 @@ get_raw_tges <- function(end_year) {
         janitor::clean_names()
       
       df <- clean_cds_fields(df, tges = TRUE)
+      df <- cds_codes_to_ids(df)
       df
     }
   )
@@ -307,8 +310,8 @@ tidy_total_spending_detail <- function(df, end_year) {
     df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
   }
 
-  if ('district_code' %in% names(df)) {
-    df$district_code <- suppressWarnings(pad_leading(df$district_code, 4))
+  if ('district_id' %in% names(df)) {
+    df$district_id <- suppressWarnings(pad_leading(df$district_id, 4))
   }
 
   df$end_year    <- data_end_year
@@ -316,7 +319,7 @@ tidy_total_spending_detail <- function(df, end_year) {
   df$report_year <- end_year
 
   lead <- intersect(
-    c('county_name', 'district_code', 'district_name', 'end_year', 'calc_type',
+    c('county_name', 'district_id', 'district_name', 'end_year', 'calc_type',
       'report_year', 'general_current_expense_pp', 'capital_outlay_pp',
       'grants_entitlements_pp', 'food_services_pp', 'debt_service_local_pp',
       'debt_service_sda_pp', 'total_spending_pp', 'total_spending',
@@ -355,7 +358,7 @@ tidy_generic_budget_indicator <- function(df, end_year, indicator) {
   #files label rank "rk0X" rather than "rank0X", so match both or the rank column
   #is dropped.
   } else if (end_year < 2011) {
-    all_years <- grepl('group|county_name|district_name|district_code|file_name|indicator', names(df))
+    all_years <- grepl('group|county_name|district_name|district_id|file_name|indicator', names(df))
     year_1 <- grepl('pp01|rank01|rk01|pct01|pct201', names(df)) | all_years
     year_2 <- grepl('pp02|rank02|rk02|pct02|pct202', names(df)) | all_years
     year_3 <- grepl('pp03|rank03|rk03|pct03|pct203', names(df)) | all_years
@@ -549,7 +552,7 @@ tidy_generic_personnel <- function(df, end_year, indicator) {
   coerce_personnel <- function(df) {
     rank_codes <- intersect(c('rk', 'rksal', 'rrk', 'srk'), names(df))
     for (nm in rank_codes) df[[nm]] <- parse_rank(df[[nm]])
-    id_codes <- c('group', 'county_name', 'district_code', 'district_name',
+    id_codes <- c('group', 'county_name', 'district_id', 'district_name',
                   'file_name', 'indicator')
     num_codes <- setdiff(names(df), c(id_codes, rank_codes))
     for (nm in num_codes) df[[nm]] <- suppressWarnings(as.numeric(df[[nm]]))
@@ -591,9 +594,9 @@ tidy_budgeted_vs_actual_fund_balance <- function(df, end_year) {
   
   df$indicator <- 'Budgeted General Fund Balance vs. Actual'
   
-  y1_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+  y1_df <- df[, c('group', 'county_name', 'district_id', 'district_name',
                    'de120', 'de220', 'file_name', 'indicator')]
-  y2_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+  y2_df <- df[, c('group', 'county_name', 'district_id', 'district_name',
                    'de320', 'de420', 'file_name', 'indicator')]
   
   indicator_fields <- list(
@@ -633,9 +636,9 @@ tidy_excess_unreserved_general_fund <- function(df, end_year) {
   df$indicator <- 'Excess Unreserved General Fund Balances'
   
   #reshape
-  y1_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+  y1_df <- df[, c('group', 'county_name', 'district_id', 'district_name',
                   'ex121', 'file_name', 'indicator')]
-  y2_df <- df[, c('group', 'county_name', 'district_code', 'district_name',
+  y2_df <- df[, c('group', 'county_name', 'district_id', 'district_name',
                   'ex221', 'file_name', 'indicator')]
   
   indicator_fields <- list(

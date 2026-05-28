@@ -149,7 +149,7 @@ frontier %>%
 
 ```{r frontier-chart}
 fr_plot <- frontier %>%
-  mutate(is_newark = district_code == NEWARK)
+  mutate(is_newark = district_id == NEWARK)
 
 newark_row <- fr_plot %>% filter(is_newark)
 
@@ -223,7 +223,7 @@ conv %>%
 
 ```{r convergence-chart}
 beta_a <- conv_a$beta[1]
-conv_a <- conv_a %>% mutate(is_newark = district_code == NEWARK)
+conv_a <- conv_a %>% mutate(is_newark = district_id == NEWARK)
 
 ggplot(conv_a, aes(x = log_start_value, y = growth)) +
   geom_smooth(method = "lm", se = FALSE, color = nwk_red, linewidth = 1) +
@@ -270,7 +270,7 @@ drift_plot <- drift_a %>%
   arrange(classroom_share_drift) %>%
   slice(1:12) %>%
   mutate(district_name = reorder(district_name, classroom_share_drift),
-         is_newark = district_code == NEWARK)
+         is_newark = district_id == NEWARK)
 
 ggplot(drift_plot, aes(x = classroom_share_drift, y = district_name, fill = is_newark)) +
   geom_col() +
@@ -307,7 +307,7 @@ vol_plot <- vol_a %>%
   arrange(desc(cv)) %>%
   slice(1:12) %>%
   mutate(district_name = reorder(district_name, cv),
-         is_newark = district_code == NEWARK)
+         is_newark = district_id == NEWARK)
 
 ggplot(vol_plot, aes(x = cv, y = district_name, fill = is_newark)) +
   geom_col() +

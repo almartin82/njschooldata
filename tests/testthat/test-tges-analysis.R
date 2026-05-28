@@ -19,7 +19,7 @@ fake_indicator <- function(indicator, pp_vals,
                             names_ = c("Newark", "Camden", "GROUP AVG")) {
   tibble::tibble(
     county_name   = "Test",
-    district_code = codes,
+    district_id = codes,
     district_name = names_,
     group         = "G. K-12 / 3501 +",
     `Per Pupil costs` = pp_vals,
@@ -37,7 +37,7 @@ fake_tges <- function() {
     CSG8 = fake_indicator("Total Administrative Costs per Pupil", c(2000, 1600, NA)),
     CSG1AA_AVGS = tibble::tibble(
       county_name   = "Test",
-      district_code = c("3570", "0680"),
+      district_id = c("3570", "0680"),
       district_name = c("Newark", "Camden"),
       `Per Pupil Total Expenditures` = c(25000, 21000),
       `Per Pupil Rank` = c(1L, 2L),
@@ -55,14 +55,14 @@ test_that("tges_composition reshapes categories and computes shares", {
 
   # group-average ("00NA") row is dropped
   expect_equal(nrow(comp), 2L)
-  expect_setequal(comp$district_code, c("3570", "0680"))
+  expect_setequal(comp$district_id, c("3570", "0680"))
 
   # category columns present
   expect_true(all(c("budgetary_pp", "classroom", "administration",
                     "total_pp", "classroom_share", "administration_share")
                   %in% names(comp)))
 
-  nwk <- comp[comp$district_code == "3570", ]
+  nwk <- comp[comp$district_id == "3570", ]
   expect_equal(nwk$classroom, 12000)
   expect_equal(nwk$budgetary_pp, 20000)
   expect_equal(nwk$classroom_share, 0.6)          # 12000 / 20000
@@ -81,7 +81,7 @@ test_that("tges_composition errors when no budget tables are present", {
 test_that("tges_percentile_rank ranks within the TGES enrollment-band group", {
   df <- tibble::tibble(
     county_name   = "X",
-    district_code = c("0001", "0002", "0003", "0004"),
+    district_id = c("0001", "0002", "0003", "0004"),
     district_name = letters[1:4],
     group         = "G",
     `Per Pupil costs` = c(10, 20, 30, 40),
@@ -94,7 +94,7 @@ test_that("tges_percentile_rank ranks within the TGES enrollment-band group", {
   r <- tges_percentile_rank(df)
 
   expect_true(all(c("peer_rank", "peer_n", "peer_percentile") %in% names(r)))
-  r <- r[order(r$district_code), ]
+  r <- r[order(r$district_id), ]
   expect_equal(r$peer_percentile, c(25, 50, 75, 100))  # rank/n * 100
   expect_equal(unique(r$peer_n), 4L)
 })
@@ -102,7 +102,7 @@ test_that("tges_percentile_rank ranks within the TGES enrollment-band group", {
 test_that("tges_percentile_rank drops average rows and honors prefix", {
   df <- tibble::tibble(
     county_name   = "X",
-    district_code = c("0001", "0002", "00NA"),
+    district_id = c("0001", "0002", "00NA"),
     district_name = c("a", "b", "AVG"),
     group         = "G",
     `Per Pupil costs` = c(100, 300, NA),
@@ -114,7 +114,7 @@ test_that("tges_percentile_rank drops average rows and honors prefix", {
 })
 
 test_that("tges_percentile_rank errors on a missing metric column", {
-  df <- tibble::tibble(district_code = "0001", group = "G", end_year = 2024)
+  df <- tibble::tibble(district_id = "0001", group = "G", end_year = 2024)
   expect_error(tges_percentile_rank(df, metric_col = "nope"), "not found")
 })
 
@@ -124,7 +124,7 @@ test_that("tges_percentile_rank errors on a missing metric column", {
 test_that("tges_efficiency joins spend to outcome and labels quadrants", {
   spend <- tibble::tibble(
     county_name   = "X",
-    district_code = c("0001", "0002", "0003", "0004"),
+    district_id = c("0001", "0002", "0003", "0004"),
     district_name = letters[1:4],
     group         = "G",
     `Per Pupil costs` = c(10, 20, 30, 40),
@@ -144,7 +144,7 @@ test_that("tges_efficiency joins spend to outcome and labels quadrants", {
                          spend_peer = "tges_group")
 
   expect_equal(nrow(eff), 4L)
-  eff <- eff[order(eff$district_code), ]
+  eff <- eff[order(eff$district_id), ]
   expect_equal(eff$spend_percentile, c(25, 50, 75, 100))
   expect_equal(eff$outcome_percentile, c(80, 60, 40, 20))
   expect_equal(eff$quadrant, c(
@@ -159,7 +159,7 @@ test_that("tges_efficiency joins spend to outcome and labels quadrants", {
 
 test_that("tges_efficiency requires district_id and the percentile column", {
   spend <- tibble::tibble(
-    district_code = "0001", group = "G",
+    district_id = "0001", group = "G",
     `Per Pupil costs` = 10, end_year = 2024
   )
   expect_error(
@@ -182,7 +182,7 @@ test_that("tges_composition builds sane shares from the live 2024 guide", {
   skip_if_offline()
   comp <- tges_composition(fetch_tges(2024), calc_type = "Budgeted")
   expect_true(all(c("classroom", "budgetary_pp", "classroom_share") %in% names(comp)))
-  nwk <- comp[comp$district_code == "3570" & comp$end_year == 2024, ]
+  nwk <- comp[comp$district_id == "3570" & comp$end_year == 2024, ]
   expect_equal(nrow(nwk), 1L)
   expect_true(is.finite(nwk$classroom_share))
   expect_gt(nwk$classroom_share, 0)
@@ -194,7 +194,7 @@ test_that("tges_percentile_rank ranks the live 2024 CSG1 within enrollment bands
   skip_if_offline()
   r <- tges_percentile_rank(fetch_tges(2024)$CSG1)
   expect_true(all(c("peer_rank", "peer_n", "peer_percentile") %in% names(r)))
-  nwk <- r[r$district_code == "3570" & r$end_year == 2024, ]
+  nwk <- r[r$district_id == "3570" & r$end_year == 2024, ]
   expect_equal(nrow(nwk), 1L)
   expect_gte(nwk$peer_percentile, 0)
   expect_lte(nwk$peer_percentile, 100)
@@ -222,7 +222,7 @@ fake_vitstat <- function(end_year = 2023,
   tibble::tibble(
     group         = "G",
     county_name   = "Test",
-    district_code = codes,
+    district_id = codes,
     district_name = c("Newark", "Camden", "AVG")[seq_along(codes)],
     `Total Spending Per Pupil` = total_pp,
     `Revenue: State %`         = state,
@@ -245,7 +245,7 @@ test_that("tges_revenue_mix attributes per-pupil dollars from shares", {
   expect_true(all(c("total_pp", "local_share", "state_share", "federal_share",
                     "local_pp", "state_pp", "federal_pp") %in% names(rm)))
 
-  nwk <- rm[rm$district_code == "3570", ]
+  nwk <- rm[rm$district_id == "3570", ]
   expect_equal(nwk$total_pp, 20000)
   expect_equal(nwk$local_pp, 12000)                # 20000 * 0.6
   expect_equal(nwk$state_pp, 6000)                 # 20000 * 0.3
@@ -263,7 +263,7 @@ test_that("tges_revenue_mix errors without a VITSTAT table", {
 test_that("tges_fund_balance_health joins CSG20/21 and flags surplus + deficit", {
   csg20 <- tibble::tibble(
     group = "G", county_name = "X",
-    district_code = c("3570", "3570"),
+    district_id = c("3570", "3570"),
     district_name = "Newark",
     `Budgeted General Fund Balance` = c(120, 120),
     Actual = c(100, 60),
@@ -271,7 +271,7 @@ test_that("tges_fund_balance_health joins CSG20/21 and flags surplus + deficit",
   )
   csg21 <- tibble::tibble(
     group = "G", county_name = "X",
-    district_code = c("3570", "3570"),
+    district_id = c("3570", "3570"),
     district_name = "Newark",
     `Actual Excess` = c(5, -3),
     end_year = c(2022, 2023)
@@ -303,14 +303,14 @@ test_that("tges_federal_exposure flags spending-up-on-federal-bump districts", {
 
   fe <- tges_federal_exposure(tgm)
 
-  nwk <- fe[fe$district_code == "3570", ]
+  nwk <- fe[fe$district_id == "3570", ]
   expect_equal(nwk$baseline_federal_share, 0.05)   # mean of 2018,2019
   expect_equal(nwk$peak_federal_share, 0.12)       # max over esser years
   expect_equal(round(nwk$federal_bump, 3), 0.07)
   expect_equal(round(nwk$pp_growth, 3), 0.3)       # 26000/20000 - 1
   expect_true(nwk$cliff_exposure)
 
-  cmd <- fe[fe$district_code == "0680", ]          # flat spend, small bump
+  cmd <- fe[fe$district_id == "0680", ]          # flat spend, small bump
   expect_false(cmd$cliff_exposure)
 })
 
@@ -321,7 +321,7 @@ test_that("tges_staffing merges personnel tables to one row per district-year", 
   mk_personnel <- function(ratio_name, ratio, sal_name = NULL, sal = NULL) {
     df <- tibble::tibble(
       group = "G", county_name = "X",
-      district_code = c("3570", "0680"),
+      district_id = c("3570", "0680"),
       district_name = c("Newark", "Camden"),
       end_year = 2024
     )
@@ -337,7 +337,7 @@ test_that("tges_staffing merges personnel tables to one row per district-year", 
     CSG19 = mk_personnel("Faculty/Administrator ratio", c(7, 8)),
     CSG14 = tibble::tibble(
       group = "G", county_name = "X",
-      district_code = c("3570", "0680"),
+      district_id = c("3570", "0680"),
       district_name = c("Newark", "Camden"),
       `% of Total Salaries` = c(0.30, 0.28),
       end_year = 2024
@@ -349,7 +349,7 @@ test_that("tges_staffing merges personnel tables to one row per district-year", 
   expect_true(all(c("student_teacher_ratio", "teacher_salary",
                     "student_admin_ratio", "admin_salary",
                     "faculty_admin_ratio", "benefits_pct_salary") %in% names(st)))
-  nwk <- st[st$district_code == "3570", ]
+  nwk <- st[st$district_id == "3570", ]
   expect_equal(nwk$student_admin_ratio, 80)
   expect_equal(nwk$benefits_pct_salary, 0.30)
 })
@@ -362,7 +362,7 @@ fake_scan_tges <- function() {
   codes <- sprintf("%04d", 1:10)
   mk <- function(indicator, vals) tibble::tibble(
     group = "G", county_name = "X",
-    district_code = codes, district_name = codes,
+    district_id = codes, district_name = codes,
     `Per Pupil costs` = vals, `District rank` = 1:10,
     indicator = indicator, end_year = 2024, calc_type = "Budgeted"
   )
@@ -376,7 +376,7 @@ fake_scan_tges <- function() {
 test_that("tges_red_flags surfaces top/bottom-decile placements", {
   # In this fixture budgetary cost rises faster than classroom $, so the highest
   # spender also has the LOWEST classroom share -- the real Newark pattern.
-  hi <- tges_red_flags(fake_scan_tges(), district_code = "0010",
+  hi <- tges_red_flags(fake_scan_tges(), district_id = "0010",
                        peer = "tges_group")
   expect_true(all(c("indicator", "value", "peer_percentile", "peer_n",
                     "higher_means", "flag") %in% names(hi)))
@@ -384,15 +384,15 @@ test_that("tges_red_flags surfaces top/bottom-decile placements", {
   expect_equal(hi$flag[hi$indicator == "Classroom share of budget"], "bottom decile")
 
   # district 0001 is the lowest spender -> bottom-decile cost, top-decile share
-  lo <- tges_red_flags(fake_scan_tges(), district_code = "0001",
+  lo <- tges_red_flags(fake_scan_tges(), district_id = "0001",
                        peer = "tges_group")
   expect_equal(lo$flag[lo$indicator == "Budgetary per-pupil cost"], "bottom decile")
   expect_equal(lo$flag[lo$indicator == "Classroom share of budget"], "top decile")
 
   # a middle district has no extremes; only_flagged filters them all out
-  mid_full <- tges_red_flags(fake_scan_tges(), district_code = "0005",
+  mid_full <- tges_red_flags(fake_scan_tges(), district_id = "0005",
                              peer = "tges_group", only_flagged = FALSE)
-  mid_flagged <- tges_red_flags(fake_scan_tges(), district_code = "0005",
+  mid_flagged <- tges_red_flags(fake_scan_tges(), district_id = "0005",
                                 peer = "tges_group", only_flagged = TRUE)
   expect_gt(nrow(mid_full), nrow(mid_flagged))
   expect_true(any(is.na(mid_full$flag)))
@@ -404,7 +404,7 @@ test_that("tges_red_flags surfaces top/bottom-decile placements", {
 test_that("tges_real_growth splits per-pupil growth into cost vs enrollment", {
   csg1aa <- tibble::tibble(
     county_name   = "X",
-    district_code = c("3570", "3570", "3570"),
+    district_id = c("3570", "3570", "3570"),
     district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1000, 1100, 1100),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 100, 90),
@@ -428,7 +428,7 @@ test_that("tges_real_growth splits per-pupil growth into cost vs enrollment", {
 
 test_that("tges_real_growth adds real-terms columns when given a deflator", {
   csg1aa <- tibble::tibble(
-    county_name = "X", district_code = c("3570", "3570"),
+    county_name = "X", district_id = c("3570", "3570"),
     district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1000, 1100),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 100),
@@ -452,7 +452,7 @@ test_that("tges_revenue_mix and friends run on the live 2024 guide", {
   tg <- fetch_tges(2024)
 
   rm <- tges_revenue_mix(tg)
-  nwk <- rm[rm$district_code == "3570", ]
+  nwk <- rm[rm$district_id == "3570", ]
   expect_equal(nrow(nwk), 1L)
   expect_true(is.finite(nwk$local_pp) && nwk$local_pp > 0)
   # shares should land near 1 (rounding); allow slack
@@ -462,7 +462,7 @@ test_that("tges_revenue_mix and friends run on the live 2024 guide", {
 
   fb <- tges_fund_balance_health(tg)
   expect_true(all(c("excess_unreserved", "excess_surplus_flag") %in% names(fb)))
-  expect_true(any(fb$district_code == "3570"))
+  expect_true(any(fb$district_id == "3570"))
 
   st <- tges_staffing(tg)
   expect_true("student_admin_ratio" %in% names(st))
@@ -492,7 +492,7 @@ test_that("tges_revenue_mix errors without per-pupil total and honors years", {
 
 test_that("tges_fund_balance_health works with only one of CSG20 / CSG21", {
   csg20 <- tibble::tibble(
-    group = "G", county_name = "X", district_code = "3570",
+    group = "G", county_name = "X", district_id = "3570",
     district_name = "Newark",
     `Budgeted General Fund Balance` = 120, Actual = 100, end_year = 2023
   )
@@ -502,7 +502,7 @@ test_that("tges_fund_balance_health works with only one of CSG20 / CSG21", {
   expect_equal(fb20$fund_balance_variance, -20)
 
   csg21 <- tibble::tibble(
-    group = "G", county_name = "X", district_code = "3570",
+    group = "G", county_name = "X", district_id = "3570",
     district_name = "Newark", `Actual Excess` = 5, end_year = 2023
   )
   fb21 <- tges_fund_balance_health(list(CSG21 = csg21))
@@ -531,12 +531,12 @@ test_that("tges_staffing errors when no personnel tables are present", {
 })
 
 test_that("tges_red_flags errors on an unknown district", {
-  expect_error(tges_red_flags(fake_scan_tges(), district_code = "9999"),
+  expect_error(tges_red_flags(fake_scan_tges(), district_id = "9999"),
                "No indicators")
 })
 
 test_that("tges_red_flags carries direction and percentile bounds", {
-  rf <- tges_red_flags(fake_scan_tges(), district_code = "0007",
+  rf <- tges_red_flags(fake_scan_tges(), district_id = "0007",
                        peer = "tges_group", only_flagged = FALSE)
   expect_true(all(rf$peer_percentile >= 0 & rf$peer_percentile <= 100))
   # composition rows carry their own direction text
@@ -550,14 +550,14 @@ test_that("tges_real_growth errors without CSG1AA and dedupes overlapping report
 
   # two guides each carry the same actual year (2022); it must collapse to one row
   r1 <- tibble::tibble(
-    county_name = "X", district_code = "3570", district_name = "Newark",
+    county_name = "X", district_id = "3570", district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1000, 1100),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 100),
     `Per Pupil Total Expenditures`              = c(10, 11),
     end_year = c(2021, 2022), calc_type = "Actuals"
   )
   r2 <- tibble::tibble(
-    county_name = "X", district_code = "3570", district_name = "Newark",
+    county_name = "X", district_id = "3570", district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1100, 1210),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 110),
     `Per Pupil Total Expenditures`              = c(11, 11),
@@ -578,8 +578,8 @@ test_that("tges_federal_exposure errors when esser_years are absent", {
   expect_error(tges_federal_exposure(tgm, esser_years = 2030), "esser_years")
 })
 
-test_that("tges_red_flags requires a district_code", {
-  expect_error(tges_red_flags(fake_scan_tges()), "district_code")
+test_that("tges_red_flags requires a district_id", {
+  expect_error(tges_red_flags(fake_scan_tges()), "district_id")
 })
 
 test_that("tges_red_flags scans whatever indicator tables are present", {
@@ -587,11 +587,11 @@ test_that("tges_red_flags scans whatever indicator tables are present", {
   # the budgetary indicator is scanned and the function still returns it.
   codes <- sprintf("%04d", 1:10)
   only1 <- list(CSG1 = tibble::tibble(
-    group = "G", county_name = "X", district_code = codes, district_name = codes,
+    group = "G", county_name = "X", district_id = codes, district_name = codes,
     `Per Pupil costs` = seq(10000, 28000, by = 2000), `District rank` = 1:10,
     indicator = "Budgetary Per Pupil Cost", end_year = 2024, calc_type = "Budgeted"
   ))
-  rf <- tges_red_flags(only1, district_code = "0010", peer = "tges_group",
+  rf <- tges_red_flags(only1, district_id = "0010", peer = "tges_group",
                        only_flagged = FALSE)
   expect_true("Budgetary per-pupil cost" %in% rf$indicator)
   expect_false("Classroom share of budget" %in% rf$indicator)
@@ -599,7 +599,7 @@ test_that("tges_red_flags scans whatever indicator tables are present", {
 
 test_that("tges_fund_balance_health honors the years filter", {
   csg20 <- tibble::tibble(
-    group = "G", county_name = "X", district_code = c("3570", "3570"),
+    group = "G", county_name = "X", district_id = c("3570", "3570"),
     district_name = "Newark",
     `Budgeted General Fund Balance` = c(120, 120), Actual = c(100, 60),
     end_year = c(2022, 2023)
@@ -610,7 +610,7 @@ test_that("tges_fund_balance_health honors the years filter", {
 
 test_that("tges_staffing honors years and skips tables lacking mapped columns", {
   mk <- function(yr) tibble::tibble(
-    group = "G", county_name = "X", district_code = c("3570", "0680"),
+    group = "G", county_name = "X", district_id = c("3570", "0680"),
     district_name = c("Newark", "Camden"),
     `Student/Teacher ratio` = c(12, 14), `Teacher Salary` = c(70000, 65000),
     end_year = yr
@@ -622,7 +622,7 @@ test_that("tges_staffing honors years and skips tables lacking mapped columns", 
   # a CSG16 table without its mapped columns contributes nothing -> no pieces
   expect_error(
     tges_staffing(list(CSG16 = tibble::tibble(
-      group = "G", district_code = "3570", end_year = 2024))),
+      group = "G", district_id = "3570", end_year = 2024))),
     "personnel"
   )
 })
@@ -631,14 +631,14 @@ test_that("tges_real_growth: missing cols, pp fallback, deflator check, years", 
   # missing total-expenditure / ADE columns
   expect_error(
     tges_real_growth(list(CSG1AA_AVGS = tibble::tibble(
-      county_name = "X", district_code = "3570", district_name = "Newark",
+      county_name = "X", district_id = "3570", district_name = "Newark",
       end_year = 2023))),
     "total expenditures"
   )
 
   # no "Per Pupil Total Expenditures" column -> per_pupil computed as exp / ADE
   no_pp <- tibble::tibble(
-    county_name = "X", district_code = "3570", district_name = "Newark",
+    county_name = "X", district_id = "3570", district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1000, 1100),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 100),
     end_year = c(2022, 2023), calc_type = "Actuals"
@@ -648,7 +648,7 @@ test_that("tges_real_growth: missing cols, pp fallback, deflator check, years", 
   expect_equal(rg$per_pupil[rg$end_year == 2023], 11)
 
   good <- tibble::tibble(
-    county_name = "X", district_code = "3570", district_name = "Newark",
+    county_name = "X", district_id = "3570", district_name = "Newark",
     `Total Expenditures, actual costs`          = c(1000, 1100),
     `Average Daily Enrollment plus Sent Pupils` = c(100, 100),
     `Per Pupil Total Expenditures`              = c(10, 11),
@@ -683,7 +683,7 @@ fake_cost <- function(code_vals, indicator, codes, names_,
                       county = "Essex", group = "G. K-12 / 3501 +",
                       end_year = 2024, calc_type = "Budgeted") {
   tibble::tibble(
-    county_name = county, district_code = codes, district_name = names_,
+    county_name = county, district_id = codes, district_name = names_,
     group = group, `Per Pupil costs` = code_vals,
     indicator = indicator, end_year = end_year, calc_type = calc_type
   )
@@ -703,7 +703,7 @@ fake_full_tges <- function() {
     CSG8 = fake_cost(seq(1200, 2200, length.out = 6),
                      "Administration", codes, nm),
     CSG1AA_AVGS = tibble::tibble(
-      county_name = "Essex", district_code = codes, district_name = nm,
+      county_name = "Essex", district_id = codes, district_name = nm,
       `Total Expenditures, actual costs` = seq(1e8, 3e8, length.out = 6),
       `Average Daily Enrollment plus Sent Pupils` = seq(5000, 30000, length.out = 6),
       `Per Pupil Total Expenditures` = seq(18000, 28000, length.out = 6),
@@ -711,7 +711,7 @@ fake_full_tges <- function() {
     ),
     VITSTAT_TOTAL = tibble::tibble(
       group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = codes, district_name = nm,
+      district_id = codes, district_name = nm,
       `Total Spending Per Pupil` = seq(18000, 28000, length.out = 6),
       `Revenue: Local %` = seq(0.1, 0.85, length.out = 6),
       `Revenue: State %` = seq(0.85, 0.1, length.out = 6),
@@ -727,7 +727,7 @@ fake_full_tges <- function() {
 
 test_that("tges_percentile_rank ranks within a custom peer set", {
   df <- tibble::tibble(
-    county_name = "X", district_code = sprintf("%04d", 1:6),
+    county_name = "X", district_id = sprintf("%04d", 1:6),
     district_name = letters[1:6], group = "G",
     `Per Pupil costs` = c(10, 20, 30, 40, 50, 60), end_year = 2024
   )
@@ -735,13 +735,13 @@ test_that("tges_percentile_rank ranks within a custom peer set", {
   r <- tges_percentile_rank(df, peer = "custom",
                             custom_ids = c("0002", "0004", "0006"))
   expect_equal(nrow(r), 3L)
-  r <- r[order(r$district_code), ]
+  r <- r[order(r$district_id), ]
   expect_equal(r$peer_percentile, c(100 / 3, 200 / 3, 100), tolerance = 0.1)
   expect_equal(unique(r$peer_n), 3L)
 })
 
 test_that("tges_percentile_rank custom peer requires ids", {
-  df <- tibble::tibble(district_code = "0001", group = "G",
+  df <- tibble::tibble(district_id = "0001", group = "G",
                        `Per Pupil costs` = 10, end_year = 2024)
   expect_error(tges_percentile_rank(df, peer = "custom"), "custom_ids")
 })
@@ -761,7 +761,7 @@ test_that("tges_find_peers returns the focal first, then nearest by distance", {
     CSG8 = fake_cost(c(2000, 2010, 1500, 2800),
                      "Administration", codes, paste0("D", 1:4)),
     CSG1AA_AVGS = tibble::tibble(
-      county_name = "Essex", district_code = codes, district_name = paste0("D", 1:4),
+      county_name = "Essex", district_id = codes, district_name = paste0("D", 1:4),
       `Total Expenditures, actual costs` = c(1e8, 1e8, 5e7, 3e8),
       `Average Daily Enrollment plus Sent Pupils` = c(10000, 10000, 4000, 40000),
       `Per Pupil Total Expenditures` = c(22000, 22100, 16000, 30000),
@@ -769,7 +769,7 @@ test_that("tges_find_peers returns the focal first, then nearest by distance", {
     ),
     VITSTAT_TOTAL = tibble::tibble(
       group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = codes, district_name = paste0("D", 1:4),
+      district_id = codes, district_name = paste0("D", 1:4),
       `Total Spending Per Pupil` = c(22000, 22100, 16000, 30000),
       `Revenue: Local %` = c(0.5, 0.5, 0.2, 0.8),
       `Revenue: State %` = c(0.45, 0.45, 0.75, 0.15),
@@ -786,7 +786,7 @@ test_that("tges_find_peers returns the focal first, then nearest by distance", {
   expect_equal(fp$distance[1], 0)
   expect_equal(nrow(fp), 3L)              # focal + 2 peers
   expect_false(is.unsorted(fp$distance))  # ascending
-  expect_equal(fp$district_code[2], "0002")  # the near-clone is nearest
+  expect_equal(fp$district_id[2], "0002")  # the near-clone is nearest
 })
 
 test_that("tges_find_peers errors on unknown district and missing feature", {
@@ -815,7 +815,7 @@ test_that("tges_find_peers drops a zero-variance feature with a warning", {
 test_that("tges_frontier computes free-disposal-hull efficiency and references", {
   codes <- sprintf("%04d", 1:4)
   spend <- tibble::tibble(
-    county_name = "X", district_code = codes, district_name = paste0("D", 1:4),
+    county_name = "X", district_id = codes, district_name = paste0("D", 1:4),
     group = "G", `Per Pupil costs` = c(100, 200, 150, 300),
     indicator = "Budgetary Per Pupil Cost", end_year = 2024, calc_type = "Actuals"
   )
@@ -825,7 +825,7 @@ test_that("tges_frontier computes free-disposal-hull efficiency and references",
   )
 
   fr <- tges_frontier(spend, outcome, outcome_col = "grad", peer = "tges_group")
-  fr <- fr[order(fr$district_code), ]
+  fr <- fr[order(fr$district_id), ]
 
   # d1: cheapest with outcome 90, nobody beats it for less -> frontier
   # d2: outcome 80, d1 (outcome 90 >= 80) does it for 100 -> 100/200 = 0.5
@@ -833,13 +833,13 @@ test_that("tges_frontier computes free-disposal-hull efficiency and references",
   # d4: outcome 85, cheapest among outcome>=85 is d1 (100) -> 100/300 = 0.333
   expect_equal(fr$efficiency_score, c(1, 0.5, 1, 0.3333), tolerance = 1e-3)
   expect_equal(fr$on_frontier, c(TRUE, FALSE, TRUE, FALSE))
-  expect_equal(fr$reference_district_code, c("0001", "0001", "0003", "0001"))
+  expect_equal(fr$reference_district_id, c("0001", "0001", "0003", "0001"))
   expect_equal(fr$excess_spend, c(0, 100, 0, 200))
 })
 
 test_that("tges_frontier validates inputs and the join", {
   spend <- tibble::tibble(
-    district_code = "0001", group = "G", `Per Pupil costs` = 100,
+    district_id = "0001", group = "G", `Per Pupil costs` = 100,
     end_year = 2024
   )
   expect_error(
@@ -867,7 +867,7 @@ test_that("tges_frontier validates inputs and the join", {
 test_that("tges_convergence detects convergence (low starters grow faster)", {
   codes <- sprintf("%04d", 1:6)
   mk <- function(yr, vals) list(CSG1 = tibble::tibble(
-    county_name = "X", district_code = codes, district_name = codes, group = "G",
+    county_name = "X", district_id = codes, district_name = codes, group = "G",
     `Per Pupil costs` = vals, indicator = "Budgetary Per Pupil Cost",
     end_year = yr, calc_type = "Budgeted"
   ))
@@ -883,14 +883,14 @@ test_that("tges_convergence detects convergence (low starters grow faster)", {
   expect_lt(s$beta, 0)                 # negative slope = convergence
   expect_true(s$converging)
   # growth is an identity check on one district
-  d1 <- cv[cv$district_code == "0001", ]
+  d1 <- cv[cv$district_id == "0001", ]
   expect_equal(d1$growth, (log(50) - log(10)) / 6, tolerance = 1e-8)
 })
 
 test_that("tges_convergence detects divergence (high starters grow faster)", {
   codes <- sprintf("%04d", 1:6)
   mk <- function(yr, vals) list(CSG1 = tibble::tibble(
-    county_name = "X", district_code = codes, district_name = codes, group = "G",
+    county_name = "X", district_id = codes, district_name = codes, group = "G",
     `Per Pupil costs` = vals, indicator = "x", end_year = yr, calc_type = "Budgeted"
   ))
   start <- c(10, 20, 30, 40, 50, 60)
@@ -903,7 +903,7 @@ test_that("tges_convergence detects divergence (high starters grow faster)", {
 test_that("tges_convergence errors on equal endpoints and missing table", {
   codes <- sprintf("%04d", 1:6)
   mk <- function(yr) list(CSG1 = tibble::tibble(
-    county_name = "X", district_code = codes, district_name = codes, group = "G",
+    county_name = "X", district_id = codes, district_name = codes, group = "G",
     `Per Pupil costs` = 1:6, indicator = "x", end_year = yr, calc_type = "Budgeted"
   ))
   expect_error(tges_convergence(list(`2024` = mk(2024)), peer = "statewide"),
@@ -918,13 +918,13 @@ test_that("tges_convergence errors on equal endpoints and missing table", {
 test_that("tges_composition_drift computes signed drift and ranks it", {
   codes <- sprintf("%04d", 1:5)
   mk <- function(yr, csg2) list(
-    CSG1 = tibble::tibble(county_name = "X", district_code = codes,
+    CSG1 = tibble::tibble(county_name = "X", district_id = codes,
       district_name = codes, group = "G", `Per Pupil costs` = rep(20000, 5),
       indicator = "Budgetary Per Pupil Cost", end_year = yr, calc_type = "Budgeted"),
-    CSG2 = tibble::tibble(county_name = "X", district_code = codes,
+    CSG2 = tibble::tibble(county_name = "X", district_id = codes,
       district_name = codes, group = "G", `Per Pupil costs` = csg2,
       indicator = "Total Classroom Instruction", end_year = yr, calc_type = "Budgeted"),
-    CSG8 = tibble::tibble(county_name = "X", district_code = codes,
+    CSG8 = tibble::tibble(county_name = "X", district_id = codes,
       district_name = codes, group = "G", `Per Pupil costs` = rep(2000, 5),
       indicator = "Administration", end_year = yr, calc_type = "Budgeted")
   )
@@ -934,12 +934,12 @@ test_that("tges_composition_drift computes signed drift and ranks it", {
   dr <- tges_composition_drift(tgm, peer = "statewide",
                                shares = c("classroom_share", "administration_share"))
 
-  d1 <- dr[dr$district_code == "0001", ]
+  d1 <- dr[dr$district_id == "0001", ]
   expect_equal(d1$classroom_share_start, 0.60)
   expect_equal(d1$classroom_share_end, 0.40)
   expect_equal(d1$classroom_share_drift, -0.20, tolerance = 1e-8)
   # district 0005 had no drift (largest end share) -> highest percentile
-  d5 <- dr[dr$district_code == "0005", ]
+  d5 <- dr[dr$district_id == "0005", ]
   expect_equal(d5$classroom_share_drift, 0, tolerance = 1e-8)
   expect_equal(d5$drift_percentile, 100)
   expect_true(all(dr$drift_percentile >= 0 & dr$drift_percentile <= 100))
@@ -956,16 +956,16 @@ test_that("tges_composition_drift errors on bad rank_on and equal years", {
 # --- tges_gap_cost -------------------------------------------------------------
 
 test_that("tges_gap_cost converts a share gap to per-pupil and total dollars", {
-  gc <- tges_gap_cost(fake_full_tges(), district_code = "0001",
+  gc <- tges_gap_cost(fake_full_tges(), district_id = "0001",
                       metric = "classroom_share", target = "median",
                       peer = "tges_group")
   expect_equal(nrow(gc), 1L)
 
   # rebuild the expected numbers from the fixture
   comp <- tges_composition(fake_full_tges(), calc_type = "Budgeted")
-  focal_share <- comp$classroom_share[comp$district_code == "0001"]
+  focal_share <- comp$classroom_share[comp$district_id == "0001"]
   med <- stats::median(comp$classroom_share)
-  bpp <- comp$budgetary_pp[comp$district_code == "0001"]
+  bpp <- comp$budgetary_pp[comp$district_id == "0001"]
   ade <- 5000  # district 0001 ADE in the fixture
 
   expect_equal(gc$focal_value, focal_share)
@@ -978,11 +978,11 @@ test_that("tges_gap_cost converts a share gap to per-pupil and total dollars", {
 
 test_that("tges_gap_cost handles a dollar metric and a numeric quantile target", {
   # classroom (raw $/pupil, not a share): gap is already per-pupil dollars
-  gc <- tges_gap_cost(fake_full_tges(), district_code = "0001",
+  gc <- tges_gap_cost(fake_full_tges(), district_id = "0001",
                       metric = "classroom", target = 0.5, peer = "tges_group")
   comp <- tges_composition(fake_full_tges(), calc_type = "Budgeted")
   med <- stats::median(comp$classroom)
-  focal <- comp$classroom[comp$district_code == "0001"]
+  focal <- comp$classroom[comp$district_id == "0001"]
   expect_equal(gc$target_basis, "p50")
   expect_equal(gc$per_pupil_gap_dollars, round(med - focal))
 })
@@ -1001,7 +1001,7 @@ test_that("tges_gap_cost errors on unknown district, metric, and bad target", {
 test_that("tges_volatility ranks a spiky series above a flat one", {
   codes <- c("0001", "0002")
   mk <- function(yr, fed) list(VITSTAT_TOTAL = tibble::tibble(
-    group = "G", county_name = "X", district_code = codes,
+    group = "G", county_name = "X", district_id = codes,
     district_name = codes, `Total Spending Per Pupil` = c(20000, 20000),
     `Revenue: Local %` = 0.5, `Revenue: State %` = 0.45,
     `Revenue: Federal %` = fed, `Revenue: Tuition %` = 0,
@@ -1013,8 +1013,8 @@ test_that("tges_volatility ranks a spiky series above a flat one", {
   vol <- tges_volatility(tgm, metric = "federal_share", peer = "statewide",
                          min_years = 3)
   expect_equal(nrow(vol), 2L)
-  flat <- vol[vol$district_code == "0001", ]
-  spiky <- vol[vol$district_code == "0002", ]
+  flat <- vol[vol$district_id == "0001", ]
+  spiky <- vol[vol$district_id == "0002", ]
   expect_equal(flat$cv, 0)
   expect_gt(spiky$cv, flat$cv)
   expect_gt(spiky$vol_percentile, flat$vol_percentile)
@@ -1023,7 +1023,7 @@ test_that("tges_volatility ranks a spiky series above a flat one", {
 test_that("tges_volatility honors min_years and routes the metric", {
   codes <- c("0001", "0002")
   mk <- function(yr, fed) list(VITSTAT_TOTAL = tibble::tibble(
-    group = "G", county_name = "X", district_code = codes, district_name = codes,
+    group = "G", county_name = "X", district_id = codes, district_name = codes,
     `Total Spending Per Pupil` = c(20000, 20000), `Revenue: Local %` = 0.5,
     `Revenue: State %` = 0.45, `Revenue: Federal %` = fed,
     `Revenue: Tuition %` = 0, `Revenue: Free balance %` = 0,
@@ -1043,28 +1043,28 @@ test_that("tges_volatility honors min_years and routes the metric", {
 test_that("tges_compare assembles a scorecard in the requested order", {
   tg <- c(fake_full_tges(), list(
     CSG16 = tibble::tibble(group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
+      district_id = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
       `Student/Teacher ratio` = seq(10, 15, length.out = 6),
       `Teacher Salary` = seq(60000, 80000, length.out = 6), end_year = 2023),
     CSG18 = tibble::tibble(group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
+      district_id = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
       `Student/Administrator ratio` = seq(70, 120, length.out = 6),
       `Administrator Salary` = seq(110000, 150000, length.out = 6), end_year = 2023),
     CSG14 = tibble::tibble(group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
+      district_id = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
       `% of Total Salaries` = seq(0.25, 0.35, length.out = 6), end_year = 2023),
     CSG21 = tibble::tibble(group = "G. K-12 / 3501 +", county_name = "Essex",
-      district_code = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
+      district_id = sprintf("%04d", 1:6), district_name = paste0("D", 1:6),
       `Actual Excess` = c(0, 0, 0, 5, 5, 5), end_year = 2023)
   ))
 
   cmp <- tges_compare(tg, district_codes = c("0003", "0001", "0005"))
-  expect_equal(cmp$district_code, c("0003", "0001", "0005"))   # requested order
+  expect_equal(cmp$district_id, c("0003", "0001", "0005"))   # requested order
   expect_true(all(c("total_pp", "classroom_share", "local_share",
                     "student_admin_ratio", "excess_surplus_flag") %in% names(cmp)))
   # total_pp comes from VITSTAT, not the (NA) budgeted composition total
   expect_true(all(is.finite(cmp$total_pp)))
-  expect_true(cmp$excess_surplus_flag[cmp$district_code == "0005"])
+  expect_true(cmp$excess_surplus_flag[cmp$district_id == "0005"])
 })
 
 test_that("tges_compare warns about district codes with no data", {
@@ -1144,7 +1144,7 @@ fake_tges_detail <- function() {
   list(
     DETAIL_FY24 = tibble::tibble(
       county_name   = "Test",
-      district_code = c("3570", "0680", "00NA"),
+      district_id = c("3570", "0680", "00NA"),
       district_name = c("Newark", "Camden", "GROUP AVG"),
       end_year      = 2024L,
       calc_type     = "Actuals",
@@ -1160,7 +1160,7 @@ fake_tges_detail <- function() {
     ),
     CSG1 = tibble::tibble(
       county_name   = "Test",
-      district_code = c("3570", "0680", "00NA"),
+      district_id = c("3570", "0680", "00NA"),
       district_name = c("Newark", "Camden", "GROUP AVG"),
       group         = "G. K-12 / 3501 +",
       `Per Pupil costs`  = c(21000, 20000, NA),
@@ -1176,17 +1176,17 @@ test_that("tges_excluded_costs computes the wedge and drops average rows", {
   ec <- tges_excluded_costs(fake_tges_detail())
 
   expect_equal(nrow(ec), 2L)                       # 00NA average row dropped
-  expect_false(any(ec$district_code == "00NA"))
+  expect_false(any(ec$district_id == "00NA"))
 
-  nwk <- ec[ec$district_code == "3570", ]
+  nwk <- ec[ec$district_id == "3570", ]
   expect_equal(nwk$gce_excess_pp, 24000 - 21000)     # GCE - budgetary
   expect_equal(nwk$excluded_total_pp, 28700 - 21000) # total - budgetary
 })
 
 test_that("tges_excluded_costs flags sending districts via sent_pupil_share", {
   ec <- tges_excluded_costs(fake_tges_detail())
-  nwk <- ec[ec$district_code == "3570", ]
-  cmd <- ec[ec$district_code == "0680", ]
+  nwk <- ec[ec$district_id == "3570", ]
+  cmd <- ec[ec$district_id == "0680", ]
 
   # Newark: (40000-39800)/40000 = 0.005 <= 0.02 -> reliable
   expect_equal(round(nwk$sent_pupil_share, 4), 0.005)
@@ -1200,7 +1200,7 @@ test_that("tges_excluded_costs flags sending districts via sent_pupil_share", {
 test_that("tges_excluded_costs honors reliable_max_sent_share", {
   ec <- tges_excluded_costs(fake_tges_detail(), reliable_max_sent_share = 0.30)
   # at a 0.30 threshold Camden (0.25) now counts as reliable
-  expect_true(ec[ec$district_code == "0680", ]$residual_reliable)
+  expect_true(ec[ec$district_id == "0680", ]$residual_reliable)
 })
 
 test_that("tges_excluded_costs errors without the detail or CSG1 tables", {
@@ -1223,7 +1223,7 @@ test_that("tidy_total_spending_detail + tges_excluded_costs run on the live 2025
   det <- tg[["DETAIL_FY24"]]
   expect_true(all(c("general_current_expense_pp", "capital_outlay_pp",
                     "total_spending_pp", "enrollment_plus_sent") %in% names(det)))
-  expect_true(all(grepl("^[0-9]{4}$", det$district_code[!is.na(det$district_code)])))
+  expect_true(all(grepl("^[0-9]{4}$", det$district_id[!is.na(det$district_id)])))
   expect_true(all(det$end_year == 2024))
 
   ec <- tges_excluded_costs(tg)

@@ -140,7 +140,7 @@ limitations, not unbuilt fetchers:
 Nine exported helpers sit on top of `fetch_tges()` / `fetch_many_tges()` and point
 the peer-benchmarking engine in `percentile_rank.R` at dollars. All consume a
 `fetch_tges()` (single) or `fetch_many_tges()` (nested) object and drop
-group-average rows (`district_code` NA / `"00NA"`):
+group-average rows (`district_id` NA / `"00NA"`):
 
 | Function | What it returns |
 |---|---|

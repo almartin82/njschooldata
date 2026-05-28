@@ -12,6 +12,7 @@ R functions (with Python bindings) to import NJ school data, including assessmen
 Useful links:
 \itemize{
   \item \url{https://github.com/almartin82/njschooldata}
+  \item \url{https://almartin82.github.io/njschooldata/}
   \item Report bugs at \url{https://github.com/almartin82/njschooldata/issues}
 }
 

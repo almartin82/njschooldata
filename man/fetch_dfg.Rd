@@ -10,7 +10,7 @@ fetch_dfg(revision = 2000)
 \item{revision}{c(2000, 1990) Which census revision to use. Default 2000.}
 }
 \value{
-data.frame with columns: county_code, county_name, district_code,
+data.frame with columns: county_id, county_name, district_id,
   district_name, dfg
 }
 \description{

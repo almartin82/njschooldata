@@ -16,7 +16,7 @@ tges_frontier(
 }
 \arguments{
 \item{spend_df}{A tidied TGES table (one report year, one \code{calc_type})
-carrying \code{district_code} and \code{spend_col}.}
+carrying \code{district_id} and \code{spend_col}.}
 
 \item{outcome_df}{A district-level frame with \code{district_id}, the year
 column, and \code{outcome_col} (higher = better).}
@@ -37,7 +37,7 @@ column, and \code{outcome_col} (higher = better).}
 \value{
 A tibble: entity columns, \code{peer_group}, the year, \code{spend},
   \code{outcome}, \code{efficiency_score}, \code{on_frontier},
-  \code{reference_district_code}, \code{reference_district_name},
+  \code{reference_district_id}, \code{reference_district_name},
   \code{reference_spend}, and \code{excess_spend}.
 }
 \description{
@@ -80,7 +80,7 @@ spend <- fetch_tges(2024)$CSG1 \%>\%
 
 fr <- tges_frontier(spend, grate, outcome_col = "grad_rate_percentile",
                     peer = "dfg")
-fr \%>\% filter(district_code == "3570") \%>\%
+fr \%>\% filter(district_id == "3570") \%>\%
   select(district_name, efficiency_score, reference_district_name, excess_spend)
 }
 
