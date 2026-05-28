@@ -20,10 +20,21 @@
 #' risk ratios compared to total population.
 #'
 #' @param df A data frame from \code{\link{fetch_disciplinary_removals}},
-#'   \code{\link{fetch_violence_vandalism_hib}}, or similar discipline data.
+#'   \code{\link{fetch_violence_vandalism_hib}},
+#'   \code{\link{fetch_police_notifications_detail}},
+#'   \code{\link{fetch_arrests}}, or similar discipline data.
 #'   Must contain subgroup column and a count/number column.
 #' @param rate_per Base for rate calculation (default: 1000). For example,
 #'   rate_per = 1000 calculates incidents per 1000 students.
+#' @param by_grade Logical, default \code{FALSE}. When \code{TRUE} and the
+#'   input carries a \code{grade_level} column, \code{grade_level} is added
+#'   to the per-entity grouping keys so rates and risk ratios are computed
+#'   within each (entity \eqn{\times} grade) cell. When \code{TRUE} but the
+#'   input has no \code{grade_level} column, the function warns and falls
+#'   through to the flat (per-subgroup) calculation. When \code{FALSE}
+#'   (default) the calculation matches the pre-existing behavior even when
+#'   a \code{grade_level} column is present (grade rows do not contaminate
+#'   the subgroup-marginal risk-ratio denominator).
 #'
 #' @return Data frame with discipline rates including:
 #'   \itemize{
@@ -48,12 +59,34 @@
 #' rates %>%
 #'   dplyr::filter(subgroup %in% c("black", "hispanic", "white")) %>%
 #'   dplyr::select(school_name, subgroup, discipline_rate, risk_ratio)
+#'
+#' # Grade-level disproportionality on the SPR Group/Grade detail sheets
+#' arrests <- fetch_arrests(2025, level = "district")
+#' grade_rates <- calc_discipline_rates_by_subgroup(arrests, by_grade = TRUE)
+#' grade_rates %>%
+#'   dplyr::filter(is_state, grade_level != "TOTAL") %>%
+#'   dplyr::select(grade_level, subgroup, discipline_rate, risk_ratio)
 #' }
-calc_discipline_rates_by_subgroup <- function(df, rate_per = 1000) {
+calc_discipline_rates_by_subgroup <- function(df, rate_per = 1000,
+                                              by_grade = FALSE) {
 
   # Validate input
   if (!"subgroup" %in% names(df)) {
     stop("Input data must contain 'subgroup' column")
+  }
+
+  # Resolve by_grade: if caller asked for it but data has no grade_level
+  # column, warn and fall through to the flat calculation. This is more
+  # forgiving than erroring (the rest of the calc still produces sensible
+  # per-subgroup rates) while keeping the mistake visible.
+  use_grade <- isTRUE(by_grade)
+  if (use_grade && !"grade_level" %in% names(df)) {
+    warning(
+      "by_grade = TRUE was requested but the input has no 'grade_level' ",
+      "column; falling through to the flat (per-subgroup) calculation.",
+      call. = FALSE
+    )
+    use_grade <- FALSE
   }
 
   # Try to find a count/number column (may vary by data source)
@@ -99,16 +132,21 @@ calc_discipline_rates_by_subgroup <- function(df, rate_per = 1000) {
   # Calculate discipline rate
   df$discipline_rate <- (df[[incident_col]] / df[[count_col]]) * rate_per
 
-  # Calculate percent of total incidents by location
-  # Group by location (school or district) and year
+  # Group keys: location (entity x year) + optionally grade_level when the
+  # caller opts in. by_grade=FALSE keeps the pre-existing subgroup-marginal
+  # semantics intact (grade rows do not contaminate the denominator).
   location_cols <- c("end_year", "county_id", "district_id")
   if ("school_id" %in% names(df)) {
     location_cols <- c(location_cols, "school_id")
   }
+  group_keys <- location_cols
+  if (use_grade) {
+    group_keys <- c(group_keys, "grade_level")
+  }
 
-  # Total incidents per location/year
+  # Total incidents per group key (location/year, optionally x grade)
   total_incidents <- df %>%
-    dplyr::group_by(dplyr::across(dplyr::all_of(location_cols))) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(group_keys))) %>%
     dplyr::summarise(
       total_incidents = sum(!!dplyr::sym(incident_col), na.rm = TRUE),
       .groups = "drop"
@@ -116,7 +154,7 @@ calc_discipline_rates_by_subgroup <- function(df, rate_per = 1000) {
 
   # Calculate percent_by_subgroup
   df <- df %>%
-    dplyr::left_join(total_incidents, by = location_cols) %>%
+    dplyr::left_join(total_incidents, by = group_keys) %>%
     dplyr::mutate(
       percent_by_subgroup = (!!dplyr::sym(incident_col) / total_incidents) * 100
     ) %>%
@@ -125,16 +163,15 @@ calc_discipline_rates_by_subgroup <- function(df, rate_per = 1000) {
   # Note: percent_by_subgroup represents the percentage of TOTAL incidents
   # accounted for by this subgroup, NOT the percentage of students in this subgroup
 
-  # Calculate risk ratio (vs total population)
-  # Get total population rate for each location/year
+  # Calculate risk ratio (vs total population for the same group key)
   total_pop_rate <- df %>%
     dplyr::filter(subgroup == "total population") %>%
-    dplyr::select(dplyr::all_of(c(location_cols, "discipline_rate"))) %>%
+    dplyr::select(dplyr::all_of(c(group_keys, "discipline_rate"))) %>%
     dplyr::rename(total_pop_rate = discipline_rate)
 
   # Join and calculate risk ratio
   df <- df %>%
-    dplyr::left_join(total_pop_rate, by = location_cols) %>%
+    dplyr::left_join(total_pop_rate, by = group_keys) %>%
     dplyr::mutate(
       risk_ratio = discipline_rate / total_pop_rate
     ) %>%
