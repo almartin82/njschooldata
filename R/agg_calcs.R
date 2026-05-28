@@ -11,6 +11,26 @@
 # Name Collapsing Utility
 # -----------------------------------------------------------------------------
 
+#' Ensure an apportionment \code{share} column exists
+#'
+#' \code{\link{id_charter_hosts}} adds a \code{share} column (the multi-campus
+#' charter apportionment weight; 1.0 for single-host charters and non-charters).
+#' Aggregation helpers multiply summed counts by \code{share} so an apportioned
+#' charter contributes \code{share} of its NJ-reported total to each host city,
+#' preserving the charter total exactly. Some inputs never pass through
+#' \code{id_charter_hosts} (e.g. \code{calculate_agg_parcc_prof}); for those this
+#' helper supplies \code{share = 1}, leaving counts unchanged. The
+#' grouping/grouped-ness of the input is preserved.
+#'
+#' @param df data frame (possibly grouped) being summarized
+#' @return df with a \code{share} column guaranteed present
+#' @keywords internal
+ensure_appt_share <- function(df) {
+  if ('share' %in% names(df)) return(df)
+  dplyr::mutate(df, share = 1)
+}
+
+
 #' Collapse repeated names in aggregation output
 #'
 #' When aggregating across schools/districts, \code{toString()} produces
@@ -57,12 +77,13 @@ collapse_agg_names <- function(name_vector) {
 #' @export
 grate_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::mutate(
       grad_rate = as.numeric(grad_rate)
     ) %>%
     dplyr::summarize(
-      cohort_count = sum(cohort_count, na.rm = TRUE),
-      graduated_count = sum(graduated_count, na.rm = TRUE),
+      cohort_count = sum(cohort_count * share, na.rm = TRUE),
+      graduated_count = sum(graduated_count * share, na.rm = TRUE),
       districts = collapse_agg_names(district_name),
       schools = collapse_agg_names(school_name),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
@@ -83,9 +104,10 @@ grate_aggregate_calcs <- function(df) {
 #' @export
 gcount_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::summarize(
-      cohort_count = sum(cohort_count, na.rm = TRUE),
-      graduated_count = sum(graduated_count, na.rm = TRUE),
+      cohort_count = sum(cohort_count * share, na.rm = TRUE),
+      graduated_count = sum(graduated_count * share, na.rm = TRUE),
       districts = collapse_agg_names(district_name),
       schools = collapse_agg_names(school_name),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
@@ -126,20 +148,21 @@ parcc_perf_level_counts <- function(df) {
 #' @export
 parcc_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::mutate(
       scale_score_mean = as.numeric(scale_score_mean),
       scale_score_numerator = scale_score_mean * number_of_valid_scale_scores
     ) %>%
     dplyr::summarize(
-      number_enrolled = sum(number_enrolled, na.rm = TRUE),
-      number_not_tested = sum(number_not_tested, na.rm = TRUE),
-      number_of_valid_scale_scores = sum(number_of_valid_scale_scores, na.rm = TRUE),
-      scale_score_mean = sum(scale_score_numerator, na.rm = TRUE),
-      num_l1 = sum(num_l1, na.rm = TRUE),
-      num_l2 = sum(num_l2, na.rm = TRUE),
-      num_l3 = sum(num_l3, na.rm = TRUE),
-      num_l4 = sum(num_l4, na.rm = TRUE),
-      num_l5 = sum(num_l5, na.rm = TRUE),
+      number_enrolled = sum(number_enrolled * share, na.rm = TRUE),
+      number_not_tested = sum(number_not_tested * share, na.rm = TRUE),
+      number_of_valid_scale_scores = sum(number_of_valid_scale_scores * share, na.rm = TRUE),
+      scale_score_mean = sum(scale_score_numerator * share, na.rm = TRUE),
+      num_l1 = sum(num_l1 * share, na.rm = TRUE),
+      num_l2 = sum(num_l2 * share, na.rm = TRUE),
+      num_l3 = sum(num_l3 * share, na.rm = TRUE),
+      num_l4 = sum(num_l4 * share, na.rm = TRUE),
+      num_l5 = sum(num_l5 * share, na.rm = TRUE),
       districts = collapse_agg_names(district_name),
       schools = collapse_agg_names(school_name),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
@@ -245,12 +268,13 @@ calculate_agg_parcc_prof <- function(end_year, subj, gradespan = "3-11") {
 #' @export
 matric_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::summarize(
-      graduated_count = sum(graduated_count, na.rm = TRUE),
-      cohort_count = sum(cohort_count, na.rm = TRUE),
-      enroll_any_count = sum(enroll_any_count, na.rm = TRUE),
-      enroll_2yr_count = sum(enroll_2yr_count, na.rm = TRUE),
-      enroll_4yr_count = sum(enroll_4yr_count, na.rm = TRUE),
+      graduated_count = sum(graduated_count * share, na.rm = TRUE),
+      cohort_count = sum(cohort_count * share, na.rm = TRUE),
+      enroll_any_count = sum(enroll_any_count * share, na.rm = TRUE),
+      enroll_2yr_count = sum(enroll_2yr_count * share, na.rm = TRUE),
+      enroll_4yr_count = sum(enroll_4yr_count * share, na.rm = TRUE),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
@@ -351,9 +375,10 @@ district_matric_aggs <- function(df) {
 #' @export
 spec_pop_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::summarize(
-      n_students = sum(n_students, na.rm = TRUE),
-      n_enrolled = sum(n_enrolled, na.rm = TRUE),
+      n_students = sum(n_students * share, na.rm = TRUE),
+      n_enrolled = sum(n_enrolled * share, na.rm = TRUE),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
@@ -395,10 +420,11 @@ agg_spec_pop_column_order <- function(df) {
 #' @export
 sped_aggregate_calcs <- function(df) {
   df %>%
+    ensure_appt_share() %>%
     dplyr::summarize(
-      gened_num = sum(gened_num, na.rm = TRUE),
-      sped_num = sum(sped_num, na.rm = TRUE),
-      sped_num_no_speech = sum(sped_num_no_speech, na.rm = TRUE),
+      gened_num = sum(gened_num * share, na.rm = TRUE),
+      sped_num = sum(sped_num * share, na.rm = TRUE),
+      sped_num_no_speech = sum(sped_num_no_speech * share, na.rm = TRUE),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(

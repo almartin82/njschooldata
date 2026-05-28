@@ -16,6 +16,56 @@
 #' @source NJ Department of Education
 "charter_city"
 
+#' Multi-Campus Charter Host-City Apportionment
+#'
+#' A year-aware companion to \code{\link{charter_city}} that splits the
+#' NJ-reported totals of multi-campus charter schools across their host cities.
+#' NJ DOE assigns one \code{district_id} per charter and does NOT report charter
+#' campuses separately, but a few charters operate campuses in more than one host
+#' city under a single \code{district_id}. For those, attributing 100% of the
+#' charter's enrollment to one host city (as the 1:1 \code{charter_city} map
+#' would) overstates that city's charter sector and erases the other host city.
+#'
+#' Each row gives the fraction (\code{share}) of a charter's NJ-reported totals
+#' attributed to one host city in one year. Shares sum to 1.0 per
+#' \code{district_id} per \code{end_year}. Single-city charters need NO entry
+#' here (their implicit share is 1.0 via \code{charter_city});
+#' \code{\link{id_charter_hosts}} only expands charters that appear in this
+#' table. Downstream charter-sector and all-public aggregations multiply summed
+#' counts by \code{share} before summing, so the charter's total is preserved
+#' exactly across host cities.
+#'
+#' \strong{This is apportionment of real data, not fabrication.} The charter
+#' TOTAL enrollment is REAL NJ DOE data; only its allocation across host cities
+#' is an explicit, documented apportionment, used because NJ does not report
+#' campuses separately. A 0.5/0.5 split is an explicit PLACEHOLDER (see
+#' \code{share_basis}), never an NJ-reported campus count. No campus-level
+#' enrollment numbers are invented.
+#'
+#' Currently the only entry is M.E.T.S. Charter School (district 6068), which ran
+#' a Jersey City campus and opened a Newark campus in 2017: through 2017 it is
+#' 100% Jersey City; from 2018 it is a documented 50/50 Jersey City / Newark
+#' placeholder. KIPP TEAM Academy / KIPP Paterson (district 7325) was
+#' investigated as a candidate but NOT added: the NJ DOE directory shows district
+#' 7325 in Newark only, with no Paterson campus reporting under that
+#' \code{district_id}, so no verifiable share exists.
+#'
+#' @format A data frame with 8 columns:
+#' \describe{
+#'   \item{district_id}{Charter school district identifier (matches \code{charter_city$district_id})}
+#'   \item{end_year}{School year ending year the share applies to (integer)}
+#'   \item{host_county_id}{County code of the host district}
+#'   \item{host_county_name}{County name of the host district}
+#'   \item{host_district_id}{Host district identifier}
+#'   \item{host_district_name}{Host district name}
+#'   \item{share}{Fraction of the charter's NJ-reported totals attributed to this host city; sums to 1.0 per district_id per end_year}
+#'   \item{share_basis}{Documented provenance of the share (e.g. single-campus year vs PLACEHOLDER split)}
+#' }
+#' @seealso \code{\link{charter_city}}, \code{\link{id_charter_hosts}}
+#' @source NJ Department of Education enrollment files and school directory;
+#'   host-city allocation is an explicit documented apportionment (see Details).
+"charter_host_apportionment"
+
 #' Newark Address Addendum
 #'
 #' Additional address data for Newark schools to supplement geocoding.
