@@ -1032,6 +1032,392 @@ fetch_hib_investigations <- function(end_year, level = "school") {
 }
 
 
+# -----------------------------------------------------------------------------
+# Group/Grade detail helper: split raw "student_group_grade" label into
+# normalized subgroup + grade_level columns.
+# -----------------------------------------------------------------------------
+
+#' Normalize a raw SPR "student_group_grade" label
+#'
+#' The SPR detail sheets (\code{PoliceNotificationsGroupGrade},
+#' \code{ArrestsStudentGroupGrade}, \code{RemovalsStudentGroupGrade} and their
+#' 2023-24 legacy aliases) carry a single column whose rows alternate between
+#' subgroup labels (e.g. \code{"Black or African American"},
+#' \code{"Economically Disadvantaged Students"}) and grade labels (e.g.
+#' \code{"Grade 9"}, \code{"Grade KG"}). This helper splits each raw label into
+#' a project-standard \code{subgroup} + \code{grade_level} pair so downstream
+#' code can filter the two dimensions independently.
+#'
+#' Subgroup rows receive the project-standard subgroup label (matching the
+#' output of \code{\link{clean_spr_subgroups}}) and \code{grade_level = "TOTAL"}.
+#' Grade rows receive \code{subgroup = "total population"} and the
+#' project-standard grade label (\code{"PK"}, \code{"K"}, \code{"01"-"12"}).
+#'
+#' @param label Character vector of raw labels from the SPR
+#'   \code{student_group_grade} / \code{student_group_grade_level} column.
+#' @return A data frame with two columns: \code{subgroup} and \code{grade_level},
+#'   one row per input label.
+#' @keywords internal
+spr_split_student_group_grade <- function(label) {
+  raw <- as.character(label)
+  is_grade <- !is.na(raw) & grepl("^Grade ", raw, ignore.case = FALSE)
+  grade_token <- ifelse(is_grade, sub("^Grade\\s+", "", raw), NA_character_)
+  grade_norm <- dplyr::case_when(
+    is.na(grade_token) ~ NA_character_,
+    toupper(grade_token) %in% c("PK", "PRE-K", "PREK") ~ "PK",
+    toupper(grade_token) %in% c("K", "KG", "KF", "KH") ~ "K",
+    suppressWarnings(!is.na(as.integer(grade_token))) ~
+      sprintf("%02d", suppressWarnings(as.integer(grade_token))),
+    TRUE ~ toupper(grade_token)
+  )
+  # Project-standard subgroup labels. clean_spr_subgroups() covers most cases,
+  # but the 2024-25 SPR redesign introduced a few labels not handled there
+  # ("Hispanic/Latino", "Asian, Native Hawaiian, or Pacific Islander",
+  # "Non-Binary/Undesignated Gender"). Map those to the project standard here.
+  subgroup_raw <- clean_spr_subgroups(raw)
+  subgroup_norm <- dplyr::case_when(
+    is_grade ~ "total population",
+    subgroup_raw == "hispanic/latino" ~ "hispanic",
+    subgroup_raw == "asian, native hawaiian, or pacific islander" ~ "asian or pacific islander",
+    subgroup_raw == "non-binary/undesignated gender" ~ "non-binary",
+    TRUE ~ subgroup_raw
+  )
+  data.frame(
+    subgroup = subgroup_norm,
+    grade_level = ifelse(is_grade, grade_norm, "TOTAL"),
+    stringsAsFactors = FALSE
+  )
+}
+
+
+#' Fetch Police Notifications Detail (by Student Group / Grade)
+#'
+#' Downloads the SPR detail sheet that breaks police-notification incident
+#' counts out by student subgroup (race, gender, ED, SwD) and by grade level.
+#' Each row reports, for one entity and one label (where the label is either
+#' a subgroup or a grade), counts and percents for the seven police-related
+#' incident categories. The label dimension is normalized into a separate
+#' \code{subgroup} + \code{grade_level} pair so downstream code can filter on
+#' the two dimensions independently.
+#'
+#' @details
+#' Sheet coverage and harmonization:
+#' \itemize{
+#'   \item The detail sheet first appears in SY2023-24 (end_year 2024) and is
+#'     \strong{absent} from every earlier SPR workbook. The function errors
+#'     for \code{end_year < 2024}.
+#'   \item Year-aliased sheet names:
+#'     \itemize{
+#'       \item 2024: \code{PoliceNotificationByStuGroup}
+#'       \item 2025: \code{PoliceNotificationsGroupGrade}
+#'     }
+#'   \item The raw label column (\code{student_group_grade_level} in 2024;
+#'     \code{student_group_grade} in 2025) is preserved as
+#'     \code{student_group_grade} and additionally split into normalized
+#'     \code{subgroup} + \code{grade_level} columns. Subgroup rows get
+#'     \code{grade_level = "TOTAL"}; grade rows get
+#'     \code{subgroup = "total population"} and a project-standard grade label
+#'     (\code{"PK"}, \code{"K"}, \code{"01"-"12"}).
+#'   \item Subgroup labels are normalized via the same
+#'     \code{\link{clean_spr_subgroups}} machinery used by every other SPR
+#'     fetcher.
+#'   \item The 2025 sheet adds a \code{school_year} column (single value, e.g.
+#'     \code{"2024-25"}); preserved in the output. The 2024 sheet has no
+#'     \code{school_year} column.
+#'   \item All seven count columns (\code{police_count} + six incident
+#'     categories) and their percent counterparts are returned numeric;
+#'     suppressed cells (NJ DOE uses \code{*}, \code{N}, \code{-},
+#'     \code{<5}) become \code{NA}.
+#' }
+#'
+#' Pair with \code{\link{calc_discipline_rates_by_subgroup}} (with
+#' \code{by_grade = TRUE} when interested in the grade dimension) to compute
+#' disproportionality rates and risk ratios.
+#'
+#' @param end_year A school year. Supported: \code{2024} (SY2023-24) and
+#'   \code{2025} (SY2024-25). Earlier years error.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#'
+#' @return Data frame with entity identifiers, \code{student_group_grade}
+#'   (raw label), \code{subgroup} and \code{grade_level} (normalized),
+#'   \code{police_count}, six per-category counts (\code{violent_count},
+#'   \code{vandalism_count}, \code{substance_count}, \code{weapons_count},
+#'   \code{hibcount}, \code{other_count}) and their matching percent columns,
+#'   the 2025-only \code{school_year} column when present, and the standard
+#'   aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
+#'   \code{is_school}, \code{is_charter}, \code{is_charter_sector},
+#'   \code{is_allpublic}).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level police-notification detail (latest year)
+#' pnd <- fetch_police_notifications_detail(2025)
+#'
+#' # District/state-level detail, filtered to the subgroup marginals
+#' library(dplyr)
+#' fetch_police_notifications_detail(2024, level = "district") %>%
+#'   filter(is_district, grade_level == "TOTAL") %>%
+#'   select(district_name, subgroup, police_count, violent_count, hibcount)
+#'
+#' # Disproportionality by subgroup AND grade
+#' fetch_police_notifications_detail(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   calc_discipline_rates_by_subgroup(by_grade = TRUE)
+#' }
+fetch_police_notifications_detail <- function(end_year, level = "school") {
+  if (!level %in% c("school", "district")) {
+    stop("level must be one of 'school' or 'district'", call. = FALSE)
+  }
+  if (end_year < 2024) {
+    stop(
+      "police notifications detail data is available for end_year >= 2024 ",
+      "(the StudentGroup/Grade police-notifications sheet is absent from ",
+      "every SPR workbook before SY2023-24).",
+      call. = FALSE
+    )
+  }
+
+  # Year-aliased sheet names (confirmed against the downloaded NJ DOE
+  # Database_SchoolDetail.xlsx and Database_DistrictStateDetail.xlsx for
+  # SY2023-24 and SY2024-25).
+  sheet_name <- if (end_year >= 2025) {
+    "PoliceNotificationsGroupGrade"
+  } else {
+    "PoliceNotificationByStuGroup"
+  }
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
+
+  # Harmonize the raw label column across the legacy / redesign layouts:
+  #   2024 legacy:  student_group_grade_level
+  #   2025+:        student_group_grade
+  if ("student_group_grade_level" %in% names(df) &&
+      !"student_group_grade" %in% names(df)) {
+    df <- dplyr::rename(df, student_group_grade = student_group_grade_level)
+  }
+
+  # Split the raw label into normalized (subgroup, grade_level).
+  split_cols <- spr_split_student_group_grade(df$student_group_grade)
+  df$subgroup <- split_cols$subgroup
+  df$grade_level <- split_cols$grade_level
+
+  # Coerce the seven count columns to numeric (suppression -> NA). Percent
+  # columns are also coerced numeric for downstream charting.
+  count_cols <- intersect(
+    c("police_count", "violent_count", "vandalism_count", "substance_count",
+      "weapons_count", "hibcount", "other_count"),
+    names(df)
+  )
+  pct_cols <- intersect(
+    c("police_percent", "violent_percent", "vandalism_percent",
+      "substance_percent", "weapons_percent", "hibpercent", "other_percent"),
+    names(df)
+  )
+  for (col in c(count_cols, pct_cols)) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      student_group_grade, subgroup, grade_level,
+      dplyr::any_of(c("police_count", "police_percent",
+                      "violent_count", "violent_percent",
+                      "vandalism_count", "vandalism_percent",
+                      "substance_count", "substance_percent",
+                      "weapons_count", "weapons_percent",
+                      "hibcount", "hibpercent",
+                      "other_count", "other_percent")),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Student Arrests (by Student Group / Grade)
+#'
+#' Downloads the SPR sheet that reports arrest counts by student subgroup
+#' (race, gender, ED, SwD) and by grade level. Each row reports, for one
+#' entity and one label (where the label is either a subgroup or a grade),
+#' counts and percents for the seven arrest-related incident categories. The
+#' label dimension is normalized into a separate \code{subgroup} +
+#' \code{grade_level} pair so downstream code can filter the two dimensions
+#' independently.
+#'
+#' @details
+#' Sheet coverage and harmonization:
+#' \itemize{
+#'   \item The arrests sheet first appears in SY2023-24 (end_year 2024) and is
+#'     \strong{absent} from every earlier SPR workbook. The function errors
+#'     for \code{end_year < 2024}.
+#'   \item Year-aliased sheet names:
+#'     \itemize{
+#'       \item 2024: \code{StuArrestbyStudentGroupGradelev}
+#'       \item 2025: \code{ArrestsStudentGroupGrade}
+#'     }
+#'   \item \strong{Upstream NJ DOE column-label bug, SY2024-25:} the 2025
+#'     \code{ArrestsStudentGroupGrade} sheet ships with column headers
+#'     \code{Police_Count}, \code{Violent_Count}, etc. (a copy-paste from the
+#'     companion Police Notifications detail sheet). The values are arrest
+#'     counts, not police-notification counts. This fetcher renames the seven
+#'     \code{police_*} / \code{violent_*} / etc. columns to the canonical
+#'     \code{arrested_*} prefix used by the 2024 sheet, so the public API is
+#'     consistent across years.
+#'   \item The raw label column (\code{student_group_grade_level} in 2024;
+#'     \code{student_group_grade} in 2025) is preserved and additionally split
+#'     into normalized \code{subgroup} + \code{grade_level} columns
+#'     (\code{"PK"}, \code{"K"}, \code{"01"-"12"}, or \code{"TOTAL"} for
+#'     subgroup marginals).
+#'   \item The 2025 sheet adds a \code{school_year} column (single value, e.g.
+#'     \code{"2024-25"}); preserved in the output. The 2024 sheet has no
+#'     \code{school_year} column.
+#'   \item All seven count columns (\code{arrested_count} + six incident
+#'     categories) and their percent counterparts are returned numeric;
+#'     suppressed cells (NJ DOE uses \code{*}, \code{N}, \code{-},
+#'     \code{<5}) become \code{NA}.
+#' }
+#'
+#' Pair with \code{\link{calc_discipline_rates_by_subgroup}} (with
+#' \code{by_grade = TRUE} when interested in the grade dimension) to compute
+#' disproportionality rates and risk ratios.
+#'
+#' @param end_year A school year. Supported: \code{2024} (SY2023-24) and
+#'   \code{2025} (SY2024-25). Earlier years error.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#'
+#' @return Data frame with entity identifiers, \code{student_group_grade},
+#'   \code{subgroup} and \code{grade_level}, \code{arrested_count}, six
+#'   per-category counts (\code{arrested_violent_count},
+#'   \code{arrested_vandalism_count}, \code{arrested_substance_count},
+#'   \code{arrested_weapons_count}, \code{arrested_hibcount},
+#'   \code{arrested_other_count}) and their matching percent columns, the
+#'   2025-only \code{school_year} column when present, and the standard
+#'   aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level arrest detail (latest year)
+#' arr <- fetch_arrests(2025)
+#'
+#' # District/state-level arrests by subgroup
+#' library(dplyr)
+#' fetch_arrests(2024, level = "district") %>%
+#'   filter(is_district, grade_level == "TOTAL") %>%
+#'   select(district_name, subgroup, arrested_count, arrested_violent_count)
+#'
+#' # Statewide arrest rates by grade
+#' fetch_arrests(2025, level = "district") %>%
+#'   filter(is_state, grade_level != "TOTAL") %>%
+#'   select(grade_level, arrested_count, arrested_violent_count)
+#' }
+fetch_arrests <- function(end_year, level = "school") {
+  if (!level %in% c("school", "district")) {
+    stop("level must be one of 'school' or 'district'", call. = FALSE)
+  }
+  if (end_year < 2024) {
+    stop(
+      "arrests data is available for end_year >= 2024 (the arrests sheet ",
+      "is absent from every SPR workbook before SY2023-24).",
+      call. = FALSE
+    )
+  }
+
+  # Year-aliased sheet names.
+  sheet_name <- if (end_year >= 2025) {
+    "ArrestsStudentGroupGrade"
+  } else {
+    "StuArrestbyStudentGroupGradelev"
+  }
+
+  df <- fetch_spr_data(sheet_name, end_year, level)
+
+  # Harmonize the raw label column.
+  if ("student_group_grade_level" %in% names(df) &&
+      !"student_group_grade" %in% names(df)) {
+    df <- dplyr::rename(df, student_group_grade = student_group_grade_level)
+  }
+
+  # Fix the NJ DOE 2024-25 column-label bug: rename police_* -> arrested_* so
+  # the public API is consistent with the 2024 sheet (which uses arrested_*
+  # natively). The values are arrest counts in both years; only the 2025
+  # column LABELS were mistakenly copy-pasted from the police-notifications
+  # detail sheet.
+  rename_map <- c(
+    arrested_count           = "police_count",
+    arrested_percent         = "police_percent",
+    arrested_violent_count   = "violent_count",
+    arrested_violent_percent = "violent_percent",
+    arrested_vandalism_count = "vandalism_count",
+    arrested_vandalism_percent = "vandalism_percent",
+    arrested_substance_count = "substance_count",
+    arrested_substance_percent = "substance_percent",
+    arrested_weapons_count   = "weapons_count",
+    arrested_weapons_percent = "weapons_percent",
+    arrested_hibcount        = "hibcount",
+    arrested_hibpercent      = "hibpercent",
+    arrested_other_count     = "other_count",
+    arrested_other_percent   = "other_percent"
+  )
+  for (new_nm in names(rename_map)) {
+    old_nm <- rename_map[[new_nm]]
+    if (old_nm %in% names(df) && !new_nm %in% names(df)) {
+      df <- dplyr::rename(df, !!new_nm := !!rlang::sym(old_nm))
+    }
+  }
+
+  # Split label into normalized (subgroup, grade_level).
+  split_cols <- spr_split_student_group_grade(df$student_group_grade)
+  df$subgroup <- split_cols$subgroup
+  df$grade_level <- split_cols$grade_level
+
+  count_cols <- intersect(
+    c("arrested_count", "arrested_violent_count", "arrested_vandalism_count",
+      "arrested_substance_count", "arrested_weapons_count",
+      "arrested_hibcount", "arrested_other_count"),
+    names(df)
+  )
+  pct_cols <- intersect(
+    c("arrested_percent", "arrested_violent_percent",
+      "arrested_vandalism_percent", "arrested_substance_percent",
+      "arrested_weapons_percent", "arrested_hibpercent",
+      "arrested_other_percent"),
+    names(df)
+  )
+  for (col in c(count_cols, pct_cols)) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      student_group_grade, subgroup, grade_level,
+      dplyr::any_of(c(
+        "arrested_count", "arrested_percent",
+        "arrested_violent_count", "arrested_violent_percent",
+        "arrested_vandalism_count", "arrested_vandalism_percent",
+        "arrested_substance_count", "arrested_substance_percent",
+        "arrested_weapons_count", "arrested_weapons_percent",
+        "arrested_hibcount", "arrested_hibpercent",
+        "arrested_other_count", "arrested_other_percent"
+      )),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
 #' Fetch Student-Staff Ratio Data
 #'
 #' Downloads student-to-staff ratio data from SPR database.
