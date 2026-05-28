@@ -43,6 +43,8 @@ The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250
 | TeachersAdminsOneYearRetention | `fetch_spr_staff_retention()` | **2018-2025 (district); 2025+ (school)** | #252, backfill |
 | TeacherExperienceSubjArea | `fetch_spr_teacher_exp_subject()` | 2025+ | #252 |
 | StatewideEducatorEquity (district/state) | `fetch_spr_educator_equity()` | 2025+ | #252 |
+| PoliceNotifications | `fetch_police_notifications()` | **2018-2025** | #191 |
+| HIBInvestigations | `fetch_hib_investigations()` | **2018-2025** | #191 |
 
 Notes: NAEP and StatewideEducatorEquity carry no CDS codes (state/national summary tables), so they read through the internal `fetch_spr_sheet_raw()` helper (no CDS/flag machinery). `fetch_spr_staff_demo_subject()` deliberately keeps its racial/ethnic and gender composition columns as character — NJ DOE reports small-cell percentages as privacy-protected ranges (e.g. `"70-80%"`), and coercing them to a single number would fabricate precision.
 
@@ -167,10 +169,18 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 
 | Sheet name | DB | What it holds | Status | Proposed fetcher |
 |---|---|---|---|---|
-| PoliceNotifications | both | Count of police notifications by school/district | NEW-high | `fetch_spr_police_notifications()` |
-| HIBInvestigations | both | Harassment, intimidation, bullying investigation counts | NEW-high | `fetch_spr_hib()` |
+| PoliceNotifications | both | Count of police notifications by school/district | ✅ done | `fetch_police_notifications()` (2018-2025) |
+| HIBInvestigations | both | Harassment, intimidation, bullying investigation counts | ✅ done | `fetch_hib_investigations()` (2018-2025) |
 | PoliceNotificationsGroupGrade | both | Police notifications by student group and grade | NEW-high | `fetch_spr_police_notifications_detail()` |
 | ArrestsStudentGroupGrade | both | Arrests by student group and grade | NEW-high | `fetch_spr_arrests()` |
+
+**Note on `fetch_police_notifications()` / `fetch_hib_investigations()`:** Both
+sheets are present in the SPR databases for end_year 2018-2025 (absent from
+SY2016-17). The 2024-25 redesign rebranded the HIB column on
+`PoliceNotifications` from `harassment_intimidation_bullying_hib` to `hib` and
+added a single-value `school_year` column to both sheets; the fetchers
+harmonize the legacy and redesigned layouts. `HIBInvestigations` is
+long-format with eight HIB-nature categories per entity.
 
 ---
 
