@@ -217,6 +217,11 @@ utils::globalVariables(c(
   # ========== SPR Staff Sheets (2024-25) ==========
   "school_year", "two_or_more_races",
 
+  # ========== SPR Discipline / Climate (PoliceNotifications, HIBInvestigations) ==========
+  "violence", "weapons", "vandalism", "substances", "hib", "other_incidents",
+  "harassment_intimidation_bullying_hib",
+  "hib_nature", "hib_alleged", "hib_confirmed", "total_hib_investigations",
+
   # ========== PARCC/Assessment Aggregates ==========
   "districts", "schools", "tests", "n_charter_rows",
   "gradespan",
