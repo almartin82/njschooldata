@@ -575,6 +575,8 @@ Additional exported functions
   : Fetch Grad Counts
 - [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
   : Fetch Grad Rate
+- [`fetch_hib_investigations()`](https://almartin82.github.io/njschooldata/reference/fetch_hib_investigations.md)
+  : Fetch HIB (Harassment, Intimidation, Bullying) Investigations
 - [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md)
   : gets and processes a HSPA file
 - [`fetch_ib_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ib_participation.md)
@@ -597,6 +599,8 @@ Additional exported functions
   : a simplified interface into NJ assessment data
 - [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)
   : Gets and cleans up a PARCC data file
+- [`fetch_police_notifications()`](https://almartin82.github.io/njschooldata/reference/fetch_police_notifications.md)
+  : Fetch Police Notifications
 - [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
   : Fetch Postsecondary Enrollment Rates
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
