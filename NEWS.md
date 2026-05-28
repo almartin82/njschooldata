@@ -1,5 +1,14 @@
 # njschooldata 0.9.11
 
+## Improvements
+
+* `tidy_nj_assess()` (used by `fetch_old_nj_assess(tidy = TRUE)` for
+  NJASK/HSPA/GEPA) now emits the same seven entity-selector flag columns
+  as tidy PARCC/NJSLA output: `is_state`, `is_dfg`, `is_district`,
+  `is_school`, `is_charter`, `is_charter_sector`, `is_allpublic`. Cross-format
+  code that already does `filter(is_district)` / `filter(is_state)` on PARCC
+  results now works identically on legacy assessment data. Closes #96.
+
 ## Documentation
 
 * New vignette, "The Head First Analyst's Guide to NJ TGES" (also in

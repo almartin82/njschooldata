@@ -114,10 +114,15 @@ fetch_old_nj_assess <- function(end_year, grade, tidy = FALSE) {
 
 
 #' @title tidies NJ assessment data
-#' 
+#'
 #' @description
-#' \code{tidy_nj_assess} is a utility/internal function that takes the somewhat messy/inconsistent 
-#' assessment headers and returns a tidy data frame.
+#' \code{tidy_nj_assess} is a utility/internal function that takes the somewhat messy/inconsistent
+#' assessment headers and returns a tidy data frame. The output also carries the
+#' same seven entity-selector flag columns emitted by tidy PARCC output -
+#' \code{is_state}, \code{is_dfg}, \code{is_district}, \code{is_school},
+#' \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic} - so
+#' downstream code can filter cross-format (PARCC + NJASK/HSPA/GEPA) results on
+#' the same predicates.
 #' @param assess_name NJASK, GEPA, HSPA
 #' @param df a processed data frame (eg, output of process_njask)
 #' @export
@@ -288,12 +293,75 @@ tidy_nj_assess <- function(assess_name, df) {
         )
       )
       
-      result_list[[iters]] <- this_tidy      
+      result_list[[iters]] <- this_tidy
       iters <- iters + 1
     }
   }
-  
-  return(dplyr::bind_rows(result_list))
+
+  out <- dplyr::bind_rows(result_list)
+
+  # ----- selector flags (PARCC parity, issue #96) ------------------------
+  # Mirror the entity-classification flags emitted by process_parcc() so
+  # downstream code can `filter(is_district)` / `filter(is_state)` etc.
+  # uniformly across PARCC/NJSLA and the legacy NJASK/HSPA/GEPA pipeline.
+  #
+  # Conventions documented in layout_njask et al.:
+  #   County_Code (a.k.a. Aggregation_Code) values:
+  #     numeric county codes (01..41) for county/district/school rows;
+  #     "80" for charter-sector county/district/school rows;
+  #     DFG letters (A, B, CD, DE, FG, GH, I, J, R, V) for DFG aggregates;
+  #     "ST" for statewide; "NS"/"SN" for Non-/Special-Needs aggregates.
+  out <- assign_legacy_assess_flags(out)
+
+  return(out)
+}
+
+
+#' @title assign PARCC-parity selector flags to legacy NJ assessment data
+#'
+#' @description tags each row of tidy NJASK/HSPA/GEPA output with the same
+#' entity-classification flags emitted by `process_parcc()`
+#' (\code{is_state}, \code{is_dfg}, \code{is_district}, \code{is_school},
+#' \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic}) so
+#' downstream code can filter cross-format data on the same predicates.
+#'
+#' The legacy NJ DOE files encode entity type in the
+#' \code{County_Code/DFG/Aggregation_Code} column:
+#' \itemize{
+#'   \item \code{"ST"} = statewide
+#'   \item DFG letter (A, B, CD, DE, FG, GH, I, J, R, V) = DFG aggregate
+#'   \item numeric county code (01..41 or 80) = district/school row;
+#'         \code{"80"} specifically tags the charter sector
+#'   \item \code{"NS"} / \code{"SN"} = Non-/Special-Needs aggregates
+#'         (none of \code{is_state} / \code{is_dfg} / \code{is_district} /
+#'         \code{is_school} apply to these rows)
+#' }
+#'
+#' `is_charter_sector` and `is_allpublic` are FALSE on every row -
+#' matching the placeholder behavior of `process_parcc()`, where these
+#' flags only become TRUE in downstream aggregation. Emitted for schema
+#' parity with PARCC tidy output.
+#'
+#' @param df a tidied NJASK/HSPA/GEPA data frame
+#' @return df with seven additional logical columns
+#' @keywords internal
+assign_legacy_assess_flags <- function(df) {
+  # NJ DFG codes (per layout_njask$valid_values for the
+  # County_Code/DFG/Aggregation_Code field):
+  dfg_codes <- c("A", "B", "CD", "DE", "FG", "GH", "I", "J", "R", "V")
+
+  cc <- toupper(as.character(df$county_code))
+
+  df$is_state <- !is.na(cc) & cc == "ST"
+  df$is_dfg <- !is.na(cc) & cc %in% dfg_codes
+  df$is_district <- !is.na(df$district_code) & is.na(df$school_code) &
+    !df$is_state & !df$is_dfg
+  df$is_school <- !is.na(df$school_code)
+  df$is_charter <- !is.na(cc) & cc == "80"
+  df$is_charter_sector <- FALSE
+  df$is_allpublic <- FALSE
+
+  df
 }
 
 
