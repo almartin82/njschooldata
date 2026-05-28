@@ -55,7 +55,7 @@ risk ratios compared to total population.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_discipline_rates_by_subgroup</span><span class="op">(</span><span class="va">df</span>, rate_per <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_discipline_rates_by_subgroup</span><span class="op">(</span><span class="va">df</span>, rate_per <span class="op">=</span> <span class="fl">1000</span>, by_grade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,13 +64,27 @@ risk ratios compared to total population.</p>
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
 <dd><p>A data frame from <code><a href="fetch_disciplinary_removals.html">fetch_disciplinary_removals</a></code>,
-<code><a href="fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib</a></code>, or similar discipline data.
+<code><a href="fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib</a></code>,
+<code><a href="fetch_police_notifications_detail.html">fetch_police_notifications_detail</a></code>,
+<code><a href="fetch_arrests.html">fetch_arrests</a></code>, or similar discipline data.
 Must contain subgroup column and a count/number column.</p></dd>
 
 
 <dt id="arg-rate-per">rate_per<a class="anchor" aria-label="anchor" href="#arg-rate-per"></a></dt>
 <dd><p>Base for rate calculation (default: 1000). For example,
 rate_per = 1000 calculates incidents per 1000 students.</p></dd>
+
+
+<dt id="arg-by-grade">by_grade<a class="anchor" aria-label="anchor" href="#arg-by-grade"></a></dt>
+<dd><p>Logical, default <code>FALSE</code>. When <code>TRUE</code> and the
+input carries a <code>grade_level</code> column, <code>grade_level</code> is added
+to the per-entity grouping keys so rates and risk ratios are computed
+within each (entity \(\times\) grade) cell. When <code>TRUE</code> but the
+input has no <code>grade_level</code> column, the function warns and falls
+through to the flat (per-subgroup) calculation. When <code>FALSE</code>
+(default) the calculation matches the pre-existing behavior even when
+a <code>grade_level</code> column is present (grade rows do not contaminate
+the subgroup-marginal risk-ratio denominator).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -95,6 +109,13 @@ rate_per = 1000 calculates incidents per 1000 students.</p></dd>
 <span class="r-in"><span><span class="va">rates</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"hispanic"</span>, <span class="st">"white"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">school_name</span>, <span class="va">subgroup</span>, <span class="va">discipline_rate</span>, <span class="va">risk_ratio</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Grade-level disproportionality on the SPR Group/Grade detail sheets</span></span></span>
+<span class="r-in"><span><span class="va">arrests</span> <span class="op">&lt;-</span> <span class="fu"><a href="fetch_arrests.html">fetch_arrests</a></span><span class="op">(</span><span class="fl">2025</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">grade_rates</span> <span class="op">&lt;-</span> <span class="fu">calc_discipline_rates_by_subgroup</span><span class="op">(</span><span class="va">arrests</span>, by_grade <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">grade_rates</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">!=</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">grade_level</span>, <span class="va">subgroup</span>, <span class="va">discipline_rate</span>, <span class="va">risk_ratio</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

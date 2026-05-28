@@ -140,6 +140,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_ap_performance.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_apprenticeship_data.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_arrests.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_arts_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.html</loc></url>
@@ -172,6 +173,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_parcc.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_police_notifications.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_police_notifications_detail.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.html</loc></url>
@@ -366,6 +368,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_require_redesign.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_for_year.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_mapping.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/spr_split_student_group_grade.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_value_numeric.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standard_assess.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>

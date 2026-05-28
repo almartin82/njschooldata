@@ -1295,6 +1295,8 @@ Additional exported functions
   : Fetch AP/IB Performance Data (Alias)
 - [`fetch_apprenticeship_data()`](https://almartin82.github.io/njschooldata/reference/fetch_apprenticeship_data.md)
   : Fetch Apprenticeship Data
+- [`fetch_arrests()`](https://almartin82.github.io/njschooldata/reference/fetch_arrests.md)
+  : Fetch Student Arrests (by Student Group / Grade)
 - [`fetch_arts_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_arts_enrollment.md)
   : Fetch Visual and Performing Arts Enrollment Data
 - [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
@@ -1359,6 +1361,8 @@ Additional exported functions
   : Gets and cleans up a PARCC data file
 - [`fetch_police_notifications()`](https://almartin82.github.io/njschooldata/reference/fetch_police_notifications.md)
   : Fetch Police Notifications
+- [`fetch_police_notifications_detail()`](https://almartin82.github.io/njschooldata/reference/fetch_police_notifications_detail.md)
+  : Fetch Police Notifications Detail (by Student Group / Grade)
 - [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
   : Fetch Postsecondary Enrollment Rates
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
