@@ -800,6 +800,238 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school") {
 }
 
 
+#' Fetch Police Notifications
+#'
+#' Downloads the \code{PoliceNotifications} sheet from the NJ DOE School
+#' Performance Reports. Each row reports, for one entity (state / county /
+#' district / school depending on \code{level}), the count of incidents that
+#' triggered a police notification, broken out by the six SPR offense
+#' categories (violence, weapons, vandalism, substances, HIB, other).
+#'
+#' @details
+#' Sheet coverage and harmonization:
+#' \itemize{
+#'   \item The \code{PoliceNotifications} sheet is present in both the School
+#'     (\code{Database_SchoolDetail.xlsx}) and District/State
+#'     (\code{Database_DistrictStateDetail.xlsx}) workbooks for
+#'     \strong{end_year 2018-2025}. It is \strong{absent from SY2016-17}
+#'     (end_year 2017), so this function errors for that year.
+#'   \item The 2024-25 redesign renamed the HIB column from
+#'     \code{harassment_intimidation_bullying_hib} (legacy) to \code{hib}; this
+#'     function harmonizes both layouts to \code{hib}.
+#'   \item The 2024-25 sheet adds a \code{school_year} column (single value, e.g.
+#'     \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets have
+#'     no \code{school_year} column.
+#'   \item All six incident-category columns are returned as numeric counts.
+#'     Suppressed cells (NJ DOE uses \code{*}, \code{N}, \code{-} as suppression
+#'     markers) become \code{NA}.
+#' }
+#'
+#' The companion analysis helper \code{\link{calc_discipline_rates_by_subgroup}}
+#' is designed for sheets with a \code{subgroup} column and an enrollment
+#' denominator (e.g. \code{\link{fetch_disciplinary_removals}}). The
+#' \code{PoliceNotifications} sheet has neither (it is one row per entity, with
+#' no subgroup breakdown and no denominator), so \code{calc_*} cannot be
+#' applied directly; pair with \code{\link{fetch_enr}} to compute rates against
+#' enrollment.
+#'
+#' @param end_year A school year (2018-2025). Year is the end of the academic
+#'   year - e.g. the 2023-24 school year is \code{end_year} 2024.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#'
+#' @return Data frame with entity identifiers, the six incident-category
+#'   columns (\code{violence}, \code{weapons}, \code{vandalism},
+#'   \code{substances}, \code{hib}, \code{other_incidents}), the 2025-only
+#'   \code{school_year} column when present, and the standard aggregation flags
+#'   (\code{is_state}, \code{is_county}, \code{is_district}, \code{is_school},
+#'   \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic}).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level police notifications (latest year)
+#' pn <- fetch_police_notifications(2025)
+#'
+#' # District/state-level counts
+#' pn_dist <- fetch_police_notifications(2024, level = "district")
+#'
+#' # Districts with the most violence-related police notifications
+#' library(dplyr)
+#' fetch_police_notifications(2024, level = "district") %>%
+#'   filter(is_district) %>%
+#'   slice_max(violence, n = 10) %>%
+#'   select(county_name, district_name, violence, weapons, substances, hib)
+#' }
+fetch_police_notifications <- function(end_year, level = "school") {
+  if (!level %in% c("school", "district")) {
+    stop("level must be one of 'school' or 'district'", call. = FALSE)
+  }
+  if (end_year < 2018) {
+    stop(
+      "police notifications data is available for end_year >= 2018 (the ",
+      "PoliceNotifications sheet is absent from the SY2016-17 SPR database).",
+      call. = FALSE
+    )
+  }
+
+  df <- fetch_spr_data("PoliceNotifications", end_year, level)
+
+  # Harmonize the HIB column name across the legacy / redesign layouts.
+  # 2017-2024: harassment_intimidation_bullying_hib -> hib
+  # 2025+:     hib (already)
+  if ("harassment_intimidation_bullying_hib" %in% names(df) &&
+      !"hib" %in% names(df)) {
+    df <- dplyr::rename(df, hib = harassment_intimidation_bullying_hib)
+  }
+
+  # Coerce the six incident-count columns to numeric (suppression -> NA).
+  count_cols <- intersect(
+    c("violence", "weapons", "vandalism", "substances", "hib", "other_incidents"),
+    names(df)
+  )
+  for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      dplyr::any_of(c("violence", "weapons", "vandalism", "substances", "hib",
+                      "other_incidents")),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch HIB (Harassment, Intimidation, Bullying) Investigations
+#'
+#' Downloads the \code{HIBInvestigations} sheet from the NJ DOE School
+#' Performance Reports. The sheet is long-format: each row reports, for one
+#' entity (state / county / district / school depending on \code{level}) and
+#' one HIB-nature category, the number of investigations alleged, confirmed,
+#' and the per-nature total.
+#'
+#' @details
+#' Sheet coverage and harmonization:
+#' \itemize{
+#'   \item The \code{HIBInvestigations} sheet is present in both the School and
+#'     District/State workbooks for \strong{end_year 2018-2025}. It is
+#'     \strong{absent from SY2016-17} (end_year 2017), so this function errors
+#'     for that year.
+#'   \item Each entity carries eight rows, one per HIB-nature category:
+#'     \code{Ancestry}, \code{Disability}, \code{Gender},
+#'     \code{No Identified Nature}, \code{Other}, \code{Race}, \code{Religion},
+#'     \code{Sexual Orientation}.
+#'   \item The 2024-25 sheet adds a \code{school_year} column (single value,
+#'     e.g. \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets
+#'     have no \code{school_year} column.
+#'   \item The raw NJ DOE column names \code{HIBNature}, \code{HIBAlleged},
+#'     \code{HIBConfirmed}, and \code{TotalHIBInvestigations} snake-case to
+#'     ambiguous \code{hibnature}/\code{hiballeged}/\code{hibconfirmed}/
+#'     \code{total_hibinvestigations}; this function renames them to the more
+#'     readable \code{hib_nature}, \code{hib_alleged}, \code{hib_confirmed},
+#'     and \code{total_hib_investigations}.
+#'   \item Count columns are returned as numeric. Suppressed cells (NJ DOE
+#'     uses \code{*}, \code{N}, \code{-} as suppression markers) become
+#'     \code{NA}.
+#'   \item The SY2019-20 School workbook ships a duplicate sheet named
+#'     \code{HIBInvestigations1} alongside \code{HIBInvestigations}; this
+#'     fetcher always reads the canonical \code{HIBInvestigations} sheet.
+#' }
+#'
+#' The companion analysis helper \code{\link{calc_discipline_rates_by_subgroup}}
+#' is designed for sheets with a \code{subgroup} column and an enrollment
+#' denominator (e.g. \code{\link{fetch_disciplinary_removals}}). The
+#' \code{HIBInvestigations} sheet is long-by-\code{hib_nature} and has no
+#' enrollment denominator, so \code{calc_*} cannot be applied directly; pair
+#' with \code{\link{fetch_enr}} to compute rates against enrollment.
+#'
+#' @param end_year A school year (2018-2025). Year is the end of the academic
+#'   year - e.g. the 2023-24 school year is \code{end_year} 2024.
+#' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
+#'   returns school-level data; \code{"district"} returns district and
+#'   state-level data.
+#'
+#' @return Data frame with entity identifiers, \code{hib_nature},
+#'   \code{hib_alleged}, \code{hib_confirmed}, \code{total_hib_investigations},
+#'   the 2025-only \code{school_year} column when present, and the standard
+#'   aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
+#'   \code{is_school}, \code{is_charter}, \code{is_charter_sector},
+#'   \code{is_allpublic}).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level HIB investigations (latest year)
+#' hib <- fetch_hib_investigations(2025)
+#'
+#' # District/state-level counts
+#' hib_dist <- fetch_hib_investigations(2024, level = "district")
+#'
+#' # Statewide HIB nature mix (which categories drive the most investigations?)
+#' library(dplyr)
+#' fetch_hib_investigations(2024, level = "district") %>%
+#'   filter(is_state) %>%
+#'   arrange(desc(total_hib_investigations)) %>%
+#'   select(hib_nature, hib_alleged, hib_confirmed, total_hib_investigations)
+#' }
+fetch_hib_investigations <- function(end_year, level = "school") {
+  if (!level %in% c("school", "district")) {
+    stop("level must be one of 'school' or 'district'", call. = FALSE)
+  }
+  if (end_year < 2018) {
+    stop(
+      "HIB investigations data is available for end_year >= 2018 (the ",
+      "HIBInvestigations sheet is absent from the SY2016-17 SPR database).",
+      call. = FALSE
+    )
+  }
+
+  df <- fetch_spr_data("HIBInvestigations", end_year, level)
+
+  # Normalize the snake-cased NJ DOE column names to readable
+  # underscore-separated forms.
+  renames <- c(
+    hib_nature = "hibnature",
+    hib_alleged = "hiballeged",
+    hib_confirmed = "hibconfirmed",
+    total_hib_investigations = "total_hibinvestigations"
+  )
+  for (new_nm in names(renames)) {
+    old_nm <- renames[[new_nm]]
+    if (old_nm %in% names(df) && !new_nm %in% names(df)) {
+      df <- dplyr::rename(df, !!new_nm := !!rlang::sym(old_nm))
+    }
+  }
+
+  # Coerce the three count columns to numeric (suppression -> NA).
+  count_cols <- intersect(
+    c("hib_alleged", "hib_confirmed", "total_hib_investigations"),
+    names(df)
+  )
+  for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      hib_nature, hib_alleged, hib_confirmed, total_hib_investigations,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
 #' Fetch Student-Staff Ratio Data
 #'
 #' Downloads student-to-staff ratio data from SPR database.
