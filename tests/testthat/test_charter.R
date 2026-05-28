@@ -103,7 +103,10 @@ test_that("charter sector aggs, 2018 enrollment data", {
   enr_2018 <- fetch_enr(2018, tidy=TRUE)
   ch_aggs_2018 <- charter_sector_enr_aggs(enr_2018)
   expect_s3_class(ch_aggs_2018, "data.frame")
-  expect_equal(nrow(ch_aggs_2018), 8455)
+  # row count grew from 8455 -> 8676 after multi-campus charter apportionment:
+  # METS (6068) now contributes a share to its Newark host city as well as
+  # Jersey City (issue #104), adding Newark-Charters grade/subgroup rows.
+  expect_equal(nrow(ch_aggs_2018), 8676)
 })
 
 
@@ -112,7 +115,9 @@ test_that("charter sector aggs, 2017-18 enrollment data", {
   enr_1718 <- map_df(c(2017:2018),~fetch_enr(.x, tidy=TRUE))
   ch_aggs_1718 <- charter_sector_enr_aggs(enr_1718)
   expect_s3_class(ch_aggs_1718, "data.frame")
-  expect_equal(nrow(ch_aggs_1718), 16569)
+  # 16569 -> 16963 after METS (6068) multi-campus apportionment adds Newark
+  # host rows in 2018 (the Newark campus opened in 2017); see issue #104.
+  expect_equal(nrow(ch_aggs_1718), 16963)
 })
 
 test_that("charter sector aggs, ALL enrollment data", {
@@ -128,7 +133,9 @@ test_that("all public aggs, 2017-18 enrollment data", {
   enr_1718 <- map_df(c(2017:2018), ~fetch_enr(.x, tidy=TRUE))
   all_public_aggs_1718 <- allpublic_enr_aggs(enr_1718)
   expect_s3_class(all_public_aggs_1718 , "data.frame")
-  expect_equal(nrow(all_public_aggs_1718), 16569)
+  # 16569 -> 16963 after METS (6068) multi-campus apportionment adds Newark
+  # all-public host rows in 2018 (the Newark campus opened in 2017); issue #104.
+  expect_equal(nrow(all_public_aggs_1718), 16963)
 })
 
 
