@@ -122,7 +122,21 @@ parcc_perf_level_counts <- function(df) {
 #'
 #' @param df grouped df of PARCC data
 #'
-#' @return df with aggregate stats for whatever grouping was provided
+#' @return df with aggregate stats for whatever grouping was provided. In
+#'   addition to the rolled-up counts and recomputed percentages, the output
+#'   records provenance of each aggregate row:
+#'   \describe{
+#'     \item{districts}{collapsed list of the district names rolled up}
+#'     \item{schools}{collapsed list of the school names rolled up}
+#'     \item{tests}{collapsed list of the test(s) (\code{test_name}, e.g.
+#'       "math"/"ela"/"science") rolled into the row, so callers can see which
+#'       assessment(s) an aggregate combines (issue #98)}
+#'     \item{n_schools}{number of distinct schools contributing to the row.
+#'       Uses \code{n_distinct(school_name)} because the grouped input holds one
+#'       row per (school, grade/course) -- e.g. a 3-8 school appears as six rows
+#'       -- so \code{n()} would overcount. (issue #70)}
+#'     \item{n_charter_rows}{number of input rows flagged \code{is_charter}}
+#'   }
 #' @export
 parcc_aggregate_calcs <- function(df) {
   df %>%
@@ -142,6 +156,15 @@ parcc_aggregate_calcs <- function(df) {
       num_l5 = sum(num_l5, na.rm = TRUE),
       districts = collapse_agg_names(district_name),
       schools = collapse_agg_names(school_name),
+      # issue #98: record which test(s) were rolled into this aggregate row.
+      # test_name holds the assessment subject ("math"/"ela"/"science"). For a
+      # single-subject roll-up this collapses to one name; for any future
+      # caller that groups across subjects it lists each with its count.
+      tests = collapse_agg_names(test_name),
+      # issue #70: count distinct schools contributing to the row, mirroring the
+      # n_charter_rows pattern. n_distinct (not n) because the grouped input has
+      # one row per (school, grade/course), so a school spans multiple rows.
+      n_schools = dplyr::n_distinct(school_name),
       n_charter_rows = sum(is_charter, na.rm = TRUE)
     ) %>%
     dplyr::mutate(
@@ -208,6 +231,19 @@ calculate_agg_parcc_prof <- function(end_year, subj, gradespan = "3-11") {
   all_grades <- parcc_perf_level_counts(all_grades)
 
   # group, aggregate, return
+  #
+  # NOTE (#98 group-by decision): `grade` is intentionally NOT a grouping key, so
+  # the per-grade/per-course files (e.g. math grades 03-08 + ALG1/GEO/ALG2) roll
+  # up into a single "3-11" row. `test_name` IS kept as a grouping key, but in
+  # this package test_name is the assessment *subject* ("math"/"ela"/"science")
+  # -- set once via `parcc_file$test_name <- subj` in process_parcc() -- not the
+  # grade/course. Because every file fetched here shares one subject, test_name
+  # is constant and keeping it in group_by does NOT fragment the gradespan
+  # aggregate (verified against 2023 math 3-11: one state total_population row).
+  # Keeping it preserves the test_name column in the output; the new
+  # `tests` column added in parcc_aggregate_calcs() then reports the test(s)
+  # combined per #98 and stays meaningful for any caller that groups across
+  # subjects.
   all_grades %>%
     dplyr::filter(!is.na(county_id)) %>%
     dplyr::group_by(
