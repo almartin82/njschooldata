@@ -24,6 +24,20 @@
   `FALSE` preserves the existing per-subgroup behavior. Pairs naturally with
   the new Group/Grade detail fetchers for disproportionality analysis.
 
+## Bug fixes
+
+* `common_fwf_req()` (the workhorse fixed-width parser behind `fetch_njask()`,
+  `fetch_hspa()`, `fetch_gepa()`, and `fetch_old_nj_assess()`) no longer
+  fails with `"Overlapping specification not supported"` on the legacy
+  NJASK/HSPA/GEPA layouts. Every layout encodes the composite county-
+  district-school identifier (positions 1-9) alongside its decomposed parts
+  (`County_Code` 1-2, `District_Code` 3-6, `School_Code` 7-9), and several
+  also carry a `RECORD_KEY` (1-9). The parser now detects these redundant
+  composites, drops them before calling `readr::fwf_positions()`, and
+  reconstructs them post-parse by concatenating the component parts. The
+  on-disk layout metadata is untouched, so it remains a faithful description
+  of the upstream NJ DOE file format. (#47, #53)
+
 ## Improvements
 
 * `tidy_nj_assess()` (used by `fetch_old_nj_assess(tidy = TRUE)` for
