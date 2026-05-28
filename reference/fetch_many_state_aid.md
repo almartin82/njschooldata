@@ -29,7 +29,7 @@ library(dplyr)
 
 # Transportation aid trend for one district across years
 fetch_many_state_aid(2022:2026) %>%
-  filter(district_code == "3570", aid_category == "transportation_aid") %>%
+  filter(district_id == "3570", aid_category == "transportation_aid") %>%
   select(end_year, amount)
 } # }
 ```

@@ -53,7 +53,7 @@ library(dplyr)
 
 # Newark: what share is local property tax?
 tges_revenue_mix(fetch_tges(2024)) %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, total_pp, local_share, state_share, federal_share)
 
 # The most local-tax-dependent districts in the latest year

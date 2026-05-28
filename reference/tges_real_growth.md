@@ -74,7 +74,7 @@ rg <- tges_real_growth(fetch_many_tges(2018:2024))
 
 # Newark: how much of per-pupil growth is just falling enrollment?
 rg %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, per_pupil_growth, real_cost_component,
          enrollment_component, enrollment_effect_share)
 
@@ -82,7 +82,7 @@ rg %>%
 cpi <- data.frame(end_year = 2018:2024,
                   price_index = c(251.1, 255.7, 258.8, 271.0, 292.7, 304.7, 313.7))
 tges_real_growth(fetch_many_tges(2018:2024), deflator = cpi) %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, per_pupil_growth, real_pp_growth)
 } # }
 ```

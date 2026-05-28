@@ -35,7 +35,7 @@ tges_efficiency(
 - spend_df:
 
   A tidied TGES table (one report year, ideally filtered to a single
-  `calc_type`) carrying `district_code` and `spend_col`.
+  `calc_type`) carrying `district_id` and `spend_col`.
 
 - outcome_df:
 
@@ -86,7 +86,7 @@ tges_efficiency(
   outcome_percentile_col = "grad_rate_percentile",
   spend_peer = "dfg"
 ) %>%
-  filter(district_code == "3570")
+  filter(district_id == "3570")
 
 # The "watch" quadrant: high spend, low outcome
 eff <- tges_efficiency(spend, grate,

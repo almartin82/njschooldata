@@ -30,7 +30,7 @@ tges_frontier(
 - spend_df:
 
   A tidied TGES table (one report year, one `calc_type`) carrying
-  `district_code` and `spend_col`.
+  `district_id` and `spend_col`.
 
 - outcome_df:
 
@@ -61,7 +61,7 @@ tges_frontier(
 ## Value
 
 A tibble: entity columns, `peer_group`, the year, `spend`, `outcome`,
-`efficiency_score`, `on_frontier`, `reference_district_code`,
+`efficiency_score`, `on_frontier`, `reference_district_id`,
 `reference_district_name`, `reference_spend`, and `excess_spend`.
 
 ## Details
@@ -99,7 +99,7 @@ spend <- fetch_tges(2024)$CSG1 %>%
 
 fr <- tges_frontier(spend, grate, outcome_col = "grad_rate_percentile",
                     peer = "dfg")
-fr %>% filter(district_code == "3570") %>%
+fr %>% filter(district_id == "3570") %>%
   select(district_name, efficiency_score, reference_district_name, excess_spend)
 } # }
 ```

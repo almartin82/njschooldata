@@ -87,7 +87,7 @@ quadrant: "Bayonne hits your graduation rate for $2,100/pupil less; you are at
 
 <dl><dt id="arg-spend-df">spend_df<a class="anchor" aria-label="anchor" href="#arg-spend-df"></a></dt>
 <dd><p>A tidied TGES table (one report year, one <code>calc_type</code>)
-carrying <code>district_code</code> and <code>spend_col</code>.</p></dd>
+carrying <code>district_id</code> and <code>spend_col</code>.</p></dd>
 
 
 <dt id="arg-outcome-df">outcome_df<a class="anchor" aria-label="anchor" href="#arg-outcome-df"></a></dt>
@@ -122,7 +122,7 @@ column, and <code>outcome_col</code> (higher = better).</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble: entity columns, <code>peer_group</code>, the year, <code>spend</code>,
   <code>outcome</code>, <code>efficiency_score</code>, <code>on_frontier</code>,
-  <code>reference_district_code</code>, <code>reference_district_name</code>,
+  <code>reference_district_id</code>, <code>reference_district_name</code>,
   <code>reference_spend</code>, and <code>excess_spend</code>.</p>
     </div>
     <div class="section level2">
@@ -157,7 +157,7 @@ group, most land on the frontier by default.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu">tges_frontier</span><span class="op">(</span><span class="va">spend</span>, <span class="va">grate</span>, outcome_col <span class="op">=</span> <span class="st">"grad_rate_percentile"</span>,</span></span>
 <span class="r-in"><span>                    peer <span class="op">=</span> <span class="st">"dfg"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_code</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span><span class="va">fr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_id</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">efficiency_score</span>, <span class="va">reference_district_name</span>, <span class="va">excess_spend</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

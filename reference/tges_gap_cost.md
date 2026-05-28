@@ -12,7 +12,7 @@ per-pupil cost (for a share metric) and its latest reported enrollment
 ``` r
 tges_gap_cost(
   tges,
-  district_code,
+  district_id,
   metric = "classroom_share",
   target = "median",
   peer = c("tges_group", "dfg", "county", "statewide"),
@@ -31,7 +31,7 @@ tges_gap_cost(
   or
   [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md).
 
-- district_code:
+- district_id:
 
   Character. The 4-digit focal district code.
 
@@ -88,7 +88,7 @@ if (FALSE) { # \dontrun{
 library(dplyr)
 
 # What would it cost Newark to reach the DFG A median classroom share?
-tges_gap_cost(fetch_tges(2024), district_code = "3570",
+tges_gap_cost(fetch_tges(2024), district_id = "3570",
               metric = "classroom_share", target = "median", peer = "dfg")
 } # }
 ```

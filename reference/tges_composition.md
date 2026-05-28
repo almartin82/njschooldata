@@ -49,7 +49,7 @@ tges_composition(tges, years = NULL, calc_type = NULL)
 
 ## Value
 
-A tibble with entity columns (`county_name`, `district_code`,
+A tibble with entity columns (`county_name`, `district_id`,
 `district_name`, `group`), `end_year`, `calc_type`, the per-pupil
 category columns, and the matching `*_share` columns.
 
@@ -63,7 +63,7 @@ comp <- tges_composition(fetch_tges(2024))
 # Classroom share for Newark, actuals only
 library(dplyr)
 tges_composition(fetch_many_tges(2020:2024), calc_type = "Actuals") %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, classroom, budgetary_pp, classroom_share)
 
 # Lowest classroom-share districts in 2024

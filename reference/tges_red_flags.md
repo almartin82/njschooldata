@@ -12,7 +12,7 @@ O&M, bottom-decile in classroom share" brief.
 ``` r
 tges_red_flags(
   tges,
-  district_code,
+  district_id,
   peer = c("tges_group", "dfg", "county", "statewide"),
   year = NULL,
   calc_type = "Budgeted",
@@ -31,7 +31,7 @@ tges_red_flags(
   (a single guide) or
   [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md).
 
-- district_code:
+- district_id:
 
   Character. The 4-digit focal district code (Newark = "3570").
 
@@ -90,10 +90,10 @@ if (FALSE) { # \dontrun{
 library(dplyr)
 
 # Newark's red flags within its enrollment-band peers
-tges_red_flags(fetch_tges(2024), district_code = "3570")
+tges_red_flags(fetch_tges(2024), district_id = "3570")
 
 # Full profile within DFG A peers, nothing hidden
-tges_red_flags(fetch_tges(2024), district_code = "3570",
+tges_red_flags(fetch_tges(2024), district_id = "3570",
                peer = "dfg", only_flagged = FALSE)
 } # }
 ```

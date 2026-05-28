@@ -58,7 +58,7 @@ library(dplyr)
 
 # Is Newark administratively heavy, and competitive on teacher pay?
 tges_staffing(fetch_tges(2024)) %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, student_admin_ratio, faculty_admin_ratio,
          teacher_salary, admin_salary, benefits_pct_salary)
 

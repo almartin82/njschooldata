@@ -23,7 +23,7 @@ fetch_state_aid(end_year)
 ## Value
 
 A tibble with one row per district per aid category: `county_name`,
-`district_code`, `district_name`, `end_year`, `is_state`, `is_district`,
+`district_id`, `district_name`, `end_year`, `is_state`, `is_district`,
 `aid_category`, `is_aid_category`, `amount`, and the raw label
 `aid_category_raw`.
 
@@ -65,7 +65,7 @@ fetch_state_aid(2026) %>%
 
 # One district's aid mix
 fetch_state_aid(2026) %>%
-  filter(district_code == "3570", is_aid_category) %>%
+  filter(district_id == "3570", is_aid_category) %>%
   select(aid_category, amount)
 } # }
 ```

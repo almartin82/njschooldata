@@ -83,7 +83,7 @@ Newark is district code `3570`.
 ``` r
 
 spending_2025[["CSG1"]] %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(district_name, end_year, calc_type, `Per Pupil costs`, `District rank`)
 #> # A tibble: 3 × 5
 #>   district_name end_year calc_type `Per Pupil costs` `District rank`
@@ -124,7 +124,7 @@ nwk_series <- function(table, value_col, calc = "Actuals") {
   map_dfr(names(reports), function(y) {
     d <- reports[[y]][[table]]
     if (is.null(d) || !value_col %in% names(d)) return(NULL)
-    r <- filter(d, !is.na(district_code), district_code == NEWARK)
+    r <- filter(d, !is.na(district_id), district_id == NEWARK)
     if ("calc_type" %in% names(r)) r <- filter(r, calc_type == calc)
     if (nrow(r) == 0) return(NULL)
     tibble(report_year = as.integer(y), end_year = r$end_year, value = r[[value_col]])
@@ -180,7 +180,7 @@ every fund is counted.
 ``` r
 
 reports[["2025"]][["CSG1AA_AVGS"]] %>%
-  filter(district_code == NEWARK, calc_type == "Actuals", end_year == 2024) %>%
+  filter(district_id == NEWARK, calc_type == "Actuals", end_year == 2024) %>%
   transmute(end_year,
             total_expenditures = `Total Expenditures, actual costs`,
             enrollment = `Average Daily Enrollment plus Sent Pupils`,
@@ -308,11 +308,11 @@ csg1_2024 <- reports[["2025"]][["CSG1"]] %>%
   filter(calc_type == "Actuals", end_year == 2024)
 
 charter_cmp <- bind_rows(
-  csg1_2024 %>% filter(district_code == NEWARK) %>%
+  csg1_2024 %>% filter(district_id == NEWARK) %>%
     transmute(name = "Newark Public Schools", per_pupil = `Per Pupil costs`,
               kind = "District"),
-  csg1_2024 %>% filter(district_code %in% nwk_charters$code) %>%
-    left_join(nwk_charters, by = c("district_code" = "code")) %>%
+  csg1_2024 %>% filter(district_id %in% nwk_charters$code) %>%
+    left_join(nwk_charters, by = c("district_id" = "code")) %>%
     transmute(name, per_pupil = `Per Pupil costs`, kind = "Charter")
 )
 stopifnot(nrow(charter_cmp) > 0, all(!is.na(charter_cmp$per_pupil)))
@@ -417,7 +417,7 @@ category_tables <- tribble(
 
 categories <- map_dfr(seq_len(nrow(category_tables)), function(i) {
   d <- reports[["2025"]][[category_tables$table[i]]]
-  r <- filter(d, district_code == NEWARK, end_year == 2025)
+  r <- filter(d, district_id == NEWARK, end_year == 2025)
   tibble(category = category_tables$category[i],
          per_pupil = r[["Per Pupil costs"]][1])
 })
@@ -585,8 +585,8 @@ stopifnot(nrow(rank) > 0)
 # size of the peer group in the most recent guide, for context
 n_peers <- reports[["2025"]][["CSG1"]] %>%
   filter(group == "G. K-12 / 3501 +", end_year == 2024,
-         !is.na(district_code), district_code != "00NA") %>%
-  distinct(district_code) %>%
+         !is.na(district_id), district_id != "00NA") %>%
+  distinct(district_id) %>%
   nrow()
 n_peers
 #> [1] 97
@@ -731,7 +731,7 @@ pulling Newark’s revenue mix is two lines:
 ``` r
 
 spending_2025[["VITSTAT_TOTAL"]] %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(district_name, end_year, `Revenue: State %`, `Revenue: Local %`, `Revenue: Federal %`)
 #> # A tibble: 1 × 5
 #>   district_name end_year `Revenue: State %` `Revenue: Local %`

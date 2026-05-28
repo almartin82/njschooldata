@@ -10,6 +10,8 @@ Useful links:
 
 - <https://github.com/almartin82/njschooldata>
 
+- <https://almartin82.github.io/njschooldata/>
+
 - Report bugs at <https://github.com/almartin82/njschooldata/issues>
 
 ## Author

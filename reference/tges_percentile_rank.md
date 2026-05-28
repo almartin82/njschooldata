@@ -69,7 +69,7 @@ tges_percentile_rank(
 
 - custom_ids:
 
-  Character vector of `district_code`s. Required when `peer = "custom"`;
+  Character vector of `district_id`s. Required when `peer = "custom"`;
   the frame is restricted to these codes and ranked within them. Ignored
   otherwise.
 
@@ -86,7 +86,7 @@ library(dplyr)
 # Rank budgetary per-pupil cost within each TGES enrollment band
 fetch_tges(2024)$CSG1 %>%
   tges_percentile_rank() %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, `Per Pupil costs`, peer_percentile)
 
 # Rank classroom share within DFG peers

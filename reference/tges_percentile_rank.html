@@ -116,7 +116,7 @@ of <code><a href="tges_composition.html">tges_composition()</a></code>.</p></dd>
 
 
 <dt id="arg-custom-ids">custom_ids<a class="anchor" aria-label="anchor" href="#arg-custom-ids"></a></dt>
-<dd><p>Character vector of <code>district_code</code>s. Required when
+<dd><p>Character vector of <code>district_id</code>s. Required when
 <code>peer = "custom"</code>; the frame is restricted to these codes and ranked
 within them. Ignored otherwise.</p></dd>
 
@@ -134,7 +134,7 @@ within them. Ignored otherwise.</p></dd>
 <span class="r-in"><span><span class="co"># Rank budgetary per-pupil cost within each TGES enrollment band</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="fetch_tges.html">fetch_tges</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span><span class="op">$</span><span class="va">CSG1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">tges_percentile_rank</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_code</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_id</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">`Per Pupil costs`</span>, <span class="va">peer_percentile</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rank classroom share within DFG peers</span></span></span>

@@ -76,7 +76,7 @@ counterpart to the spending data in <code><a href="fetch_tges.html">fetch_tges</
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with one row per district per aid category:
-  <code>county_name</code>, <code>district_code</code>, <code>district_name</code>,
+  <code>county_name</code>, <code>district_id</code>, <code>district_name</code>,
   <code>end_year</code>, <code>is_state</code>, <code>is_district</code>, <code>aid_category</code>,
   <code>is_aid_category</code>, <code>amount</code>, and the raw label <code>aid_category_raw</code>.</p>
     </div>
@@ -116,7 +116,7 @@ per-year zip bundle.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># One district's aid mix</span></span></span>
 <span class="r-in"><span><span class="fu">fetch_state_aid</span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_code</span> <span class="op">==</span> <span class="st">"3570"</span>, <span class="va">is_aid_category</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_id</span> <span class="op">==</span> <span class="st">"3570"</span>, <span class="va">is_aid_category</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">aid_category</span>, <span class="va">amount</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

@@ -77,7 +77,7 @@ SOMSD is district code `4900`.
 ``` r
 
 spending_2025[["CSG1"]] %>%
-  filter(district_code == "4900") %>%
+  filter(district_id == "4900") %>%
   select(district_name, end_year, calc_type, `Per Pupil costs`, `District rank`)
 #> # A tibble: 3 × 5
 #>   district_name          end_year calc_type `Per Pupil costs` `District rank`
@@ -118,7 +118,7 @@ somsd_series <- function(table, value_col, calc = "Actuals") {
   map_dfr(names(reports), function(y) {
     d <- reports[[y]][[table]]
     if (is.null(d) || !value_col %in% names(d)) return(NULL)
-    r <- filter(d, !is.na(district_code), district_code == SOMSD)
+    r <- filter(d, !is.na(district_id), district_id == SOMSD)
     if ("calc_type" %in% names(r)) r <- filter(r, calc_type == calc)
     if (nrow(r) == 0) return(NULL)
     tibble(report_year = as.integer(y), end_year = r$end_year, value = r[[value_col]])
@@ -368,7 +368,7 @@ category_tables <- tribble(
 
 categories <- map_dfr(seq_len(nrow(category_tables)), function(i) {
   d <- reports[["2025"]][[category_tables$table[i]]]
-  r <- filter(d, district_code == SOMSD, end_year == 2025)
+  r <- filter(d, district_id == SOMSD, end_year == 2025)
   tibble(category = category_tables$category[i],
          per_pupil = r[["Per Pupil costs"]][1])
 })
@@ -418,7 +418,7 @@ stopifnot(nrow(rank) > 0)
 # size of the peer group in the most recent guide, for context
 n_peers <- reports[["2025"]][["CSG1"]] %>%
   filter(group == "G. K-12 / 3501 +", end_year == 2025,
-         !is.na(district_code), district_code != "00NA") %>%
+         !is.na(district_id), district_id != "00NA") %>%
   nrow()
 n_peers
 #> [1] 100
@@ -680,7 +680,7 @@ pulling SOMSD’s benefits trend is two lines:
 ``` r
 
 spending_2025[["CSG14"]] %>%
-  filter(district_code == "4900", calc_type == "Actuals") %>%
+  filter(district_id == "4900", calc_type == "Actuals") %>%
   select(district_name, end_year, `% of Total Salaries`)
 #> # A tibble: 2 × 3
 #>   district_name          end_year `% of Total Salaries`

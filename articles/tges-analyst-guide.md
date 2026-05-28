@@ -215,7 +215,7 @@ output you have to do it yourself.
 
 And the four-digit district code is unique only within a county. The
 same code turns up in several counties. Join two TGES tables on
-`district_code` alone and you will silently weld Atlantic’s 0010 to some
+`district_id` alone and you will silently weld Atlantic’s 0010 to some
 other county’s 0010. Key on county plus district code, every time.
 
 ## Lightning round

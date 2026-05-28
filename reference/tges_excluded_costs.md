@@ -109,7 +109,7 @@ tges_excluded_costs(fetch_tges(2025)) %>%
 
 # Track one district's excluded-cost wedge across guides
 tges_excluded_costs(fetch_many_tges(2024:2025)) %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(end_year, budgetary_pp, gce_excess_pp, excluded_total_pp)
 } # }
 ```

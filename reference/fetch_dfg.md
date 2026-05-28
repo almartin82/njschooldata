@@ -21,7 +21,7 @@ fetch_dfg(revision = 2000)
 
 ## Value
 
-data.frame with columns: county_code, county_name, district_code,
+data.frame with columns: county_id, county_name, district_id,
 district_name, dfg
 
 ## References

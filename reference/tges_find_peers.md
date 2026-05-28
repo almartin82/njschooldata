@@ -13,7 +13,7 @@ every other comparison in this toolkit: pass the returned codes to
 ``` r
 tges_find_peers(
   tges,
-  district_code,
+  district_id,
   n = 10,
   year = NULL,
   features = c("ade", "budgetary_pp", "classroom_share", "administration_share",
@@ -32,7 +32,7 @@ tges_find_peers(
   or
   [`fetch_many_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_many_tges.md).
 
-- district_code:
+- district_id:
 
   Character. The 4-digit focal district code (Newark = "3570").
 
@@ -65,7 +65,7 @@ tges_find_peers(
 
 A tibble sorted by `distance` ascending, with the focal district first
 (`is_focal = TRUE`, `distance = 0`) followed by the `n` nearest peers:
-`district_code`, `district_name`, `county_name`, `group`, `dfg`,
+`district_id`, `district_name`, `county_name`, `group`, `dfg`,
 `is_focal`, `distance`, and the raw feature columns.
 
 ## Details
@@ -87,14 +87,14 @@ if (FALSE) { # \dontrun{
 library(dplyr)
 
 # Newark's data-driven fiscal twins
-peers <- tges_find_peers(fetch_tges(2024), district_code = "3570")
+peers <- tges_find_peers(fetch_tges(2024), district_id = "3570")
 peers %>% select(district_name, dfg, distance, ade, budgetary_pp, local_share)
 
 # Use them as the peer set for an honest rank
-twin_ids <- peers$district_code
+twin_ids <- peers$district_id
 fetch_tges(2024)$CSG1 %>%
   tges_percentile_rank(peer = "custom", custom_ids = twin_ids) %>%
-  filter(district_code == "3570") %>%
+  filter(district_id == "3570") %>%
   select(`Per Pupil costs`, peer_percentile, peer_n)
 } # }
 ```

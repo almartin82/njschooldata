@@ -117,7 +117,7 @@ the budgetary per-pupil definition.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble with entity columns (<code>county_name</code>, <code>district_code</code>,
+    <p>A tibble with entity columns (<code>county_name</code>, <code>district_id</code>,
   <code>district_name</code>, <code>group</code>), <code>end_year</code>, <code>calc_type</code>, the
   per-pupil category columns, and the matching <code>*_share</code> columns.</p>
     </div>
@@ -131,7 +131,7 @@ the budgetary per-pupil definition.</p>
 <span class="r-in"><span><span class="co"># Classroom share for Newark, actuals only</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">tges_composition</span><span class="op">(</span><span class="fu"><a href="fetch_many_tges.html">fetch_many_tges</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2024</span><span class="op">)</span>, calc_type <span class="op">=</span> <span class="st">"Actuals"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_code</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">district_id</span> <span class="op">==</span> <span class="st">"3570"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">classroom</span>, <span class="va">budgetary_pp</span>, <span class="va">classroom_share</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Lowest classroom-share districts in 2024</span></span></span>
