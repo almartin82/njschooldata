@@ -41,7 +41,7 @@ test_that("no tidied table carries janitor-deduplicated (...N) columns", {
 test_that("CSG1 budget table has the expected schema and 3-year window", {
   skip_on_cran()
   skip_if_offline()
-  needed <- c("group", "county_name", "district_code", "district_name",
+  needed <- c("group", "county_name", "district_id", "district_name",
               "Per Pupil costs", "District rank", "end_year", "indicator")
   for (y in tges_years_live) {
     c1 <- tges_tidy(y)[["CSG1"]]
@@ -94,7 +94,7 @@ test_that("district codes are character and four characters wide", {
   skip_on_cran()
   skip_if_offline()
   for (y in tges_years_live) {
-    dc <- tges_tidy(y)[["CSG1"]]$district_code
+    dc <- tges_tidy(y)[["CSG1"]]$district_id
     expect_type(dc, "character")
     dc <- dc[!is.na(dc)]
     expect_true(all(nchar(dc) == 4), info = paste("year", y))

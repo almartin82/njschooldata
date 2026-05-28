@@ -51,7 +51,7 @@ library(dplyr)
 
 # Newark fund-balance health over the available window
 tges_fund_balance_health(fetch_many_tges(2022:2024)) \%>\%
-  filter(district_code == "3570") \%>\%
+  filter(district_id == "3570") \%>\%
   select(end_year, budgeted_fund_balance, actual_fund_balance,
          excess_unreserved, excess_surplus_flag)
 

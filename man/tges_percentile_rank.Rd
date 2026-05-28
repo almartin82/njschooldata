@@ -38,7 +38,7 @@ of \code{tges_composition()}.}
 
 \item{dfg_revision}{Numeric. DFG revision when \code{peer = "dfg"}. Default 2000.}
 
-\item{custom_ids}{Character vector of \code{district_code}s. Required when
+\item{custom_ids}{Character vector of \code{district_id}s. Required when
 \code{peer = "custom"}; the frame is restricted to these codes and ranked
 within them. Ignored otherwise.}
 }
@@ -62,7 +62,7 @@ library(dplyr)
 # Rank budgetary per-pupil cost within each TGES enrollment band
 fetch_tges(2024)$CSG1 \%>\%
   tges_percentile_rank() \%>\%
-  filter(district_code == "3570") \%>\%
+  filter(district_id == "3570") \%>\%
   select(end_year, `Per Pupil costs`, peer_percentile)
 
 # Rank classroom share within DFG peers

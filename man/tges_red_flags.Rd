@@ -6,7 +6,7 @@
 \usage{
 tges_red_flags(
   tges,
-  district_code,
+  district_id,
   peer = c("tges_group", "dfg", "county", "statewide"),
   year = NULL,
   calc_type = "Budgeted",
@@ -19,7 +19,7 @@ tges_red_flags(
 \item{tges}{Output of \code{fetch_tges()} (a single guide) or
 \code{fetch_many_tges()}.}
 
-\item{district_code}{Character. The 4-digit focal district code (Newark =
+\item{district_id}{Character. The 4-digit focal district code (Newark =
 "3570").}
 
 \item{peer}{Character. Peer group. See \code{tges_percentile_rank()}. Default
@@ -66,10 +66,10 @@ indicators use one consistent peer system.
 library(dplyr)
 
 # Newark's red flags within its enrollment-band peers
-tges_red_flags(fetch_tges(2024), district_code = "3570")
+tges_red_flags(fetch_tges(2024), district_id = "3570")
 
 # Full profile within DFG A peers, nothing hidden
-tges_red_flags(fetch_tges(2024), district_code = "3570",
+tges_red_flags(fetch_tges(2024), district_id = "3570",
                peer = "dfg", only_flagged = FALSE)
 }
 

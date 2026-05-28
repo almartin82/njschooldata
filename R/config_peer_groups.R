@@ -43,7 +43,7 @@ get_dfg_districts <- function(dfg_code, revision = 2000) {
   dfg_data %>%
     dplyr::filter(dfg == dfg_code) %>%
     dplyr::mutate(
-      district_id = paste0(pad_leading(county_code, 2), pad_leading(district_code, 4))
+      district_id = paste0(pad_leading(county_id, 2), pad_leading(district_id, 4))
     ) %>%
     dplyr::pull(district_id)
 }
@@ -126,8 +126,8 @@ add_dfg <- function(df, revision = 2000) {
   # Create lookup with both full CDS format and district-only format
   dfg_slim <- dfg_data %>%
     dplyr::mutate(
-      district_id_full = paste0(pad_leading(county_code, 2), pad_leading(district_code, 4)),
-      district_id_short = district_code
+      district_id_full = paste0(pad_leading(county_id, 2), pad_leading(district_id, 4)),
+      district_id_short = district_id
     ) %>%
     dplyr::select(district_id_full, district_id_short, dfg)
 
