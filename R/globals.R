@@ -215,7 +215,7 @@ utils::globalVariables(c(
   "school_year", "two_or_more_races",
 
   # ========== PARCC/Assessment Aggregates ==========
-  "districts", "schools", "n_charter_rows",
+  "districts", "schools", "tests", "n_charter_rows",
   "gradespan",
 
   # ========== Report Card Columns ==========
