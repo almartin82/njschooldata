@@ -25,20 +25,24 @@ a single tibble with all successfully-fetched years bound together.
 }
 \description{
 Convenience wrapper that calls \code{\link{fetch_sped_placement}} for each
-year and binds the results. Skips years that fail with a warning.
+year and binds the results. Per-year failures are surfaced as warnings and
+the year is skipped, matching the package's existing multi-year wrappers.
 }
 \details{
-Currently only end_year 2025 is supported; this wrapper is provided so
-downstream code can pre-write multi-year pipelines and pick up additional
-years transparently as they're added.
+The 2021 Ages 5-21 short-circuit and any pre-2025 PDF-only state-level
+combinations will surface as warnings here, so a multi-year call like
+\code{fetch_sped_placement_multi(2020:2025)} happily returns whatever
+slices exist.
 }
 \examples{
 \dontrun{
-# Pull every supported year (currently just 2025)
-placement_all <- fetch_sped_placement_multi(2025)
+# Pull every supported year (district 5-21). 2021/5-21 surfaces as a
+# warning; other years return data.
+placement_all <- fetch_sped_placement_multi(2020:2025)
 
-# As more years come online, just widen the range:
-# placement_all <- fetch_sped_placement_multi(2020:2025)
+# State-level multi-year (only 2024-2025 have 5-21 state placement
+# available; other years emit a warning).
+fetch_sped_placement_multi(2020:2025, level = "state")
 }
 }
 \seealso{

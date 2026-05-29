@@ -1,3 +1,39 @@
+# njschooldata 0.9.13
+
+## New features
+
+* `fetch_sped_placement()` now covers end_years 2020-2024 in addition to
+  the 2025 path that shipped in v0.9.12 (PR #278). NJ DOE changed
+  publication conventions multiple times across this range -- 2020/2021
+  ship as annual `.zip` archives bundling 8+ subgroup-specific workbooks
+  each, 2022-2024 publish those workbooks loose under three distinct
+  `docs/{year}*/` directory conventions, and 2025 consolidates everything
+  into one workbook. The fetcher transparently downloads, extracts (for
+  zip years), and parses every variant into the same tidy schema that
+  shipped in v1.
+* The public API and the tidy output schema are unchanged: a 2024 call
+  returns the same columns as a 2025 call, so any downstream code written
+  against the v1 schema keeps working as soon as it bumps the year range.
+  Pre-2025 district 5-21 workbooks publish counts only (no percent
+  column), so `percent` is `NA` in those rows and `subgroup_total` is
+  derived from the visible-count sum.
+* Per-year coverage caveats:
+  - `fetch_sped_placement(2021, age_group = "5-21")` errors with a clear
+    message pointing at the PDF source on nj.gov (state-level data for
+    that one slice was published only as a PDF).
+  - State-level 5-21 placement for end_years 2020/2022/2023 and
+    state-level 3-5 placement for 2020-2022 are PDF-only and error with
+    a similar honest message. District-level data for those years is
+    still fully available.
+  - `fetch_sped_placement_multi()` wraps each per-year call in
+    `tryCatch`, so a multi-year request like
+    `fetch_sped_placement_multi(2020:2025)` returns one bound tibble and
+    surfaces any skipped slices as warnings.
+* On-disk cache extended with a `file_label` so per-subgroup workbooks
+  cache to distinct paths under
+  `tools::R_user_dir("njschooldata", "cache")/sped-placement/`. Pre-2025
+  years are static snapshots, so subsequent calls are free.
+
 # njschooldata 0.9.12
 
 ## New features

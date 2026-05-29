@@ -2,17 +2,19 @@
 % Please edit documentation in R/sped_placement.R
 \name{build_sped_placement_url}
 \alias{build_sped_placement_url}
-\title{Build the IDEA 618 placement workbook URL}
+\title{Build the IDEA 618 placement workbook URL (2025 only)}
 \usage{
 build_sped_placement_url(end_year)
 }
 \arguments{
-\item{end_year}{ending school year (currently only 2025)}
+\item{end_year}{ending school year (2025)}
 }
 \value{
 character URL
 }
 \description{
-Build the IDEA 618 placement workbook URL
+Retained for backwards compatibility with the v1 (PR #278) API. For
+end_years 2020-2024 use \code{\link{enumerate_sped_placement_files}}, which
+returns a tibble of (subgroup_dim, age_group, level, url, skip) rows.
 }
 \keyword{internal}

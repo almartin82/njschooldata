@@ -2,18 +2,33 @@
 % Please edit documentation in R/sped_placement.R
 \name{sped_placement_cached_workbook}
 \alias{sped_placement_cached_workbook}
-\title{Download (and disk-cache) the IDEA 618 placement workbook}
+\title{Download (and disk-cache) one IDEA 618 placement workbook}
 \usage{
-sped_placement_cached_workbook(end_year)
+sped_placement_cached_workbook(
+  end_year,
+  file_label = "consolidated",
+  url = NULL,
+  zip_member = NULL
+)
 }
 \arguments{
 \item{end_year}{ending school year}
+
+\item{file_label}{per-file slug for cache differentiation (eg
+"5-21_district_race", "consolidated"). Defaults to "consolidated" so
+v1 callers continue to work.}
+
+\item{url}{full HTTP URL of the workbook (or the parent zip)}
+
+\item{zip_member}{if the URL is a .zip, path inside the archive to extract}
 }
 \value{
 path to a local, validated .xlsx file
 }
 \description{
 Validates the download as a real .xlsx before caching, so an HTTP error or
-bot-protection page is never written to the cache or parsed as data.
+bot-protection page is never written to the cache or parsed as data. For
+zip-archive years (2020, 2021), downloads the zip once, extracts the
+requested member, and caches the member as a standalone .xlsx.
 }
 \keyword{internal}

@@ -17,8 +17,9 @@ numeric vector on the 0-100 scale (NA for suppressed)
 }
 \description{
 The workbook mixes two percent formats across sheets:
-  - State sheets store percents as decimals (eg 0.4514 = 45.14%)
+  - State sheets store percents as decimals (eg 0.4514 = 45.14%) in 2025
   - District sheets store percents as whole percents (eg 67.3 = 67.3%)
+  - Pre-2025 district 5-21 files store COUNTS only (no percent column)
 Both are kept on the same 0-100 scale in tidy output. Suppression flags
 ("*") become NA.
 }

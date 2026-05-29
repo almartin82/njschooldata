@@ -2,23 +2,11 @@
 % Please edit documentation in R/sped_placement.R
 \name{tidy_sped_placement_district_3_5}
 \alias{tidy_sped_placement_district_3_5}
-\title{Tidy the 3-5 District Counts sheet (preschool, totals only)}
+\title{Tidy the 3-5 District Counts sheet -- 2025}
 \usage{
 tidy_sped_placement_district_3_5(df)
 }
-\arguments{
-\item{df}{raw tibble from \code{get_raw_sped_placement(level = "district",
-age_group = "3-5")}}
-}
-\value{
-tidy tibble
-}
 \description{
-The preschool district sheet does NOT carry an environment dimension -- it
-only has a districtwide total per (district, student group). The tidy
-output has the same column shape as the school-age district output, with
-\code{environment = "districtwide"} and \code{count}/\code{percent} taken
-from the workbook's Districtwide Total / Districtwide Percent columns.
-This keeps a uniform tidy schema across age groups.
+Tidy the 3-5 District Counts sheet -- 2025
 }
 \keyword{internal}

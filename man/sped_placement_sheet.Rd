@@ -2,7 +2,7 @@
 % Please edit documentation in R/sped_placement.R
 \name{sped_placement_sheet}
 \alias{sped_placement_sheet}
-\title{Map (age_group, level) to the workbook sheet name}
+\title{Map (age_group, level) to the workbook sheet name (2025 only)}
 \usage{
 sped_placement_sheet(age_group, level)
 }
@@ -15,6 +15,6 @@ sped_placement_sheet(age_group, level)
 character sheet name
 }
 \description{
-Map (age_group, level) to the workbook sheet name
+Map (age_group, level) to the workbook sheet name (2025 only)
 }
 \keyword{internal}
