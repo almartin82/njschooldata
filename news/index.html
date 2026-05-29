@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,16 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.12" id="njschooldata-0912">njschooldata 0.9.12<a class="anchor" aria-label="anchor" href="#njschooldata-0912"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-12">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-12"></a></h3>
+<ul><li>
+<code><a href="../reference/fetch_sped_placement.html">fetch_sped_placement()</a></code> exposes the NJ DOE IDEA Section 618 “Student Count and Educational Environment” workbook – the placement / Least Restrictive Environment dataset that complements the existing <code><a href="../reference/fetch_sped.html">fetch_sped()</a></code> classification-rate fetcher. Returns counts and percents of students with disabilities by educational setting (eg “In General Education for 80% or More of the Day”, “Separate School”, “Residential Facility”), at the district (school-age and preschool) and state levels. The state output ships five marginal breakdowns (by age, by disability category, by race/ethnicity, by gender, and by multilingual- learner status). Tidy output uses the standard <code>county_id</code> / <code>district_id</code> naming, snake_case subgroup labels (<code>total</code>, <code>black</code>, <code>hispanic</code>, <code>lep</code>, …), and the cross-state entity flags (<code>is_state</code>, <code>is_district</code>, <code>is_charter</code>). The large workbook (~3 MB, 10 sheets) is cached on disk via the same mechanism as the SPR workbooks (<code><a href="../reference/spr_cached_workbook.html">spr_cached_workbook()</a></code>), so the second call in any session is effectively free. Currently supports SY2024-25 only – earlier years are published on nj.gov but spread across a dozen subgroup- specific files (and some are PDF-only); pre-2020 requires an OPRA request. (Closes <a href="https://github.com/almartin82/njschooldata/issues/46" class="external-link">#46</a>.)</li>
+<li>
+<code><a href="../reference/fetch_sped_placement_multi.html">fetch_sped_placement_multi()</a></code> is a multi-year convenience wrapper that calls <code><a href="../reference/fetch_sped_placement.html">fetch_sped_placement()</a></code> per year and binds the results, warning on (but not failing for) unsupported years – so downstream multi-year code keeps working as more years come online.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.11" id="njschooldata-0911">njschooldata 0.9.11<a class="anchor" aria-label="anchor" href="#njschooldata-0911"></a></h2>
 <div class="section level3">

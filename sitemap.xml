@@ -63,6 +63,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/arrange_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assessment_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assign_legacy_assess_flags.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/build_sped_placement_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/build_sped_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/cache_exists.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/cache_get.html</loc></url>
@@ -182,6 +183,8 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sgp.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_data.html</loc></url>
@@ -247,6 +250,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_school_directory.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sla.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped_placement.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_tges.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_rc_databases.html</loc></url>
@@ -257,6 +261,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_spr_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_valid_grades.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_valid_sped_placement_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_valid_sped_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_valid_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/grad_file_group_cleanup.html</loc></url>
@@ -323,6 +328,8 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/parcc_percentile_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parcc_perf_level_counts.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_parcc_subj.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/parse_placement_count.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/parse_placement_pct.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_postsec_range.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/peek.html</loc></url>
@@ -362,7 +369,11 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_lookup_map.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_cache_dir.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_cached_workbook.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_sheet.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_enr_cols.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/split_state_ed_environ_tables.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_blank_no_data.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_cached_workbook.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_require_redesign.html</loc></url>
@@ -372,6 +383,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_value_numeric.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standard_assess.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/standardize_sped_placement_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/statewide_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_compare.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_composition.html</loc></url>
@@ -419,6 +431,9 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_administrators.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_special_service.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_teachers.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_sped_placement_district_3_5.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_sped_placement_district_5_21.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_sped_placement_state.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_state_aid.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_support_services_salaries.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_tges_data.html</loc></url>

@@ -230,6 +230,12 @@ Functions for special education and other subgroup data
 
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
+- [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
+  : Fetch NJ Special Education Placement / Educational Environment data
+- [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
+  : Fetch NJ SPED placement data for multiple years
+- [`get_raw_sped_placement()`](https://almartin82.github.io/njschooldata/reference/get_raw_sped_placement.md)
+  : Read one raw sheet from the SPED placement workbook
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
   : Fetch Special Population data
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
@@ -621,6 +627,10 @@ Additional exported functions
   : Fetch Social Studies Enrollment Data
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
+- [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
+  : Fetch NJ Special Education Placement / Educational Environment data
+- [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
+  : Fetch NJ SPED placement data for multiple years
 - [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md)
   : Fetch ESSA Summative Accountability Scores
 - [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md)
@@ -690,6 +700,8 @@ Additional exported functions
   : Get Raw Report Card Database
 - [`get_percentile_cols()`](https://almartin82.github.io/njschooldata/reference/get_percentile_cols.md)
   : Get percentile cols
+- [`get_raw_sped_placement()`](https://almartin82.github.io/njschooldata/reference/get_raw_sped_placement.md)
+  : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
   : Get multiple RC databases
 - [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)

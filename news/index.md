@@ -1,5 +1,38 @@
 # Changelog
 
+## njschooldata 0.9.12
+
+### New features
+
+- [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
+  exposes the NJ DOE IDEA Section 618 “Student Count and Educational
+  Environment” workbook – the placement / Least Restrictive Environment
+  dataset that complements the existing
+  [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
+  classification-rate fetcher. Returns counts and percents of students
+  with disabilities by educational setting (eg “In General Education for
+  80% or More of the Day”, “Separate School”, “Residential Facility”),
+  at the district (school-age and preschool) and state levels. The state
+  output ships five marginal breakdowns (by age, by disability category,
+  by race/ethnicity, by gender, and by multilingual- learner status).
+  Tidy output uses the standard `county_id` / `district_id` naming,
+  snake_case subgroup labels (`total`, `black`, `hispanic`, `lep`, …),
+  and the cross-state entity flags (`is_state`, `is_district`,
+  `is_charter`). The large workbook (~3 MB, 10 sheets) is cached on disk
+  via the same mechanism as the SPR workbooks
+  ([`spr_cached_workbook()`](https://almartin82.github.io/njschooldata/reference/spr_cached_workbook.md)),
+  so the second call in any session is effectively free. Currently
+  supports SY2024-25 only – earlier years are published on nj.gov but
+  spread across a dozen subgroup- specific files (and some are
+  PDF-only); pre-2020 requires an OPRA request. (Closes
+  [\#46](https://github.com/almartin82/njschooldata/issues/46).)
+- [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
+  is a multi-year convenience wrapper that calls
+  [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
+  per year and binds the results, warning on (but not failing for)
+  unsupported years – so downstream multi-year code keeps working as
+  more years come online.
+
 ## njschooldata 0.9.11
 
 ### New features
