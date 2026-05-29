@@ -137,6 +137,9 @@ reference:
     desc: Functions for special education and other subgroup data
     contents:
       - fetch_sped
+      - fetch_sped_placement
+      - fetch_sped_placement_multi
+      - get_raw_sped_placement
       - fetch_reportcard_special_pop
       - fetch_chronic_absenteeism
       - fetch_all_chronic_absenteeism
