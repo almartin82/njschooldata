@@ -70,29 +70,65 @@ test_that("fetch_sped_placement validates age_group and level", {
   )
 })
 
-test_that("2021 + 5-21 short-circuits with PDF-source error", {
-  expect_error(
-    fetch_sped_placement(2021, age_group = "5-21"),
-    "PDF"
-  )
-  expect_error(
-    fetch_sped_placement(2021, age_group = "5-21", level = "state"),
-    "PDF"
-  )
+test_that("pdf_only_slice() identifies the 6 transcribed-CSV slices", {
+  # Only state-level pre-2023 combinations route to the bundled PDF CSVs.
+  for (yr in c(2020L, 2021L, 2022L)) {
+    expect_true(pdf_only_slice(yr, "5-21", "state"))
+    expect_true(pdf_only_slice(yr, "3-5", "state"))
+    # District-level for the same year is structured data, never PDF.
+    expect_false(pdf_only_slice(yr, "5-21", "district"))
+    expect_false(pdf_only_slice(yr, "3-5", "district"))
+  }
+  # 2023 state 5-21 ships as a (typo-named) Excel; 2023 state 3-5 too.
+  expect_false(pdf_only_slice(2023L, "5-21", "state"))
+  expect_false(pdf_only_slice(2023L, "3-5", "state"))
+  # 2024 + 2025 state files are also structured.
+  expect_false(pdf_only_slice(2024L, "5-21", "state"))
+  expect_false(pdf_only_slice(2025L, "5-21", "state"))
 })
 
-test_that("pre-2025 state-level PDF-only combos error with helpful message", {
-  for (yr in c(2020L, 2022L, 2023L)) {
-    expect_error(
-      fetch_sped_placement(yr, age_group = "5-21", level = "state"),
-      "PDF"
-    )
-  }
+test_that("read_transcribed_pdf_slice returns canonical state-level schema", {
   for (yr in c(2020L, 2021L, 2022L)) {
-    expect_error(
-      fetch_sped_placement(yr, age_group = "3-5", level = "state"),
-      "PDF"
-    )
+    for (ag in c("5-21", "3-5")) {
+      df <- read_transcribed_pdf_slice(yr, ag)
+      expect_true(is.data.frame(df))
+      expect_true(nrow(df) > 0)
+      expected_cols <- c(
+        "end_year", "county_id", "county_name",
+        "district_id", "district_name",
+        "dimension", "subgroup", "environment",
+        "count", "percent", "subgroup_total",
+        "is_state", "is_district", "is_charter"
+      )
+      expect_true(all(expected_cols %in% names(df)))
+      expect_equal(unique(df$end_year), yr)
+      expect_true(all(df$is_state))
+      expect_false(any(df$is_district))
+      expect_false(any(df$is_charter))
+      expect_equal(unique(df$district_name), "New Jersey")
+    }
+  }
+})
+
+test_that("each transcribed-PDF CSV has a sibling _source.json audit trail", {
+  # We deliberately avoid a JSON dependency by checking required tokens
+  # via regex; the actual JSON is also human-readable for auditors.
+  for (yr in c(2020L, 2021L, 2022L)) {
+    for (ag in c("5-21", "3-5")) {
+      json <- system.file(
+        "extdata", "sped-placement-pdf-transcribed",
+        sprintf("%d_%s_state_source.json", yr, ag),
+        package = "njschooldata"
+      )
+      expect_true(nzchar(json) && file.exists(json),
+                  info = sprintf("missing source JSON for %d %s", yr, ag))
+      txt <- paste(readLines(json, warn = FALSE), collapse = "\n")
+      expect_match(txt, sprintf('"end_year"[[:space:]]*:[[:space:]]*%d', yr))
+      expect_match(txt, sprintf('"age_group"[[:space:]]*:[[:space:]]*"%s"', ag))
+      expect_match(txt, '"level"[[:space:]]*:[[:space:]]*"state"')
+      expect_match(txt, '"pdf_sha256"[[:space:]]*:[[:space:]]*"[0-9a-f]{64}"')
+      expect_match(txt, '"pdf_url"[[:space:]]*:[[:space:]]*"https?://')
+    }
   }
 })
 
@@ -541,19 +577,131 @@ test_that("fetch_sped_placement_multi binds years and skips bad ones", {
 })
 
 
-test_that("fetch_sped_placement_multi warns on 2021/5-21 but continues", {
+# ------------------------------------------------------------------
+# 2021 district 5-21 (Plan 1: the previously-blocked slice that is
+# actually published as Excel inside docs/2020.zip)
+# ------------------------------------------------------------------
+
+test_that("fetch_sped_placement (2021 district 5-21) returns canonical schema", {
   skip_if_offline()
-  df <- suppressWarnings(
-    tryCatch(
-      # Range that includes the 2021/5-21 short-circuit
-      fetch_sped_placement_multi(c(2020L, 2021L, 2022L)),
-      error = function(e) NULL
-    )
+  df <- tryCatch(
+    fetch_sped_placement(2021, age_group = "5-21", level = "district"),
+    error = function(e) NULL
   )
   skip_if(is.null(df), "SPED placement workbook not accessible")
 
-  # 2021 should be missing (short-circuited), 2020 + 2022 present
-  expect_true(2020L %in% unique(df$end_year))
-  expect_true(2022L %in% unique(df$end_year))
-  expect_false(2021L %in% unique(df$end_year))
+  expect_true(nrow(df) > 0)
+  expect_equal(unique(df$end_year), 2021)
+  expect_true(all(df$is_district))
+  expect_false(any(df$is_state))
+  # Pre-2025 district 5-21 files publish counts only -> percent is NA
+  expect_true(all(is.na(df$percent)))
+  # 2021 uses same 2-letter disability codes as 2020 -- verify expansion
+  expect_true(any(c("autism", "specific_learning_disability") %in% df$subgroup))
+  expect_false(any(c("AUT", "SLD") %in% df$subgroup))
+})
+
+
+test_that("fetch_sped_placement_multi(2020:2025) contains 2021/5-21 district rows", {
+  skip_if_offline()
+  df <- suppressWarnings(
+    tryCatch(
+      fetch_sped_placement_multi(2020:2025,
+                                 age_group = "5-21", level = "district"),
+      error = function(e) NULL
+    )
+  )
+  skip_if(is.null(df), "SPED placement workbook(s) not accessible")
+
+  expect_true(any(df$end_year == 2021))
+  # Every year between 2020 and 2025 should be represented (no Excel gap)
+  expect_setequal(unique(df$end_year), 2020:2025)
+})
+
+
+# ------------------------------------------------------------------
+# Pre-2023 state-level slices: now served from bundled PDF-transcribed
+# CSVs (Plan 2 coverage). These are offline tests because the CSVs ship
+# with the package -- no network required.
+# ------------------------------------------------------------------
+
+test_that("PDF-sourced state slices return non-empty data (no network)", {
+  for (yr in c(2020L, 2021L, 2022L)) {
+    for (ag in c("5-21", "3-5")) {
+      label <- sprintf("%d %s", yr, ag)
+      df <- fetch_sped_placement(yr, age_group = ag, level = "state")
+      expect_true(nrow(df) > 0, label = label)
+      expect_true(all(df$is_state), label = label)
+      expect_equal(unique(df$end_year), yr, label = label)
+      expect_setequal(
+        unique(df$dimension),
+        c("racial_ethnic", "gender", "disability", "multilingual_learner")
+      )
+    }
+  }
+})
+
+
+test_that("transcribed PDF slices: env counts <= subgroup_total (fidelity)", {
+  # Pick the cleanest, anomaly-free slice (2022 5-21) and verify White
+  # row's visible env counts sum exactly to subgroup_total.
+  df <- fetch_sped_placement(2022, age_group = "5-21", level = "state")
+  white <- df[df$dimension == "racial_ethnic" & df$subgroup == "white", ]
+  expect_true(nrow(white) > 0)
+  visible_sum <- sum(white$count, na.rm = TRUE)
+  total <- unique(white$subgroup_total)
+  expect_equal(visible_sum, total)
+})
+
+
+test_that("fetch_sped_placement(tidy=FALSE) on PDF slice returns tidy schema", {
+  # PDF-sourced slices have no "raw" representation, so tidy=FALSE returns
+  # the same canonical schema as tidy=TRUE.
+  raw <- fetch_sped_placement(2020, age_group = "5-21", level = "state",
+                              tidy = FALSE)
+  tidy <- fetch_sped_placement(2020, age_group = "5-21", level = "state",
+                               tidy = TRUE)
+  expect_equal(names(raw), names(tidy))
+  expect_equal(nrow(raw), nrow(tidy))
+})
+
+
+# ------------------------------------------------------------------
+# 2023 state 5-21 Excel (now wired via the typo-named NJ DOE file)
+# ------------------------------------------------------------------
+
+test_that("fetch_sped_placement (2023 state 5-21) parses typo-named Excel", {
+  skip_if_offline()
+  df <- tryCatch(
+    fetch_sped_placement(2023, age_group = "5-21", level = "state"),
+    error = function(e) NULL
+  )
+  skip_if(is.null(df), "SPED placement workbook not accessible")
+
+  expect_true(nrow(df) > 0)
+  expect_true(all(df$is_state))
+  expect_equal(unique(df$end_year), 2023)
+  expect_true(all(c("racial_ethnic", "gender", "disability",
+                    "multilingual_learner") %in% df$dimension))
+  # Spot check: White gen_ed_80_plus = 50750 per the source workbook.
+  white80 <- df[df$dimension == "racial_ethnic" &
+                  df$subgroup == "white" &
+                  df$environment == "gen_ed_80_plus", ]
+  expect_equal(nrow(white80), 1)
+  expect_equal(white80$count, 50750)
+})
+
+
+test_that("fetch_sped_placement_multi covers 2020-2022 district 5-21 without gaps", {
+  skip_if_offline()
+  df <- tryCatch(
+    fetch_sped_placement_multi(c(2020L, 2021L, 2022L)),
+    error = function(e) NULL
+  )
+  skip_if(is.null(df), "SPED placement workbook not accessible")
+
+  # All three years now present; 2021 is no longer short-circuited (the
+  # district-level data was always available inside docs/2020.zip; the
+  # state-level rollup ships from the bundled PDF-transcribed CSV).
+  expect_setequal(unique(df$end_year), c(2020L, 2021L, 2022L))
 })

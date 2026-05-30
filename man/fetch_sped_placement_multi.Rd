@@ -29,19 +29,18 @@ year and binds the results. Per-year failures are surfaced as warnings and
 the year is skipped, matching the package's existing multi-year wrappers.
 }
 \details{
-The 2021 Ages 5-21 short-circuit and any pre-2025 PDF-only state-level
-combinations will surface as warnings here, so a multi-year call like
-\code{fetch_sped_placement_multi(2020:2025)} happily returns whatever
-slices exist.
+Every \code{(end_year, age_group, level)} combination across 2020-2025
+returns data, so \code{fetch_sped_placement_multi(2020:2025)} produces a
+single bound tibble covering the whole range. Per-year failures (network
+errors, e.g.) surface as warnings and the year is skipped.
 }
 \examples{
 \dontrun{
-# Pull every supported year (district 5-21). 2021/5-21 surfaces as a
-# warning; other years return data.
+# Pull every supported year (district 5-21) into one tibble.
 placement_all <- fetch_sped_placement_multi(2020:2025)
 
-# State-level multi-year (only 2024-2025 have 5-21 state placement
-# available; other years emit a warning).
+# Full state-level coverage across 2020-2025 (combines structured
+# downloads with transcribed-PDF slices for state-level 2020-2022).
 fetch_sped_placement_multi(2020:2025, level = "state")
 }
 }

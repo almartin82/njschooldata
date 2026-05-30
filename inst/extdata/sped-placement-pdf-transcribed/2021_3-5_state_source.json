@@ -1,0 +1,28 @@
+{
+  "end_year": 2021,
+  "age_group": "3-5",
+  "level": "state",
+  "pdf_filename": "3-5_Placement.pdf",
+  "pdf_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip (member: 2020/3-5_Placement.pdf)",
+  "pdf_sha256": "c48152face5e0fa659c71c4519c5522cb595ca06e5397b4320435270f8b73b8b",
+  "transcribed_at": "2026-05-30T03:18:17Z",
+  "transcriber": "njschooldata maintainer (PR #279 amendment)",
+  "extraction_tool": "data-raw/transcribe-sped-placement-pdfs.py via poppler pdftotext -layout",
+  "environments_present": [
+    "ec_program_10plus_hrs",
+    "services_other_loc_attended_ec_10plus_hrs",
+    "ec_program_less_10_hrs",
+    "services_other_loc_attended_ec_less_10_hrs",
+    "separate_class",
+    "separate_school",
+    "residential_facility"
+  ],
+  "environments_omitted": [],
+  "omitted_reason": "",
+  "notes": [
+    "NJ DOE source-doc error #1 (Race count table on Regular Education page): column 4 ('services_other_loc_attended_ec_less_10_hrs') is corrupted in the source PDF -- column-4 cells are mis-rendered as duplicates of column 2 for every Race row. E.g. the White row prints 2361, 231, 259, 231, 3359 in the PDF but 2361+231+259+231 = 3082 != 3359 (the published Total). The Disability and LEP tables on the same page have correctly-rendered column-4 values (Disability Total = 5513, 603, 554, 1235, 7905 sums correctly). Because the Race column-4 values in the PDF are unreliable, we emit count = NA for every Race row's services_other_loc_attended_ec_less_10_hrs cell. The true column-4 Total (1235) is recoverable from the Disability Total row on the same page but we leave the Race row NA to avoid mixing sources.",
+    "NJ DOE source-doc error #2 (Disability percent table on Regular Education page): column 4 of the Regular Education page disability percent table duplicates column 1 (e.g. Developmental Delay shows 40.60 in both columns; the correct value implied by count 1228 is ~9.13). Because this casts doubt on every cell of that table we emit percent = NA for every disability row on the Regular Education page. Counts are transcribed verbatim.",
+    "Disability subgroup 'Developmental' in the source PDF is normalised to developmental_delay in this CSV.",
+    "Gender table on the Special Education page (PDF page 2) renders 'Separate School' and 'Residential Facility' columns as stray '*' tokens for all gender rows; we record the visible 'Separate Special Education Class' values and emit the other two envs as NA."
+  ]
+}

@@ -54,3 +54,6 @@ venv/
 # Local dev scratch (large SPR workbooks, inspection scripts)
 scratch/
 .gstack/
+
+# Claude Code working scratch (PDFs, text dumps, agent context)
+.claude/

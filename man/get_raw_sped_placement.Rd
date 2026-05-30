@@ -24,8 +24,11 @@ For end_year 2025, returns the raw tibble for a single sheet
 \details{
 For end_years 2020-2024, returns a named list of raw tibbles -- one per
 single-subgroup workbook (race, gender, disability, lep) needed for the
-requested (age_group, level) slice. State-level 5-21 across 2020-2023 and
-state-level 3-5 across 2020-2022 are PDF-only and error out.
+requested (age_group, level) slice. State-level 5-21 across 2020-2022 and
+state-level 3-5 across 2020-2022 ship as PDF transcriptions; for those
+slices the function returns a single tidy tibble (already in the
+state-level output schema) read from
+\code{inst/extdata/sped-placement-pdf-transcribed/}.
 }
 \examples{
 \dontrun{

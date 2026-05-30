@@ -47,13 +47,15 @@ annual zip archive; 2022-2024 publish ~8 single-subgroup workbooks per
 year; 2025 consolidates everything into one workbook. The fetcher hides
 these differences and exposes a single tidy schema.
 
-One narrow gap: \code{fetch_sped_placement(2021, age_group = "5-21")}
-errors with a clear message because NJ DOE only published that one slice
-as a PDF. Similarly, end_year 2020/2022/2023 state-level 5-21 placement
-and end_year 2020-2022 state-level 3-5 placement are PDF-only and error
-out. The corresponding district-level data is still available in every
-affected year. Pre-2020 placement data is not downloadable at all and
-requires an OPRA request.
+Six state-level slices that NJ DOE published only as PDFs (state 5-21
+for end_years 2020-2022, state 3-5 for end_years 2020-2022) are served
+from bundled CSVs transcribed from those PDFs; the audit trail (source
+URL, SHA-256, transcription date) lives next to the CSVs at
+\code{inst/extdata/sped-placement-pdf-transcribed/}. The 2023 state 5-21
+Excel file ships with NJ DOE's typo "PlacemnetData" in its filename
+(\code{StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx}); the file
+map wires this in transparently. Pre-2020 placement data is not
+downloadable at all and requires an OPRA request.
 }
 
 \section{Tidy output schema}{

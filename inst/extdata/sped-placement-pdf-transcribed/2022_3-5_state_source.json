@@ -1,0 +1,27 @@
+{
+  "end_year": 2022,
+  "age_group": "3-5",
+  "level": "state",
+  "pdf_filename": "3_5 Placement.pdf",
+  "pdf_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5 Placement.pdf",
+  "pdf_sha256": "ef3d207aa42349b993108f9b8260d581909f30f1ae4788eb3105f3d76e8a2a3b",
+  "transcribed_at": "2026-05-30T03:18:17Z",
+  "transcriber": "njschooldata maintainer (PR #279 amendment)",
+  "extraction_tool": "data-raw/transcribe-sped-placement-pdfs.py via poppler pdftotext -layout",
+  "environments_present": [
+    "ec_program_10plus_hrs",
+    "services_other_loc_attended_ec_10plus_hrs",
+    "ec_program_less_10_hrs",
+    "services_other_loc_attended_ec_less_10_hrs"
+  ],
+  "environments_omitted": [
+    "separate_class",
+    "separate_school",
+    "residential_facility"
+  ],
+  "omitted_reason": "The 2022 3-5 source PDF does not include a Separate Settings page; only Regular Education environments are reported.",
+  "notes": [
+    "Source PDF contains only Regular Education environments (page 1 + page 2 LEP); there is no Separate Settings page. All separate-setting environments (separate_class, separate_school, residential_facility) are omitted from the CSV.",
+    "Several disability subgroup_total cells are suppressed (printed as '*'); subgroup_total is empty (NA) for those rows."
+  ]
+}

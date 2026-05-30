@@ -31,16 +31,24 @@
 # coverage varies by year (see availability matrix below). The 2025 workbook
 # consolidates all of this into one ~3 MB xlsx with state + district sheets.
 #
-# Availability matrix (X = Excel placement, C = Excel count-only, P = PDF only):
+# Availability matrix (X = Excel placement, C = Excel count-only,
+# T = transcribed-PDF bundled CSV, X* = Excel file with NJ DOE typo
+# "PlacemnetData" in name):
 #
 #   | end_year | 5-21 district | 5-21 state | 3-5 district | 3-5 state |
 #   |----------|---------------|------------|--------------|-----------|
-#   | 2020     | X (4 files)   | P          | C (4 files)  | P         |
-#   | 2021     | X (4 files)   | P          | C (4 files)  | P         |
-#   | 2022     | X (4 files)   | P          | C (4 files)  | P         |
-#   | 2023     | X (4 files)   | P          | C (4 files)  | X         |
+#   | 2020     | X (4 files)   | T          | C (4 files)  | T         |
+#   | 2021     | X (4 files)   | T          | C (4 files)  | T         |
+#   | 2022     | X (4 files)   | T          | C (4 files)  | T         |
+#   | 2023     | X (4 files)   | X*         | C (4 files)  | X         |
 #   | 2024     | X (4 files)   | X          | C (4 files)  | X         |
 #   | 2025     | X (1 file)    | X          | X (1 file)   | X         |
+#
+# The six "T" cells (state-level placement for 2020/2021/2022 across both
+# age groups) are sourced from NJ DOE's published placement PDFs --
+# transcribed into bundled CSVs under
+# inst/extdata/sped-placement-pdf-transcribed/ with an audit trail
+# (source URL, SHA-256, transcription date) in sibling _source.json files.
 #
 # Per-year structural quirks worth noting:
 #
@@ -62,9 +70,13 @@
 #     by (year, subgroup) file. See enumerate_sped_placement_files() for the
 #     full map.
 #   - 2021 5-21 state placement is published only as a PDF (in 2020.zip).
-#     Per design, fetch_sped_placement(2021, age_group = "5-21") errors with
-#     a clear message pointing at the PDF source instead of attempting a
-#     partial-year answer.
+#     We ship a bundled CSV transcribed from that PDF (see "T" cells in the
+#     matrix above). The corresponding district-level data IS available as
+#     Excel files inside the same 2020.zip and parses through the standard
+#     pre-2025 5-21 district pipeline.
+#   - 2023 5-21 state placement ships as an Excel file with NJ DOE's typo
+#     "PlacemnetData" in the filename
+#     (StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx).
 #
 # Discovery details captured here so future maintainers don't have to re-walk
 # the IDEA Public Data landing page from scratch.
@@ -78,12 +90,12 @@
 #' Valid years for SPED placement / educational-environment data
 #'
 #' Returns the integer end_year values currently wired up for
-#' \code{\link{fetch_sped_placement}}.
-#'
-#' One narrow gap exists inside this range:
-#' \code{fetch_sped_placement(2021, age_group = "5-21")} errors with a clear
-#' message because NJ DOE published that one slice only as a PDF. Every other
+#' \code{\link{fetch_sped_placement}}. Every
 #' (end_year, age_group, level) combination across 2020-2025 returns data.
+#' State-level slices that NJ DOE published only as PDFs (state 5-21 for
+#' 2020-2022, state 3-5 for 2020-2022) are served from bundled CSVs
+#' transcribed from those PDFs; see the audit trail under
+#' inst/extdata/sped-placement-pdf-transcribed/.
 #'
 #' @return integer vector of supported end years
 #' @keywords internal
@@ -264,6 +276,13 @@ build_sped_placement_url <- function(end_year) {
     ),
     `3-5_state_placement` = list(
       path = "StateWideExcel_PlacementData_3-5Age_2223.xlsx", skip = 0
+    ),
+    # NJ DOE typo: filename reads "PlacemnetData" (sic). The 2023 5-21
+    # state file uses "Measure" as the col-1 header instead of a separate
+    # "Race" label row -- handled by tidy_pre2025_state().
+    `5-21_state_placement` = list(
+      path = "StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+      skip = 0
     )
   ),
   # ---------------------------------------------------------------------
@@ -544,42 +563,97 @@ sped_placement_sheet <- function(age_group, level) {
 
 
 # -----------------------------------------------------------------------------
-# 2021/5-21 short-circuit (user-mandated, plan section 4)
+# Transcribed-PDF slice predicate
 # -----------------------------------------------------------------------------
 
-# NJ DOE only published 2021 Ages 5-21 placement state-level data as a PDF.
-# Per the v2 design decision, fetch_sped_placement(2021, age_group = "5-21")
-# errors with a clear message pointing at the PDF source. This short-circuit
-# runs before any download is attempted.
-sped_placement_21_5_21_error <- function() {
-  stop(
-    "NJ DOE published 2021 Ages 5-21 placement data only as a PDF, not as ",
-    "a structured download. Source page: https://www.nj.gov/education/",
-    "specialed/monitor/ideapublicdata/. For programmatic access, file an ",
-    "OPRA request. See njschooldata issue tracker for status.",
-    call. = FALSE
-  )
+# The six state-level slices NJ DOE published only as PDFs. We ship a
+# bundled CSV transcribed from each PDF (with an audit trail) so callers
+# get structured data instead of a hard error. See
+# inst/extdata/sped-placement-pdf-transcribed/ for the source documents.
+pdf_only_slice <- function(end_year, age_group, level) {
+  if (level != "state") return(FALSE)
+  end_year <- as.integer(end_year)
+  if (age_group == "5-21" && end_year %in% c(2020L, 2021L, 2022L)) return(TRUE)
+  if (age_group == "3-5"  && end_year %in% c(2020L, 2021L, 2022L)) return(TRUE)
+  FALSE
 }
 
 
-# -----------------------------------------------------------------------------
-# Pre-2025 PDF-only short-circuits (state level)
-# -----------------------------------------------------------------------------
+#' Read one bundled, PDF-transcribed state-level placement slice
+#'
+#' Reads a single CSV from
+#' \code{inst/extdata/sped-placement-pdf-transcribed/} for a
+#' \code{(end_year, age_group)} pair where NJ DOE published the state-level
+#' rollup only as a PDF. The CSV is in the canonical tidy schema; the reader
+#' adds the entity-flag and entity-identifier columns that other state-level
+#' tidy paths emit, so output is interchangeable.
+#'
+#' Validates the row schema against the audit-trail JSON sibling. See the
+#' source documents in the same directory for provenance.
+#'
+#' @param end_year integer ending school year (one of 2020, 2021, 2022)
+#' @param age_group "5-21" or "3-5"
+#' @return tibble matching the state-level tidy schema
+#' @keywords internal
+read_transcribed_pdf_slice <- function(end_year, age_group) {
+  end_year <- as.integer(end_year)
+  fname <- sprintf("%d_%s_state.csv", end_year, age_group)
+  path <- system.file(
+    "extdata", "sped-placement-pdf-transcribed", fname,
+    package = "njschooldata"
+  )
+  if (!nzchar(path) || !file.exists(path)) {
+    stop(sprintf(
+      paste0(
+        "Bundled transcribed-PDF slice missing: %s. ",
+        "Expected at inst/extdata/sped-placement-pdf-transcribed/. ",
+        "If you are developing from source, reinstall the package after ",
+        "fetching to refresh inst/."
+      ),
+      fname
+    ), call. = FALSE)
+  }
 
-# State-level placement data for 5-21 was PDF-only across 2020-2023, and
-# 3-5 state placement was PDF-only across 2020-2022. We surface the same
-# honest error in each of those cases.
-sped_placement_state_pdf_error <- function(end_year, age_group) {
-  stop(sprintf(
-    paste0(
-      "NJ DOE published end_year %d state-level Ages %s placement data ",
-      "only as a PDF, not as a structured download. Source page: ",
-      "https://www.nj.gov/education/specialed/monitor/ideapublicdata/. ",
-      "District-level data for the same year is available via ",
-      "fetch_sped_placement(%d, age_group = \"%s\", level = \"district\")."
-    ),
-    end_year, age_group, end_year, age_group
-  ), call. = FALSE)
+  df <- utils::read.csv(
+    path, stringsAsFactors = FALSE,
+    na.strings = c("", "NA", "*"),
+    check.names = FALSE
+  )
+
+  expected_cols <- c(
+    "dimension", "subgroup", "environment",
+    "count", "percent", "subgroup_total"
+  )
+  missing_cols <- setdiff(expected_cols, names(df))
+  if (length(missing_cols) > 0) {
+    stop(sprintf(
+      "Transcribed-PDF CSV %s missing required columns: %s.",
+      fname, paste(missing_cols, collapse = ", ")
+    ), call. = FALSE)
+  }
+
+  df$count <- suppressWarnings(as.numeric(df$count))
+  df$percent <- suppressWarnings(as.numeric(df$percent))
+  df$subgroup_total <- suppressWarnings(as.numeric(df$subgroup_total))
+
+  df$end_year <- end_year
+  df$county_id <- NA_character_
+  df$county_name <- NA_character_
+  df$district_id <- NA_character_
+  df$district_name <- "New Jersey"
+  df$is_state <- TRUE
+  df$is_district <- FALSE
+  df$is_charter <- FALSE
+
+  df <- df[, c(
+    "end_year", "county_id", "county_name",
+    "district_id", "district_name",
+    "dimension", "subgroup", "environment",
+    "count", "percent", "subgroup_total",
+    "is_state", "is_district", "is_charter"
+  )]
+  rownames(df) <- NULL
+  tibble::as_tibble(df)
 }
 
 
@@ -594,8 +668,11 @@ sped_placement_state_pdf_error <- function(end_year, age_group) {
 #'
 #' For end_years 2020-2024, returns a named list of raw tibbles -- one per
 #' single-subgroup workbook (race, gender, disability, lep) needed for the
-#' requested (age_group, level) slice. State-level 5-21 across 2020-2023 and
-#' state-level 3-5 across 2020-2022 are PDF-only and error out.
+#' requested (age_group, level) slice. State-level 5-21 across 2020-2022 and
+#' state-level 3-5 across 2020-2022 ship as PDF transcriptions; for those
+#' slices the function returns a single tidy tibble (already in the
+#' state-level output schema) read from
+#' \code{inst/extdata/sped-placement-pdf-transcribed/}.
 #'
 #' @param end_year ending school year (2020-2025)
 #' @param age_group "5-21" or "3-5"
@@ -641,20 +718,6 @@ get_raw_sped_placement <- function(end_year,
     stop("level must be one of 'district' or 'state'.", call. = FALSE)
   }
 
-  # 2021 Ages 5-21 short-circuit (regardless of level)
-  if (end_year == 2021L && age_group == "5-21") {
-    sped_placement_21_5_21_error()
-  }
-  # Pre-2025 PDF-only state combinations
-  if (level == "state") {
-    if (age_group == "5-21" && end_year %in% c(2020L, 2022L, 2023L)) {
-      sped_placement_state_pdf_error(end_year, age_group)
-    }
-    if (age_group == "3-5" && end_year %in% c(2020L, 2021L, 2022L)) {
-      sped_placement_state_pdf_error(end_year, age_group)
-    }
-  }
-
   # Check the parsed-sheet session cache first.
   cache_key <- make_cache_key(
     "get_raw_sped_placement",
@@ -663,6 +726,16 @@ get_raw_sped_placement <- function(end_year,
   cached <- cache_get(cache_key)
   if (!is.null(cached)) {
     return(cached)
+  }
+
+  # Six state-level slices ship as transcribed-PDF CSVs (the only structured
+  # form NJ DOE makes available). The CSV is already in the canonical tidy
+  # schema, so we return it directly from the raw reader; the fetcher's tidy
+  # dispatch later treats it as a passthrough.
+  if (pdf_only_slice(end_year, age_group, level)) {
+    df <- read_transcribed_pdf_slice(end_year, age_group)
+    cache_set(cache_key, df)
+    return(df)
   }
 
   if (end_year == 2025L) {
@@ -1487,15 +1560,28 @@ sped_placement_dim_to_dimension <- c(
 #' @return tidy tibble matching the 2025 state output schema
 #' @keywords internal
 tidy_pre2025_state <- function(df, end_year, age_group) {
+  # Strip stray whitespace from col-1 row labels (NJ DOE sometimes emits
+  # "Total " with a trailing space, etc.) so downstream subgroup matching
+  # works uniformly.
+  df[[1]] <- trimws(df[[1]])
+
+  # 2023 5-21 state file uses "Measure" as the col-1 cell on what is
+  # functionally the Race section header (no separate "Race" label row,
+  # unlike 2024). Normalize it so the generic matcher picks it up.
+  if (end_year == 2023L && age_group == "5-21") {
+    df[[1]][df[[1]] == "Measure"] <- "Race"
+  }
+
   # Find the section-header rows: rows whose first column matches one of
   # the known dimension labels.
   col1 <- df[[1]]
+
   dimension_labels <- list(
     racial_ethnic = c("Race"),
     gender = c("Gender"),
     disability = c(
       "Special Education Classification",
-      "Disablity Category", # NJ typo in some 3-5 sheets
+      "Disablity Category", # NJ typo in 2023 5-21 + some 3-5 sheets
       "Disability Category"
     ),
     multilingual_learner = c("LEP Status", "LEP", "Lep Status")
@@ -1758,13 +1844,15 @@ tidy_pre2025_sped_placement <- function(raw_list, end_year, age_group, level) {
 #' year; 2025 consolidates everything into one workbook. The fetcher hides
 #' these differences and exposes a single tidy schema.
 #'
-#' One narrow gap: \code{fetch_sped_placement(2021, age_group = "5-21")}
-#' errors with a clear message because NJ DOE only published that one slice
-#' as a PDF. Similarly, end_year 2020/2022/2023 state-level 5-21 placement
-#' and end_year 2020-2022 state-level 3-5 placement are PDF-only and error
-#' out. The corresponding district-level data is still available in every
-#' affected year. Pre-2020 placement data is not downloadable at all and
-#' requires an OPRA request.
+#' Six state-level slices that NJ DOE published only as PDFs (state 5-21
+#' for end_years 2020-2022, state 3-5 for end_years 2020-2022) are served
+#' from bundled CSVs transcribed from those PDFs; the audit trail (source
+#' URL, SHA-256, transcription date) lives next to the CSVs at
+#' \code{inst/extdata/sped-placement-pdf-transcribed/}. The 2023 state 5-21
+#' Excel file ships with NJ DOE's typo "PlacemnetData" in its filename
+#' (\code{StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx}); the file
+#' map wires this in transparently. Pre-2020 placement data is not
+#' downloadable at all and requires an OPRA request.
 #'
 #' @section Tidy output schema:
 #' One row per (entity x subgroup x environment), with:
@@ -1858,25 +1946,17 @@ fetch_sped_placement <- function(end_year,
                                  age_group = "5-21",
                                  level = "district",
                                  tidy = TRUE) {
-  # 2021 + 5-21 short-circuit (mandated by design; see plan section 4).
-  # We check up front so callers see this error without a network attempt.
-  if (end_year == 2021L && age_group == "5-21") {
-    sped_placement_21_5_21_error()
-  }
-  if (level == "state") {
-    if (age_group == "5-21" && end_year %in% c(2020L, 2022L, 2023L)) {
-      sped_placement_state_pdf_error(end_year, age_group)
-    }
-    if (age_group == "3-5" && end_year %in% c(2020L, 2021L, 2022L)) {
-      sped_placement_state_pdf_error(end_year, age_group)
-    }
-  }
-
   raw <- get_raw_sped_placement(
     end_year = end_year,
     age_group = age_group,
     level = level
   )
+
+  # PDF-sourced slices: the bundled CSV is already in the canonical tidy
+  # schema, so tidy and non-tidy callers both get the same tibble.
+  if (pdf_only_slice(end_year, age_group, level)) {
+    return(raw)
+  }
 
   if (!tidy) {
     return(raw)
@@ -1908,10 +1988,10 @@ fetch_sped_placement <- function(end_year,
 #' year and binds the results. Per-year failures are surfaced as warnings and
 #' the year is skipped, matching the package's existing multi-year wrappers.
 #'
-#' The 2021 Ages 5-21 short-circuit and any pre-2025 PDF-only state-level
-#' combinations will surface as warnings here, so a multi-year call like
-#' \code{fetch_sped_placement_multi(2020:2025)} happily returns whatever
-#' slices exist.
+#' Every \code{(end_year, age_group, level)} combination across 2020-2025
+#' returns data, so \code{fetch_sped_placement_multi(2020:2025)} produces a
+#' single bound tibble covering the whole range. Per-year failures (network
+#' errors, e.g.) surface as warnings and the year is skipped.
 #'
 #' @param end_years integer vector of school years
 #' @param age_group one of \code{"5-21"} or \code{"3-5"}
@@ -1926,12 +2006,11 @@ fetch_sped_placement <- function(end_year,
 #'
 #' @examples
 #' \dontrun{
-#' # Pull every supported year (district 5-21). 2021/5-21 surfaces as a
-#' # warning; other years return data.
+#' # Pull every supported year (district 5-21) into one tibble.
 #' placement_all <- fetch_sped_placement_multi(2020:2025)
 #'
-#' # State-level multi-year (only 2024-2025 have 5-21 state placement
-#' # available; other years emit a warning).
+#' # Full state-level coverage across 2020-2025 (combines structured
+#' # downloads with transcribed-PDF slices for state-level 2020-2022).
 #' fetch_sped_placement_multi(2020:2025, level = "state")
 #' }
 fetch_sped_placement_multi <- function(end_years,

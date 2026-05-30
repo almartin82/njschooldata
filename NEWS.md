@@ -17,18 +17,26 @@
   Pre-2025 district 5-21 workbooks publish counts only (no percent
   column), so `percent` is `NA` in those rows and `subgroup_total` is
   derived from the visible-count sum.
-* Per-year coverage caveats:
-  - `fetch_sped_placement(2021, age_group = "5-21")` errors with a clear
-    message pointing at the PDF source on nj.gov (state-level data for
-    that one slice was published only as a PDF).
-  - State-level 5-21 placement for end_years 2020/2022/2023 and
-    state-level 3-5 placement for 2020-2022 are PDF-only and error with
-    a similar honest message. District-level data for those years is
-    still fully available.
-  - `fetch_sped_placement_multi()` wraps each per-year call in
-    `tryCatch`, so a multi-year request like
-    `fetch_sped_placement_multi(2020:2025)` returns one bound tibble and
-    surfaces any skipped slices as warnings.
+* Every `(end_year, age_group, level)` combination across 2020-2025 now
+  returns data. The pre-2025 state-level slices that NJ DOE published
+  only as PDFs (state 5-21 for end_years 2020-2022 and state 3-5 for
+  end_years 2020-2022 -- six slices total) ship as bundled CSVs
+  transcribed from those PDFs, alongside per-slice `_source.json` audit
+  trails that record the source URL, PDF SHA-256, transcription
+  timestamp, and notes on any data anomalies in the published PDFs
+  (misaligned percent tables, copy-paste errors, etc.). Bundled CSVs
+  live under
+  `inst/extdata/sped-placement-pdf-transcribed/`.
+* The 2023 state 5-21 placement file
+  (`StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx`, with NJ DOE's
+  "Placemnet" typo preserved) is now wired into the file map; the
+  pre-2025 state parser was extended to handle the slightly different
+  section-header layout that file uses (`Measure` in column 1 instead
+  of a separate `Race` label row).
+* `fetch_sped_placement_multi(2020:2025)` returns one bound tibble
+  covering the whole range. Per-year network failures still surface as
+  warnings and skip the affected year, but no slice is short-circuited
+  any more.
 * On-disk cache extended with a `file_label` so per-subgroup workbooks
   cache to distinct paths under
   `tools::R_user_dir("njschooldata", "cache")/sped-placement/`. Pre-2025
