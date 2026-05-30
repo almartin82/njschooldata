@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,14 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.14" id="njschooldata-0914">njschooldata 0.9.14<a class="anchor" aria-label="anchor" href="#njschooldata-0914"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-14">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-14"></a></h3>
+<ul><li>
+<code><a href="../reference/tidy_nj_assess.html">tidy_nj_assess()</a></code> now emits a single canonical value for the <code>school_code</code> column on district-aggregate rows in NJASK / HSPA / GEPA output (issue <a href="https://github.com/almartin82/njschooldata/issues/26" class="external-link">#26</a>). The raw NJ DOE fixed-width files encode district-aggregate rows with either a whitespace-only <code>School_Code</code> field or the literal sentinel <code>"000"</code>, depending on year and layout revision. Before this fix, both encodings could appear in the same tidy output, so <code>filter(school_code == "000")</code> and <code>filter(is.na(school_code))</code> silently disagreed about which rows were district aggregates. After this fix, both encodings collapse to <code>NA_character_</code>, matching the convention <code><a href="../reference/process_parcc.html">process_parcc()</a></code> already uses for PARCC tidy output. <code>is.na(school_code)</code> is now the single correct test for “not a school” across the cross-format pipeline.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.13" id="njschooldata-0913">njschooldata 0.9.13<a class="anchor" aria-label="anchor" href="#njschooldata-0913"></a></h2>
 <div class="section level3">

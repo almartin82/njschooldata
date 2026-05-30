@@ -1,5 +1,26 @@
 # Changelog
 
+## njschooldata 0.9.14
+
+### Bug fixes
+
+- [`tidy_nj_assess()`](https://almartin82.github.io/njschooldata/reference/tidy_nj_assess.md)
+  now emits a single canonical value for the `school_code` column on
+  district-aggregate rows in NJASK / HSPA / GEPA output (issue
+  [\#26](https://github.com/almartin82/njschooldata/issues/26)). The raw
+  NJ DOE fixed-width files encode district-aggregate rows with either a
+  whitespace-only `School_Code` field or the literal sentinel `"000"`,
+  depending on year and layout revision. Before this fix, both encodings
+  could appear in the same tidy output, so
+  `filter(school_code == "000")` and `filter(is.na(school_code))`
+  silently disagreed about which rows were district aggregates. After
+  this fix, both encodings collapse to `NA_character_`, matching the
+  convention
+  [`process_parcc()`](https://almartin82.github.io/njschooldata/reference/process_parcc.md)
+  already uses for PARCC tidy output. `is.na(school_code)` is now the
+  single correct test for “not a school” across the cross-format
+  pipeline.
+
 ## njschooldata 0.9.13
 
 ### New features
