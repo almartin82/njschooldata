@@ -2,7 +2,8 @@
 
 The workbook mixes two percent formats across sheets: - State sheets
 store percents as decimals (eg 0.4514 = 45.14 - District sheets store
-percents as whole percents (eg 67.3 = 67.3 Both are kept on the same
+percents as whole percents (eg 67.3 = 67.3 - Pre-2025 district 5-21
+files store COUNTS only (no percent column) Both are kept on the same
 0-100 scale in tidy output. Suppression flags ("\*") become NA.
 
 ## Usage

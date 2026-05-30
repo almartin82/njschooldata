@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,20 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.13" id="njschooldata-0913">njschooldata 0.9.13<a class="anchor" aria-label="anchor" href="#njschooldata-0913"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-9-13">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-13"></a></h3>
+<ul><li>
+<code><a href="../reference/fetch_sped_placement.html">fetch_sped_placement()</a></code> now covers end_years 2020-2024 in addition to the 2025 path that shipped in v0.9.12 (PR <a href="https://github.com/almartin82/njschooldata/issues/278" class="external-link">#278</a>). NJ DOE changed publication conventions multiple times across this range – 2020/2021 ship as annual <code>.zip</code> archives bundling 8+ subgroup-specific workbooks each, 2022-2024 publish those workbooks loose under three distinct <code>docs/{year}*/</code> directory conventions, and 2025 consolidates everything into one workbook. The fetcher transparently downloads, extracts (for zip years), and parses every variant into the same tidy schema that shipped in v1.</li>
+<li>The public API and the tidy output schema are unchanged: a 2024 call returns the same columns as a 2025 call, so any downstream code written against the v1 schema keeps working as soon as it bumps the year range. Pre-2025 district 5-21 workbooks publish counts only (no percent column), so <code>percent</code> is <code>NA</code> in those rows and <code>subgroup_total</code> is derived from the visible-count sum.</li>
+<li>Every <code>(end_year, age_group, level)</code> combination across 2020-2025 now returns data. The pre-2025 state-level slices that NJ DOE published only as PDFs (state 5-21 for end_years 2020-2022 and state 3-5 for end_years 2020-2022 – six slices total) ship as bundled CSVs transcribed from those PDFs, alongside per-slice <code>_source.json</code> audit trails that record the source URL, PDF SHA-256, transcription timestamp, and notes on any data anomalies in the published PDFs (misaligned percent tables, copy-paste errors, etc.). Bundled CSVs live under <code>inst/extdata/sped-placement-pdf-transcribed/</code>.</li>
+<li>The 2023 state 5-21 placement file (<code>StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx</code>, with NJ DOE’s “Placemnet” typo preserved) is now wired into the file map; the pre-2025 state parser was extended to handle the slightly different section-header layout that file uses (<code>Measure</code> in column 1 instead of a separate <code>Race</code> label row).</li>
+<li>
+<code>fetch_sped_placement_multi(2020:2025)</code> returns one bound tibble covering the whole range. Per-year network failures still surface as warnings and skip the affected year, but no slice is short-circuited any more.</li>
+<li>On-disk cache extended with a <code>file_label</code> so per-subgroup workbooks cache to distinct paths under <code>tools::R_user_dir("njschooldata", "cache")/sped-placement/</code>. Pre-2025 years are static snapshots, so subsequent calls are free.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.12" id="njschooldata-0912">njschooldata 0.9.12<a class="anchor" aria-label="anchor" href="#njschooldata-0912"></a></h2>
 <div class="section level3">

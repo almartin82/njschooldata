@@ -121,6 +121,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/ensure_appt_share.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/enumerate_sped_placement_files.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/expand_street_types.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_AP.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/extract_rc_SAT.html</loc></url>
@@ -354,6 +355,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/progress_tracker.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rc_numeric_cleaner.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rc_year_matcher.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/read_transcribed_pdf_slice.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/school_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_gap.html</loc></url>
@@ -427,6 +429,9 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_personal_services_benefits.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_plant_operations_maintenance.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_plant_operations_maintenance_salaries.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_pre2025_district_3_5_one.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_pre2025_district_5_21_one.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_pre2025_state.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_faculty_to_administrators.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_administrators.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ratio_students_to_special_service.html</loc></url>

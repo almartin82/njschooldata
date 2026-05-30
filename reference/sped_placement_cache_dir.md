@@ -1,9 +1,6 @@
 # Directory holding cached SPED placement workbooks
 
-Mirrors
-[`njsd_workbook_cache_dir()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_dir.md)
-for SPR – the placement workbook is large enough that we cache it on
-disk across sessions.
+Directory holding cached SPED placement workbooks
 
 ## Usage
 

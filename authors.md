@@ -10,13 +10,13 @@ Source:
 [`DESCRIPTION`](https://github.com/almartin82/njschooldata/blob/master/DESCRIPTION)
 
 Martin A (2026). *njschooldata: A Simple Interface for Accessing NJ DOE
-School Data in R and Python*. R package version 0.9.12,
+School Data in R and Python*. R package version 0.9.13,
 <https://github.com/almartin82/njschooldata>.
 
     @Manual{,
       title = {njschooldata: A Simple Interface for Accessing NJ DOE School Data in R and Python},
       author = {Andrew Martin},
       year = {2026},
-      note = {R package version 0.9.12},
+      note = {R package version 0.9.13},
       url = {https://github.com/almartin82/njschooldata},
     }
