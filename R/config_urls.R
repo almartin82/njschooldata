@@ -17,7 +17,9 @@
 njdoe_base_urls <- list(
   assessment = "https://www.nj.gov/education/assessment/results/reports/",
   schools = "https://www.nj.gov/education/schooldirectory/",
-  performance = "https://rc.doe.state.nj.us/",
+  # rc.doe.state.nj.us was retired; performance reports now live at
+  # /education/spr/ (UI) and /education/sprreports/download/ (bulk data).
+  performance = "https://www.nj.gov/education/spr/",
   data = "https://www.nj.gov/education/data/"
 )
 

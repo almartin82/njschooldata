@@ -1,3 +1,41 @@
+# njschooldata 0.9.15
+
+## Bug fixes
+
+* `get_one_rc_database()` / `fetch_msgp()` / `get_and_process_msgp()` now
+  resolve again for end_years 2012-2019. NJ DOE retired the
+  `rc.doe.state.nj.us` host (now 301-redirects to `nj.gov/education/spr/`)
+  and removed the `/education/schoolperformance/archive/` tree, so every
+  Performance Report database URL hardcoded in `R/report_card.R` had been
+  returning 404 with no replacement on the public site. The bulk PR
+  databases now live in two places:
+
+  - 2011-12 through 2014-15 (legacy single-workbook era):
+    `nj.gov/education/spr/download/archive/<YYYYYY>/<file>` -- same
+    filenames as the old tree, just a different host path.
+  - 2015-16 through 2018-19 (split school/district workbooks):
+    `nj.gov/education/sprreports/download/DataFiles/<YYYY-YYYY>/`, with
+    `PerformanceReports.xlsx` renamed to `Database_SchoolDetail.xlsx`
+    and `DistrictPerformanceReports.xlsx` renamed to
+    `Database_DistrictStateDetail.xlsx`. 2015-16 has no separate
+    district workbook; the school workbook carries
+    `SchoolMedian`/`DistrictMedian`/`StatewideMedian` columns, which is
+    what `get_and_process_msgp(2016)` already expects.
+
+  `njdoe_base_urls$performance` in `R/config_urls.R` is updated for the
+  same reason. The dead URL pattern in `R/report_card.R:71-75,171-176`
+  was confirmed 404 across all 11 entries; the new pattern was
+  discovered by reading `nj.gov/education/spr/download/script/download.js`
+  (the SPR Download page builds its file list dynamically) and verified
+  with end-to-end fetches for 2012, 2014, 2016, and 2017.
+
+* `tests/testthat/test_msgp.R` now includes `is_charter` in the expected
+  column list for sgp 2016/2017/2018/2019. The `is_charter` flag was
+  added to `get_and_process_msgp()` output in commit `8eb714c8` but the
+  column-name assertions in the test were never updated, so all four
+  `sgp works with <year> data` tests had been failing on master with a
+  spurious "expected[8:10]" mismatch unrelated to the URL fix.
+
 # njschooldata 0.9.14
 
 ## Bug fixes
