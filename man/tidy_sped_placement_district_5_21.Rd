@@ -2,20 +2,11 @@
 % Please edit documentation in R/sped_placement.R
 \name{tidy_sped_placement_district_5_21}
 \alias{tidy_sped_placement_district_5_21}
-\title{Tidy the District by Ed Environ sheet (school-age, 5-21)}
+\title{Tidy the District by Ed Environ sheet (school-age, 5-21) -- 2025}
 \usage{
 tidy_sped_placement_district_5_21(df)
 }
-\arguments{
-\item{df}{raw tibble from \code{get_raw_sped_placement(level = "district",
-age_group = "5-21")}}
-}
-\value{
-tidy tibble
-}
 \description{
-Pivots the wide workbook to long format: one row per
-(county_id, district_id, subgroup, environment), with \code{count} and
-\code{percent} columns. Adds standard entity flags.
+Tidy the District by Ed Environ sheet (school-age, 5-21) -- 2025
 }
 \keyword{internal}

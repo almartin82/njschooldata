@@ -1,0 +1,28 @@
+{
+  "end_year": 2020,
+  "age_group": "5-21",
+  "level": "state",
+  "pdf_filename": "6_21 Placement.pdf",
+  "pdf_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2019.zip (member: 2019/6_21 Placement.pdf)",
+  "pdf_sha256": "f1cd1324104af58ddb1296b46efb4a1084760a65531841eb44499a1055679f4c",
+  "transcribed_at": "2026-05-30T03:18:17Z",
+  "transcriber": "njschooldata maintainer (PR #279 amendment)",
+  "extraction_tool": "data-raw/transcribe-sped-placement-pdfs.py via poppler pdftotext -layout",
+  "environments_present": [
+    "gen_ed_80_plus",
+    "gen_ed_40_79",
+    "gen_ed_less_40",
+    "separate_school",
+    "residential_facility",
+    "homebound_hospital"
+  ],
+  "environments_omitted": [
+    "correction_facility"
+  ],
+  "omitted_reason": "Not reported in source PDF (PDF predates correctional-facility environment in NJ DOE reporting).",
+  "notes": [
+    "Source PDF does not include a Correctional Facility environment column; the package's canonical 5-21 schema includes correction_facility, but it is omitted here to faithfully reflect the PDF.",
+    "deaf_blindness Separate Settings Total is suppressed (printed as '*'); subgroup_total reflects the Regular Education page Total only (10).",
+    "The 2020 source PDF does not explicitly document the suppression threshold. Several subgroup rows have published Totals that exceed visible-cell-sum + 9 x suppressed-cell-count (e.g. Race Two-or-more-races Separate Settings Total = 330 with visible 304 and only two suppressed cells, implying hidden values up to 26; Disability Traumatic-Brain-Injury Regular Total = 333 with visible 118 and two suppressed cells). The fidelity report FLAGGED status records these per-row discrepancies; we transcribe the PDF as published."
+  ]
+}

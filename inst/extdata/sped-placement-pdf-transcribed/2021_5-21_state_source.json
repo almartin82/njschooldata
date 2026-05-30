@@ -1,0 +1,29 @@
+{
+  "end_year": 2021,
+  "age_group": "5-21",
+  "level": "state",
+  "pdf_filename": "5_21 Placement.pdf",
+  "pdf_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip (member: 2020/5_21 Placement.pdf)",
+  "pdf_sha256": "622cbaa02c0b71e69787d9264994df8bd0e740ff4f3e4c62ff763de4c3cf9a32",
+  "transcribed_at": "2026-05-30T03:18:17Z",
+  "transcriber": "njschooldata maintainer (PR #279 amendment)",
+  "extraction_tool": "data-raw/transcribe-sped-placement-pdfs.py via poppler pdftotext -layout",
+  "environments_present": [
+    "gen_ed_80_plus",
+    "gen_ed_40_79",
+    "gen_ed_less_40",
+    "separate_school",
+    "residential_facility",
+    "homebound_hospital"
+  ],
+  "environments_omitted": [
+    "correction_facility"
+  ],
+  "omitted_reason": "Not reported in source PDF (PDF predates correctional-facility environment in NJ DOE reporting).",
+  "notes": [
+    "NJ DOE source-doc error: the Regular Education page disability percent table (PDF page 3) is misaligned. The percent table is missing a row for 'Preschool Disabled (DD)' and the surviving rows do not match the count table (e.g. the 'Hearing Impairment' percent row prints 1.00/0.72/0.49, which are the percents of Other Health Impairment counts 25519/15536/5409). For every disability row on the Regular Education page we emit percent = NA. The Separate Settings disability percent table on PDF page 5 is correctly aligned and is transcribed verbatim.",
+    "Race/Ethnicity Total row count values for Total environment render as Excel scientific notation ('2E+05', '1E+05') in the source PDF; the integer Total values are reconstructed by summing visible per-subgroup counts (199594 for the Regular Education page, 14816 for the Separate Settings page).",
+    "deaf_blindness Separate Settings Total is suppressed ('*'); subgroup_total reflects the Regular Education page Total only (12).",
+    "The 2021 source PDF does not explicitly document the suppression threshold. A few disability subgroup rows have published Totals that exceed visible-cell-sum + 9 x suppressed-cell-count (e.g. Hearing Impairment Separate Settings Total = 242 with visible 0 and two suppressed cells; Speech or Language Impairment Separate Settings Total = 274 with visible 253 and two suppressed cells; Visual Impairment Separate Settings Total = 23 with visible 0 and two suppressed cells). The fidelity report FLAGGED status records these per-row discrepancies; we transcribe the PDF as published."
+  ]
+}

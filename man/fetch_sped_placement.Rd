@@ -13,19 +13,19 @@ fetch_sped_placement(
 }
 \arguments{
 \item{end_year}{ending school year (eg 2025 for the 2024-25 school
-year). Valid years: 2025.}
+year). Valid years: 2020 through 2025.}
 
 \item{age_group}{one of \code{"5-21"} (school-age, default) or
 \code{"3-5"} (preschool).}
 
 \item{level}{one of \code{"district"} (district + charter rows, default)
-or \code{"state"} (statewide breakdowns by age, disability, race/
-ethnicity, gender, and multilingual-learner status).}
+or \code{"state"} (statewide breakdowns).}
 
 \item{tidy}{if \code{TRUE} (default), pivots to the long tidy schema
-described above. If \code{FALSE}, returns the raw workbook tibble with
-minimal cleaning (column names preserved as published; all values as
-character; suppression flags retained).}
+described above. If \code{FALSE}, returns the raw workbook tibble(s)
+with minimal cleaning (column names preserved as published; all values
+as character; suppression flags retained). For pre-2025 years that
+span multiple subgroup files, \code{tidy = FALSE} returns a named list.}
 }
 \value{
 tibble. See "Tidy output schema" for the layout when
@@ -41,12 +41,21 @@ More of the Day", "Separate School", "Residential Facility").
 }
 \section{Coverage}{
 
-Currently only the SY2024-25 consolidated workbook (end_year 2025) is
-supported. Earlier years are published on nj.gov but under a different,
-fragmented file structure (one workbook per subgroup, with some
-subgroups PDF-only). Wiring them up is tracked as a follow-up to
-issue #46. Pre-2020 placement data is not downloadable at all and
-requires an OPRA request.
+Supports end_years 2020-2025. NJ DOE changed publication conventions
+multiple times across these years: 2020-2021 are bundled inside an
+annual zip archive; 2022-2024 publish ~8 single-subgroup workbooks per
+year; 2025 consolidates everything into one workbook. The fetcher hides
+these differences and exposes a single tidy schema.
+
+Six state-level slices that NJ DOE published only as PDFs (state 5-21
+for end_years 2020-2022, state 3-5 for end_years 2020-2022) are served
+from bundled CSVs transcribed from those PDFs; the audit trail (source
+URL, SHA-256, transcription date) lives next to the CSVs at
+\code{inst/extdata/sped-placement-pdf-transcribed/}. The 2023 state 5-21
+Excel file ships with NJ DOE's typo "PlacemnetData" in its filename
+(\code{StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx}); the file
+map wires this in transparently. Pre-2020 placement data is not
+downloadable at all and requires an OPRA request.
 }
 
 \section{Tidy output schema}{
@@ -58,20 +67,24 @@ One row per (entity x subgroup x environment), with:
     \code{district_name = "New Jersey"})
   \item \code{subgroup} -- standardized snake_case (\code{"total"},
     \code{"black"}, \code{"hispanic"}, \code{"lep"}, \code{"male"}, ...,
-    plus disability categories like \code{"autism"} and (state output
+    plus disability categories like \code{"autism"} and (2025 state output
     only) age rows like \code{"age_6"})
   \item \code{environment} -- short code for the educational setting (see
     Details for valid values)
   \item \code{count}, \code{percent} -- counts and percents (0-100 scale)
-    reported for the cell; suppressed cells (\code{"*"}) become \code{NA}
+    reported for the cell; suppressed cells (\code{"*"}) become \code{NA}.
+    Note: pre-2025 district 5-21 workbooks publish counts only, so
+    \code{percent} is \code{NA} in those rows.
   \item \code{subgroup_total} -- the subgroup's row total (Districtwide
-    Total / Statewide Total) carried for convenience
+    Total / Statewide Total) carried for convenience. For pre-2025 district
+    5-21 rows this is the visible-count sum across environments.
   \item \code{is_state}, \code{is_district}, \code{is_charter} -- entity
     flags consistent with other njschooldata fetchers (county_id == "80"
     marks charter schools/districts)
   \item \code{dimension} (state output only) -- which marginal table the
-    row came from (\code{"age"}, \code{"disability"}, \code{"racial_ethnic"},
-    \code{"gender"}, \code{"multilingual_learner"})
+    row came from (\code{"racial_ethnic"}, \code{"gender"},
+    \code{"disability"}, \code{"multilingual_learner"}; 2025 additionally
+    reports \code{"age"})
 }
 }
 
@@ -79,8 +92,8 @@ One row per (entity x subgroup x environment), with:
 
 \code{gen_ed_80_plus}, \code{gen_ed_40_79}, \code{gen_ed_less_40},
 \code{separate_school}, \code{residential_facility},
-\code{homebound_hospital}, \code{correction_facility},
-\code{parentally_placed_nonpublic}.
+\code{homebound_hospital}, \code{correction_facility}.
+2025 additionally reports \code{parentally_placed_nonpublic}.
 }
 
 \section{Environment categories (preschool, 3-5 state)}{
@@ -97,7 +110,7 @@ uses \code{environment = "districtwide"} with the districtwide total.
 
 \examples{
 \dontrun{
-# 1. Basic call: school-age district-level placement
+# 1. Basic call: school-age district-level placement (2025)
 placement <- fetch_sped_placement(2025)
 
 # 2. Common dplyr filter -- where are Newark's classified students placed?
@@ -108,15 +121,15 @@ fetch_sped_placement(2025) \%>\%
   select(environment, count, percent) \%>\%
   arrange(desc(percent))
 
-# 3. State-level breakdown by disability
-fetch_sped_placement(2025, level = "state") \%>\%
+# 3. State-level breakdown by disability (2024)
+fetch_sped_placement(2024, level = "state") \%>\%
   filter(dimension == "disability",
          environment == "gen_ed_80_plus") \%>\%
   select(subgroup, count, percent) \%>\%
   arrange(desc(percent))
 
-# 4. Preschool placement (statewide, by environment)
-fetch_sped_placement(2025, age_group = "3-5", level = "state")
+# 4. Earlier-year district 5-21 (pre-2025 returns counts only)
+fetch_sped_placement(2022, age_group = "5-21", level = "district")
 }
 }
 \seealso{

@@ -4,7 +4,7 @@ Title: A Simple Interface for Accessing NJ DOE School Data in R and Python
 Description: R functions (with Python bindings) to import NJ school data,
     including assessment, enrollment, and accountability data from the
     New Jersey Department of Education.
-Version: 0.9.12
+Version: 0.9.13
 Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
     email = "almartin@gmail.com")
 License: MIT + file LICENSE

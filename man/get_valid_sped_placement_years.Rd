@@ -10,6 +10,12 @@ get_valid_sped_placement_years()
 integer vector of supported end years
 }
 \description{
-Valid years for SPED placement / educational-environment data
+Returns the integer end_year values currently wired up for
+\code{\link{fetch_sped_placement}}. Every
+(end_year, age_group, level) combination across 2020-2025 returns data.
+State-level slices that NJ DOE published only as PDFs (state 5-21 for
+2020-2022, state 3-5 for 2020-2022) are served from bundled CSVs
+transcribed from those PDFs; see the audit trail under
+inst/extdata/sped-placement-pdf-transcribed/.
 }
 \keyword{internal}

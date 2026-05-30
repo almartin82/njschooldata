@@ -1,0 +1,27 @@
+{
+  "end_year": 2022,
+  "age_group": "5-21",
+  "level": "state",
+  "pdf_filename": "5_21 Placement.pdf",
+  "pdf_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21 Placement.pdf",
+  "pdf_sha256": "421f039ee28fcb14d14bb3e45704b568faaa63b66888c53a1b3f31b58d4d8b83",
+  "transcribed_at": "2026-05-30T03:18:17Z",
+  "transcriber": "njschooldata maintainer (PR #279 amendment)",
+  "extraction_tool": "data-raw/transcribe-sped-placement-pdfs.py via poppler pdftotext -layout",
+  "environments_present": [
+    "gen_ed_80_plus",
+    "gen_ed_40_79",
+    "gen_ed_less_40",
+    "separate_school",
+    "residential_facility",
+    "homebound_hospital"
+  ],
+  "environments_omitted": [
+    "correction_facility"
+  ],
+  "omitted_reason": "Not reported in source PDF.",
+  "notes": [
+    "NJ DOE source-doc error: on PDF page 2 (Separate Settings) the LEP Status table prints English Learner = 3705 / Non-English Learner = 9255 -- identical to the Female = 3705 / Male = 9255 row on the same page's Gender table, and with the same Total row (12960/292/520). This appears to be a copy-paste of the Gender values into the LEP rows. We transcribe what the PDF prints and flag the anomaly here; downstream consumers should compare against the Regular Education page LEP values (page 1, EL = 9427 across the three Regular environments) for sanity-checking.",
+    "deaf_blindness Total is suppressed on both pages; subgroup_total is empty (NA)."
+  ]
+}

@@ -10,7 +10,6 @@ sped_placement_cache_dir()
 absolute path to the cache directory (created lazily on use)
 }
 \description{
-Mirrors \code{njsd_workbook_cache_dir()} for SPR -- the placement workbook
-is large enough that we cache it on disk across sessions.
+Directory holding cached SPED placement workbooks
 }
 \keyword{internal}
