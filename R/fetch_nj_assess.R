@@ -300,6 +300,16 @@ tidy_nj_assess <- function(assess_name, df) {
 
   out <- dplyr::bind_rows(result_list)
 
+  # ----- school_code canonicalization (issue #26) ------------------------
+  # NJ DOE files report district-wide rows with EITHER an empty/blank
+  # School_Code field OR a literal "000" sentinel, depending on the year
+  # and layout revision. Both encode the same logical record (a
+  # district-aggregate row), but downstream filters like
+  # `filter(school_code == "000")` vs `filter(is.na(school_code))`
+  # silently disagree. Collapse both forms to NA so the post-tidy
+  # column has exactly one canonical value for "no school".
+  out <- canonicalize_legacy_assess_school_code(out)
+
   # ----- selector flags (PARCC parity, issue #96) ------------------------
   # Mirror the entity-classification flags emitted by process_parcc() so
   # downstream code can `filter(is_district)` / `filter(is_state)` etc.
@@ -314,6 +324,49 @@ tidy_nj_assess <- function(assess_name, df) {
   out <- assign_legacy_assess_flags(out)
 
   return(out)
+}
+
+
+#' @title canonicalize school_code in tidy legacy assessment output
+#'
+#' @description Collapses the multiple "no school here" encodings emitted
+#' by the raw NJ DOE NJASK/HSPA/GEPA files into a single canonical value
+#' (\code{NA_character_}).
+#'
+#' Issue #26 documents that the raw fixed-width layouts use two different
+#' encodings for district-aggregate rows in the same column:
+#' \itemize{
+#'   \item \code{""} (whitespace-only, after trimming the padded field)
+#'   \item \code{"000"} (a literal three-digit zero sentinel)
+#' }
+#' Both mean "this row is not a school." Without normalization,
+#' downstream filters silently disagree:
+#' \code{filter(school_code == "000")} drops the blank-encoded rows,
+#' \code{filter(is.na(school_code))} drops the "000"-encoded rows, and
+#' neither filter returns the full set of district-aggregate rows.
+#'
+#' After this function runs, \code{is.na(school_code)} is the single,
+#' correct test for "not a school." Real school codes
+#' (\code{"001"}..\code{"999"} per layout_njask) are preserved unchanged.
+#'
+#' The function is idempotent: applying it twice yields the same result.
+#'
+#' @param df a tidied NJASK/HSPA/GEPA data frame (must have a
+#'   \code{school_code} column).
+#' @return \code{df} with \code{school_code} normalized.
+#' @keywords internal
+canonicalize_legacy_assess_school_code <- function(df) {
+  if (!"school_code" %in% names(df)) return(df)
+
+  sc <- as.character(df$school_code)
+  sc_trim <- trimws(sc)
+
+  # Treat both whitespace-only and "000" as district-aggregate sentinels.
+  district_aggregate <- !is.na(sc) & (sc_trim == "" | sc_trim == "000")
+  sc[district_aggregate] <- NA_character_
+
+  df$school_code <- sc
+  df
 }
 
 
