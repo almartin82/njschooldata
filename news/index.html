@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,19 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.15" id="njschooldata-0915">njschooldata 0.9.15<a class="anchor" aria-label="anchor" href="#njschooldata-0915"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-15">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-15"></a></h3>
+<ul><li>
+<p><code><a href="../reference/get_one_rc_database.html">get_one_rc_database()</a></code> / <code><a href="../reference/fetch_msgp.html">fetch_msgp()</a></code> / <code><a href="../reference/get_and_process_msgp.html">get_and_process_msgp()</a></code> now resolve again for end_years 2012-2019. NJ DOE retired the <code>rc.doe.state.nj.us</code> host (now 301-redirects to <code>nj.gov/education/spr/</code>) and removed the <code>/education/schoolperformance/archive/</code> tree, so every Performance Report database URL hardcoded in <code>R/report_card.R</code> had been returning 404 with no replacement on the public site. The bulk PR databases now live in two places:</p>
+<ul><li>2011-12 through 2014-15 (legacy single-workbook era): <code>nj.gov/education/spr/download/archive/&lt;YYYYYY&gt;/&lt;file&gt;</code> – same filenames as the old tree, just a different host path.</li>
+<li>2015-16 through 2018-19 (split school/district workbooks): <code>nj.gov/education/sprreports/download/DataFiles/&lt;YYYY-YYYY&gt;/</code>, with <code>PerformanceReports.xlsx</code> renamed to <code>Database_SchoolDetail.xlsx</code> and <code>DistrictPerformanceReports.xlsx</code> renamed to <code>Database_DistrictStateDetail.xlsx</code>. 2015-16 has no separate district workbook; the school workbook carries <code>SchoolMedian</code>/<code>DistrictMedian</code>/<code>StatewideMedian</code> columns, which is what <code>get_and_process_msgp(2016)</code> already expects.</li>
+</ul><p><code>njdoe_base_urls$performance</code> in <code>R/config_urls.R</code> is updated for the same reason. The dead URL pattern in <code>R/report_card.R:71-75,171-176</code> was confirmed 404 across all 11 entries; the new pattern was discovered by reading <code>nj.gov/education/spr/download/script/download.js</code> (the SPR Download page builds its file list dynamically) and verified with end-to-end fetches for 2012, 2014, 2016, and 2017.</p>
+</li>
+<li><p><code>tests/testthat/test_msgp.R</code> now includes <code>is_charter</code> in the expected column list for sgp 2016/2017/2018/2019. The <code>is_charter</code> flag was added to <code><a href="../reference/get_and_process_msgp.html">get_and_process_msgp()</a></code> output in commit <code>8eb714c8</code> but the column-name assertions in the test were never updated, so all four <code>sgp works with &lt;year&gt; data</code> tests had been failing on master with a spurious “expected[8:10]” mismatch unrelated to the URL fix.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.14" id="njschooldata-0914">njschooldata 0.9.14<a class="anchor" aria-label="anchor" href="#njschooldata-0914"></a></h2>
 <div class="section level3">
