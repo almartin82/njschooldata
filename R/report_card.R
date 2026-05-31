@@ -67,14 +67,27 @@ get_one_rc_database <- function(end_year) {
 
 get_standalone_rc_database <- function(end_year) {
   
+  # NJ DOE retired the rc.doe.state.nj.us host (now 301 -> nj.gov/education/spr/)
+  # and the /education/schoolperformance/archive/ tree (now 404, see meta refresh
+  # at /education/schoolperformance/). Two new patterns took their place:
+  #
+  #   2011-12 -> 2014-15:  /education/spr/download/archive/<YYYYYY>/<file>
+  #                        (filenames preserved from the legacy tree)
+  #   2015-16 -> current:  /education/sprreports/download/DataFiles/<YYYY-YYYY>/
+  #                        Database_SchoolDetail.xlsx (renamed from
+  #                        PerformanceReports.xlsx). 2015-16 has no separate
+  #                        district workbook; the school workbook carries
+  #                        SchoolMedian + DistrictMedian + StatewideMedian
+  #                        columns, which is what get_and_process_msgp(2016)
+  #                        already expects.
   pr_urls <- list(
-    "2016" = "https://rc.doe.state.nj.us/ReportsDatabase/15-16/PerformanceReports.xlsx",
-    "2015" = "https://nj.gov/education/schoolperformance/archive/201415/2015PRDATABASE.xlsx",
-    "2014" = "https://nj.gov/education/schoolperformance/archive/201314/2014%20performance%20report%20database.xlsx",
-    "2013" = "https://nj.gov/education/schoolperformance/archive/201213/nj%20pr13%20database.xlsx",
-    "2012" = "https://nj.gov/education/schoolperformance/archive/201112/nj%20pr12%20database.xlsx"
-    
-    # 2003-2011 report cards deleted
+    "2016" = "https://www.nj.gov/education/sprreports/download/DataFiles/2015-2016/Database_SchoolDetail.xlsx",
+    "2015" = "https://www.nj.gov/education/spr/download/archive/201415/2015PRDATABASE.xlsx",
+    "2014" = "https://www.nj.gov/education/spr/download/archive/201314/2014%20performance%20report%20database.xlsx",
+    "2013" = "https://www.nj.gov/education/spr/download/archive/201213/nj%20pr13%20database.xlsx",
+    "2012" = "https://www.nj.gov/education/spr/download/archive/201112/nj%20pr12%20database.xlsx"
+
+    # 2003-2011 report cards deleted (no archive available on nj.gov or Wayback)
     # "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
     # "2010" = "http://www.nj.gov/education/reportcard/2010/database/RC10%20database.xls",
     # "2009" = "http://www.nj.gov/education/reportcard/2009/database/RC09%20database.xls",
@@ -167,13 +180,17 @@ get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 
 get_merged_rc_database <- function(end_year) {
   
+  # rc.doe.state.nj.us was retired; the merged-format PR databases moved to
+  # /education/sprreports/download/DataFiles/<YYYY-YYYY>/ and were renamed
+  # PerformanceReports.xlsx          -> Database_SchoolDetail.xlsx
+  # DistrictPerformanceReports.xlsx  -> Database_DistrictStateDetail.xlsx
   pr_urls <- list(
-    "sch_2019" = "https://rc.doe.state.nj.us/ReportsDatabase/PerformanceReports.xlsx",
-    "dist_2019" = "https://rc.doe.state.nj.us/ReportsDatabase/DistrictPerformanceReports.xlsx",
-    "sch_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/17-18/PerformanceReports.xlsx",
-    "dist_2018" = "https://rc.doe.state.nj.us/ReportsDatabase/17-18/DistrictPerformanceReports.xlsx",
-    "sch_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/PerformanceReports.xlsx",
-    "dist_2017" = "https://rc.doe.state.nj.us/ReportsDatabase/16-17/DistrictPerformanceReports.xlsx"
+    "sch_2019"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_SchoolDetail.xlsx",
+    "dist_2019" = "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_DistrictStateDetail.xlsx",
+    "sch_2018"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_SchoolDetail.xlsx",
+    "dist_2018" = "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_DistrictStateDetail.xlsx",
+    "sch_2017"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_SchoolDetail.xlsx",
+    "dist_2017" = "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_DistrictStateDetail.xlsx"
   )
   
   # get district and school df

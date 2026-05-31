@@ -11,8 +11,8 @@ test_that("sgp works with 2016 data", {
   expect_equal(
     names(sgp16),
     c("county_id", "district_id", "school_id",
-      "end_year", "subject", "grade", "subgroup", "median_sgp", 
-      "is_district", "is_school")
+      "end_year", "subject", "grade", "subgroup", "median_sgp",
+      "is_district", "is_school", "is_charter")
   )
   
   expect_length(sgp16 %>%
@@ -36,8 +36,8 @@ test_that("sgp works with 2017 data", {
   expect_equal(
     names(sgp17),
     c("county_id", "district_id", "school_id",
-      "end_year", "subject", "grade", "subgroup", "median_sgp", 
-      "is_district", "is_school")
+      "end_year", "subject", "grade", "subgroup", "median_sgp",
+      "is_district", "is_school", "is_charter")
   )
 })
 
@@ -47,9 +47,9 @@ test_that("sgp works with 2018 data", {
   expect_s3_class(sgp18, 'data.frame')
   expect_equal(
     names(sgp18),
-    c("county_id", "district_id", "school_id", 
-      "end_year", "subject", "grade", "subgroup", "median_sgp", 
-      "is_district", "is_school")
+    c("county_id", "district_id", "school_id",
+      "end_year", "subject", "grade", "subgroup", "median_sgp",
+      "is_district", "is_school", "is_charter")
   )
 })
 
@@ -59,9 +59,9 @@ test_that("sgp works with 2019 data", {
    expect_s3_class(sgp19, 'data.frame')
    expect_equal(
       names(sgp19),
-      c("county_id", "district_id", "school_id", 
-        "end_year", "subject", "grade", "subgroup", "median_sgp", 
-        "is_district", "is_school")
+      c("county_id", "district_id", "school_id",
+        "end_year", "subject", "grade", "subgroup", "median_sgp",
+        "is_district", "is_school", "is_charter")
    )
 })
 
