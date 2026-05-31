@@ -1,6 +1,18 @@
 #' Get and Process mSGP data
 #'
-#' @param end_year ending school year.  valid values are currently 2012-2018.
+#' @param end_year ending school year. Valid values are 2012-2019.
+#'
+#'   District-level rows (`is_district == TRUE`) are only produced for
+#'   `end_year >= 2016`. NJ DOE did not publish district mSGP in the
+#'   public Performance Report database for 2012-2015 (the `sgp` sheet
+#'   in those workbooks contains only school-level rows -- see the
+#'   2014-15 layout doc at
+#'   `nj.gov/education/spr/download/archive/201415/nj_pr15_layout.xlsx`).
+#'   Pre-2016 district mSGP summaries were distributed confidentially
+#'   through NJ SMART / NJDOE Homeroom under TEACHNJ / AchieveNJ (see
+#'   the December 2014 release memo at
+#'   `nj.gov/education/broadcasts/2014/DEC/02/12604/`) and require
+#'   per-district credentials. See issue #114 for the full archaeology.
 #'
 #' @return df of msgp data, schoolwide (and district-wide and by grade level, if reported)
 #' @keywords internal

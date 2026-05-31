@@ -1,3 +1,18 @@
+# njschooldata 0.9.16
+
+## Documentation
+
+* `?fetch_msgp` / `?get_and_process_msgp` now document that district-level
+  rows (`is_district == TRUE`) are only produced for `end_year >= 2016`,
+  and that NJ DOE never published district mSGP in the public Performance
+  Report database for 2012-2015. The pre-2016 `sgp` sheet contains only
+  school-level rows (confirmed by inspecting the 2011-12 through 2014-15
+  workbooks and the 2014-15 layout doc); district mSGP summaries from
+  that era were distributed confidentially through NJ SMART / NJDOE
+  Homeroom under TEACHNJ / AchieveNJ and require per-district credentials.
+  The roxygen also corrects the stale "valid values are currently 2012-2018"
+  upper bound to 2012-2019. Closes #114.
+
 # njschooldata 0.9.15
 
 ## Bug fixes
