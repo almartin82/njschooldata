@@ -2,10 +2,9 @@ project:
   type: website
   output-dir: _site
   execute-dir: project
-  render:
-    - index.qmd
-    - about.qmd
-    - profiles/*.qmd
+  # No explicit render list: Quarto renders index.qmd, about.qmd, and every
+  # generated {district_id}.qmd at the site root, skipping _-prefixed includes.
+  # District stubs at root -> clean URLs at .../profiles/{id}.html.
 
 website:
   title: "NJ District Profiles"
@@ -49,4 +48,4 @@ format:
       echo: true
       warning: false
       message: false
-      freeze: false
+      freeze: auto

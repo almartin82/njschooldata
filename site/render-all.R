@@ -13,8 +13,9 @@ suppressMessages({ library(dplyr) })
 
 SITE_DIR    <- "site"
 BUNDLE_DIR  <- file.path(SITE_DIR, "_bundles")
-PROFILE_DIR <- file.path(SITE_DIR, "profiles")
-dir.create(PROFILE_DIR, showWarnings = FALSE)
+# District stubs render at the site root so pages deploy to
+# .../profiles/{id}.html (clean share URLs), not .../profiles/profiles/{id}.html.
+PROFILE_DIR <- SITE_DIR
 
 dir_all <- readRDS(file.path(BUNDLE_DIR, "_statewide", "directory.rds"))
 name_for <- function(id) {
@@ -42,7 +43,7 @@ subtitle: "New Jersey district profile"
 district_id <- "%s"
 ```
 
-{{< include ../_district-body.qmd >}}
+{{< include _district-body.qmd >}}
 ', yaml_q(name_for(id)), id)
 }
 
