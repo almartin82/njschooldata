@@ -74,3 +74,8 @@ site/*.html
 site/*.rmarkdown
 site/site_libs/
 site/_freeze/
+site/_discovery/
+site/_stories/
+site/almanac-[0-9]*.qmd
+site/_almanac_figs/
+site/_quarto_internal_scss_error.scss
