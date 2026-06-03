@@ -414,7 +414,7 @@ sessionInfo()
 #> [33] snakecase_0.11.1  stringr_1.6.0     bit_4.6.0         fs_2.1.0         
 #> [37] vroom_1.7.1       ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
 #> [41] desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1     bslib_0.11.0     
-#> [45] glue_1.8.1        systemfonts_1.3.2 xfun_0.57         tibble_3.3.1     
+#> [45] glue_1.8.1        systemfonts_1.3.2 xfun_0.58         tibble_3.3.1     
 #> [49] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   
 #> [53] readr_2.2.0       compiler_4.6.0    readxl_1.5.0
 ```

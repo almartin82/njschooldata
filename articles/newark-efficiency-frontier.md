@@ -497,7 +497,7 @@ sessionInfo()
 #> [4] ggplot2_4.0.3       njschooldata_0.9.16
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       xfun_0.57          bslib_0.11.0       ggrepel_0.9.8     
+#>  [1] gtable_0.3.6       xfun_0.58          bslib_0.11.0       ggrepel_0.9.8     
 #>  [5] lattice_0.22-9     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.0       
 #>  [9] generics_0.1.4     curl_7.1.0         parallel_4.6.0     tibble_3.3.1      
 #> [13] pkgconfig_2.0.3    Matrix_1.7-5       RColorBrewer_1.1-3 S7_0.2.2          

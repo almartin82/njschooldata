@@ -783,7 +783,7 @@ sessionInfo()
 #> [37] fs_2.1.0           vroom_1.7.1        foreign_0.8-91     ragg_1.5.2        
 #> [41] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0     
 #> [45] pillar_1.11.1      bslib_0.11.0       gtable_0.3.6       glue_1.8.1        
-#> [49] systemfonts_1.3.2  xfun_0.57          tidyselect_1.2.1   knitr_1.51        
+#> [49] systemfonts_1.3.2  xfun_0.58          tidyselect_1.2.1   knitr_1.51        
 #> [53] farver_2.1.2       htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.31    
 #> [57] readr_2.2.0        compiler_4.6.0     S7_0.2.2           readxl_1.5.0
 ```
