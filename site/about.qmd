@@ -1,0 +1,73 @@
+---
+title: "About the Data"
+subtitle: "Where these numbers come from, and what they mean"
+toc: true
+---
+
+## The short version
+
+Every figure on this site is fetched directly from the **New Jersey Department of
+Education** using the open-source [`njschooldata`](https://github.com/almartin82/njschooldata)
+R package. There is no hand-entered data, no estimation, and no fabrication. If a
+number isn't published by the state, the section says so rather than guessing.
+
+## Data sources
+
+| Section | Source | Years shown |
+|---|---|---|
+| Enrollment & demographics | NJ DOE Fall Enrollment files | 2015–2026 |
+| Spending | [Taxpayers' Guide to Educational Spending](https://www.nj.gov/education/guide/) (TGES) | 2014–2024 (actuals) |
+| Graduation | NJ DOE Four-Year Adjusted Cohort Graduation Rate | 2013–2025 |
+| High-school proficiency | NJGPA (NJ Graduation Proficiency Assessment) | 2022–2025 |
+| Chronic absenteeism | NJ School Performance Reports | 2019–2024 |
+| Staffing ratios | NJ School Performance Reports | latest year |
+
+## How to read the comparisons
+
+Most charts compare a district to its **peer group median** (the dashed line).
+Peers are defined by **District Factor Group (DFG)** — the NJ DOE's
+socioeconomic classification of districts, lettered A (highest need) through J
+(most affluent). Comparing a district to demographically similar districts is far
+more meaningful than comparing it to the statewide average. Charter and special
+districts without a DFG are compared against all districts.
+
+Percentiles ("72nd percentile among 103 DFG I peers") describe where a district
+falls within its peer group on that metric, from the latest available year.
+
+## Caveats and suppression
+
+- **Small cells are suppressed at the source.** The NJ DOE withholds counts for
+  very small groups to protect student privacy; these appear as missing, never as
+  zero or an estimate.
+- **Spending is district-level.** TGES reports traditional districts, not
+  individual charters, so charter profiles omit the spending section.
+- **Per-pupil spending uses "actuals."** Figures lag ~2 years behind the budget
+  year, consistent with how TGES reports settled costs.
+- **Some districts don't enroll every grade.** A K–8 district has no graduation
+  rate; a profile marks such sections as not applicable rather than showing an
+  empty chart.
+
+## Reproduce any number
+
+Everything here is one function call away:
+
+```r
+# install.packages("remotes")
+remotes::install_github("almartin82/njschooldata")
+library(njschooldata)
+
+fetch_enr(2026, tidy = TRUE)        # enrollment, all districts
+fetch_grad_rate(2025)               # graduation rates
+fetch_tges(2024)                    # spending (Taxpayers' Guide)
+fetch_absence(2024, level = "district")  # chronic absenteeism
+```
+
+The full data engine — 80+ fetchers covering assessments, finance, staffing,
+discipline, and more — is documented at
+[almartin82.github.io/njschooldata](https://almartin82.github.io/njschooldata/).
+
+## Who made this
+
+Built by [Andy Martin](https://github.com/almartin82) on top of `njschooldata`,
+the open interface to New Jersey school data. Found an error? Open an issue on
+[GitHub](https://github.com/almartin82/njschooldata/issues).

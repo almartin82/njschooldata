@@ -1,0 +1,201 @@
+```{r body-setup, include=FALSE}
+source("R/theme.R")
+source("R/charts.R")
+source("R/bundle.R")
+library(dplyr); library(ggplot2); library(scales); library(knitr)
+b <- load_bundle(district_id)
+m <- b$meta
+```
+
+```{r header, echo=FALSE, results='asis'}
+dfg_txt <- if (!is.na(m$dfg)) paste0("DFG ", m$dfg) else "no DFG (charter / special)"
+type_txt <- if (isTRUE(m$is_charter)) "Charter" else "Traditional public"
+web_txt <- if (!is.null(m$website) && !is.na(m$website) && nzchar(m$website))
+  sprintf(" &nbsp;·&nbsp; [website](%s)", m$website) else ""
+cat(sprintf("**%s County** &nbsp;·&nbsp; %s district &nbsp;·&nbsp; %s\n\n",
+            tools::toTitleCase(tolower(m$county_name)), type_txt, dfg_txt))
+if (has_data(b$enr_total)) {
+  latest_enr <- b$enr_total %>% filter(end_year == max(end_year)) %>% slice(1)
+  cat(sprintf("> **%s students** enrolled (%s) &nbsp;·&nbsp; district code `%s`%s\n\n",
+              fmt_int(latest_enr$n_students), latest_enr$end_year, m$district_id, web_txt))
+} else {
+  cat(sprintf("> District code `%s`%s\n\n", m$district_id, web_txt))
+}
+```
+
+## Enrollment
+
+```{r enr-trend, echo=FALSE}
+if (has_data(b$enr_total)) {
+  kable(b$enr_total %>% rename(`School year` = end_year, Students = n_students),
+        format.args = list(big.mark = ","), caption = "Total enrollment by year")
+}
+```
+
+```{r enr-trend-chart, echo=FALSE}
+#| fig-cap: "Total district enrollment over time."
+if (has_data(b$enr_total)) {
+  print(chart_trend(b$enr_total, "end_year", "n_students",
+    title = paste0(m$district_name, ": enrollment"),
+    subtitle = "Total students, district-wide", ylab = "Students", value_fmt = "comma"))
+} else cat("*Enrollment data not available for this district.*")
+```
+
+### Who the district serves
+
+```{r enr-demographics, echo=FALSE}
+#| fig-cap: "Racial/ethnic composition of enrollment over time (share)."
+if (has_data(b$enr_race)) {
+  print(chart_demographics(b$enr_race,
+    title = "Demographic composition", subtitle = "Share of total enrollment by year"))
+} else cat("*Demographic breakdown not available.*")
+```
+
+```{r enr-grades, echo=FALSE}
+#| fig-cap: "Latest-year enrollment by grade."
+if (has_data(b$enr_grades)) {
+  print(chart_grades(b$enr_grades,
+    title = paste0("Enrollment by grade (", b$enr_latest_year, ")"),
+    subtitle = "Where the district's students are"))
+} else cat("*Grade-level breakdown not available.*")
+```
+
+```{r enr-special, echo=FALSE, results='asis'}
+if (has_data(b$enr_special)) {
+  latest <- b$enr_special %>% filter(end_year == max(end_year))
+  lab <- c(econ_disadv="Economically disadvantaged", free_reduced_lunch="Free/reduced lunch",
+           lep="English learners", special_ed="Students with disabilities")
+  bullets <- latest %>% mutate(txt = sprintf("- **%s**: %s students (%s)",
+                ifelse(subgroup %in% names(lab), lab[subgroup], subgroup),
+                fmt_int(n_students), fmt_pct(as_pct_scale(pct))))
+  cat("**Special populations (", max(latest$end_year), "):**\n\n", sep="")
+  cat(paste(bullets$txt, collapse = "\n"))
+}
+```
+
+## Spending
+
+```{r spend-section, echo=FALSE, results='asis'}
+if (isTRUE(m$is_charter)) {
+  cat("*District-level fiscal data (Taxpayers' Guide to Educational Spending) is reported for traditional districts, not charters. Spending figures are not available for this district.*")
+} else if (!has_data(b$tges_pp)) {
+  cat("*Per-pupil spending data not available for this district.*")
+}
+```
+
+```{r spend-trend, echo=FALSE}
+#| fig-cap: "Per-pupil spending (actuals) over time, with peer-group median."
+if (!isTRUE(m$is_charter) && has_data(b$tges_pp)) {
+  pv <- if (!is.null(b$tges_pp_peer)) b$tges_pp_peer$peer_median else NULL
+  print(chart_trend(b$tges_pp, "end_year", "per_pupil",
+    title = "Per-pupil spending", subtitle = "Total cost per pupil (actuals), vs peer median",
+    ylab = "Per pupil ($)", value_fmt = "dollar", color = nj_gold, peer_value = pv))
+}
+```
+
+```{r spend-peer, echo=FALSE, results='asis'}
+if (!isTRUE(m$is_charter) && has_data(b$tges_pp_peer) && is.finite(b$tges_pp_peer$value)) {
+  pp <- b$tges_pp_peer
+  cat(sprintf("In %s, the district spent **%s per pupil** — %s. The peer median was %s.\n\n",
+    pp$year, fmt_dollar(pp$value),
+    if (!is.na(pp$pctile)) peer_phrase(pp$pctile, m$n_peers, m$dfg) else "peer rank n/a",
+    fmt_dollar(pp$peer_median)))
+}
+```
+
+```{r spend-composition, echo=FALSE}
+#| fig-cap: "How each per-pupil dollar is spent (latest year)."
+if (!isTRUE(m$is_charter) && has_data(b$tges_comp)) {
+  comp_row <- b$tges_comp %>% filter(end_year == max(end_year)) %>% slice(1)
+  print(chart_composition(comp_row,
+    title = paste0("Where the money goes (", max(b$tges_comp$end_year), ")"),
+    subtitle = "Share of per-pupil spending by category"))
+}
+```
+
+## Outcomes
+
+```{r grad-trend, echo=FALSE}
+#| fig-cap: "Four-year graduation rate over time, with peer-group median."
+if (has_data(b$grad_trend)) {
+  gt <- b$grad_trend %>% mutate(grad_rate = as_pct_scale(grad_rate))
+  pv <- if (!is.null(b$grad_peer)) as_pct_scale(b$grad_peer$peer_median) else NULL
+  print(chart_trend(gt, "end_year", "grad_rate",
+    title = "Four-year graduation rate", subtitle = "District-wide, vs peer median",
+    ylab = "Graduation rate (%)", value_fmt = "pct", color = nj_teal, peer_value = pv))
+} else cat("*Graduation data not available (district may not enroll high-school grades).*")
+```
+
+```{r grad-peer, echo=FALSE, results='asis'}
+if (has_data(b$grad_peer) && is.finite(b$grad_peer$value)) {
+  gp <- b$grad_peer
+  cat(sprintf("Latest four-year graduation rate: **%s** (%s) — %s.\n\n",
+    fmt_pct(as_pct_scale(gp$value)), gp$year, peer_phrase(gp$pctile, m$n_peers, m$dfg)))
+}
+```
+
+```{r assess-trend, echo=FALSE}
+#| fig-cap: "NJGPA (high-school) percent proficient and above, by subject."
+if (has_data(b$njgpa_trend)) {
+  at <- b$njgpa_trend %>% mutate(proficient_above = as_pct_scale(proficient_above))
+  print(
+    ggplot(at, aes(x = testing_year, y = proficient_above, color = test_name)) +
+      geom_line(linewidth = 1.3) + geom_point(size = 2.6) +
+      scale_y_continuous(labels = label_number(suffix = "%"), limits = c(0, NA)) +
+      scale_color_manual(values = c(ela = nj_navy, math = nj_red), na.value = "gray50") +
+      labs(title = "High-school proficiency (NJGPA)",
+           subtitle = "Percent proficient and above", x = NULL, y = "% proficient+") +
+      theme_nj()
+  )
+} else cat("*High-school assessment (NJGPA) data not available for this district.*")
+```
+
+## Climate & equity
+
+```{r absence-trend, echo=FALSE}
+#| fig-cap: "Chronic absenteeism rate over time, with peer-group median."
+if (has_data(b$absence_trend)) {
+  ab <- b$absence_trend %>% mutate(chronically_absent_rate = as_pct_scale(chronically_absent_rate))
+  pv <- if (!is.null(b$absence_peer)) as_pct_scale(b$absence_peer$peer_median) else NULL
+  print(chart_trend(ab, "end_year", "chronically_absent_rate",
+    title = "Chronic absenteeism", subtitle = "Share of students chronically absent, vs peer median",
+    ylab = "Chronically absent (%)", value_fmt = "pct", color = nj_red, peer_value = pv))
+} else cat("*Chronic absenteeism data not available for this district.*")
+```
+
+## Staff
+
+```{r staff, echo=FALSE, results='asis'}
+if (has_data(b$staff)) {
+  s <- b$staff
+  rows <- c(
+    "Student-to-teacher ratio"   = s$student_teacher_district,
+    "Student-to-administrator"   = s$student_admin_district,
+    "Student-to-counselor"       = s$student_counselor_district,
+    "Student-to-nurse"           = s$student_nurse_district
+  )
+  rows <- rows[!is.na(rows)]
+  if (length(rows)) {
+    cat(knitr::kable(data.frame(Metric = names(rows), Ratio = unname(rows)),
+                     caption = sprintf("Staffing ratios (%s)", s$end_year)))
+  }
+} else cat("*Staffing ratio data not available for this district.*")
+```
+
+---
+
+```{r footer, echo=FALSE, results='asis'}
+cat(sprintf(
+"::: {.callout-note collapse=\"true\"}\n## Data sources & how to reproduce\n
+All figures on this page are fetched from the New Jersey Department of Education via the open-source [`njschooldata`](https://github.com/almartin82/njschooldata) R package. Nothing is hand-entered or estimated.\n
+```r
+library(njschooldata)
+fetch_enr(%s, tidy = TRUE) |> dplyr::filter(district_id == \"%s\")   # enrollment
+fetch_grad_rate(%s) |> dplyr::filter(district_id == \"%s\")          # graduation
+fetch_tges(%s)                                                       # spending (TGES)
+```\n
+Suppression: small cells are suppressed at the source by NJ DOE and appear as missing. Spending uses TGES \"actuals\"; peer comparisons use District Factor Group (DFG) peers.\n:::\n",
+if (is.na(b$enr_latest_year)) 2026 else b$enr_latest_year, m$district_id,
+if (has_data(b$grad_peer)) b$grad_peer$year else 2025, m$district_id,
+if (has_data(b$tges_pp)) max(b$tges_pp$end_year) else 2025))
+```

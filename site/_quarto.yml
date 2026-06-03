@@ -1,0 +1,52 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+  render:
+    - index.qmd
+    - about.qmd
+    - profiles/*.qmd
+
+website:
+  title: "NJ District Profiles"
+  description: "A data profile for every New Jersey school district — enrollment, spending, outcomes, and climate, straight from the NJ DOE."
+  site-url: "https://almartin82.github.io/njschooldata/profiles/"
+  repo-url: "https://github.com/almartin82/njschooldata"
+  page-navigation: true
+  back-to-top-navigation: true
+  navbar:
+    background: "#16356B"
+    search: true
+    left:
+      - text: "All Districts"
+        href: index.qmd
+      - text: "About the Data"
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/almartin82/njschooldata
+  page-footer:
+    background: light
+    left: "Built with [njschooldata](https://github.com/almartin82/njschooldata). Data: NJ Department of Education."
+    right: "Numbers trace to NJ DOE sources. No data is fabricated."
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    toc-title: "On this page"
+    grid:
+      body-width: 920px
+    fig-width: 9
+    fig-height: 5
+    fig-dpi: 120
+    code-fold: true
+    code-summary: "Show the code"
+    code-tools: false
+    df-print: kable
+    execute:
+      echo: true
+      warning: false
+      message: false
+      freeze: false

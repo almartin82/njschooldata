@@ -60,3 +60,13 @@ scratch/
 
 # Private business-strategy doc — must NEVER be committed to a public repo
 GOALS.md
+
+# District Profiles site build artifacts
+site/_bundles/
+site/_site/
+site/.quarto/
+site/dev-explore.R
+site/dev-explore.out
+site/*_files/
+site/*.out
+site/profiles/
