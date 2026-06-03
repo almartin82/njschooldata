@@ -10,14 +10,17 @@ m <- b$meta
 ```{r header, echo=FALSE, results='asis'}
 dfg_txt <- if (!is.na(m$dfg)) paste0("DFG ", m$dfg) else "no DFG (charter / special)"
 type_txt <- if (isTRUE(m$is_charter)) "Charter" else "Traditional public"
-latest_enr <- b$enr_total %>% filter(end_year == max(end_year))
-cat(sprintf(
-"**%s County** &nbsp;·&nbsp; %s district &nbsp;·&nbsp; %s\n\n",
-m$county_name, type_txt, dfg_txt))
-cat(sprintf(
-"> **%s students** enrolled (%s) &nbsp;·&nbsp; district code `%s`%s\n\n",
-fmt_int(latest_enr$n_students), latest_enr$end_year, m$district_id,
-if (!is.na(m$website) && nzchar(m$website)) sprintf(" &nbsp;·&nbsp; [website](%s)", m$website) else ""))
+web_txt <- if (!is.null(m$website) && !is.na(m$website) && nzchar(m$website))
+  sprintf(" &nbsp;·&nbsp; [website](%s)", m$website) else ""
+cat(sprintf("**%s County** &nbsp;·&nbsp; %s district &nbsp;·&nbsp; %s\n\n",
+            tools::toTitleCase(tolower(m$county_name)), type_txt, dfg_txt))
+if (has_data(b$enr_total)) {
+  latest_enr <- b$enr_total %>% filter(end_year == max(end_year)) %>% slice(1)
+  cat(sprintf("> **%s students** enrolled (%s) &nbsp;·&nbsp; district code `%s`%s\n\n",
+              fmt_int(latest_enr$n_students), latest_enr$end_year, m$district_id, web_txt))
+} else {
+  cat(sprintf("> District code `%s`%s\n\n", m$district_id, web_txt))
+}
 ```
 
 ## Enrollment
@@ -192,7 +195,7 @@ fetch_grad_rate(%s) |> dplyr::filter(district_id == \"%s\")          # graduatio
 fetch_tges(%s)                                                       # spending (TGES)
 ```\n
 Suppression: small cells are suppressed at the source by NJ DOE and appear as missing. Spending uses TGES \"actuals\"; peer comparisons use District Factor Group (DFG) peers.\n:::\n",
-b$enr_latest_year, m$district_id,
+if (is.na(b$enr_latest_year)) 2026 else b$enr_latest_year, m$district_id,
 if (has_data(b$grad_peer)) b$grad_peer$year else 2025, m$district_id,
 if (has_data(b$tges_pp)) max(b$tges_pp$end_year) else 2025))
 ```
