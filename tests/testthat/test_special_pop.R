@@ -63,7 +63,7 @@ test_that("ground truth value checks on 2018 special populations data", {
 )
 
 test_that("special populations data is enriched w/ enrollment, 2018", {
-   expect_equal(sp_18 %>%
+   expect_equal(sp18 %>%
                    filter(district_id == '3570',
                           school_id == '220',
                           subgroup == 'Economically Disadvantaged') %>%
@@ -97,8 +97,8 @@ test_that("ground truth value checks on 2019 special populations data", {
                 78.6)
    
    expect_equal(newark_sp_19 %>% 
-                   filter(subgroup == "IEP") %>% 
-                   pull(percent), 
+                   filter(subgroup == "students with disabilities") %>%
+                   pull(percent),
                 29.2)
    
    expect_equal(newark_sp_19 %>% 
