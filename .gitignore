@@ -57,3 +57,6 @@ scratch/
 
 # Claude Code working scratch (PDFs, text dumps, agent context)
 .claude/
+
+# Private business-strategy doc — must NEVER be committed to a public repo
+GOALS.md
