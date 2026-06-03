@@ -44,7 +44,7 @@ cat(sprintf("**%s districts** &nbsp;·&nbsp; **%s students** statewide &nbsp;·&
 disp <- tbl %>%
   mutate(District = ifelse(
     district_id %in% built,
-    sprintf('<a href="profiles/%s.html">%s</a>', district_id, district_name),
+    sprintf('<a href="%s.html">%s</a>', district_id, district_name),
     district_name)) %>%
   transmute(District, County = county, Type = type,
             DFG = ifelse(is.na(dfg), "—", dfg),

@@ -69,4 +69,8 @@ site/dev-explore.R
 site/dev-explore.out
 site/*_files/
 site/*.out
-site/profiles/
+site/[0-9]*.qmd
+site/*.html
+site/*.rmarkdown
+site/site_libs/
+site/_freeze/
