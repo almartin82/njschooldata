@@ -1,0 +1,58 @@
+---
+title: "New Jersey District Profiles"
+subtitle: "A data profile for every school district in the state"
+toc: false
+---
+
+```{r setup, include=FALSE}
+library(dplyr); library(DT)
+source("R/bundle.R")
+dir_all <- readRDS("_bundles/_statewide/directory.rds")
+dfg     <- readRDS("_bundles/_statewide/dfg.rds")
+enr     <- readRDS("_bundles/_statewide/enrollment.rds")
+
+latest_enr <- enr %>%
+  filter(subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(district_id) %>% slice_max(end_year, n = 1, with_ties = FALSE) %>%
+  ungroup() %>% select(district_id, enr_year = end_year, enrollment = n_students)
+
+built <- sub("\\.rds$", "", list.files("_bundles", pattern = "\\.rds$"))
+
+tbl <- dir_all %>%
+  transmute(district_id, district_name, county = tools::toTitleCase(tolower(county_name)),
+            type = ifelse(is_charter, "Charter", "Traditional")) %>%
+  left_join(dfg %>% select(district_id, dfg), by = "district_id") %>%
+  left_join(latest_enr, by = "district_id") %>%
+  filter(!is.na(district_name)) %>%
+  arrange(desc(enrollment))
+```
+
+Every number on these pages comes straight from the New Jersey Department of
+Education, fetched with the open-source [`njschooldata`](https://github.com/almartin82/njschooldata)
+engine. Pick a district to see its enrollment, demographics, spending, outcomes,
+and school-climate data, with every metric benchmarked against its
+[District Factor Group](about.qmd) peers. Nothing here is estimated or hand-entered.
+
+```{r summary, echo=FALSE, results='asis'}
+n_d <- nrow(tbl); n_built <- sum(tbl$district_id %in% built)
+tot <- sum(tbl$enrollment, na.rm = TRUE)
+cat(sprintf("**%s districts** &nbsp;·&nbsp; **%s students** statewide &nbsp;·&nbsp; **%s** profiles published so far\n\n",
+            format(n_d, big.mark=","), format(round(tot), big.mark=","), format(n_built, big.mark=",")))
+```
+
+```{r table, echo=FALSE}
+disp <- tbl %>%
+  mutate(District = ifelse(
+    district_id %in% built,
+    sprintf('<a href="profiles/%s.html">%s</a>', district_id, district_name),
+    district_name)) %>%
+  transmute(District, County = county, Type = type,
+            DFG = ifelse(is.na(dfg), "—", dfg),
+            Enrollment = enrollment)
+
+datatable(disp, escape = FALSE, rownames = FALSE,
+          options = list(pageLength = 25, order = list(list(4, "desc")),
+                         language = list(search = "Filter districts:")),
+          class = "stripe hover compact") |>
+  formatCurrency("Enrollment", currency = "", digits = 0)
+```
