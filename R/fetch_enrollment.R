@@ -254,7 +254,10 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
   }
 
   enr_data <- get_raw_enr(end_year) %>%
-    process_enr()
+    process_enr() %>%
+    # Attach federal NCES ids (LEAID / NCESSCH) on the wide frame so they carry
+    # through to tidy as well. Identifiers only — no federal data values.
+    attach_nces_ids()
 
   if (tidy) {
     enr_data <- tidy_enr(enr_data) %>%

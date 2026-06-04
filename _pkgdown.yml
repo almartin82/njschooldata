@@ -29,6 +29,7 @@ reference:
       - tidy_enr
       - enr_grade_aggs
       - id_enr_aggs
+      - attach_nces_ids
 
   - title: Assessment Data (NJSLA/PARCC)
     desc: Functions for NJSLA (2019+) and PARCC (2015-2018) assessment results

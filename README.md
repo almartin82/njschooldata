@@ -157,7 +157,7 @@ k_trend %>%
 
 | Category | Years | Function | Details |
 |----------|-------|----------|---------|
-| **Enrollment** | 2000-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant |
+| **Enrollment** | 2000-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
 | **Assessments** | 2004-2024 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-yr and 6-yr ACGR. District and school level |
 | **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
@@ -239,6 +239,8 @@ Full analysis with 15 stories:
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.
 
 **Census Day:** NJ enrollment counts are based on October 15 enrollment (ASSA reporting).
+
+**Federal NCES linkage:** `fetch_enr()` attaches the federal NCES identifiers to every enrollment row -- `nces_dist` (the 7-digit `LEAID`) and `nces_sch` (the 12-digit `NCESSCH`) -- so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep `NA` rather than a guessed id.
 
 **Known caveats:**
 - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency
