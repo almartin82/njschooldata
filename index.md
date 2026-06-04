@@ -171,7 +171,7 @@ COVID Kindergarten
 
 | Category | Years | Function | Details |
 |----|----|----|----|
-| **Enrollment** | 2000-2026 | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | State, county, district, school. Race, gender, FRPL, LEP, migrant |
+| **Enrollment** | 2000-2026 | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
 | **Assessments** | 2004-2024 | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) / [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md) / [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md) | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) / [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 4-yr and 6-yr ACGR. District and school level |
 | **Directory** | Current | [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md) / [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md) | Names, IDs, addresses, school type |
@@ -269,6 +269,17 @@ which can produce non-integer counts.
 
 **Census Day:** NJ enrollment counts are based on October 15 enrollment
 (ASSA reporting).
+
+**Federal NCES linkage:**
+[`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+attaches the federal NCES identifiers to every enrollment row –
+`nces_dist` (the 7-digit `LEAID`) and `nces_sch` (the 12-digit
+`NCESSCH`) – so NJ districts and schools join cleanly to the national
+NCES universe. These are identifiers only; all data values still come
+from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 +
+the NJ DOE directory); about 95% of districts and 97% of schools match,
+and entities absent from the crosswalk (new/closed/charter additions,
+state and county aggregate rows) keep `NA` rather than a guessed id.
 
 **Known caveats:** - 2020+ enrollment data includes state-level rows but
 the vignette aggregates from district-level for time-series

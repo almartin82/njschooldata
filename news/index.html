@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,9 +43,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.9.16" id="njschooldata-0916">njschooldata 0.9.16<a class="anchor" aria-label="anchor" href="#njschooldata-0916"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.9.17" id="njschooldata-0917">njschooldata 0.9.17<a class="anchor" aria-label="anchor" href="#njschooldata-0917"></a></h2>
 <div class="section level3">
-<h3 id="documentation-0-9-16">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-9-16"></a></h3>
+<h3 id="federal-nces-id-linkage-0-9-17">Federal NCES id linkage<a class="anchor" aria-label="anchor" href="#federal-nces-id-linkage-0-9-17"></a></h3>
+<ul><li>
+<code><a href="../reference/fetch_enr.html">fetch_enr()</a></code> now attaches federal NCES identifiers to enrollment in BOTH wide and tidy output: <code>nces_dist</code> (7-digit <code>LEAID</code>) on district and school rows, and <code>nces_sch</code> (12-digit <code>NCESSCH</code>) on school rows. These let NJ districts and schools join cleanly to the national NCES universe. Identifiers only — all data values still come from NJ DOE.</li>
+<li>New exported helper <code><a href="../reference/attach_nces_ids.html">attach_nces_ids()</a></code> performs the exact CDS → NCES join against a bundled, identifiers-only crosswalk (<code>inst/extdata/crosswalk/nj_nces_crosswalk.csv</code>); unmatched/ambiguous entities stay <code>NA</code>, never a guessed id. Coverage is ~95% of districts and ~97% of schools (CCD 2024 + NJ DOE directory vintage).</li>
+<li>New re-runnable build script <code>data-raw/build_nces_crosswalk.R</code> regenerates the crosswalk and cross-validates every LEAID against the CCD 2024 NJ universe.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-9-17">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-9-17"></a></h3>
 <ul><li>
 <code><a href="../reference/fetch_msgp.html">?fetch_msgp</a></code> / <code><a href="../reference/get_and_process_msgp.html">?get_and_process_msgp</a></code> now document that district-level rows (<code>is_district == TRUE</code>) are only produced for <code>end_year &gt;= 2016</code>, and that NJ DOE never published district mSGP in the public Performance Report database for 2012-2015. The pre-2016 <code>sgp</code> sheet contains only school-level rows (confirmed by inspecting the 2011-12 through 2014-15 workbooks and the 2014-15 layout doc); district mSGP summaries from that era were distributed confidentially through NJ SMART / NJDOE Homeroom under TEACHNJ / AchieveNJ and require per-district credentials. The roxygen also corrects the stale “valid values are currently 2012-2018” upper bound to 2012-2019. Closes <a href="https://github.com/almartin82/njschooldata/issues/114" class="external-link">#114</a>.</li>
 </ul></div>

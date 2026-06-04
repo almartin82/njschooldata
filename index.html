@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -227,7 +227,7 @@
 <td><strong>Enrollment</strong></td>
 <td>2000-2026</td>
 <td><code><a href="reference/fetch_enr.html">fetch_enr()</a></code></td>
-<td>State, county, district, school. Race, gender, FRPL, LEP, migrant</td>
+<td>State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (<code>nces_dist</code>/<code>nces_sch</code>)</td>
 </tr>
 <tr>
 <td><strong>Assessments</strong></td>
@@ -399,6 +399,7 @@
 <p><strong>Available years:</strong> Enrollment data from 2000-2026. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).</p>
 <p><strong>Suppression rules:</strong> NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.</p>
 <p><strong>Census Day:</strong> NJ enrollment counts are based on October 15 enrollment (ASSA reporting).</p>
+<p><strong>Federal NCES linkage:</strong> <code><a href="reference/fetch_enr.html">fetch_enr()</a></code> attaches the federal NCES identifiers to every enrollment row – <code>nces_dist</code> (the 7-digit <code>LEAID</code>) and <code>nces_sch</code> (the 12-digit <code>NCESSCH</code>) – so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep <code>NA</code> rather than a guessed id.</p>
 <p><strong>Known caveats:</strong> - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency - Charter schools appear as separate “districts” in the data - Pre-2020 and post-2020 data formats differ significantly</p>
 </div>
 <div class="section level2">

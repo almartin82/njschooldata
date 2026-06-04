@@ -16,6 +16,8 @@ Functions for fetching and processing NJ school enrollment data
   : Custom Enrollment Grade Level Aggregates
 - [`id_enr_aggs()`](https://almartin82.github.io/njschooldata/reference/id_enr_aggs.md)
   : Identify enrollment aggregation levels
+- [`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
+  : Attach federal NCES ids to an enrollment data frame
 
 ## Assessment Data (NJSLA/PARCC)
 
@@ -428,6 +430,8 @@ Additional exported functions
   : Analyze Course Access Equity
 - [`analyze_retention_patterns()`](https://almartin82.github.io/njschooldata/reference/analyze_retention_patterns.md)
   : Analyze Staff Retention Patterns
+- [`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
+  : Attach federal NCES ids to an enrollment data frame
 - [`calc_ap_access_rate()`](https://almartin82.github.io/njschooldata/reference/calc_ap_access_rate.md)
   : Calculate AP/IB Access Rate
 - [`calc_discipline_rates_by_subgroup()`](https://almartin82.github.io/njschooldata/reference/calc_discipline_rates_by_subgroup.md)

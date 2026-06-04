@@ -87,7 +87,7 @@ enr_2024 <- fetch_enr(2024)
 # View the structure
 glimpse(enr_2024)
 #> Rows: 101,650
-#> Columns: 26
+#> Columns: 28
 #> $ end_year         <dbl> 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024,…
 #> $ cds_code         <chr> "010010999", "010010999", "010010999", "010010999", "…
 #> $ county_id        <chr> "01", "01", "01", "01", "01", "01", "01", "01", "01",…
@@ -114,10 +114,12 @@ glimpse(enr_2024)
 #> $ migrant          <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 #> $ homeless         <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 #> $ grade_level      <chr> "PK", NA, "PK", NA, "K", NA, "K", NA, "01", NA, "02",…
+#> $ nces_dist        <chr> "3400660", "3400660", "3400660", "3400660", "3400660"…
+#> $ nces_sch         <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 
 # Check dimensions
 dim(enr_2024)  # Rows and columns
-#> [1] 101650     26
+#> [1] 101650     28
 ```
 
 ### Wide vs. Tidy Format
@@ -400,7 +402,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] purrr_1.2.2         dplyr_1.2.1         njschooldata_0.9.16
+#> [1] purrr_1.2.2         dplyr_1.2.1         njschooldata_0.9.17
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    

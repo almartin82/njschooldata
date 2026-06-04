@@ -1,6 +1,25 @@
 # Changelog
 
-## njschooldata 0.9.16
+## njschooldata 0.9.17
+
+### Federal NCES id linkage
+
+- [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  now attaches federal NCES identifiers to enrollment in BOTH wide and
+  tidy output: `nces_dist` (7-digit `LEAID`) on district and school
+  rows, and `nces_sch` (12-digit `NCESSCH`) on school rows. These let NJ
+  districts and schools join cleanly to the national NCES universe.
+  Identifiers only — all data values still come from NJ DOE.
+- New exported helper
+  [`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
+  performs the exact CDS → NCES join against a bundled, identifiers-only
+  crosswalk (`inst/extdata/crosswalk/nj_nces_crosswalk.csv`);
+  unmatched/ambiguous entities stay `NA`, never a guessed id. Coverage
+  is ~95% of districts and ~97% of schools (CCD 2024 + NJ DOE directory
+  vintage).
+- New re-runnable build script `data-raw/build_nces_crosswalk.R`
+  regenerates the crosswalk and cross-validates every LEAID against the
+  CCD 2024 NJ universe.
 
 ### Documentation
 

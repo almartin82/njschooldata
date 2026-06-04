@@ -63,6 +63,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/arrange_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assessment_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assign_legacy_assess_flags.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/attach_nces_ids.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/build_sped_placement_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/build_sped_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/cache_exists.html</loc></url>
@@ -303,6 +304,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/layout_njask09.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/layout_njask10.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/list_spr_sheets.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/load_nces_crosswalk.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/lookup_peer_percentile.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/make_cache_key.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/matric_aggregate_calcs.html</loc></url>

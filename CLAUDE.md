@@ -110,6 +110,43 @@ Run tests with: `devtools::test()` or `Rscript -e "devtools::test()"`
 **Note:** Tests are disabled in CI/CD due to NJ DOE network
 dependencies. Run locally before deploying.
 
+## Federal NCES id linkage (enrollment)
+
+[`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+attaches two federal identifier columns to BOTH wide and tidy output
+(regardless of the `tidy` default):
+
+- `nces_dist` — 7-digit NCES `LEAID`. Present on district aggregate rows
+  (`school_id == "999"`) and school rows. `NA` on state/county aggregate
+  rows.
+- `nces_sch` — 12-digit NCES `NCESSCH`. Present on school rows only;
+  `NA` for district/state/county rows.
+
+**These are IDENTIFIERS, not data values.** Federal NCES ids are
+explicitly allowed as join keys (see the parent `CLAUDE.md` “CRITICAL
+DATA SOURCE RULES” and `docs/FEDERAL-NCES-LINKAGE.md`); the
+no-federal-data rule binds VALUES only. All enrollment values still come
+from NJ DOE.
+
+**How it works (Pattern C — state directory publishes NCES):** the NJ
+DOE Homeroom directory carries the full 7-digit `NCES ID` keyed by the
+state’s County-District-School (CDS) code. The bundled crosswalk
+(`inst/extdata/crosswalk/nj_nces_crosswalk.csv`) maps CDS →
+`nces_dist`/`nces_sch`, with the 12-digit `NCESSCH` taken from CCD 2024
+(joined on district `LEAID` + 3-digit school code; NJ school codes are
+reused across districts, so never join on the bare school code).
+[`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
+does an exact CDS join — unmatched/ambiguous stays `NA`, never guessed.
+
+**Rebuild the crosswalk:** `Rscript data-raw/build_nces_crosswalk.R`
+(vintage 2024). The build cross-validates every LEAID against the CCD
+2024 NJ universe and aborts on an implausibly large disagreement.
+
+**Coverage / filter notes:** ~95% of districts and ~97% of schools
+match. Filter real ids with `!is.na(nces_dist)` (an
+[`nzchar()`](https://rdrr.io/r/base/nchar.html) filter alone passes
+`NA`).
+
 ## Caching
 
 Two layers, both on by default.

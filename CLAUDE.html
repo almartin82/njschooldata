@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,6 +118,18 @@
 <h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h2>
 <p>Run tests with: <code>devtools::test()</code> or <code>Rscript -e "devtools::test()"</code></p>
 <p><strong>Note:</strong> Tests are disabled in CI/CD due to NJ DOE network dependencies. Run locally before deploying.</p>
+</div>
+<div class="section level2">
+<h2 id="federal-nces-id-linkage-enrollment">Federal NCES id linkage (enrollment)<a class="anchor" aria-label="anchor" href="#federal-nces-id-linkage-enrollment"></a></h2>
+<p><code><a href="reference/fetch_enr.html">fetch_enr()</a></code> attaches two federal identifier columns to BOTH wide and tidy output (regardless of the <code>tidy</code> default):</p>
+<ul><li>
+<code>nces_dist</code> — 7-digit NCES <code>LEAID</code>. Present on district aggregate rows (<code>school_id == "999"</code>) and school rows. <code>NA</code> on state/county aggregate rows.</li>
+<li>
+<code>nces_sch</code> — 12-digit NCES <code>NCESSCH</code>. Present on school rows only; <code>NA</code> for district/state/county rows.</li>
+</ul><p><strong>These are IDENTIFIERS, not data values.</strong> Federal NCES ids are explicitly allowed as join keys (see the parent <code>CLAUDE.md</code> “CRITICAL DATA SOURCE RULES” and <code>docs/FEDERAL-NCES-LINKAGE.md</code>); the no-federal-data rule binds VALUES only. All enrollment values still come from NJ DOE.</p>
+<p><strong>How it works (Pattern C — state directory publishes NCES):</strong> the NJ DOE Homeroom directory carries the full 7-digit <code>NCES ID</code> keyed by the state’s County-District-School (CDS) code. The bundled crosswalk (<code>inst/extdata/crosswalk/nj_nces_crosswalk.csv</code>) maps CDS → <code>nces_dist</code>/<code>nces_sch</code>, with the 12-digit <code>NCESSCH</code> taken from CCD 2024 (joined on district <code>LEAID</code> + 3-digit school code; NJ school codes are reused across districts, so never join on the bare school code). <code><a href="reference/attach_nces_ids.html">attach_nces_ids()</a></code> does an exact CDS join — unmatched/ambiguous stays <code>NA</code>, never guessed.</p>
+<p><strong>Rebuild the crosswalk:</strong> <code>Rscript data-raw/build_nces_crosswalk.R</code> (vintage 2024). The build cross-validates every LEAID against the CCD 2024 NJ universe and aborts on an implausibly large disagreement.</p>
+<p><strong>Coverage / filter notes:</strong> ~95% of districts and ~97% of schools match. Filter real ids with <code>!is.na(nces_dist)</code> (an <code><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar()</a></code> filter alone passes <code>NA</code>).</p>
 </div>
 <div class="section level2">
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>
