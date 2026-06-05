@@ -22,8 +22,13 @@ tidy_enr <- function(df) {
     "county_id", "county_name",
     "district_id", "district_name",
     "school_id", "school_name",
+    "nces_dist", "nces_sch",
     "program_code", "program_name", "grade_level"
   )
+
+  # Keep only invariants present in df, so callers that did not attach NCES ids
+  # (e.g. legacy callers of tidy_enr on a raw frame) still work.
+  invariants <- invariants[invariants %in% names(df)]
 
   # cols to tidy
   to_tidy <- c(
@@ -131,6 +136,8 @@ id_enr_aggs <- function(df) {
 #' @export
 enr_grade_aggs <- function(df) {
 
+  # NCES ids are constant per cds_code; include them in the grouping when present
+  # (via any_of) so the federal ids survive the grade-level rollups.
   gr_aggs_group_logic <- . %>%
     dplyr::group_by(
       end_year,
@@ -138,6 +145,7 @@ enr_grade_aggs <- function(df) {
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
+      dplyr::across(dplyr::any_of(c("nces_dist", "nces_sch"))),
       subgroup,
       is_state, is_county, is_district,
       is_charter_sector, is_allpublic, is_school, is_subprogram
@@ -153,6 +161,7 @@ enr_grade_aggs <- function(df) {
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
+      dplyr::any_of(c("nces_dist", "nces_sch")),
       program_code, program_name, grade_level,
       subgroup,
       n_students,
