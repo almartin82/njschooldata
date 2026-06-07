@@ -1,0 +1,52 @@
+---
+pagetitle: "NJ District Almanacs — sample"
+format:
+  html:
+    theme: _almanac.scss
+    toc: false
+    page-layout: article
+    grid:
+      body-width: 860px
+    embed-resources: true
+    include-in-header: _almanac-head.html
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+dir <- readRDS("_bundles/_statewide/directory.rds")
+dfg <- readRDS("_bundles/_statewide/dfg.rds")
+enr <- readRDS("_bundles/_statewide/enrollment.rds")
+ids <- readLines("_almanac_sample.txt"); ids <- strsplit(ids, " ")[[1]]
+tot <- enr %>% filter(subgroup=="total_enrollment", grade_level=="TOTAL", end_year==max(end_year)) %>%
+  group_by(district_id) %>% summarise(n=round(sum(n_students,na.rm=TRUE)), .groups="drop")
+tbl <- dir %>% filter(district_id %in% ids) %>%
+  transmute(district_id, district_name, county=tools::toTitleCase(tolower(county_name)),
+            type=ifelse(is_charter,"Charter",ifelse(grepl("VOCATION|VOC",toupper(district_name),useBytes=TRUE),"Vocational","Traditional"))) %>%
+  left_join(dfg %>% select(district_id,dfg), by="district_id") %>%
+  left_join(tot, by="district_id") %>% arrange(desc(n))
+```
+
+```{r masthead, results='asis'}
+cat('<div class="almanac-masthead">\n')
+cat('<div class="kicker">Sample · 25 districts</div>\n')
+cat('<div class="wordmark">NJ District <span class="tt">Almanacs</span></div>\n')
+cat('<div class="meta">Narrative-first data profiles · A representative sample for review</div>\n')
+cat('</div>\n\n')
+cat('Each almanac mines every available longitudinal data source for a district and leads with the ten (or fewer) most newsworthy findings, written narrative-first, with the full data tables below. Every number is computed from NJ DOE data via [njschooldata](https://github.com/almartin82/njschooldata). This is a 25-district sample spanning District Factor Groups A (highest-need) through J (most affluent), large urban systems to tiny K-8 districts, plus charters and a county vocational.\n\n')
+```
+
+```{r list, results='asis'}
+for (i in seq_len(nrow(tbl))) {
+  r <- tbl[i,]
+  cat('<div class="story" style="padding-top:1rem;margin-top:1rem;border-top:1px solid #c8c2b8;">\n')
+  cat(sprintf('<span class="tag">%s &nbsp;·&nbsp; %s County &nbsp;·&nbsp; DFG %s &nbsp;·&nbsp; %s students</span>\n',
+              r$type, r$county, ifelse(is.na(r$dfg),"—",r$dfg), formatC(r$n,big.mark=",",format="d")))
+  cat(sprintf('<h2 style="font-size:1.4rem;margin:.2rem 0;"><a href="almanac-%s.html">%s</a></h2>\n',
+              r$district_id, r$district_name))
+  cat('</div>\n')
+}
+```

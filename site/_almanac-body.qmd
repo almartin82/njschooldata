@@ -1,0 +1,73 @@
+```{r almanac-setup, include=FALSE}
+library(jsonlite); library(ggplot2); library(dplyr); library(knitr)
+`%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || (length(a)==1 && is.na(a))) b else a
+source("R/story_charts.R")
+opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+d       <- readRDS(file.path("_discovery", paste0(district_id, ".rds")))
+stories <- fromJSON(file.path("_stories", paste0(district_id, ".json")), simplifyDataFrame = FALSE)
+m       <- d$meta
+figdir  <- "_almanac_figs"; dir.create(figdir, showWarnings = FALSE)
+
+# pre-render each story's chart to PNG, capture data-URI for inline embedding
+story_img <- vapply(seq_along(stories), function(i) {
+  p <- render_story_chart(d, stories[[i]]$chart_id)
+  if (is.null(p)) return("")
+  fp <- file.path(figdir, sprintf("%s_%02d.png", district_id, i))
+  suppressMessages(ggsave(fp, p, width = 9, height = 4.6, dpi = 120, bg = "#f7f7f6"))
+  knitr::image_uri(fp)
+}, character(1))
+```
+
+```{r masthead, results='asis'}
+type_txt <- if (isTRUE(m$is_charter)) "Charter district" else "Traditional public district"
+dfg_txt  <- if (!is.na(m$dfg)) paste0("DFG ", m$dfg) else "no DFG"
+enr_now  <- if (!is.null(d$enr_total) && nrow(d$enr_total)) tail(d$enr_total, 1) else NULL
+cat('<div class="almanac-masthead">\n')
+cat('<div class="kicker">NJ School Data Almanac</div>\n')
+cat('<div class="wordmark">', m$district_name, '</div>\n')
+cat('<div class="meta">', toupper(m$county), ' COUNTY &nbsp;·&nbsp; ', toupper(type_txt), ' &nbsp;·&nbsp; ', dfg_txt,
+    if (!is.null(enr_now)) paste0(' &nbsp;·&nbsp; ', formatC(enr_now$students, big.mark=",", format="d"), ' STUDENTS (', enr_now$year, ')') else '',
+    '</div>\n')
+cat('</div>\n')
+
+# key-figures strip (only stats that exist)
+kf <- list()
+add_kf <- function(lab, val) if (!is.null(val) && length(val) && nzchar(as.character(val)) && !is.na(val))
+  kf[[length(kf)+1]] <<- c(lab, as.character(val))
+if (!is.null(enr_now)) add_kf("Students", formatC(enr_now$students, big.mark=",", format="d"))
+if (!is.null(d$grad_total) && nrow(d$grad_total)) add_kf("4-yr grad rate", paste0(tail(d$grad_total$grad_rate,1), "%"))
+if (!is.null(d$njsla_trend) && nrow(d$njsla_trend)) { el<-d$njsla_trend[d$njsla_trend$test_name=="ela",]; if(nrow(el)) add_kf("Gr 3-8 ELA", paste0(tail(el$prof,1), "%")) }
+if (!is.null(d$absence) && nrow(d$absence)) add_kf("Chronically absent", paste0(tail(d$absence$chronic_pct,1), "%"))
+if (!is.null(d$spend_pp) && nrow(d$spend_pp)) add_kf("Per pupil", paste0("$", formatC(tail(d$spend_pp$per_pupil,1), big.mark=",", format="d")))
+if (length(kf)) {
+  cat('<div class="keyfig">\n')
+  for (k in kf) cat('<div class="kf"><div class="kf-val">', k[2], '</div><div class="kf-lab">', k[1], '</div></div>\n', sep="")
+  cat('</div>\n')
+}
+cat('\n*', length(stories), ' things the data says about ', m$district_name,
+    '. Every figure is computed from New Jersey Department of Education data via the [njschooldata](https://github.com/almartin82/njschooldata) package — nothing is estimated. Comparisons use District Factor Group (DFG) peers',
+    if (!is.na(m$dfg)) paste0(" (", m$n_peers, " districts in DFG ", m$dfg, ")") else "", '.*\n\n', sep="")
+```
+
+```{r stories, results='asis'}
+for (i in seq_along(stories)) {
+  s <- stories[[i]]
+  cat('<div class="story">\n')
+  cat('<span class="rank">No. ', s$rank, '</span> <span class="tag">', toupper(gsub("_"," ", s$category %||% "")), '</span>\n', sep="")
+  cat('<h2>', s$headline, '</h2>\n', sep="")
+  if (!is.null(s$dek) && nzchar(s$dek)) cat('<p class="dek">', s$dek, '</p>\n', sep="")
+  cat('\n', s$narrative_md, '\n\n', sep="")
+  if (nzchar(story_img[i])) cat('![](', story_img[i], ')\n\n', sep="")
+  cat('<p class="seedata"><a href="#the-almanac">See the underlying data ›</a></p>\n')
+  cat('</div>\n')
+}
+```
+
+```{r almanac-tables, results='asis'}
+cat('<div class="almanac-divider"></div>\n')
+cat('## The Almanac {#the-almanac}\n\n')
+cat('The full longitudinal record behind the stories above. Every number a reader can check.\n\n')
+md <- readLines(file.path("_discovery", paste0(district_id, ".md")), warn = FALSE)
+i0 <- grep("^## DATA TABLES", md)
+if (length(i0)) cat(paste(md[(i0[1]+1):length(md)], collapse = "\n"))
+```

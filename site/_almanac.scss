@@ -1,0 +1,73 @@
+/*-- scss:defaults --*/
+// NJ District Almanac — its own visual identity (intentionally distinct from any
+// other NJ-school-data publication). Geometric sans + serif body + mono labels;
+// indigo accent on a cool near-white. Fonts loaded via include-in-header.
+
+$paper:    #f7f7f6;   // cool near-white (not warm cream)
+$ink:      #11131a;   // near-black, faint blue cast
+$surface:  #ffffff;
+$rule:     #d9d9d4;
+$gray-600: #5f6672;
+$gray-400: #9aa0ac;
+$accent:   #3730a3;   // indigo
+$accent2:  #7c3aed;   // violet
+
+$body-bg: $paper;
+$body-color: $ink;
+$link-color: $accent;
+$font-family-sans-serif: "Space Grotesk", system-ui, sans-serif;
+$font-family-serif: "Spectral", Georgia, serif;
+$headings-font-family: "Space Grotesk", system-ui, sans-serif;
+$toc-color: $gray-600;
+
+/*-- scss:rules --*/
+body { font-family: $font-family-serif; font-size: 1.16rem; line-height: 1.62; color: $ink; background: $paper; }
+h1,h2,h3,h4 { font-family: "Space Grotesk", system-ui, sans-serif; letter-spacing: -0.015em; }
+
+// ---- masthead ----
+.almanac-masthead { text-align:left; border-bottom: 4px solid $ink; padding-bottom: 1rem; margin-bottom: 1.8rem; }
+.almanac-masthead .wordmark { font-family:"Space Grotesk"; font-weight:700; font-size:2.5rem; letter-spacing:-0.03em; line-height:1.05; }
+.almanac-masthead .wordmark .tt { color:$accent; }
+.almanac-masthead .kicker { font-family:"Space Mono"; text-transform:uppercase; letter-spacing:0.22em; font-size:0.66rem; color:$accent; margin-bottom:.5rem; }
+.almanac-masthead .meta { font-family:"Space Mono"; text-transform:uppercase; letter-spacing:0.04em; font-size:0.68rem; color:$gray-600; margin-top:.55rem; }
+
+// ---- story units (narrative-first) ----
+.story { border-top: 1px solid $rule; padding-top: 1.6rem; margin-top: 2.2rem; }
+.story:first-of-type { border-top: 4px solid $accent; }
+.story .tag { font-family:"Space Mono"; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; font-size:0.62rem; color:$accent; }
+.story h2 { font-weight:600; font-size:1.95rem; line-height:1.16; letter-spacing:-0.02em; margin:.3rem 0 .5rem 0; }
+.story .dek { font-family:"Spectral"; font-style:italic; color:$gray-600; font-size:1.18rem; margin-bottom:1rem; }
+.story p { max-width: 70ch; }
+.story img { width:100%; border:1px solid $rule; margin:1.2rem 0 .2rem 0; background:$surface; }
+.story .rank { font-family:"Space Mono"; font-weight:700; color:$accent; font-size:0.72rem; letter-spacing:0.04em; }
+
+// ---- almanac (receipts) ----
+.almanac-divider { border-top:4px solid $ink; margin:3.5rem 0 1.5rem 0; }
+table { font-family:"Space Mono"; font-size:0.78rem; font-variant-numeric: tabular-nums; }
+thead th { font-family:"Space Mono"; text-transform:uppercase; letter-spacing:0.03em; font-size:0.66rem; color:$gray-600; border-bottom:2px solid $rule !important; }
+td,th { padding:6px 10px !important; }
+
+// ---- key-figures strip ----
+.keyfig { display:flex; flex-wrap:wrap; gap:0; justify-content:flex-start; border-top:1px solid $rule; border-bottom:1px solid $rule; margin:1.4rem 0 1.6rem 0; }
+.kf { flex:1 1 0; min-width:118px; text-align:left; padding:0.9rem 1rem 0.9rem 0; border-right:1px solid $rule; }
+.kf:last-child { border-right:none; }
+.kf-val { font-family:"Space Grotesk"; font-weight:700; font-size:1.7rem; color:$ink; line-height:1; letter-spacing:-0.02em; }
+.kf-lab { font-family:"Space Mono"; text-transform:uppercase; letter-spacing:0.06em; font-size:0.6rem; color:$gray-600; margin-top:.4rem; }
+
+// ---- per-story 'see the data' link ----
+.seedata { font-family:"Space Mono"; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.06em; margin:.2rem 0 0 0; }
+.seedata a { color:$gray-600; border-bottom:none; }
+.seedata a:hover { color:$accent; }
+
+// links
+a { text-decoration: none; border-bottom: 1px solid rgba($accent,0.35); }
+a:hover { border-bottom-color:$accent; }
+.quarto-title-block { display:none; }
+
+// mobile
+@media (max-width: 700px) {
+  .story h2 { font-size:1.55rem; }
+  .kf-val { font-size:1.35rem; }
+  body { font-size:1.06rem; }
+  .almanac-masthead .wordmark { font-size:2rem; }
+}
