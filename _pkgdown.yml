@@ -161,6 +161,16 @@ reference:
       - get_dfg_districts
       - get_dfg_a_districts
 
+  - title: School Finance (Uniform)
+    desc: >
+      The cross-state-uniform finance front door. Consolidates per-pupil
+      spending (TGES) and total K-12 state aid onto one tidy schema with a
+      standard metric vocabulary, so cross-state code works unchanged.
+    contents:
+      - fetch_finance
+      - fetch_finance_multi
+      - get_available_finance_years
+
   - title: State Aid
     desc: >
       Per-district K-12 state aid by category (equalization, special education,
@@ -235,6 +245,7 @@ articles:
   - title: School Finance
     navbar: ~
     contents:
+      - nj-finance
       - somsd-school-spending
       - newark-school-spending
       - newark-fiscal-brief

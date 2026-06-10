@@ -97,6 +97,38 @@ aborts on an implausibly large disagreement.
 **Coverage / filter notes:** ~95% of districts and ~97% of schools match. Filter
 real ids with `!is.na(nces_dist)` (an `nzchar()` filter alone passes `NA`).
 
+## Valid Filter Values (finance)
+
+`fetch_finance()` is the uniform, cross-state finance front door. It consolidates
+the data `fetch_tges()` (per-pupil spending) and `fetch_state_aid()` (K-12 state
+aid) already pull onto the canonical tidy schema in `docs/FINANCE-DATA-SPEC.md`.
+Source-specific richness still lives in those functions and the `tges_*` toolkit.
+
+- **FY <-> SY mapping:** `end_year` is the fiscal/school year END. `end_year = 2024`
+  is FY2024 = school year 2023-24. NJ publishes a year's spending ACTUALS in the
+  guide released the following year, so the spending side fetches
+  `fetch_tges(end_year + 1)` and keeps `calc_type == "Actuals"`; state aid is
+  appropriated for the named year and is read directly from `fetch_state_aid(end_year)`.
+- **Year coverage:** per-pupil spending (TGES actuals) 2001-2024; state-aid revenue
+  2019-2026. Years 2025+ carry `revenue_state` only; pre-2019 carry per-pupil only.
+- **`metric`** (standard cross-state names first, then NJ-specific):
+  - `per_pupil_total` (standard) - total per-pupil expenditures; carries a statewide
+    `is_state` row and `enrollment_denominator` (avg daily enrollment + sent pupils)
+  - `per_pupil_instruction` (standard) - classroom instruction per pupil
+  - `per_pupil_support_services`, `per_pupil_administration`,
+    `per_pupil_operations_maintenance`, `per_pupil_food_service` (NJ-specific:
+    NJ reports these per-pupil, not as absolute totals; no `enrollment_denominator`)
+  - `revenue_state` (standard) - total K-12 state aid, absolute dollars; carries a
+    statewide `is_state` row
+- **Entity flags:** `is_state` (statewide aggregate) XOR `is_district`; `is_school`
+  always FALSE (NJ finance is district-level only); `is_charter` always NA (sources
+  don't flag it).
+- **`is_per_pupil`:** TRUE for every `per_pupil_*` metric, FALSE for `revenue_*`.
+- **ids:** `state_id` is the 4-digit district code (Newark = "3570"); `nces_dist`
+  is attached by district_id from the bundled crosswalk (~94% match), `nces_sch`
+  always NA. Values are nominal dollars exactly as published - no rescaling, no
+  fabrication; unmatched NCES ids and suppressed values stay NA.
+
 ## Caching
 
 Two layers, both on by default.

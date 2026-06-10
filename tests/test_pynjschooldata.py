@@ -35,6 +35,36 @@ def test_has_version():
     assert isinstance(pynjschooldata.__version__, str)
 
 
+def test_has_fetch_finance():
+    """fetch_finance and friends are available."""
+    import pynjschooldata
+    for name in ("fetch_finance", "fetch_finance_multi",
+                 "get_available_finance_years"):
+        assert hasattr(pynjschooldata, name)
+        assert callable(getattr(pynjschooldata, name))
+
+
+def test_fetch_finance_canonical_schema():
+    """fetch_finance returns the canonical finance schema through rpy2.
+
+    Network/R test: skipped if the R package or NJ DOE data is unavailable.
+    """
+    import pynjschooldata
+    try:
+        df = pynjschooldata.fetch_finance(2024)
+    except Exception as exc:  # noqa: BLE001 - any R/network failure -> skip
+        pytest.skip(f"R/network unavailable: {exc}")
+
+    expected = {
+        "end_year", "state_id", "entity_name", "county", "is_state",
+        "is_district", "is_school", "is_charter", "nces_dist", "nces_sch",
+        "metric", "value", "is_per_pupil", "enrollment_denominator",
+    }
+    assert expected.issubset(set(df.columns))
+    assert "per_pupil_total" in set(df["metric"].astype(str))
+    assert "revenue_state" in set(df["metric"].astype(str))
+
+
 def test_fetch_enr_carries_nces_ids():
     """fetch_enr output carries the federal NCES id columns through rpy2.
 

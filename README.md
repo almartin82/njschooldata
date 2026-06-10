@@ -161,7 +161,7 @@ k_trend %>%
 | **Assessments** | 2004-2024 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-yr and 6-yr ACGR. District and school level |
 | **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
-| Per-Pupil Spending | -- | -- | Not yet available |
+| **Per-Pupil Spending** | 2001-2026 | `fetch_finance()` / `fetch_tges()` / `fetch_state_aid()` | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
