@@ -12,6 +12,8 @@
 
 ### School Finance
 
+- [New Jersey School Finance: A Uniform Front
+  Door](https://almartin82.github.io/njschooldata/articles/nj-finance.md):
 - [Following the Money: 25 Years of Spending in South
   Orange-Maplewood](https://almartin82.github.io/njschooldata/articles/somsd-school-spending.md):
 - [Following the Money: 25 Years of Spending in

@@ -13,6 +13,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/articles/newark-fiscal-brief.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/newark-school-spending.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/articles/nj-finance.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/somsd-school-spending.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/spr-dictionary.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/tges-analyst-guide.html</loc></url>
@@ -161,6 +162,8 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_essa_chronic_absenteeism.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_essa_status.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_finance.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_gepa.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_grad_count.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.html</loc></url>
@@ -224,6 +227,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/geocoded.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_access_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_and_process_msgp.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_available_finance_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_chronic_absenteeism_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_dfg_districts.html</loc></url>

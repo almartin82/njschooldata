@@ -175,7 +175,7 @@ COVID Kindergarten
 | **Assessments** | 2004-2024 | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) / [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md) / [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md) | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) / [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 4-yr and 6-yr ACGR. District and school level |
 | **Directory** | Current | [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md) / [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md) | Names, IDs, addresses, school type |
-| Per-Pupil Spending | – | – | Not yet available |
+| **Per-Pupil Spending** | 2001-2026 | [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md) / [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md) / [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md) | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md) / [`fetch_essa_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.md) | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) / [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md) / [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md) | By grade, by demographic. Cross-state standard via [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) |
 | **EL Progress** | 2022-2024 | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md) | WIDA ACCESS for ELLs |
@@ -1045,6 +1045,19 @@ Additional NJ DOE data functions
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 
+## School Finance (Uniform)
+
+The cross-state-uniform finance front door. Consolidates per-pupil
+spending (TGES) and total K-12 state aid onto one tidy schema with a
+standard metric vocabulary, so cross-state code works unchanged.
+
+- [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md)
+  : Fetch NJ school finance in the canonical cross-state schema
+- [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
+  : Fetch multiple years of NJ school finance
+- [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
+  : Years for which NJ finance data is available
+
 ## State Aid
 
 Per-district K-12 state aid by category (equalization, special
@@ -1350,6 +1363,10 @@ Additional exported functions
   : Fetch ESSA Accountability Progress
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
   : Fetch ESSA Accountability Status
+- [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md)
+  : Fetch NJ school finance in the canonical cross-state schema
+- [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
+  : Fetch multiple years of NJ school finance
 - [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md)
   : gets and processes a GEPA file
 - [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)
@@ -1458,6 +1475,8 @@ Additional exported functions
   : Aggregate multiple grad count rows and produce summary statistics
 - [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
   : Geocoded School Addresses
+- [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
+  : Years for which NJ finance data is available
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
@@ -1692,6 +1711,8 @@ Additional exported functions
 
 ### School Finance
 
+- [New Jersey School Finance: A Uniform Front
+  Door](https://almartin82.github.io/njschooldata/articles/nj-finance.md):
 - [Following the Money: 25 Years of Spending in South
   Orange-Maplewood](https://almartin82.github.io/njschooldata/articles/somsd-school-spending.md):
 - [Following the Money: 25 Years of Spending in

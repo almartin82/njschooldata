@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
     <li><a class="dropdown-item" href="articles/newark-fiscal-brief.html">What Did Newark's Gains Cost? A DFG A Fiscal Brief</a></li>
@@ -131,6 +132,31 @@
 <p><strong>Rebuild the crosswalk:</strong> <code>Rscript data-raw/build_nces_crosswalk.R</code> (vintage 2024). The build cross-validates every LEAID against the CCD 2024 NJ universe and aborts on an implausibly large disagreement.</p>
 <p><strong>Coverage / filter notes:</strong> ~95% of districts and ~97% of schools match. Filter real ids with <code>!is.na(nces_dist)</code> (an <code><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar()</a></code> filter alone passes <code>NA</code>).</p>
 </div>
+<div class="section level2">
+<h2 id="valid-filter-values-finance">Valid Filter Values (finance)<a class="anchor" aria-label="anchor" href="#valid-filter-values-finance"></a></h2>
+<p><code><a href="reference/fetch_finance.html">fetch_finance()</a></code> is the uniform, cross-state finance front door. It consolidates the data <code><a href="reference/fetch_tges.html">fetch_tges()</a></code> (per-pupil spending) and <code><a href="reference/fetch_state_aid.html">fetch_state_aid()</a></code> (K-12 state aid) already pull onto the canonical tidy schema in <code>docs/FINANCE-DATA-SPEC.md</code>. Source-specific richness still lives in those functions and the <code>tges_*</code> toolkit.</p>
+<ul><li>
+<strong>FY &lt;-&gt; SY mapping:</strong> <code>end_year</code> is the fiscal/school year END. <code>end_year = 2024</code> is FY2024 = school year 2023-24. NJ publishes a year’s spending ACTUALS in the guide released the following year, so the spending side fetches <code>fetch_tges(end_year + 1)</code> and keeps <code>calc_type == "Actuals"</code>; state aid is appropriated for the named year and is read directly from <code>fetch_state_aid(end_year)</code>.</li>
+<li>
+<strong>Year coverage:</strong> per-pupil spending (TGES actuals) 2001-2024; state-aid revenue 2019-2026. Years 2025+ carry <code>revenue_state</code> only; pre-2019 carry per-pupil only.</li>
+<li>
+<strong><code>metric</code></strong> (standard cross-state names first, then NJ-specific):
+<ul><li>
+<code>per_pupil_total</code> (standard) - total per-pupil expenditures; carries a statewide <code>is_state</code> row and <code>enrollment_denominator</code> (avg daily enrollment + sent pupils)</li>
+<li>
+<code>per_pupil_instruction</code> (standard) - classroom instruction per pupil</li>
+<li>
+<code>per_pupil_support_services</code>, <code>per_pupil_administration</code>, <code>per_pupil_operations_maintenance</code>, <code>per_pupil_food_service</code> (NJ-specific: NJ reports these per-pupil, not as absolute totals; no <code>enrollment_denominator</code>)</li>
+<li>
+<code>revenue_state</code> (standard) - total K-12 state aid, absolute dollars; carries a statewide <code>is_state</code> row</li>
+</ul></li>
+<li>
+<strong>Entity flags:</strong> <code>is_state</code> (statewide aggregate) XOR <code>is_district</code>; <code>is_school</code> always FALSE (NJ finance is district-level only); <code>is_charter</code> always NA (sources don’t flag it).</li>
+<li>
+<strong><code>is_per_pupil</code>:</strong> TRUE for every <code>per_pupil_*</code> metric, FALSE for <code>revenue_*</code>.</li>
+<li>
+<strong>ids:</strong> <code>state_id</code> is the 4-digit district code (Newark = “3570”); <code>nces_dist</code> is attached by district_id from the bundled crosswalk (~94% match), <code>nces_sch</code> always NA. Values are nominal dollars exactly as published - no rescaling, no fabrication; unmatched NCES ids and suppressed values stay NA.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>
 <p>Two layers, both on by default.</p>

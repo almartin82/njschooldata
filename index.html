@@ -37,6 +37,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
     <li><a class="dropdown-item" href="articles/newark-fiscal-brief.html">What Did Newark's Gains Cost? A DFG A Fiscal Brief</a></li>
@@ -254,10 +255,12 @@
 <td>Names, IDs, addresses, school type</td>
 </tr>
 <tr>
-<td>Per-Pupil Spending</td>
-<td>–</td>
-<td>–</td>
-<td>Not yet available</td>
+<td><strong>Per-Pupil Spending</strong></td>
+<td>2001-2026</td>
+<td>
+<code><a href="reference/fetch_finance.html">fetch_finance()</a></code> / <code><a href="reference/fetch_tges.html">fetch_tges()</a></code> / <code><a href="reference/fetch_state_aid.html">fetch_state_aid()</a></code>
+</td>
+<td>State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (<code>nces_dist</code>)</td>
 </tr>
 <tr>
 <td><strong>Accountability</strong></td>

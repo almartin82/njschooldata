@@ -276,6 +276,19 @@ Additional NJ DOE data functions
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 
+## School Finance (Uniform)
+
+The cross-state-uniform finance front door. Consolidates per-pupil
+spending (TGES) and total K-12 state aid onto one tidy schema with a
+standard metric vocabulary, so cross-state code works unchanged.
+
+- [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md)
+  : Fetch NJ school finance in the canonical cross-state schema
+- [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
+  : Fetch multiple years of NJ school finance
+- [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
+  : Years for which NJ finance data is available
+
 ## State Aid
 
 Per-district K-12 state aid by category (equalization, special
@@ -581,6 +594,10 @@ Additional exported functions
   : Fetch ESSA Accountability Progress
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
   : Fetch ESSA Accountability Status
+- [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md)
+  : Fetch NJ school finance in the canonical cross-state schema
+- [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
+  : Fetch multiple years of NJ school finance
 - [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md)
   : gets and processes a GEPA file
 - [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md)
@@ -689,6 +706,8 @@ Additional exported functions
   : Aggregate multiple grad count rows and produce summary statistics
 - [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
   : Geocoded School Addresses
+- [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
+  : Years for which NJ finance data is available
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
