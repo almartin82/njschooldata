@@ -106,6 +106,89 @@ def tidy_enr(df: pd.DataFrame) -> pd.DataFrame:
         return pandas2ri.rpy2py(r_result)
 
 
+def fetch_finance(end_year: int) -> pd.DataFrame:
+    """
+    Fetch New Jersey school finance data in the canonical cross-state schema.
+
+    Consolidates per-pupil spending (Taxpayers' Guide to Educational Spending)
+    and total K-12 state aid (Governor's Budget Message district details) onto a
+    single tidy schema with a standard ``metric`` vocabulary.
+
+    Parameters
+    ----------
+    end_year : int
+        The ending fiscal/school year (e.g., 2024 for FY2024 / school year
+        2023-24).
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per year / entity / metric, with columns end_year, state_id,
+        entity_name, county, is_state, is_district, is_school, is_charter,
+        nces_dist, nces_sch, metric, value, is_per_pupil, enrollment_denominator.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> df = nj.fetch_finance(2024)
+    >>> df[df.metric == "per_pupil_total"].head()
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_finance(end_year)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def fetch_finance_multi(end_years: list[int]) -> pd.DataFrame:
+    """
+    Fetch New Jersey school finance data for multiple years.
+
+    Parameters
+    ----------
+    end_years : list[int]
+        List of ending fiscal/school years (e.g., [2020, 2021, 2022]).
+
+    Returns
+    -------
+    pd.DataFrame
+        Combined finance data for all requested years in the canonical schema.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> df = nj.fetch_finance_multi([2022, 2023, 2024])
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_years = robjects.IntVector(end_years)
+        r_df = pkg.fetch_finance_multi(r_years)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def get_available_finance_years() -> list[int]:
+    """
+    Get the years for which NJ finance data is available.
+
+    Returns
+    -------
+    list[int]
+        Sorted list of available end_years.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> years = nj.get_available_finance_years()
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_result = pkg.get_available_finance_years()
+        return [int(y) for y in r_result]
+
+
 def get_available_years() -> dict:
     """
     Get the range of available years for enrollment data.

@@ -1,0 +1,203 @@
+---
+title: "New Jersey School Finance: A Uniform Front Door"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{New Jersey School Finance: A Uniform Front Door}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  # Default OFF: only the expensive fetch chunks cache. Plot chunks must
+  # re-evaluate every build or knitr replays stale figures (caschooldata, 2026-03).
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(scales)
+
+options(timeout = max(600, getOption("timeout")))
+```
+
+```{r theme}
+theme_nj <- function() {
+  theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(color = "gray40"),
+      plot.caption = element_text(color = "gray55", size = 9),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom"
+    )
+}
+
+nj_navy <- "#16356B"
+nj_gold <- "#C8A14B"
+nj_red  <- "#B83227"
+```
+
+`fetch_finance()` is the uniform, cross-state finance front door for New Jersey.
+It consolidates the two NJ DOE finance sources this package already pulls — the
+[Taxpayers' Guide to Educational Spending](https://www.nj.gov/education/guide/)
+(per-pupil spending) and the Governor's Budget Message district details
+(K-12 state aid) — onto one tidy schema with a standard `metric` vocabulary, so
+the same analysis code runs unchanged across states.
+
+`end_year` is the fiscal/school year END: `end_year = 2024` is FY2024, school
+year 2023-24. Every value traces to a downloaded NJ DOE file; the federal NCES
+identifier (`nces_dist`) is attached as a join key only.
+
+```{r fetch-finance, cache=TRUE}
+# the spending side is published a year in arrears, so even years 2016-2024
+# give a clean statewide actuals series; 2024 is the latest full cross-section.
+fin_multi <- fetch_finance_multi(c(2016, 2018, 2020, 2022, 2024))
+fin_2024  <- fetch_finance(2024)
+```
+
+## Story 1: New Jersey per-pupil spending climbed 47% in eight years
+
+Statewide total per-pupil expenditures rose from \$20,385 in FY2016 to \$29,950
+in FY2024 — an eight-year jump of nearly half, well ahead of general
+inflation over the same window.
+
+```{r story1-data}
+state_trend <- fin_multi %>%
+  filter(is_state, metric == "per_pupil_total") %>%
+  arrange(end_year) %>%
+  select(end_year, value)
+
+state_trend %>%
+  mutate(pct_change_since_2016 = round((value / value[1] - 1) * 100, 1))
+```
+
+```{r story1-chart}
+stopifnot(nrow(state_trend) > 0)
+
+ggplot(state_trend, aes(end_year, value)) +
+  geom_line(color = nj_navy, linewidth = 1.2) +
+  geom_point(color = nj_navy, size = 3) +
+  geom_text(aes(label = dollar(value)), vjust = -1, size = 4, color = nj_navy) +
+  scale_y_continuous(labels = dollar, limits = c(20000, 32000)) +
+  scale_x_continuous(breaks = state_trend$end_year) +
+  labs(
+    title = "NJ total per-pupil spending rose 47% from FY2016 to FY2024",
+    subtitle = "Statewide average, total per-pupil expenditures (actuals)",
+    x = "Fiscal year (end)", y = "Per-pupil total",
+    caption = "Source: NJ DOE Taxpayers' Guide to Educational Spending via fetch_finance()"
+  ) +
+  theme_nj()
+```
+
+## Story 2: Per-pupil spending varies enormously — Lakewood is the extreme
+
+Within a single year, district per-pupil spending spans a huge range. Lakewood
+Township reports \$86,480 per pupil in FY2024 — nearly three times the statewide
+average — a figure driven by the district's large nonpublic-school transportation
+and special-education obligations, which run through the public district budget.
+
+```{r story2-data}
+top_spenders <- fin_2024 %>%
+  filter(is_district, metric == "per_pupil_total",
+         enrollment_denominator > 1000) %>%
+  arrange(desc(value)) %>%
+  select(entity_name, county, value, enrollment_denominator) %>%
+  head(10)
+
+top_spenders
+```
+
+```{r story2-chart}
+stopifnot(nrow(top_spenders) > 0)
+
+state_pp <- fin_2024 %>%
+  filter(is_state, metric == "per_pupil_total") %>%
+  pull(value)
+
+ggplot(top_spenders, aes(reorder(entity_name, value), value)) +
+  geom_col(fill = nj_gold) +
+  geom_hline(yintercept = state_pp, linetype = "dashed", color = nj_navy) +
+  annotate("text", x = 1.5, y = state_pp,
+           label = paste0("State avg ", dollar(state_pp)),
+           hjust = 0, vjust = -0.5, color = nj_navy, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(labels = dollar) +
+  labs(
+    title = "Highest per-pupil spenders, FY2024 (enrollment > 1,000)",
+    subtitle = "Dashed line = statewide average",
+    x = NULL, y = "Per-pupil total",
+    caption = "Source: NJ DOE TGES via fetch_finance()"
+  ) +
+  theme_nj()
+```
+
+## Story 3: State aid is concentrated in the former Abbott cities
+
+Of \$10.75 billion in total K-12 state aid in FY2024, the four largest
+recipients — Newark, Elizabeth, Paterson, and Trenton, all former Abbott
+districts — absorb a strikingly large share. Newark alone receives nearly \$1.15
+billion, about 10.7% of all state aid in New Jersey.
+
+```{r story3-data}
+state_total_aid <- fin_2024 %>%
+  filter(is_state, metric == "revenue_state") %>%
+  pull(value)
+
+top_aid <- fin_2024 %>%
+  filter(is_district, metric == "revenue_state") %>%
+  arrange(desc(value)) %>%
+  mutate(share_of_state = round(value / state_total_aid * 100, 1)) %>%
+  select(entity_name, value, share_of_state) %>%
+  head(10)
+
+top_aid
+```
+
+```{r story3-chart}
+stopifnot(nrow(top_aid) > 0)
+
+ggplot(top_aid, aes(reorder(entity_name, value), value)) +
+  geom_col(fill = nj_red) +
+  geom_text(aes(label = paste0(share_of_state, "%")),
+            hjust = -0.1, size = 3.5, color = nj_red) +
+  coord_flip() +
+  scale_y_continuous(labels = label_dollar(scale = 1e-6, suffix = "M"),
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Largest K-12 state-aid recipients, FY2024",
+    subtitle = "Bar label = share of the $10.75B statewide total",
+    x = NULL, y = "Total state aid",
+    caption = "Source: NJ DOE Governor's Budget Message district details via fetch_finance()"
+  ) +
+  theme_nj()
+```
+
+## The canonical schema
+
+Every row is one `end_year` × entity × `metric`. The standard cross-state
+metrics (`per_pupil_total`, `per_pupil_instruction`, `revenue_state`) sit
+alongside NJ-specific per-pupil category metrics, and each row carries the
+federal `nces_dist` join key.
+
+```{r schema}
+fin_2024 %>%
+  filter(state_id == "3570") %>%
+  select(end_year, entity_name, metric, value, is_per_pupil,
+         enrollment_denominator, nces_dist)
+```
+
+```{r session-info}
+sessionInfo()
+```
