@@ -20,7 +20,7 @@ Departments of Education.
 | 6 | **Accountability Ratings** | [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md), [`fetch_essa_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.md) | 2018+ | CSI/TSI lists, ESSA indicators, progress tracking |
 | 7 | **Chronic Absenteeism** | [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md), [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md) | 2017-2024 | By grade, by demographic. Absenteeism rates |
 | 8 | **English Learner Progress** | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md), [`fetch_all_access()`](https://almartin82.github.io/njschooldata/reference/fetch_all_access.md) | 2022-2024 | WIDA ACCESS for ELLs assessment results |
-| 9 | **Special Education** | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md) | 2024+ | Classification rates by disability category |
+| 9 | **Special Education** | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md), [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md) | 2020-2025 | District classification rates + statewide child count by IDEA disability category; educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 
 ## Tier 3 – Commonly Published (most state DOEs have this)
 

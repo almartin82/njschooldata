@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_raw_sped</span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_raw_sped</span><span class="op">(</span><span class="va">end_year</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -60,6 +60,14 @@
 <dl><dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
 <dd><p>A school year. Year is the end of the academic year - eg 2006-07
 school year is year '2007'. Valid values are 2000-2026.</p></dd>
+
+
+<dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
+<dd><p>one of <code>"district"</code> (default; district-level total
+classification rate, all supported years) or <code>"state"</code> (state-level
+counts + classification rate by IDEA disability category, 2025+ only –
+NJ DOE did not publish the by-disability state table in the older
+single-sheet workbooks).</p></dd>
 
 </dl></div>
     <div class="section level2">
