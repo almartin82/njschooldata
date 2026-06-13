@@ -165,7 +165,7 @@ k_trend %>%
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
-| **Special Ed** | 2024+ | `fetch_sped()` | Classification rates by disability category |
+| **Special Ed** | 2020-2025 | `fetch_sped()` / `fetch_sped_placement()` | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Discipline** | Available | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` | Suspensions, expulsions, HIB incidents |
 | **Staff** | Available | `fetch_staff_demographics()` / `fetch_teacher_experience()` | Demographics, experience, ratios |
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |

@@ -13,6 +13,8 @@ from .core import (
     fetch_finance,
     fetch_finance_multi,
     get_available_finance_years,
+    fetch_sped,
+    fetch_sped_placement,
 )
 
 __version__ = "0.1.0"
@@ -24,4 +26,6 @@ __all__ = [
     "fetch_finance",
     "fetch_finance_multi",
     "get_available_finance_years",
+    "fetch_sped",
+    "fetch_sped_placement",
 ]

@@ -19,7 +19,7 @@ Canonical taxonomy of school data categories published by state Departments of E
 | 6 | **Accountability Ratings** | `fetch_essa_status()`, `fetch_essa_progress()` | 2018+ | CSI/TSI lists, ESSA indicators, progress tracking |
 | 7 | **Chronic Absenteeism** | `fetch_chronic_absenteeism()`, `fetch_days_absent()` | 2017-2024 | By grade, by demographic. Absenteeism rates |
 | 8 | **English Learner Progress** | `fetch_access()`, `fetch_all_access()` | 2022-2024 | WIDA ACCESS for ELLs assessment results |
-| 9 | **Special Education** | `fetch_sped()` | 2024+ | Classification rates by disability category |
+| 9 | **Special Education** | `fetch_sped()`, `fetch_sped_placement()` | 2020-2025 | District classification rates + statewide child count by IDEA disability category; educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 
 ## Tier 3 -- Commonly Published (most state DOEs have this)
 

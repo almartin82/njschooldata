@@ -65,6 +65,35 @@ def test_fetch_finance_canonical_schema():
     assert "revenue_state" in set(df["metric"].astype(str))
 
 
+def test_has_fetch_sped():
+    """fetch_sped and fetch_sped_placement are available."""
+    import pynjschooldata
+    for name in ("fetch_sped", "fetch_sped_placement"):
+        assert hasattr(pynjschooldata, name)
+        assert callable(getattr(pynjschooldata, name))
+
+
+def test_fetch_sped_state_by_disability():
+    """fetch_sped(level="state") returns child count by disability category.
+
+    Network/R test: skipped if the R package or NJ DOE data is unavailable.
+    """
+    import pynjschooldata
+    try:
+        df = pynjschooldata.fetch_sped(2025, level="state")
+    except Exception as exc:  # noqa: BLE001 - any R/network failure -> skip
+        pytest.skip(f"R/network unavailable: {exc}")
+
+    expected = {
+        "end_year", "is_state", "disability_category", "n_students",
+        "sped_rate", "suppressed",
+    }
+    assert expected.issubset(set(df.columns))
+    cats = set(df["disability_category"].astype(str))
+    assert "autism" in cats
+    assert "all_disabilities" in cats
+
+
 def test_fetch_enr_carries_nces_ids():
     """fetch_enr output carries the federal NCES id columns through rpy2.
 
