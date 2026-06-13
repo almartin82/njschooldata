@@ -189,6 +189,85 @@ def get_available_finance_years() -> list[int]:
         return [int(y) for y in r_result]
 
 
+def fetch_sped(end_year: int, level: str = "district") -> pd.DataFrame:
+    """
+    Fetch New Jersey special education classification data (IDEA Section 618).
+
+    Parameters
+    ----------
+    end_year : int
+        The ending school year (e.g., 2025 for 2024-25). Valid years: 2024, 2025.
+    level : str, optional
+        ``"district"`` (default) returns district-level total classification
+        rates. ``"state"`` returns the statewide count of students with IEPs by
+        IDEA disability category (2025+ only).
+
+    Returns
+    -------
+    pd.DataFrame
+        For ``level="district"``: end_year, county_id, county_name, district_id,
+        district_name, gened_num, sped_num, sped_rate. For ``level="state"``:
+        end_year, is_state, disability_category, n_students, sped_rate,
+        suppressed.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> nj.fetch_sped(2025).head()
+    >>> nj.fetch_sped(2025, level="state")
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_sped(end_year, level=level)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def fetch_sped_placement(
+    end_year: int,
+    age_group: str = "5-21",
+    level: str = "district",
+    tidy: bool = True,
+) -> pd.DataFrame:
+    """
+    Fetch NJ special education placement / educational environment data.
+
+    IDEA Section 618 "Student Count and Educational Environment" (Least
+    Restrictive Environment) data, the companion to :func:`fetch_sped`.
+
+    Parameters
+    ----------
+    end_year : int
+        Ending school year. Valid years: 2020 through 2025.
+    age_group : str, optional
+        ``"5-21"`` (school-age, default) or ``"3-5"`` (preschool).
+    level : str, optional
+        ``"district"`` (default) or ``"state"``.
+    tidy : bool, optional
+        If True (default), returns the long tidy schema.
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per entity x subgroup x environment.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> nj.fetch_sped_placement(2025).head()
+    >>> nj.fetch_sped_placement(2024, level="state")
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_sped_placement(
+            end_year, age_group=age_group, level=level, tidy=tidy
+        )
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
 def get_available_years() -> dict:
     """
     Get the range of available years for enrollment data.

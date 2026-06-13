@@ -4,18 +4,51 @@
 \alias{fetch_sped}
 \title{Fetch Special Education Classification Data}
 \usage{
-fetch_sped(end_year)
+fetch_sped(end_year, level = "district")
 }
 \arguments{
-\item{end_year}{ending school year (e.g., 2024 for 2023-2024 school year).
-Valid years: 2024+}
+\item{end_year}{ending school year (e.g., 2025 for the 2024-2025 school
+year). Valid years: 2024, 2025.}
+
+\item{level}{one of \code{"district"} (default) or \code{"state"}. The
+\code{"state"} by-disability table is only published for 2025+.}
 }
 \value{
-cleaned sped dataframe with columns: end_year, county_id, county_name,
-  district_id, district_name, gened_num, sped_num, sped_rate
+For \code{level = "district"}: a data frame with columns end_year,
+  county_id, county_name, district_id, district_name, gened_num, sped_num,
+  sped_rate. For \code{level = "state"}: a tibble with columns end_year,
+  is_state, disability_category, n_students, sped_rate, suppressed.
 }
 \description{
-Fetches special education classification rate data from NJ DOE.
-As of 2024, only current data is available. Historical data (2003-2019) is no
-longer accessible via URL and requires an OPRA request.
+Fetches NJ DOE special education classification data (IDEA
+  Section 618 public reporting). With \code{level = "district"} (default)
+  returns the district-level total classification rate (the count of
+  students with IEPs and the general-education enrollment denominator per
+  district). With \code{level = "state"} returns the statewide count of
+  students with IEPs by IDEA disability category (2025+ only).
+
+  Historical district data (2003-2019) is no longer accessible via URL and
+  requires an OPRA request. For by-disability counts and educational
+  placement (LRE) across 2020-2025, see \code{\link{fetch_sped_placement}}.
+}
+\examples{
+\dontrun{
+# 1. District-level classification rates (default)
+fetch_sped(2025)
+
+# 2. Filter to the highest-classification districts
+library(dplyr)
+fetch_sped(2025) \%>\%
+  filter(gened_num > 1000) \%>\%
+  arrange(desc(sped_rate)) \%>\%
+  select(district_name, gened_num, sped_num, sped_rate)
+
+# 3. Statewide child count by disability category (2025+)
+fetch_sped(2025, level = "state") \%>\%
+  arrange(desc(n_students))
+}
+}
+\seealso{
+\code{\link{fetch_sped_placement}} for IDEA 618 educational
+  environment / placement data and multi-year by-disability counts.
 }
