@@ -268,6 +268,96 @@ def fetch_sped_placement(
         return pandas2ri.rpy2py(r_df)
 
 
+def fetch_ell(end_year: int, tidy: bool = True) -> pd.DataFrame:
+    """
+    Fetch New Jersey English Learner (EL) population data for a single year.
+
+    EL **population** (how many English Learners are enrolled and their share of
+    total enrollment), at state / district / school level, from the NJ DOE Fall
+    Enrollment files. This is distinct from EL **proficiency** assessment (WIDA
+    ACCESS), exposed separately via the R ``fetch_access()``.
+
+    Parameters
+    ----------
+    end_year : int
+        The ending school year (e.g., 2025 for 2024-25). Valid years: 2006-2026.
+    tidy : bool, optional
+        If True (default), returns the long cross-state tidy contract. If False,
+        returns the wider per-entity frame with ``el_count`` / ``el_pct``.
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per entity x EL status x subgroup. NJ publishes a single
+        current-EL headcount per entity, so ``el_status`` is always
+        ``"current"`` and ``subgroup`` is always ``"total"``. ``n_students`` is
+        the published headcount (NA for the percent-only 2020-2022
+        district/school files); ``pct_of_enrollment`` is the EL share (0-100).
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> ell = nj.fetch_ell(2025)
+    >>> ell[ell.is_state][["end_year", "n_students", "pct_of_enrollment"]]
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_ell(end_year, tidy=tidy)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def fetch_ell_multi(end_years: list[int], tidy: bool = True) -> pd.DataFrame:
+    """
+    Fetch New Jersey English Learner population data for multiple years.
+
+    Parameters
+    ----------
+    end_years : list[int]
+        List of ending school years (e.g., [2023, 2024, 2025]).
+    tidy : bool, optional
+        If True (default), returns the long tidy contract.
+
+    Returns
+    -------
+    pd.DataFrame
+        Combined EL population data for all available requested years.
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> nj.fetch_ell_multi([2023, 2024, 2025])
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_years = robjects.IntVector(end_years)
+        r_df = pkg.fetch_ell_multi(r_years, tidy=tidy)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def get_available_ell_years() -> list[int]:
+    """
+    Get the years for which NJ English Learner population data is available.
+
+    Returns
+    -------
+    list[int]
+        Sorted list of available end_years (2006-2026).
+
+    Examples
+    --------
+    >>> import pynjschooldata as nj
+    >>> nj.get_available_ell_years()
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_result = pkg.get_available_ell_years()
+        return [int(y) for y in r_result]
+
+
 def get_available_years() -> dict:
     """
     Get the range of available years for enrollment data.
