@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'almartin82' || github.actor == 'dependabot[bot]'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Enable auto-merge
         run: gh pr merge --squash --auto "$PR_NUMBER"
