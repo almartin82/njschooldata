@@ -178,6 +178,7 @@ COVID Kindergarten
 | **Per-Pupil Spending** | 2001-2026 | [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md) / [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md) / [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md) | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md) / [`fetch_essa_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.md) | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) / [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md) / [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md) | By grade, by demographic. Cross-state standard via [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) |
+| **English Learners** | 2006-2026 | [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md) | EL/Multilingual Learner headcount + share of enrollment. State, district, school. Federal NCES ids |
 | **EL Progress** | 2022-2024 | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md) | WIDA ACCESS for ELLs |
 | **Special Ed** | 2020-2025 | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md) / [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md) | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Discipline** | Available | [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md) / [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md) | Suspensions, expulsions, HIB incidents |
@@ -246,6 +247,11 @@ Full analysis with 15 stories:
   Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html)
   – 15 stories covering charter growth, demographics, COVID recovery,
   poverty gaps, and more
+- [NJ English
+  Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html)
+  – the EL population tripling since 2006, district hotspots, and
+  largest EL systems via
+  [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
 - [Getting
   Started](https://almartin82.github.io/njschooldata/articles/getting-started.html)
   – installation, data fetching, and tidy format guide

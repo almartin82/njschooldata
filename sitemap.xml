@@ -12,6 +12,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/articles/newark-efficiency-frontier.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/newark-fiscal-brief.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/newark-school-spending.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/articles/nj-english-learners.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/nj-finance.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/articles/somsd-school-spending.html</loc></url>
@@ -26,6 +27,8 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/CHARTER_SECTOR_SUFFIX.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/DISTRICT_TOTAL_SCHOOL_ID.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/ELEMENTARY_GRADES.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ELL_TIDY_COLS.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ELL_VALID_YEARS.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/ENR_VALID_YEARS.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/GCOUNT_VALID_YEARS.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/GRATE_4YR_VALID_YEARS.html</loc></url>
@@ -116,6 +119,12 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/district_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/download_and_clean_pr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/ecosystem_trend.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ell_download_xlsx.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ell_enr_zip_url.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ell_locate_cols.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ell_read_modern_entities.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/ell_read_modern_state.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/empty_ell_frame.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enr_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/enrich_grad_count.html</loc></url>
@@ -156,6 +165,8 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_directory.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_ell.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_ell_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_enr_cached.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_enr_years.html</loc></url>
@@ -227,6 +238,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/geocoded.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_access_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_and_process_msgp.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_available_ell_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_available_finance_years.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_chronic_absenteeism_url.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.html</loc></url>
@@ -247,6 +259,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_percentile_cols.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_access.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_district_directory.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_ell.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_gepa.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_grad_file.html</loc></url>
@@ -348,6 +361,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_chronic_absenteeism_cols.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_days_absent_cols.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_district_directory.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/process_ell.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_enr_program.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/process_grad_count.html</loc></url>
@@ -422,6 +436,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_classroom_general_supplies.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_classroom_purchased_services.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_classroom_salaries_benefits.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/tidy_ell.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_equipment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tidy_excess_unreserved_general_fund.html</loc></url>

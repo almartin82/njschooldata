@@ -189,6 +189,48 @@ those functions and the `tges_*` toolkit.
   as published - no rescaling, no fabrication; unmatched NCES ids and
   suppressed values stay NA.
 
+## Valid Filter Values (English Learners)
+
+[`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
+is the EL **population** front door (headcount + share of enrollment),
+sourced from the NJ DOE Fall Enrollment files. It is distinct from EL
+**proficiency**
+([`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md),
+WIDA ACCESS). Tidy by default.
+
+- **Year coverage:** 2006-2026
+  ([`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)).
+  Earlier enrollment files carry no EL column.
+- **`el_status`:** always `"current"` — NJ publishes a single current-EL
+  headcount, no former/monitored/ever-EL split.
+- **`subgroup`:** always `"total"` — the EL count is not crossed by
+  race/gender/grade.
+- **`grade_level`:** always `"TOTAL"`.
+- **Entity flags:** `is_state` XOR `is_district` XOR `is_school`
+  (exactly one is TRUE per row; county aggregates are dropped).
+  `is_charter` flags county 80.
+- **`n_students` vs `pct_of_enrollment` (the COVID gap):** for **2020,
+  2021, 2022** the NJ DOE *district* and *school* worksheets publish
+  only an EL **percent**, not a headcount — for those entity-years
+  `n_students` is `NA` and only `pct_of_enrollment` (0-100) is
+  populated. The **statewide** count is published every year, and full
+  counts at every level return from **2023** on. **NEVER back-derive the
+  count from the percent** for the gap years.
+- **Source-pipeline trap:**
+  [`get_raw_enr()`](https://almartin82.github.io/njschooldata/reference/get_raw_enr.md)
+  overwrites the published EL count with `pct * total` for 2020+ (its
+  demographic-share workflow), so the enrollment `lep` subgroup is
+  derived for those years.
+  [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
+  reads the real `English Learners` / `Multilingual Learners` count
+  column directly and must NOT reuse
+  [`get_raw_enr()`](https://almartin82.github.io/njschooldata/reference/get_raw_enr.md)’s
+  EL value for 2020+.
+- **No suppression:** NJ does not suppress EL counts; `n_students_lower`
+  == `n_students_upper` == `n_students` wherever a count exists.
+  Fractional `.5` values are real shared-time/vocational FTE, preserved
+  as published.
+
 ## Caching
 
 Two layers, both on by default.

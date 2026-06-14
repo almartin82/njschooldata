@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="articles/nj-english-learners.html">New Jersey English Learners</a></li>
     <li><a class="dropdown-item" href="articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
@@ -156,6 +157,26 @@
 <strong><code>is_per_pupil</code>:</strong> TRUE for every <code>per_pupil_*</code> metric, FALSE for <code>revenue_*</code>.</li>
 <li>
 <strong>ids:</strong> <code>state_id</code> is the 4-digit district code (Newark = “3570”); <code>nces_dist</code> is attached by district_id from the bundled crosswalk (~94% match), <code>nces_sch</code> always NA. Values are nominal dollars exactly as published - no rescaling, no fabrication; unmatched NCES ids and suppressed values stay NA.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-english-learners">Valid Filter Values (English Learners)<a class="anchor" aria-label="anchor" href="#valid-filter-values-english-learners"></a></h2>
+<p><code><a href="reference/fetch_ell.html">fetch_ell()</a></code> is the EL <strong>population</strong> front door (headcount + share of enrollment), sourced from the NJ DOE Fall Enrollment files. It is distinct from EL <strong>proficiency</strong> (<code><a href="reference/fetch_access.html">fetch_access()</a></code>, WIDA ACCESS). Tidy by default.</p>
+<ul><li>
+<strong>Year coverage:</strong> 2006-2026 (<code><a href="reference/get_available_ell_years.html">get_available_ell_years()</a></code>). Earlier enrollment files carry no EL column.</li>
+<li>
+<strong><code>el_status</code>:</strong> always <code>"current"</code> — NJ publishes a single current-EL headcount, no former/monitored/ever-EL split.</li>
+<li>
+<strong><code>subgroup</code>:</strong> always <code>"total"</code> — the EL count is not crossed by race/gender/grade.</li>
+<li>
+<strong><code>grade_level</code>:</strong> always <code>"TOTAL"</code>.</li>
+<li>
+<strong>Entity flags:</strong> <code>is_state</code> XOR <code>is_district</code> XOR <code>is_school</code> (exactly one is TRUE per row; county aggregates are dropped). <code>is_charter</code> flags county 80.</li>
+<li>
+<strong><code>n_students</code> vs <code>pct_of_enrollment</code> (the COVID gap):</strong> for <strong>2020, 2021, 2022</strong> the NJ DOE <em>district</em> and <em>school</em> worksheets publish only an EL <strong>percent</strong>, not a headcount — for those entity-years <code>n_students</code> is <code>NA</code> and only <code>pct_of_enrollment</code> (0-100) is populated. The <strong>statewide</strong> count is published every year, and full counts at every level return from <strong>2023</strong> on. <strong>NEVER back-derive the count from the percent</strong> for the gap years.</li>
+<li>
+<strong>Source-pipeline trap:</strong> <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code> overwrites the published EL count with <code>pct * total</code> for 2020+ (its demographic-share workflow), so the enrollment <code>lep</code> subgroup is derived for those years. <code><a href="reference/fetch_ell.html">fetch_ell()</a></code> reads the real <code>English Learners</code> / <code>Multilingual Learners</code> count column directly and must NOT reuse <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code>’s EL value for 2020+.</li>
+<li>
+<strong>No suppression:</strong> NJ does not suppress EL counts; <code>n_students_lower</code> == <code>n_students_upper</code> == <code>n_students</code> wherever a count exists. Fractional <code>.5</code> values are real shared-time/vocational FTE, preserved as published.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>

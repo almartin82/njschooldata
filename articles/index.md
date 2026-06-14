@@ -9,6 +9,8 @@
 
 - [New Jersey Enrollment
   Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.md):
+- [New Jersey English
+  Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.md):
 
 ### School Finance
 

@@ -226,6 +226,21 @@ Functions for charter school sector aggregations
 - [`id_charter_hosts()`](https://almartin82.github.io/njschooldata/reference/id_charter_hosts.md)
   : Identify charter host districts
 
+## English Learners
+
+English Learner / Multilingual Learner population (counts + share of
+enrollment)
+
+- [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
+  : Fetch New Jersey English Learner (EL) population data
+- [`fetch_ell_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_ell_multi.md)
+  : Fetch NJ English Learner population data for multiple years
+- [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
+  : Get the years for which NJ English Learner population data is
+  available
+- [`tidy_ell()`](https://almartin82.github.io/njschooldata/reference/tidy_ell.md)
+  : Tidy English Learner population data
+
 ## Special Populations
 
 Functions for special education and other subgroup data
@@ -582,6 +597,10 @@ Additional exported functions
   : Fetch Disciplinary Removals Data
 - [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
   : Fetch Dropout Rate Data
+- [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
+  : Fetch New Jersey English Learner (EL) population data
+- [`fetch_ell_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_ell_multi.md)
+  : Fetch NJ English Learner population data for multiple years
 - [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
   : Gets and processes a NJ enrollment file
 - [`fetch_enr_cached()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_cached.md)
@@ -706,6 +725,9 @@ Additional exported functions
   : Aggregate multiple grad count rows and produce summary statistics
 - [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
   : Geocoded School Addresses
+- [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
+  : Get the years for which NJ English Learner population data is
+  available
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
   : Years for which NJ finance data is available
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
@@ -893,6 +915,8 @@ Additional exported functions
   : Tidy chronic absenteeism data
 - [`tidy_budgetary_per_pupil_cost()`](https://almartin82.github.io/njschooldata/reference/tidy_budgetary_per_pupil_cost.md)
   : Tidy Budgetary Per Pupil data frame
+- [`tidy_ell()`](https://almartin82.github.io/njschooldata/reference/tidy_ell.md)
+  : Tidy English Learner population data
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
   : Tidy enrollment data
 - [`tidy_nj_assess()`](https://almartin82.github.io/njschooldata/reference/tidy_nj_assess.md)
