@@ -1,0 +1,192 @@
+---
+title: "New Jersey English Learners"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{New Jersey English Learners}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  # Default OFF: only the expensive fetch chunks cache. Plot chunks must
+  # re-evaluate every build so knitr never replays a stale cached figure.
+  cache = FALSE
+)
+```
+
+`fetch_ell()` returns the **English Learner population** — how many students are
+identified as English Learners (formerly "Limited English Proficient", now
+"Multilingual Learners" in NJ DOE parlance) and what share of enrollment they
+make up — at the state, district, and school level. The numbers come straight
+from the NJ DOE Fall Enrollment files; no count is ever derived from a
+percentage.
+
+This is the EL *population* feature. EL *proficiency* (the WIDA ACCESS for ELLs
+assessment) is a separate measure, available through `fetch_access()`.
+
+```{r load-packages}
+library(njschooldata)
+library(ggplot2)
+library(dplyr)
+library(scales)
+```
+
+```{r theme}
+theme_nj <- function() {
+  theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(color = "gray40"),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom"
+    )
+}
+el_blue <- "#2C7FB8"
+el_orange <- "#E67E22"
+```
+
+## 1. New Jersey's English Learner population has tripled since 2006
+
+In the 2005-06 school year, New Jersey enrolled about 50,000 English Learners —
+3.6% of all students. By 2024-25 that had grown to more than 155,000, **11.2% of
+enrollment**. The EL count roughly tripled while total enrollment barely moved,
+so the EL *share* of New Jersey's classrooms has more than doubled in two
+decades.
+
+```{r fetch-state, cache = TRUE}
+# Statewide EL population, every year NJ publishes a count (2006-2025).
+state_el <- fetch_ell_multi(2006:2025, use_cache = TRUE) %>%
+  filter(is_state) %>%
+  select(end_year, n_students, total_enrollment, pct_of_enrollment) %>%
+  arrange(end_year)
+
+stopifnot(nrow(state_el) > 0)
+print(state_el)
+```
+
+```{r state-trend-chart}
+stopifnot(nrow(state_el) > 0)
+
+ggplot(state_el, aes(x = end_year, y = pct_of_enrollment)) +
+  geom_line(color = el_blue, linewidth = 1.3) +
+  geom_point(color = el_blue, size = 2.5) +
+  scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(2006, 2025, 3)) +
+  labs(
+    title = "English Learners are a rising share of NJ enrollment",
+    subtitle = "Statewide EL students as a percent of total enrollment, 2006-2025",
+    x = NULL, y = "EL share of enrollment",
+    caption = "Source: NJ DOE Fall Enrollment"
+  ) +
+  theme_nj()
+```
+
+## 2. In a dozen districts, two of every five students are English Learners
+
+EL students are far from evenly spread. Statewide the share is about 11%, but in
+the highest-EL districts more than 40% of students are English Learners.
+Plainfield tops the list at roughly 45%, followed by a cluster of Central and
+North Jersey cities.
+
+```{r fetch-2025, cache = TRUE}
+ell_2025 <- fetch_ell(2025, use_cache = TRUE)
+stopifnot(nrow(ell_2025) > 0)
+
+top_share <- ell_2025 %>%
+  filter(is_district, total_enrollment > 2000, !is.na(n_students)) %>%
+  arrange(desc(pct_of_enrollment)) %>%
+  select(district_name, n_students, total_enrollment, pct_of_enrollment) %>%
+  head(12)
+
+print(top_share)
+```
+
+```{r el-hotspots-chart}
+stopifnot(nrow(top_share) > 0)
+
+ggplot(top_share, aes(x = reorder(district_name, pct_of_enrollment),
+                      y = pct_of_enrollment)) +
+  geom_col(fill = el_orange) +
+  geom_text(aes(label = label_percent(scale = 1, accuracy = 0.1)(pct_of_enrollment)),
+            hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(labels = label_percent(scale = 1),
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Where English Learners are concentrated",
+    subtitle = "EL share of enrollment, districts over 2,000 students, 2024-25",
+    x = NULL, y = "EL share of enrollment",
+    caption = "Source: NJ DOE Fall Enrollment"
+  ) +
+  theme_nj()
+```
+
+## 3. The biggest EL populations are in New Jersey's largest cities
+
+Share and headcount tell different stories. The districts with the *most* EL
+students are the big urban systems: Newark enrolls more than 12,000 English
+Learners, Elizabeth nearly 11,000, and Paterson over 8,000. Together a handful
+of cities account for a large slice of the state's EL students.
+
+```{r largest-el}
+largest_el <- ell_2025 %>%
+  filter(is_district, !is.na(n_students)) %>%
+  arrange(desc(n_students)) %>%
+  select(district_name, n_students, total_enrollment, pct_of_enrollment) %>%
+  head(10)
+
+stopifnot(nrow(largest_el) > 0)
+print(largest_el)
+```
+
+```{r largest-el-chart}
+stopifnot(nrow(largest_el) > 0)
+
+ggplot(largest_el, aes(x = reorder(district_name, n_students), y = n_students)) +
+  geom_col(fill = el_blue) +
+  geom_text(aes(label = comma(round(n_students))), hjust = -0.1, size = 3.5) +
+  coord_flip() +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Largest English Learner populations in New Jersey",
+    subtitle = "EL student headcount by district, 2024-25",
+    x = NULL, y = "English Learners",
+    caption = "Source: NJ DOE Fall Enrollment"
+  ) +
+  theme_nj()
+```
+
+## Data notes
+
+- **Source:** NJ DOE Fall Enrollment files
+  (`nj.gov/education/doedata/enr/`). The EL measure appears as `LEP` through
+  2018-19, `English Learners` for 2019-20 through 2022-23, and
+  `Multilingual Learners` from 2023-24 onward — `fetch_ell()` reconciles the
+  renames.
+- **Years:** 2006-2026 (`get_available_ell_years()`). Earlier enrollment files
+  do not report an EL measure.
+- **Counts vs. percent (COVID-era gap):** for 2020, 2021, and 2022 the NJ DOE
+  *district* and *school* worksheets published only an EL **percent**, not a
+  headcount. For those entity-years `n_students` is `NA` and only
+  `pct_of_enrollment` is populated — the count is never back-derived from the
+  percent. The statewide count is published every year. From 2023-24 on, real
+  counts return at every level.
+- **No suppression:** NJ does not suppress EL counts, so `n_students_lower` and
+  `n_students_upper` equal `n_students` wherever a count is published.
+- **Fractional values:** some counts and enrollment totals carry a `.5` — these
+  are real shared-time / county-vocational FTE students, preserved exactly as
+  published.
+- **EL status:** NJ publishes a single current-EL headcount, so `el_status` is
+  always `"current"` and `subgroup` is always `"total"`.
+
+```{r session-info}
+sessionInfo()
+```

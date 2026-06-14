@@ -134,6 +134,14 @@ reference:
       - starts_with("allpublic")
       - id_charter_hosts
 
+  - title: English Learners
+    desc: English Learner / Multilingual Learner population (counts + share of enrollment)
+    contents:
+      - fetch_ell
+      - fetch_ell_multi
+      - get_available_ell_years
+      - tidy_ell
+
   - title: Special Populations
     desc: Functions for special education and other subgroup data
     contents:
@@ -242,6 +250,7 @@ articles:
     navbar: ~
     contents:
       - nj-enrollment-insights
+      - nj-english-learners
   - title: School Finance
     navbar: ~
     contents:

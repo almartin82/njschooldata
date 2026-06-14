@@ -40,6 +40,13 @@ GCOUNT_VALID_YEARS <- 1998:2025
 #' @keywords internal
 LEGACY_ASSESS_VALID_YEARS <- 2004:2014
 
+#' English Learner (EL) population valid years
+#' The NJ Fall Enrollment file first carries an EL/LEP measure in the 2005-06
+#' file (end_year 2006); files for 2000-2005 have no EL column. The latest
+#' published file is 2025-26 (end_year 2026).
+#' @keywords internal
+ELL_VALID_YEARS <- 2006:2026
+
 #' Check if year is valid for a data type
 #'
 #' @param end_year The school year (end year)

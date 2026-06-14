@@ -118,3 +118,50 @@ def test_fetch_enr_carries_nces_ids():
     assert len(nd) > 0
     assert (nd.str.len() == 7).all()
     assert (ns.str.len() == 12).all()
+
+
+def test_has_fetch_ell():
+    """fetch_ell, fetch_ell_multi, get_available_ell_years are available."""
+    import pynjschooldata
+    for name in ("fetch_ell", "fetch_ell_multi", "get_available_ell_years"):
+        assert hasattr(pynjschooldata, name)
+        assert callable(getattr(pynjschooldata, name))
+
+
+def test_get_available_ell_years():
+    """get_available_ell_years returns the documented integer range."""
+    import pynjschooldata
+    try:
+        yrs = pynjschooldata.get_available_ell_years()
+    except Exception as exc:  # noqa: BLE001 - any R/network failure -> skip
+        pytest.skip(f"R unavailable: {exc}")
+    assert 2006 in yrs
+    assert 2025 in yrs
+    assert min(yrs) == 2006
+
+
+def test_fetch_ell_tidy_schema():
+    """fetch_ell returns the tidy EL population contract through rpy2.
+
+    Network/R test: skipped if the R package or NJ DOE data is unavailable.
+    """
+    import pynjschooldata
+    try:
+        df = pynjschooldata.fetch_ell(2025)
+    except Exception as exc:  # noqa: BLE001 - any R/network failure -> skip
+        pytest.skip(f"R/network unavailable: {exc}")
+
+    expected = {
+        "end_year", "district_id", "district_name", "school_id", "school_name",
+        "nces_dist", "nces_sch", "is_state", "is_district", "is_school",
+        "is_charter", "grade_level", "el_status", "subgroup", "n_students",
+        "pct_of_enrollment", "n_students_lower", "n_students_upper",
+    }
+    assert expected.issubset(set(df.columns))
+    assert set(df["el_status"].astype(str)) == {"current"}
+    assert set(df["subgroup"].astype(str)) == {"total"}
+
+    # statewide EL count is real and matches the published 2024-25 file
+    state = df[df["is_state"].astype(bool)]
+    assert len(state) == 1
+    assert abs(float(state["n_students"].iloc[0]) - 155304) < 1
