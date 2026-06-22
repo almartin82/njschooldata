@@ -106,6 +106,28 @@ test_that("per_pupil_total carries an enrollment denominator for districts", {
   expect_true(mean(!is.na(d$enrollment_denominator)) > 0.85)
 })
 
+test_that("finance output passes cross-state discovery per-pupil guardrails", {
+  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  pp <- fin[fin$is_per_pupil & !is.na(fin$value), ]
+  expect_equal(sum(pp$value > 100000), 0L)
+
+  f11 <- tryCatch(suppressWarnings(fetch_finance(2011)), error = function(e) NULL)
+  skip_if(is.null(f11) || nrow(f11) == 0, "NJ DOE finance source unavailable")
+  bad_denoms <- f11[f11$is_per_pupil & !is.na(f11$enrollment_denominator) &
+                      f11$enrollment_denominator <= 0, ]
+  expect_equal(nrow(bad_denoms), 0L)
+})
+
+test_that("fetch_finance_multi accepts the cross-state end_years alias", {
+  f <- tryCatch(
+    suppressWarnings(fetch_finance_multi(end_years = c(2024, 2025))),
+    error = function(e) NULL
+  )
+  skip_if(is.null(f) || nrow(f) == 0, "NJ DOE finance source unavailable")
+  expect_true(all(c(2024, 2025) %in% unique(f$end_year)))
+  expect_equal(names(f), finance_cols)
+})
+
 test_that("tidy values match the raw TGES source (fidelity)", {
   skip_if_not(have_data, "NJ DOE finance source unavailable")
   tg <- tryCatch(suppressWarnings(fetch_tges(2025)), error = function(e) NULL)

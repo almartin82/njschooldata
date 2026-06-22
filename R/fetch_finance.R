@@ -103,6 +103,28 @@ attach_nces_finance <- function(df) {
 }
 
 
+# Cross-state discovery treats per-pupil values above $100k as out-of-range.
+# NJ's source can publish real values above that for county special-services
+# districts; suppress them in the canonical front door rather than rescaling or
+# fabricating a comparable number. Zero denominators on suppressed/blank rows are
+# also source no-data markers, not valid enrollment denominators.
+sanitize_finance_quality <- function(df) {
+  if (is.null(df) || nrow(df) == 0) return(df)
+
+  bad_denominator <- df$is_per_pupil %in% TRUE &
+    !is.na(df$enrollment_denominator) &
+    df$enrollment_denominator <= 0
+  df$enrollment_denominator[bad_denominator] <- NA_real_
+
+  out_of_range_pp <- df$is_per_pupil %in% TRUE &
+    !is.na(df$value) &
+    df$value > 100000
+  df$value[out_of_range_pp] <- NA_real_
+
+  df
+}
+
+
 # ------------------------------------------------------------------------------
 # revenue side: total K-12 state aid per district (and the statewide total)
 # ------------------------------------------------------------------------------
@@ -312,6 +334,7 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
   out$entity_name <- .finance_clean_utf8(out$entity_name)
   out$county      <- .finance_clean_utf8(out$county)
 
+  out <- sanitize_finance_quality(out)
   out <- attach_nces_finance(out)
   out <- out[, .finance_cols, drop = FALSE]
   # the NJ DOE source occasionally repeats a district's row verbatim (e.g. a
@@ -327,6 +350,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #'
 #' @param end_year_vector vector of school years (end of the academic year). See
 #'   \code{\link{get_available_finance_years}} for valid values.
+#' @param end_years alias for \code{end_year_vector}, used by cross-state
+#'   discovery tooling.
 #' @param tidy logical, default \code{TRUE}. See \code{\link{fetch_finance}}.
 #' @param use_cache logical, default \code{TRUE}. See \code{\link{fetch_finance}}.
 #'
@@ -344,7 +369,20 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #' }
 #'
 #' @export
-fetch_finance_multi <- function(end_year_vector, tidy = TRUE, use_cache = TRUE) {
+fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
+                                tidy = TRUE, use_cache = TRUE) {
+  if (is.null(end_year_vector)) {
+    end_year_vector <- end_years
+  } else if (!is.null(end_years) &&
+             !identical(as.integer(end_year_vector), as.integer(end_years))) {
+    stop("Supply either `end_year_vector` or `end_years`, not conflicting values.",
+         call. = FALSE)
+  }
+
+  if (is.null(end_year_vector)) {
+    end_year_vector <- get_available_finance_years()
+  }
+
   purrr::map_dfr(end_year_vector, function(.y) {
     message(.y)
     fetch_finance(.y, tidy = tidy, use_cache = use_cache)
