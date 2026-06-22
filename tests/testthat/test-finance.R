@@ -106,11 +106,28 @@ test_that("per_pupil_total carries an enrollment denominator for districts", {
   expect_true(mean(!is.na(d$enrollment_denominator)) > 0.85)
 })
 
-test_that("finance output passes cross-state discovery per-pupil guardrails", {
+test_that("real per-pupil values above $100k pass through with raw fidelity", {
   skip_if_not(have_data, "NJ DOE finance source unavailable")
+  # County special-services districts genuinely spend more than $100k per pupil.
+  # These were formerly NA-ed by a blunt magnitude cap; the canonical front door
+  # now passes them through unchanged so the value matches the published source.
   pp <- fin[fin$is_per_pupil & !is.na(fin$value), ]
-  expect_equal(sum(pp$value > 100000), 0L)
+  expect_true(any(pp$value > 100000))
 
+  bergen <- fin$value[which(fin$state_id == "0285" &
+                              fin$metric == "per_pupil_total")]
+  expect_true(length(bergen) == 1 && bergen > 100000)
+
+  tg <- tryCatch(suppressWarnings(fetch_tges(2025)), error = function(e) NULL)
+  skip_if(is.null(tg), "TGES source unavailable")
+  aa <- tg[["CSG1AA_AVGS"]]
+  raw <- aa[which(aa$end_year == 2024 & aa$calc_type == "Actuals" &
+                    aa$district_id == "0285"), "Per Pupil Total Expenditures",
+            drop = TRUE]
+  expect_equal(as.numeric(bergen), as.numeric(raw[1]))
+})
+
+test_that("zero/blank per-pupil denominators are still NA-ed", {
   f11 <- tryCatch(suppressWarnings(fetch_finance(2011)), error = function(e) NULL)
   skip_if(is.null(f11) || nrow(f11) == 0, "NJ DOE finance source unavailable")
   bad_denoms <- f11[f11$is_per_pupil & !is.na(f11$enrollment_denominator) &

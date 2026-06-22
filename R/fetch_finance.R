@@ -103,11 +103,11 @@ attach_nces_finance <- function(df) {
 }
 
 
-# Cross-state discovery treats per-pupil values above $100k as out-of-range.
-# NJ's source can publish real values above that for county special-services
-# districts; suppress them in the canonical front door rather than rescaling or
-# fabricating a comparable number. Zero denominators on suppressed/blank rows are
-# also source no-data markers, not valid enrollment denominators.
+# NJ's source publishes real per-pupil values above $100k for county
+# special-services districts; pass them through unchanged for raw fidelity rather
+# than rescaling, capping, or fabricating a comparable number. The only guard kept
+# here is zero/blank enrollment denominators on per-pupil rows, which are source
+# no-data markers, not valid enrollment denominators.
 sanitize_finance_quality <- function(df) {
   if (is.null(df) || nrow(df) == 0) return(df)
 
@@ -115,11 +115,6 @@ sanitize_finance_quality <- function(df) {
     !is.na(df$enrollment_denominator) &
     df$enrollment_denominator <= 0
   df$enrollment_denominator[bad_denominator] <- NA_real_
-
-  out_of_range_pp <- df$is_per_pupil %in% TRUE &
-    !is.na(df$value) &
-    df$value > 100000
-  df$value[out_of_range_pp] <- NA_real_
 
   df
 }
