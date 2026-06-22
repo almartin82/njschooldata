@@ -497,7 +497,7 @@ sessionInfo()
 #> [4] ggplot2_4.0.3       njschooldata_0.9.18
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       xfun_0.58          bslib_0.11.0       ggrepel_0.9.8     
+#>  [1] gtable_0.3.6       xfun_0.59          bslib_0.11.0       ggrepel_0.9.8     
 #>  [5] lattice_0.22-9     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.0       
 #>  [9] generics_0.1.4     curl_7.1.0         parallel_4.6.0     tibble_3.3.1      
 #> [13] pkgconfig_2.0.3    Matrix_1.7-5       RColorBrewer_1.1-3 S7_0.2.2          
@@ -508,7 +508,7 @@ sessionInfo()
 #> [33] jquerylib_0.1.4    cachem_1.1.0       nlme_3.1-169       tidyselect_1.2.1  
 #> [37] digest_0.6.39      stringi_1.8.7      purrr_1.2.2        splines_4.6.0     
 #> [41] labeling_0.4.3     fastmap_1.2.0      grid_4.6.0         cli_3.6.6         
-#> [45] magrittr_2.0.5     utf8_1.2.6         readr_2.2.0        withr_3.0.2       
+#> [45] magrittr_2.0.5     utf8_1.2.6         readr_2.2.0        withr_3.0.3       
 #> [49] bit64_4.8.2        lubridate_1.9.5    timechange_0.4.0   rmarkdown_2.31    
 #> [53] httr_1.4.8         bit_4.6.0          otel_0.2.0         cellranger_1.1.0  
 #> [57] ragg_1.5.2         hms_1.1.4          evaluate_1.0.5     knitr_1.51        

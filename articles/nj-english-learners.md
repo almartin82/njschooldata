@@ -287,14 +287,14 @@ sessionInfo()
 #>  [9] grid_4.6.0         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8         purrr_1.2.2       
 #> [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         
-#> [21] crayon_1.5.3       rlang_1.2.0        bit64_4.8.2        withr_3.0.2       
+#> [21] crayon_1.5.3       rlang_1.2.0        bit64_4.8.2        withr_3.0.3       
 #> [25] cachem_1.1.0       yaml_2.3.12        otel_0.2.0         parallel_4.6.0    
 #> [29] downloader_0.4.1   tools_4.6.0        tzdb_0.5.0         curl_7.1.0        
 #> [33] vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5   
 #> [37] snakecase_0.11.1   stringr_1.6.0      bit_4.6.0          fs_2.1.0          
 #> [41] vroom_1.7.1        ragg_1.5.2         janitor_2.2.1      pkgconfig_2.0.3   
 #> [45] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.11.0      
-#> [49] gtable_0.3.6       glue_1.8.1         systemfonts_1.3.2  xfun_0.58         
+#> [49] gtable_0.3.6       glue_1.8.1         systemfonts_1.3.2  xfun_0.59         
 #> [53] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      
 #> [57] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.31     readr_2.2.0       
 #> [61] compiler_4.6.0     S7_0.2.2           readxl_1.5.0

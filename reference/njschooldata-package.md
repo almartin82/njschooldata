@@ -16,4 +16,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Andrew Martin <almartin@gmail.com>
+**Maintainer**: Andy Martin <almartin@gmail.com>

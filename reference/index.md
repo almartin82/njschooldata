@@ -291,6 +291,22 @@ Additional NJ DOE data functions
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 
+## School Facilities
+
+Public NJDOE, NJGIN, and NJSDA facilities sources on a canonical long
+schema, with geometry available through a separate GIS companion.
+
+- [`fetch_facilities()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities.md)
+  : Fetch New Jersey school facilities data
+- [`fetch_facilities_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities_multi.md)
+  : Fetch New Jersey facilities data for multiple years
+- [`fetch_facility_gis()`](https://almartin82.github.io/njschooldata/reference/fetch_facility_gis.md)
+  : Fetch New Jersey school facility geometry
+- [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md)
+  : What facilities categories are available for New Jersey
+- [`get_raw_facilities()`](https://almartin82.github.io/njschooldata/reference/get_raw_facilities.md)
+  : Fetch raw New Jersey facilities source data
+
 ## School Finance (Uniform)
 
 The cross-state-uniform finance front door. Consolidates per-pupil
@@ -613,6 +629,12 @@ Additional exported functions
   : Fetch ESSA Accountability Progress
 - [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
   : Fetch ESSA Accountability Status
+- [`fetch_facilities()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities.md)
+  : Fetch New Jersey school facilities data
+- [`fetch_facilities_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities_multi.md)
+  : Fetch New Jersey facilities data for multiple years
+- [`fetch_facility_gis()`](https://almartin82.github.io/njschooldata/reference/fetch_facility_gis.md)
+  : Fetch New Jersey school facility geometry
 - [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md)
   : Fetch NJ school finance in the canonical cross-state schema
 - [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
@@ -728,6 +750,8 @@ Additional exported functions
 - [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
   : Get the years for which NJ English Learner population data is
   available
+- [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md)
+  : What facilities categories are available for New Jersey
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
   : Years for which NJ finance data is available
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
@@ -745,6 +769,8 @@ Additional exported functions
   : Get Raw Report Card Database
 - [`get_percentile_cols()`](https://almartin82.github.io/njschooldata/reference/get_percentile_cols.md)
   : Get percentile cols
+- [`get_raw_facilities()`](https://almartin82.github.io/njschooldata/reference/get_raw_facilities.md)
+  : Fetch raw New Jersey facilities source data
 - [`get_raw_sped_placement()`](https://almartin82.github.io/njschooldata/reference/get_raw_sped_placement.md)
   : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)

@@ -37,6 +37,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with njschooldata</a></li>
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
+    <li><a class="dropdown-item" href="articles/nj-facilities.html">New Jersey School Facilities Data</a></li>
     <li><a class="dropdown-item" href="articles/nj-english-learners.html">New Jersey English Learners</a></li>
     <li><a class="dropdown-item" href="articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
@@ -67,6 +68,7 @@
 
 <p>1.4 million students. 580+ districts. 21 counties. 25+ years of data from the New Jersey Department of Education, in one clean R and Python interface.</p>
 <p><strong><a href="https://almartin82.github.io/njschooldata/">Full documentation</a></strong> – all 15 stories with interactive charts, getting-started guide, and complete function reference.</p>
+<p><strong>Vignettes:</strong> - <a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights</a> – 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more - <a href="https://almartin82.github.io/njschooldata/articles/nj-facilities.html">New Jersey School Facilities Data</a> – SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points - <a href="https://almartin82.github.io/njschooldata/articles/nj-english-learners.html">NJ English Learners</a> – English Learner population trends via <code><a href="reference/fetch_ell.html">fetch_ell()</a></code> - <a href="https://almartin82.github.io/njschooldata/articles/getting-started.html">Getting Started</a> – installation, data fetching, and tidy format guide</p>
 <div class="section level2">
 <h2 id="highlights">Highlights<a class="anchor" aria-label="anchor" href="#highlights"></a>
 </h2>
@@ -301,6 +303,14 @@
 <td>District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 &amp; 5-21</td>
 </tr>
 <tr>
+<td><strong>Facilities</strong></td>
+<td>Current / FY2026 / 2024-2025</td>
+<td>
+<code><a href="reference/fetch_facilities.html">fetch_facilities()</a></code> / <code><a href="reference/fetch_facilities_multi.html">fetch_facilities_multi()</a></code> / <code><a href="reference/fetch_facility_gis.html">fetch_facility_gis()</a></code> / <code><a href="reference/get_available_facilities.html">get_available_facilities()</a></code>
+</td>
+<td>Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels</td>
+</tr>
+<tr>
 <td><strong>Discipline</strong></td>
 <td>Available</td>
 <td>
@@ -367,7 +377,11 @@
 <span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># School directory</span></span>
-<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Facilities data</span></span>
+<span><span class="va">facilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_facilities.html">fetch_facilities</a></span><span class="op">(</span><span class="st">"finance"</span><span class="op">)</span></span>
+<span><span class="va">facility_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_facility_gis.html">fetch_facility_gis</a></span><span class="op">(</span><span class="st">"school_points"</span>, sf <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
@@ -389,7 +403,11 @@
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># School directory</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span></code></pre></div>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Facilities data</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>facilities <span class="op">=</span> njsd.fetch_facilities(<span class="st">"finance"</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>facility_points <span class="op">=</span> njsd.fetch_facility_gis(<span class="st">"school_points"</span>)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -399,6 +417,9 @@
 <ul>
 <li>
 <a href="https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html">NJ Enrollment Insights</a> – 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more</li>
+<li>
+<a href="https://almartin82.github.io/njschooldata/articles/nj-facilities.html">New Jersey School Facilities Data</a> – SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points via <code><a href="reference/fetch_facilities.html">fetch_facilities()</a></code>
+</li>
 <li>
 <a href="https://almartin82.github.io/njschooldata/articles/nj-english-learners.html">NJ English Learners</a> – the EL population tripling since 2006, district hotspots, and largest EL systems via <code><a href="reference/fetch_ell.html">fetch_ell()</a></code>
 </li>
@@ -415,7 +436,8 @@
 <p><strong>Suppression rules:</strong> NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.</p>
 <p><strong>Census Day:</strong> NJ enrollment counts are based on October 15 enrollment (ASSA reporting).</p>
 <p><strong>Federal NCES linkage:</strong> <code><a href="reference/fetch_enr.html">fetch_enr()</a></code> attaches the federal NCES identifiers to every enrollment row – <code>nces_dist</code> (the 7-digit <code>LEAID</code>) and <code>nces_sch</code> (the 12-digit <code>NCESSCH</code>) – so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep <code>NA</code> rather than a guessed id.</p>
-<p><strong>Known caveats:</strong> - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency - Charter schools appear as separate “districts” in the data - Pre-2020 and post-2020 data formats differ significantly</p>
+<p><strong>Facilities sources:</strong> <code><a href="reference/fetch_facilities.html">fetch_facilities()</a></code> combines public NJDOE, NJGIN, and NJSDA facilities sources: the County/District/School Code workbook, NJGIN school point locations, the FY2026 SDA allocation workbook, the 2024-25 Lead Statement of Assurance workbook, and NJSDA active project pages. <code>condition</code> and <code>capital_needs</code> are in the standard facilities vocabulary but are not shipped for New Jersey until a verified populated public statewide bulk source is available.</p>
+<p><strong>Known caveats:</strong> - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency - Charter schools appear as separate “districts” in the data - Pre-2020 and post-2020 data formats differ significantly - NJDOE’s 2024-25 Lead Statement of Assurance workbook includes one district row where exceeded outlets are greater than tested outlets; the package preserves the reported exceeded value and drops only impossible negative count cells</p>
 </div>
 <div class="section level2">
 <h2 id="deeper-dive">Deeper Dive<a class="anchor" aria-label="anchor" href="#deeper-dive"></a>
@@ -862,7 +884,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Andrew Martin <br><small class="roles"> Author, maintainer </small>   </li>
+<li>
+<a href="https://github.com/almartin82" class="external-link">Andy Martin</a> <br><small class="roles"> Author, maintainer </small>   </li>
 </ul>
 </div>
 
@@ -881,7 +904,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Andrew Martin.</p>
+  <p>Developed by <a href="https://github.com/almartin82" class="external-link">Andy Martin</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
