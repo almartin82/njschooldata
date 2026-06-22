@@ -28,6 +28,7 @@ Canonical taxonomy of school data categories published by state Departments of E
 | 10 | **Discipline** | `fetch_disciplinary_removals()`, `fetch_violence_vandalism_hib()` | Available | Suspensions, expulsions, HIB incidents. By demographic |
 | 11 | **Teacher/Staff Data** | `fetch_staff_demographics()`, `fetch_staff_ratios()`, `fetch_teacher_experience()` | Available | Demographics, experience, student-teacher ratios |
 | 12 | **College-Going Rates** | `fetch_postsecondary()` | Available | Postsecondary enrollment within 16 months |
+| 13 | **Facilities** | `fetch_facilities()`, `fetch_facilities_multi()`, `fetch_facility_gis()`, `get_available_facilities()` | Current / FY2026 / 2024-2025 | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
 | 14 | **SAT/ACT Scores** | `fetch_sat_participation()`, `fetch_sat_performance()` | Available | Participation rates, average scores |
 | 15 | **AP/IB Participation** | `fetch_ap_participation()`, `fetch_ap_performance()`, `fetch_ib_participation()` | Available | Course enrollment, exam pass rates |
 | 16 | **CTE (Career/Technical Ed)** | `fetch_cte_participation()`, `fetch_industry_credentials()`, `fetch_apprenticeship_data()` | Available | Career pathways, credentials, work-based learning |
@@ -37,4 +38,3 @@ Canonical taxonomy of school data categories published by state Departments of E
 | # | Category | Function(s) | Years | Details |
 |---|----------|-------------|-------|---------|
 | 17 | **Course Enrollment** | `fetch_math_course_enrollment()`, `fetch_science_course_enrollment()`, `fetch_cs_enrollment()`, `fetch_arts_enrollment()`, `fetch_world_language_enrollment()` | Available | Math, science, CS, arts, world languages |
-

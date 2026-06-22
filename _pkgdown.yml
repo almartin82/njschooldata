@@ -169,6 +169,17 @@ reference:
       - get_dfg_districts
       - get_dfg_a_districts
 
+  - title: School Facilities
+    desc: >
+      Public NJDOE, NJGIN, and NJSDA facilities sources on a canonical long
+      schema, with geometry available through a separate GIS companion.
+    contents:
+      - fetch_facilities
+      - fetch_facilities_multi
+      - fetch_facility_gis
+      - get_available_facilities
+      - get_raw_facilities
+
   - title: School Finance (Uniform)
     desc: >
       The cross-state-uniform finance front door. Consolidates per-pupil
@@ -250,6 +261,7 @@ articles:
     navbar: ~
     contents:
       - nj-enrollment-insights
+      - nj-facilities
       - nj-english-learners
   - title: School Finance
     navbar: ~

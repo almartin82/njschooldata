@@ -16,6 +16,12 @@ from .enrollment import fetch_enr
 from .assessment import fetch_parcc, fetch_access
 from .graduation import fetch_grad_rate
 from .directory import get_school_directory, get_district_directory
+from .facilities import (
+    fetch_facilities,
+    fetch_facilities_multi,
+    fetch_facility_gis,
+    get_available_facilities,
+)
 
 __version__ = "0.9.0"
 
@@ -26,4 +32,8 @@ __all__ = [
     "fetch_grad_rate",
     "get_school_directory",
     "get_district_directory",
+    "fetch_facilities",
+    "fetch_facilities_multi",
+    "fetch_facility_gis",
+    "get_available_facilities",
 ]

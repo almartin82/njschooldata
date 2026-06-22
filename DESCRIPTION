@@ -5,7 +5,7 @@ Description: R functions (with Python bindings) to import NJ school data,
     including assessment, enrollment, and accountability data from the
     New Jersey Department of Education.
 Version: 0.9.18
-Authors@R: person("Andrew", "Martin", role = c("aut","cre"),
+Authors@R: person("Andy", "Martin", role = c("aut","cre"),
     email = "almartin@gmail.com")
 License: MIT + file LICENSE
 URL: https://github.com/almartin82/njschooldata, https://almartin82.github.io/njschooldata/
@@ -21,6 +21,7 @@ Imports:
     gtools,
     httr,
     janitor,
+    jsonlite,
     magrittr,
     purrr,
     readr,

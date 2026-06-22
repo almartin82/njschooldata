@@ -18,6 +18,10 @@ from .core import (
     fetch_ell,
     fetch_ell_multi,
     get_available_ell_years,
+    fetch_facilities,
+    fetch_facilities_multi,
+    fetch_facility_gis,
+    get_available_facilities,
 )
 
 __version__ = "0.1.0"
@@ -34,4 +38,8 @@ __all__ = [
     "fetch_ell",
     "fetch_ell_multi",
     "get_available_ell_years",
+    "fetch_facilities",
+    "fetch_facilities_multi",
+    "fetch_facility_gis",
+    "get_available_facilities",
 ]
