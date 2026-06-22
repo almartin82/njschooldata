@@ -52,7 +52,12 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance_multi</span><span class="op">(</span><span class="va">end_year_vector</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance_multi</span><span class="op">(</span></span>
+<span>  end_year_vector <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  end_years <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tidy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_cache <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -62,6 +67,11 @@
 <dl><dt id="arg-end-year-vector">end_year_vector<a class="anchor" aria-label="anchor" href="#arg-end-year-vector"></a></dt>
 <dd><p>vector of school years (end of the academic year). See
 <code><a href="get_available_finance_years.html">get_available_finance_years</a></code> for valid values.</p></dd>
+
+
+<dt id="arg-end-years">end_years<a class="anchor" aria-label="anchor" href="#arg-end-years"></a></dt>
+<dd><p>alias for <code>end_year_vector</code>, used by cross-state
+discovery tooling.</p></dd>
 
 
 <dt id="arg-tidy">tidy<a class="anchor" aria-label="anchor" href="#arg-tidy"></a></dt>

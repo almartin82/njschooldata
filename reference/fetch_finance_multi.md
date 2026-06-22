@@ -5,7 +5,12 @@ Fetch multiple years of NJ school finance
 ## Usage
 
 ``` r
-fetch_finance_multi(end_year_vector, tidy = TRUE, use_cache = TRUE)
+fetch_finance_multi(
+  end_year_vector = NULL,
+  end_years = NULL,
+  tidy = TRUE,
+  use_cache = TRUE
+)
 ```
 
 ## Arguments
@@ -15,6 +20,10 @@ fetch_finance_multi(end_year_vector, tidy = TRUE, use_cache = TRUE)
   vector of school years (end of the academic year). See
   [`get_available_finance_years`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
   for valid values.
+
+- end_years:
+
+  alias for `end_year_vector`, used by cross-state discovery tooling.
 
 - tidy:
 
