@@ -11,6 +11,12 @@
 
 **[Full documentation](https://almartin82.github.io/njschooldata/)** -- all 15 stories with interactive charts, getting-started guide, and complete function reference.
 
+**Vignettes:**
+- [NJ Enrollment Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html) -- 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more
+- [New Jersey School Facilities Data](https://almartin82.github.io/njschooldata/articles/nj-facilities.html) -- SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points
+- [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- English Learner population trends via `fetch_ell()`
+- [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
+
 ## Highlights
 
 ### 1. Charter enrollment grew 15% since 2020
@@ -167,6 +173,7 @@ k_trend %>%
 | **English Learners** | 2006-2026 | `fetch_ell()` | EL/Multilingual Learner headcount + share of enrollment. State, district, school. Federal NCES ids |
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
 | **Special Ed** | 2020-2025 | `fetch_sped()` / `fetch_sped_placement()` | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
+| **Facilities** | Current / FY2026 / 2024-2025 | `fetch_facilities()` / `fetch_facilities_multi()` / `fetch_facility_gis()` / `get_available_facilities()` | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
 | **Discipline** | Available | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` | Suspensions, expulsions, HIB incidents |
 | **Staff** | Available | `fetch_staff_demographics()` / `fetch_teacher_experience()` | Demographics, experience, ratios |
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |
@@ -195,6 +202,10 @@ grate <- fetch_grad_rate(2024)
 
 # School directory
 schools <- get_school_directory()
+
+# Facilities data
+facilities <- fetch_facilities("finance")
+facility_points <- fetch_facility_gis("school_points", sf = FALSE)
 ```
 
 ### Python
@@ -221,6 +232,10 @@ grate = njsd.fetch_grad_rate(2024)
 
 # School directory
 schools = njsd.get_school_directory()
+
+# Facilities data
+facilities = njsd.fetch_facilities("finance")
+facility_points = njsd.fetch_facility_gis("school_points")
 ```
 
 ## Explore More
@@ -228,6 +243,7 @@ schools = njsd.get_school_directory()
 Full analysis with 15 stories:
 
 - [NJ Enrollment Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html) -- 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more
+- [New Jersey School Facilities Data](https://almartin82.github.io/njschooldata/articles/nj-facilities.html) -- SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points via `fetch_facilities()`
 - [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- the EL population tripling since 2006, district hotspots, and largest EL systems via `fetch_ell()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 - [Function reference](https://almartin82.github.io/njschooldata/reference/)
@@ -244,10 +260,13 @@ Full analysis with 15 stories:
 
 **Federal NCES linkage:** `fetch_enr()` attaches the federal NCES identifiers to every enrollment row -- `nces_dist` (the 7-digit `LEAID`) and `nces_sch` (the 12-digit `NCESSCH`) -- so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep `NA` rather than a guessed id.
 
+**Facilities sources:** `fetch_facilities()` combines public NJDOE, NJGIN, and NJSDA facilities sources: the County/District/School Code workbook, NJGIN school point locations, the FY2026 SDA allocation workbook, the 2024-25 Lead Statement of Assurance workbook, and NJSDA active project pages. `condition` and `capital_needs` are in the standard facilities vocabulary but are not shipped for New Jersey until a verified populated public statewide bulk source is available.
+
 **Known caveats:**
 - 2020+ enrollment data includes state-level rows but the vignette aggregates from district-level for time-series consistency
 - Charter schools appear as separate "districts" in the data
 - Pre-2020 and post-2020 data formats differ significantly
+- NJDOE's 2024-25 Lead Statement of Assurance workbook includes one district row where exceeded outlets are greater than tested outlets; the package preserves the reported exceeded value and drops only impossible negative count cells
 
 ## Deeper Dive
 

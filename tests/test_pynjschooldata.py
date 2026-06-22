@@ -165,3 +165,38 @@ def test_fetch_ell_tidy_schema():
     state = df[df["is_state"].astype(bool)]
     assert len(state) == 1
     assert abs(float(state["n_students"].iloc[0]) - 155304) < 1
+
+
+def test_has_fetch_facilities():
+    """Facilities wrappers are available."""
+    import pynjschooldata
+    for name in (
+        "fetch_facilities",
+        "fetch_facilities_multi",
+        "fetch_facility_gis",
+        "get_available_facilities",
+    ):
+        assert hasattr(pynjschooldata, name)
+        assert callable(getattr(pynjschooldata, name))
+        assert name in pynjschooldata.__all__
+
+
+def test_fetch_facilities_canonical_schema():
+    """fetch_facilities returns the canonical facilities schema through rpy2.
+
+    Network/R test: skipped if the R package or live source data is unavailable.
+    """
+    import pynjschooldata
+    try:
+        df = pynjschooldata.fetch_facilities("finance")
+    except Exception as exc:  # noqa: BLE001 - any R/network failure -> skip
+        pytest.skip(f"R/network unavailable: {exc}")
+
+    expected = [
+        "category", "entity_level", "entity_id", "entity_name", "metric",
+        "value", "unit", "source_agency", "source_type", "source_url",
+        "vintage", "nces_dist", "nces_sch",
+    ]
+    assert list(df.columns) == expected
+    assert len(df) > 0
+    assert set(df["category"].astype(str)) == {"finance"}

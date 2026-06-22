@@ -38,6 +38,10 @@ df_multi = nj.fetch_enr_multi([2020, 2021, 2022, 2023, 2024, 2025])
 
 # Convert to tidy format
 tidy = nj.tidy_enr(df)
+
+# Fetch facilities data
+facilities = nj.fetch_facilities("finance")
+facility_points = nj.fetch_facility_gis("school_points")
 ```
 
 ## API
@@ -57,6 +61,19 @@ Convert enrollment data to tidy (long) format.
 ### `get_available_years() -> dict`
 
 Get the range of available years (`min_year`, `max_year`).
+
+### `fetch_facilities(category: str, year=None) -> pd.DataFrame`
+
+Fetch source-backed New Jersey facilities data on the canonical long schema.
+
+### `fetch_facility_gis(layer: str = "school_points") -> pd.DataFrame`
+
+Fetch NJGIN school point geometry. Returns a GeoDataFrame when spatial Python
+packages are installed, otherwise a pandas DataFrame with coordinates and WKT.
+
+### `get_available_facilities() -> pd.DataFrame`
+
+List shipped facilities categories with source agency, URL, type, and vintage.
 
 ## Part of the 50 State Schooldata Family
 

@@ -358,6 +358,84 @@ def get_available_ell_years() -> list[int]:
         return [int(y) for y in r_result]
 
 
+# ============================================================================
+# Facilities
+# ============================================================================
+
+def fetch_facilities(category: str, year=None, tidy: bool = True,
+                     use_cache: bool = True) -> pd.DataFrame:
+    """
+    Fetch New Jersey facilities data by category.
+
+    Returns the canonical long facilities schema from the R package. Geometry is
+    served separately by ``fetch_facility_gis``.
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        kwargs = {"tidy": tidy, "use_cache": use_cache}
+        if year is not None:
+            kwargs["year"] = year
+        r_df = pkg.fetch_facilities(category, **kwargs)
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def fetch_facilities_multi(category: str, years: list[int],
+                           tidy: bool = True,
+                           use_cache: bool = True) -> pd.DataFrame:
+    """
+    Fetch New Jersey facilities data for multiple source years.
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_years = robjects.IntVector(years)
+        r_df = pkg.fetch_facilities_multi(
+            category,
+            r_years,
+            tidy=tidy,
+            use_cache=use_cache,
+        )
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
+def fetch_facility_gis(layer: str = "school_points", use_cache: bool = True):
+    """
+    Fetch New Jersey facilities GIS data.
+
+    Returns a GeoDataFrame when geopandas/shapely are installed, otherwise a
+    pandas DataFrame with latitude, longitude, and WKT columns.
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.fetch_facility_gis(layer, sf=False, use_cache=use_cache)
+        df = r_df if isinstance(r_df, pd.DataFrame) else pandas2ri.rpy2py(r_df)
+
+    try:
+        import geopandas as gpd
+        from shapely import wkt as shapely_wkt
+
+        mask = df["wkt"].notna()
+        geom = df.loc[mask, "wkt"].apply(shapely_wkt.loads)
+        return gpd.GeoDataFrame(df.loc[mask], geometry=geom, crs="EPSG:4326")
+    except Exception:
+        return df
+
+
+def get_available_facilities() -> pd.DataFrame:
+    """
+    Return New Jersey facilities categories with source metadata.
+    """
+    pkg = _get_pkg()
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        r_df = pkg.get_available_facilities()
+        if isinstance(r_df, pd.DataFrame):
+            return r_df
+        return pandas2ri.rpy2py(r_df)
+
+
 def get_available_years() -> dict:
     """
     Get the range of available years for enrollment data.

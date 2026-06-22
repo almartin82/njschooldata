@@ -10,7 +10,7 @@ readme = "README.md"
 license = "GPL-3.0"
 requires-python = ">=3.9"
 authors = [
-    {name = "Andrew Martin", email = "almartin@gmail.com"}
+    {name = "Andy Martin", email = "almartin@gmail.com"}
 ]
 keywords = ["education", "new-jersey", "school-data", "rpy2"]
 classifiers = [

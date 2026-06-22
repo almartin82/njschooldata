@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Andrew Martin \email{almartin@gmail.com}
+\strong{Maintainer}: Andy Martin \email{almartin@gmail.com}
 
 }
 \keyword{internal}
