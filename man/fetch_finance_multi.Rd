@@ -4,11 +4,19 @@
 \alias{fetch_finance_multi}
 \title{Fetch multiple years of NJ school finance}
 \usage{
-fetch_finance_multi(end_year_vector, tidy = TRUE, use_cache = TRUE)
+fetch_finance_multi(
+  end_year_vector = NULL,
+  end_years = NULL,
+  tidy = TRUE,
+  use_cache = TRUE
+)
 }
 \arguments{
 \item{end_year_vector}{vector of school years (end of the academic year). See
 \code{\link{get_available_finance_years}} for valid values.}
+
+\item{end_years}{alias for \code{end_year_vector}, used by cross-state
+discovery tooling.}
 
 \item{tidy}{logical, default \code{TRUE}. See \code{\link{fetch_finance}}.}
 
