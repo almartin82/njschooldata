@@ -99,6 +99,7 @@ reference:
       - fetch_biliteracy_trends
       - fetch_biliteracy_by_group
       - fetch_violence_vandalism_hib
+      - fetch_restraint_seclusion
       - fetch_disciplinary_removals
       - fetch_teacher_experience
       - fetch_staff_demographics

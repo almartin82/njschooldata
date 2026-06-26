@@ -18,6 +18,7 @@
 - [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- instructional minutes/day and student-to-device ratios via `fetch_school_day()` / `fetch_device_ratios()`
 - [Seal of Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html) -- statewide seal trends, school summaries, and the seal-earning equity gap via `fetch_biliteracy_summary()` / `fetch_biliteracy_trends()` / `fetch_biliteracy_by_group()`
 - [Advanced-Coursework Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html) -- which advanced courses a school offers, AP/IB/dual participation by student group, and SLE participation via `fetch_advanced_course_access()`
+- [Restraint & Seclusion](https://almartin82.github.io/njschooldata/articles/nj-restraint-seclusion.html) -- school-level restraint and seclusion events, and the disability disproportionality, via `fetch_restraint_seclusion()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 
 ## Highlights
@@ -177,7 +178,7 @@ k_trend %>%
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
 | **Special Ed** | 2020-2025 | `fetch_sped()` / `fetch_sped_placement()` | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Facilities** | Current / FY2026 / 2024-2025 | `fetch_facilities()` / `fetch_facilities_multi()` / `fetch_facility_gis()` / `get_available_facilities()` | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
-| **Discipline** | Available | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` | Suspensions, expulsions, HIB incidents |
+| **Discipline** | Available; restraint & seclusion 2023-2024 | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` / `fetch_restraint_seclusion()` | Suspensions, expulsions, HIB incidents; school-level restraint & seclusion events by student group |
 | **Staff** | Available | `fetch_staff_demographics()` / `fetch_teacher_experience()` | Demographics, experience, ratios |
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |
 | **Advanced-Coursework Access** | 2017-2025 (courses, SLE); 2021-2025 (by group) | `fetch_advanced_course_access()` | Which advanced courses a school offers (enrolled/tested), AP/IB/dual-enrollment participation by student group, and Structured Learning Experience participation. School + district/state |
@@ -254,6 +255,7 @@ Full analysis with 15 stories:
 - [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- how long the NJ school day runs and how student-to-device access dipped in the first pandemic year via `fetch_school_day()` / `fetch_device_ratios()`
 - [Seal of Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html) -- the statewide seal count rising from ~5k to ~12.6k since 2020-21 and the seal-earning equity gap by student group via `fetch_biliteracy_summary()` / `fetch_biliteracy_trends()` / `fetch_biliteracy_by_group()`
 - [Advanced-Coursework Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html) -- which schools offer AP/IB at all and the AP/IB access gap by student group via `fetch_advanced_course_access()`
+- [Restraint & Seclusion](https://almartin82.github.io/njschooldata/articles/nj-restraint-seclusion.html) -- the special-education concentration of restraint events and the schools reporting the most, via `fetch_restraint_seclusion()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 - [Function reference](https://almartin82.github.io/njschooldata/reference/)
 
