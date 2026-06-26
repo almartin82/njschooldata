@@ -243,7 +243,7 @@ fin_2024 %>%
 ``` r
 
 sessionInfo()
-#> R version 4.6.0 (2026-04-24)
+#> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.4 LTS
 #> 
@@ -270,18 +270,18 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     stringi_1.8.7     
 #>  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5    
-#>  [9] grid_4.6.0         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
+#>  [9] grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.2        codetools_0.2-20  
 #> [17] textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6          crayon_1.5.3      
 #> [21] rlang_1.2.0        bit64_4.8.2        withr_3.0.3        cachem_1.1.0      
-#> [25] yaml_2.3.12        otel_0.2.0         parallel_4.6.0     downloader_0.4.1  
-#> [29] tools_4.6.0        tzdb_0.5.0         vctrs_0.7.3        R6_2.6.1          
+#> [25] yaml_2.3.12        otel_0.2.0         parallel_4.6.1     downloader_0.4.1  
+#> [29] tools_4.6.1        tzdb_0.5.0         vctrs_0.7.3        R6_2.6.1          
 #> [33] lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1   stringr_1.6.0     
 #> [37] bit_4.6.0          fs_2.1.0           vroom_1.7.1        ragg_1.5.2        
 #> [41] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.0     
 #> [45] pillar_1.11.1      bslib_0.11.0       gtable_0.3.6       glue_1.8.1        
 #> [49] systemfonts_1.3.2  xfun_0.59          tibble_3.3.1       tidyselect_1.2.1  
 #> [53] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
-#> [57] rmarkdown_2.31     readr_2.2.0        compiler_4.6.0     S7_0.2.2          
+#> [57] rmarkdown_2.31     readr_2.2.0        compiler_4.6.1     S7_0.2.2          
 #> [61] readxl_1.5.0
 ```

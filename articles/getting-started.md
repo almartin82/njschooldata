@@ -381,7 +381,7 @@ enrollment_trends <- multi_year_enr %>%
 ``` r
 
 sessionInfo()
-#> R version 4.6.0 (2026-04-24)
+#> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.4 LTS
 #> 
@@ -411,12 +411,12 @@ sessionInfo()
 #> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  
 #> [17] cli_3.6.6         crayon_1.5.3      rlang_1.2.0       bit64_4.8.2      
 #> [21] withr_3.0.3       cachem_1.1.0      yaml_2.3.12       otel_0.2.0       
-#> [25] parallel_4.6.0    tools_4.6.0       downloader_0.4.1  tzdb_0.5.0       
+#> [25] parallel_4.6.1    tools_4.6.1       downloader_0.4.1  tzdb_0.5.0       
 #> [29] curl_7.1.0        vctrs_0.7.3       R6_2.6.1          lifecycle_1.0.5  
 #> [33] lubridate_1.9.5   snakecase_0.11.1  stringr_1.6.0     bit_4.6.0        
 #> [37] fs_2.1.0          vroom_1.7.1       ragg_1.5.2        janitor_2.2.1    
 #> [41] pkgconfig_2.0.3   desc_1.4.3        pkgdown_2.2.0     pillar_1.11.1    
 #> [45] bslib_0.11.0      glue_1.8.1        systemfonts_1.3.2 xfun_0.59        
 #> [49] tibble_3.3.1      tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9  
-#> [53] rmarkdown_2.31    readr_2.2.0       compiler_4.6.0    readxl_1.5.0
+#> [53] rmarkdown_2.31    readr_2.2.0       compiler_4.6.1    readxl_1.5.0
 ```
