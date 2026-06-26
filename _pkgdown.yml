@@ -116,6 +116,8 @@ reference:
       - fetch_spr_home_language
       - fetch_spr_naep
       - fetch_sgp
+      - fetch_school_day
+      - fetch_device_ratios
       - fetch_math_course_enrollment
 
 
