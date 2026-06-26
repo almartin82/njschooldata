@@ -313,5 +313,13 @@ utils::globalVariables(c(
   "length_of_day", "length_of_day_minutes",
   "instruction_full_time", "instruction_full_time_minutes",
   "instruction_shared_time", "instruction_shared_time_minutes",
-  "student_device_ratio", "students_per_device"
+  "student_device_ratio", "students_per_device",
+
+  # ========== Seal of Biliteracy (2024-25 redesign sheets) ==========
+  "total_seals_earned", "numberof_languages",
+  "unique_students_earning_seals", "unique_students_earning_seals_pct",
+  "multilingual_learners_earning_seals", "multilingual_learners_earning_seals_pct",
+  "students_earning_seal_pct_school",
+  "students_earning_seal_pct_district",
+  "students_earning_seal_pct_state"
 ))

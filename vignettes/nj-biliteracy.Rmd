@@ -1,0 +1,158 @@
+---
+title: "Seal of Biliteracy: Statewide Trend & the Seal-Earning Equity Gap"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Seal of Biliteracy: Statewide Trend & the Seal-Earning Equity Gap}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(dplyr)
+library(ggplot2)
+```
+
+The New Jersey State Seal of Biliteracy recognizes graduating students who reach
+proficiency in English and at least one world language. The 2024-25 School
+Performance Reports split this into a richer set of views: a school/district/state
+**summary** (`fetch_biliteracy_summary()`), a five-year **trend**
+(`fetch_biliteracy_trends()`), and a seal-earning rate **by student group**
+(`fetch_biliteracy_by_group()`). All three are new in the 2024-25 redesign and
+cover end_year 2025 only; the per-language detail (2018-2025) stays in
+`fetch_biliteracy_seal()`.
+
+Throughout, suppressed cells (`"Fewer than 5 seals"`, `"Enrollment for the group
+is <10 students."`) are returned as `NA`, never a guessed number. A real
+published `0` stays `0`.
+
+## Statewide seals more than doubled in four years
+
+The trend sheet is unusual: it carries five school years inside the single 2025
+workbook. The statewide row shows seals earned climbing from about 4,950 in
+2020-21 to 12,644 in 2024-25.
+
+```{r trend-data, cache = TRUE}
+state_trend <- fetch_biliteracy_trends(2025, level = "district") %>%
+  filter(is_state) %>%
+  select(school_year, total_seals_earned) %>%
+  arrange(school_year)
+```
+
+```{r trend-print}
+# Print-before-plot: confirm the data feeding the chart.
+state_trend
+stopifnot(nrow(state_trend) == 5)
+```
+
+```{r trend-chart}
+ggplot(state_trend, aes(x = school_year, y = total_seals_earned, group = 1)) +
+  geom_line(colour = "#2c7fb8", linewidth = 1.1) +
+  geom_point(size = 3, colour = "#2c7fb8") +
+  geom_text(aes(label = format(total_seals_earned, big.mark = ",")),
+            vjust = -1, size = 3.6) +
+  scale_y_continuous(limits = c(0, 15000),
+                     labels = function(x) format(x, big.mark = ",")) +
+  labs(
+    title = "New Jersey Seal of Biliteracy: statewide seals earned",
+    subtitle = "Total seals earned per school year (SealofBiliteracy_Trends, 2024-25 SPR)",
+    x = "School year",
+    y = "Total seals earned"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## English learners earn seals at the highest rate
+
+The student-group view reframes the seal as an equity measure. Because the seal
+rewards proficiency in a language other than English, the groups earning it at
+the highest rates are exactly the students who arrive multilingual: current and
+former English learners lead at about 25%, with Hispanic/Latino students next.
+Students with disabilities and Black students earn seals at the lowest rates.
+The statewide rate for each group is carried in the
+`students_earning_seal_pct_state` column.
+
+```{r group-data, cache = TRUE}
+group_rates <- fetch_biliteracy_by_group(2025, level = "district") %>%
+  filter(!is.na(students_earning_seal_pct_state)) %>%
+  distinct(subgroup, students_earning_seal_pct_state)
+```
+
+```{r group-print}
+# Print-before-plot: confirm the values exist and are sane.
+group_rates <- group_rates %>%
+  arrange(desc(students_earning_seal_pct_state))
+group_rates
+stopifnot(nrow(group_rates) > 0)
+stopifnot("limited english proficiency" %in% group_rates$subgroup)
+```
+
+```{r group-chart}
+ggplot(
+  group_rates,
+  aes(x = reorder(subgroup, students_earning_seal_pct_state),
+      y = students_earning_seal_pct_state)
+) +
+  geom_col(fill = "#2c7fb8") +
+  geom_text(aes(label = paste0(students_earning_seal_pct_state, "%")),
+            hjust = -0.15, size = 3.4) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 30)) +
+  labs(
+    title = "Seal-earning rate by student group, 2024-25 (statewide)",
+    subtitle = "Percent of each group earning a Seal of Biliteracy (SealofBiliteracy_StudentGroup)",
+    x = NULL,
+    y = "Percent earning a seal"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## Summary view: seals, languages, and unique earners
+
+The summary sheet pairs each entity's seal count with the number of distinct
+languages and the count and share of unique students earning a seal. Here are the
+districts producing the most seals statewide.
+
+```{r summary-data, cache = TRUE}
+summary25 <- fetch_biliteracy_summary(2025, level = "district") %>%
+  filter(is_district, !is.na(total_seals_earned))
+```
+
+```{r summary-print}
+nrow(summary25)
+stopifnot(nrow(summary25) > 0)
+
+summary25 %>%
+  arrange(desc(total_seals_earned)) %>%
+  slice(1:10) %>%
+  select(district_name, total_seals_earned, numberof_languages,
+         unique_students_earning_seals, unique_students_earning_seals_pct)
+```
+
+## Notes
+
+- All three fetchers cover **end_year 2025 only** (the 2024-25 SPR redesign sheets
+  `SealofBiliteracy_Summary`, `_Trends`, `_StudentGroup`). For the per-language
+  detail across 2018-2025 use `fetch_biliteracy_seal()`.
+- Suppression and text-bleed strings become `NA`, never a fabricated number. A
+  genuine published `0` is preserved.
+- A handful of small high schools publish a seal-earning rate above 100% for a
+  group (the rate is seals earned over a 12th-grade-style denominator, not over
+  the group's own enrollment); those real cells pass through unclipped.
+
+```{r session-info}
+sessionInfo()
+```

@@ -789,3 +789,314 @@ fetch_biliteracy_seal <- function(end_year, level = "school") {
 
   df
 }
+
+
+# -----------------------------------------------------------------------------
+# Seal of Biliteracy - 2024-25 redesign sheets (summary / trends / by-group)
+# -----------------------------------------------------------------------------
+#
+# The 2024-25 (end_year 2025) SPR redesign split the single legacy
+# SealofBiliteracy sheet into four sheets. The per-language detail
+# (SealofBiliteracy_Language) is covered by fetch_biliteracy_seal() above; the
+# three genuinely-new summary/trend/equity views below exist ONLY in end_year
+# 2025 (both school and district workbooks) and are absent from 2017-2024, so
+# each of these three fetchers is 2025-only and errors for any other year.
+#
+# These add a school-completion lens (how many seals, how many languages, how
+# many unique students), a multi-year trend (within the 2025 workbook itself),
+# and an equity lens (seal-earning rate by student group). Suppression and
+# text-bleed strings ("Fewer than 5 seals", "Enrollment for the group is <10
+# students.", "Total Current and Former ML enrollment was less than 10
+# students.") are coerced to NA by spr_value_numeric() - never to a guessed
+# number. A real published 0 stays 0.
+#
+# The 2025-only error gate matches the precedent set by the other redesign
+# fetchers (e.g. fetch_spr_tsi); the sheet simply does not exist earlier, so
+# erroring is honest rather than fabricating coverage.
+
+#' Numeric columns to coerce on each redesigned biliteracy sheet
+#' @keywords internal
+.biliteracy_summary_num_cols <- c(
+  "total_seals_earned", "numberof_languages",
+  "unique_students_earning_seals", "unique_students_earning_seals_pct",
+  "multilingual_learners_earning_seals", "multilingual_learners_earning_seals_pct",
+  # District-workbook-only extras (absent from the School workbook):
+  "schools_earning_seals", "schools_earning_seals_pct",
+  "districts_earning_seals", "districts_earning_seals_pct"
+)
+
+#' Validate a redesigned-biliteracy call (2025-only, school/district level)
+#'
+#' The three redesigned Seal-of-Biliteracy sheets exist only in the end_year
+#' 2025 SPR workbooks. This helper enforces the supported \code{level} and the
+#' 2025-only year gate with clear error messages, mirroring the gating used by
+#' the other 2024-25 redesign fetchers.
+#'
+#' @param end_year Requested school year.
+#' @param level Requested level ("school" or "district").
+#' @param fn Function name, for the error message.
+#' @keywords internal
+.validate_biliteracy_redesign <- function(end_year, level, fn) {
+  if (!level %in% c("school", "district")) {
+    stop(
+      fn, "(): level must be \"school\" or \"district\".",
+      call. = FALSE
+    )
+  }
+  if (!identical(as.numeric(end_year), 2025)) {
+    stop(
+      fn, "() covers end_year 2025 only: the redesigned ",
+      "Seal-of-Biliteracy summary/trend/student-group sheets were introduced ",
+      "in the 2024-25 SPR redesign and are absent from 2017-2024 workbooks. ",
+      "For the per-language detail (2018-2025) use fetch_biliteracy_seal().",
+      call. = FALSE
+    )
+  }
+  invisible(TRUE)
+}
+
+
+#' Fetch Seal-of-Biliteracy Summary (2024-25)
+#'
+#' Downloads the \code{SealofBiliteracy_Summary} sheet from the redesigned
+#' 2024-25 NJ DOE School Performance Reports. Each row reports, for one entity,
+#' the total seals earned, the number of distinct languages, the count and
+#' percentage of unique students earning a seal, and the count and percentage of
+#' multilingual learners earning a seal.
+#'
+#' @details
+#' This sheet exists \strong{only in end_year 2025} (both school and district
+#' workbooks); 2017-2024 had a single combined \code{SealofBiliteracy} sheet, so
+#' other years error. For the per-language detail across 2018-2025 use
+#' \code{\link{fetch_biliteracy_seal}}.
+#'
+#' Percentages are published as strings (e.g. \code{"6.8\%"}) and counts may
+#' carry thousands separators (e.g. \code{"12,644"}); both are coerced to
+#' numeric. Some multilingual-learner cells bleed a suppression note into the
+#' value column (e.g. \code{"Total Current and Former ML enrollment was less
+#' than 10 students."} or \code{"Fewer than 5 students."}); these non-numeric
+#' strings become \code{NA}, never a fabricated number. A genuine published
+#' \code{0} is preserved as \code{0}.
+#'
+#' The District workbook additionally carries
+#' \code{schools_earning_seals(_pct)} and \code{districts_earning_seals(_pct)}
+#' columns (absent from the School workbook); they are passed through when
+#' present.
+#'
+#' @param end_year Must be 2025 (the only year the sheet exists).
+#' @param level One of \code{"school"} or \code{"district"}. \code{"district"}
+#'   returns district and state rows.
+#'
+#' @return Data frame with entity identifiers, \code{school_year}, the summary
+#'   metrics above (numeric), and the standard aggregation flags
+#'   (\code{is_state}, \code{is_county}, \code{is_district}, \code{is_school},
+#'   \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic}).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Summary for every school (2024-25)
+#' bs <- fetch_biliteracy_summary(2025)
+#'
+#' # Statewide totals (district workbook carries the is_state row)
+#' library(dplyr)
+#' fetch_biliteracy_summary(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   select(total_seals_earned, numberof_languages, unique_students_earning_seals)
+#'
+#' # Schools earning the most seals
+#' fetch_biliteracy_summary(2025) %>%
+#'   filter(is_school) %>%
+#'   slice_max(total_seals_earned, n = 10) %>%
+#'   select(district_name, school_name, total_seals_earned, numberof_languages)
+#' }
+fetch_biliteracy_summary <- function(end_year, level = "school") {
+  .validate_biliteracy_redesign(end_year, level, "fetch_biliteracy_summary")
+
+  df <- njschooldata::fetch_spr_data(
+    sheet_name = "SealofBiliteracy_Summary",
+    end_year = end_year,
+    level = level
+  )
+
+  # Coerce every numeric metric present. spr_value_numeric() strips "%" and
+  # thousands commas and maps suppression / text-bleed strings to NA, preserving
+  # a real published 0.
+  for (col in .biliteracy_summary_num_cols) {
+    if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      total_seals_earned, numberof_languages,
+      unique_students_earning_seals, unique_students_earning_seals_pct,
+      multilingual_learners_earning_seals, multilingual_learners_earning_seals_pct,
+      dplyr::any_of(c(
+        "schools_earning_seals", "schools_earning_seals_pct",
+        "districts_earning_seals", "districts_earning_seals_pct"
+      )),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Seal-of-Biliteracy Multi-Year Trend (2024-25)
+#'
+#' Downloads the \code{SealofBiliteracy_Trends} sheet from the redesigned
+#' 2024-25 NJ DOE School Performance Reports. Unlike most SPR sheets this one is
+#' \strong{multi-year within the single 2025 workbook}: each entity has one row
+#' per \code{school_year} (\code{"2020-21"} through \code{"2024-25"}) carrying
+#' the total seals earned that year.
+#'
+#' @details
+#' The sheet exists \strong{only in end_year 2025} (both school and district
+#' workbooks); other years error. All five \code{school_year} rows are returned
+#' for each entity - the function does not filter to a single year.
+#'
+#' \code{total_seals_earned} is coerced to numeric. A real published \code{0}
+#' (no seals that year) is preserved as \code{0}; the suppression string
+#' \code{"Fewer than 5 seals"} becomes \code{NA}, never a guessed number.
+#'
+#' @param end_year Must be 2025 (the only year the sheet exists).
+#' @param level One of \code{"school"} or \code{"district"}. \code{"district"}
+#'   returns district and state rows.
+#'
+#' @return Data frame with entity identifiers, \code{school_year},
+#'   \code{total_seals_earned} (numeric), and the standard aggregation flags.
+#'   One row per entity per \code{school_year}.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Five-year seal trend for every school (2024-25 workbook)
+#' bt <- fetch_biliteracy_trends(2025)
+#'
+#' # Statewide seal trend
+#' library(dplyr)
+#' fetch_biliteracy_trends(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   select(school_year, total_seals_earned)
+#'
+#' # One school's five-year trajectory
+#' fetch_biliteracy_trends(2025) %>%
+#'   filter(district_id == "3570", school_id == "010") %>%
+#'   select(school_name, school_year, total_seals_earned)
+#' }
+fetch_biliteracy_trends <- function(end_year, level = "school") {
+  .validate_biliteracy_redesign(end_year, level, "fetch_biliteracy_trends")
+
+  df <- njschooldata::fetch_spr_data(
+    sheet_name = "SealofBiliteracy_Trends",
+    end_year = end_year,
+    level = level
+  )
+
+  # Coerce the single value column. A published 0 stays 0; "Fewer than 5 seals"
+  # -> NA.
+  df$total_seals_earned <- spr_value_numeric(df$total_seals_earned)
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      total_seals_earned,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Seal-of-Biliteracy Seal-Earning Rate by Student Group (2024-25)
+#'
+#' Downloads the \code{SealofBiliteracy_StudentGroup} sheet from the redesigned
+#' 2024-25 NJ DOE School Performance Reports. Each row reports, for one entity
+#' and one student group, the percentage of students in that group earning a
+#' seal, alongside the district and state rates for the same group - an equity
+#' lens on biliteracy attainment.
+#'
+#' @details
+#' The sheet exists \strong{only in end_year 2025} (both school and district
+#' workbooks); other years error. The School workbook carries the
+#' \code{students_earning_seal_pct_school} column; the District workbook omits
+#' it (there is no school context at the district level), so that column is
+#' present only for \code{level = "school"}.
+#'
+#' Percentages are published as strings (e.g. \code{"6.8\%"}) and coerced to
+#' numeric. Suppression strings (\code{"Enrollment for the group is <10
+#' students."}, \code{"Fewer than 5 students earned a seal."}) become \code{NA},
+#' never a fabricated number. Student-group labels are normalized by
+#' \code{\link{clean_spr_subgroups}} (e.g. \code{"total population"},
+#' \code{"economically disadvantaged"}, \code{"limited english proficiency"}).
+#'
+#' Note: the StudentGroup sheet has no statewide aggregate \emph{row}; the
+#' state rate for each group is carried in the
+#' \code{students_earning_seal_pct_state} column on every row.
+#'
+#' @param end_year Must be 2025 (the only year the sheet exists).
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, \code{school_year},
+#'   \code{subgroup}, the per-group seal-earning rates (\code{*_pct_school} for
+#'   school level only, plus \code{*_pct_district} and \code{*_pct_state}), and
+#'   the standard aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Seal-earning rate by student group for every school (2024-25)
+#' bg <- fetch_biliteracy_by_group(2025)
+#'
+#' # Equity gap: economically disadvantaged vs total, statewide-by-district
+#' library(dplyr)
+#' fetch_biliteracy_by_group(2025, level = "district") %>%
+#'   filter(subgroup %in% c("total population", "economically disadvantaged")) %>%
+#'   select(district_name, subgroup, students_earning_seal_pct_district)
+#'
+#' # English-learner seal rate at one school
+#' fetch_biliteracy_by_group(2025) %>%
+#'   filter(district_id == "3570", subgroup == "limited english proficiency") %>%
+#'   select(school_name, subgroup, students_earning_seal_pct_school)
+#' }
+fetch_biliteracy_by_group <- function(end_year, level = "school") {
+  .validate_biliteracy_redesign(end_year, level, "fetch_biliteracy_by_group")
+
+  df <- njschooldata::fetch_spr_data(
+    sheet_name = "SealofBiliteracy_StudentGroup",
+    end_year = end_year,
+    level = level
+  )
+
+  pct_cols <- c(
+    "students_earning_seal_pct_school",
+    "students_earning_seal_pct_district",
+    "students_earning_seal_pct_state"
+  )
+  for (col in pct_cols) {
+    if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subgroup,
+      dplyr::any_of(pct_cols),
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
