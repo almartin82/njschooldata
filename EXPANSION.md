@@ -91,7 +91,14 @@ are the genuine holes.
 - **Caveat:** `fetch_ap_participation(2025)` already errors on the malformed 2024-25
   school-level sheet — expect the same parsing trap on these adjacent sheets.
 
-### 5. Seal of Biliteracy — trends & by student group
+### 5. Seal of Biliteracy — trends & by student group — DONE (0.9.20)
+
+**Shipped:** `fetch_biliteracy_summary()`, `fetch_biliteracy_trends()`, and
+`fetch_biliteracy_by_group()` wire up the three 2024-25 redesign sheets
+(`SealofBiliteracy_Summary` / `_Trends` / `_StudentGroup`); 2025-only, school +
+district levels, suppression/text-bleed coerced to NA. Vignette
+`nj-biliteracy.Rmd` charts the statewide trend (4,953 -> 12,644 seals) and the
+seal-earning equity gap (LEP 24.7% vs students with disabilities 1.3%).
 
 - **What it measures:** Students earning the State Seal of Biliteracy over time
   (`SealofBiliteracy_Trends`, `_Summary`) and by student group (`_StudentGroup`).
@@ -114,7 +121,7 @@ are the genuine holes.
 | 2 | Staff evaluation + deep history | HIGH | MEDIUM-HARD | Yes — standalone |
 | 3 | School-day length + device ratio | MEDIUM | EASY | No — SPR sheets |
 | 4 | Advanced-coursework access/equity | MEDIUM | EASY-MEDIUM | No — SPR sheets |
-| 5 | Seal of Biliteracy trends/group | MEDIUM | EASY | No — SPR sheets |
+| 5 | Seal of Biliteracy trends/group (DONE 0.9.20) | MEDIUM | EASY | No — SPR sheets |
 
 - **#3, #4, #5** are additional sheets in SPR workbooks the package already downloads and
   caches (`fetch_spr_data()` / `fetch_spr_sheet_raw()`) — mostly new tidy cleaners. Fast.

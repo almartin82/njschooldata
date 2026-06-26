@@ -94,6 +94,9 @@ reference:
       - fetch_work_based_learning
       - fetch_apprenticeship_data
       - fetch_biliteracy_seal
+      - fetch_biliteracy_summary
+      - fetch_biliteracy_trends
+      - fetch_biliteracy_by_group
       - fetch_violence_vandalism_hib
       - fetch_disciplinary_removals
       - fetch_teacher_experience

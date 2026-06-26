@@ -186,6 +186,51 @@ district/state aggregate; `level` must be `"school"`).
   workbook also carries a single district-aggregate placeholder row some years.
   `is_charter` flags county 80.
 
+## Valid Filter Values (Seal of Biliteracy)
+
+The Seal of Biliteracy has four fetchers. The per-language detail is covered by
+`fetch_biliteracy_seal()` (legacy `SealofBiliteracy` 2018-2024, redesigned
+`SealofBiliteracy_Language` 2025) - do NOT confuse it with the three
+summary/trend/group fetchers below, which read sheets that exist **only in
+end_year 2025** (introduced by the 2024-25 SPR redesign; absent 2017-2024). All
+three are **2025-only** and error for any other year, and accept
+`level = "school"` or `"district"`.
+
+- **`fetch_biliteracy_summary()`** (`SealofBiliteracy_Summary`): per entity,
+  `total_seals_earned`, `numberof_languages`, `unique_students_earning_seals`
+  (+ `_pct`), `multilingual_learners_earning_seals` (+ `_pct`). The District
+  workbook adds `schools_earning_seals(_pct)` and `districts_earning_seals(_pct)`
+  (absent from the School workbook). The statewide `is_state` row lives in the
+  **district** file (school file has no state row).
+- **`fetch_biliteracy_trends()`** (`SealofBiliteracy_Trends`): **multi-year
+  inside the 2025 workbook** - one row per entity per `school_year`, values
+  `"2020-21"` .. `"2024-25"` (always 5 distinct years), with
+  `total_seals_earned`. Do NOT filter to a single year.
+- **`fetch_biliteracy_by_group()`** (`SealofBiliteracy_StudentGroup`): per entity
+  and `subgroup`, `students_earning_seal_pct_school` (School workbook only),
+  `students_earning_seal_pct_district`, `students_earning_seal_pct_state`. This
+  sheet has **no statewide `is_state` row**; the state rate is carried in the
+  `_pct_state` column on every row. Subgroups are normalized by
+  `clean_spr_subgroups` (e.g. `total population`, `economically disadvantaged`,
+  `limited english proficiency`, `hispanic/latino`,
+  `asian, native hawaiian, or pacific islander`, `students with disabilities`,
+  `female`, `male`, `white`, `black`, `multiracial`, etc.).
+- **Suppression / text-bleed -> NA (NEVER a guessed number):** `spr_value_numeric`
+  strips `%` and thousands commas and maps every non-numeric token to `NA`. A
+  real published `0` stays `0`. Strings seen in the wild that must become `NA`:
+  `"Fewer than 5 seals"` (trends), `"Enrollment for the group is <10 students."`
+  / `"Fewer than 5 students earned a seal."` (by group),
+  `"Total Current and Former ML enrollment was less than 10 students."` /
+  `"Fewer than 5 students."` (summary ML text-bleed into the value column).
+- **Rates can exceed 100%:** a few small high schools publish a group
+  seal-earning rate above 100% (e.g. Kingsway Regional HS LEP `"109.1%"`) because
+  the rate uses a 12th-grade-style denominator, not the group's own enrollment.
+  These are real published cells - pass them through, do not clip. The
+  `_pct_state` column stays a sane share (<= ~25%).
+- **Entity flags:** standard SPR flags (`is_state`/`is_county`/`is_district`/
+  `is_school`/`is_charter`/`is_charter_sector`/`is_allpublic`); `is_charter`
+  flags county 80.
+
 ## Caching
 
 Two layers, both on by default.
