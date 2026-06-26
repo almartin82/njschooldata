@@ -2,6 +2,14 @@
 # These are column names used in dplyr/tidyr operations via non-standard evaluation
 
 utils::globalVariables(c(
+  # ========== Staff doedata (fetch_staff_evaluations / fetch_certificated_staff) ==========
+  "ineffective", "partially_effective", "effective", "highly_effective",
+  "staff_category", "category", "lea_name",
+  "position", "gender", "white", "black", "hispanic", "asian",
+  "american_indian", "pacific_islander", "two_or_more",
+  "POSITION", "SEX", "WHITE", "BLACK", "HISP", "ALS_IND", "ASI_PAC",
+  "CO", "CONAME", "DIST", "DISTNAME", "SCH", "SCHNAME",
+
   # ========== Restraint & Seclusion (fetch_restraint_seclusion) ==========
   "any_restraint_seclusion_count", "any_restraint_seclusion_pct",
   "restraint_count", "restraint_pct",

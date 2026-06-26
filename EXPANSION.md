@@ -42,7 +42,18 @@ are the genuine holes.
 - **Caveat:** Verify the exact current `/dars/` path before wiring (the `vandv/` root 404'd
   to one fetch tool; resolves via the annual-report portal).
 
-### 2. Staff evaluation outcomes + deep staffing history
+### 2. Staff evaluation outcomes + deep staffing history ✅ DONE (fetch_staff_evaluations / fetch_certificated_staff)
+
+> Shipped: `fetch_staff_evaluations()` (summative educator rating distributions;
+> the only three years NJ published: **2014, 2015, 2016**; school + district
+> levels; statewide aggregate present 2014-2015) and `fetch_certificated_staff()`
+> (certificated-staff FTE by position x race x gender, harmonized long-by-gender;
+> covered **2000-2008** legacy CSV + **2020-2026** modern xlsx; state/county/
+> district/school levels). The **2009-2019** intermediate Excel files use a
+> drifting, non-uniform layout and **error** (documented) rather than risk
+> misaligned values. `"*"` suppression -> NA; era-absent race columns -> NA, never
+> 0; FTE preserved as fractional doubles. Non-certificated (`ncs/`) series is
+> **deferred**. Vignette: `nj-staff-history`.
 
 - **What it measures:** (a) Summative educator **evaluation rating distributions**
   (how many teachers/principals land in each tier); (b) the long Certificated /

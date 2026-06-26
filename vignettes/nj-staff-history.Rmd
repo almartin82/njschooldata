@@ -1,0 +1,172 @@
+---
+title: "Staff History: Educator Evaluations & the Certificated Workforce"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Staff History: Educator Evaluations & the Certificated Workforce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+Two NJ DOE "doedata" staff sources sit outside the School Performance Reports and
+reach back well before them. `fetch_staff_evaluations()` returns the summative
+educator **evaluation rating distributions** NJ published for the three years it
+ran the file (2014-2016), and `fetch_certificated_staff()` returns the deep
+**certificated-staff FTE** series by position, race, and gender (2000-2008 and
+2020-2026; the 2009-2019 intermediate files use a non-uniform layout and are not
+supported). Every number below traces to a downloaded NJ DOE file: a `"*"`
+suppression mask is `NA`, and a race column an era did not report is `NA`, never
+zero.
+
+## Where do teacher evaluation ratings land?
+
+NJ's summative evaluation places each educator in one of four tiers. The
+statewide teacher distribution (the published `is_state` row, available 2014 and
+2015) clusters heavily at the top two tiers, and the **highly effective** share
+jumped sharply between the two years.
+
+```{r eval-data, cache=TRUE}
+eval_state <- bind_rows(
+  fetch_staff_evaluations(2014, level = "district"),
+  fetch_staff_evaluations(2015, level = "district")
+) %>%
+  filter(is_state, staff_category == "teachers")
+```
+
+```{r eval-prep}
+tiers <- c("ineffective", "partially_effective", "effective", "highly_effective")
+
+eval_long <- eval_state %>%
+  select(end_year, all_of(tiers)) %>%
+  pivot_longer(all_of(tiers), names_to = "rating", values_to = "n") %>%
+  group_by(end_year) %>%
+  mutate(share = 100 * n / sum(n, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(rating = factor(rating, levels = tiers))
+
+# Print-before-plot: confirm the data feeding the chart.
+stopifnot(nrow(eval_long) > 0)
+eval_long %>% arrange(end_year, rating) %>% as.data.frame()
+```
+
+```{r eval-chart}
+ggplot(eval_long, aes(x = factor(end_year), y = share, fill = rating)) +
+  geom_col(width = 0.65) +
+  geom_text(aes(label = ifelse(share >= 3, sprintf("%.1f%%", share), "")),
+            position = position_stack(vjust = 0.5), colour = "white", size = 3.4) +
+  scale_fill_manual(
+    values = c(ineffective = "#b2182b", partially_effective = "#ef8a62",
+               effective = "#67a9cf", highly_effective = "#2166ac"),
+    labels = c("Ineffective", "Partially effective", "Effective",
+               "Highly effective")
+  ) +
+  labs(
+    title = "Statewide teacher evaluation rating distribution",
+    subtitle = "Share of evaluated NJ teachers in each summative tier",
+    x = NULL, y = "Share of teachers (%)", fill = "Rating"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+Effective and highly effective together account for more than 97% of teachers in
+both years, and highly effective alone climbs from about 24% to about 34% in a
+single year. (The 2016 workbook publishes no statewide aggregate row, so the
+clean statewide comparison runs 2014-2015.)
+
+## The certificated teacher workforce, across two eras
+
+`fetch_certificated_staff()` reports staff full-time-equivalents (FTE), so counts
+are fractional. Pulling the statewide teacher total across both covered eras
+shows a workforce that grew through the 2000s and has held roughly flat in the
+2020s.
+
+```{r workforce-data, cache=TRUE}
+years <- c(2000:2008, 2020:2026)
+teachers_state <- bind_rows(lapply(years, function(y) {
+  fetch_certificated_staff(y, level = "state") %>%
+    filter(position == "teachers", gender == "total") %>%
+    transmute(end_year, white, total)
+}))
+```
+
+```{r workforce-prep}
+stopifnot(nrow(teachers_state) > 0)
+teachers_state %>% as.data.frame()
+```
+
+```{r workforce-chart}
+ggplot(teachers_state, aes(x = end_year, y = total)) +
+  geom_col(fill = "#2c7fb8") +
+  scale_x_continuous(breaks = years) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Statewide certificated teacher FTE",
+    subtitle = "NJ DOE certificated-staff files (2009-2019 not published in a supported layout)",
+    x = NULL, y = "Teacher FTE"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+The gap from 2009 to 2019 is a coverage gap, not a workforce collapse: those
+years exist but in a drifting layout the fetcher refuses to parse rather than risk
+misaligned values. The single low bar at 2006 is the value NJ published in that
+year's file and is passed through as-is.
+
+## The teaching workforce got less white
+
+The same series carries race, so the white share of the teacher workforce is
+directly computable across both eras. It has drifted down from roughly 88% at the
+start of the 2000s toward about 81% in the mid-2020s.
+
+```{r diversity-prep}
+white_share <- teachers_state %>%
+  mutate(pct_white = 100 * white / total)
+
+stopifnot(nrow(white_share) > 0)
+white_share %>%
+  filter(end_year %in% c(2000, 2008, 2020, 2026)) %>%
+  as.data.frame()
+```
+
+```{r diversity-chart}
+ggplot(white_share, aes(x = end_year, y = pct_white)) +
+  geom_line(colour = "#d95f0e", linewidth = 1) +
+  geom_point(colour = "#d95f0e", size = 2) +
+  scale_x_continuous(breaks = years) +
+  labs(
+    title = "White share of NJ certificated teachers",
+    subtitle = "white FTE / total teacher FTE, statewide",
+    x = NULL, y = "White share (%)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Note that the legacy era (2000-2008) reported a single combined Asian/Pacific
+Islander group, so `fetch_certificated_staff()` carries that combined count in
+`asian` and leaves `pacific_islander` and `two_or_more` as `NA` for those years;
+the white share above is unaffected by that distinction.
+
+```{r session-info}
+sessionInfo()
+```
