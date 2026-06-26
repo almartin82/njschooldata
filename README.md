@@ -17,6 +17,7 @@
 - [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- English Learner population trends via `fetch_ell()`
 - [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- instructional minutes/day and student-to-device ratios via `fetch_school_day()` / `fetch_device_ratios()`
 - [Seal of Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html) -- statewide seal trends, school summaries, and the seal-earning equity gap via `fetch_biliteracy_summary()` / `fetch_biliteracy_trends()` / `fetch_biliteracy_by_group()`
+- [Advanced-Coursework Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html) -- which advanced courses a school offers, AP/IB/dual participation by student group, and SLE participation via `fetch_advanced_course_access()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 
 ## Highlights
@@ -179,6 +180,7 @@ k_trend %>%
 | **Discipline** | Available | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` | Suspensions, expulsions, HIB incidents |
 | **Staff** | Available | `fetch_staff_demographics()` / `fetch_teacher_experience()` | Demographics, experience, ratios |
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |
+| **Advanced-Coursework Access** | 2017-2025 (courses, SLE); 2021-2025 (by group) | `fetch_advanced_course_access()` | Which advanced courses a school offers (enrolled/tested), AP/IB/dual-enrollment participation by student group, and Structured Learning Experience participation. School + district/state |
 | **Courses** | Available | `fetch_math_course_enrollment()` / `fetch_cs_enrollment()` | Math, science, CS, arts, world languages |
 | **CTE** | Available | `fetch_cte_participation()` / `fetch_industry_credentials()` | Career pathways, credentials, apprenticeships |
 | **School Environment** | 2017-2025 | `fetch_school_day()` / `fetch_device_ratios()` | School-level instructional minutes/day (start/end time, full- and shared-time) and student-to-device ratios |
@@ -251,6 +253,7 @@ Full analysis with 15 stories:
 - [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- the EL population tripling since 2006, district hotspots, and largest EL systems via `fetch_ell()`
 - [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- how long the NJ school day runs and how student-to-device access dipped in the first pandemic year via `fetch_school_day()` / `fetch_device_ratios()`
 - [Seal of Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html) -- the statewide seal count rising from ~5k to ~12.6k since 2020-21 and the seal-earning equity gap by student group via `fetch_biliteracy_summary()` / `fetch_biliteracy_trends()` / `fetch_biliteracy_by_group()`
+- [Advanced-Coursework Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html) -- which schools offer AP/IB at all and the AP/IB access gap by student group via `fetch_advanced_course_access()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 - [Function reference](https://almartin82.github.io/njschooldata/reference/)
 

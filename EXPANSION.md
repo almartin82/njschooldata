@@ -74,7 +74,19 @@ are the genuine holes.
 - **Priority:** MEDIUM · **Complexity:** EASY (additional sheets in SPR workbooks the
   package already downloads + caches; mostly a new tidy cleaner). **Lowest-effort win.**
 
-### 4. Advanced-coursework access & equity
+### 4. Advanced-coursework access & equity DONE (0.9.21)
+
+**Shipped:** `fetch_advanced_course_access(end_year, type, level)` wires up the three
+sheet families behind a single front door. `type = "courses_offered"`
+(`APIBCoursesOffered` 2017-2024 / `ABIBCoursesOffered` 2025) gives one row per
+school per advanced course (`students_enrolled`, `students_tested`);
+`type = "participation_by_group"` (`APIBDualEnrPartByStudentGrp` 2021-2024 /
+`AP_IB_Dual_PartStudentGroup` 2025) gives AP/IB and dual-enrollment rates per
+student group (`apib_pct_*`, `dual_pct_*`, +district columns in 2025);
+`type = "sle"` (`CTE_SLEParticipation` 2017-2023 / `SLE_Participation` 2024-2025)
+surfaces only the Structured Learning Experience columns (CTE participation and
+industry credentials stay in their existing fetchers). Suppression / no-data text
+is coerced to `NA`. Vignette `nj-advanced-courses.Rmd`.
 
 - **What it measures:** Which advanced courses a school actually **offers**
   (`ABIBCoursesOffered`), AP/IB/dual-enrollment participation **by student group**
@@ -120,7 +132,7 @@ seal-earning equity gap (LEP 24.7% vs students with disabilities 1.3%).
 | 1 | Restraint & seclusion (DARS) | HIGH | MEDIUM | Yes — standalone |
 | 2 | Staff evaluation + deep history | HIGH | MEDIUM-HARD | Yes — standalone |
 | 3 | School-day length + device ratio | MEDIUM | EASY | No — SPR sheets |
-| 4 | Advanced-coursework access/equity | MEDIUM | EASY-MEDIUM | No — SPR sheets |
+| 4 | Advanced-coursework access/equity (DONE 0.9.21) | MEDIUM | EASY-MEDIUM | No — SPR sheets |
 | 5 | Seal of Biliteracy trends/group (DONE 0.9.20) | MEDIUM | EASY | No — SPR sheets |
 
 - **#3, #4, #5** are additional sheets in SPR workbooks the package already downloads and
