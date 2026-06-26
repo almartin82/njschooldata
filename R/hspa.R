@@ -7,29 +7,18 @@
 #' school year is end_year '2014'.  valid values are 2004-2014.
 #' @param layout what layout dataframe to use.  default is layout_hspa.
 #' @keywords internal
-get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {    
-  #url paths changed in 2012
-  years <- list(
-    "2014"="14", "2013"="13", "2012"="2013", "2011"="2012", "2010"="2011", "2009"="2010", 
-    "2008"="2009", "2007"="2008", "2006"="2007", "2005"="2006", "2004"="2005"
-  )
-  parsed_year <- years[[as.character(end_year)]]
-  
+get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {
   #filenames are screwy
   parsed_filename <- if(end_year > 2005) {
     "state_summary.txt"
   } else if (end_year == 2005) {
-    "2005hspa_state_summary.txt" 
+    "2005hspa_state_summary.txt"
   } else if (end_year == 2004) {
     "hspa04state_summary.txt"
   }
-      
-  #build url
-  target_url <- paste0(
-    "http://www.state.nj.us/education/schools/achievement/", parsed_year, 
-    "/hspa/", parsed_filename
-  )
-  
+
+  target_url <- nj_legacy_assess_url(end_year, "hspa", parsed_filename)
+
   df <- common_fwf_req(target_url, layout)
 
   #return df

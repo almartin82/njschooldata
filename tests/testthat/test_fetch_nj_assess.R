@@ -1,6 +1,9 @@
-# NOTE: As of 2024, legacy assessment data (NJASK, HSPA, GEPA) URLs on
-# state.nj.us are no longer accessible. These tests are skipped when
-# the data cannot be fetched.
+# NOTE: NJ DOE retired the old state.nj.us achievement file tree in 2024 and
+# rehosted the legacy NJASK/HSPA/GEPA summary files under nj.gov at
+# education/assessment/results/njask/njask{YY}/ (see nj_legacy_assess_url()).
+# 2005-2014 fetch live from nj.gov; 2004 (not rehosted) is recovered from the
+# Internet Archive. The tryCatch/skip_if guards below remain as a defensive net
+# against transient network failures.
 
 test_that("valid_call correctly identifies status of years/grade pairs", {
   expect_true(valid_call(2014, 8))
