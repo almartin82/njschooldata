@@ -6,55 +6,29 @@
 #' @inheritParams fetch_njask
 #' @param layout what layout dataframe to use.  default is layout_njask.
 #' @keywords internal
-get_raw_njask <- function(end_year, grade, layout=layout_njask) {  
-  #url paths changed after the 2012 assessment
-  years <- list(
-    "2014" = "14", "2013" = "13", "2012" = "2013", "2011" = "2012", "2010" = "2011", 
-    "2009" = "2010", "2008" = "2009", "2007" = "2008", "2006" = "2007", 
-    "2005" = "2006", "2004" = "2005"
-  )
-  parsed_year <- years[[as.character(end_year)]]
-  
-  #2008 follows a totally unique pattern
-  grade_str <- if (end_year == 2008 & grade >= 5) {
-    paste0('58/g', grade)
-  } else if (end_year %in% c(2006, 2007) & grade %in% c(5, 6, 7)) {
-    '57'
+get_raw_njask <- function(end_year, grade, layout=layout_njask) {
+  #filenames vary by year/grade (unchanged across the state.nj.us -> nj.gov move):
+  # 2004 carries the grade in the name; 2005 has bespoke per-grade names; the
+  # 2006-2007 upper grades (5-7) use a G{grade} prefix; everything else is the
+  # plain state_summary.txt.
+  parsed_filename <- if (end_year == 2004) {
+    paste0("njask", grade, "04state_summary.txt")
+  } else if (end_year == 2005 & grade == 3) {
+    "njask005_state_summary3.txt"
+  } else if (end_year == 2005 & grade == 4) {
+    "njask2005_state_summary4.txt"
+  } else if (end_year %in% c(2006, 2007) & grade >= 5) {
+    paste0("G", grade, "state_summary.txt")
   } else {
-    grade
+    "state_summary.txt"
   }
-  
-  #filenames are also inconsistent 
-  filename <- list(
-    "2014" = "state_summary.txt", "2013" = "state_summary.txt", "2012" = "state_summary.txt",
-    "2011" = "state_summary.txt", "2010" = "state_summary.txt", "2009" = "state_summary.txt",
-    "2008" = "state_summary.txt", "2007" = if (grade >= 5) {
-        paste0('G', grade, 'state_summary.txt')
-      } else {
-        "state_summary.txt"
-      }, 
-      "2006" = if (grade >= 5) {
-        paste0('G', grade, 'state_summary.txt')
-      } else {
-        "state_summary.txt"
-      }, 
-      "2005" = if (grade == 3) {
-        "njask005_state_summary3.txt"
-      } else if (grade == 4) {
-        "njask2005_state_summary4.txt"
-      }, 
-    "2004" = paste0("njask", grade, "04state_summary.txt")   
-  )
-  parsed_filename <- filename[[as.character(end_year)]]
 
-  #build url
-  target_url <- paste0(
-    "http://www.state.nj.us/education/schools/achievement/", parsed_year, 
-    "/njask", grade_str, "/", parsed_filename
-  )
+  #the live nj.gov site uses clean per-grade folders (njask3 .. njask8), so the
+  #old njask57 / njask58 grade groupings are no longer needed.
+  target_url <- nj_legacy_assess_url(end_year, paste0("njask", grade), parsed_filename)
 
   df <- common_fwf_req(target_url, layout)
-  
+
   #return df
   return(df)
 }

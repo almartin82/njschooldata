@@ -556,6 +556,51 @@ reconstruct_composite_field <- function(df, composite_row, parse_layout) {
 }
 
 
+#' @title nj_legacy_assess_url
+#'
+#' @description
+#' Build the download URL for a legacy NJ assessment (NJASK / HSPA / GEPA)
+#' state-summary flat file.
+#'
+#' In 2024 the NJ DOE retired the old \code{state.nj.us/education/schools/achievement}
+#' file tree (those URLs now 301 to nj.gov and 404) and rehosted the legacy
+#' NJASK/HSPA/GEPA summary files under nj.gov at
+#' \code{education/assessment/results/njask/njask\{YY\}/\{subdir\}/}. This helper
+#' returns the live nj.gov URL for end_years 2005-2014.
+#'
+#' The 2004 files were NOT rehosted on nj.gov, so for end_year 2004 we recover
+#' the original NJ DOE file from the Internet Archive's capture of the removed
+#' state.nj.us tree (the only remaining source). The archived bytes are the
+#' original NJ DOE file verbatim - all VALUES still originate from NJ DOE; only
+#' the transport differs.
+#'
+#' @param end_year assessment end_year (2004-2014)
+#' @param subdir per-test/grade subdirectory, e.g. "njask5", "hspa", "gepa"
+#' @param filename flat-file name within the subdirectory
+#' @return a character URL
+#' @keywords internal
+nj_legacy_assess_url <- function(end_year, subdir, filename) {
+  if (end_year == 2004) {
+    # NJ DOE did not rehost 2004 on nj.gov. Recover the original file from the
+    # Internet Archive's capture of the (now-removed) state.nj.us tree, where
+    # 2004 files lived under the /2005/ directory. The id_ suffix returns the
+    # archived bytes verbatim (no Wayback toolbar) so the fwf layout parses; the
+    # date prefix redirects to the nearest capture for each distinct file.
+    return(paste0(
+      "https://web.archive.org/web/20160708id_/",
+      "http://www.state.nj.us/education/schools/achievement/2005/",
+      subdir, "/", filename
+    ))
+  }
+
+  yy <- sprintf("%02d", end_year %% 100)
+  paste0(
+    "https://www.nj.gov/education/assessment/results/njask/njask", yy, "/",
+    subdir, "/", filename
+  )
+}
+
+
 #' @title common_fwf_req
 #'
 #' @description common fwf logic across various assessment types.  DRY.
