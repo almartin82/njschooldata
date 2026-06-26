@@ -1,0 +1,146 @@
+---
+title: "Advanced-Coursework Access & Equity"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Advanced-Coursework Access & Equity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(dplyr)
+library(ggplot2)
+```
+
+The usual AP/IB question is "how many students took an exam." The harder,
+more newsworthy question is about **access**: does a school even offer advanced
+courses, and once offered, who actually gets in. `fetch_advanced_course_access()`
+answers both. A single front door over three NJ School Performance Report sheet
+families:
+
+- `type = "courses_offered"` -- one row per school per advanced course
+  (enrolled / tested), 2017-2025.
+- `type = "participation_by_group"` -- AP/IB and dual-enrollment participation
+  rates broken out by student group, 2021-2025.
+- `type = "sle"` -- Structured Learning Experience participation, 2017-2025.
+
+Every rate and count comes straight from the published SPR workbooks; suppression
+and no-data text is kept as `NA`, never a guessed number.
+
+## The AP/IB access gap by student group
+
+`type = "participation_by_group"` reports, for each student group, the percent of
+students enrolled in one or more AP/IB courses. The statewide rate per group is
+carried in the `apib_pct_state` column. Lining the groups up shows an access gap
+that is anything but subtle: in 2023-24 Asian students participated at **70%**
+while students with disabilities sat at **under 5%**, with English learners,
+Black, Hispanic, and economically disadvantaged students all well below the
+statewide average.
+
+```{r access-gap-data}
+groups <- c(
+  "asian, native hawaiian, or pacific islander", "white", "multiracial",
+  "total population", "hispanic", "black", "economically disadvantaged",
+  "limited english proficiency", "students with disabilities"
+)
+
+apib_state <- fetch_advanced_course_access(
+  2024, type = "participation_by_group", level = "district"
+) %>%
+  filter(is_state, subgroup %in% groups) %>%
+  group_by(subgroup) %>%
+  summarise(apib_pct = first(apib_pct_state), .groups = "drop") %>%
+  filter(!is.na(apib_pct)) %>%
+  arrange(apib_pct)
+
+# Print-before-plot: confirm the data feeding the chart.
+stopifnot(nrow(apib_state) > 0)
+apib_state
+```
+
+```{r access-gap-chart}
+ggplot(apib_state, aes(x = reorder(subgroup, apib_pct), y = apib_pct)) +
+  geom_col(fill = "#2c7fb8") +
+  geom_text(aes(label = paste0(apib_pct, "%")), hjust = -0.15, size = 3.6) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 80), expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    title = "Who is enrolled in AP/IB coursework in New Jersey, 2023-24",
+    subtitle = "Statewide share of each student group enrolled in one or more AP/IB courses",
+    x = NULL,
+    y = "Percent enrolled in one or more AP/IB courses"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## How many advanced courses does a school offer at all?
+
+Access starts with supply. `type = "courses_offered"` lists every advanced course
+a school runs, so counting distinct courses per school measures the **breadth** of
+the advanced-course menu. In 2023-24 the typical NJ high school offering any
+advanced course listed about 19 of them, but the range is enormous - from a single
+course to nearly 50.
+
+```{r breadth-data}
+breadth <- fetch_advanced_course_access(2024, type = "courses_offered") %>%
+  filter(is_school) %>%
+  group_by(district_id, school_id, school_name) %>%
+  summarise(n_courses = n_distinct(course_name), .groups = "drop")
+
+# Print-before-plot.
+stopifnot(nrow(breadth) > 0)
+summary(breadth$n_courses)
+```
+
+```{r breadth-chart}
+ggplot(breadth, aes(x = n_courses)) +
+  geom_histogram(binwidth = 2, fill = "#2c7fb8", colour = "white") +
+  geom_vline(xintercept = median(breadth$n_courses),
+             linetype = "dashed", colour = "#d95f0e", linewidth = 0.9) +
+  labs(
+    title = "Breadth of the advanced-course menu, 2023-24",
+    subtitle = paste0("Distinct AP/IB courses offered per school; dashed line = median (",
+                      median(breadth$n_courses), " courses)"),
+    x = "Number of distinct advanced courses offered",
+    y = "Number of schools"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+The schools with the widest menus:
+
+```{r breadth-top}
+breadth %>%
+  arrange(desc(n_courses)) %>%
+  slice_head(n = 10) %>%
+  select(school_name, n_courses)
+```
+
+## Notes
+
+- `fetch_advanced_course_access()` accepts `level = "school"` (default) or
+  `level = "district"`; the statewide `is_state` row lives in the District
+  workbook.
+- Coverage: `courses_offered` and `sle` span 2017-2025; `participation_by_group`
+  spans 2021-2025 (the sheet is absent 2017-2020 and those years error). The 2025
+  participation sheet is a multi-year trend table filtered to the requested year.
+- Suppression / no-data strings (e.g. "There is no data available for this school
+  year.") are coerced to `NA`, never a fabricated number.
+
+```{r session-info}
+sessionInfo()
+```

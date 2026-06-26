@@ -231,6 +231,43 @@ three are **2025-only** and error for any other year, and accept
   `is_school`/`is_charter`/`is_charter_sector`/`is_allpublic`); `is_charter`
   flags county 80.
 
+## Valid Filter Values (advanced course access)
+
+`fetch_advanced_course_access(end_year, type, level)` is the single front door
+over three SPR sheet families on advanced-coursework ACCESS/EQUITY (distinct from
+`fetch_ap_participation()`, which is overall AP/IB participation). Tidy by
+default; `level` is `"school"` or `"district"`. Every rate/count is coerced with
+`spr_value_numeric` (strips `%`/commas, maps suppression / "There is no data
+available for this school year." to `NA`, keeps a real `0`).
+
+- **`type = "courses_offered"`** (`APIBCoursesOffered` 2017-2024 /
+  `ABIBCoursesOffered` 2025 - the A-B-IB typo is the real 2025 sheet name): one
+  row per school per advanced course. Cols `course_name`, `students_enrolled`,
+  `students_tested` (counts). Years 2017-2025; error <2017. The 2017 sheet omits
+  the county/district/school **name** columns (CDS ids only) -> names `NA` for
+  2017.
+- **`type = "participation_by_group"`** (`APIBDualEnrPartByStudentGrp` 2021-2024 /
+  `AP_IB_Dual_PartStudentGroup` 2025): one row per entity per `subgroup`
+  (normalized by `clean_spr_subgroups`; `total population` is the schoolwide
+  total). Cols `apib_pct_school`, `apib_pct_state`, `dual_pct_school`,
+  `dual_pct_state` always; `apib_pct_district`/`dual_pct_district` exist **only
+  2025**. Years 2021-2025; **absent 2017-2020 -> error <2021**. The **2025 sheet
+  is a multi-year trend table** (`school_year` 2020-21..2024-25) - filtered to the
+  requested year with `filter_spr_to_year`. On the **legacy** `is_state` row the
+  entity columns are `NA`; the statewide value is carried in `*_pct_state`.
+- **`type = "sle"`** (Structured Learning Experience; `CTE_SLEParticipation`
+  2017-2023 - only the SLE columns surfaced, NOT CTE/IVC which stay in
+  `fetch_cte_participation()` / `fetch_industry_credentials()` - / `SLE_Participation`
+  2024-2025): one row per school. Entity rate is `sle_pct_school` (School
+  workbook) or `sle_pct_district` (District workbook; also present in the 2025
+  School workbook), plus `sle_pct_state` always. Years 2017-2025; error <2017.
+  Published column names drift across BOTH year and level
+  (`sleperc`/`sleschool`/`sledistrict`/`sle_school`/`sle_district`/`slestate`/
+  `slestate_perc`/`sle_state`) and are detected-and-renamed onto the stable schema.
+- **Genuine >100 / cross-level note:** participation/SLE rates observed in
+  [0,100]; pass any real published outlier through unclipped, never clip. Rates
+  are per-entity shares and are NOT summable across levels.
+
 ## Caching
 
 Two layers, both on by default.

@@ -2,6 +2,20 @@
 # These are column names used in dplyr/tidyr operations via non-standard evaluation
 
 utils::globalVariables(c(
+  # ========== Advanced-coursework access & equity (fetch_advanced_course_access) ==========
+  "students_tested", "course_name",
+  "student_enroll_count", "student_tested_count",
+  "sleschool", "slestate", "sle_school", "sle_district", "sle_state",
+  "sle_pct_school", "sle_pct_district", "sle_pct_state",
+  "apib_pct_school", "apib_pct_district", "apib_pct_state",
+  "dual_pct_school", "dual_pct_district", "dual_pct_state",
+  "apib_enrolled_school", "apib_enrolled_district", "apib_enrolled_state",
+  "dual_district",
+  "percent_enrolled_in_one_or_more_apor_ibcourse",
+  "percent_enrolled_in_one_or_more_dual_enrollment_course",
+  "state_percent_percent_enrolled_in_one_or_more_apor_ibcourse",
+  "state_percent_enrolled_in_one_or_more_dual_enrollment_course",
+
   # ========== Column Names with Special Characters ==========
   "% of Total Salaries",
   "%English Learners", "%Multilingual Learners", "%Free Lunch", "%Homeless", "%Migrant", "%Military", "%Reduced Lunch",
