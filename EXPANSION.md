@@ -18,7 +18,14 @@ are the genuine holes.
 
 ## Recommended Enhancements (ranked by interest-to-effort)
 
-### 1. Restraint & Seclusion incidents (DARS workbooks)
+### 1. Restraint & Seclusion incidents (DARS workbooks) DONE (fetch_restraint_seclusion)
+
+> Shipped: `fetch_restraint_seclusion()` (school-level, end_year 2023 and 2024).
+> Reads the standalone DARS `Restraints and Seclusions` workbook (10 SSDS event
+> categories x count/percent), splits the student-group label into normalized
+> `subgroup` + `grade_level`, and maps the `*` / `<5` masking tokens to `NA`
+> (never a guessed number).
+
 
 - **What it measures:** School-level counts of physical restraint and seclusion events,
   in NJ's standalone Discipline & Restraint (DARS) Excel workbooks — separate from the

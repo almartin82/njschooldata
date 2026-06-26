@@ -2,6 +2,18 @@
 # These are column names used in dplyr/tidyr operations via non-standard evaluation
 
 utils::globalVariables(c(
+  # ========== Restraint & Seclusion (fetch_restraint_seclusion) ==========
+  "any_restraint_seclusion_count", "any_restraint_seclusion_pct",
+  "restraint_count", "restraint_pct",
+  "restraint_physical_count", "restraint_physical_pct",
+  "restraint_mechanical_count", "restraint_mechanical_pct",
+  "restraint_both_phys_mech_count", "restraint_both_phys_mech_pct",
+  "seclusion_count", "seclusion_pct",
+  "both_restraint_seclusion_count", "both_restraint_seclusion_pct",
+  "both_physical_restraint_count", "both_physical_restraint_pct",
+  "both_mechanical_restraint_count", "both_mechanical_restraint_pct",
+  "both_phys_mech_restraint_count", "both_phys_mech_restraint_pct",
+
   # ========== Advanced-coursework access & equity (fetch_advanced_course_access) ==========
   "students_tested", "course_name",
   "student_enroll_count", "student_tested_count",

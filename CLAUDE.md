@@ -268,6 +268,42 @@ available for this school year." to `NA`, keeps a real `0`).
   [0,100]; pass any real published outlier through unclipped, never clip. Rates
   are per-entity shares and are NOT summable across levels.
 
+## Valid Filter Values (restraint & seclusion)
+
+`fetch_restraint_seclusion(end_year, level)` reads the standalone NJ DOE DARS
+school-level Restraint & Seclusion workbook (source:
+`nj.gov/education/vandv/annualreport/dars/`) - a source distinct from
+`fetch_violence_vandalism_hib()`. Tidy output by default.
+
+- **Year coverage:** `end_year` 2023 (SY2022-23) and 2024 (SY2023-24) only; any
+  other year errors.
+- **School-level only, NO aggregates:** `level` must be `"school"` (errors
+  otherwise). Every row is a school: `is_school` is always TRUE,
+  `is_state`/`is_county`/`is_district` always FALSE. The workbook has no
+  state/district/county aggregate rows - do NOT invent them. `is_charter` flags
+  county 80; `is_charter_sector`/`is_allpublic` always FALSE.
+- **One row per (school, student_group).** The raw `student_group` is kept and
+  also split into normalized `subgroup` + `grade_level`:
+  - `subgroup` values: `total population` (the schoolwide total - raw
+    `"Schoolwide"` in 2023, `"School Total"` in 2024), `american indian`,
+    `asian`, `black`, `hispanic`, `pacific islander`, `multiracial`, `white`,
+    `female`, `male`, `non-binary`, `economically disadvantaged`,
+    `students with disabilities`.
+  - `grade_level`: `TOTAL` for subgroup/schoolwide rows; grade rows carry
+    `subgroup = "total population"` with `grade_level` in `PK` (raw
+    `"Grade Preschool"`), `K` (`"Grade Kindergarten"`), `01`-`12`.
+- **20 value columns** (count, percent pairs) across the 10 SSDS categories:
+  `any_restraint_seclusion_*`, `restraint_*`, `restraint_physical_*`,
+  `restraint_mechanical_*`, `restraint_both_phys_mech_*`, `seclusion_*`,
+  `both_restraint_seclusion_*`, `both_physical_restraint_*`,
+  `both_mechanical_restraint_*`, `both_phys_mech_restraint_*` (each `_count` +
+  `_pct`).
+- **Suppression -> NA (NEVER a guessed number):** small cells are masked. `"*"`
+  hides a value entirely; `"<5"` / `"<5.00"` is a published RANGE for 1-4
+  students. `rs_value_numeric()` maps both (any `"<"` token or `"*"`) to `NA`
+  BEFORE numeric parsing, so `"<5"` NEVER becomes the literal `5`. A real
+  published `0` stays `0`. Do NOT back-derive a count from a percent.
+
 ## Caching
 
 Two layers, both on by default.
