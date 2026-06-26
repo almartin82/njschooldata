@@ -102,6 +102,8 @@ reference:
       - fetch_restraint_seclusion
       - fetch_disciplinary_removals
       - fetch_teacher_experience
+      - fetch_staff_evaluations
+      - fetch_certificated_staff
       - fetch_staff_demographics
       - fetch_staff_ratios
       - fetch_spr_admin_experience

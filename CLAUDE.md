@@ -304,6 +304,56 @@ school-level Restraint & Seclusion workbook (source:
   BEFORE numeric parsing, so `"<5"` NEVER becomes the literal `5`. A real
   published `0` stays `0`. Do NOT back-derive a count from a percent.
 
+## Valid Filter Values (staff evaluations + certificated staff)
+
+Two standalone NJ DOE **doedata** staff sources (NOT SPR sheets), distinct from
+the SPR-sourced `fetch_staff_demographics()` / `fetch_spr_staff_counts()` etc.
+Both coerce values with `staff_value_numeric` (`"*"` / `""` / any `"<N"` range /
+free text -> `NA` BEFORE numeric parse; commas stripped; a real `0` stays `0`;
+fractional FTE preserved).
+
+- **`fetch_staff_evaluations(end_year, level)`** - summative educator evaluation
+  rating distributions (source `nj.gov/education/doedata/staff/`). **Only three
+  years exist: 2014, 2015, 2016**; any other year errors. `level` is `"school"`
+  (default) or `"district"`.
+  - `staff_category`: `teachers` (raw `TEACHERS`), `principals_vps` (raw
+    `PRIN/AP/VP`). Raw label kept as `category`.
+  - rating cols: `ineffective`, `partially_effective`, `effective`,
+    `highly_effective`, `total` (`"*"` -> NA).
+  - Entity flags: `is_school` (per-school) vs `is_district` (`school_id=="999"`).
+    A **statewide** aggregate (county `"99"` / district `"9999"`) is published in
+    **2014 and 2015** and flagged `is_state` (returned at `level="district"`);
+    **2016 has no statewide row**. `is_charter` flags county 80.
+  - CDS drift: the 2015 (1415) file drops leading zeros (district `"10"`); ids are
+    re-padded to county 2 / district 4 / school 3.
+
+- **`fetch_certificated_staff(end_year, level)`** - certificated-staff FTE by
+  position x race x gender (source `nj.gov/education/doedata/cs/`). Output is
+  harmonized **long by gender** (one row per entity x position x gender; `gender`
+  in `total`/`male`/`female`). `level` is `"school"` (default), `"district"`,
+  `"county"`, `"state"`.
+  - **Covered years: 2000-2008 (legacy CSV) and 2020-2026 (modern xlsx).** The
+    **2009-2019** intermediate Excel files use a drifting, non-uniform layout and
+    **error** (documented) - never guess.
+  - `position`: `administrators`, `teachers`, `special_services`,
+    `supervisors_coordinators`, `total` (the modern SCHOOL sheet has no `total`
+    position row).
+  - race FTE cols: `white`, `black`, `hispanic`, `asian`, `american_indian`,
+    `pacific_islander`, `two_or_more`, plus `total`. **Era-absent -> NA, never 0:**
+    the legacy era reports a single combined Asian/Pacific-Islander bucket, so
+    `asian` carries the combined count and `pacific_islander` + `two_or_more` are
+    `NA` for 2000-2008. Modern era populates all races (on the `gender=="total"`
+    row only; `male`/`female` rows carry the gender headcount in `total` with race
+    cols `NA`).
+  - **FTE values are fractional doubles** (e.g. `35.8`) - never rounded.
+    Non-binary staff are published only as a percent (no count) in modern files
+    and are NOT surfaced as a count.
+  - Legacy entity conventions inside the single CSV: state = `CONAME=="STATE SUM"`,
+    county = `DIST=="9998"` (CO SUMMARY), district total = `SCH=="998"` (DIST
+    SUMMARY), else school. `is_charter` flags county 80.
+  - **Deferred:** the non-certificated (`ncs/`) series mirrors this but is not yet
+    implemented.
+
 ## Caching
 
 Two layers, both on by default.
