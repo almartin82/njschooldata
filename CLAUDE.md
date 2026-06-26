@@ -159,6 +159,33 @@ EL **proficiency** (`fetch_access()`, WIDA ACCESS). Tidy by default.
   `n_students_upper` == `n_students` wherever a count exists. Fractional `.5`
   values are real shared-time/vocational FTE, preserved as published.
 
+## Valid Filter Values (school environment)
+
+`fetch_school_day()` and `fetch_device_ratios()` read the school-only SPR
+`SchoolDay` / `DeviceRatios` sheets. Both are **school-level only** (no
+district/state aggregate; `level` must be `"school"`).
+
+- **`fetch_school_day()` year coverage:** 2017-2025 (every year). The SY2016-17
+  (2017) sheet omits the county/district/school **name** columns (CDS ids only);
+  names are `NA` for 2017.
+- **`fetch_device_ratios()` year coverage:** 2018, 2019, 2021, 2022, 2023, 2024,
+  2025. The sheet is **absent from SY2016-17 (2017) and SY2019-20 (2020)** -
+  those years error.
+- **Published strings + derived numerics (deterministic parse, NOT fabrication):**
+  - SchoolDay keeps `length_of_day`, `instruction_full_time`,
+    `instruction_shared_time` as the published `"6 Hrs. 25 Mins."` strings and
+    adds `length_of_day_minutes` / `instruction_full_time_minutes` /
+    `instruction_shared_time_minutes`. Non-durations (`"n/a"`,
+    `"n/a - applies only to high schools"`) -> `NA` minutes, never 0.
+  - DeviceRatios keeps `student_device_ratio` (`"2.6:1"`; 2025 bare `"1"`) and
+    adds numeric `students_per_device` (students per one device; 1 == 1:1).
+    `"No devices reported"` / `"n/a"` -> `NA`.
+- **No cross-level consistency check:** instructional minutes and device ratios
+  are per-building attributes, not summable to a district/state total.
+- **Entity flags:** `is_school` is TRUE for the per-school rows; the School
+  workbook also carries a single district-aggregate placeholder row some years.
+  `is_charter` flags county 80.
+
 ## Caching
 
 Two layers, both on by default.

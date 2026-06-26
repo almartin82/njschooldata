@@ -306,5 +306,12 @@ utils::globalVariables(c(
   # ========== Common Tidyverse ==========
   ".", ".env", "value", "name", "n",
   "everything", "where", "one_of", "any_of", "all_of",
-  "starts_with", "ends_with", "contains", "matches"
+  "starts_with", "ends_with", "contains", "matches",
+
+  # ========== School Environment (SchoolDay / DeviceRatios) ==========
+  "typical_start_time", "typical_end_time",
+  "length_of_day", "length_of_day_minutes",
+  "instruction_full_time", "instruction_full_time_minutes",
+  "instruction_shared_time", "instruction_shared_time_minutes",
+  "student_device_ratio", "students_per_device"
 ))

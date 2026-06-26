@@ -15,6 +15,7 @@
 - [NJ Enrollment Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html) -- 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more
 - [New Jersey School Facilities Data](https://almartin82.github.io/njschooldata/articles/nj-facilities.html) -- SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points
 - [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- English Learner population trends via `fetch_ell()`
+- [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- instructional minutes/day and student-to-device ratios via `fetch_school_day()` / `fetch_device_ratios()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 
 ## Highlights
@@ -179,6 +180,7 @@ k_trend %>%
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |
 | **Courses** | Available | `fetch_math_course_enrollment()` / `fetch_cs_enrollment()` | Math, science, CS, arts, world languages |
 | **CTE** | Available | `fetch_cte_participation()` / `fetch_industry_credentials()` | Career pathways, credentials, apprenticeships |
+| **School Environment** | 2017-2025 | `fetch_school_day()` / `fetch_device_ratios()` | School-level instructional minutes/day (start/end time, full- and shared-time) and student-to-device ratios |
 
 > See the full [data category taxonomy](DATA-CATEGORY-TAXONOMY.md)
 
@@ -245,6 +247,7 @@ Full analysis with 15 stories:
 - [NJ Enrollment Insights](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html) -- 15 stories covering charter growth, demographics, COVID recovery, poverty gaps, and more
 - [New Jersey School Facilities Data](https://almartin82.github.io/njschooldata/articles/nj-facilities.html) -- SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points via `fetch_facilities()`
 - [NJ English Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html) -- the EL population tripling since 2006, district hotspots, and largest EL systems via `fetch_ell()`
+- [School Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html) -- how long the NJ school day runs and how student-to-device access dipped in the first pandemic year via `fetch_school_day()` / `fetch_device_ratios()`
 - [Getting Started](https://almartin82.github.io/njschooldata/articles/getting-started.html) -- installation, data fetching, and tidy format guide
 - [Function reference](https://almartin82.github.io/njschooldata/reference/)
 
