@@ -6,14 +6,20 @@ articles:
   newark-efficiency-frontier: newark-efficiency-frontier.html
   newark-fiscal-brief: newark-fiscal-brief.html
   newark-school-spending: newark-school-spending.html
+  nj-advanced-courses: nj-advanced-courses.html
+  nj-assessment-detail: nj-assessment-detail.html
+  nj-biliteracy: nj-biliteracy.html
   nj-english-learners: nj-english-learners.html
   nj-enrollment-insights: nj-enrollment-insights.html
   nj-facilities: nj-facilities.html
   nj-finance: nj-finance.html
+  nj-restraint-seclusion: nj-restraint-seclusion.html
+  nj-school-environment: nj-school-environment.html
+  nj-staff-history: nj-staff-history.html
   somsd-school-spending: somsd-school-spending.html
   spr-dictionary: spr-dictionary.html
   tges-analyst-guide: tges-analyst-guide.html
-last_built: 2026-06-26T03:54Z
+last_built: 2026-06-27T13:21Z
 urls:
   reference: https://almartin82.github.io/njschooldata/reference
   article: https://almartin82.github.io/njschooldata/articles

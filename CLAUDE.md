@@ -231,6 +231,329 @@ WIDA ACCESS). Tidy by default.
   Fractional `.5` values are real shared-time/vocational FTE, preserved
   as published.
 
+## Valid Filter Values (school environment)
+
+[`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+and
+[`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md)
+read the school-only SPR `SchoolDay` / `DeviceRatios` sheets. Both are
+**school-level only** (no district/state aggregate; `level` must be
+`"school"`).
+
+- **[`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+  year coverage:** 2017-2025 (every year). The SY2016-17
+  2017. sheet omits the county/district/school **name** columns (CDS ids
+        only); names are `NA` for 2017.
+- **[`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md)
+  year coverage:** 2018, 2019, 2021, 2022, 2023, 2024,
+  2025. The sheet is **absent from SY2016-17 (2017) and SY2019-20
+        (2020)** - those years error.
+- **Published strings + derived numerics (deterministic parse, NOT
+  fabrication):**
+  - SchoolDay keeps `length_of_day`, `instruction_full_time`,
+    `instruction_shared_time` as the published `"6 Hrs. 25 Mins."`
+    strings and adds `length_of_day_minutes` /
+    `instruction_full_time_minutes` / `instruction_shared_time_minutes`.
+    Non-durations (`"n/a"`, `"n/a - applies only to high schools"`) -\>
+    `NA` minutes, never 0.
+  - DeviceRatios keeps `student_device_ratio` (`"2.6:1"`; 2025 bare
+    `"1"`) and adds numeric `students_per_device` (students per one
+    device; 1 == 1:1). `"No devices reported"` / `"n/a"` -\> `NA`.
+- **No cross-level consistency check:** instructional minutes and device
+  ratios are per-building attributes, not summable to a district/state
+  total.
+- **Entity flags:** `is_school` is TRUE for the per-school rows; the
+  School workbook also carries a single district-aggregate placeholder
+  row some years. `is_charter` flags county 80.
+
+## Valid Filter Values (Seal of Biliteracy)
+
+The Seal of Biliteracy has four fetchers. The per-language detail is
+covered by
+[`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
+(legacy `SealofBiliteracy` 2018-2024, redesigned
+`SealofBiliteracy_Language` 2025) - do NOT confuse it with the three
+summary/trend/group fetchers below, which read sheets that exist **only
+in end_year 2025** (introduced by the 2024-25 SPR redesign; absent
+2017-2024). All three are **2025-only** and error for any other year,
+and accept `level = "school"` or `"district"`.
+
+- **[`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md)**
+  (`SealofBiliteracy_Summary`): per entity, `total_seals_earned`,
+  `numberof_languages`, `unique_students_earning_seals` (+ `_pct`),
+  `multilingual_learners_earning_seals` (+ `_pct`). The District
+  workbook adds `schools_earning_seals(_pct)` and
+  `districts_earning_seals(_pct)` (absent from the School workbook). The
+  statewide `is_state` row lives in the **district** file (school file
+  has no state row).
+- **[`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md)**
+  (`SealofBiliteracy_Trends`): **multi-year inside the 2025 workbook** -
+  one row per entity per `school_year`, values `"2020-21"` ..
+  `"2024-25"` (always 5 distinct years), with `total_seals_earned`. Do
+  NOT filter to a single year.
+- **[`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md)**
+  (`SealofBiliteracy_StudentGroup`): per entity and `subgroup`,
+  `students_earning_seal_pct_school` (School workbook only),
+  `students_earning_seal_pct_district`,
+  `students_earning_seal_pct_state`. This sheet has **no statewide
+  `is_state` row**; the state rate is carried in the `_pct_state` column
+  on every row. Subgroups are normalized by `clean_spr_subgroups`
+  (e.g. `total population`, `economically disadvantaged`,
+  `limited english proficiency`, `hispanic/latino`,
+  `asian, native hawaiian, or pacific islander`,
+  `students with disabilities`, `female`, `male`, `white`, `black`,
+  `multiracial`, etc.).
+- **Suppression / text-bleed -\> NA (NEVER a guessed number):**
+  `spr_value_numeric` strips `%` and thousands commas and maps every
+  non-numeric token to `NA`. A real published `0` stays `0`. Strings
+  seen in the wild that must become `NA`: `"Fewer than 5 seals"`
+  (trends), `"Enrollment for the group is <10 students."` /
+  `"Fewer than 5 students earned a seal."` (by group),
+  `"Total Current and Former ML enrollment was less than 10 students."`
+  / `"Fewer than 5 students."` (summary ML text-bleed into the value
+  column).
+- **Rates can exceed 100%:** a few small high schools publish a group
+  seal-earning rate above 100% (e.g. Kingsway Regional HS LEP
+  `"109.1%"`) because the rate uses a 12th-grade-style denominator, not
+  the group’s own enrollment. These are real published cells - pass them
+  through, do not clip. The `_pct_state` column stays a sane share (\<=
+  ~25%).
+- **Entity flags:** standard SPR flags
+  (`is_state`/`is_county`/`is_district`/
+  `is_school`/`is_charter`/`is_charter_sector`/`is_allpublic`);
+  `is_charter` flags county 80.
+
+## Valid Filter Values (advanced course access)
+
+`fetch_advanced_course_access(end_year, type, level)` is the single
+front door over three SPR sheet families on advanced-coursework
+ACCESS/EQUITY (distinct from
+[`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md),
+which is overall AP/IB participation). Tidy by default; `level` is
+`"school"` or `"district"`. Every rate/count is coerced with
+`spr_value_numeric` (strips `%`/commas, maps suppression / “There is no
+data available for this school year.” to `NA`, keeps a real `0`).
+
+- **`type = "courses_offered"`** (`APIBCoursesOffered` 2017-2024 /
+  `ABIBCoursesOffered` 2025 - the A-B-IB typo is the real 2025 sheet
+  name): one row per school per advanced course. Cols `course_name`,
+  `students_enrolled`, `students_tested` (counts). Years 2017-2025;
+  error \<2017. The 2017 sheet omits the county/district/school **name**
+  columns (CDS ids only) -\> names `NA` for
+  2017. 
+- **`type = "participation_by_group"`** (`APIBDualEnrPartByStudentGrp`
+  2021-2024 / `AP_IB_Dual_PartStudentGroup` 2025): one row per entity
+  per `subgroup` (normalized by `clean_spr_subgroups`;
+  `total population` is the schoolwide total). Cols `apib_pct_school`,
+  `apib_pct_state`, `dual_pct_school`, `dual_pct_state` always;
+  `apib_pct_district`/`dual_pct_district` exist **only 2025**. Years
+  2021-2025; **absent 2017-2020 -\> error \<2021**. The **2025 sheet is
+  a multi-year trend table** (`school_year` 2020-21..2024-25) - filtered
+  to the requested year with `filter_spr_to_year`. On the **legacy**
+  `is_state` row the entity columns are `NA`; the statewide value is
+  carried in `*_pct_state`.
+- **`type = "sle"`** (Structured Learning Experience;
+  `CTE_SLEParticipation` 2017-2023 - only the SLE columns surfaced, NOT
+  CTE/IVC which stay in
+  [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)
+  /
+  [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md) -
+  / `SLE_Participation` 2024-2025): one row per school. Entity rate is
+  `sle_pct_school` (School workbook) or `sle_pct_district` (District
+  workbook; also present in the 2025 School workbook), plus
+  `sle_pct_state` always. Years 2017-2025; error \<2017. Published
+  column names drift across BOTH year and level
+  (`sleperc`/`sleschool`/`sledistrict`/`sle_school`/`sle_district`/`slestate`/
+  `slestate_perc`/`sle_state`) and are detected-and-renamed onto the
+  stable schema.
+- **Genuine \>100 / cross-level note:** participation/SLE rates observed
+  in \[0,100\]; pass any real published outlier through unclipped, never
+  clip. Rates are per-entity shares and are NOT summable across levels.
+
+## Valid Filter Values (restraint & seclusion)
+
+`fetch_restraint_seclusion(end_year, level)` reads the standalone NJ DOE
+DARS school-level Restraint & Seclusion workbook (source:
+`nj.gov/education/vandv/annualreport/dars/`) - a source distinct from
+[`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md).
+Tidy output by default.
+
+- **Year coverage:** `end_year` 2023 (SY2022-23) and 2024 (SY2023-24)
+  only; any other year errors.
+- **School-level only, NO aggregates:** `level` must be `"school"`
+  (errors otherwise). Every row is a school: `is_school` is always TRUE,
+  `is_state`/`is_county`/`is_district` always FALSE. The workbook has no
+  state/district/county aggregate rows - do NOT invent them.
+  `is_charter` flags county 80; `is_charter_sector`/`is_allpublic`
+  always FALSE.
+- **One row per (school, student_group).** The raw `student_group` is
+  kept and also split into normalized `subgroup` + `grade_level`:
+  - `subgroup` values: `total population` (the schoolwide total - raw
+    `"Schoolwide"` in 2023, `"School Total"` in 2024),
+    `american indian`, `asian`, `black`, `hispanic`, `pacific islander`,
+    `multiracial`, `white`, `female`, `male`, `non-binary`,
+    `economically disadvantaged`, `students with disabilities`.
+  - `grade_level`: `TOTAL` for subgroup/schoolwide rows; grade rows
+    carry `subgroup = "total population"` with `grade_level` in `PK`
+    (raw `"Grade Preschool"`), `K` (`"Grade Kindergarten"`), `01`-`12`.
+- **20 value columns** (count, percent pairs) across the 10 SSDS
+  categories: `any_restraint_seclusion_*`, `restraint_*`,
+  `restraint_physical_*`, `restraint_mechanical_*`,
+  `restraint_both_phys_mech_*`, `seclusion_*`,
+  `both_restraint_seclusion_*`, `both_physical_restraint_*`,
+  `both_mechanical_restraint_*`, `both_phys_mech_restraint_*` (each
+  `_count` + `_pct`).
+- **Suppression -\> NA (NEVER a guessed number):** small cells are
+  masked. `"*"` hides a value entirely; `"<5"` / `"<5.00"` is a
+  published RANGE for 1-4 students.
+  [`rs_value_numeric()`](https://almartin82.github.io/njschooldata/reference/rs_value_numeric.md)
+  maps both (any `"<"` token or `"*"`) to `NA` BEFORE numeric parsing,
+  so `"<5"` NEVER becomes the literal `5`. A real published `0` stays
+  `0`. Do NOT back-derive a count from a percent.
+
+## Valid Filter Values (staff evaluations + certificated staff)
+
+Two standalone NJ DOE **doedata** staff sources (NOT SPR sheets),
+distinct from the SPR-sourced
+[`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
+/
+[`fetch_spr_staff_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_counts.md)
+etc. Both coerce values with `staff_value_numeric` (`"*"` / `""` / any
+`"<N"` range / free text -\> `NA` BEFORE numeric parse; commas stripped;
+a real `0` stays `0`; fractional FTE preserved).
+
+- **`fetch_staff_evaluations(end_year, level)`** - summative educator
+  evaluation rating distributions (source
+  `nj.gov/education/doedata/staff/`). **Only three years exist: 2014,
+  2015, 2016**; any other year errors. `level` is `"school"` (default)
+  or `"district"`.
+  - `staff_category`: `teachers` (raw `TEACHERS`), `principals_vps` (raw
+    `PRIN/AP/VP`). Raw label kept as `category`.
+  - rating cols: `ineffective`, `partially_effective`, `effective`,
+    `highly_effective`, `total` (`"*"` -\> NA).
+  - Entity flags: `is_school` (per-school) vs `is_district`
+    (`school_id=="999"`). A **statewide** aggregate (county `"99"` /
+    district `"9999"`) is published in **2014 and 2015** and flagged
+    `is_state` (returned at `level="district"`); **2016 has no statewide
+    row**. `is_charter` flags county 80.
+  - CDS drift: the 2015 (1415) file drops leading zeros (district
+    `"10"`); ids are re-padded to county 2 / district 4 / school 3.
+- **`fetch_certificated_staff(end_year, level)`** - certificated-staff
+  FTE by position x race x gender (source
+  `nj.gov/education/doedata/cs/`). Output is harmonized **long by
+  gender** (one row per entity x position x gender; `gender` in
+  `total`/`male`/`female`). `level` is `"school"` (default),
+  `"district"`, `"county"`, `"state"`.
+  - **Covered years: 2000-2008 (legacy CSV) and 2020-2026 (modern
+    xlsx).** The **2009-2019** intermediate Excel files use a drifting,
+    non-uniform layout and **error** (documented) - never guess.
+  - `position`: `administrators`, `teachers`, `special_services`,
+    `supervisors_coordinators`, `total` (the modern SCHOOL sheet has no
+    `total` position row).
+  - race FTE cols: `white`, `black`, `hispanic`, `asian`,
+    `american_indian`, `pacific_islander`, `two_or_more`, plus `total`.
+    **Era-absent -\> NA, never 0:** the legacy era reports a single
+    combined Asian/Pacific-Islander bucket, so `asian` carries the
+    combined count and `pacific_islander` + `two_or_more` are `NA` for
+    2000-2008. Modern era populates all races (on the `gender=="total"`
+    row only; `male`/`female` rows carry the gender headcount in `total`
+    with race cols `NA`).
+  - **FTE values are fractional doubles** (e.g. `35.8`) - never rounded.
+    Non-binary staff are published only as a percent (no count) in
+    modern files and are NOT surfaced as a count.
+  - Legacy entity conventions inside the single CSV: state =
+    `CONAME=="STATE SUM"`, county = `DIST=="9998"` (CO SUMMARY),
+    district total = `SCH=="998"` (DIST SUMMARY), else school.
+    `is_charter` flags county 80.
+  - **Deferred:** the non-certificated (`ncs/`) series mirrors this but
+    is not yet implemented.
+
+## Valid Filter Values (SPR assessment / graduation detail “Bucket A”)
+
+Five SPR sheets first published in (or, for federal grad rates, expanded
+by) the redesigned 2024-25 School Performance Reports, with no
+standalone-fetcher equivalent. All read via
+[`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
+(CDS + standard entity flags), tidy by default, `level` is `"school"` or
+`"district"`. Every value is coerced with `spr_value_numeric` (strips
+`%`/commas, maps suppression / `"n/a"` / “Fewer than 10…” to `NA`, keeps
+a real `0`); a published rate is NEVER clipped or back-derived.
+
+**Shared entity-pick rule (the `{_school,_district,_state}` triple).**
+Four of these sheets repeat every value as a school/district/state
+triple on each row.
+[`spr_pick_entity_value()`](https://almartin82.github.io/njschooldata/reference/spr_pick_entity_value.md)
+collapses it like
+[`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md):
+at `level="school"` it takes `_school`; at `level="district"` it takes
+`_district` for ordinary rows and `_state` ONLY for the statewide
+`is_state` row (whose `_district` cell is blank). It never fills a
+suppressed district from the state column. The statewide value is
+therefore available from the `is_state` row of **district**-level
+output, and the redundant `_state` reference columns are dropped from
+the result.
+
+- **`fetch_spr_proficiency_by_test(end_year, subject, level)`** -
+  `ELAPerformanceByTest` / `MathPerformancebyTest`. **2025-only** (error
+  \<2025; earlier `MathPerformanceByGradeTest` etc. are a different
+  layout, not mapped). `subject` is `"ela"` (default) or `"math"`.
+  Unlike
+  [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)
+  (overall proficiency), splits by the test taken, carried in
+  `grade_test`: ELA = Grade 3 through Grade 9; Math = Grade 3 through
+  Grade 8 PLUS the high-school end-of-course tests `Algebra I`,
+  `Geometry`, `Algebra II`. Values: `valid_scores`, `mean_scaled_score`,
+  `proficiency_rate` (level 4+5), `level_1`..`level_5` (each
+  entity-picked). Multi-year trend table inside the 2025 workbook;
+  **filtered to the requested academic year** (SY2024-25). Anchor:
+  statewide ELA Grade 4 `proficiency_rate` = 53.5, `valid_scores` =
+  93574; Math Algebra I = 38.1.
+- **`fetch_spr_science_grade(end_year, level)`** -
+  `NJSLASciencebyGradeTrends`. **2025-only** (earlier
+  `NJSLAScienceTable` / `NJASKScience` are a different layout, not
+  mapped). NJSLA Science is grades 5/8/11; `grade_level` normalizes the
+  raw `grade` (`"Grade 5"`) to `"05"`/`"08"`/`"11"`. Values:
+  `level_1_percentage`..`level_4_percentage` (entity-picked);
+  proficiency = levels 3+4 but NOT summed here. Trend table; filtered to
+  SY2024-25. Anchor: statewide Grade 5 L1 = 30.6, L4 = 7.9.
+- **`fetch_spr_elp_progress(end_year, level)`** - `ProgressTowardELP`.
+  **2025-only**; distinct from the ELP *target* sheet
+  (`ProgresstowardELPTargets`, in `fetch_spr_essa_targets`) and from the
+  legacy target-bearing `EnglishLanguageProgress` (not mapped). **No
+  subgroup/grade** - one `progress_toward_elp` (entity-picked) per
+  entity. Trend table; filtered to SY2024-25. Anchor: statewide = 30.1.
+- **`fetch_spr_grad_cohort(end_year, level)`** -
+  `GraduationCohortProfile`. **2025-only**. One row per entity x
+  `cohort_type` (`"4-Year"`/`"5-Year"`/ `"6-Year"`) x subgroup, with
+  entity-picked `graduated` / `continuing` / `non_continuing` /
+  `persisting` rates (0-100). `persisting` is published only for the
+  6-Year cohort - the 4-/5-Year `"n/a"` -\> `NA`. The 4- and 6-year
+  rates are also in
+  [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
+  /
+  [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md);
+  this adds the 5-year cohort and all three in one frame. **Note:** this
+  sheet stamps `school_year` as the full-year form `"2024-2025"` (others
+  use `"2024-25"`); `filter_spr_to_year` accepts both. Anchor: statewide
+  4-Year `graduated` = 91.8.
+- **`fetch_spr_fed_grad(end_year, level)`** - `FederalGraduationRates`,
+  **2021-2025** (absent SY2016-17..SY2019-20 -\> error \<2021).
+  Federally reported ACGR (different cohort denominator than
+  [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)’s
+  state rate). Reshaped **long by cohort**: one row per entity x
+  subgroup x `cohort_years` (4/5/6), with `cohort_label`
+  (e.g. `"Cohort 2025"`) and entity-picked `graduation_rate_federal`.
+  **6-year cohort only from SY2023-24 (2024)**; 2021-2023 carry 4+5
+  only. Heavy column drift handled by
+  [`fed_grad_cols_for_n()`](https://almartin82.github.io/njschooldata/reference/fed_grad_cols_for_n.md):
+  2025 names by cohort length (`x_4_yr_graduation_rate_federal_school` +
+  a `school_year` column); 2021-2024 embed the graduating year in the
+  name (`x_2024_4_year_federal_graduation_rate` / `state_2024_...`), and
+  in that legacy layout the statewide value lives in the `state_*`
+  column on the `State` row. `end_year` 2021 = SY2020-21. Anchors:
+  statewide 4-yr = 88.9 (2025) / 85.2 (2022); Atlantic City (`0110`)
+  4-yr 2022 = 66.5.
+
 ## Caching
 
 Two layers, both on by default.

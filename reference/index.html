@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.18</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,11 @@
     <li><a class="dropdown-item" href="../articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
     <li><a class="dropdown-item" href="../articles/nj-facilities.html">New Jersey School Facilities Data</a></li>
     <li><a class="dropdown-item" href="../articles/nj-english-learners.html">New Jersey English Learners</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-advanced-courses.html">Advanced-Coursework Access &amp; Equity</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-biliteracy.html">Seal of Biliteracy: Statewide Trend &amp; the Seal-Earning Equity Gap</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-restraint-seclusion.html">Restraint &amp; Seclusion: A Special-Education Liability Metric</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-school-environment.html">School Environment: Instructional Time &amp; Device Access</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-staff-history.html">Staff History: Educator Evaluations &amp; the Certificated Workforce</a></li>
     <li><a class="dropdown-item" href="../articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="../articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="../articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
@@ -29,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/newark-efficiency-frontier.html">Newark on the Efficiency Frontier: Do the Dollars Pay Off?</a></li>
     <li><a class="dropdown-item" href="../articles/tges-analyst-guide.html">The Head First Analyst's Guide to NJ TGES</a></li>
     <li><a class="dropdown-item" href="../articles/spr-dictionary.html">SPR Data Dictionary</a></li>
+    <li><a class="dropdown-item" href="../articles/nj-assessment-detail.html">Assessment &amp; Graduation Detail: Behind the Headline Rates</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -423,6 +429,13 @@
 
         <dt>
 
+          <code><a href="fetch_advanced_course_access.html">fetch_advanced_course_access()</a></code>
+
+        </dt>
+        <dd>Fetch Advanced-Coursework Access &amp; Equity Data</dd>
+
+        <dt>
+
           <code><a href="fetch_cte_participation.html">fetch_cte_participation()</a></code>
 
         </dt>
@@ -458,10 +471,38 @@
 
         <dt>
 
+          <code><a href="fetch_biliteracy_summary.html">fetch_biliteracy_summary()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Summary (2024-25)</dd>
+
+        <dt>
+
+          <code><a href="fetch_biliteracy_trends.html">fetch_biliteracy_trends()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Multi-Year Trend (2024-25)</dd>
+
+        <dt>
+
+          <code><a href="fetch_biliteracy_by_group.html">fetch_biliteracy_by_group()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Seal-Earning Rate by Student Group (2024-25)</dd>
+
+        <dt>
+
           <code><a href="fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib()</a></code>
 
         </dt>
         <dd>Fetch Violence/Vandalism/HIB Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_restraint_seclusion.html">fetch_restraint_seclusion()</a></code>
+
+        </dt>
+        <dd>Fetch Restraint &amp; Seclusion Incidents (school-level)</dd>
 
         <dt>
 
@@ -476,6 +517,20 @@
 
         </dt>
         <dd>Fetch Teacher Experience Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_staff_evaluations.html">fetch_staff_evaluations()</a></code>
+
+        </dt>
+        <dd>Fetch Summative Educator Evaluation Rating Distributions</dd>
+
+        <dt>
+
+          <code><a href="fetch_certificated_staff.html">fetch_certificated_staff()</a></code>
+
+        </dt>
+        <dd>Fetch Certificated-Staff FTE Counts (position x race x gender)</dd>
 
         <dt>
 
@@ -605,10 +660,59 @@
 
         <dt>
 
+          <code><a href="fetch_spr_proficiency_by_test.html">fetch_spr_proficiency_by_test()</a></code>
+
+        </dt>
+        <dd>Fetch NJSLA Proficiency by Test Variant</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_science_grade.html">fetch_spr_science_grade()</a></code>
+
+        </dt>
+        <dd>Fetch NJSLA Science Proficiency by Grade</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_elp_progress.html">fetch_spr_elp_progress()</a></code>
+
+        </dt>
+        <dd>Fetch Progress Toward English Language Proficiency</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_grad_cohort.html">fetch_spr_grad_cohort()</a></code>
+
+        </dt>
+        <dd>Fetch Graduation Cohort Profile (4/5/6-Year)</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_fed_grad.html">fetch_spr_fed_grad()</a></code>
+
+        </dt>
+        <dd>Fetch Federally Reported Graduation Rates (ESSA ACGR)</dd>
+
+        <dt>
+
           <code><a href="fetch_sgp.html">fetch_sgp()</a></code>
 
         </dt>
         <dd>Fetch Student Growth Percentile (SGP) Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_school_day.html">fetch_school_day()</a></code>
+
+        </dt>
+        <dd>Fetch School-Day Length &amp; Instructional Time</dd>
+
+        <dt>
+
+          <code><a href="fetch_device_ratios.html">fetch_device_ratios()</a></code>
+
+        </dt>
+        <dd>Fetch Student-to-Device Ratios</dd>
 
         <dt>
 
@@ -1814,6 +1918,13 @@
 
         <dt>
 
+          <code><a href="fetch_advanced_course_access.html">fetch_advanced_course_access()</a></code>
+
+        </dt>
+        <dd>Fetch Advanced-Coursework Access &amp; Equity Data</dd>
+
+        <dt>
+
           <code><a href="fetch_all_6yr_grad_rate.html">fetch_all_6yr_grad_rate()</a></code>
 
         </dt>
@@ -1891,10 +2002,38 @@
 
         <dt>
 
+          <code><a href="fetch_biliteracy_by_group.html">fetch_biliteracy_by_group()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Seal-Earning Rate by Student Group (2024-25)</dd>
+
+        <dt>
+
           <code><a href="fetch_biliteracy_seal.html">fetch_biliteracy_seal()</a></code>
 
         </dt>
         <dd>Fetch Seal of Biliteracy Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_biliteracy_summary.html">fetch_biliteracy_summary()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Summary (2024-25)</dd>
+
+        <dt>
+
+          <code><a href="fetch_biliteracy_trends.html">fetch_biliteracy_trends()</a></code>
+
+        </dt>
+        <dd>Fetch Seal-of-Biliteracy Multi-Year Trend (2024-25)</dd>
+
+        <dt>
+
+          <code><a href="fetch_certificated_staff.html">fetch_certificated_staff()</a></code>
+
+        </dt>
+        <dd>Fetch Certificated-Staff FTE Counts (position x race x gender)</dd>
 
         <dt>
 
@@ -1923,6 +2062,13 @@
 
         </dt>
         <dd>Fetch Days Absent Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_device_ratios.html">fetch_device_ratios()</a></code>
+
+        </dt>
+        <dd>Fetch Student-to-Device Ratios</dd>
 
         <dt>
 
@@ -2178,6 +2324,13 @@
 
         <dt>
 
+          <code><a href="fetch_restraint_seclusion.html">fetch_restraint_seclusion()</a></code>
+
+        </dt>
+        <dd>Fetch Restraint &amp; Seclusion Incidents (school-level)</dd>
+
+        <dt>
+
           <code><a href="fetch_sat_participation.html">fetch_sat_participation()</a></code>
 
         </dt>
@@ -2189,6 +2342,13 @@
 
         </dt>
         <dd>Fetch SAT/ACT/PSAT Performance Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_school_day.html">fetch_school_day()</a></code>
+
+        </dt>
+        <dd>Fetch School-Day Length &amp; Instructional Time</dd>
 
         <dt>
 
@@ -2262,6 +2422,13 @@
 
         <dt>
 
+          <code><a href="fetch_spr_elp_progress.html">fetch_spr_elp_progress()</a></code>
+
+        </dt>
+        <dd>Fetch Progress Toward English Language Proficiency</dd>
+
+        <dt>
+
           <code><a href="fetch_spr_essa_status_counts.html">fetch_spr_essa_status_counts()</a></code>
 
         </dt>
@@ -2273,6 +2440,20 @@
 
         </dt>
         <dd>Fetch ESSA Long-Term-Goal Targets</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_fed_grad.html">fetch_spr_fed_grad()</a></code>
+
+        </dt>
+        <dd>Fetch Federally Reported Graduation Rates (ESSA ACGR)</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_grad_cohort.html">fetch_spr_grad_cohort()</a></code>
+
+        </dt>
+        <dd>Fetch Graduation Cohort Profile (4/5/6-Year)</dd>
 
         <dt>
 
@@ -2294,6 +2475,20 @@
 
         </dt>
         <dd>Fetch NAEP Achievement Results</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_proficiency_by_test.html">fetch_spr_proficiency_by_test()</a></code>
+
+        </dt>
+        <dd>Fetch NJSLA Proficiency by Test Variant</dd>
+
+        <dt>
+
+          <code><a href="fetch_spr_science_grade.html">fetch_spr_science_grade()</a></code>
+
+        </dt>
+        <dd>Fetch NJSLA Science Proficiency by Grade</dd>
 
         <dt>
 
@@ -2343,6 +2538,13 @@
 
         </dt>
         <dd>Fetch Staff Demographics Data</dd>
+
+        <dt>
+
+          <code><a href="fetch_staff_evaluations.html">fetch_staff_evaluations()</a></code>
+
+        </dt>
+        <dd>Fetch Summative Educator Evaluation Rating Distributions</dd>
 
         <dt>
 

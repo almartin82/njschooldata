@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.18</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,11 @@
     <li><a class="dropdown-item" href="articles/nj-enrollment-insights.html">New Jersey Enrollment Insights</a></li>
     <li><a class="dropdown-item" href="articles/nj-facilities.html">New Jersey School Facilities Data</a></li>
     <li><a class="dropdown-item" href="articles/nj-english-learners.html">New Jersey English Learners</a></li>
+    <li><a class="dropdown-item" href="articles/nj-advanced-courses.html">Advanced-Coursework Access &amp; Equity</a></li>
+    <li><a class="dropdown-item" href="articles/nj-biliteracy.html">Seal of Biliteracy: Statewide Trend &amp; the Seal-Earning Equity Gap</a></li>
+    <li><a class="dropdown-item" href="articles/nj-restraint-seclusion.html">Restraint &amp; Seclusion: A Special-Education Liability Metric</a></li>
+    <li><a class="dropdown-item" href="articles/nj-school-environment.html">School Environment: Instructional Time &amp; Device Access</a></li>
+    <li><a class="dropdown-item" href="articles/nj-staff-history.html">Staff History: Educator Evaluations &amp; the Certificated Workforce</a></li>
     <li><a class="dropdown-item" href="articles/nj-finance.html">New Jersey School Finance: A Uniform Front Door</a></li>
     <li><a class="dropdown-item" href="articles/somsd-school-spending.html">Following the Money: 25 Years of Spending in South Orange-Maplewood</a></li>
     <li><a class="dropdown-item" href="articles/newark-school-spending.html">Following the Money: 25 Years of Spending in Newark</a></li>
@@ -29,6 +34,7 @@
     <li><a class="dropdown-item" href="articles/newark-efficiency-frontier.html">Newark on the Efficiency Frontier: Do the Dollars Pay Off?</a></li>
     <li><a class="dropdown-item" href="articles/tges-analyst-guide.html">The Head First Analyst's Guide to NJ TGES</a></li>
     <li><a class="dropdown-item" href="articles/spr-dictionary.html">SPR Data Dictionary</a></li>
+    <li><a class="dropdown-item" href="articles/nj-assessment-detail.html">Assessment &amp; Graduation Detail: Behind the Headline Rates</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
@@ -178,6 +184,116 @@
 <strong>Source-pipeline trap:</strong> <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code> overwrites the published EL count with <code>pct * total</code> for 2020+ (its demographic-share workflow), so the enrollment <code>lep</code> subgroup is derived for those years. <code><a href="reference/fetch_ell.html">fetch_ell()</a></code> reads the real <code>English Learners</code> / <code>Multilingual Learners</code> count column directly and must NOT reuse <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code>’s EL value for 2020+.</li>
 <li>
 <strong>No suppression:</strong> NJ does not suppress EL counts; <code>n_students_lower</code> == <code>n_students_upper</code> == <code>n_students</code> wherever a count exists. Fractional <code>.5</code> values are real shared-time/vocational FTE, preserved as published.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-school-environment">Valid Filter Values (school environment)<a class="anchor" aria-label="anchor" href="#valid-filter-values-school-environment"></a></h2>
+<p><code><a href="reference/fetch_school_day.html">fetch_school_day()</a></code> and <code><a href="reference/fetch_device_ratios.html">fetch_device_ratios()</a></code> read the school-only SPR <code>SchoolDay</code> / <code>DeviceRatios</code> sheets. Both are <strong>school-level only</strong> (no district/state aggregate; <code>level</code> must be <code>"school"</code>).</p>
+<ul><li>
+<strong><code><a href="reference/fetch_school_day.html">fetch_school_day()</a></code> year coverage:</strong> 2017-2025 (every year). The SY2016-17
+<ol start="2017" style="list-style-type: decimal"><li>sheet omits the county/district/school <strong>name</strong> columns (CDS ids only); names are <code>NA</code> for 2017.</li>
+</ol></li>
+<li>
+<strong><code><a href="reference/fetch_device_ratios.html">fetch_device_ratios()</a></code> year coverage:</strong> 2018, 2019, 2021, 2022, 2023, 2024,
+<ol start="2025" style="list-style-type: decimal"><li>The sheet is <strong>absent from SY2016-17 (2017) and SY2019-20 (2020)</strong> - those years error.</li>
+</ol></li>
+<li>
+<strong>Published strings + derived numerics (deterministic parse, NOT fabrication):</strong>
+<ul><li>SchoolDay keeps <code>length_of_day</code>, <code>instruction_full_time</code>, <code>instruction_shared_time</code> as the published <code>"6 Hrs. 25 Mins."</code> strings and adds <code>length_of_day_minutes</code> / <code>instruction_full_time_minutes</code> / <code>instruction_shared_time_minutes</code>. Non-durations (<code>"n/a"</code>, <code>"n/a - applies only to high schools"</code>) -&gt; <code>NA</code> minutes, never 0.</li>
+<li>DeviceRatios keeps <code>student_device_ratio</code> (<code>"2.6:1"</code>; 2025 bare <code>"1"</code>) and adds numeric <code>students_per_device</code> (students per one device; 1 == 1:1). <code>"No devices reported"</code> / <code>"n/a"</code> -&gt; <code>NA</code>.</li>
+</ul></li>
+<li>
+<strong>No cross-level consistency check:</strong> instructional minutes and device ratios are per-building attributes, not summable to a district/state total.</li>
+<li>
+<strong>Entity flags:</strong> <code>is_school</code> is TRUE for the per-school rows; the School workbook also carries a single district-aggregate placeholder row some years. <code>is_charter</code> flags county 80.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-seal-of-biliteracy">Valid Filter Values (Seal of Biliteracy)<a class="anchor" aria-label="anchor" href="#valid-filter-values-seal-of-biliteracy"></a></h2>
+<p>The Seal of Biliteracy has four fetchers. The per-language detail is covered by <code><a href="reference/fetch_biliteracy_seal.html">fetch_biliteracy_seal()</a></code> (legacy <code>SealofBiliteracy</code> 2018-2024, redesigned <code>SealofBiliteracy_Language</code> 2025) - do NOT confuse it with the three summary/trend/group fetchers below, which read sheets that exist <strong>only in end_year 2025</strong> (introduced by the 2024-25 SPR redesign; absent 2017-2024). All three are <strong>2025-only</strong> and error for any other year, and accept <code>level = "school"</code> or <code>"district"</code>.</p>
+<ul><li>
+<strong><code><a href="reference/fetch_biliteracy_summary.html">fetch_biliteracy_summary()</a></code></strong> (<code>SealofBiliteracy_Summary</code>): per entity, <code>total_seals_earned</code>, <code>numberof_languages</code>, <code>unique_students_earning_seals</code> (+ <code>_pct</code>), <code>multilingual_learners_earning_seals</code> (+ <code>_pct</code>). The District workbook adds <code>schools_earning_seals(_pct)</code> and <code>districts_earning_seals(_pct)</code> (absent from the School workbook). The statewide <code>is_state</code> row lives in the <strong>district</strong> file (school file has no state row).</li>
+<li>
+<strong><code><a href="reference/fetch_biliteracy_trends.html">fetch_biliteracy_trends()</a></code></strong> (<code>SealofBiliteracy_Trends</code>): <strong>multi-year inside the 2025 workbook</strong> - one row per entity per <code>school_year</code>, values <code>"2020-21"</code> .. <code>"2024-25"</code> (always 5 distinct years), with <code>total_seals_earned</code>. Do NOT filter to a single year.</li>
+<li>
+<strong><code><a href="reference/fetch_biliteracy_by_group.html">fetch_biliteracy_by_group()</a></code></strong> (<code>SealofBiliteracy_StudentGroup</code>): per entity and <code>subgroup</code>, <code>students_earning_seal_pct_school</code> (School workbook only), <code>students_earning_seal_pct_district</code>, <code>students_earning_seal_pct_state</code>. This sheet has <strong>no statewide <code>is_state</code> row</strong>; the state rate is carried in the <code>_pct_state</code> column on every row. Subgroups are normalized by <code>clean_spr_subgroups</code> (e.g. <code>total population</code>, <code>economically disadvantaged</code>, <code>limited english proficiency</code>, <code>hispanic/latino</code>, <code>asian, native hawaiian, or pacific islander</code>, <code>students with disabilities</code>, <code>female</code>, <code>male</code>, <code>white</code>, <code>black</code>, <code>multiracial</code>, etc.).</li>
+<li>
+<strong>Suppression / text-bleed -&gt; NA (NEVER a guessed number):</strong> <code>spr_value_numeric</code> strips <code>%</code> and thousands commas and maps every non-numeric token to <code>NA</code>. A real published <code>0</code> stays <code>0</code>. Strings seen in the wild that must become <code>NA</code>: <code>"Fewer than 5 seals"</code> (trends), <code>"Enrollment for the group is &lt;10 students."</code> / <code>"Fewer than 5 students earned a seal."</code> (by group), <code>"Total Current and Former ML enrollment was less than 10 students."</code> / <code>"Fewer than 5 students."</code> (summary ML text-bleed into the value column).</li>
+<li>
+<strong>Rates can exceed 100%:</strong> a few small high schools publish a group seal-earning rate above 100% (e.g. Kingsway Regional HS LEP <code>"109.1%"</code>) because the rate uses a 12th-grade-style denominator, not the group’s own enrollment. These are real published cells - pass them through, do not clip. The <code>_pct_state</code> column stays a sane share (&lt;= ~25%).</li>
+<li>
+<strong>Entity flags:</strong> standard SPR flags (<code>is_state</code>/<code>is_county</code>/<code>is_district</code>/ <code>is_school</code>/<code>is_charter</code>/<code>is_charter_sector</code>/<code>is_allpublic</code>); <code>is_charter</code> flags county 80.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-advanced-course-access">Valid Filter Values (advanced course access)<a class="anchor" aria-label="anchor" href="#valid-filter-values-advanced-course-access"></a></h2>
+<p><code>fetch_advanced_course_access(end_year, type, level)</code> is the single front door over three SPR sheet families on advanced-coursework ACCESS/EQUITY (distinct from <code><a href="reference/fetch_ap_participation.html">fetch_ap_participation()</a></code>, which is overall AP/IB participation). Tidy by default; <code>level</code> is <code>"school"</code> or <code>"district"</code>. Every rate/count is coerced with <code>spr_value_numeric</code> (strips <code>%</code>/commas, maps suppression / “There is no data available for this school year.” to <code>NA</code>, keeps a real <code>0</code>).</p>
+<ul><li>
+<strong><code>type = "courses_offered"</code></strong> (<code>APIBCoursesOffered</code> 2017-2024 / <code>ABIBCoursesOffered</code> 2025 - the A-B-IB typo is the real 2025 sheet name): one row per school per advanced course. Cols <code>course_name</code>, <code>students_enrolled</code>, <code>students_tested</code> (counts). Years 2017-2025; error &lt;2017. The 2017 sheet omits the county/district/school <strong>name</strong> columns (CDS ids only) -&gt; names <code>NA</code> for
+<ol start="2017" style="list-style-type: decimal"><li>
+</li></ol></li>
+<li>
+<strong><code>type = "participation_by_group"</code></strong> (<code>APIBDualEnrPartByStudentGrp</code> 2021-2024 / <code>AP_IB_Dual_PartStudentGroup</code> 2025): one row per entity per <code>subgroup</code> (normalized by <code>clean_spr_subgroups</code>; <code>total population</code> is the schoolwide total). Cols <code>apib_pct_school</code>, <code>apib_pct_state</code>, <code>dual_pct_school</code>, <code>dual_pct_state</code> always; <code>apib_pct_district</code>/<code>dual_pct_district</code> exist <strong>only 2025</strong>. Years 2021-2025; <strong>absent 2017-2020 -&gt; error &lt;2021</strong>. The <strong>2025 sheet is a multi-year trend table</strong> (<code>school_year</code> 2020-21..2024-25) - filtered to the requested year with <code>filter_spr_to_year</code>. On the <strong>legacy</strong> <code>is_state</code> row the entity columns are <code>NA</code>; the statewide value is carried in <code>*_pct_state</code>.</li>
+<li>
+<strong><code>type = "sle"</code></strong> (Structured Learning Experience; <code>CTE_SLEParticipation</code> 2017-2023 - only the SLE columns surfaced, NOT CTE/IVC which stay in <code><a href="reference/fetch_cte_participation.html">fetch_cte_participation()</a></code> / <code><a href="reference/fetch_industry_credentials.html">fetch_industry_credentials()</a></code> - / <code>SLE_Participation</code> 2024-2025): one row per school. Entity rate is <code>sle_pct_school</code> (School workbook) or <code>sle_pct_district</code> (District workbook; also present in the 2025 School workbook), plus <code>sle_pct_state</code> always. Years 2017-2025; error &lt;2017. Published column names drift across BOTH year and level (<code>sleperc</code>/<code>sleschool</code>/<code>sledistrict</code>/<code>sle_school</code>/<code>sle_district</code>/<code>slestate</code>/ <code>slestate_perc</code>/<code>sle_state</code>) and are detected-and-renamed onto the stable schema.</li>
+<li>
+<strong>Genuine &gt;100 / cross-level note:</strong> participation/SLE rates observed in [0,100]; pass any real published outlier through unclipped, never clip. Rates are per-entity shares and are NOT summable across levels.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-restraint--seclusion">Valid Filter Values (restraint &amp; seclusion)<a class="anchor" aria-label="anchor" href="#valid-filter-values-restraint--seclusion"></a></h2>
+<p><code>fetch_restraint_seclusion(end_year, level)</code> reads the standalone NJ DOE DARS school-level Restraint &amp; Seclusion workbook (source: <code>nj.gov/education/vandv/annualreport/dars/</code>) - a source distinct from <code><a href="reference/fetch_violence_vandalism_hib.html">fetch_violence_vandalism_hib()</a></code>. Tidy output by default.</p>
+<ul><li>
+<strong>Year coverage:</strong> <code>end_year</code> 2023 (SY2022-23) and 2024 (SY2023-24) only; any other year errors.</li>
+<li>
+<strong>School-level only, NO aggregates:</strong> <code>level</code> must be <code>"school"</code> (errors otherwise). Every row is a school: <code>is_school</code> is always TRUE, <code>is_state</code>/<code>is_county</code>/<code>is_district</code> always FALSE. The workbook has no state/district/county aggregate rows - do NOT invent them. <code>is_charter</code> flags county 80; <code>is_charter_sector</code>/<code>is_allpublic</code> always FALSE.</li>
+<li>
+<strong>One row per (school, student_group).</strong> The raw <code>student_group</code> is kept and also split into normalized <code>subgroup</code> + <code>grade_level</code>:
+<ul><li>
+<code>subgroup</code> values: <code>total population</code> (the schoolwide total - raw <code>"Schoolwide"</code> in 2023, <code>"School Total"</code> in 2024), <code>american indian</code>, <code>asian</code>, <code>black</code>, <code>hispanic</code>, <code>pacific islander</code>, <code>multiracial</code>, <code>white</code>, <code>female</code>, <code>male</code>, <code>non-binary</code>, <code>economically disadvantaged</code>, <code>students with disabilities</code>.</li>
+<li>
+<code>grade_level</code>: <code>TOTAL</code> for subgroup/schoolwide rows; grade rows carry <code>subgroup = "total population"</code> with <code>grade_level</code> in <code>PK</code> (raw <code>"Grade Preschool"</code>), <code>K</code> (<code>"Grade Kindergarten"</code>), <code>01</code>-<code>12</code>.</li>
+</ul></li>
+<li>
+<strong>20 value columns</strong> (count, percent pairs) across the 10 SSDS categories: <code>any_restraint_seclusion_*</code>, <code>restraint_*</code>, <code>restraint_physical_*</code>, <code>restraint_mechanical_*</code>, <code>restraint_both_phys_mech_*</code>, <code>seclusion_*</code>, <code>both_restraint_seclusion_*</code>, <code>both_physical_restraint_*</code>, <code>both_mechanical_restraint_*</code>, <code>both_phys_mech_restraint_*</code> (each <code>_count</code> + <code>_pct</code>).</li>
+<li>
+<strong>Suppression -&gt; NA (NEVER a guessed number):</strong> small cells are masked. <code>"*"</code> hides a value entirely; <code>"&lt;5"</code> / <code>"&lt;5.00"</code> is a published RANGE for 1-4 students. <code><a href="reference/rs_value_numeric.html">rs_value_numeric()</a></code> maps both (any <code>"&lt;"</code> token or <code>"*"</code>) to <code>NA</code> BEFORE numeric parsing, so <code>"&lt;5"</code> NEVER becomes the literal <code>5</code>. A real published <code>0</code> stays <code>0</code>. Do NOT back-derive a count from a percent.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-staff-evaluations--certificated-staff">Valid Filter Values (staff evaluations + certificated staff)<a class="anchor" aria-label="anchor" href="#valid-filter-values-staff-evaluations--certificated-staff"></a></h2>
+<p>Two standalone NJ DOE <strong>doedata</strong> staff sources (NOT SPR sheets), distinct from the SPR-sourced <code><a href="reference/fetch_staff_demographics.html">fetch_staff_demographics()</a></code> / <code><a href="reference/fetch_spr_staff_counts.html">fetch_spr_staff_counts()</a></code> etc. Both coerce values with <code>staff_value_numeric</code> (<code>"*"</code> / <code>""</code> / any <code>"&lt;N"</code> range / free text -&gt; <code>NA</code> BEFORE numeric parse; commas stripped; a real <code>0</code> stays <code>0</code>; fractional FTE preserved).</p>
+<ul><li>
+<strong><code>fetch_staff_evaluations(end_year, level)</code></strong> - summative educator evaluation rating distributions (source <code>nj.gov/education/doedata/staff/</code>). <strong>Only three years exist: 2014, 2015, 2016</strong>; any other year errors. <code>level</code> is <code>"school"</code> (default) or <code>"district"</code>.
+<ul><li>
+<code>staff_category</code>: <code>teachers</code> (raw <code>TEACHERS</code>), <code>principals_vps</code> (raw <code>PRIN/AP/VP</code>). Raw label kept as <code>category</code>.</li>
+<li>rating cols: <code>ineffective</code>, <code>partially_effective</code>, <code>effective</code>, <code>highly_effective</code>, <code>total</code> (<code>"*"</code> -&gt; NA).</li>
+<li>Entity flags: <code>is_school</code> (per-school) vs <code>is_district</code> (<code>school_id=="999"</code>). A <strong>statewide</strong> aggregate (county <code>"99"</code> / district <code>"9999"</code>) is published in <strong>2014 and 2015</strong> and flagged <code>is_state</code> (returned at <code>level="district"</code>); <strong>2016 has no statewide row</strong>. <code>is_charter</code> flags county 80.</li>
+<li>CDS drift: the 2015 (1415) file drops leading zeros (district <code>"10"</code>); ids are re-padded to county 2 / district 4 / school 3.</li>
+</ul></li>
+<li>
+<strong><code>fetch_certificated_staff(end_year, level)</code></strong> - certificated-staff FTE by position x race x gender (source <code>nj.gov/education/doedata/cs/</code>). Output is harmonized <strong>long by gender</strong> (one row per entity x position x gender; <code>gender</code> in <code>total</code>/<code>male</code>/<code>female</code>). <code>level</code> is <code>"school"</code> (default), <code>"district"</code>, <code>"county"</code>, <code>"state"</code>.
+<ul><li>
+<strong>Covered years: 2000-2008 (legacy CSV) and 2020-2026 (modern xlsx).</strong> The <strong>2009-2019</strong> intermediate Excel files use a drifting, non-uniform layout and <strong>error</strong> (documented) - never guess.</li>
+<li>
+<code>position</code>: <code>administrators</code>, <code>teachers</code>, <code>special_services</code>, <code>supervisors_coordinators</code>, <code>total</code> (the modern SCHOOL sheet has no <code>total</code> position row).</li>
+<li>race FTE cols: <code>white</code>, <code>black</code>, <code>hispanic</code>, <code>asian</code>, <code>american_indian</code>, <code>pacific_islander</code>, <code>two_or_more</code>, plus <code>total</code>. <strong>Era-absent -&gt; NA, never 0:</strong> the legacy era reports a single combined Asian/Pacific-Islander bucket, so <code>asian</code> carries the combined count and <code>pacific_islander</code> + <code>two_or_more</code> are <code>NA</code> for 2000-2008. Modern era populates all races (on the <code>gender=="total"</code> row only; <code>male</code>/<code>female</code> rows carry the gender headcount in <code>total</code> with race cols <code>NA</code>).</li>
+<li>
+<strong>FTE values are fractional doubles</strong> (e.g. <code>35.8</code>) - never rounded. Non-binary staff are published only as a percent (no count) in modern files and are NOT surfaced as a count.</li>
+<li>Legacy entity conventions inside the single CSV: state = <code>CONAME=="STATE SUM"</code>, county = <code>DIST=="9998"</code> (CO SUMMARY), district total = <code>SCH=="998"</code> (DIST SUMMARY), else school. <code>is_charter</code> flags county 80.</li>
+<li>
+<strong>Deferred:</strong> the non-certificated (<code>ncs/</code>) series mirrors this but is not yet implemented.</li>
+</ul></li>
+</ul></div>
+<div class="section level2">
+<h2 id="valid-filter-values-spr-assessment--graduation-detail-bucket-a">Valid Filter Values (SPR assessment / graduation detail “Bucket A”)<a class="anchor" aria-label="anchor" href="#valid-filter-values-spr-assessment--graduation-detail-bucket-a"></a></h2>
+<p>Five SPR sheets first published in (or, for federal grad rates, expanded by) the redesigned 2024-25 School Performance Reports, with no standalone-fetcher equivalent. All read via <code><a href="reference/fetch_spr_data.html">fetch_spr_data()</a></code> (CDS + standard entity flags), tidy by default, <code>level</code> is <code>"school"</code> or <code>"district"</code>. Every value is coerced with <code>spr_value_numeric</code> (strips <code>%</code>/commas, maps suppression / <code>"n/a"</code> / “Fewer than 10…” to <code>NA</code>, keeps a real <code>0</code>); a published rate is NEVER clipped or back-derived.</p>
+<p><strong>Shared entity-pick rule (the <code>{_school,_district,_state}</code> triple).</strong> Four of these sheets repeat every value as a school/district/state triple on each row. <code><a href="reference/spr_pick_entity_value.html">spr_pick_entity_value()</a></code> collapses it like <code><a href="reference/fetch_6yr_grad_rate.html">fetch_6yr_grad_rate()</a></code>: at <code>level="school"</code> it takes <code>_school</code>; at <code>level="district"</code> it takes <code>_district</code> for ordinary rows and <code>_state</code> ONLY for the statewide <code>is_state</code> row (whose <code>_district</code> cell is blank). It never fills a suppressed district from the state column. The statewide value is therefore available from the <code>is_state</code> row of <strong>district</strong>-level output, and the redundant <code>_state</code> reference columns are dropped from the result.</p>
+<ul><li>
+<strong><code>fetch_spr_proficiency_by_test(end_year, subject, level)</code></strong> - <code>ELAPerformanceByTest</code> / <code>MathPerformancebyTest</code>. <strong>2025-only</strong> (error &lt;2025; earlier <code>MathPerformanceByGradeTest</code> etc. are a different layout, not mapped). <code>subject</code> is <code>"ela"</code> (default) or <code>"math"</code>. Unlike <code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code> (overall proficiency), splits by the test taken, carried in <code>grade_test</code>: ELA = Grade 3 through Grade 9; Math = Grade 3 through Grade 8 PLUS the high-school end-of-course tests <code>Algebra I</code>, <code>Geometry</code>, <code>Algebra II</code>. Values: <code>valid_scores</code>, <code>mean_scaled_score</code>, <code>proficiency_rate</code> (level 4+5), <code>level_1</code>..<code>level_5</code> (each entity-picked). Multi-year trend table inside the 2025 workbook; <strong>filtered to the requested academic year</strong> (SY2024-25). Anchor: statewide ELA Grade 4 <code>proficiency_rate</code> = 53.5, <code>valid_scores</code> = 93574; Math Algebra I = 38.1.</li>
+<li>
+<strong><code>fetch_spr_science_grade(end_year, level)</code></strong> - <code>NJSLASciencebyGradeTrends</code>. <strong>2025-only</strong> (earlier <code>NJSLAScienceTable</code> / <code>NJASKScience</code> are a different layout, not mapped). NJSLA Science is grades 5/8/11; <code>grade_level</code> normalizes the raw <code>grade</code> (<code>"Grade 5"</code>) to <code>"05"</code>/<code>"08"</code>/<code>"11"</code>. Values: <code>level_1_percentage</code>..<code>level_4_percentage</code> (entity-picked); proficiency = levels 3+4 but NOT summed here. Trend table; filtered to SY2024-25. Anchor: statewide Grade 5 L1 = 30.6, L4 = 7.9.</li>
+<li>
+<strong><code>fetch_spr_elp_progress(end_year, level)</code></strong> - <code>ProgressTowardELP</code>. <strong>2025-only</strong>; distinct from the ELP <em>target</em> sheet (<code>ProgresstowardELPTargets</code>, in <code>fetch_spr_essa_targets</code>) and from the legacy target-bearing <code>EnglishLanguageProgress</code> (not mapped). <strong>No subgroup/grade</strong> - one <code>progress_toward_elp</code> (entity-picked) per entity. Trend table; filtered to SY2024-25. Anchor: statewide = 30.1.</li>
+<li>
+<strong><code>fetch_spr_grad_cohort(end_year, level)</code></strong> - <code>GraduationCohortProfile</code>. <strong>2025-only</strong>. One row per entity x <code>cohort_type</code> (<code>"4-Year"</code>/<code>"5-Year"</code>/ <code>"6-Year"</code>) x subgroup, with entity-picked <code>graduated</code> / <code>continuing</code> / <code>non_continuing</code> / <code>persisting</code> rates (0-100). <code>persisting</code> is published only for the 6-Year cohort - the 4-/5-Year <code>"n/a"</code> -&gt; <code>NA</code>. The 4- and 6-year rates are also in <code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code> / <code><a href="reference/fetch_6yr_grad_rate.html">fetch_6yr_grad_rate()</a></code>; this adds the 5-year cohort and all three in one frame. <strong>Note:</strong> this sheet stamps <code>school_year</code> as the full-year form <code>"2024-2025"</code> (others use <code>"2024-25"</code>); <code>filter_spr_to_year</code> accepts both. Anchor: statewide 4-Year <code>graduated</code> = 91.8.</li>
+<li>
+<strong><code>fetch_spr_fed_grad(end_year, level)</code></strong> - <code>FederalGraduationRates</code>, <strong>2021-2025</strong> (absent SY2016-17..SY2019-20 -&gt; error &lt;2021). Federally reported ACGR (different cohort denominator than <code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code>’s state rate). Reshaped <strong>long by cohort</strong>: one row per entity x subgroup x <code>cohort_years</code> (4/5/6), with <code>cohort_label</code> (e.g. <code>"Cohort 2025"</code>) and entity-picked <code>graduation_rate_federal</code>. <strong>6-year cohort only from SY2023-24 (2024)</strong>; 2021-2023 carry 4+5 only. Heavy column drift handled by <code><a href="reference/fed_grad_cols_for_n.html">fed_grad_cols_for_n()</a></code>: 2025 names by cohort length (<code>x_4_yr_graduation_rate_federal_school</code> + a <code>school_year</code> column); 2021-2024 embed the graduating year in the name (<code>x_2024_4_year_federal_graduation_rate</code> / <code>state_2024_...</code>), and in that legacy layout the statewide value lives in the <code>state_*</code> column on the <code>State</code> row. <code>end_year</code> 2021 = SY2020-21. Anchors: statewide 4-yr = 88.9 (2025) / 85.2 (2022); Atlantic City (<code>0110</code>) 4-yr 2022 = 66.5.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h2>

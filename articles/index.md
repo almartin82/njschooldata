@@ -13,6 +13,16 @@
   Data](https://almartin82.github.io/njschooldata/articles/nj-facilities.md):
 - [New Jersey English
   Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.md):
+- [Advanced-Coursework Access &
+  Equity](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.md):
+- [Seal of Biliteracy: Statewide Trend & the Seal-Earning Equity
+  Gap](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.md):
+- [Restraint & Seclusion: A Special-Education Liability
+  Metric](https://almartin82.github.io/njschooldata/articles/nj-restraint-seclusion.md):
+- [School Environment: Instructional Time & Device
+  Access](https://almartin82.github.io/njschooldata/articles/nj-school-environment.md):
+- [Staff History: Educator Evaluations & the Certificated
+  Workforce](https://almartin82.github.io/njschooldata/articles/nj-staff-history.md):
 
 ### School Finance
 
@@ -33,3 +43,5 @@
 
 - [SPR Data
   Dictionary](https://almartin82.github.io/njschooldata/articles/spr-dictionary.md):
+- [Assessment & Graduation Detail: Behind the Headline
+  Rates](https://almartin82.github.io/njschooldata/articles/nj-assessment-detail.md):

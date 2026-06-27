@@ -18,6 +18,38 @@ points - [NJ English
 Learners](https://almartin82.github.io/njschooldata/articles/nj-english-learners.html)
 – English Learner population trends via
 [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md) -
+[School
+Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html)
+– instructional minutes/day and student-to-device ratios via
+[`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+/
+[`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md) -
+[Seal of
+Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html)
+– statewide seal trends, school summaries, and the seal-earning equity
+gap via
+[`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md)
+/
+[`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md)
+/
+[`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md) -
+[Advanced-Coursework
+Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html)
+– which advanced courses a school offers, AP/IB/dual participation by
+student group, and SLE participation via
+[`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md) -
+[Restraint &
+Seclusion](https://almartin82.github.io/njschooldata/articles/nj-restraint-seclusion.html)
+– school-level restraint and seclusion events, and the disability
+disproportionality, via
+[`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md) -
+[Staff
+History](https://almartin82.github.io/njschooldata/articles/nj-staff-history.html)
+– summative educator evaluation rating distributions (2014-2016) and the
+deep certificated-staff FTE history (2000-2008, 2020-2026) via
+[`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md)
+/
+[`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md) -
 [Getting
 Started](https://almartin82.github.io/njschooldata/articles/getting-started.html)
 – installation, data fetching, and tidy format guide
@@ -196,11 +228,14 @@ COVID Kindergarten
 | **EL Progress** | 2022-2024 | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md) | WIDA ACCESS for ELLs |
 | **Special Ed** | 2020-2025 | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md) / [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md) | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Facilities** | Current / FY2026 / 2024-2025 | [`fetch_facilities()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities.md) / [`fetch_facilities_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities_multi.md) / [`fetch_facility_gis()`](https://almartin82.github.io/njschooldata/reference/fetch_facility_gis.md) / [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md) | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
-| **Discipline** | Available | [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md) / [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md) | Suspensions, expulsions, HIB incidents |
-| **Staff** | Available | [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md) / [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md) | Demographics, experience, ratios |
+| **Discipline** | Available; restraint & seclusion 2023-2024 | [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md) / [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md) / [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md) | Suspensions, expulsions, HIB incidents; school-level restraint & seclusion events by student group |
+| **Staff** | Demographics/experience (SPR); evaluations 2014-2016; certificated FTE 2000-2008 & 2020-2026 | [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md) / [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md) / [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md) / [`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md) | Demographics, experience, ratios; summative evaluation rating distributions (teachers, principals/APs/VPs); deep certificated-staff FTE history by position, race, gender. State, county, district, school |
 | **College-Going** | Available | [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md) / [`fetch_sat_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.md) / [`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md) | Postsecondary enrollment, SAT, AP |
+| **Advanced-Coursework Access** | 2017-2025 (courses, SLE); 2021-2025 (by group) | [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md) | Which advanced courses a school offers (enrolled/tested), AP/IB/dual-enrollment participation by student group, and Structured Learning Experience participation. School + district/state |
 | **Courses** | Available | [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md) / [`fetch_cs_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_cs_enrollment.md) | Math, science, CS, arts, world languages |
 | **CTE** | Available | [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md) / [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md) | Career pathways, credentials, apprenticeships |
+| **School Environment** | 2017-2025 | [`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md) / [`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md) | School-level instructional minutes/day (start/end time, full- and shared-time) and student-to-device ratios |
+| **Seal of Biliteracy** | 2018-2025 (per-language); 2025 (summary/trends/group) | [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md) / [`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md) / [`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md) / [`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md) | Seals by language, school/district/state summary, 5-year trend, and seal-earning rate by student group. Suppressed counts kept `NA` |
 
 > See the full [data category
 > taxonomy](https://almartin82.github.io/njschooldata/DATA-CATEGORY-TAXONOMY.md)
@@ -280,6 +315,39 @@ Full analysis with 15 stories:
   – the EL population tripling since 2006, district hotspots, and
   largest EL systems via
   [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md)
+- [School
+  Environment](https://almartin82.github.io/njschooldata/articles/nj-school-environment.html)
+  – how long the NJ school day runs and how student-to-device access
+  dipped in the first pandemic year via
+  [`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+  /
+  [`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md)
+- [Seal of
+  Biliteracy](https://almartin82.github.io/njschooldata/articles/nj-biliteracy.html)
+  – the statewide seal count rising from ~5k to ~12.6k since 2020-21 and
+  the seal-earning equity gap by student group via
+  [`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md)
+  /
+  [`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md)
+  /
+  [`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md)
+- [Advanced-Coursework
+  Access](https://almartin82.github.io/njschooldata/articles/nj-advanced-courses.html)
+  – which schools offer AP/IB at all and the AP/IB access gap by student
+  group via
+  [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md)
+- [Restraint &
+  Seclusion](https://almartin82.github.io/njschooldata/articles/nj-restraint-seclusion.html)
+  – the special-education concentration of restraint events and the
+  schools reporting the most, via
+  [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md)
+- [Staff
+  History](https://almartin82.github.io/njschooldata/articles/nj-staff-history.html)
+  – how concentrated teacher evaluation ratings are at the top of the
+  scale and the long-run shape of the certificated workforce via
+  [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md)
+  /
+  [`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md)
 - [Getting
   Started](https://almartin82.github.io/njschooldata/articles/getting-started.html)
   – installation, data fetching, and tidy format guide

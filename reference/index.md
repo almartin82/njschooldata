@@ -121,6 +121,8 @@ Functions for SPR database data (2017-2024)
   : Fetch AP/IB Performance Data (Alias)
 - [`fetch_ib_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ib_participation.md)
   : Fetch IB Participation Data
+- [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md)
+  : Fetch Advanced-Coursework Access & Equity Data
 - [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)
   : Fetch CTE Participation Data
 - [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md)
@@ -131,12 +133,25 @@ Functions for SPR database data (2017-2024)
   : Fetch Apprenticeship Data
 - [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
   : Fetch Seal of Biliteracy Data
+- [`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md)
+  : Fetch Seal-of-Biliteracy Summary (2024-25)
+- [`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md)
+  : Fetch Seal-of-Biliteracy Multi-Year Trend (2024-25)
+- [`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md)
+  : Fetch Seal-of-Biliteracy Seal-Earning Rate by Student Group
+  (2024-25)
 - [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md)
   : Fetch Violence/Vandalism/HIB Data
+- [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md)
+  : Fetch Restraint & Seclusion Incidents (school-level)
 - [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
   : Fetch Disciplinary Removals Data
 - [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md)
   : Fetch Teacher Experience Data
+- [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md)
+  : Fetch Summative Educator Evaluation Rating Distributions
+- [`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md)
+  : Fetch Certificated-Staff FTE Counts (position x race x gender)
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
   : Fetch Staff Demographics Data
 - [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
@@ -173,8 +188,22 @@ Functions for SPR database data (2017-2024)
   : Fetch Enrollment by Home Language
 - [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
   : Fetch NAEP Achievement Results
+- [`fetch_spr_proficiency_by_test()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_proficiency_by_test.md)
+  : Fetch NJSLA Proficiency by Test Variant
+- [`fetch_spr_science_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_science_grade.md)
+  : Fetch NJSLA Science Proficiency by Grade
+- [`fetch_spr_elp_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_elp_progress.md)
+  : Fetch Progress Toward English Language Proficiency
+- [`fetch_spr_grad_cohort()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_cohort.md)
+  : Fetch Graduation Cohort Profile (4/5/6-Year)
+- [`fetch_spr_fed_grad()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_fed_grad.md)
+  : Fetch Federally Reported Graduation Rates (ESSA ACGR)
 - [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
   : Fetch Student Growth Percentile (SGP) Data
+- [`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+  : Fetch School-Day Length & Instructional Time
+- [`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md)
+  : Fetch Student-to-Device Ratios
 - [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md)
   : Fetch Math Course Enrollment Data
 
@@ -573,6 +602,8 @@ Additional exported functions
   : Fetch Absenteeism by Grade
 - [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md)
   : Fetch ACCESS for ELLs data
+- [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md)
+  : Fetch Advanced-Coursework Access & Equity Data
 - [`fetch_all_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_all_6yr_grad_rate.md)
   : Fetch all 6-Year Graduation Rate data
 - [`fetch_all_access()`](https://almartin82.github.io/njschooldata/reference/fetch_all_access.md)
@@ -595,8 +626,17 @@ Additional exported functions
   : Fetch Student Arrests (by Student Group / Grade)
 - [`fetch_arts_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_arts_enrollment.md)
   : Fetch Visual and Performing Arts Enrollment Data
+- [`fetch_biliteracy_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_by_group.md)
+  : Fetch Seal-of-Biliteracy Seal-Earning Rate by Student Group
+  (2024-25)
 - [`fetch_biliteracy_seal()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_seal.md)
   : Fetch Seal of Biliteracy Data
+- [`fetch_biliteracy_summary()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_summary.md)
+  : Fetch Seal-of-Biliteracy Summary (2024-25)
+- [`fetch_biliteracy_trends()`](https://almartin82.github.io/njschooldata/reference/fetch_biliteracy_trends.md)
+  : Fetch Seal-of-Biliteracy Multi-Year Trend (2024-25)
+- [`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md)
+  : Fetch Certificated-Staff FTE Counts (position x race x gender)
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
   : Fetch Chronic Absenteeism Data
 - [`fetch_cs_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_cs_enrollment.md)
@@ -605,6 +645,8 @@ Additional exported functions
   : Fetch CTE Participation Data
 - [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md)
   : Fetch Days Absent Data
+- [`fetch_device_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_device_ratios.md)
+  : Fetch Student-to-Device Ratios
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
@@ -677,10 +719,14 @@ Additional exported functions
   : Fetch Postsecondary Enrollment Rates
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
   : Fetch Special Population data
+- [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md)
+  : Fetch Restraint & Seclusion Incidents (school-level)
 - [`fetch_sat_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.md)
   : Fetch SAT/ACT/PSAT Participation Data
 - [`fetch_sat_performance()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_performance.md)
   : Fetch SAT/ACT/PSAT Performance Data
+- [`fetch_school_day()`](https://almartin82.github.io/njschooldata/reference/fetch_school_day.md)
+  : Fetch School-Day Length & Instructional Time
 - [`fetch_science_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_science_course_enrollment.md)
   : Fetch Science Course Enrollment Data
 - [`fetch_sgp()`](https://almartin82.github.io/njschooldata/reference/fetch_sgp.md)
@@ -701,16 +747,26 @@ Additional exported functions
   : Fetch SPR Data
 - [`fetch_spr_educator_equity()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_educator_equity.md)
   : Fetch Statewide Educator Equity Metrics
+- [`fetch_spr_elp_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_elp_progress.md)
+  : Fetch Progress Toward English Language Proficiency
 - [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
   : Fetch ESSA Accountability Status Counts (district/state)
 - [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)
   : Fetch ESSA Long-Term-Goal Targets
+- [`fetch_spr_fed_grad()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_fed_grad.md)
+  : Fetch Federally Reported Graduation Rates (ESSA ACGR)
+- [`fetch_spr_grad_cohort()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_cohort.md)
+  : Fetch Graduation Cohort Profile (4/5/6-Year)
 - [`fetch_spr_grad_pathways()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_pathways.md)
   : Fetch Graduation Pathways
 - [`fetch_spr_home_language()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_home_language.md)
   : Fetch Enrollment by Home Language
 - [`fetch_spr_naep()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_naep.md)
   : Fetch NAEP Achievement Results
+- [`fetch_spr_proficiency_by_test()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_proficiency_by_test.md)
+  : Fetch NJSLA Proficiency by Test Variant
+- [`fetch_spr_science_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_science_grade.md)
+  : Fetch NJSLA Science Proficiency by Grade
 - [`fetch_spr_staff_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_counts.md)
   : Fetch Staff Counts
 - [`fetch_spr_staff_demo_subject()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_demo_subject.md)
@@ -725,6 +781,8 @@ Additional exported functions
   : Fetch Targeted Support and Improvement (TSI) Identification
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
   : Fetch Staff Demographics Data
+- [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md)
+  : Fetch Summative Educator Evaluation Rating Distributions
 - [`fetch_staff_ratios()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.md)
   : Fetch Student-Staff Ratio Data
 - [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md)
