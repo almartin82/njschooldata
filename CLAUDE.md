@@ -13,6 +13,14 @@
 
 **The test is simple: can you trace every number back to a downloaded file from a state DOE website?** If not, it is fabricated. There is no gray area. If the data source is unavailable, the package MUST use Under Construction status — not fake data.
 
+## Year Convention: njschooldata is END-year (verify external sources before joining)
+
+Every fetcher in this package names a year by its **END year**: `end_year = 2024` means school year 2023-24. This is the canonical convention for all joins and trends.
+
+**External or hand-supplied data may use a different convention and MUST be checked before joining — never assume the raw year label matches.** In particular, **ASSA (Application for State School Aid) is collected/delivered in December**, so ASSA-derived series often carry a **START-year** label, off by one from this package. An ASSA row labeled `2025` may correspond to `end_year = 2026` here. Mismatched year conventions are the prime suspect whenever an external series and an njschooldata series disagree by exactly one year.
+
+Before joining any external series to fetcher output: confirm the convention (anchor on a known value, or apply the December-delivery → start-year heuristic), convert everything to END-year, and document the conversion. Treat year alignment as a validation gate, not an assumption — a silent off-by-one corrupts every cohort-survival ratio, decomposition, and trend.
+
 ---
 
 
@@ -374,40 +382,61 @@ column. The statewide value is therefore available from the `is_state` row of
 **district**-level output, and the redundant `_state` reference columns are
 dropped from the result.
 
+**Pre-redesign backfill (`spr_legacy_entity_value`).** Three of these fetchers
+extend back into the pre-2025 databases, where the sheets are differently named
+and store the entity value in one column with the statewide value repeated in a
+parallel `state_*` column (blank entity cell on the `State` row). The shared
+`spr_legacy_entity_value()` collapses that the same way (`state_*` only on the
+`is_state` row, entity column otherwise; never fill a suppressed entity from the
+statewide column). Where the column name embeds the grade/test, `grade_subject`/
+`grade` is normalized to the 2025 `grade_test` vocabulary by
+`normalize_grade_test()` (`"Grade 03"`->`"Grade 3"`, `ALG01`/`ALG02`/`GEO01`->
+`Algebra I`/`Algebra II`/`Geometry`).
+
 - **`fetch_spr_proficiency_by_test(end_year, subject, level)`** -
-  `ELAPerformanceByTest` / `MathPerformancebyTest`. **2025-only** (error <2025;
-  earlier `MathPerformanceByGradeTest` etc. are a different layout, not mapped).
-  `subject` is `"ela"` (default) or `"math"`. Unlike `fetch_parcc()` (overall
-  proficiency), splits by the test taken, carried in `grade_test`: ELA = Grade 3
-  through Grade 9; Math = Grade 3 through Grade 8 PLUS the high-school
-  end-of-course tests `Algebra I`, `Geometry`, `Algebra II`. Values:
-  `valid_scores`, `mean_scaled_score`, `proficiency_rate` (level 4+5),
-  `level_1`..`level_5` (each entity-picked). Multi-year trend table inside the
-  2025 workbook; **filtered to the requested academic year** (SY2024-25). Anchor:
-  statewide ELA Grade 4 `proficiency_rate` = 53.5, `valid_scores` = 93574; Math
-  Algebra I = 38.1.
-- **`fetch_spr_science_grade(end_year, level)`** - `NJSLASciencebyGradeTrends`.
-  **2025-only** (earlier `NJSLAScienceTable` / `NJASKScience` are a different
-  layout, not mapped). NJSLA Science is grades 5/8/11; `grade_level` normalizes
-  the raw `grade` (`"Grade 5"`) to `"05"`/`"08"`/`"11"`. Values:
-  `level_1_percentage`..`level_4_percentage` (entity-picked); proficiency =
-  levels 3+4 but NOT summed here. Trend table; filtered to SY2024-25. Anchor:
-  statewide Grade 5 L1 = 30.6, L4 = 7.9.
+  ELA/Math NJSLA proficiency split by the test taken (`grade_test`): grade-level
+  tests Grade 3-9 PLUS the high-school end-of-course tests `Algebra I`,
+  `Geometry`, `Algebra II` (Math). `subject` is `"ela"` (default) or `"math"`.
+  Values `valid_scores`, `mean_scaled_score`, `proficiency_rate` (level 4+5),
+  `level_1`..`level_5`. **Years 2017-2019 and 2022-2025; 2020-2021 error** (no
+  by-grade/test ELA/Math sheet - COVID). Sheets by era: 2025
+  `ELAPerformanceByTest`/`MathPerformancebyTest` (multi-year trend, filtered to
+  the requested year); 2022-2024 `ELAPerformanceByGrade`/`MathPerformanceByGradeTest`
+  (`grade_subject`, `percent_level_*`, `percent_testers_met_or_exceeded`);
+  2017-2019 `ELALiteracyPerformanceByGrade`/`MathPerformanceByGradeTest`
+  (`grade`, `level_*`, `met_exceed`). Anchors: 2025 statewide ELA Grade 4
+  `proficiency_rate` = 53.5 / `valid_scores` = 93574, Math Algebra I = 38.1;
+  2024 Math Algebra I = 40; 2019 Math Algebra I = 42.
+- **`fetch_spr_science_grade(end_year, level)`** - NJSLA science by grade (5/8/11);
+  `grade_level` normalizes `grade` to `"05"`/`"08"`/`"11"`. Values
+  `level_1_percentage`..`level_4_percentage` (proficiency = levels 3+4, NOT
+  summed here). **Years 2019 and 2021-2025; 2020 errors** (no spring 2020
+  testing) and **2017-2018 error** (the earlier `NJASKScience` is a different
+  scale, not mapped). Sheets by era: 2025 `NJSLASciencebyGradeTrends`; 2022-2024
+  `ScienceAssessmentByGrade` (entity `percent_level_*`, state
+  `performance_level_*_perc`); 2021 `NJSLAScience`; 2019 `NJSLAScienceTable`
+  (`level_1`..`level_4` direct). Anchors: 2025 statewide Grade 5 L1 = 30.6 / L4 =
+  7.9; 2024 Grade 5 L4 = 6; 2019 Grade 5 L4 = 7.
 - **`fetch_spr_elp_progress(end_year, level)`** - `ProgressTowardELP`.
   **2025-only**; distinct from the ELP *target* sheet (`ProgresstowardELPTargets`,
   in `fetch_spr_essa_targets`) and from the legacy target-bearing
-  `EnglishLanguageProgress` (not mapped). **No subgroup/grade** - one
-  `progress_toward_elp` (entity-picked) per entity. Trend table; filtered to
-  SY2024-25. Anchor: statewide = 30.1.
-- **`fetch_spr_grad_cohort(end_year, level)`** - `GraduationCohortProfile`.
-  **2025-only**. One row per entity x `cohort_type` (`"4-Year"`/`"5-Year"`/
-  `"6-Year"`) x subgroup, with entity-picked `graduated` / `continuing` /
-  `non_continuing` / `persisting` rates (0-100). `persisting` is published only
-  for the 6-Year cohort - the 4-/5-Year `"n/a"` -> `NA`. The 4- and 6-year rates
-  are also in `fetch_grad_rate()` / `fetch_6yr_grad_rate()`; this adds the 5-year
-  cohort and all three in one frame. **Note:** this sheet stamps `school_year` as
-  the full-year form `"2024-2025"` (others use `"2024-25"`); `filter_spr_to_year`
-  accepts both. Anchor: statewide 4-Year `graduated` = 91.8.
+  `EnglishLanguageProgress` (a different metric - deliberately NOT mapped; 2020
+  is COVID and 2021-2024 carry only ACCESS participation/performance). **No
+  subgroup/grade** - one `progress_toward_elp` (entity-picked) per entity. Trend
+  table; filtered to SY2024-25. Anchor: statewide = 30.1.
+- **`fetch_spr_grad_cohort(end_year, level)`** - 4/5/6-year cohort outcome rates.
+  One row per entity x `cohort_type` (`"4-Year"`/`"5-Year"`/`"6-Year"`) x
+  subgroup, with `graduated` / `continuing` / `non_continuing` / `persisting`
+  rates (0-100). `persisting` is published only for the 6-Year cohort (and only
+  from `end_year` 2024 in the pre-redesign sheets) - else `NA`. **Years
+  2020-2025; 2020 has 4/5-Year only** (no 6-Year sheet yet); error <2020. Sheets:
+  2025 combined `GraduationCohortProfile` (entity-picked; `school_year` stamped
+  as full-year `"2024-2025"`, which `filter_spr_to_year` now accepts); 2020-2024
+  stacks the separate `4Yr`/`5Yr`/`6YrGraduationCohortProfile` sheets
+  (`graduates`/`state_graduates` etc. via `spr_legacy_entity_value`). The 4- and
+  6-year rates are also in `fetch_grad_rate()` / `fetch_6yr_grad_rate()`; this
+  adds the 5-year cohort and all available lengths in one frame. Anchors:
+  statewide 4-Year `graduated` 2025 = 91.8, 2024 = 91.3, 2020 = 91.0.
 - **`fetch_spr_fed_grad(end_year, level)`** - `FederalGraduationRates`,
   **2021-2025** (absent SY2016-17..SY2019-20 -> error <2021). Federally reported
   ACGR (different cohort denominator than `fetch_grad_rate()`'s state rate).

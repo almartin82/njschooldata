@@ -39,16 +39,30 @@ local_big_download_timeout <- function(seconds = 600, env = parent.frame()) {
 # ==============================================================================
 
 test_that("Bucket A fetchers gate at their real first available year", {
-  # The four redesign-only sheets error before SY2024-25.
-  expect_error(fetch_spr_proficiency_by_test(2024), ">= 2025")
-  expect_error(fetch_spr_science_grade(2024), ">= 2025")
+  # elp_progress stays 2025-only (the legacy sheet is a different metric).
   expect_error(fetch_spr_elp_progress(2024), ">= 2025")
-  expect_error(fetch_spr_grad_cohort(2024), ">= 2025")
+  # proficiency_by_test: 2017-2019 and 2022-2025; COVID years 2020/2021 error.
+  expect_error(fetch_spr_proficiency_by_test(2020), "2017-2019 and")
+  expect_error(fetch_spr_proficiency_by_test(2021), "2017-2019 and")
+  expect_error(fetch_spr_proficiency_by_test(2016), "2017-2019 and")
+  # science_grade: 2019 and 2021-2025; 2020 COVID and 2017-2018 (NJASK) error.
+  expect_error(fetch_spr_science_grade(2020), "2019 and")
+  expect_error(fetch_spr_science_grade(2018), "2019 and")
+  # grad_cohort: 2020+ (cohort-profile sheets); error before 2020.
+  expect_error(fetch_spr_grad_cohort(2019), "end_year >= 2020")
   # FederalGraduationRates exists from SY2020-21; error before that.
   expect_error(fetch_spr_fed_grad(2020), "end_year >= 2021")
   # subject must be ela/math.
   expect_error(fetch_spr_proficiency_by_test(2025, subject = "science"),
                "subject must be one of")
+})
+
+test_that("normalize_grade_test maps pre-redesign labels to the 2025 form", {
+  expect_equal(
+    normalize_grade_test(c("Grade 03", "Grade 08", "Grade 10",
+                           "ALG01", "ALG02", "GEO01")),
+    c("Grade 3", "Grade 8", "Grade 10", "Algebra I", "Algebra II", "Geometry")
+  )
 })
 
 
@@ -231,4 +245,80 @@ test_that("Bucket A value coercion maps suppression text to NA, keeps real 0", {
   expect_equal(spr_value_numeric("0"), 0)
   expect_equal(spr_value_numeric("53.5%"), 53.5)
   expect_equal(spr_value_numeric("93,574"), 93574)
+})
+
+
+# ==============================================================================
+# Pre-redesign backfill years (verified against the legacy workbooks)
+# ==============================================================================
+
+test_that("fetch_spr_grad_cohort backfills the pre-redesign cohort sheets", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  # 2024 reads the three separate NYr sheets and stacks them.
+  gc24 <- fetch_spr_grad_cohort(2024, level = "district")
+  expect_setequal(unique(gc24$cohort_type), c("4-Year", "5-Year", "6-Year"))
+  state4 <- gc24 %>%
+    dplyr::filter(is_state, cohort_type == "4-Year",
+                  subgroup == "total population")
+  expect_equal(state4$graduated, 91.3)
+  # A real district takes its own value, never the statewide column.
+  ac <- gc24 %>%
+    dplyr::filter(is_district, district_id == "0110", cohort_type == "4-Year",
+                  subgroup == "total population")
+  expect_equal(ac$graduated, 81.9)
+
+  # 2020 has only the 4- and 5-year cohorts (no 6-year sheet yet).
+  gc20 <- fetch_spr_grad_cohort(2020, level = "district")
+  expect_setequal(unique(gc20$cohort_type), c("4-Year", "5-Year"))
+  expect_equal(
+    (gc20 %>% dplyr::filter(is_state, cohort_type == "4-Year",
+                            subgroup == "total population"))$graduated,
+    91.0
+  )
+})
+
+test_that("fetch_spr_proficiency_by_test backfills both pre-redesign eras", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  # 2022-2024 era (grade_subject + percent_testers_met_or_exceeded).
+  m24 <- fetch_spr_proficiency_by_test(2024, subject = "math", level = "district")
+  expect_true(all(c("Algebra I", "Geometry", "Algebra II", "Grade 3") %in%
+                    m24$grade_test))
+  alg <- m24 %>%
+    dplyr::filter(is_state, grade_test == "Algebra I",
+                  subgroup == "total population")
+  expect_equal(alg$proficiency_rate, 40)
+
+  # 2017-2019 era (grade + met_exceed).
+  m19 <- fetch_spr_proficiency_by_test(2019, subject = "math", level = "district")
+  expect_true("Algebra I" %in% m19$grade_test)
+  expect_false("school_year" %in% names(m19))  # no trend column pre-2025
+  alg19 <- m19 %>%
+    dplyr::filter(is_state, grade_test == "Algebra I",
+                  subgroup == "total population")
+  expect_equal(alg19$proficiency_rate, 42)
+})
+
+test_that("fetch_spr_science_grade backfills NJSLA science to 2019", {
+  skip_on_cran()
+  skip_if_offline()
+  local_big_download_timeout()
+
+  # 2022-2024 era (percent_level entity / performance_level_perc state).
+  s24 <- fetch_spr_science_grade(2024, level = "district")
+  expect_setequal(unique(s24$grade_level), c("05", "08", "11"))
+  ref24 <- s24 %>%
+    dplyr::filter(is_state, grade_level == "05", subgroup == "total population")
+  expect_equal(ref24$level_4_percentage, 6)
+
+  # 2019 era (NJSLAScienceTable, level_1..4 direct).
+  s19 <- fetch_spr_science_grade(2019, level = "district")
+  ref19 <- s19 %>%
+    dplyr::filter(is_state, grade_level == "05", subgroup == "total population")
+  expect_equal(ref19$level_4_percentage, 7)
 })
