@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,6 +170,55 @@ context.</p>
 <p><img src="nj-assessment-detail_files/figure-html/math-by-test-chart-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
+<h2 id="algebra-i-never-fully-recovered-from-the-pandemic">Algebra I never fully recovered from the pandemic<a class="anchor" aria-label="anchor" href="#algebra-i-never-fully-recovered-from-the-pandemic"></a>
+</h2>
+<p>Because the by-test sheet reaches back to the pre-redesign databases,
+<code><a href="../reference/fetch_spr_proficiency_by_test.html">fetch_spr_proficiency_by_test()</a></code> can follow a single test
+across years. Statewide Algebra I proficiency was <strong>42% in spring
+2019</strong>, fell to <strong>35% in 2022</strong> (the first
+administration after the COVID testing pause), and has only partly
+recovered to <strong>38% in 2025</strong> — still four points below
+where it started. There is no 2020 or 2021 point because New Jersey gave
+no statewide spring assessment those years; the function errors on those
+years rather than inventing a value.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">alg_years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2019</span>, <span class="fl">2022</span>, <span class="fl">2023</span>, <span class="fl">2024</span>, <span class="fl">2025</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">alg_trend</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">alg_years</span>, <span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/fetch_spr_proficiency_by_test.html">fetch_spr_proficiency_by_test</a></span><span class="op">(</span><span class="va">y</span>, subject <span class="op">=</span> <span class="st">"math"</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_test</span> <span class="op">==</span> <span class="st">"Algebra I"</span>,</span>
+<span>           <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>end_year <span class="op">=</span> <span class="va">y</span>, <span class="va">proficiency_rate</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">alg_trend</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">alg_years</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print-before-plot.</span></span>
+<span><span class="va">alg_trend</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
+<span><span class="co">#&gt;   end_year proficiency_rate</span></span>
+<span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     <span style="text-decoration: underline;">2</span>019             42  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     <span style="text-decoration: underline;">2</span>022             35  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     <span style="text-decoration: underline;">2</span>023             35  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     <span style="text-decoration: underline;">2</span>024             40  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     <span style="text-decoration: underline;">2</span>025             38.1</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">alg_trend</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">proficiency_rate</span>, group <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#1b7837"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#1b7837"</span>, size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">proficiency_rate</span>, <span class="st">"%"</span><span class="op">)</span><span class="op">)</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">1.1</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">46</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Statewide Algebra I proficiency, 2019-2025"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"No 2020-21 points: NJ gave no statewide spring assessment during the pandemic"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"School year (spring)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Percent proficient (NJSLA level 4 or 5)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nj-assessment-detail_files/figure-html/alg-trend-chart-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
 <h2 id="the-6-year-cohort-quietly-recovers-students-the-4-year-rate-misses">The 6-year cohort quietly recovers students the 4-year rate
 misses<a class="anchor" aria-label="anchor" href="#the-6-year-cohort-quietly-recovers-students-the-4-year-rate-misses"></a>
 </h2>
@@ -182,7 +231,7 @@ falls from 3.4% to 1.0%. The 6-year cohort also reports a high-school
 enrolled). Combining all three cohort lengths in one frame, which
 <code><a href="../reference/fetch_spr_grad_cohort.html">fetch_spr_grad_cohort()</a></code> does, makes the slow recovery
 legible.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cohort_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_grad_cohort.html">fetch_spr_grad_cohort</a></span><span class="op">(</span><span class="fl">2025</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cohort_type</span>, <span class="va">graduated</span>, <span class="va">continuing</span>, <span class="va">non_continuing</span>, <span class="va">persisting</span><span class="op">)</span></span>
@@ -197,7 +246,7 @@ legible.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 4-Year           91.8        3.4            4.8       <span style="color: #BB0000;">NA</span>  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 5-Year           92.9        1.7            5.4       <span style="color: #BB0000;">NA</span>  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 6-Year           93.2        1              5.8       94.2</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">cohort_state</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cohort_type</span>, y <span class="op">=</span> <span class="va">graduated</span>, group <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2166ac"</span>, linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#2166ac"</span>, size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -223,7 +272,7 @@ Asian/Native Hawaiian/Pacific Islander students and
 <strong>92.8%</strong> for white students.
 <code><a href="../reference/fetch_spr_fed_grad.html">fetch_spr_fed_grad()</a></code> returns the rate by subgroup and
 cohort length, so the gap behind the headline is one filter away.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fed_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_spr_fed_grad.html">fetch_spr_fed_grad</a></span><span class="op">(</span><span class="fl">2025</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">cohort_years</span> <span class="op">==</span> <span class="fl">4</span>,</span>
 <span>         <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">graduation_rate_federal</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -256,7 +305,7 @@ cohort length, so the gap behind the headline is one filter away.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> female                                                         91.6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> white                                                          92.8</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> asian, native hawaiian, or pacific islander                    96.5</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fed_plot</span> <span class="op">&lt;-</span> <span class="va">fed_state</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>highlight <span class="op">=</span> <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span></span>
 <span></span>
@@ -284,23 +333,31 @@ cohort length, so the gap behind the headline is one filter away.</p>
 </h2>
 <ul>
 <li>
-<strong>Coverage.</strong> The proficiency-by-test,
-science-by-grade, ELP-progress, and graduation-cohort sheets are new in
-the 2024-25 redesign and are available for <code>end_year</code> 2025
-only. <code><a href="../reference/fetch_spr_fed_grad.html">fetch_spr_fed_grad()</a></code> covers 2021-2025 (the 6-year
-cohort from 2024).</li>
+<strong>Coverage.</strong> Although these sheets were redesigned in
+2024-25, most reach further back through their pre-redesign
+predecessors: <code><a href="../reference/fetch_spr_proficiency_by_test.html">fetch_spr_proficiency_by_test()</a></code> covers
+2017-2019 and 2022-2025 (no by-grade/test sheet in the 2020-21 COVID
+years); <code><a href="../reference/fetch_spr_science_grade.html">fetch_spr_science_grade()</a></code> covers 2019 and 2021-2025
+(NJSLA science began in 2019; 2020 was not tested and the earlier NJASK
+is a different scale); <code><a href="../reference/fetch_spr_grad_cohort.html">fetch_spr_grad_cohort()</a></code> covers
+2020-2025 (2020 has only the 4- and 5-year cohorts);
+<code><a href="../reference/fetch_spr_fed_grad.html">fetch_spr_fed_grad()</a></code> covers 2021-2025 (6-year cohort from
+2024). <code><a href="../reference/fetch_spr_elp_progress.html">fetch_spr_elp_progress()</a></code> is 2025-only — the
+pre-redesign sheet measured a different, target-based quantity, so it is
+deliberately not mapped.</li>
 <li>
 <strong>Suppression.</strong> Cells for fewer than ten students are
 masked in the source and return <code>NA</code>; the 4- and 5-year
 cohorts report no persistence rate (“n/a”), so <code>persisting</code>
 is <code>NA</code> there.</li>
 <li>
-<strong>Entity values.</strong> Each sheet repeats its values as a
-school/district/state triple; these fetchers return the
-entity-appropriate value, and the statewide figure is carried on the
+<strong>Entity values.</strong> Each sheet stores its values as a
+school/district/state triple (or, in the pre-redesign databases, an
+entity column beside a parallel statewide column); these fetchers return
+the entity-appropriate value, and the statewide figure is carried on the
 <code>is_state</code> row of district-level output.</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -323,7 +380,7 @@ entity-appropriate value, and the statewide figure is carried on the
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.9.24</span></span>
+<span><span class="co">#&gt; [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.9.25</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       </span></span>

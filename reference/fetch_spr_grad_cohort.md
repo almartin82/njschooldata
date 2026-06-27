@@ -19,7 +19,8 @@ fetch_spr_grad_cohort(end_year, level = "school")
 
 - end_year:
 
-  A school year. Only `2025` (SY2024-25) and later are supported.
+  A school year (2020-2025). Year is the end of the academic year - e.g.
+  the 2020-21 school year is `end_year` 2021.
 
 - level:
 
@@ -27,9 +28,9 @@ fetch_spr_grad_cohort(end_year, level = "school")
 
 ## Value
 
-Data frame with entity identifiers, school_year, cohort_type, subgroup,
-graduated, continuing, non_continuing, persisting, and the aggregation
-flags.
+Data frame with entity identifiers, school_year (2025 only),
+cohort_type, subgroup, graduated, continuing, non_continuing,
+persisting, and the aggregation flags.
 
 ## Details
 
@@ -39,27 +40,35 @@ triple in the source; this function returns the entity-appropriate value
 district-level output). Rates are percentages on a 0-100 scale;
 suppressed cells (fewer than 10 students) become `NA`.
 
-This sheet is the SY2024-25 successor to the separate
-`4YrGraduationCohortProfile` / `5YrGraduationCohortProfile` /
-`6YrGraduationCohortProfile` sheets used in 2017-2024. The 4- and 6-year
-cohort rates are also available (in their pre-redesign form) through
+In SY2024-25 (`end_year` 2025) this reads the single combined
+`GraduationCohortProfile` sheet. For `end_year` 2020-2024 it stacks the
+separate `4YrGraduationCohortProfile` / `5YrGraduationCohortProfile` /
+`6YrGraduationCohortProfile` sheets (the pre-redesign predecessors,
+identical columns) into the same `cohort_type` long shape. The 4- and
+6-year cohort rates are also available through
 [`fetch_grad_rate`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md)
 and
 [`fetch_6yr_grad_rate`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md);
 this function additionally exposes the 5-year cohort and presents all
-three cohort lengths in one tidy frame.
+available cohort lengths in one tidy frame.
 
-**Supported years:** only `end_year >= 2025`. Earlier databases do not
-carry the combined `GraduationCohortProfile` sheet (their per-length
-cohort profiles are reached via
-[`fetch_6yr_grad_rate`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md)).
+**Supported years:** `end_year >= 2020`. The 6-year cohort first appears
+in SY2020-21 (`end_year` 2021), so `end_year` 2020 returns only the 4-
+and 5-year cohorts. Earlier databases (2017-2019) do not carry
+cohort-profile sheets and error. The pre-2025 sheets report no
+per-cohort `school_year` column, so that column is present only for
+2025. `persisting` is published only for the 6-year cohort (and only
+from `end_year` 2024 in the pre-redesign sheets); it is `NA` otherwise.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# School-level cohort profile (all three cohort lengths)
+# School-level cohort profile (all available cohort lengths)
 gc <- fetch_spr_grad_cohort(2025)
+
+# The same shape from a pre-redesign year
+gc_2022 <- fetch_spr_grad_cohort(2022)
 
 # Statewide 4-year cohort outcomes
 library(dplyr)

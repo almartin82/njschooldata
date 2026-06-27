@@ -21,7 +21,7 @@ Algebra II. The test label is carried in grade_test."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,8 +87,8 @@ end-of-course assessments <code>Algebra I</code>, <code>Geometry</code>, and
 
 
 <dl><dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
-<dd><p>A school year. Only <code>2025</code> (SY2024-25) and later are
-supported.</p></dd>
+<dd><p>A school year (2017-2019 or 2022-2025). Year is the end of the
+academic year - e.g. the 2022-23 school year is <code>end_year</code> 2023.</p></dd>
 
 
 <dt id="arg-subject">subject<a class="anchor" aria-label="anchor" href="#arg-subject"></a></dt>
@@ -101,8 +101,8 @@ supported.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with entity identifiers, school_year, subject, grade_test,
-  subgroup, valid_scores, mean_scaled_score, proficiency_rate,
+    <p>Data frame with entity identifiers, school_year (2025 only), subject,
+  grade_test, subgroup, valid_scores, mean_scaled_score, proficiency_rate,
   level_1..level_5, and the aggregation flags.</p>
     </div>
     <div class="section level2">
@@ -116,16 +116,20 @@ as a <code>_school</code> / <code>_district</code> / <code>_state</code> triple;
 returns the entity-appropriate value (see the entity-pick note in the package
 source). The statewide value is available from the <code>is_state</code> row of
 district-level output.</p>
-<p>This sheet ships as a multi-year trend table inside the 2025 workbook
-(<code>school_year</code> 2021-22..2024-25); per the package convention this
-function filters to the requested academic year (SY2024-25 for
-<code>end_year</code> 2025). The pre-COVID and COVID years (no spring 2020/2021
-statewide NJSLA testing) are not present.</p>
-<p><strong>Supported years:</strong> only <code>end_year &gt;= 2025</code>. The
-<code>ELAPerformanceByTest</code> / <code>MathPerformancebyTest</code> sheets are new in
-the SY2024-25 redesign; earlier databases carry differently structured
-assessment sheets (e.g. <code>MathPerformanceByGradeTest</code>) and are not mapped
-here.</p>
+<p>In SY2024-25 (<code>end_year</code> 2025) this sheet ships as a multi-year trend
+table inside the workbook (<code>school_year</code> 2021-22..2024-25); the function
+filters to the requested academic year. For <code>end_year</code> 2017-2019 and
+2022-2024 it reads the pre-redesign predecessors (ELA:
+<code>ELALiteracyPerformanceByGrade</code> 2017-2019, <code>ELAPerformanceByGrade</code>
+2022-2024; Math: <code>MathPerformanceByGradeTest</code> throughout) and harmonizes
+their drifting column names onto the same schema. The end-of-course Math
+tests appear in every era (raw <code>ALG01</code>/<code>ALG02</code>/<code>GEO01</code> in the
+pre-redesign sheets, normalized to <code>Algebra I</code>/<code>Algebra II</code>/
+<code>Geometry</code>); grade labels (<code>Grade 03</code>) are normalized to the 2025
+form (<code>Grade 3</code>).</p>
+<p><strong>Supported years:</strong> 2017-2019 and 2022-2025. The 2020 and 2021
+databases carry no by-grade/test ELA or Math sheet (no spring 2020 statewide
+NJSLA, and SY2020-21 did not publish this breakdown), so those years error.</p>
     </div>
 
     <div class="section level2">
@@ -134,18 +138,14 @@ here.</p>
 <span class="r-in"><span><span class="co"># School-level ELA proficiency by test</span></span></span>
 <span class="r-in"><span><span class="va">ela</span> <span class="op">&lt;-</span> <span class="fu">fetch_spr_proficiency_by_test</span><span class="op">(</span><span class="fl">2025</span>, subject <span class="op">=</span> <span class="st">"ela"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The same shape from a pre-redesign year</span></span></span>
+<span class="r-in"><span><span class="va">math_2023</span> <span class="op">&lt;-</span> <span class="fu">fetch_spr_proficiency_by_test</span><span class="op">(</span><span class="fl">2023</span>, subject <span class="op">=</span> <span class="st">"math"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Statewide Algebra I vs grade-level Math proficiency</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">fetch_spr_proficiency_by_test</span><span class="op">(</span><span class="fl">2025</span>, subject <span class="op">=</span> <span class="st">"math"</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">grade_test</span>, <span class="va">valid_scores</span>, <span class="va">proficiency_rate</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Schools with the largest Algebra I proficiency gap for economically</span></span></span>
-<span class="r-in"><span><span class="co"># disadvantaged students</span></span></span>
-<span class="r-in"><span><span class="fu">fetch_spr_proficiency_by_test</span><span class="op">(</span><span class="fl">2025</span>, subject <span class="op">=</span> <span class="st">"math"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_school</span>, <span class="va">grade_test</span> <span class="op">==</span> <span class="st">"Algebra I"</span>,</span></span>
-<span class="r-in"><span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"total population"</span>, <span class="st">"economically disadvantaged"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">school_name</span>, <span class="va">subgroup</span>, <span class="va">proficiency_rate</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

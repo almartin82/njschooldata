@@ -99,6 +99,61 @@ ggplot(math_state, aes(x = reorder(grade_test, proficiency_rate),
 
 ![](nj-assessment-detail_files/figure-html/math-by-test-chart-1.png)
 
+## Algebra I never fully recovered from the pandemic
+
+Because the by-test sheet reaches back to the pre-redesign databases,
+[`fetch_spr_proficiency_by_test()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_proficiency_by_test.md)
+can follow a single test across years. Statewide Algebra I proficiency
+was **42% in spring 2019**, fell to **35% in 2022** (the first
+administration after the COVID testing pause), and has only partly
+recovered to **38% in 2025** — still four points below where it started.
+There is no 2020 or 2021 point because New Jersey gave no statewide
+spring assessment those years; the function errors on those years rather
+than inventing a value.
+
+``` r
+
+alg_years <- c(2019, 2022, 2023, 2024, 2025)
+
+alg_trend <- lapply(alg_years, function(y) {
+  fetch_spr_proficiency_by_test(y, subject = "math", level = "district") %>%
+    filter(is_state, grade_test == "Algebra I",
+           subgroup == "total population") %>%
+    transmute(end_year = y, proficiency_rate)
+}) %>% bind_rows()
+
+stopifnot(nrow(alg_trend) == length(alg_years))
+
+# Print-before-plot.
+alg_trend
+#> # A tibble: 5 × 2
+#>   end_year proficiency_rate
+#>      <dbl>            <dbl>
+#> 1     2019             42  
+#> 2     2022             35  
+#> 3     2023             35  
+#> 4     2024             40  
+#> 5     2025             38.1
+```
+
+``` r
+
+ggplot(alg_trend, aes(x = factor(end_year), y = proficiency_rate, group = 1)) +
+  geom_line(color = "#1b7837", linewidth = 1.2) +
+  geom_point(color = "#1b7837", size = 3.5) +
+  geom_text(aes(label = paste0(proficiency_rate, "%")), vjust = -1.1, size = 4) +
+  scale_y_continuous(limits = c(30, 46)) +
+  labs(
+    title = "Statewide Algebra I proficiency, 2019-2025",
+    subtitle = "No 2020-21 points: NJ gave no statewide spring assessment during the pandemic",
+    x = "School year (spring)",
+    y = "Percent proficient (NJSLA level 4 or 5)"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+![](nj-assessment-detail_files/figure-html/alg-trend-chart-1.png)
+
 ## The 6-year cohort quietly recovers students the 4-year rate misses
 
 The headline graduation rate is the 4-year cohort: 91.8% statewide for
@@ -222,18 +277,29 @@ ggplot(fed_plot, aes(x = reorder(subgroup, graduation_rate_federal),
 
 ## Notes
 
-- **Coverage.** The proficiency-by-test, science-by-grade, ELP-progress,
-  and graduation-cohort sheets are new in the 2024-25 redesign and are
-  available for `end_year` 2025 only.
+- **Coverage.** Although these sheets were redesigned in 2024-25, most
+  reach further back through their pre-redesign predecessors:
+  [`fetch_spr_proficiency_by_test()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_proficiency_by_test.md)
+  covers 2017-2019 and 2022-2025 (no by-grade/test sheet in the 2020-21
+  COVID years);
+  [`fetch_spr_science_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_science_grade.md)
+  covers 2019 and 2021-2025 (NJSLA science began in 2019; 2020 was not
+  tested and the earlier NJASK is a different scale);
+  [`fetch_spr_grad_cohort()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_grad_cohort.md)
+  covers 2020-2025 (2020 has only the 4- and 5-year cohorts);
   [`fetch_spr_fed_grad()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_fed_grad.md)
-  covers 2021-2025 (the 6-year cohort from 2024).
+  covers 2021-2025 (6-year cohort from 2024).
+  [`fetch_spr_elp_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_elp_progress.md)
+  is 2025-only — the pre-redesign sheet measured a different,
+  target-based quantity, so it is deliberately not mapped.
 - **Suppression.** Cells for fewer than ten students are masked in the
   source and return `NA`; the 4- and 5-year cohorts report no
   persistence rate (“n/a”), so `persisting` is `NA` there.
-- **Entity values.** Each sheet repeats its values as a
-  school/district/state triple; these fetchers return the
-  entity-appropriate value, and the statewide figure is carried on the
-  `is_state` row of district-level output.
+- **Entity values.** Each sheet stores its values as a
+  school/district/state triple (or, in the pre-redesign databases, an
+  entity column beside a parallel statewide column); these fetchers
+  return the entity-appropriate value, and the statewide figure is
+  carried on the `is_state` row of district-level output.
 
 ``` r
 
@@ -259,7 +325,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.9.24
+#> [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.9.25
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       

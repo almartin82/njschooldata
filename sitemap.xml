@@ -402,6 +402,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_clear.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_dir.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_info.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/normalize_grade_test.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/normalize_staff_position.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/normalize_state_aid_category.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/nwk_address_addendum.html</loc></url>
@@ -475,6 +476,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_state_ed_environ_tables.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_blank_no_data.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_cached_workbook.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/spr_legacy_entity_value.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_pick_entity_value.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_require_redesign.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_for_year.html</loc></url>

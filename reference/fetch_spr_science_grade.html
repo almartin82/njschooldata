@@ -15,7 +15,7 @@ performance levels."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,8 +78,8 @@ performance levels.</p>
 
 
 <dl><dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
-<dd><p>A school year. Only <code>2025</code> (SY2024-25) and later are
-supported.</p></dd>
+<dd><p>A school year (2019 or 2021-2025). Year is the end of the
+academic year - e.g. the 2021-22 school year is <code>end_year</code> 2022.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
@@ -88,9 +88,9 @@ supported.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with entity identifiers, school_year, subgroup, grade,
-  grade_level, level_1_percentage..level_4_percentage, and the aggregation
-  flags.</p>
+    <p>Data frame with entity identifiers, school_year (2025 and 2021 only),
+  subgroup, grade, grade_level, level_1_percentage..level_4_percentage, and
+  the aggregation flags.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -102,14 +102,20 @@ output). NJSLA Science proficiency is conventionally levels 3 and 4 combined;
 the level percentages are returned as published and not summed here.
 <code>grade_level</code> normalizes the raw <code>grade</code> label (<code>"Grade 5"</code>) to
 the package's two-digit convention (<code>"05"</code>, <code>"08"</code>, <code>"11"</code>).</p>
-<p>This sheet ships as a multi-year trend table inside the 2025 workbook
-(<code>school_year</code> 2021-22..2024-25; the earlier COVID years carry no spring
-science testing); per the package convention this function filters to the
-requested academic year (SY2024-25 for <code>end_year</code> 2025).</p>
-<p><strong>Supported years:</strong> only <code>end_year &gt;= 2025</code>. The
-<code>NJSLASciencebyGradeTrends</code> sheet is new in the SY2024-25 redesign;
-earlier databases carry differently structured science sheets
-(<code>NJSLAScienceTable</code>, <code>NJASKScience</code>) and are not mapped here.</p>
+<p>In SY2024-25 (<code>end_year</code> 2025) this reads the multi-year trend table
+<code>NJSLASciencebyGradeTrends</code> and filters to the requested academic year.
+For <code>end_year</code> 2019 and 2021-2024 it reads the pre-redesign NJSLA science
+predecessors and harmonizes them: <code>NJSLAScienceTable</code> (2019) and
+<code>NJSLAScience</code> (2021) carry the four level percentages directly
+(<code>level_1</code>..<code>level_4</code>); <code>ScienceAssessmentByGrade</code> (2022-2024)
+stores the entity's value in <code>percent_level_*</code> and the statewide value in
+<code>performance_level_*_perc</code>. <code>grade_level</code> normalizes the raw grade
+(<code>"Grade 5"</code> or <code>"5"</code>) to the two-digit form (<code>"05"</code>,
+<code>"08"</code>, <code>"11"</code>).</p>
+<p><strong>Supported years:</strong> 2019 and 2021-2025. NJSLA Science began in spring
+2019; the 2020 database carries no science results (no spring 2020 testing),
+and the 2017-2018 databases report the earlier <code>NJASKScience</code> assessment
+on a different scale (not comparable, not mapped). Those years error.</p>
     </div>
 
     <div class="section level2">
@@ -118,18 +124,15 @@ earlier databases carry differently structured science sheets
 <span class="r-in"><span><span class="co"># School-level NJSLA science by grade</span></span></span>
 <span class="r-in"><span><span class="va">sci</span> <span class="op">&lt;-</span> <span class="fu">fetch_spr_science_grade</span><span class="op">(</span><span class="fl">2025</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The same shape from a pre-redesign year</span></span></span>
+<span class="r-in"><span><span class="va">sci_2022</span> <span class="op">&lt;-</span> <span class="fu">fetch_spr_science_grade</span><span class="op">(</span><span class="fl">2022</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Statewide grade-5 science level distribution</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">fetch_spr_science_grade</span><span class="op">(</span><span class="fl">2025</span>, level <span class="op">=</span> <span class="st">"district"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"05"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">grade</span>, <span class="va">level_1_percentage</span>, <span class="va">level_2_percentage</span>,</span></span>
 <span class="r-in"><span>         <span class="va">level_3_percentage</span>, <span class="va">level_4_percentage</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Schools with the highest grade-8 level-4 share</span></span></span>
-<span class="r-in"><span><span class="fu">fetch_spr_science_grade</span><span class="op">(</span><span class="fl">2025</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_school</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total population"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"08"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">level_4_percentage</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">school_name</span>, <span class="va">level_4_percentage</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
