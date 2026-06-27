@@ -355,5 +355,16 @@ utils::globalVariables(c(
   "multilingual_learners_earning_seals", "multilingual_learners_earning_seals_pct",
   "students_earning_seal_pct_school",
   "students_earning_seal_pct_district",
-  "students_earning_seal_pct_state"
+  "students_earning_seal_pct_state",
+
+  # ========== SPR Bucket A (assessment / graduation detail sheets) ==========
+  "subject", "grade_test", "grade", "grade_level",
+  "valid_scores", "mean_scaled_score", "proficiency_rate",
+  "level_1", "level_2", "level_3", "level_4", "level_5",
+  "level_1_percentage", "level_2_percentage",
+  "level_3_percentage", "level_4_percentage",
+  "progress_toward_elp",
+  "cohort_type", "cohort_years", "cohort_label",
+  "graduated", "continuing", "non_continuing", "persisting",
+  "graduation_rate_federal"
 ))

@@ -85,9 +85,13 @@ filter_spr_to_year <- function(df, end_year) {
   if (!"school_year" %in% names(df)) {
     return(df)
   }
-  # Academic-year label, e.g. end_year 2025 -> "2024-25".
+  # Academic-year label. Most sheets use the abbreviated form (end_year 2025 ->
+  # "2024-25"), but a few (e.g. GraduationCohortProfile) spell out the full end
+  # year ("2024-2025"). Accept either.
   academic_label <- paste0(end_year - 1, "-", substr(as.character(end_year), 3, 4))
-  keep <- !is.na(df[["school_year"]]) & df[["school_year"]] == academic_label
+  academic_label_full <- paste0(end_year - 1, "-", end_year)
+  keep <- !is.na(df[["school_year"]]) &
+    df[["school_year"]] %in% c(academic_label, academic_label_full)
   df[keep, , drop = FALSE]
 }
 
@@ -3677,4 +3681,576 @@ fetch_spr_educator_equity <- function(end_year) {
   for (col in metric_cols) df[[col]] <- spr_value_numeric(df[[col]])
 
   df
+}
+
+
+# ==============================================================================
+# Bucket A: redesigned 2024-25 assessment / graduation detail sheets
+# ==============================================================================
+#
+# Five sheets first published in (or, for FederalGraduationRates, expanded by)
+# the redesigned SY2024-25 SPR databases that have no standalone-fetcher
+# equivalent:
+#
+#   ELAPerformanceByTest / MathPerformancebyTest -> proficiency by test variant
+#                                                   (2025; fetch_spr_proficiency_by_test)
+#   NJSLASciencebyGradeTrends -> NJSLA science proficiency by grade (2025)
+#   ProgressTowardELP         -> progress toward English language proficiency (2025)
+#   GraduationCohortProfile   -> 4/5/6-year cohort outcome rates by subgroup (2025)
+#   FederalGraduationRates    -> federally reported ACGR (2021-2025)
+#
+# Several of these sheets repeat each value as a {_school, _district, _state}
+# triple on every row. spr_pick_entity_value() collapses a triple to a single
+# entity-appropriate value the same way fetch_6yr_grad_rate() does: at
+# level = "school" it takes the _school value; at level = "district" it takes the
+# _district value for ordinary district rows and the _state value ONLY for the
+# statewide aggregate row (whose _district cell is blank). It never fills a
+# suppressed district from the statewide column, which would fabricate data. The
+# statewide value is therefore available from the is_state row of district-level
+# output (mirroring fetch_6yr_grad_rate), and the redundant _state reference
+# columns are dropped.
+#
+# ==============================================================================
+
+#' Collapse an SPR school/district/state value triple to one column
+#'
+#' @param df A data frame from \code{\link{fetch_spr_data}} (so the
+#'   \code{is_state} flag is present).
+#' @param base The shared column stem, e.g. \code{"proficiency_rate"} for the
+#'   triple \code{proficiency_rate_school} / \code{_district} / \code{_state}.
+#' @param level One of \code{"school"} or \code{"district"}.
+#' @return A numeric vector: the \code{_school} value at school level; the
+#'   \code{_district} value (or \code{_state} on the statewide row) at district
+#'   level. Suppressed / non-numeric cells become \code{NA}.
+#' @keywords internal
+spr_pick_entity_value <- function(df, base, level) {
+  if (level == "school") {
+    out <- df[[paste0(base, "_school")]]
+  } else {
+    state_col <- df[[paste0(base, "_state")]]
+    dist_col <- df[[paste0(base, "_district")]]
+    out <- dplyr::if_else(df$is_state, state_col, dist_col)
+  }
+  spr_value_numeric(out)
+}
+
+
+#' Fetch NJSLA Proficiency by Test Variant
+#'
+#' Downloads the \code{ELAPerformanceByTest} or \code{MathPerformancebyTest}
+#' sheet from the redesigned 2024-25 School Performance Reports. Unlike
+#' \code{\link{fetch_parcc}} (which reports overall ELA/Math proficiency), these
+#' sheets break results out by the specific test a student sat: for ELA the
+#' grade-level NJSLA tests (Grade 3 through Grade 9), and for Math the
+#' grade-level NJSLA tests (Grade 3 through Grade 8) plus the high-school
+#' end-of-course assessments \code{Algebra I}, \code{Geometry}, and
+#' \code{Algebra II}. The test label is carried in \code{grade_test}.
+#'
+#' @details
+#' For each entity, student group, and test, the sheet reports
+#' \code{valid_scores} (the number of valid test takers), \code{mean_scaled_score},
+#' \code{proficiency_rate} (percent at NJSLA level 4 or 5, the proficiency
+#' threshold), and the percentage at each of the five performance levels
+#' (\code{level_1}..\code{level_5}). In the source these values are each repeated
+#' as a \code{_school} / \code{_district} / \code{_state} triple; this function
+#' returns the entity-appropriate value (see the entity-pick note in the package
+#' source). The statewide value is available from the \code{is_state} row of
+#' district-level output.
+#'
+#' This sheet ships as a multi-year trend table inside the 2025 workbook
+#' (\code{school_year} 2021-22..2024-25); per the package convention this
+#' function filters to the requested academic year (SY2024-25 for
+#' \code{end_year} 2025). The pre-COVID and COVID years (no spring 2020/2021
+#' statewide NJSLA testing) are not present.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. The
+#' \code{ELAPerformanceByTest} / \code{MathPerformancebyTest} sheets are new in
+#' the SY2024-25 redesign; earlier databases carry differently structured
+#' assessment sheets (e.g. \code{MathPerformanceByGradeTest}) and are not mapped
+#' here.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param subject One of \code{"ela"} (default) or \code{"math"}.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year, subject, grade_test,
+#'   subgroup, valid_scores, mean_scaled_score, proficiency_rate,
+#'   level_1..level_5, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level ELA proficiency by test
+#' ela <- fetch_spr_proficiency_by_test(2025, subject = "ela")
+#'
+#' # Statewide Algebra I vs grade-level Math proficiency
+#' library(dplyr)
+#' fetch_spr_proficiency_by_test(2025, subject = "math", level = "district") %>%
+#'   filter(is_state, subgroup == "total population") %>%
+#'   select(grade_test, valid_scores, proficiency_rate)
+#'
+#' # Schools with the largest Algebra I proficiency gap for economically
+#' # disadvantaged students
+#' fetch_spr_proficiency_by_test(2025, subject = "math") %>%
+#'   filter(is_school, grade_test == "Algebra I",
+#'          subgroup %in% c("total population", "economically disadvantaged")) %>%
+#'   select(district_name, school_name, subgroup, proficiency_rate)
+#' }
+fetch_spr_proficiency_by_test <- function(end_year, subject = "ela",
+                                          level = "school") {
+  subject <- tolower(subject)
+  if (!subject %in% c("ela", "math")) {
+    stop("subject must be one of 'ela' or 'math'.", call. = FALSE)
+  }
+  spr_require_redesign(
+    end_year, "NJSLA proficiency-by-test data"
+  )
+
+  sheet_name <- if (subject == "ela") "ELAPerformanceByTest" else "MathPerformancebyTest"
+  df <- fetch_spr_data(sheet_name, end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+  df$subject <- if (subject == "ela") "ELA" else "Math"
+
+  value_bases <- c("valid_scores", "mean_scaled_score", "proficiency_rate",
+                   "level_1", "level_2", "level_3", "level_4", "level_5")
+  for (base in value_bases) {
+    df[[base]] <- spr_pick_entity_value(df, base, level)
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subject, grade_test, subgroup,
+      valid_scores, mean_scaled_score, proficiency_rate,
+      level_1, level_2, level_3, level_4, level_5,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch NJSLA Science Proficiency by Grade
+#'
+#' Downloads the \code{NJSLASciencebyGradeTrends} sheet from the redesigned
+#' 2024-25 School Performance Reports. The NJSLA Science assessment is given at
+#' grades 5, 8, and 11; for each entity, student group, and grade the sheet
+#' reports the percentage of valid test takers at each of the four NJSLA Science
+#' performance levels.
+#'
+#' @details
+#' The four level percentages (\code{level_1_percentage}..\code{level_4_percentage})
+#' are each repeated as a \code{_school} / \code{_district} / \code{_state} triple
+#' in the source; this function returns the entity-appropriate value (the
+#' statewide value is available from the \code{is_state} row of district-level
+#' output). NJSLA Science proficiency is conventionally levels 3 and 4 combined;
+#' the level percentages are returned as published and not summed here.
+#' \code{grade_level} normalizes the raw \code{grade} label (\code{"Grade 5"}) to
+#' the package's two-digit convention (\code{"05"}, \code{"08"}, \code{"11"}).
+#'
+#' This sheet ships as a multi-year trend table inside the 2025 workbook
+#' (\code{school_year} 2021-22..2024-25; the earlier COVID years carry no spring
+#' science testing); per the package convention this function filters to the
+#' requested academic year (SY2024-25 for \code{end_year} 2025).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. The
+#' \code{NJSLASciencebyGradeTrends} sheet is new in the SY2024-25 redesign;
+#' earlier databases carry differently structured science sheets
+#' (\code{NJSLAScienceTable}, \code{NJASKScience}) and are not mapped here.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year, subgroup, grade,
+#'   grade_level, level_1_percentage..level_4_percentage, and the aggregation
+#'   flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level NJSLA science by grade
+#' sci <- fetch_spr_science_grade(2025)
+#'
+#' # Statewide grade-5 science level distribution
+#' library(dplyr)
+#' fetch_spr_science_grade(2025, level = "district") %>%
+#'   filter(is_state, subgroup == "total population", grade_level == "05") %>%
+#'   select(grade, level_1_percentage, level_2_percentage,
+#'          level_3_percentage, level_4_percentage)
+#'
+#' # Schools with the highest grade-8 level-4 share
+#' fetch_spr_science_grade(2025) %>%
+#'   filter(is_school, subgroup == "total population", grade_level == "08") %>%
+#'   slice_max(level_4_percentage, n = 10) %>%
+#'   select(district_name, school_name, level_4_percentage)
+#' }
+fetch_spr_science_grade <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "NJSLA science-by-grade data")
+
+  df <- fetch_spr_data("NJSLASciencebyGradeTrends", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  # Drop the trailing all-blank sentinel rows (no grade).
+  df <- df %>% dplyr::filter(!is.na(grade))
+
+  # Normalize "Grade 5" -> "05" etc. (NJSLA science is grades 5, 8, 11).
+  df$grade_level <- gsub("^Grade\\s+", "", df$grade)
+  df$grade_level <- formatC(suppressWarnings(as.integer(df$grade_level)),
+                            width = 2, flag = "0")
+
+  for (base in c("level_1_percentage", "level_2_percentage",
+                 "level_3_percentage", "level_4_percentage")) {
+    df[[base]] <- spr_pick_entity_value(df, base, level)
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subgroup, grade, grade_level,
+      level_1_percentage, level_2_percentage,
+      level_3_percentage, level_4_percentage,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Progress Toward English Language Proficiency
+#'
+#' Downloads the \code{ProgressTowardELP} sheet from the redesigned 2024-25
+#' School Performance Reports. This is the ESSA "Progress Toward English Language
+#' Proficiency" accountability indicator: the percentage of English learners who
+#' met their expected annual growth target toward proficiency on the ACCESS for
+#' ELLs assessment. It is distinct from the \emph{target} sheet
+#' (\code{ProgresstowardELPTargets}), which is exposed through
+#' \code{\link{fetch_spr_essa_targets}}.
+#'
+#' @details
+#' This sheet has no student-group or grade breakdown - it reports a single
+#' \code{progress_toward_elp} percentage per entity. The value is repeated as a
+#' \code{_school} / \code{_district} / \code{_state} triple in the source; this
+#' function returns the entity-appropriate value (the statewide value is
+#' available from the \code{is_state} row of district-level output).
+#'
+#' This sheet ships as a multi-year trend table inside the 2025 workbook
+#' (\code{school_year} 2021-22..2024-25); per the package convention this
+#' function filters to the requested academic year (SY2024-25 for
+#' \code{end_year} 2025).
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. The
+#' \code{ProgressTowardELP} sheet is new in the SY2024-25 redesign; the
+#' pre-redesign \code{EnglishLanguageProgress} sheet carries a different
+#' (target-bearing) layout and is not mapped here.
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year,
+#'   progress_toward_elp, and the aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level progress toward ELP
+#' elp <- fetch_spr_elp_progress(2025)
+#'
+#' # Statewide progress rate
+#' library(dplyr)
+#' fetch_spr_elp_progress(2025, level = "district") %>%
+#'   filter(is_state) %>%
+#'   select(progress_toward_elp)
+#'
+#' # Schools with the lowest ELP progress
+#' fetch_spr_elp_progress(2025) %>%
+#'   filter(is_school, !is.na(progress_toward_elp)) %>%
+#'   slice_min(progress_toward_elp, n = 10) %>%
+#'   select(district_name, school_name, progress_toward_elp)
+#' }
+fetch_spr_elp_progress <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "progress-toward-ELP data")
+
+  df <- fetch_spr_data("ProgressTowardELP", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  df$progress_toward_elp <- spr_pick_entity_value(df, "progresstoward_elp", level)
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      progress_toward_elp,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Fetch Graduation Cohort Profile (4/5/6-Year)
+#'
+#' Downloads the combined \code{GraduationCohortProfile} sheet from the
+#' redesigned 2024-25 School Performance Reports. For each entity, cohort length
+#' (\code{cohort_type} in \code{"4-Year"}, \code{"5-Year"}, \code{"6-Year"}), and
+#' student group it reports the cohort's outcome distribution: the percentage who
+#' \code{graduated}, are \code{continuing} (still enrolled), are
+#' \code{non_continuing} (left without graduating), and the high-school
+#' \code{persisting} rate (graduated plus continuing; published for the 6-Year
+#' cohort, \code{NA} for shorter cohorts).
+#'
+#' @details
+#' Each outcome rate is repeated as a \code{_school} / \code{_district} /
+#' \code{_state} triple in the source; this function returns the
+#' entity-appropriate value (the statewide value is available from the
+#' \code{is_state} row of district-level output). Rates are percentages on a
+#' 0-100 scale; suppressed cells (fewer than 10 students) become \code{NA}.
+#'
+#' This sheet is the SY2024-25 successor to the separate
+#' \code{4YrGraduationCohortProfile} / \code{5YrGraduationCohortProfile} /
+#' \code{6YrGraduationCohortProfile} sheets used in 2017-2024. The 4- and 6-year
+#' cohort rates are also available (in their pre-redesign form) through
+#' \code{\link{fetch_grad_rate}} and \code{\link{fetch_6yr_grad_rate}}; this
+#' function additionally exposes the 5-year cohort and presents all three cohort
+#' lengths in one tidy frame.
+#'
+#' \strong{Supported years:} only \code{end_year >= 2025}. Earlier databases do
+#' not carry the combined \code{GraduationCohortProfile} sheet (their per-length
+#' cohort profiles are reached via \code{\link{fetch_6yr_grad_rate}}).
+#'
+#' @param end_year A school year. Only \code{2025} (SY2024-25) and later are
+#'   supported.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year, cohort_type,
+#'   subgroup, graduated, continuing, non_continuing, persisting, and the
+#'   aggregation flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level cohort profile (all three cohort lengths)
+#' gc <- fetch_spr_grad_cohort(2025)
+#'
+#' # Statewide 4-year cohort outcomes
+#' library(dplyr)
+#' fetch_spr_grad_cohort(2025, level = "district") %>%
+#'   filter(is_state, cohort_type == "4-Year", subgroup == "total population") %>%
+#'   select(graduated, continuing, non_continuing)
+#'
+#' # How much does the graduation rate rise from the 4- to the 6-year cohort?
+#' fetch_spr_grad_cohort(2025, level = "district") %>%
+#'   filter(is_state, subgroup == "total population") %>%
+#'   select(cohort_type, graduated)
+#' }
+fetch_spr_grad_cohort <- function(end_year, level = "school") {
+  spr_require_redesign(end_year, "graduation cohort profile data")
+
+  df <- fetch_spr_data("GraduationCohortProfile", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  # Drop the trailing all-blank sentinel rows (no cohort type).
+  df <- df %>% dplyr::filter(!is.na(cohort_type))
+
+  for (base in c("graduated", "continuing", "non_continuing", "persisting")) {
+    df[[base]] <- spr_pick_entity_value(df, base, level)
+  }
+
+  df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      cohort_type, subgroup,
+      graduated, continuing, non_continuing, persisting,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+}
+
+
+#' Locate the FederalGraduationRates columns for one cohort length
+#'
+#' Resolves the entity/state rate columns (and, in 2025, the cohort label
+#' column) for an N-year cohort across the two FederalGraduationRates layouts:
+#' the SY2024-25 redesign (\code{x_<n>_yr_graduation_rate_federal_*}) and the
+#' pre-redesign layout that embeds the cohort year in the column name
+#' (\code{x_<yyyy>_<n>_year_federal_graduation_rate} /
+#' \code{state_<yyyy>_<n>_year_...}).
+#'
+#' @param nms Character vector of (snake_cased) column names.
+#' @param n Cohort length: 4, 5, or 6.
+#' @return A list describing the columns, or \code{NULL} if this cohort length is
+#'   absent from the sheet (e.g. the 6-year cohort before SY2023-24).
+#' @keywords internal
+fed_grad_cols_for_n <- function(nms, n) {
+  school_2025 <- paste0("x_", n, "_yr_graduation_rate_federal_school")
+  dist_2025   <- paste0("x_", n, "_yr_graduation_rate_federal_district")
+  state_2025  <- paste0("x_", n, "_yr_graduation_rate_federal_state")
+  cohort_2025 <- paste0("x_", n, "_yr_cohort")
+  if (any(c(school_2025, dist_2025, state_2025) %in% nms)) {
+    return(list(
+      entity_school = school_2025,
+      entity_district = dist_2025,
+      state = if (state_2025 %in% nms) state_2025 else NA_character_,
+      cohort_col = if (cohort_2025 %in% nms) cohort_2025 else NA_character_,
+      cohort_year = NA_character_
+    ))
+  }
+  entity_leg <- grep(paste0("^x_\\d{4}_", n, "_year_federal_graduation_rate$"),
+                     nms, value = TRUE)
+  state_leg <- grep(paste0("^state_\\d{4}_", n, "_year_federal_graduation_rate$"),
+                    nms, value = TRUE)
+  if (length(entity_leg) >= 1) {
+    yr <- sub(paste0("^x_(\\d{4})_", n, "_year.*$"), "\\1", entity_leg[1])
+    return(list(
+      entity_school = entity_leg[1],
+      entity_district = entity_leg[1],
+      state = if (length(state_leg)) state_leg[1] else NA_character_,
+      cohort_col = NA_character_,
+      cohort_year = yr
+    ))
+  }
+  NULL
+}
+
+
+#' Fetch Federally Reported Graduation Rates (ESSA ACGR)
+#'
+#' Downloads the \code{FederalGraduationRates} sheet from the School Performance
+#' Reports. This is the federally reported Adjusted Cohort Graduation Rate
+#' (ACGR) used for ESSA accountability, reported for the 4-, 5-, and 6-year
+#' cohorts by student group. The federal ACGR uses a different (federally
+#' specified) cohort denominator than the state graduation rate in
+#' \code{\link{fetch_grad_rate}}, so the two can differ for the same entity and
+#' year.
+#'
+#' @details
+#' The source publishes one wide row per entity and student group with a
+#' separate rate column per cohort length. This function reshapes that to a tidy
+#' frame of one row per entity, student group, and cohort length: \code{cohort_years}
+#' is 4, 5, or 6, \code{cohort_label} is the graduating cohort it refers to (e.g.
+#' \code{"Cohort 2025"}), and \code{graduation_rate_federal} is the
+#' entity-appropriate ACGR (percent on a 0-100 scale; suppressed cells are
+#' \code{NA}). At \code{level = "district"} the statewide ACGR is carried on the
+#' \code{is_state} row.
+#'
+#' The sheet's column layout drifts across years and this function harmonizes
+#' both forms: the SY2024-25 redesign names columns by cohort length
+#' (\code{x_4_yr_graduation_rate_federal_school}, ...) and adds a \code{school_year}
+#' and per-cohort label column; the pre-redesign layout embeds the graduating
+#' year in the column name (\code{x_2024_4_year_federal_graduation_rate},
+#' \code{state_2024_4_year_...}), from which the cohort label is recovered.
+#'
+#' \strong{Supported years:} \code{end_year} 2021-2025. The
+#' \code{FederalGraduationRates} sheet is absent from the SY2016-17 through
+#' SY2019-20 databases (\code{end_year} 2017-2020 error). The 6-year cohort is
+#' reported only from SY2023-24 (\code{end_year} 2024) onward; for 2021-2023 only
+#' the 4- and 5-year cohorts are present. \code{end_year} 2021 is SY2020-21.
+#'
+#' @param end_year A school year (2021-2025). Year is the end of the academic
+#'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
+#' @param level One of \code{"school"} or \code{"district"}.
+#'
+#' @return Data frame with entity identifiers, school_year (2025 only), subgroup,
+#'   cohort_years, cohort_label, graduation_rate_federal, and the aggregation
+#'   flags.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # School-level federal graduation rates (4/5/6-year, long)
+#' fg <- fetch_spr_fed_grad(2025)
+#'
+#' # Statewide 4-year federal ACGR
+#' library(dplyr)
+#' fetch_spr_fed_grad(2025, level = "district") %>%
+#'   filter(is_state, subgroup == "total population", cohort_years == 4) %>%
+#'   select(cohort_label, graduation_rate_federal)
+#'
+#' # Federal vs state 4-year rate gap by district
+#' fetch_spr_fed_grad(2024, level = "district") %>%
+#'   filter(is_district, subgroup == "total population", cohort_years == 4) %>%
+#'   select(district_name, graduation_rate_federal)
+#' }
+fetch_spr_fed_grad <- function(end_year, level = "school") {
+  if (end_year < 2021) {
+    stop(
+      "federally reported graduation rates are available for end_year >= 2021. ",
+      "The FederalGraduationRates sheet is absent from the SY2016-17 through ",
+      "SY2019-20 SPR databases.",
+      call. = FALSE
+    )
+  }
+
+  df <- fetch_spr_data("FederalGraduationRates", end_year, level)
+  df <- filter_spr_to_year(df, end_year)
+
+  base <- df %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subgroup,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
+
+  nms <- names(df)
+  parts <- list()
+  for (n in c(4, 5, 6)) {
+    info <- fed_grad_cols_for_n(nms, n)
+    if (is.null(info)) next
+
+    entity_col <- if (level == "school") info$entity_school else info$entity_district
+    ev <- df[[entity_col]]
+    if (level == "district" && !is.na(info$state)) {
+      ev <- dplyr::if_else(df$is_state, df[[info$state]], df[[entity_col]])
+    }
+
+    cohort_label <- if (!is.na(info$cohort_col)) {
+      as.character(df[[info$cohort_col]])
+    } else {
+      paste0("Cohort ", info$cohort_year)
+    }
+
+    rows <- base
+    rows$cohort_years <- n
+    rows$cohort_label <- cohort_label
+    rows$graduation_rate_federal <- spr_value_numeric(ev)
+    parts[[length(parts) + 1]] <- rows
+  }
+
+  out <- dplyr::bind_rows(parts)
+
+  out %>%
+    dplyr::select(
+      end_year,
+      county_id, county_name,
+      district_id, district_name,
+      school_id, school_name,
+      dplyr::any_of("school_year"),
+      subgroup, cohort_years, cohort_label, graduation_rate_federal,
+      is_state, is_county, is_district, is_school,
+      is_charter, is_charter_sector, is_allpublic
+    )
 }

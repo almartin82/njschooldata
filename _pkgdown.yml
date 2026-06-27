@@ -122,6 +122,11 @@ reference:
       - fetch_spr_grad_pathways
       - fetch_spr_home_language
       - fetch_spr_naep
+      - fetch_spr_proficiency_by_test
+      - fetch_spr_science_grade
+      - fetch_spr_elp_progress
+      - fetch_spr_grad_cohort
+      - fetch_spr_fed_grad
       - fetch_sgp
       - fetch_school_day
       - fetch_device_ratios
@@ -285,6 +290,7 @@ articles:
     navbar: ~
     contents:
       - spr-dictionary
+      - nj-assessment-detail
 
 authors:
   Andy Martin:
