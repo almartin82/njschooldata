@@ -7,15 +7,15 @@
 fetch_spr_science_grade(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year. Only \code{2025} (SY2024-25) and later are
-supported.}
+\item{end_year}{A school year (2019 or 2021-2025). Year is the end of the
+academic year - e.g. the 2021-22 school year is \code{end_year} 2022.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
 \value{
-Data frame with entity identifiers, school_year, subgroup, grade,
-  grade_level, level_1_percentage..level_4_percentage, and the aggregation
-  flags.
+Data frame with entity identifiers, school_year (2025 and 2021 only),
+  subgroup, grade, grade_level, level_1_percentage..level_4_percentage, and
+  the aggregation flags.
 }
 \description{
 Downloads the \code{NJSLASciencebyGradeTrends} sheet from the redesigned
@@ -34,20 +34,29 @@ the level percentages are returned as published and not summed here.
 \code{grade_level} normalizes the raw \code{grade} label (\code{"Grade 5"}) to
 the package's two-digit convention (\code{"05"}, \code{"08"}, \code{"11"}).
 
-This sheet ships as a multi-year trend table inside the 2025 workbook
-(\code{school_year} 2021-22..2024-25; the earlier COVID years carry no spring
-science testing); per the package convention this function filters to the
-requested academic year (SY2024-25 for \code{end_year} 2025).
+In SY2024-25 (\code{end_year} 2025) this reads the multi-year trend table
+\code{NJSLASciencebyGradeTrends} and filters to the requested academic year.
+For \code{end_year} 2019 and 2021-2024 it reads the pre-redesign NJSLA science
+predecessors and harmonizes them: \code{NJSLAScienceTable} (2019) and
+\code{NJSLAScience} (2021) carry the four level percentages directly
+(\code{level_1}..\code{level_4}); \code{ScienceAssessmentByGrade} (2022-2024)
+stores the entity's value in \code{percent_level_*} and the statewide value in
+\code{performance_level_*_perc}. \code{grade_level} normalizes the raw grade
+(\code{"Grade 5"} or \code{"5"}) to the two-digit form (\code{"05"},
+\code{"08"}, \code{"11"}).
 
-\strong{Supported years:} only \code{end_year >= 2025}. The
-\code{NJSLASciencebyGradeTrends} sheet is new in the SY2024-25 redesign;
-earlier databases carry differently structured science sheets
-(\code{NJSLAScienceTable}, \code{NJASKScience}) and are not mapped here.
+\strong{Supported years:} 2019 and 2021-2025. NJSLA Science began in spring
+2019; the 2020 database carries no science results (no spring 2020 testing),
+and the 2017-2018 databases report the earlier \code{NJASKScience} assessment
+on a different scale (not comparable, not mapped). Those years error.
 }
 \examples{
 \dontrun{
 # School-level NJSLA science by grade
 sci <- fetch_spr_science_grade(2025)
+
+# The same shape from a pre-redesign year
+sci_2022 <- fetch_spr_science_grade(2022)
 
 # Statewide grade-5 science level distribution
 library(dplyr)
@@ -55,11 +64,5 @@ fetch_spr_science_grade(2025, level = "district") \%>\%
   filter(is_state, subgroup == "total population", grade_level == "05") \%>\%
   select(grade, level_1_percentage, level_2_percentage,
          level_3_percentage, level_4_percentage)
-
-# Schools with the highest grade-8 level-4 share
-fetch_spr_science_grade(2025) \%>\%
-  filter(is_school, subgroup == "total population", grade_level == "08") \%>\%
-  slice_max(level_4_percentage, n = 10) \%>\%
-  select(district_name, school_name, level_4_percentage)
 }
 }

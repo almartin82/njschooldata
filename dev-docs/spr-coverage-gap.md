@@ -47,24 +47,33 @@ The Tier 1 and Tier 2 shortlist below was implemented in 2026-05 (PRs #247, #250
 | HIBInvestigations | `fetch_hib_investigations()` | **2018-2025** | #191 |
 | PoliceNotificationsGroupGrade (alias: PoliceNotificationByStuGroup in 2024) | `fetch_police_notifications_detail()` | **2024-2025** | #191 |
 | ArrestsStudentGroupGrade (alias: StuArrestbyStudentGroupGradelev in 2024) | `fetch_arrests()` | **2024-2025** | #191 |
-| ELAPerformanceByTest / MathPerformancebyTest | `fetch_spr_proficiency_by_test(subject=)` | **2025** | Bucket A |
-| NJSLASciencebyGradeTrends | `fetch_spr_science_grade()` | **2025** | Bucket A |
+| ELAPerformanceByTest / MathPerformancebyTest (+ pre-redesign `*PerformanceByGrade`/`*ByGradeTest`) | `fetch_spr_proficiency_by_test(subject=)` | **2017-2019, 2022-2025** | Bucket A |
+| NJSLASciencebyGradeTrends (+ `ScienceAssessmentByGrade`/`NJSLAScience`/`NJSLAScienceTable`) | `fetch_spr_science_grade()` | **2019, 2021-2025** | Bucket A |
 | ProgressTowardELP | `fetch_spr_elp_progress()` | **2025** | Bucket A |
-| GraduationCohortProfile | `fetch_spr_grad_cohort()` | **2025** | Bucket A |
+| GraduationCohortProfile (+ `4Yr`/`5Yr`/`6YrGraduationCohortProfile`) | `fetch_spr_grad_cohort()` | **2020-2025** | Bucket A |
 | FederalGraduationRates | `fetch_spr_fed_grad()` | **2021-2025** | Bucket A |
 
-**Bucket A note (assessment / graduation detail).** Five sheets with no
-standalone-fetcher equivalent. The first four are confirmed 2025-only (their
-pre-redesign analogues have incompatible layouts and are not mapped); they read
-each value as a `{_school,_district,_state}` triple, collapsed to one
-entity-appropriate column by the shared `spr_pick_entity_value()` helper (same
-rule as `fetch_6yr_grad_rate()`). `fetch_spr_proficiency_by_test()` covers both
-the ELA and Math by-test sheets (schema-identical) via a `subject=` argument and
-exposes the high-school end-of-course Math variants (Algebra I/II, Geometry) that
-`fetch_parcc()` does not. `fetch_spr_fed_grad()` spans 2021-2025, reshaping the
-drifting wide layout to long-by-cohort (4/5/6-year; 6-year only from 2024). See
-the "Valid Filter Values (SPR ... Bucket A)" block in the package CLAUDE.md for
-the full schema and anchor values.
+**Bucket A note (assessment / graduation detail).** Five sheet families with no
+standalone-fetcher equivalent. The 2025 sheets read each value as a
+`{_school,_district,_state}` triple, collapsed by `spr_pick_entity_value()` (same
+rule as `fetch_6yr_grad_rate()`). Four of the five were backfilled into the
+pre-redesign databases (the assessment + grad-cohort sheets exist earlier under
+different names with deterministic column-renames); the legacy layouts store the
+entity value beside a parallel `state_*` column, collapsed by the sibling
+`spr_legacy_entity_value()`, and `normalize_grade_test()` maps the legacy
+`grade`/`grade_subject` labels (incl. `ALG01`/`ALG02`/`GEO01`) onto the 2025
+`grade_test` vocabulary. Coverage gaps are honest, not guessed: **2020-2021**
+have no by-grade/test ELA/Math sheet (COVID); science is **2019, 2021-2025**
+(2020 COVID, 2017-2018 is the incomparable NJASK); grad cohort is **2020-2025**
+(2020 = 4/5-year only). `fetch_spr_proficiency_by_test()` covers both ELA and
+Math via a `subject=` argument and exposes the high-school end-of-course Math
+variants (Algebra I/II, Geometry) that `fetch_parcc()` does not.
+`fetch_spr_elp_progress()` stays **2025-only** - the legacy `EnglishLanguageProgress`
+is a different target-framed metric, deliberately not forced into the indicator
+schema. `fetch_spr_fed_grad()` spans 2021-2025, reshaping the drifting wide
+layout to long-by-cohort (4/5/6-year; 6-year only from 2024). See the "Valid
+Filter Values (SPR ... Bucket A)" block in the package CLAUDE.md for full schema
+and anchor values.
 
 Notes: NAEP and StatewideEducatorEquity carry no CDS codes (state/national summary tables), so they read through the internal `fetch_spr_sheet_raw()` helper (no CDS/flag machinery). `fetch_spr_staff_demo_subject()` deliberately keeps its racial/ethnic and gender composition columns as character — NJ DOE reports small-cell percentages as privacy-protected ranges (e.g. `"70-80%"`), and coercing them to a single number would fabricate precision.
 
@@ -129,13 +138,13 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 |---|---|---|---|---|
 | ELAParticipationPerformance | both | NJSLA ELA participation rate and proficiency | redundant-low | `fetch_spr_ela()` |
 | MathParticipationPerformance | both | NJSLA Math participation rate and proficiency | redundant-low | `fetch_spr_math()` |
-| ELAPerformanceByTest | both | ELA proficiency sliced by assessment variant | ✅ done | `fetch_spr_proficiency_by_test(subject="ela")` (2025) |
-| MathPerformancebyTest | both | Math proficiency sliced by assessment variant | ✅ done | `fetch_spr_proficiency_by_test(subject="math")` (2025) |
+| ELAPerformanceByTest | both | ELA proficiency sliced by assessment variant | ✅ done | `fetch_spr_proficiency_by_test(subject="ela")` (2017-2019, 2022-2025) |
+| MathPerformancebyTest | both | Math proficiency sliced by assessment variant | ✅ done | `fetch_spr_proficiency_by_test(subject="math")` (2017-2019, 2022-2025) |
 | DLMTrends | both | Dynamic Learning Maps alternate assessment trends | NEW-med (Bucket B) | `fetch_dlm()` — build from richer standalone source, not this SPR sheet |
 | ACCESSPartPerform | both | ACCESS for ELLs participation and performance | redundant-low | `fetch_spr_access()` |
 | ProgressTowardELP | both | Progress toward English Language Proficiency goals | ✅ done | `fetch_spr_elp_progress()` (2025) |
 | OverallNJSLAScience | both | NJSLA Science overall proficiency | redundant-low | `fetch_spr_science()` |
-| NJSLASciencebyGradeTrends | both | NJSLA Science proficiency by grade over time | ✅ done | `fetch_spr_science_grade()` (2025) |
+| NJSLASciencebyGradeTrends | both | NJSLA Science proficiency by grade over time | ✅ done | `fetch_spr_science_grade()` (2019, 2021-2025) |
 | NJGPA | both | NJ Graduation Proficiency Assessment results | redundant-low | `fetch_spr_njgpa()` |
 | NAEP | district/state only | NAEP 4th/8th grade reading and math scores | NEW-high | `fetch_spr_naep()` |
 
@@ -177,7 +186,7 @@ The remaining uncovered sheets below are Tier 3 (lower priority) plus a few NEW 
 | Sheet name | DB | What it holds | Status | Proposed fetcher |
 |---|---|---|---|---|
 | GraduationRateTrends | both | Multi-year 4-year graduation rate trends | redundant-low | `fetch_spr_grad_trends()` |
-| GraduationCohortProfile | both | Cohort 4/5/6-year outcomes by subgroup | ✅ done | `fetch_spr_grad_cohort()` (2025) |
+| GraduationCohortProfile | both | Cohort 4/5/6-year outcomes by subgroup | ✅ done | `fetch_spr_grad_cohort()` (2020-2025) |
 | FederalGraduationRates | both | Federally reported graduation rates (ESSA ACGR) | ✅ done | `fetch_spr_fed_grad()` (2021-2025) |
 | GraduationPathways | both | Count of graduates by pathway type | NEW-high | `fetch_spr_grad_pathways()` |
 
