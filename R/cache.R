@@ -312,6 +312,15 @@ spr_cached_workbook <- function(end_year, level) {
   # interrupted or failed download never leaves a corrupt file in the cache.
   tmp <- tempfile(pattern = "spr_dl_", tmpdir = dl_dir, fileext = ".xlsx")
   on.exit(unlink(tmp), add = TRUE)
+
+  # SPR workbooks are large (the 2024-25 District file is ~119 MB, the School
+  # file ~350 MB). R's default 60s download timeout truncates them on slower
+  # links (e.g. CI), so raise it for the duration of the download and restore it
+  # afterward.
+  old_timeout <- getOption("timeout")
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  options(timeout = max(old_timeout, 1200))
+
   downloader::download(url, destfile = tmp, mode = "wb")
 
   if (!is_valid_xlsx(tmp)) {

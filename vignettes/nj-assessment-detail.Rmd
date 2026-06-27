@@ -1,0 +1,193 @@
+---
+title: "Assessment & Graduation Detail: Behind the Headline Rates"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Assessment & Graduation Detail: Behind the Headline Rates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6,
+  out.width = "100%",
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE
+)
+```
+
+```{r load-packages}
+library(njschooldata)
+library(dplyr)
+library(ggplot2)
+```
+
+The 2024-25 School Performance Reports added several sheets that slice
+assessment and graduation results more finely than the headline proficiency and
+graduation rates. This vignette uses three of the new fetchers to show how the
+detail changes the story:
+
+- `fetch_spr_proficiency_by_test()` splits NJSLA math by the *test* a student
+  sat, separating the grade-level tests from the high-school end-of-course
+  exams (Algebra I, Geometry, Algebra II) that `fetch_parcc()` folds together.
+- `fetch_spr_grad_cohort()` returns the 4-, 5-, and 6-year graduation cohorts in
+  one frame, so the recovery between them is visible at a glance.
+- `fetch_spr_fed_grad()` reads the federally reported Adjusted Cohort Graduation
+  Rate (ACGR) by student group, the rate used for ESSA accountability.
+
+Two companion fetchers round out the set: `fetch_spr_science_grade()` (NJSLA
+science by grade) and `fetch_spr_elp_progress()` (progress toward English
+language proficiency). Every value comes straight from the published workbook;
+suppressed cells stay `NA` rather than being guessed.
+
+## Grade-8 math looks like a crisis until you see who skipped the test
+
+The single lowest NJSLA math proficiency rate in New Jersey is **Grade 8, at
+20.7%**. Taken alone that reads like a collapse. The by-test breakdown explains
+it: the strongest eighth graders do not sit the Grade 8 NJSLA at all. They take
+**Algebra I** (38.1% proficient) or **Geometry** (58.4%) as accelerated math.
+What is left in the Grade 8 pool is the lower-performing remainder, so the
+grade-level rate is depressed by who *left* it, not only by who is in it. The
+end-of-course exams, which `fetch_parcc()` does not separate, are the missing
+context.
+
+```{r math-by-test-data}
+math_state <- fetch_spr_proficiency_by_test(2025, subject = "math",
+                                            level = "district") %>%
+  filter(is_state, subgroup == "total population")
+
+stopifnot(nrow(math_state) > 0)
+
+math_state <- math_state %>%
+  mutate(kind = if_else(grade_test %in% c("Algebra I", "Geometry", "Algebra II"),
+                        "End-of-course", "Grade-level NJSLA")) %>%
+  arrange(proficiency_rate)
+
+# Print-before-plot: the data feeding the chart.
+math_state %>% select(grade_test, kind, valid_scores, proficiency_rate)
+```
+
+```{r math-by-test-chart}
+ggplot(math_state, aes(x = reorder(grade_test, proficiency_rate),
+                       y = proficiency_rate, fill = kind)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = paste0(proficiency_rate, "%")), hjust = -0.15,
+            size = 3.6) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  scale_fill_manual(values = c("End-of-course" = "#1b7837",
+                               "Grade-level NJSLA" = "#762a83")) +
+  labs(
+    title = "NJ math proficiency by test, 2024-25",
+    subtitle = "Grade 8 is the lowest grade-level rate; strong students sit Algebra I / Geometry instead",
+    x = NULL,
+    y = "Percent proficient (NJSLA level 4 or 5)",
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+```
+
+## The 6-year cohort quietly recovers students the 4-year rate misses
+
+The headline graduation rate is the 4-year cohort: 91.8% statewide for the class
+that should have finished in 2024-25. Following the same students another two
+years lifts the rate to **92.9% at five years and 93.2% at six**, while the
+share still enrolled ("continuing") falls from 3.4% to 1.0%. The 6-year cohort
+also reports a high-school **persistence** rate of 94.2% (graduated plus still
+enrolled). Combining all three cohort lengths in one frame, which
+`fetch_spr_grad_cohort()` does, makes the slow recovery legible.
+
+```{r grad-cohort-data}
+cohort_state <- fetch_spr_grad_cohort(2025, level = "district") %>%
+  filter(is_state, subgroup == "total population") %>%
+  select(cohort_type, graduated, continuing, non_continuing, persisting)
+
+stopifnot(nrow(cohort_state) == 3)
+
+# Print-before-plot.
+cohort_state
+```
+
+```{r grad-cohort-chart}
+ggplot(cohort_state, aes(x = cohort_type, y = graduated, group = 1)) +
+  geom_line(color = "#2166ac", linewidth = 1.2) +
+  geom_point(color = "#2166ac", size = 3.5) +
+  geom_text(aes(label = paste0(graduated, "%")), vjust = -1.1, size = 4) +
+  scale_y_continuous(limits = c(90, 94)) +
+  labs(
+    title = "NJ statewide graduation rate by cohort length, class of 2024-25",
+    subtitle = "Following the same students longer recovers about 1.4 points",
+    x = NULL,
+    y = "Percent graduated"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+## The federal graduation rate hides a 43-point equity gap
+
+The federally reported ACGR is a single statewide 4-year number, 88.9%. By
+student group it spans an enormous range. Students in foster care graduate at
+**53.4%** and students with disabilities at **65.6%**, against **96.5%** for
+Asian/Native Hawaiian/Pacific Islander students and **92.8%** for white students.
+`fetch_spr_fed_grad()` returns the rate by subgroup and cohort length, so the gap
+behind the headline is one filter away.
+
+```{r fed-grad-data}
+fed_state <- fetch_spr_fed_grad(2025, level = "district") %>%
+  filter(is_state, cohort_years == 4,
+         !is.na(graduation_rate_federal)) %>%
+  select(subgroup, graduation_rate_federal) %>%
+  arrange(graduation_rate_federal)
+
+stopifnot(nrow(fed_state) > 0)
+
+total_rate <- fed_state$graduation_rate_federal[fed_state$subgroup == "total population"]
+
+# Print-before-plot.
+fed_state
+```
+
+```{r fed-grad-chart}
+fed_plot <- fed_state %>%
+  mutate(highlight = subgroup == "total population")
+
+ggplot(fed_plot, aes(x = reorder(subgroup, graduation_rate_federal),
+                     y = graduation_rate_federal, fill = highlight)) +
+  geom_col(width = 0.75) +
+  geom_hline(yintercept = total_rate, linetype = "dashed", color = "grey30") +
+  geom_text(aes(label = paste0(graduation_rate_federal, "%")), hjust = -0.15,
+            size = 3.2) +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  scale_fill_manual(values = c("TRUE" = "#b2182b", "FALSE" = "#4393c3"),
+                    guide = "none") +
+  labs(
+    title = "Federal 4-year ACGR by student group, NJ 2024-25",
+    subtitle = "Dashed line = statewide 88.9%; foster-care and disability cohorts trail by 20-35 points",
+    x = NULL,
+    y = "Federal adjusted cohort graduation rate"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+## Notes
+
+- **Coverage.** The proficiency-by-test, science-by-grade, ELP-progress, and
+  graduation-cohort sheets are new in the 2024-25 redesign and are available for
+  `end_year` 2025 only. `fetch_spr_fed_grad()` covers 2021-2025 (the 6-year
+  cohort from 2024).
+- **Suppression.** Cells for fewer than ten students are masked in the source and
+  return `NA`; the 4- and 5-year cohorts report no persistence rate ("n/a"), so
+  `persisting` is `NA` there.
+- **Entity values.** Each sheet repeats its values as a school/district/state
+  triple; these fetchers return the entity-appropriate value, and the statewide
+  figure is carried on the `is_state` row of district-level output.
+
+```{r session-info}
+sessionInfo()
+```

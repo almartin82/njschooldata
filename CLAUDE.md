@@ -354,6 +354,74 @@ fractional FTE preserved).
   - **Deferred:** the non-certificated (`ncs/`) series mirrors this but is not yet
     implemented.
 
+## Valid Filter Values (SPR assessment / graduation detail "Bucket A")
+
+Five SPR sheets first published in (or, for federal grad rates, expanded by) the
+redesigned 2024-25 School Performance Reports, with no standalone-fetcher
+equivalent. All read via `fetch_spr_data()` (CDS + standard entity flags), tidy
+by default, `level` is `"school"` or `"district"`. Every value is coerced with
+`spr_value_numeric` (strips `%`/commas, maps suppression / `"n/a"` / "Fewer than
+10..." to `NA`, keeps a real `0`); a published rate is NEVER clipped or
+back-derived.
+
+**Shared entity-pick rule (the `{_school,_district,_state}` triple).** Four of
+these sheets repeat every value as a school/district/state triple on each row.
+`spr_pick_entity_value()` collapses it like `fetch_6yr_grad_rate()`: at
+`level="school"` it takes `_school`; at `level="district"` it takes `_district`
+for ordinary rows and `_state` ONLY for the statewide `is_state` row (whose
+`_district` cell is blank). It never fills a suppressed district from the state
+column. The statewide value is therefore available from the `is_state` row of
+**district**-level output, and the redundant `_state` reference columns are
+dropped from the result.
+
+- **`fetch_spr_proficiency_by_test(end_year, subject, level)`** -
+  `ELAPerformanceByTest` / `MathPerformancebyTest`. **2025-only** (error <2025;
+  earlier `MathPerformanceByGradeTest` etc. are a different layout, not mapped).
+  `subject` is `"ela"` (default) or `"math"`. Unlike `fetch_parcc()` (overall
+  proficiency), splits by the test taken, carried in `grade_test`: ELA = Grade 3
+  through Grade 9; Math = Grade 3 through Grade 8 PLUS the high-school
+  end-of-course tests `Algebra I`, `Geometry`, `Algebra II`. Values:
+  `valid_scores`, `mean_scaled_score`, `proficiency_rate` (level 4+5),
+  `level_1`..`level_5` (each entity-picked). Multi-year trend table inside the
+  2025 workbook; **filtered to the requested academic year** (SY2024-25). Anchor:
+  statewide ELA Grade 4 `proficiency_rate` = 53.5, `valid_scores` = 93574; Math
+  Algebra I = 38.1.
+- **`fetch_spr_science_grade(end_year, level)`** - `NJSLASciencebyGradeTrends`.
+  **2025-only** (earlier `NJSLAScienceTable` / `NJASKScience` are a different
+  layout, not mapped). NJSLA Science is grades 5/8/11; `grade_level` normalizes
+  the raw `grade` (`"Grade 5"`) to `"05"`/`"08"`/`"11"`. Values:
+  `level_1_percentage`..`level_4_percentage` (entity-picked); proficiency =
+  levels 3+4 but NOT summed here. Trend table; filtered to SY2024-25. Anchor:
+  statewide Grade 5 L1 = 30.6, L4 = 7.9.
+- **`fetch_spr_elp_progress(end_year, level)`** - `ProgressTowardELP`.
+  **2025-only**; distinct from the ELP *target* sheet (`ProgresstowardELPTargets`,
+  in `fetch_spr_essa_targets`) and from the legacy target-bearing
+  `EnglishLanguageProgress` (not mapped). **No subgroup/grade** - one
+  `progress_toward_elp` (entity-picked) per entity. Trend table; filtered to
+  SY2024-25. Anchor: statewide = 30.1.
+- **`fetch_spr_grad_cohort(end_year, level)`** - `GraduationCohortProfile`.
+  **2025-only**. One row per entity x `cohort_type` (`"4-Year"`/`"5-Year"`/
+  `"6-Year"`) x subgroup, with entity-picked `graduated` / `continuing` /
+  `non_continuing` / `persisting` rates (0-100). `persisting` is published only
+  for the 6-Year cohort - the 4-/5-Year `"n/a"` -> `NA`. The 4- and 6-year rates
+  are also in `fetch_grad_rate()` / `fetch_6yr_grad_rate()`; this adds the 5-year
+  cohort and all three in one frame. **Note:** this sheet stamps `school_year` as
+  the full-year form `"2024-2025"` (others use `"2024-25"`); `filter_spr_to_year`
+  accepts both. Anchor: statewide 4-Year `graduated` = 91.8.
+- **`fetch_spr_fed_grad(end_year, level)`** - `FederalGraduationRates`,
+  **2021-2025** (absent SY2016-17..SY2019-20 -> error <2021). Federally reported
+  ACGR (different cohort denominator than `fetch_grad_rate()`'s state rate).
+  Reshaped **long by cohort**: one row per entity x subgroup x `cohort_years`
+  (4/5/6), with `cohort_label` (e.g. `"Cohort 2025"`) and entity-picked
+  `graduation_rate_federal`. **6-year cohort only from SY2023-24 (2024)**;
+  2021-2023 carry 4+5 only. Heavy column drift handled by `fed_grad_cols_for_n()`:
+  2025 names by cohort length (`x_4_yr_graduation_rate_federal_school` + a
+  `school_year` column); 2021-2024 embed the graduating year in the name
+  (`x_2024_4_year_federal_graduation_rate` / `state_2024_...`), and in that legacy
+  layout the statewide value lives in the `state_*` column on the `State` row.
+  `end_year` 2021 = SY2020-21. Anchors: statewide 4-yr = 88.9 (2025) / 85.2
+  (2022); Atlantic City (`0110`) 4-yr 2022 = 66.5.
+
 ## Caching
 
 Two layers, both on by default.
