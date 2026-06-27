@@ -277,6 +277,11 @@ articles:
       - nj-enrollment-insights
       - nj-facilities
       - nj-english-learners
+      - nj-advanced-courses
+      - nj-biliteracy
+      - nj-restraint-seclusion
+      - nj-school-environment
+      - nj-staff-history
   - title: School Finance
     navbar: ~
     contents:
