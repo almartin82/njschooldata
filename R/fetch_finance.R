@@ -51,6 +51,8 @@
   "metric", "value", "is_per_pupil", "enrollment_denominator"
 )
 
+.finance_cols_with_status <- c(.finance_cols, "value_status")
+
 
 #' Years for which NJ finance data is available
 #'
@@ -278,12 +280,16 @@ get_finance_spending <- function(end_year) {
 #' @param use_cache logical, default \code{TRUE}. Reserved for parity with other
 #'   fetchers; the underlying TGES/state-aid downloads use the package session
 #'   cache.
+#' @param with_status logical, default \code{FALSE}. If \code{TRUE}, adds
+#'   \code{value_status}, classifying present values as \code{actual}, current
+#'   per-pupil actuals not yet published as \code{not_yet_observed}, and missing
+#'   values with absent per-pupil denominators as \code{not_published}.
 #'
 #' @return A tibble in the canonical finance schema: \code{end_year},
 #'   \code{state_id}, \code{entity_name}, \code{county}, \code{is_state},
 #'   \code{is_district}, \code{is_school}, \code{is_charter}, \code{nces_dist},
 #'   \code{nces_sch}, \code{metric}, \code{value}, \code{is_per_pupil},
-#'   \code{enrollment_denominator}.
+#'   \code{enrollment_denominator}, and optionally \code{value_status}.
 #'
 #' @examples
 #' \dontrun{
@@ -311,7 +317,8 @@ get_finance_spending <- function(end_year) {
 #' }
 #'
 #' @export
-fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
+fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
+                          with_status = FALSE) {
   end_year <- as.integer(end_year)
   if (is.na(end_year)) stop("`end_year` must be a year, e.g. 2024.", call. = FALSE)
 
@@ -320,7 +327,7 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 
   out <- dplyr::bind_rows(spending, revenue)
   if (is.null(out) || nrow(out) == 0) {
-    return(empty_finance_frame())
+    return(empty_finance_frame(with_status = with_status))
   }
 
   # the NJ DOE files carry some CP1252 bytes (e.g. a curly apostrophe 0x92 in
@@ -330,8 +337,18 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
   out$county      <- .finance_clean_utf8(out$county)
 
   out <- sanitize_finance_quality(out)
+  if (isTRUE(with_status)) {
+    out$value_status <- finance_value_status(
+      metric = out$metric,
+      value = out$value,
+      end_year = out$end_year,
+      is_per_pupil = out$is_per_pupil,
+      enrollment_denominator = out$enrollment_denominator
+    )
+  }
   out <- attach_nces_finance(out)
-  out <- out[, .finance_cols, drop = FALSE]
+  out <- out[, if (isTRUE(with_status)) .finance_cols_with_status else .finance_cols,
+             drop = FALSE]
   # the NJ DOE source occasionally repeats a district's row verbatim (e.g. a
   # charter listed twice with identical figures); collapse exact duplicates so
   # there is one observation per entity-metric. Genuinely conflicting values
@@ -349,6 +366,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #'   discovery tooling.
 #' @param tidy logical, default \code{TRUE}. See \code{\link{fetch_finance}}.
 #' @param use_cache logical, default \code{TRUE}. See \code{\link{fetch_finance}}.
+#' @param with_status logical, default \code{FALSE}. See
+#'   \code{\link{fetch_finance}}.
 #'
 #' @return A single tibble, the per-year results of \code{\link{fetch_finance}}
 #'   stacked.
@@ -365,7 +384,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #'
 #' @export
 fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
-                                tidy = TRUE, use_cache = TRUE) {
+                                tidy = TRUE, use_cache = TRUE,
+                                with_status = FALSE) {
   if (is.null(end_year_vector)) {
     end_year_vector <- end_years
   } else if (!is.null(end_years) &&
@@ -380,14 +400,15 @@ fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
 
   purrr::map_dfr(end_year_vector, function(.y) {
     message(.y)
-    fetch_finance(.y, tidy = tidy, use_cache = use_cache)
+    fetch_finance(.y, tidy = tidy, use_cache = use_cache,
+                  with_status = with_status)
   })
 }
 
 
 # correctly-typed empty tidy frame (Under-Construction / no-data fallback)
-empty_finance_frame <- function() {
-  tibble::tibble(
+empty_finance_frame <- function(with_status = FALSE) {
+  out <- tibble::tibble(
     end_year               = integer(0),
     state_id               = character(0),
     entity_name            = character(0),
@@ -403,4 +424,8 @@ empty_finance_frame <- function() {
     is_per_pupil           = logical(0),
     enrollment_denominator = double(0)
   )
+  if (isTRUE(with_status)) {
+    out$value_status <- value_status_factor(character(0))
+  }
+  out
 }
