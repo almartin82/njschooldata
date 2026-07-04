@@ -11,7 +11,7 @@ ELL_TIDY_COLS <- c(
   "school_id", "school_name",
   "cds_code", "nces_dist", "nces_sch",
   "is_state", "is_district", "is_school", "is_charter",
-  "grade_level", "el_status", "subgroup",
+  "grade_level", "el_status", "subgroup", "subgroup_std",
   "n_students", "total_enrollment", "pct_of_enrollment",
   "n_students_lower", "n_students_upper"
 )
@@ -37,6 +37,9 @@ tidy_ell <- function(df) {
       n_students_lower = .data$el_count,
       n_students_upper = .data$el_count
     )
+
+  # standardized subgroup label (lands immediately after `subgroup`)
+  out <- add_subgroup_std(out)
 
   # ensure every contract column exists, then order
   for (col in ELL_TIDY_COLS) {
@@ -65,7 +68,8 @@ empty_ell_frame <- function() {
     cds_code = character(0), nces_dist = character(0), nces_sch = character(0),
     is_state = logical(0), is_district = logical(0),
     is_school = logical(0), is_charter = logical(0),
-    grade_level = character(0), el_status = character(0), subgroup = character(0),
+    grade_level = character(0), el_status = character(0),
+    subgroup = character(0), subgroup_std = character(0),
     n_students = numeric(0), total_enrollment = numeric(0),
     pct_of_enrollment = numeric(0),
     n_students_lower = numeric(0), n_students_upper = numeric(0),
