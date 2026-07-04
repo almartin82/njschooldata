@@ -8,6 +8,8 @@ finance_cols <- c(
   "metric", "value", "is_per_pupil", "enrollment_denominator"
 )
 
+finance_cols_with_status <- c(finance_cols, "value_status")
+
 # standard + NJ-specific metric vocabulary this package emits
 finance_metrics <- c(
   "per_pupil_total", "per_pupil_instruction", "per_pupil_support_services",
@@ -39,9 +41,75 @@ test_that("an unavailable year returns the empty, correctly-typed tidy frame", {
   expect_type(e$is_state, "logical")
 })
 
+test_that("finance metric registry rows match the finance contract", {
+  registry <- load_metric_registry()
+  rows <- registry[registry$metric %in% finance_metrics, , drop = FALSE]
+
+  expect_equal(nrow(rows), length(finance_metrics))
+  expect_equal(sort(rows$metric), sort(finance_metrics))
+  expect_true(all(rows$domain == "finance"))
+  expect_true(all(rows$unit == "dollars"))
+  expect_true(all(rows$polarity == "neutral"))
+  expect_true(all(!rows$is_rate))
+  expect_true(all(is.na(rows$denominator_metric) | rows$denominator_metric == ""))
+})
+
+test_that("finance FY/SY alignment assertion fails loudly on off-by-one rows", {
+  spending <- tibble::tibble(end_year = 2024L, metric = "per_pupil_total")
+  revenue <- tibble::tibble(end_year = 2024L, metric = "revenue_state")
+
+  expect_invisible(assert_finance_year_alignment(
+    spending, revenue, end_year = 2024L, tges_report_year = 2025L
+  ))
+
+  expect_error(
+    assert_finance_year_alignment(
+      spending, revenue, end_year = 2024L, tges_report_year = 2024L
+    ),
+    "following year"
+  )
+  expect_error(
+    assert_finance_year_alignment(
+      spending, revenue, end_year = 2024L, tges_report_year = 2026L
+    ),
+    "following year"
+  )
+  expect_error(
+    assert_finance_year_alignment(
+      tibble::tibble(end_year = 2023L, metric = "per_pupil_total"),
+      revenue,
+      end_year = 2024L,
+      tges_report_year = 2025L
+    ),
+    "spending"
+  )
+  expect_error(
+    assert_finance_year_alignment(
+      spending,
+      tibble::tibble(end_year = 2025L, metric = "revenue_state"),
+      end_year = 2024L,
+      tges_report_year = 2025L
+    ),
+    "state aid"
+  )
+})
+
 test_that("fetch_finance emits exactly the canonical columns in order", {
   skip_if_not(have_data, "NJ DOE finance source unavailable")
   expect_equal(names(fin), finance_cols)
+})
+
+test_that("with_status is additive and preserves the default finance columns", {
+  skip_if_not(have_data, "NJ DOE finance source unavailable")
+
+  fin_status <- tryCatch(
+    suppressWarnings(fetch_finance(2024, with_status = TRUE)),
+    error = function(e) NULL
+  )
+  skip_if(is.null(fin_status) || nrow(fin_status) == 0, "NJ DOE finance source unavailable")
+
+  expect_equal(names(fin_status), finance_cols_with_status)
+  expect_equal(fin_status[, finance_cols], fin)
 })
 
 test_that("metrics conform to the documented vocabulary", {
@@ -87,6 +155,19 @@ test_that("entity flags are mutually consistent", {
   skip_if_not(have_data, "NJ DOE finance source unavailable")
   expect_true(all(xor(fin$is_state, fin$is_district)))
   expect_true(all(!fin$is_school))
+})
+
+test_that("school-level finance requests return a structural not-published gap", {
+  school_gap <- fetch_finance(2024, level = "school", with_status = TRUE)
+
+  expect_equal(names(school_gap), finance_cols_with_status)
+  expect_equal(nrow(school_gap), length(finance_metrics))
+  expect_equal(sort(school_gap$metric), sort(finance_metrics))
+  expect_true(all(is.na(school_gap$value)))
+  expect_true(all(!school_gap$is_state))
+  expect_true(all(!school_gap$is_district))
+  expect_true(all(!school_gap$is_school))
+  expect_true(all(as.character(school_gap$value_status) == "not_published"))
 })
 
 test_that("nces_dist is attached to most districts and never fabricated for state rows", {
@@ -163,4 +244,21 @@ test_that("a revenue-only recent year emits revenue_state and no spending", {
   skip_if(is.null(f25) || nrow(f25) == 0, "state aid source unavailable")
   expect_true(all(f25$metric == "revenue_state"))
   expect_equal(names(f25), finance_cols)
+})
+
+test_that("with_status marks current-year per-pupil actuals as not yet observed", {
+  f25 <- tryCatch(
+    suppressWarnings(fetch_finance(2025, with_status = TRUE)),
+    error = function(e) NULL
+  )
+  skip_if(is.null(f25) || nrow(f25) == 0, "state aid source unavailable")
+
+  pp <- f25[grepl("^per_pupil_", f25$metric), , drop = FALSE]
+  rev <- f25[f25$metric == "revenue_state", , drop = FALSE]
+
+  expect_gt(nrow(pp), 0)
+  expect_true(all(is.na(pp$value)))
+  expect_true(all(as.character(pp$value_status) == "not_yet_observed"))
+  expect_true(all(as.character(rev$value_status) == "actual"))
+  expect_equal(names(f25), finance_cols_with_status)
 })

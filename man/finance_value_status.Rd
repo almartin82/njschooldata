@@ -10,7 +10,8 @@ finance_value_status(
   end_year,
   is_per_pupil = NULL,
   enrollment_denominator = NULL,
-  latest_observed_per_pupil_year = 2024L
+  latest_observed_per_pupil_year = 2024L,
+  structural_not_published = NULL
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ inferred from metric names beginning with \code{per_pupil}.}
 
 \item{latest_observed_per_pupil_year}{Latest year with per-pupil actuals in
 the current finance source.}
+
+\item{structural_not_published}{Optional logical vector for structural gaps
+known by the caller to be unpublished regardless of year.}
 }
 \value{
 A value-status factor.

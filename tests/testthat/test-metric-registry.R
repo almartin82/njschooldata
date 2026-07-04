@@ -39,7 +39,7 @@ test_that("annotate_metric attaches row-wise metadata for long finance output", 
   expect_equal(names(df), names(annotated)[seq_along(names(df))])
   expect_equal(annotated$polarity, c("neutral", "neutral"))
   expect_equal(annotated$unit, c("dollars", "dollars"))
-  expect_equal(annotated$is_rate, c(TRUE, FALSE))
+  expect_equal(annotated$is_rate, c(FALSE, FALSE))
 })
 
 

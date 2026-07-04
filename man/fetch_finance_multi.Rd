@@ -9,7 +9,8 @@ fetch_finance_multi(
   end_years = NULL,
   tidy = TRUE,
   use_cache = TRUE,
-  with_status = FALSE
+  with_status = FALSE,
+  level = "all"
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ discovery tooling.}
 
 \item{with_status}{logical, default \code{FALSE}. See
 \code{\link{fetch_finance}}.}
+
+\item{level}{entity grain to return. See \code{\link{fetch_finance}}.}
 }
 \value{
 A single tibble, the per-year results of \code{\link{fetch_finance}}
