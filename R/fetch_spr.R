@@ -3709,17 +3709,23 @@ fetch_spr_educator_equity <- function(end_year) {
 #' @param base The shared column stem, e.g. \code{"proficiency_rate"} for the
 #'   triple \code{proficiency_rate_school} / \code{_district} / \code{_state}.
 #' @param level One of \code{"school"} or \code{"district"}.
+#' @param with_status Logical. If \code{TRUE}, return a list with the cleaned
+#'   numeric \code{value} and the \code{status} classified from the picked raw
+#'   cell. The default \code{FALSE} returns the legacy numeric vector.
 #' @return A numeric vector: the \code{_school} value at school level; the
 #'   \code{_district} value (or \code{_state} on the statewide row) at district
 #'   level. Suppressed / non-numeric cells become \code{NA}.
 #' @keywords internal
-spr_pick_entity_value <- function(df, base, level) {
+spr_pick_entity_value <- function(df, base, level, with_status = FALSE) {
   if (level == "school") {
     out <- df[[paste0(base, "_school")]]
   } else {
     state_col <- df[[paste0(base, "_state")]]
     dist_col <- df[[paste0(base, "_district")]]
     out <- dplyr::if_else(df$is_state, state_col, dist_col)
+  }
+  if (isTRUE(with_status)) {
+    return(spr_value_with_status(out))
   }
   spr_value_numeric(out)
 }
@@ -3741,12 +3747,19 @@ spr_pick_entity_value <- function(df, base, level) {
 #' @param entity_col Name of the entity (school/district) value column.
 #' @param state_col Name of the parallel statewide value column (may be absent).
 #' @param level One of \code{"school"} or \code{"district"}.
+#' @param with_status Logical. If \code{TRUE}, return a list with the cleaned
+#'   numeric \code{value} and the \code{status} classified from the picked raw
+#'   cell. The default \code{FALSE} returns the legacy numeric vector.
 #' @return A numeric vector; suppressed / non-numeric cells become \code{NA}.
 #' @keywords internal
-spr_legacy_entity_value <- function(df, entity_col, state_col, level) {
+spr_legacy_entity_value <- function(df, entity_col, state_col, level,
+                                    with_status = FALSE) {
   out <- df[[entity_col]]
   if (level == "district" && state_col %in% names(df)) {
     out <- dplyr::if_else(df$is_state, df[[state_col]], out)
+  }
+  if (isTRUE(with_status)) {
+    return(spr_value_with_status(out))
   }
   spr_value_numeric(out)
 }

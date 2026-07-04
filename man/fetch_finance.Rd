@@ -4,7 +4,7 @@
 \alias{fetch_finance}
 \title{Fetch NJ school finance in the canonical cross-state schema}
 \usage{
-fetch_finance(end_year, tidy = TRUE, use_cache = TRUE)
+fetch_finance(end_year, tidy = TRUE, use_cache = TRUE, with_status = FALSE)
 }
 \arguments{
 \item{end_year}{school year (end of the academic year). See
@@ -17,13 +17,18 @@ long frame and is reserved for a future wide form.}
 \item{use_cache}{logical, default \code{TRUE}. Reserved for parity with other
 fetchers; the underlying TGES/state-aid downloads use the package session
 cache.}
+
+\item{with_status}{logical, default \code{FALSE}. If \code{TRUE}, adds
+\code{value_status}, classifying present values as \code{actual}, current
+per-pupil actuals not yet published as \code{not_yet_observed}, and missing
+values with absent per-pupil denominators as \code{not_published}.}
 }
 \value{
 A tibble in the canonical finance schema: \code{end_year},
   \code{state_id}, \code{entity_name}, \code{county}, \code{is_state},
   \code{is_district}, \code{is_school}, \code{is_charter}, \code{nces_dist},
   \code{nces_sch}, \code{metric}, \code{value}, \code{is_per_pupil},
-  \code{enrollment_denominator}.
+  \code{enrollment_denominator}, and optionally \code{value_status}.
 }
 \description{
 The uniform front door for NJ school finance. Consolidates the
