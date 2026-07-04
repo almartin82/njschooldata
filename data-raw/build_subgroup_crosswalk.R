@@ -27,6 +27,8 @@ standard_mapping <- data.frame(
     "other",
     "male",
     "female",
+    "non-binary",
+    "non-binary/undesignated gender",
     "grade_other",
     "grade_06",
     "grade_07",
@@ -62,6 +64,8 @@ standard_mapping <- data.frame(
     "other",
     "male",
     "female",
+    "non_binary",
+    "non_binary",
     NA_character_,
     NA_character_,
     NA_character_,
@@ -95,6 +99,8 @@ standard_mapping <- data.frame(
     "race",
     "race",
     "race",
+    "gender",
+    "gender",
     "gender",
     "gender",
     NA_character_,
@@ -148,7 +154,9 @@ spr_inputs <- c(
   "Hispanic",
   "Other",
   "Male",
-  "Female"
+  "Female",
+  "Non-Binary",
+  "Non-Binary/Undesignated Gender"
 )
 
 parcc_inputs <- c(
