@@ -26,6 +26,5 @@ TODO\.md$
 .*_cache$
 ^\.venv$
 ^python$
-^pynjschooldata$
 ^scratch$
 ^DATA-CATEGORY-TAXONOMY\.md$
