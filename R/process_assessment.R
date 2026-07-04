@@ -248,31 +248,27 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
       !grepl("suppressed|end of worksheet", county_code, ignore.case = TRUE)
     )
 
-  # Tag subsets (case-insensitive for state since 2015 uses "STATE", 2019+ uses "State")
-  parcc_file$is_state <- toupper(parcc_file$county_code) == "STATE"
+  # Tag subsets
   parcc_file$is_dfg <- toupper(parcc_file$county_code) == "DFG"
-  parcc_file$is_district <- is.na(parcc_file$school_code) & !is.na(parcc_file$district_code)
-  parcc_file$is_school <- !is.na(parcc_file$school_code)
-  parcc_file$is_charter <- parcc_file$county_code == "80"
-
-  parcc_file$is_charter_sector <- FALSE
-  parcc_file$is_allpublic <- FALSE
-
-  # Normalize state-level records to use standard codes
-  # NJ DOE uses "STATE"/"State" but package convention is county_id="99"
-  parcc_file <- parcc_file %>%
-    dplyr::mutate(
-      county_code = ifelse(is_state, "99", county_code),
-      district_code = ifelse(is_state, "9999", district_code),
-      school_code = ifelse(is_state, "999", school_code)
-    )
-
-  # Use district_id, etc
   parcc_file <- parcc_file %>%
     dplyr::rename(
       county_id = county_code,
       district_id = district_code,
       school_id = school_code
+    )
+  parcc_file <- assign_entity_flags(
+    parcc_file,
+    district_school_ids = character(0),
+    recognize_state_label = TRUE,
+    na_school_is_district = TRUE
+  )
+
+  # Normalize state-level records to use standard codes
+  parcc_file <- parcc_file %>%
+    dplyr::mutate(
+      county_id = ifelse(is_state, "99", county_id),
+      district_id = ifelse(is_state, "9999", district_id),
+      school_id = ifelse(is_state, "999", school_id)
     )
 
   # Level counts

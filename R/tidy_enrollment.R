@@ -112,16 +112,23 @@ tidy_enr <- function(df) {
 #' @return data.frame with boolean aggregation flags
 #' @export
 id_enr_aggs <- function(df) {
-  df %>%
+  input_cols <- names(df)
+
+  assign_entity_flags(
+    df,
+    district_school_ids = c("999"),
+    recognize_state_label = FALSE
+  ) %>%
     dplyr::mutate(
-      is_state = district_id == "9999" & county_id == "99",
-      is_county = district_id == "9999" & !county_id == "99",
       is_district = school_id == "999" & !is_state,
-      is_charter = county_id == "80",
-      is_charter_sector = FALSE,
-      is_allpublic = FALSE,
       is_school = !school_id == "999" & !is_state,
       is_subprogram = !program_code == "55"
+    ) %>%
+    dplyr::select(
+      dplyr::all_of(input_cols),
+      is_state, is_county, is_district,
+      is_charter, is_charter_sector, is_allpublic,
+      is_school, is_subprogram
     )
 }
 
