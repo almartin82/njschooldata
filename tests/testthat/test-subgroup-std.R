@@ -26,7 +26,7 @@ test_that("every crosswalk raw_value maps to a valid token or explicit NA", {
     "total_enrollment", "econ_disadv", "non_econ_disadv", "special_ed",
     "lep", "lep_current", "lep_former", "native_american", "asian", "black",
     "hispanic", "pacific_islander", "white", "multiracial", "other",
-    "male", "female"
+    "male", "female", "non_binary"
   )
   vals <- subgroup_crosswalk$subgroup_std
   expect_true(all(is.na(vals) | vals %in% std_vocab))

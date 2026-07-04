@@ -729,6 +729,16 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 #' @param end_year A school year (2018-2025). SY2016-17 (end_year 2017) has no
 #'   discipline-removals sheet in the SPR database.
 #' @param level One of "school" or "district"
+#' @param with_status Logical, default \code{FALSE}. If \code{TRUE}, appends
+#'   \code{value_status}, classified from the raw primary suspension-rate token
+#'   before numeric coercion.
+#' @param with_denominator Logical, default \code{FALSE}. If \code{TRUE},
+#'   appends \code{n_students} from the matching total-enrollment row in
+#'   \code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+#'   rows remain \code{NA}.
+#' @param with_subgroup_std Logical, default \code{FALSE}. If \code{TRUE} and
+#'   the source has a student-group/grade label, appends normalized
+#'   \code{subgroup}, \code{subgroup_std}, and \code{grade_level} detail.
 #'
 #' @return Data frame with disciplinary actions. Includes a
 #'   \code{student_group_grade} column identifying the student group / grade
@@ -737,7 +747,10 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 #' @examples \dontrun{
 #' discipline <- fetch_disciplinary_removals(2024)
 #' }
-fetch_disciplinary_removals <- function(end_year, level = "school") {
+fetch_disciplinary_removals <- function(end_year, level = "school",
+                                        with_status = FALSE,
+                                        with_denominator = FALSE,
+                                        with_subgroup_std = FALSE) {
   # The discipline-removals sheet has been renamed several times. Names below
   # are confirmed against the downloaded NJ DOE Database_SchoolDetail.xlsx for
   # each year:
@@ -765,6 +778,31 @@ fetch_disciplinary_removals <- function(end_year, level = "school") {
     df <- dplyr::rename(df, student_group_grade = student_group_grade_level)
   }
 
+  if (isTRUE(with_status)) {
+    df$value_status <- discipline_primary_value_status(
+      df,
+      c(
+        "percent_students_any_suspension",
+        "any_susp_pct",
+        "percent_students_outof_school_suspension",
+        "outof_school_pct",
+        "percent_students_in_school_suspension",
+        "in_school_pct"
+      )
+    )
+  }
+
+  if (isTRUE(with_subgroup_std)) {
+    df <- discipline_add_student_group_detail(
+      df,
+      with_subgroup_std = with_subgroup_std
+    )
+  }
+
+  if (isTRUE(with_denominator)) {
+    df <- attach_discipline_enrollment_denominator(df)
+  }
+
   df
 }
 
@@ -775,13 +813,22 @@ fetch_disciplinary_removals <- function(end_year, level = "school") {
 #'
 #' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
+#' @param with_status Logical, default \code{FALSE}. If \code{TRUE}, appends
+#'   \code{value_status}, classified from the raw incidents-per-100-students
+#'   rate token before numeric coercion.
+#' @param with_denominator Logical, default \code{FALSE}. If \code{TRUE},
+#'   appends \code{n_students} from the matching total-enrollment row in
+#'   \code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+#'   rows remain \code{NA}.
 #'
 #' @return Data frame with incident counts
 #' @export
 #' @examples \dontrun{
 #' incidents <- fetch_violence_vandalism_hib(2024)
 #' }
-fetch_violence_vandalism_hib <- function(end_year, level = "school") {
+fetch_violence_vandalism_hib <- function(end_year, level = "school",
+                                         with_status = FALSE,
+                                         with_denominator = FALSE) {
   # Sheet renamed in 2024-25:
   #   2017-2024: ViolenceVandalismHIBSubstanceOf
   #   2025+:     IncidentsbyType
@@ -790,6 +837,22 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school") {
   )
 
   df <- fetch_spr_data(sheet_name, end_year, level)
+
+  if (isTRUE(with_status)) {
+    df$value_status <- discipline_primary_value_status(
+      df,
+      c(
+        "incidents_per_100_students_enrolled",
+        "incidents_per_100_students",
+        "total_unique_incidents"
+      )
+    )
+  }
+
+  if (isTRUE(with_denominator)) {
+    df <- attach_discipline_enrollment_denominator(df)
+  }
+
   df
 }
 
@@ -834,6 +897,15 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school") {
 #' @param level One of \code{"school"} or \code{"district"}. \code{"school"}
 #'   returns school-level data; \code{"district"} returns district and
 #'   state-level data.
+#' @param with_status Logical, default \code{FALSE}. If \code{TRUE}, appends
+#'   row-level \code{value_status}, classified from the raw incident-category
+#'   cells before numeric coercion. A row is \code{suppressed} when any category
+#'   is suppressed, \code{actual} when any category has a real number and none is
+#'   suppressed, and otherwise the most honest missing-data status available.
+#' @param with_denominator Logical, default \code{FALSE}. If \code{TRUE},
+#'   appends \code{n_students} from the matching total-enrollment row in
+#'   \code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+#'   rows remain \code{NA}.
 #'
 #' @return Data frame with entity identifiers, the six incident-category
 #'   columns (\code{violence}, \code{weapons}, \code{vandalism},
@@ -859,7 +931,9 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school") {
 #'   slice_max(violence, n = 10) %>%
 #'   select(county_name, district_name, violence, weapons, substances, hib)
 #' }
-fetch_police_notifications <- function(end_year, level = "school") {
+fetch_police_notifications <- function(end_year, level = "school",
+                                       with_status = FALSE,
+                                       with_denominator = FALSE) {
   if (!level %in% c("school", "district")) {
     stop("level must be one of 'school' or 'district'", call. = FALSE)
   }
@@ -886,9 +960,13 @@ fetch_police_notifications <- function(end_year, level = "school") {
     c("violence", "weapons", "vandalism", "substances", "hib", "other_incidents"),
     names(df)
   )
+  value_status <- NULL
+  if (isTRUE(with_status)) {
+    value_status <- discipline_row_value_status(df, count_cols)
+  }
   for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
 
-  df %>%
+  out <- df %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -900,6 +978,16 @@ fetch_police_notifications <- function(end_year, level = "school") {
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
     )
+
+  if (isTRUE(with_status)) {
+    out$value_status <- value_status
+  }
+
+  if (isTRUE(with_denominator)) {
+    out <- attach_discipline_enrollment_denominator(out)
+  }
+
+  out
 }
 
 

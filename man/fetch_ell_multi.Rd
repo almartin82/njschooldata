@@ -4,7 +4,7 @@
 \alias{fetch_ell_multi}
 \title{Fetch NJ English Learner population data for multiple years}
 \usage{
-fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE)
+fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
 }
 \arguments{
 \item{end_years}{integer vector of ending academic years (2006-2026).}
@@ -12,6 +12,9 @@ fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE)
 \item{tidy}{if `TRUE` (default), returns the long tidy contract.}
 
 \item{use_cache}{if `TRUE`, uses the session cache.}
+
+\item{with_status}{if `TRUE` (and `tidy = TRUE`), appends the additive
+`value_status` column (see [fetch_ell()]).}
 }
 \value{
 combined data.frame of EL population data for all available
@@ -28,4 +31,7 @@ fetch_ell_multi(2015:2025) \%>\%
   filter(is_state) \%>\%
   select(end_year, n_students, pct_of_enrollment)
 }
+}
+\seealso{
+[fetch_access()] for EL proficiency (WIDA ACCESS).
 }

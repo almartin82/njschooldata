@@ -212,9 +212,12 @@ get_raw_restraint_seclusion <- function(end_year) {
 #'
 #' @param df A raw data frame from \code{\link{get_raw_restraint_seclusion}}.
 #' @param end_year The school year end (added as a column).
+#' @param with_status Logical. If \code{TRUE}, append \code{value_status}
+#'   classified from the raw \code{any_restraint_seclusion_count} token before
+#'   numeric coercion.
 #' @return The tidy data frame in the documented output schema.
 #' @keywords internal
-tidy_restraint_seclusion <- function(df, end_year) {
+tidy_restraint_seclusion <- function(df, end_year, with_status = FALSE) {
   if (ncol(df) != 27) {
     stop(sprintf(
       "Unexpected DARS layout for %d: %d columns (expected 27). The NJ DOE ",
@@ -242,6 +245,11 @@ tidy_restraint_seclusion <- function(df, end_year) {
       !is.na(.data$student_group)
     )
 
+  value_status <- NULL
+  if (isTRUE(with_status)) {
+    value_status <- rs_value_with_status(df$any_restraint_seclusion_count)$status
+  }
+
   # Coerce the 20 value columns to numeric; masking tokens -> NA (never a guess).
   df[.restraint_seclusion_value_cols] <-
     lapply(df[.restraint_seclusion_value_cols], rs_value_numeric)
@@ -267,6 +275,10 @@ tidy_restraint_seclusion <- function(df, end_year) {
       is_allpublic = FALSE
     )
 
+  if (isTRUE(with_status)) {
+    df$value_status <- value_status
+  }
+
   df %>%
     dplyr::select(
       end_year,
@@ -276,7 +288,8 @@ tidy_restraint_seclusion <- function(df, end_year) {
       student_group, subgroup, grade_level,
       dplyr::all_of(.restraint_seclusion_value_cols),
       is_state, is_county, is_district, is_school,
-      is_charter, is_charter_sector, is_allpublic
+      is_charter, is_charter_sector, is_allpublic,
+      dplyr::any_of("value_status")
     )
 }
 
@@ -333,6 +346,15 @@ tidy_restraint_seclusion <- function(df, end_year) {
 #' @param end_year A school year: 2023 (SY2022-23) or 2024 (SY2023-24).
 #' @param level Only \code{"school"} is supported (the DARS workbook is
 #'   school-level only). Other values error.
+#' @param with_status Logical, default \code{FALSE}. If \code{TRUE}, appends
+#'   \code{value_status}, classified from the raw
+#'   \code{any_restraint_seclusion_count} token before numeric coercion.
+#' @param with_denominator Logical, default \code{FALSE}. If \code{TRUE},
+#'   appends \code{n_students} from the matching total-enrollment row in
+#'   \code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+#'   rows remain \code{NA}.
+#' @param with_subgroup_std Logical, default \code{FALSE}. If \code{TRUE}, adds
+#'   \code{subgroup_std} immediately after \code{subgroup}.
 #'
 #' @return Data frame with \code{end_year}, the entity identifiers
 #'   (\code{county_id}/\code{county_name}/\code{district_id}/\code{district_name}/
@@ -363,7 +385,10 @@ tidy_restraint_seclusion <- function(df, end_year) {
 #'          grade_level == "TOTAL") %>%
 #'   select(school_name, subgroup, restraint_count)
 #' }
-fetch_restraint_seclusion <- function(end_year, level = "school") {
+fetch_restraint_seclusion <- function(end_year, level = "school",
+                                      with_status = FALSE,
+                                      with_denominator = FALSE,
+                                      with_subgroup_std = FALSE) {
   if (!identical(level, "school")) {
     stop(
       "fetch_restraint_seclusion() is school-level only: the DARS Restraint & ",
@@ -382,14 +407,25 @@ fetch_restraint_seclusion <- function(end_year, level = "school") {
 
   # Parsed-result session cache (the workbook is ~5 MB and holds ~46k rows).
   cache_key <- make_cache_key("fetch_restraint_seclusion", end_year, level)
-  cached <- cache_get(cache_key)
+  cached <- if (isTRUE(with_status)) NULL else cache_get(cache_key)
   if (!is.null(cached)) {
-    return(cached)
+    out <- cached
+  } else {
+    raw <- get_raw_restraint_seclusion(end_year)
+    out <- tidy_restraint_seclusion(raw, end_year, with_status = with_status)
+
+    if (!isTRUE(with_status)) {
+      cache_set(cache_key, out)
+    }
   }
 
-  raw <- get_raw_restraint_seclusion(end_year)
-  out <- tidy_restraint_seclusion(raw, end_year)
+  if (isTRUE(with_subgroup_std)) {
+    out <- add_subgroup_std(out)
+  }
 
-  cache_set(cache_key, out)
+  if (isTRUE(with_denominator)) {
+    out <- attach_discipline_enrollment_denominator(out)
+  }
+
   out
 }
