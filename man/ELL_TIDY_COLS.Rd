@@ -5,7 +5,7 @@
 \alias{ELL_TIDY_COLS}
 \title{Canonical column order for tidy EL population data}
 \format{
-An object of class \code{character} of length 22.
+An object of class \code{character} of length 23.
 }
 \usage{
 ELL_TIDY_COLS

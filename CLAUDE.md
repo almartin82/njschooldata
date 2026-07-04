@@ -148,8 +148,18 @@ EL **proficiency** (`fetch_access()`, WIDA ACCESS). Tidy by default.
 - **`el_status`:** always `"current"` — NJ publishes a single current-EL
   headcount, no former/monitored/ever-EL split.
 - **`subgroup`:** always `"total"` — the EL count is not crossed by
-  race/gender/grade.
-- **`grade_level`:** always `"TOTAL"`.
+  race/gender/grade. The additive `subgroup_std` column (inserted right after
+  `subgroup`) standardizes this to `total_enrollment` for cross-domain joins.
+- **`grade_level`:** always `"TOTAL"` — the NJ DOE fall-enrollment EL column
+  publishes only a single current-EL total, with no by-grade breakdown (a grade
+  split is never fabricated).
+- **`with_status = FALSE` (opt-in honesty column):** `fetch_ell(..., with_status
+  = TRUE)` appends a `value_status` column classified from the raw count token
+  before coercion — `actual` where a count is published, `not_published` for the
+  percent-only 2020-2022 district/school entity-years (the count stays `NA` and
+  is never back-derived from the percent). The WIDA ACCESS proficiency bridge
+  [`fetch_access()`] carries `subgroup = "limited english proficiency"` /
+  `subgroup_std = "lep"` so EL population joins to EL proficiency on the CDS id.
 - **Entity flags:** `is_state` XOR `is_district` XOR `is_school` (exactly one is
   TRUE per row; county aggregates are dropped). `is_charter` flags county 80.
 - **`n_students` vs `pct_of_enrollment` (the COVID gap):** for **2020, 2021,

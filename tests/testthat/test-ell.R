@@ -16,7 +16,7 @@ ell_cols <- c(
   "school_id", "school_name",
   "cds_code", "nces_dist", "nces_sch",
   "is_state", "is_district", "is_school", "is_charter",
-  "grade_level", "el_status", "subgroup",
+  "grade_level", "el_status", "subgroup", "subgroup_std",
   "n_students", "total_enrollment", "pct_of_enrollment",
   "n_students_lower", "n_students_upper"
 )
@@ -51,6 +51,25 @@ test_that("an out-of-range year returns the empty, correctly-typed tidy frame", 
   expect_type(e$pct_of_enrollment, "double")
   expect_type(e$district_id, "character")
   expect_type(e$is_state, "logical")
+})
+
+test_that("EL subgroup values standardize offline", {
+  expect_equal(standardize_subgroup("total"), "total_enrollment")
+})
+
+test_that("empty EL frames carry subgroup_std after subgroup", {
+  e <- fetch_ell(2005)
+  expect_true("subgroup_std" %in% names(e))
+  expect_equal(
+    which(names(e) == "subgroup_std"),
+    which(names(e) == "subgroup") + 1L
+  )
+})
+
+test_that("with_status appends value_status on empty tidy EL frames", {
+  e <- fetch_ell(2005, with_status = TRUE)
+  expect_true("value_status" %in% names(e))
+  expect_equal(nrow(e), 0L)
 })
 
 test_that("ell_locate_cols handles the EL/MLL rename and percent spacing", {
