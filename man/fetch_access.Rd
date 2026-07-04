@@ -20,6 +20,7 @@ Processed ACCESS dataframe with columns including:
     \item school_id, school_name, valid_scores
     \item pct_l1 through pct_l6 (proficiency level percentages)
     \item proficient_above (L5 + L6 percentage)
+    \item subgroup, subgroup_std (always the English Learner group; `lep`)
   }
 }
 \description{
@@ -38,4 +39,9 @@ access_g3 <- fetch_access(2024, grade = 3)
 # Get Kindergarten ACCESS results
 access_k <- fetch_access(2024, grade = "K")
 }
+}
+\seealso{
+[fetch_ell()] for the EL **population** feature (headcount and share
+  of enrollment), which joins to these proficiency results on the CDS id
+  backbone.
 }

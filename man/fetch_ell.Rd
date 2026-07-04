@@ -4,7 +4,7 @@
 \alias{fetch_ell}
 \title{Fetch New Jersey English Learner (EL) population data}
 \usage{
-fetch_ell(end_year, tidy = TRUE, use_cache = FALSE)
+fetch_ell(end_year, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
 }
 \arguments{
 \item{end_year}{ending academic year. Valid values: 2006-2026. See
@@ -16,6 +16,13 @@ fetch_ell(end_year, tidy = TRUE, use_cache = FALSE)
 
 \item{use_cache}{if `TRUE`, uses the session cache to avoid re-downloading.
 See [njsd_cache_info()].}
+
+\item{with_status}{if `TRUE` (and `tidy = TRUE`), appends a `value_status`
+column classifying, per row, why the headcount is present or absent
+(`actual` where a count is published, `not_published` for the percent-only
+district/school entity-years 2020-2022). Classified from the raw count
+token before numeric coercion; the count is never back-derived from the
+percent. Default `FALSE` (the column is additive and off by default).}
 }
 \value{
 data.frame of EL population data. An out-of-range `end_year` returns
@@ -31,10 +38,12 @@ assessment (WIDA ACCESS), exposed separately via [fetch_access()].
 \details{
 New Jersey publishes a single current-EL headcount per entity, so the tidy
 output carries `el_status == "current"` and `subgroup == "total"` for every
-row. The EL share of enrollment (`pct_of_enrollment`, 0-100) is computed fresh
-from the published headcount; for the 2020-2022 district/school files, which
-publish only a percent, that published percent is carried through and
-`n_students` is `NA` (the count is never back-derived from the percent).
+row. The source publishes only a total current-EL headcount, not a grade
+breakdown, so `grade_level == "TOTAL"`. The EL share of enrollment
+(`pct_of_enrollment`, 0-100) is computed fresh from the published headcount;
+for the 2020-2022 district/school files, which publish only a percent, that
+published percent is carried through and `n_students` is `NA` (the count is
+never back-derived from the percent).
 }
 \examples{
 \dontrun{
@@ -54,4 +63,8 @@ fetch_ell(2025) \%>\%
   select(district_name, n_students, pct_of_enrollment) \%>\%
   head(10)
 }
+}
+\seealso{
+[fetch_access()] for EL **proficiency** (WIDA ACCESS), which joins to
+  this EL **population** feature on the CDS id backbone.
 }

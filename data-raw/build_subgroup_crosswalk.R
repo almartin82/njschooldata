@@ -4,6 +4,7 @@ standard_mapping <- data.frame(
   raw_value = c(
     "total population",
     "total_population",
+    "total",
     "economically disadvantaged",
     "ed",
     "non_ed",
@@ -38,6 +39,7 @@ standard_mapping <- data.frame(
   subgroup_std = c(
     "total_enrollment",
     "total_enrollment",
+    "total_enrollment",
     "econ_disadv",
     "econ_disadv",
     "non_econ_disadv",
@@ -70,6 +72,7 @@ standard_mapping <- data.frame(
     NA_character_
   ),
   dimension = c(
+    "total",
     "total",
     "total",
     "econ",
@@ -201,10 +204,19 @@ grad6yr_inputs <- c(
   "Female"
 )
 
+# The EL population feature (fetch_ell) always emits subgroup == "total" (the
+# single current-EL headcount), and the WIDA ACCESS bridge (fetch_access) emits
+# subgroup == "limited english proficiency" (every ACCESS taker is a current EL).
+ell_inputs <- c(
+  "total",
+  "limited english proficiency"
+)
+
 subgroup_crosswalk <- rbind(
   build_family("spr", clean_spr_subgroups(spr_inputs)),
   build_family("parcc", tidy_parcc_subgroup(parcc_inputs)),
-  build_family("grad6yr", clean_6yr_grad_subgroups(grad6yr_inputs))
+  build_family("grad6yr", clean_6yr_grad_subgroups(grad6yr_inputs)),
+  build_family("ell", ell_inputs)
 )
 
 dir.create("data", showWarnings = FALSE)
