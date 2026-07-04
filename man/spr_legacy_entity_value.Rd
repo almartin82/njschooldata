@@ -4,7 +4,7 @@
 \alias{spr_legacy_entity_value}
 \title{Pick an entity value from a pre-redesign SPR sheet with a parallel state column}
 \usage{
-spr_legacy_entity_value(df, entity_col, state_col, level)
+spr_legacy_entity_value(df, entity_col, state_col, level, with_status = FALSE)
 }
 \arguments{
 \item{df}{A data frame from \code{\link{fetch_spr_data}}.}
@@ -14,6 +14,10 @@ spr_legacy_entity_value(df, entity_col, state_col, level)
 \item{state_col}{Name of the parallel statewide value column (may be absent).}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
+
+\item{with_status}{Logical. If \code{TRUE}, return a list with the cleaned
+numeric \code{value} and the \code{status} classified from the picked raw
+cell. The default \code{FALSE} returns the legacy numeric vector.}
 }
 \value{
 A numeric vector; suppressed / non-numeric cells become \code{NA}.

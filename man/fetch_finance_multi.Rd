@@ -8,7 +8,8 @@ fetch_finance_multi(
   end_year_vector = NULL,
   end_years = NULL,
   tidy = TRUE,
-  use_cache = TRUE
+  use_cache = TRUE,
+  with_status = FALSE
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ discovery tooling.}
 \item{tidy}{logical, default \code{TRUE}. See \code{\link{fetch_finance}}.}
 
 \item{use_cache}{logical, default \code{TRUE}. See \code{\link{fetch_finance}}.}
+
+\item{with_status}{logical, default \code{FALSE}. See
+\code{\link{fetch_finance}}.}
 }
 \value{
 A single tibble, the per-year results of \code{\link{fetch_finance}}

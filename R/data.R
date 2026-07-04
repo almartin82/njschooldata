@@ -387,3 +387,35 @@
 #' @source Derived from the in-package subgroup cleaners; rebuild with
 #'   \code{data-raw/build_subgroup_crosswalk.R}
 "subgroup_crosswalk"
+
+#' Era Break Metadata
+#'
+#' A documented metadata table of New Jersey assessment, attendance,
+#' graduation, and economically disadvantaged definition break years. These
+#' rows identify years where trend code should segment or flag results rather
+#' than drawing a continuous line across a regime change or COVID disruption.
+#'
+#' The \code{break_set} values align to the package's metric registry era
+#' groups. \code{scale_break} and \code{definition_change} rows start a new
+#' \code{\link{tag_era}} era. \code{covid_gap} rows are flagged as break years
+#' but do not start a new scale era.
+#'
+#' @format A data frame with 11 rows and 6 columns:
+#' \describe{
+#'   \item{break_set}{Metric family key, such as \code{"njsla"},
+#'     \code{"grad"}, \code{"attendance"}, or \code{"econ_disadv"}}
+#'   \item{break_year}{School year ending year for the break}
+#'   \item{break_type}{Break type: one of \code{"scale_break"},
+#'     \code{"covid_gap"}, or \code{"definition_change"}}
+#'   \item{label}{Short human-readable break label}
+#'   \item{comparable_prior}{Logical flag indicating whether the prior-year
+#'     value is comparable across the break; \code{NA} for COVID gap rows where
+#'     comparability is not a scale question}
+#'   \item{notes}{Public-record justification for the break}
+#' }
+#' @seealso \code{\link{get_era_breaks}}, \code{\link{tag_era}},
+#'   \code{\link{assert_no_break_span}}
+#' @source NJDOE and NJDA public assessment, school-performance, graduation,
+#'   attendance, school-meals, and ASSA guidance; rebuild with
+#'   \code{data-raw/build_era_breaks.R}
+"era_breaks"

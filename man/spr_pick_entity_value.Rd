@@ -4,7 +4,7 @@
 \alias{spr_pick_entity_value}
 \title{Collapse an SPR school/district/state value triple to one column}
 \usage{
-spr_pick_entity_value(df, base, level)
+spr_pick_entity_value(df, base, level, with_status = FALSE)
 }
 \arguments{
 \item{df}{A data frame from \code{\link{fetch_spr_data}} (so the
@@ -14,6 +14,10 @@ spr_pick_entity_value(df, base, level)
 triple \code{proficiency_rate_school} / \code{_district} / \code{_state}.}
 
 \item{level}{One of \code{"school"} or \code{"district"}.}
+
+\item{with_status}{Logical. If \code{TRUE}, return a list with the cleaned
+numeric \code{value} and the \code{status} classified from the picked raw
+cell. The default \code{FALSE} returns the legacy numeric vector.}
 }
 \value{
 A numeric vector: the \code{_school} value at school level; the
