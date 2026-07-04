@@ -58,6 +58,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/abbreviate_street_types.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/add_dfg.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/add_percentile_rank.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/add_subgroup_std.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/agg_enr_column_order.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/agg_enr_pct_total.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/agg_spec_pop_column_order.html</loc></url>
@@ -74,6 +75,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/apply_charter_apportionment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/arrange_enr.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assessment_peer_percentile.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/assign_entity_flags.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/assign_legacy_assess_flags.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/attach_facilities_nces.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/attach_nces_ids.html</loc></url>
@@ -489,7 +491,9 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_sped_disability_category.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_sped_placement_subgroups.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/standardize_subgroup.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/statewide_peer_percentile.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/subgroup_crosswalk.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_compare.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_composition.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/tges_composition_drift.html</loc></url>

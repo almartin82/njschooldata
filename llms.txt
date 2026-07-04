@@ -1359,6 +1359,8 @@ Additional exported functions
   : Add DFG classification to district data
 - [`add_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/add_percentile_rank.md)
   : Add percentile rank columns for any metric
+- [`add_subgroup_std()`](https://almartin82.github.io/njschooldata/reference/add_subgroup_std.md)
+  : Add standardized subgroup labels
 - [`agg_enr_column_order()`](https://almartin82.github.io/njschooldata/reference/agg_enr_column_order.md)
   : Helper function to return aggregate enrollment columns in correct
   order
@@ -1388,6 +1390,8 @@ Additional exported functions
   : Analyze Course Access Equity
 - [`analyze_retention_patterns()`](https://almartin82.github.io/njschooldata/reference/analyze_retention_patterns.md)
   : Analyze Staff Retention Patterns
+- [`assign_entity_flags()`](https://almartin82.github.io/njschooldata/reference/assign_entity_flags.md)
+  : Assign standard entity-level flags
 - [`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
   : Attach federal NCES ids to an enrollment data frame
 - [`calc_ap_access_rate()`](https://almartin82.github.io/njschooldata/reference/calc_ap_access_rate.md)
@@ -1840,6 +1844,10 @@ Additional exported functions
   : Aggregate multiple sped rows and produce summary statistics
 - [`sped_lookup_map`](https://almartin82.github.io/njschooldata/reference/sped_lookup_map.md)
   : Special Education District Lookup Map
+- [`standardize_subgroup()`](https://almartin82.github.io/njschooldata/reference/standardize_subgroup.md)
+  : Standardize subgroup labels
+- [`subgroup_crosswalk`](https://almartin82.github.io/njschooldata/reference/subgroup_crosswalk.md)
+  : Subgroup Standardization Crosswalk
 - [`tges_compare()`](https://almartin82.github.io/njschooldata/reference/tges_compare.md)
   : A side-by-side fiscal scorecard for a named set of districts
 - [`tges_composition()`](https://almartin82.github.io/njschooldata/reference/tges_composition.md)
