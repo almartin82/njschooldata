@@ -472,6 +472,9 @@ Additional exported functions
   : Standard subgroup pairs for gap analysis
 - [`add_dfg()`](https://almartin82.github.io/njschooldata/reference/add_dfg.md)
   : Add DFG classification to district data
+- [`add_favorable_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/add_favorable_percentile_rank.md)
+  : Add favorable-direction percentile rank columns for a registered
+  metric
 - [`add_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/add_percentile_rank.md)
   : Add percentile rank columns for any metric
 - [`add_subgroup_std()`](https://almartin82.github.io/njschooldata/reference/add_subgroup_std.md)
@@ -505,6 +508,10 @@ Additional exported functions
   : Analyze Course Access Equity
 - [`analyze_retention_patterns()`](https://almartin82.github.io/njschooldata/reference/analyze_retention_patterns.md)
   : Analyze Staff Retention Patterns
+- [`annotate_metric()`](https://almartin82.github.io/njschooldata/reference/annotate_metric.md)
+  : Attach metric metadata to a data frame
+- [`assert_no_break_span()`](https://almartin82.github.io/njschooldata/reference/assert_no_break_span.md)
+  : Assert a year span does not cross an era break
 - [`assign_entity_flags()`](https://almartin82.github.io/njschooldata/reference/assign_entity_flags.md)
   : Assign standard entity-level flags
 - [`attach_nces_ids()`](https://almartin82.github.io/njschooldata/reference/attach_nces_ids.md)
@@ -586,6 +593,8 @@ Additional exported functions
   : Enrich School Data with City Ward
 - [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
   : Enrich School Data with Lat / Long
+- [`era_breaks`](https://almartin82.github.io/njschooldata/reference/era_breaks.md)
+  : Era Break Metadata
 - [`extract_rc_AP()`](https://almartin82.github.io/njschooldata/reference/extract_rc_AP.md)
   : Extract Report Card Advanced Placement Data
 - [`extract_rc_SAT()`](https://almartin82.github.io/njschooldata/reference/extract_rc_SAT.md)
@@ -822,6 +831,8 @@ Additional exported functions
   : Get districts in a specific District Factor Group
 - [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
   : Get NJ District Directory Data
+- [`get_era_breaks()`](https://almartin82.github.io/njschooldata/reference/get_era_breaks.md)
+  : Get era break metadata
 - [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
   : Get an ESSA comprehensive or targeted accountability file
 - [`get_merged_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_merged_rc_database.md)
@@ -893,13 +904,19 @@ Additional exported functions
   : NJASK 2009 Fixed-Width File Layout
 - [`layout_njask10`](https://almartin82.github.io/njschooldata/reference/layout_njask10.md)
   : NJASK 2010 Fixed-Width File Layout
+- [`list_metrics()`](https://almartin82.github.io/njschooldata/reference/list_metrics.md)
+  : List registered metrics
 - [`list_spr_sheets()`](https://almartin82.github.io/njschooldata/reference/list_spr_sheets.md)
   : List Available SPR Sheets
+- [`load_metric_registry()`](https://almartin82.github.io/njschooldata/reference/load_metric_registry.md)
+  : Load the bundled metric registry
 - [`matric_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/matric_aggregate_calcs.md)
   : Aggregate multiple postsecondary matriculation rows and produce
   summary statistics
 - [`matric_column_order()`](https://almartin82.github.io/njschooldata/reference/matric_column_order.md)
   : Matriculation column order
+- [`metric_meta()`](https://almartin82.github.io/njschooldata/reference/metric_meta.md)
+  : Look up metadata for one metric
 - [`njsd_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_clear.md)
   : Clear the session cache
 - [`njsd_cache_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_cache_enable.md)
@@ -963,6 +980,8 @@ Additional exported functions
   : Standardize subgroup labels
 - [`subgroup_crosswalk`](https://almartin82.github.io/njschooldata/reference/subgroup_crosswalk.md)
   : Subgroup Standardization Crosswalk
+- [`tag_era()`](https://almartin82.github.io/njschooldata/reference/tag_era.md)
+  : Tag rows with era identifiers
 - [`tges_compare()`](https://almartin82.github.io/njschooldata/reference/tges_compare.md)
   : A side-by-side fiscal scorecard for a named set of districts
 - [`tges_composition()`](https://almartin82.github.io/njschooldata/reference/tges_composition.md)
