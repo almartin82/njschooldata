@@ -4,12 +4,26 @@
 \alias{fetch_violence_vandalism_hib}
 \title{Fetch Violence/Vandalism/HIB Data}
 \usage{
-fetch_violence_vandalism_hib(end_year, level = "school")
+fetch_violence_vandalism_hib(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE
+)
 }
 \arguments{
 \item{end_year}{A school year (2017-2025)}
 
 \item{level}{One of "school" or "district"}
+
+\item{with_status}{Logical, default \code{FALSE}. If \code{TRUE}, appends
+\code{value_status}, classified from the raw incidents-per-100-students
+rate token before numeric coercion.}
+
+\item{with_denominator}{Logical, default \code{FALSE}. If \code{TRUE},
+appends \code{n_students} from the matching total-enrollment row in
+\code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+rows remain \code{NA}.}
 }
 \value{
 Data frame with incident counts

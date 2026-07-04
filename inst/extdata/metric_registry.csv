@@ -62,13 +62,18 @@ discipline,weapons,Weapons incidents,count,lower_is_better,FALSE,,,Emitted by fe
 discipline,vandalism,Vandalism incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
 discipline,substances,Substance incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
 discipline,hib,HIB incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,harassment_intimidation_bullying_hib,HIB incidents,count,lower_is_better,FALSE,,,Legacy HIB column emitted by fetch_violence_vandalism_hib
 discipline,other_incidents,Other incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,total_unique_incidents,Total unique incidents,count,lower_is_better,FALSE,,,Emitted by fetch_violence_vandalism_hib
+discipline,incidents_per_100_students_enrolled,Incidents per 100 students enrolled,per 100 students,lower_is_better,TRUE,n_students,,Legacy rate emitted by fetch_violence_vandalism_hib
+discipline,incidents_per_100_students,Incidents per 100 students,per 100 students,lower_is_better,TRUE,n_students,,Emitted by fetch_violence_vandalism_hib
 discipline,police_count,Police notifications,count,lower_is_better,FALSE,,,Emitted by SPR group grade detail helpers
 discipline,arrested_count,Student arrests,count,lower_is_better,FALSE,,,Emitted by fetch_arrests
 discipline,hib_alleged,HIB alleged investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 discipline,hib_confirmed,HIB confirmed investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 discipline,total_hib_investigations,Total HIB investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 restraint,restraint_rate,Restraint rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for restraint_pct
+restraint,seclusion_rate,Seclusion rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for seclusion_pct
 restraint,any_restraint_seclusion_count,Any restraint or seclusion count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
 restraint,any_restraint_seclusion_pct,Any restraint or seclusion percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
 restraint,restraint_count,Restraint count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion

@@ -4,7 +4,12 @@
 \alias{fetch_police_notifications}
 \title{Fetch Police Notifications}
 \usage{
-fetch_police_notifications(end_year, level = "school")
+fetch_police_notifications(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE
+)
 }
 \arguments{
 \item{end_year}{A school year (2018-2025). Year is the end of the academic
@@ -13,6 +18,17 @@ year - e.g. the 2023-24 school year is \code{end_year} 2024.}
 \item{level}{One of \code{"school"} or \code{"district"}. \code{"school"}
 returns school-level data; \code{"district"} returns district and
 state-level data.}
+
+\item{with_status}{Logical, default \code{FALSE}. If \code{TRUE}, appends
+row-level \code{value_status}, classified from the raw incident-category
+cells before numeric coercion. A row is \code{suppressed} when any category
+is suppressed, \code{actual} when any category has a real number and none is
+suppressed, and otherwise the most honest missing-data status available.}
+
+\item{with_denominator}{Logical, default \code{FALSE}. If \code{TRUE},
+appends \code{n_students} from the matching total-enrollment row in
+\code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+rows remain \code{NA}.}
 }
 \value{
 Data frame with entity identifiers, the six incident-category
