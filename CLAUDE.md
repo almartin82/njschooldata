@@ -461,6 +461,47 @@ statewide column). Where the column name embeds the grade/test, `grade_subject`/
   `end_year` 2021 = SY2020-21. Anchors: statewide 4-yr = 88.9 (2025) / 85.2
   (2022); Atlantic City (`0110`) 4-yr 2022 = 66.5.
 
+## Valid Filter Values (special education)
+
+Two fetchers read NJ DOE IDEA-618 public-reporting special-education data
+(source `nj.gov/education/specialed/monitor/ideapublicdata/docs/`). Both carry
+the standard entity flags (`is_state`/`is_county`/`is_district`/`is_school`/
+`is_charter`/`is_charter_sector`/`is_allpublic`; `is_charter` flags county 80)
+and an opt-in `with_status = FALSE` arg (TRUE appends a `value_status` factor
+classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
+0). Metric polarity/denominator metadata is in `metric_registry.csv`
+(`sped_rate`/`sped_num`/`gened_num`/`sped_num_no_speech`, and placement `count`/
+`percent`/`subgroup_total`).
+
+- **`fetch_sped(end_year, level, with_status)`** - district classification
+  rate. **`level = "district"` (default) covers every end_year 2015-2025**: the
+  2015-2024 archives live in the year-labeled folders/zips of the IDEA-618
+  directory (e.g. `docs/2020.zip` -> `2020/Lea_Classification_Pub.xlsx`), 2025
+  is the consolidated `District Rates` sheet. Columns: `end_year`, `county_id`,
+  `county_name`, `district_id`, `district_name`, `gened_num`, `sped_num`,
+  `sped_rate` (+ flags). Rates are published shares - a few tiny/sending
+  districts publish `sped_rate > 100` (e.g. 2018), passed through UNCLIPPED,
+  never fabricated. **`level = "state"` (by IDEA disability category) is
+  2025-only** (`State Rates` sheet -> `disability_category`, `n_students`,
+  `sped_rate`, `suppressed`); earlier years have NO clean public-only
+  state-by-disability workbook -> honest error (not_published), NOT transcribed.
+  Pre-2015 requires an OPRA request. `disability_category` is standardized
+  snake_case with the `"Statewide Total"` rollup mapped to `all_disabilities`.
+- **`fetch_sped_placement(end_year, age_group, level, tidy, with_status)`** /
+  `fetch_sped_placement_multi()` - IDEA-618 educational-environment (LRE)
+  placement, 2020-2025. `level` is `"district"` (default) or `"state"`;
+  **`level = "school"` is rejected honestly** (NJ DOE publishes LRE at
+  district/state only - school-level placement is not_published). `age_group`
+  is `"5-21"` (default) or `"3-5"`. Tidy output adds `subgroup_std` immediately
+  after `subgroup`: standard demographic subgroups map onto the shared
+  vocabulary; placement-specific / non-demographic tokens (`total`, disability
+  categories, `age_*`, `lep`, `native_american`) have NO standard demographic
+  equivalent and carry `subgroup_std = NA` by design (the row's dimension is in
+  `dimension`). `with_status` classifies the `count` column
+  (`actual`/`suppressed`; a `"*"` small cell is suppressed). Pre-2025 district
+  5-21 publishes counts only (`percent` is `NA` in those rows); state-level
+  2020-2022 slices ship from bundled transcribed-PDF CSVs.
+
 ## Caching
 
 Two layers, both on by default.
