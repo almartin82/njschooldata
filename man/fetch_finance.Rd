@@ -4,7 +4,13 @@
 \alias{fetch_finance}
 \title{Fetch NJ school finance in the canonical cross-state schema}
 \usage{
-fetch_finance(end_year, tidy = TRUE, use_cache = TRUE, with_status = FALSE)
+fetch_finance(
+  end_year,
+  tidy = TRUE,
+  use_cache = TRUE,
+  with_status = FALSE,
+  level = "all"
+)
 }
 \arguments{
 \item{end_year}{school year (end of the academic year). See
@@ -22,6 +28,11 @@ cache.}
 \code{value_status}, classifying present values as \code{actual}, current
 per-pupil actuals not yet published as \code{not_yet_observed}, and missing
 values with absent per-pupil denominators as \code{not_published}.}
+
+\item{level}{entity grain to return: \code{"all"} (default, state and
+district rows), \code{"state"}, \code{"district"}, or \code{"school"}.
+School-level NJ finance is not published in this fetcher; school requests
+return structural gap rows only.}
 }
 \value{
 A tibble in the canonical finance schema: \code{end_year},
@@ -63,6 +74,13 @@ not yet published); years before 2019 carry per-pupil spending only. Values
 are nominal dollars exactly as published - no rescaling, no fabrication. The
 federal \code{nces_dist} identifier is attached from the bundled CCD
 crosswalk; unmatched districts keep \code{NA}.
+
+\strong{Entity grain.} NJ finance in this front door is district/state only.
+NJ's school-level per-pupil expenditure reporting is a separate source that
+is not wired here, so \code{is_school} remains \code{FALSE}. If
+\code{level = "school"} is requested, the function returns structural gap
+rows; use \code{with_status = TRUE} to see \code{value_status =
+"not_published"} for those rows.
 }
 \examples{
 \dontrun{

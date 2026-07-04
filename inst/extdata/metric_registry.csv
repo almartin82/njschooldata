@@ -1,10 +1,10 @@
 domain,metric,label,unit,polarity,is_rate,denominator_metric,era_break_set,notes
-finance,per_pupil_total,Total expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_instruction,Instruction expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_support_services,Support services expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_administration,Administration expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_operations_maintenance,Operations and maintenance expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_food_service,Food service expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_total,Total expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_instruction,Instruction expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_support_services,Support services expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_administration,Administration expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_operations_maintenance,Operations and maintenance expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_food_service,Food service expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
 finance,revenue_state,State aid revenue,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
 graduation,grad_rate,Graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate
 graduation,four_yr_grad_rate,Four year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate when present

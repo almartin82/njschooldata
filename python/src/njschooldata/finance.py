@@ -1,10 +1,12 @@
 """School finance data functions."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 import pandas as pd
 
 from ._r_bridge import call_r_function, r_to_pandas
+
+FinanceLevel = Literal["all", "state", "district", "school"]
 
 
 @r_to_pandas
@@ -12,6 +14,8 @@ def fetch_finance(
     end_year: int,
     tidy: bool = True,
     use_cache: bool = True,
+    with_status: bool = False,
+    level: FinanceLevel = "all",
 ) -> pd.DataFrame:
     """
     Fetch New Jersey school finance data in the canonical cross-state schema.
@@ -27,6 +31,11 @@ def fetch_finance(
         Passed through to the R package.
     use_cache : bool, default True
         Whether to use the R package source cache.
+    with_status : bool, default False
+        Add a ``value_status`` column for structural missingness.
+    level : {"all", "state", "district", "school"}, default "all"
+        Entity grain to return. ``"school"`` returns structural gap rows because
+        school-level finance is not published by this R fetcher.
 
     Returns
     -------
@@ -46,6 +55,8 @@ def fetch_finance(
         end_year,
         tidy=tidy,
         use_cache=use_cache,
+        with_status=with_status,
+        level=level,
     )
 
 
@@ -54,6 +65,8 @@ def fetch_finance_multi(
     end_years: Optional[list[int]] = None,
     tidy: bool = True,
     use_cache: bool = True,
+    with_status: bool = False,
+    level: FinanceLevel = "all",
 ) -> pd.DataFrame:
     """
     Fetch New Jersey school finance data for multiple years.
@@ -67,13 +80,22 @@ def fetch_finance_multi(
         Passed through to the R package.
     use_cache : bool, default True
         Whether to use the R package source cache.
+    with_status : bool, default False
+        Add a ``value_status`` column for structural missingness.
+    level : {"all", "state", "district", "school"}, default "all"
+        Entity grain to return.
 
     Returns
     -------
     pd.DataFrame
         Combined finance data for all requested years in the canonical schema.
     """
-    kwargs = {"tidy": tidy, "use_cache": use_cache}
+    kwargs = {
+        "tidy": tidy,
+        "use_cache": use_cache,
+        "with_status": with_status,
+        "level": level,
+    }
     if end_years is not None:
         kwargs["end_years"] = end_years
     return call_r_function("fetch_finance_multi", **kwargs)

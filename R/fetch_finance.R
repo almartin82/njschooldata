@@ -28,7 +28,7 @@
 # ==============================================================================
 
 
-# Standard metric vocabulary this package emits (see docs/FINANCE-DATA-SPEC.md).
+# Standard metric vocabulary this package emits (see dev-docs/FINANCE-DATA-SPEC.md).
 # `per_pupil_total` and `per_pupil_instruction` are the standard cross-state
 # names; the remaining per_pupil_* category metrics are NJ-specific (NJ publishes
 # these categories per-pupil rather than as absolute totals) and are documented
@@ -42,6 +42,10 @@
   "per_pupil_food_service",
   "revenue_state"
 )
+
+.finance_latest_observed_per_pupil_year <- 2024L
+.finance_per_pupil_metrics <- .finance_metrics[grepl("^per_pupil_", .finance_metrics)]
+.finance_levels <- c("all", "state", "district", "school")
 
 # canonical tidy column order
 .finance_cols <- c(
@@ -66,9 +70,171 @@
 #' @return integer vector of available \code{end_year}s
 #' @export
 get_available_finance_years <- function() {
-  spending <- 2001:2024
+  spending <- 2001:.finance_latest_observed_per_pupil_year
   revenue  <- 2019:2026
   sort(unique(c(spending, revenue)))
+}
+
+
+normalize_finance_level <- function(level) {
+  if (length(level) != 1L || is.na(level)) {
+    stop("`level` must be one of: ", paste(.finance_levels, collapse = ", "),
+         call. = FALSE)
+  }
+  level <- as.character(level)
+  match.arg(level, .finance_levels)
+}
+
+
+# Validate the package END-year convention at the point the finance sources are
+# combined. TGES spending actuals are published in the following guide year
+# (FY2024 actuals in the 2025 guide); state aid is already keyed to the requested
+# fiscal/school END year. A one-year drift here silently corrupts trends.
+assert_finance_year_alignment <- function(spending, revenue, end_year,
+                                          tges_report_year) {
+  end_year <- as.integer(end_year)
+  if (length(end_year) != 1L || is.na(end_year)) {
+    stop("`end_year` must be a single year.", call. = FALSE)
+  }
+
+  expected_tges_report_year <- end_year + 1L
+  tges_report_year <- as.integer(tges_report_year)
+  if (length(tges_report_year) != 1L || is.na(tges_report_year) ||
+      tges_report_year != expected_tges_report_year) {
+    stop(
+      "Finance FY/SY alignment failed: TGES spending actuals for end_year ",
+      end_year,
+      " must come from the following year guide (",
+      expected_tges_report_year,
+      "), not ",
+      paste(tges_report_year, collapse = ", "),
+      ".",
+      call. = FALSE
+    )
+  }
+
+  assert_source_year <- function(df, source_label) {
+    if (is.null(df) || nrow(df) == 0) return(invisible(TRUE))
+    if (!"end_year" %in% names(df)) {
+      stop(
+        "Finance FY/SY alignment failed: ",
+        source_label,
+        " rows are missing `end_year`.",
+        call. = FALSE
+      )
+    }
+
+    row_year <- as.integer(df$end_year)
+    bad <- !is.na(row_year) & row_year != end_year
+    if (any(bad)) {
+      bad_years <- sort(unique(row_year[bad]))
+      stop(
+        "Finance FY/SY alignment failed: ",
+        source_label,
+        " row end_year must equal requested end_year ",
+        end_year,
+        ". Off-year value(s): ",
+        paste(bad_years, collapse = ", "),
+        ".",
+        call. = FALSE
+      )
+    }
+
+    invisible(TRUE)
+  }
+
+  assert_source_year(spending, "spending")
+  assert_source_year(revenue, "state aid")
+  invisible(TRUE)
+}
+
+
+finance_tges_report_year <- function(end_year) {
+  as.integer(end_year) + 1L
+}
+
+
+filter_finance_level <- function(df, level) {
+  if (identical(level, "all") || is.null(df) || nrow(df) == 0) {
+    return(df)
+  }
+  if (identical(level, "state")) {
+    return(df[df$is_state %in% TRUE, , drop = FALSE])
+  }
+  if (identical(level, "district")) {
+    return(df[df$is_district %in% TRUE, , drop = FALSE])
+  }
+  df[0, , drop = FALSE]
+}
+
+
+finance_school_gap_frame <- function(end_year, with_status = FALSE) {
+  metric <- .finance_metrics
+  out <- tibble::tibble(
+    end_year               = as.integer(end_year),
+    state_id               = NA_character_,
+    entity_name            = NA_character_,
+    county                 = NA_character_,
+    is_state               = FALSE,
+    is_district            = FALSE,
+    is_school              = FALSE,
+    is_charter             = NA,
+    nces_dist              = NA_character_,
+    nces_sch               = NA_character_,
+    metric                 = metric,
+    value                  = NA_real_,
+    is_per_pupil           = metric %in% .finance_per_pupil_metrics,
+    enrollment_denominator = NA_real_
+  )
+
+  if (isTRUE(with_status)) {
+    out$value_status <- finance_value_status(
+      metric = out$metric,
+      value = out$value,
+      end_year = out$end_year,
+      is_per_pupil = out$is_per_pupil,
+      enrollment_denominator = out$enrollment_denominator,
+      latest_observed_per_pupil_year = .finance_latest_observed_per_pupil_year,
+      structural_not_published = TRUE
+    )
+  }
+
+  out[, if (isTRUE(with_status)) .finance_cols_with_status else .finance_cols,
+      drop = FALSE]
+}
+
+
+add_unobserved_per_pupil_finance <- function(df, end_year) {
+  if (is.null(df) || nrow(df) == 0 ||
+      end_year <= .finance_latest_observed_per_pupil_year) {
+    return(df)
+  }
+
+  missing_metrics <- setdiff(.finance_per_pupil_metrics, unique(df$metric))
+  if (length(missing_metrics) == 0) {
+    return(df)
+  }
+
+  entity_cols <- c(
+    "end_year", "state_id", "entity_name", "county",
+    "is_state", "is_district", "is_school", "is_charter"
+  )
+  entities <- unique(df[df$is_state %in% TRUE | df$is_district %in% TRUE,
+                        entity_cols, drop = FALSE])
+  if (nrow(entities) == 0) {
+    return(df)
+  }
+
+  gap_entities <- entities[rep(seq_len(nrow(entities)),
+                               each = length(missing_metrics)), ,
+                           drop = FALSE]
+  gaps <- gap_entities
+  gaps$metric <- rep(missing_metrics, times = nrow(entities))
+  gaps$value <- NA_real_
+  gaps$is_per_pupil <- TRUE
+  gaps$enrollment_denominator <- NA_real_
+
+  dplyr::bind_rows(df, gaps)
 }
 
 
@@ -212,7 +378,7 @@ get_finance_revenue <- function(end_year) {
 
 get_finance_spending <- function(end_year) {
   end_year   <- as.integer(end_year)
-  report_year <- end_year + 1L
+  report_year <- finance_tges_report_year(end_year)
   if (report_year < 2002 || report_year > 2025) return(NULL)
 
   tg <- tryCatch(fetch_tges(report_year), error = function(e) NULL)
@@ -233,7 +399,9 @@ get_finance_spending <- function(end_year) {
   )
   pieces <- purrr::compact(pieces)
   if (length(pieces) == 0) return(NULL)
-  dplyr::bind_rows(pieces)
+  out <- dplyr::bind_rows(pieces)
+  attr(out, "tges_report_year") <- report_year
+  out
 }
 
 
@@ -272,6 +440,13 @@ get_finance_spending <- function(end_year) {
 #' federal \code{nces_dist} identifier is attached from the bundled CCD
 #' crosswalk; unmatched districts keep \code{NA}.
 #'
+#' \strong{Entity grain.} NJ finance in this front door is district/state only.
+#' NJ's school-level per-pupil expenditure reporting is a separate source that
+#' is not wired here, so \code{is_school} remains \code{FALSE}. If
+#' \code{level = "school"} is requested, the function returns structural gap
+#' rows; use \code{with_status = TRUE} to see \code{value_status =
+#' "not_published"} for those rows.
+#'
 #' @param end_year school year (end of the academic year). See
 #'   \code{\link{get_available_finance_years}} for valid values.
 #' @param tidy logical, default \code{TRUE}. The tidy long schema is the only
@@ -284,6 +459,10 @@ get_finance_spending <- function(end_year) {
 #'   \code{value_status}, classifying present values as \code{actual}, current
 #'   per-pupil actuals not yet published as \code{not_yet_observed}, and missing
 #'   values with absent per-pupil denominators as \code{not_published}.
+#' @param level entity grain to return: \code{"all"} (default, state and
+#'   district rows), \code{"state"}, \code{"district"}, or \code{"school"}.
+#'   School-level NJ finance is not published in this fetcher; school requests
+#'   return structural gap rows only.
 #'
 #' @return A tibble in the canonical finance schema: \code{end_year},
 #'   \code{state_id}, \code{entity_name}, \code{county}, \code{is_state},
@@ -318,12 +497,30 @@ get_finance_spending <- function(end_year) {
 #'
 #' @export
 fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
-                          with_status = FALSE) {
+                          with_status = FALSE, level = "all") {
+  level <- normalize_finance_level(level)
   end_year <- as.integer(end_year)
   if (is.na(end_year)) stop("`end_year` must be a year, e.g. 2024.", call. = FALSE)
 
+  if (identical(level, "school")) {
+    return(tibble::as_tibble(finance_school_gap_frame(
+      end_year,
+      with_status = with_status
+    )))
+  }
+
   spending <- get_finance_spending(end_year)
   revenue  <- get_finance_revenue(end_year)
+  tges_report_year <- attr(spending, "tges_report_year", exact = TRUE)
+  if (is.null(tges_report_year)) {
+    tges_report_year <- finance_tges_report_year(end_year)
+  }
+  assert_finance_year_alignment(
+    spending = spending,
+    revenue = revenue,
+    end_year = end_year,
+    tges_report_year = tges_report_year
+  )
 
   out <- dplyr::bind_rows(spending, revenue)
   if (is.null(out) || nrow(out) == 0) {
@@ -338,14 +535,17 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 
   out <- sanitize_finance_quality(out)
   if (isTRUE(with_status)) {
+    out <- add_unobserved_per_pupil_finance(out, end_year)
     out$value_status <- finance_value_status(
       metric = out$metric,
       value = out$value,
       end_year = out$end_year,
       is_per_pupil = out$is_per_pupil,
-      enrollment_denominator = out$enrollment_denominator
+      enrollment_denominator = out$enrollment_denominator,
+      latest_observed_per_pupil_year = .finance_latest_observed_per_pupil_year
     )
   }
+  out <- filter_finance_level(out, level)
   out <- attach_nces_finance(out)
   out <- out[, if (isTRUE(with_status)) .finance_cols_with_status else .finance_cols,
              drop = FALSE]
@@ -368,6 +568,7 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 #' @param use_cache logical, default \code{TRUE}. See \code{\link{fetch_finance}}.
 #' @param with_status logical, default \code{FALSE}. See
 #'   \code{\link{fetch_finance}}.
+#' @param level entity grain to return. See \code{\link{fetch_finance}}.
 #'
 #' @return A single tibble, the per-year results of \code{\link{fetch_finance}}
 #'   stacked.
@@ -385,7 +586,7 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 #' @export
 fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
                                 tidy = TRUE, use_cache = TRUE,
-                                with_status = FALSE) {
+                                with_status = FALSE, level = "all") {
   if (is.null(end_year_vector)) {
     end_year_vector <- end_years
   } else if (!is.null(end_years) &&
@@ -401,7 +602,7 @@ fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
   purrr::map_dfr(end_year_vector, function(.y) {
     message(.y)
     fetch_finance(.y, tidy = tidy, use_cache = use_cache,
-                  with_status = with_status)
+                  with_status = with_status, level = level)
   })
 }
 

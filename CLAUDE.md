@@ -109,7 +109,7 @@ real ids with `!is.na(nces_dist)` (an `nzchar()` filter alone passes `NA`).
 
 `fetch_finance()` is the uniform, cross-state finance front door. It consolidates
 the data `fetch_tges()` (per-pupil spending) and `fetch_state_aid()` (K-12 state
-aid) already pull onto the canonical tidy schema in `docs/FINANCE-DATA-SPEC.md`.
+aid) already pull onto the canonical tidy schema in `dev-docs/FINANCE-DATA-SPEC.md`.
 Source-specific richness still lives in those functions and the `tges_*` toolkit.
 
 - **FY <-> SY mapping:** `end_year` is the fiscal/school year END. `end_year = 2024`
