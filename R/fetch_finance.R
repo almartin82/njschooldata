@@ -28,7 +28,7 @@
 # ==============================================================================
 
 
-# Standard metric vocabulary this package emits (see docs/FINANCE-DATA-SPEC.md).
+# Standard metric vocabulary this package emits (see dev-docs/FINANCE-DATA-SPEC.md).
 # `per_pupil_total` and `per_pupil_instruction` are the standard cross-state
 # names; the remaining per_pupil_* category metrics are NJ-specific (NJ publishes
 # these categories per-pupil rather than as absolute totals) and are documented
