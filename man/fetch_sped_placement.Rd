@@ -8,7 +8,8 @@ fetch_sped_placement(
   end_year,
   age_group = "5-21",
   level = "district",
-  tidy = TRUE
+  tidy = TRUE,
+  with_status = FALSE
 )
 }
 \arguments{
@@ -19,13 +20,20 @@ year). Valid years: 2020 through 2025.}
 \code{"3-5"} (preschool).}
 
 \item{level}{one of \code{"district"} (district + charter rows, default)
-or \code{"state"} (statewide breakdowns).}
+or \code{"state"} (statewide breakdowns). \code{level = "school"} is
+rejected: NJ DOE publishes LRE at district/state level only (school-level
+placement is not_published).}
 
 \item{tidy}{if \code{TRUE} (default), pivots to the long tidy schema
 described above. If \code{FALSE}, returns the raw workbook tibble(s)
 with minimal cleaning (column names preserved as published; all values
 as character; suppression flags retained). For pre-2025 years that
 span multiple subgroup files, \code{tidy = FALSE} returns a named list.}
+
+\item{with_status}{logical, default \code{FALSE}. When \code{TRUE} (and
+\code{tidy = TRUE}), appends a \code{value_status} column classifying the
+\code{count} value as \code{"actual"} or \code{"suppressed"} (a
+\code{"*"}-suppressed small cell). Additive; default output is unchanged.}
 }
 \value{
 tibble. See "Tidy output schema" for the layout when
@@ -69,6 +77,12 @@ One row per (entity x subgroup x environment), with:
     \code{"black"}, \code{"hispanic"}, \code{"lep"}, \code{"male"}, ...,
     plus disability categories like \code{"autism"} and (2025 state output
     only) age rows like \code{"age_6"})
+  \item \code{subgroup_std} -- the shared cross-domain subgroup vocabulary
+    (added immediately after \code{subgroup}). Standard demographic
+    subgroups map; placement-specific / non-demographic tokens
+    (\code{"total"}, disability categories, \code{age_*}, \code{lep},
+    \code{native_american}) have no standard demographic equivalent and are
+    \code{NA} by design (the row's dimension is given by \code{dimension}).
   \item \code{environment} -- short code for the educational setting (see
     Details for valid values)
   \item \code{count}, \code{percent} -- counts and percents (0-100 scale)

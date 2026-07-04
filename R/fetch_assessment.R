@@ -581,7 +581,7 @@ process_access <- function(access_file, end_year) {
   access_file$is_charter <- access_file$county_id == "80"
 
   # Column order
-  access_file %>%
+  access_file <- access_file %>%
     dplyr::select(
       testing_year, assess_name, test_name, grade,
       county_id, county_name,
@@ -592,6 +592,13 @@ process_access <- function(access_file, end_year) {
       proficient_above,
       is_state, is_district, is_school, is_charter
     )
+
+  # Every ACCESS test-taker is a current English Learner, so the standardized
+  # subgroup is `lep`. Appended at the tail (additive) so the join to the EL
+  # population feature (fetch_ell) shares a subgroup vocabulary. subgroup_std
+  # lands immediately after subgroup.
+  access_file$subgroup <- "limited english proficiency"
+  add_subgroup_std(access_file)
 }
 
 
@@ -611,7 +618,11 @@ process_access <- function(access_file, end_year) {
 #'     \item school_id, school_name, valid_scores
 #'     \item pct_l1 through pct_l6 (proficiency level percentages)
 #'     \item proficient_above (L5 + L6 percentage)
+#'     \item subgroup, subgroup_std (always the English Learner group; `lep`)
 #'   }
+#' @seealso [fetch_ell()] for the EL **population** feature (headcount and share
+#'   of enrollment), which joins to these proficiency results on the CDS id
+#'   backbone.
 #' @export
 #' @examples
 #' \dontrun{
