@@ -276,8 +276,9 @@ names(schools)
 #> [41] "grade_9"                     "grade_10"                   
 #> [43] "grade_11"                    "grade_12"                   
 #> [45] "post_grad"                   "adult_ed"                   
-#> [47] "nces_code"                   "address"                    
-#> [49] "cds_code"
+#> [47] "nces_code"                   "fb_url"                     
+#> [49] "instagram_url"               "x_url"                      
+#> [51] "address"                     "cds_code"
 ```
 
 ## Data Coverage Summary
