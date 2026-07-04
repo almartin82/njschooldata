@@ -4,13 +4,31 @@
 \alias{fetch_restraint_seclusion}
 \title{Fetch Restraint & Seclusion Incidents (school-level)}
 \usage{
-fetch_restraint_seclusion(end_year, level = "school")
+fetch_restraint_seclusion(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE,
+  with_subgroup_std = FALSE
+)
 }
 \arguments{
 \item{end_year}{A school year: 2023 (SY2022-23) or 2024 (SY2023-24).}
 
 \item{level}{Only \code{"school"} is supported (the DARS workbook is
 school-level only). Other values error.}
+
+\item{with_status}{Logical, default \code{FALSE}. If \code{TRUE}, appends
+\code{value_status}, classified from the raw
+\code{any_restraint_seclusion_count} token before numeric coercion.}
+
+\item{with_denominator}{Logical, default \code{FALSE}. If \code{TRUE},
+appends \code{n_students} from the matching total-enrollment row in
+\code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+rows remain \code{NA}.}
+
+\item{with_subgroup_std}{Logical, default \code{FALSE}. If \code{TRUE}, adds
+\code{subgroup_std} immediately after \code{subgroup}.}
 }
 \value{
 Data frame with \code{end_year}, the entity identifiers

@@ -106,6 +106,28 @@ test_that("rs_split_student_group normalizes the DARS labels", {
   ))
 })
 
+test_that("tidy_restraint_seclusion can attach value_status from raw tokens", {
+  raw <- as.data.frame(
+    matrix("0", nrow = 2, ncol = 27),
+    stringsAsFactors = FALSE
+  )
+  raw[[1]] <- c("01", "01")
+  raw[[2]] <- c("Atlantic", "Atlantic")
+  raw[[3]] <- c("0010", "0010")
+  raw[[4]] <- c("Absecon Public Schools District", "Absecon Public Schools District")
+  raw[[5]] <- c("050", "051")
+  raw[[6]] <- c("Emma C Attales", "H Ashton Marsh")
+  raw[[7]] <- c("Asian", "School Total")
+  raw[[8]] <- c("<5", "0")
+
+  out <- tidy_restraint_seclusion(raw, 2024, with_status = TRUE)
+
+  expect_true("value_status" %in% names(out))
+  expect_equal(as.character(out$value_status), c("suppressed", "actual"))
+  expect_true(is.na(out$any_restraint_seclusion_count[1]))
+  expect_equal(out$any_restraint_seclusion_count[2], 0)
+})
+
 
 # ==============================================================================
 # Structure

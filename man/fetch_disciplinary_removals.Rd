@@ -4,13 +4,32 @@
 \alias{fetch_disciplinary_removals}
 \title{Fetch Disciplinary Removals Data}
 \usage{
-fetch_disciplinary_removals(end_year, level = "school")
+fetch_disciplinary_removals(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE,
+  with_subgroup_std = FALSE
+)
 }
 \arguments{
 \item{end_year}{A school year (2018-2025). SY2016-17 (end_year 2017) has no
 discipline-removals sheet in the SPR database.}
 
 \item{level}{One of "school" or "district"}
+
+\item{with_status}{Logical, default \code{FALSE}. If \code{TRUE}, appends
+\code{value_status}, classified from the raw primary suspension-rate token
+before numeric coercion.}
+
+\item{with_denominator}{Logical, default \code{FALSE}. If \code{TRUE},
+appends \code{n_students} from the matching total-enrollment row in
+\code{\link{fetch_enr}} on \code{end_year} and CDS identifiers. Unmatched
+rows remain \code{NA}.}
+
+\item{with_subgroup_std}{Logical, default \code{FALSE}. If \code{TRUE} and
+the source has a student-group/grade label, appends normalized
+\code{subgroup}, \code{subgroup_std}, and \code{grade_level} detail.}
 }
 \value{
 Data frame with disciplinary actions. Includes a

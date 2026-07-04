@@ -4,12 +4,16 @@
 \alias{tidy_restraint_seclusion}
 \title{Tidy a raw DARS Restraint & Seclusion data frame}
 \usage{
-tidy_restraint_seclusion(df, end_year)
+tidy_restraint_seclusion(df, end_year, with_status = FALSE)
 }
 \arguments{
 \item{df}{A raw data frame from \code{\link{get_raw_restraint_seclusion}}.}
 
 \item{end_year}{The school year end (added as a column).}
+
+\item{with_status}{Logical. If \code{TRUE}, append \code{value_status}
+classified from the raw \code{any_restraint_seclusion_count} token before
+numeric coercion.}
 }
 \value{
 The tidy data frame in the documented output schema.

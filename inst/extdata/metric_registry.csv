@@ -1,10 +1,10 @@
 domain,metric,label,unit,polarity,is_rate,denominator_metric,era_break_set,notes
-finance,per_pupil_total,Total expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_instruction,Instruction expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_support_services,Support services expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_administration,Administration expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_operations_maintenance,Operations and maintenance expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
-finance,per_pupil_food_service,Food service expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_total,Total expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_instruction,Instruction expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_support_services,Support services expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_administration,Administration expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_operations_maintenance,Operations and maintenance expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_food_service,Food service expenditures per pupil,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
 finance,revenue_state,State aid revenue,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
 graduation,grad_rate,Graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate
 graduation,four_yr_grad_rate,Four year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate when present
@@ -62,13 +62,18 @@ discipline,weapons,Weapons incidents,count,lower_is_better,FALSE,,,Emitted by fe
 discipline,vandalism,Vandalism incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
 discipline,substances,Substance incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
 discipline,hib,HIB incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,harassment_intimidation_bullying_hib,HIB incidents,count,lower_is_better,FALSE,,,Legacy HIB column emitted by fetch_violence_vandalism_hib
 discipline,other_incidents,Other incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,total_unique_incidents,Total unique incidents,count,lower_is_better,FALSE,,,Emitted by fetch_violence_vandalism_hib
+discipline,incidents_per_100_students_enrolled,Incidents per 100 students enrolled,per 100 students,lower_is_better,TRUE,n_students,,Legacy rate emitted by fetch_violence_vandalism_hib
+discipline,incidents_per_100_students,Incidents per 100 students,per 100 students,lower_is_better,TRUE,n_students,,Emitted by fetch_violence_vandalism_hib
 discipline,police_count,Police notifications,count,lower_is_better,FALSE,,,Emitted by SPR group grade detail helpers
 discipline,arrested_count,Student arrests,count,lower_is_better,FALSE,,,Emitted by fetch_arrests
 discipline,hib_alleged,HIB alleged investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 discipline,hib_confirmed,HIB confirmed investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 discipline,total_hib_investigations,Total HIB investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
 restraint,restraint_rate,Restraint rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for restraint_pct
+restraint,seclusion_rate,Seclusion rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for seclusion_pct
 restraint,any_restraint_seclusion_count,Any restraint or seclusion count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
 restraint,any_restraint_seclusion_pct,Any restraint or seclusion percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
 restraint,restraint_count,Restraint count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
@@ -137,6 +142,7 @@ special_ed,sped_classification_rate,Special education classification rate,percen
 special_ed,sped_rate,Special education classification rate,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
 special_ed,sped_rate_no_speech,Special education classification rate without speech,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
 special_ed,sped_num,Special education student count,count,neutral,FALSE,,,Emitted by fetch_sped
+special_ed,sped_num_no_speech,Special education student count without speech,count,neutral,FALSE,,,Emitted by fetch_sped when the no-speech column is published
 special_ed,gened_num,General education enrollment count,count,neutral,FALSE,,,Emitted by fetch_sped
 special_ed,count,Special education placement count,count,neutral,FALSE,,,Emitted by fetch_sped_placement
 special_ed,percent,Special education placement percent,percent,neutral,TRUE,subgroup_total,,Emitted by fetch_sped_placement

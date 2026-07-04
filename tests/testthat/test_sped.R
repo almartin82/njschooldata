@@ -134,3 +134,81 @@ test_that("fetch_sped(2025, level='state') gives child count by disability", {
   expect_equal(s$suppressed, is.na(s$n_students))
 })
 
+
+
+test_that("get_valid_sped_years spans 2015-2025", {
+  yrs <- get_valid_sped_years()
+  expect_equal(min(yrs), 2015L)
+  expect_equal(max(yrs), 2025L)
+  expect_true(all(2015:2025 %in% yrs))
+})
+
+
+test_that("sped_classification_source maps district years to real archives", {
+  # 2015-2024 live in the year-labeled folders/zips; 2025 is consolidated.
+  s25 <- sped_classification_source(2025, level = "district")
+  expect_match(s25$url, "2025_618data/", fixed = TRUE)
+  expect_equal(s25$sheet, "District Rates")
+
+  s21 <- sped_classification_source(2021, level = "district")
+  expect_match(s21$url, "2020\\.zip$")
+  expect_equal(s21$zip_member, "2020/Lea_Classification_Pub.xlsx")
+
+  s15 <- sped_classification_source(2015, level = "district")
+  expect_match(s15$url, "2014\\.zip$")
+  expect_true(!is.na(s15$zip_member))
+})
+
+
+test_that("clean_sped_df appends entity flags and opt-in value_status", {
+  raw <- tibble::tibble(
+    end_year = rep(2019L, 3),
+    county_id = c("01", "80", "07"),
+    county_name = c("ATLANTIC", "CHARTERS", "ESSEX"),
+    district_id = c("0010", "1234", "3570"),
+    district_name = c("Absecon", "A Charter", "Newark"),
+    gened_num = c("1000", "500", "*"),
+    sped_num = c("150", "60", "20"),
+    sped_rate = c("15.0", "12.0", "*")
+  )
+
+  out <- clean_sped_df(raw, 2019L)
+  # Existing curated columns preserved and in order.
+  expect_identical(
+    names(out)[1:8],
+    c("end_year", "county_id", "county_name", "district_id",
+      "district_name", "gened_num", "sped_num", "sped_rate")
+  )
+  # Entity flags appended additively.
+  expect_true(all(c("is_state", "is_county", "is_district", "is_school",
+                    "is_charter", "is_charter_sector", "is_allpublic") %in%
+                    names(out)))
+  expect_true(all(out$is_district))
+  # county_id == "80" flags charter.
+  expect_true(out$is_charter[out$county_id == "80"])
+  # Row with missing enrollment ("*") is dropped as a footer/suppressed row.
+  expect_false("3570" %in% out$district_id)
+  # value_status is opt-in only.
+  expect_false("value_status" %in% names(out))
+
+  out_ws <- clean_sped_df(raw, 2019L, with_status = TRUE)
+  expect_true("value_status" %in% names(out_ws))
+  expect_equal(as.character(out_ws$value_status[out_ws$county_id == "01"]),
+               "actual")
+})
+
+
+test_that("historical district SPED years return the standard schema", {
+  skip_if_offline()
+  res <- tryCatch(fetch_sped(2018), error = function(e) NULL)
+  skip_if(is.null(res), "SPED 2018 archive not accessible")
+
+  expected_cols <- c("end_year", "county_id", "county_name", "district_id",
+                     "district_name", "gened_num", "sped_num", "sped_rate")
+  expect_true(all(expected_cols %in% names(res)))
+  expect_true(all(c("is_district", "is_charter") %in% names(res)))
+  expect_true(nrow(res) > 500)
+  expect_equal(unique(res$end_year), 2018L)
+  expect_true(is.numeric(res$gened_num))
+  expect_true(all(res$gened_num > 0, na.rm = TRUE))
+})

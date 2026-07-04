@@ -1864,6 +1864,12 @@ tidy_pre2025_sped_placement <- function(raw_list, end_year, age_group, level) {
 #'     \code{"black"}, \code{"hispanic"}, \code{"lep"}, \code{"male"}, ...,
 #'     plus disability categories like \code{"autism"} and (2025 state output
 #'     only) age rows like \code{"age_6"})
+#'   \item \code{subgroup_std} -- the shared cross-domain subgroup vocabulary
+#'     (added immediately after \code{subgroup}). Standard demographic
+#'     subgroups map; placement-specific / non-demographic tokens
+#'     (\code{"total"}, disability categories, \code{age_*}, \code{lep},
+#'     \code{native_american}) have no standard demographic equivalent and are
+#'     \code{NA} by design (the row's dimension is given by \code{dimension}).
 #'   \item \code{environment} -- short code for the educational setting (see
 #'     Details for valid values)
 #'   \item \code{count}, \code{percent} -- counts and percents (0-100 scale)
@@ -1903,12 +1909,18 @@ tidy_pre2025_sped_placement <- function(raw_list, end_year, age_group, level) {
 #' @param age_group one of \code{"5-21"} (school-age, default) or
 #'   \code{"3-5"} (preschool).
 #' @param level one of \code{"district"} (district + charter rows, default)
-#'   or \code{"state"} (statewide breakdowns).
+#'   or \code{"state"} (statewide breakdowns). \code{level = "school"} is
+#'   rejected: NJ DOE publishes LRE at district/state level only (school-level
+#'   placement is not_published).
 #' @param tidy if \code{TRUE} (default), pivots to the long tidy schema
 #'   described above. If \code{FALSE}, returns the raw workbook tibble(s)
 #'   with minimal cleaning (column names preserved as published; all values
 #'   as character; suppression flags retained). For pre-2025 years that
 #'   span multiple subgroup files, \code{tidy = FALSE} returns a named list.
+#' @param with_status logical, default \code{FALSE}. When \code{TRUE} (and
+#'   \code{tidy = TRUE}), appends a \code{value_status} column classifying the
+#'   \code{count} value as \code{"actual"} or \code{"suppressed"} (a
+#'   \code{"*"}-suppressed small cell). Additive; default output is unchanged.
 #'
 #' @return tibble. See "Tidy output schema" for the layout when
 #'   \code{tidy = TRUE}.
@@ -1945,7 +1957,20 @@ tidy_pre2025_sped_placement <- function(raw_list, end_year, age_group, level) {
 fetch_sped_placement <- function(end_year,
                                  age_group = "5-21",
                                  level = "district",
-                                 tidy = TRUE) {
+                                 tidy = TRUE,
+                                 with_status = FALSE) {
+  # NJ DOE publishes IDEA-618 educational-environment (LRE) placement at the
+  # DISTRICT and STATE levels only; there is no school-level LRE table. Reject
+  # level = "school" honestly rather than inventing a school grain.
+  if (identical(level, "school")) {
+    stop(
+      "NJ DOE does not publish SPED placement/LRE at the school level ",
+      "(not_published); it is reported at district and state level only. ",
+      "Use level = 'district' or level = 'state'.",
+      call. = FALSE
+    )
+  }
+
   raw <- get_raw_sped_placement(
     end_year = end_year,
     age_group = age_group,
@@ -1955,7 +1980,7 @@ fetch_sped_placement <- function(end_year,
   # PDF-sourced slices: the bundled CSV is already in the canonical tidy
   # schema, so tidy and non-tidy callers both get the same tibble.
   if (pdf_only_slice(end_year, age_group, level)) {
-    return(raw)
+    return(finalize_sped_placement(raw, with_status = with_status))
   }
 
   if (!tidy) {
@@ -1963,22 +1988,64 @@ fetch_sped_placement <- function(end_year,
   }
 
   if (end_year == 2025L) {
-    if (level == "district" && age_group == "5-21") {
-      return(tidy_sped_placement_district_5_21(raw))
+    out <- if (level == "district" && age_group == "5-21") {
+      tidy_sped_placement_district_5_21(raw)
     } else if (level == "district" && age_group == "3-5") {
-      return(tidy_sped_placement_district_3_5(raw))
+      tidy_sped_placement_district_3_5(raw)
     } else if (level == "state") {
-      return(tidy_sped_placement_state(raw, age_group = age_group))
+      tidy_sped_placement_state(raw, age_group = age_group)
     } else {
       stop(
         "Unsupported (age_group, level) combination.",
         call. = FALSE
       )
     }
+    return(finalize_sped_placement(out, with_status = with_status))
   }
 
   # 2020-2024 path
-  tidy_pre2025_sped_placement(raw, end_year, age_group, level)
+  out <- tidy_pre2025_sped_placement(raw, end_year, age_group, level)
+  finalize_sped_placement(out, with_status = with_status)
+}
+
+
+#' Attach schema-conformance columns to tidy SPED placement output
+#'
+#' Adds the standardized \code{subgroup_std} column (immediately after
+#' \code{subgroup}) and, when \code{with_status = TRUE}, an honesty
+#' \code{value_status} column.
+#'
+#' The placement \code{subgroup} column is a MIXED dimension governed by the
+#' \code{dimension} column: standard demographic subgroups (\code{black},
+#' \code{white}, \code{asian}, \code{hispanic}, \code{male}, \code{female},
+#' \code{multiracial}, \code{pacific_islander}) map onto the shared subgroup
+#' vocabulary; placement-specific / non-demographic tokens (\code{total}, the
+#' disability categories, the \code{age_*} rows, \code{lep},
+#' \code{native_american}) have no standard demographic equivalent and carry
+#' \code{subgroup_std = NA} by design. Unmatched-subgroup warnings from
+#' \code{add_subgroup_std} are therefore expected here and are suppressed.
+#'
+#' \code{value_status} classifies the primary published value, the \code{count}
+#' column. In these child-count sheets a cell is either a published count or a
+#' \code{"*"} small-cell suppression, so a missing \code{count} is classified
+#' \code{"suppressed"} and a present one \code{"actual"} (never fabricated).
+#'
+#' @param df tidy placement tibble (must contain \code{subgroup}; \code{count}
+#'   used for status).
+#' @param with_status logical; attach \code{value_status} when \code{TRUE}.
+#' @return \code{df} with \code{subgroup_std} (and optionally
+#'   \code{value_status}) added additively.
+#' @keywords internal
+finalize_sped_placement <- function(df, with_status = FALSE) {
+  if ("subgroup" %in% names(df)) {
+    df <- suppressWarnings(add_subgroup_std(df))
+  }
+  if (isTRUE(with_status) && "count" %in% names(df)) {
+    df$value_status <- value_status_factor(
+      ifelse(is.na(df[["count"]]), "suppressed", "actual")
+    )
+  }
+  df
 }
 
 
@@ -1997,6 +2064,7 @@ fetch_sped_placement <- function(end_year,
 #' @param age_group one of \code{"5-21"} or \code{"3-5"}
 #' @param level one of \code{"district"} or \code{"state"}
 #' @param tidy logical; passed through to \code{fetch_sped_placement()}
+#' @param with_status logical; passed through to \code{fetch_sped_placement()}
 #'
 #' @return a single tibble with all successfully-fetched years bound together.
 #'
@@ -2016,7 +2084,8 @@ fetch_sped_placement <- function(end_year,
 fetch_sped_placement_multi <- function(end_years,
                                        age_group = "5-21",
                                        level = "district",
-                                       tidy = TRUE) {
+                                       tidy = TRUE,
+                                       with_status = FALSE) {
   results <- list()
   for (yr in end_years) {
     result <- tryCatch(
@@ -2024,7 +2093,8 @@ fetch_sped_placement_multi <- function(end_years,
         end_year = yr,
         age_group = age_group,
         level = level,
-        tidy = tidy
+        tidy = tidy,
+        with_status = with_status
       ),
       error = function(e) {
         warning(

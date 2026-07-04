@@ -4,20 +4,30 @@
 \alias{fetch_sped}
 \title{Fetch Special Education Classification Data}
 \usage{
-fetch_sped(end_year, level = "district")
+fetch_sped(end_year, level = "district", with_status = FALSE)
 }
 \arguments{
 \item{end_year}{ending school year (e.g., 2025 for the 2024-2025 school
-year). Valid years: 2024, 2025.}
+year). Valid years: 2015-2025 (district); 2025 (state).}
 
 \item{level}{one of \code{"district"} (default) or \code{"state"}. The
 \code{"state"} by-disability table is only published for 2025+.}
+
+\item{with_status}{logical, default \code{FALSE}. When \code{TRUE}, appends
+a \code{value_status} column classified from the raw published token
+(before numeric coercion) so suppressed cells are distinguishable from a
+true zero. Additive; default output is unchanged.}
 }
 \value{
 For \code{level = "district"}: a data frame with columns end_year,
   county_id, county_name, district_id, district_name, gened_num, sped_num,
-  sped_rate. For \code{level = "state"}: a tibble with columns end_year,
-  is_state, disability_category, n_students, sped_rate, suppressed.
+  sped_rate, plus the standard entity flags (is_state, is_county,
+  is_district, is_school, is_charter, is_charter_sector, is_allpublic). For
+  \code{level = "state"}: a tibble with columns end_year, is_state,
+  disability_category, n_students, sped_rate, suppressed, plus the entity
+  flags. Metric polarity/denominator metadata for \code{sped_rate},
+  \code{sped_num} and \code{gened_num} is available via
+  \code{\link{metric_meta}} / \code{\link{annotate_metric}}.
 }
 \description{
 Fetches NJ DOE special education classification data (IDEA
@@ -27,9 +37,15 @@ Fetches NJ DOE special education classification data (IDEA
   district). With \code{level = "state"} returns the statewide count of
   students with IEPs by IDEA disability category (2025+ only).
 
-  Historical district data (2003-2019) is no longer accessible via URL and
-  requires an OPRA request. For by-disability counts and educational
-  placement (LRE) across 2020-2025, see \code{\link{fetch_sped_placement}}.
+  District-level classification is available for every end_year 2015-2025
+  (the 2015-2024 archives live in the year-labeled folders/zips of the IDEA
+  618 public-reporting directory; 2025 is the consolidated workbook). Data
+  before end_year 2015 requires an OPRA request. The statewide
+  by-disability-category table is only published for 2025+ (NJ DOE did not
+  release a clean public-only state-by-disability workbook for earlier
+  years); that gap is left honest rather than derived. For by-disability
+  counts and educational placement (LRE) across 2020-2025, see
+  \code{\link{fetch_sped_placement}}.
 }
 \examples{
 \dontrun{

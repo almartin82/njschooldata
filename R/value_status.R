@@ -141,14 +141,18 @@ rc_numeric_with_status <- function(x) {
 #' @param enrollment_denominator Optional denominator vector for per-pupil rows.
 #' @param latest_observed_per_pupil_year Latest year with per-pupil actuals in
 #'   the current finance source.
+#' @param structural_not_published Optional logical vector for structural gaps
+#'   known by the caller to be unpublished regardless of year.
 #' @return A value-status factor.
 #' @keywords internal
 finance_value_status <- function(metric, value, end_year,
                                  is_per_pupil = NULL,
                                  enrollment_denominator = NULL,
-                                 latest_observed_per_pupil_year = 2024L) {
+                                 latest_observed_per_pupil_year = 2024L,
+                                 structural_not_published = NULL) {
   input_lengths <- c(length(metric), length(value), length(end_year),
-                     length(is_per_pupil), length(enrollment_denominator))
+                     length(is_per_pupil), length(enrollment_denominator),
+                     length(structural_not_published))
   if (max(input_lengths) == 0) return(value_status_factor(character(0)))
   n <- max(input_lengths)
 
@@ -183,6 +187,14 @@ finance_value_status <- function(metric, value, end_year,
   missing_denominator <- !actual & is_per_pupil %in% TRUE &
     (is.na(enrollment_denominator) | enrollment_denominator <= 0)
   status[missing_denominator & !not_yet_observed] <- "not_published"
+
+  if (is.null(structural_not_published)) {
+    structural_not_published <- rep(FALSE, n)
+  } else {
+    structural_not_published <- rep(as.logical(structural_not_published),
+                                    length.out = n)
+  }
+  status[structural_not_published %in% TRUE] <- "not_published"
 
   value_status_factor(status)
 }
