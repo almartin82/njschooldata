@@ -41,7 +41,7 @@ annotate_metric(finance)
 #> # A tibble: 2 × 5
 #>   metric          value polarity unit    is_rate
 #>   <chr>           <dbl> <chr>    <chr>   <lgl>  
-#> 1 per_pupil_total     1 neutral  dollars TRUE   
+#> 1 per_pupil_total     1 neutral  dollars FALSE  
 #> 2 revenue_state       2 neutral  dollars FALSE  
 annotate_metric(tibble::tibble(value = c(10, 20)), metric = "discipline_rate")
 #> # A tibble: 2 × 4

@@ -16,7 +16,8 @@ fetch_sped_placement(
   end_year,
   age_group = "5-21",
   level = "district",
-  tidy = TRUE
+  tidy = TRUE,
+  with_status = FALSE
 )
 ```
 
@@ -34,7 +35,9 @@ fetch_sped_placement(
 - level:
 
   one of `"district"` (district + charter rows, default) or `"state"`
-  (statewide breakdowns).
+  (statewide breakdowns). `level = "school"` is rejected: NJ DOE
+  publishes LRE at district/state level only (school-level placement is
+  not_published).
 
 - tidy:
 
@@ -43,6 +46,13 @@ fetch_sped_placement(
   (column names preserved as published; all values as character;
   suppression flags retained). For pre-2025 years that span multiple
   subgroup files, `tidy = FALSE` returns a named list.
+
+- with_status:
+
+  logical, default `FALSE`. When `TRUE` (and `tidy = TRUE`), appends a
+  `value_status` column classifying the `count` value as `"actual"` or
+  `"suppressed"` (a `"*"`-suppressed small cell). Additive; default
+  output is unchanged.
 
 ## Value
 
@@ -76,6 +86,13 @@ One row per (entity x subgroup x environment), with:
 - `subgroup` – standardized snake_case (`"total"`, `"black"`,
   `"hispanic"`, `"lep"`, `"male"`, ..., plus disability categories like
   `"autism"` and (2025 state output only) age rows like `"age_6"`)
+
+- `subgroup_std` – the shared cross-domain subgroup vocabulary (added
+  immediately after `subgroup`). Standard demographic subgroups map;
+  placement-specific / non-demographic tokens (`"total"`, disability
+  categories, `age_*`, `lep`, `native_american`) have no standard
+  demographic equivalent and are `NA` by design (the row's dimension is
+  given by `dimension`).
 
 - `environment` – short code for the educational setting (see Details
   for valid values)

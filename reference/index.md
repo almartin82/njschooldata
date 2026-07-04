@@ -652,6 +652,8 @@ Additional exported functions
   : Fetch Certificated-Staff FTE Counts (position x race x gender)
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
   : Fetch Chronic Absenteeism Data
+- [`fetch_courses()`](https://almartin82.github.io/njschooldata/reference/fetch_courses.md)
+  : Fetch Course, CTE, and College-Career Data
 - [`fetch_cs_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_cs_enrollment.md)
   : Fetch Computer Science Enrollment Data
 - [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)

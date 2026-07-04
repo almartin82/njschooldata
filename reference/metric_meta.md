@@ -33,7 +33,7 @@ metric_meta("per_pupil_total")
 #> # A tibble: 1 × 9
 #>   domain  metric   label unit  polarity is_rate denominator_metric era_break_set
 #>   <chr>   <chr>    <chr> <chr> <chr>    <lgl>   <chr>              <chr>        
-#> 1 finance per_pup… Tota… doll… neutral  TRUE    enrollment_denomi… NA           
+#> 1 finance per_pup… Tota… doll… neutral  FALSE   NA                 NA           
 #> # ℹ 1 more variable: notes <chr>
 metric_meta("chronically_absent_rate")
 #> # A tibble: 1 × 9

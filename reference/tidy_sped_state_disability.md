@@ -10,7 +10,7 @@ reports it as a decimal). The "Statewide Total" rollup row maps to
 ## Usage
 
 ``` r
-tidy_sped_state_disability(df, end_year)
+tidy_sped_state_disability(df, end_year, with_status = FALSE)
 ```
 
 ## Arguments

@@ -73,7 +73,13 @@ and total K-12 state aid from the Governor's Budget Message district details
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span>, with_status <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance</span><span class="op">(</span></span>
+<span>  <span class="va">end_year</span>,</span>
+<span>  tidy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_cache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_status <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  level <span class="op">=</span> <span class="st">"all"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -102,6 +108,13 @@ cache.</p></dd>
 <code>value_status</code>, classifying present values as <code>actual</code>, current
 per-pupil actuals not yet published as <code>not_yet_observed</code>, and missing
 values with absent per-pupil denominators as <code>not_published</code>.</p></dd>
+
+
+<dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
+<dd><p>entity grain to return: <code>"all"</code> (default, state and
+district rows), <code>"state"</code>, <code>"district"</code>, or <code>"school"</code>.
+School-level NJ finance is not published in this fetcher; school requests
+return structural gap rows only.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -134,6 +147,12 @@ not yet published); years before 2019 carry per-pupil spending only. Values
 are nominal dollars exactly as published - no rescaling, no fabrication. The
 federal <code>nces_dist</code> identifier is attached from the bundled CCD
 crosswalk; unmatched districts keep <code>NA</code>.</p>
+<p><strong>Entity grain.</strong> NJ finance in this front door is district/state only.
+NJ's school-level per-pupil expenditure reporting is a separate source that
+is not wired here, so <code>is_school</code> remains <code>FALSE</code>. If
+<code>level = "school"</code> is requested, the function returns structural gap
+rows; use <code>with_status = TRUE</code> to see <code>value_status =
+"not_published"</code> for those rows.</p>
     </div>
 
     <div class="section level2">

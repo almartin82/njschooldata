@@ -5,7 +5,7 @@ Cleans and standardizes SPED data from NJ DOE.
 ## Usage
 
 ``` r
-clean_sped_df(df, end_year)
+clean_sped_df(df, end_year, with_status = FALSE)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ clean_sped_df(df, end_year)
 - end_year:
 
   academic year, ending year - eg 2023-2024 is 2024.
+
+- with_status:
+
+  logical. If `TRUE`, appends `value_status` classified from the raw
+  `sped_rate` token before numeric coercion.
 
 ## Value
 

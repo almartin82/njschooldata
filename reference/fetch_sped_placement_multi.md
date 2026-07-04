@@ -13,7 +13,8 @@ fetch_sped_placement_multi(
   end_years,
   age_group = "5-21",
   level = "district",
-  tidy = TRUE
+  tidy = TRUE,
+  with_status = FALSE
 )
 ```
 
@@ -32,6 +33,11 @@ fetch_sped_placement_multi(
   one of `"district"` or `"state"`
 
 - tidy:
+
+  logical; passed through to
+  [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
+
+- with_status:
 
   logical; passed through to
   [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)

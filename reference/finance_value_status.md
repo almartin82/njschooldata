@@ -14,7 +14,8 @@ finance_value_status(
   end_year,
   is_per_pupil = NULL,
   enrollment_denominator = NULL,
-  latest_observed_per_pupil_year = 2024L
+  latest_observed_per_pupil_year = 2024L,
+  structural_not_published = NULL
 )
 ```
 
@@ -44,6 +45,11 @@ finance_value_status(
 - latest_observed_per_pupil_year:
 
   Latest year with per-pupil actuals in the current finance source.
+
+- structural_not_published:
+
+  Optional logical vector for structural gaps known by the caller to be
+  unpublished regardless of year.
 
 ## Value
 

@@ -77,7 +77,8 @@ More of the Day", "Separate School", "Residential Facility").</p>
 <span>  <span class="va">end_year</span>,</span>
 <span>  age_group <span class="op">=</span> <span class="st">"5-21"</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"district"</span>,</span>
-<span>  tidy <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  tidy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_status <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -97,7 +98,9 @@ year). Valid years: 2020 through 2025.</p></dd>
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
 <dd><p>one of <code>"district"</code> (district + charter rows, default)
-or <code>"state"</code> (statewide breakdowns).</p></dd>
+or <code>"state"</code> (statewide breakdowns). <code>level = "school"</code> is
+rejected: NJ DOE publishes LRE at district/state level only (school-level
+placement is not_published).</p></dd>
 
 
 <dt id="arg-tidy">tidy<a class="anchor" aria-label="anchor" href="#arg-tidy"></a></dt>
@@ -106,6 +109,13 @@ described above. If <code>FALSE</code>, returns the raw workbook tibble(s)
 with minimal cleaning (column names preserved as published; all values
 as character; suppression flags retained). For pre-2025 years that
 span multiple subgroup files, <code>tidy = FALSE</code> returns a named list.</p></dd>
+
+
+<dt id="arg-with-status">with_status<a class="anchor" aria-label="anchor" href="#arg-with-status"></a></dt>
+<dd><p>logical, default <code>FALSE</code>. When <code>TRUE</code> (and
+<code>tidy = TRUE</code>), appends a <code>value_status</code> column classifying the
+<code>count</code> value as <code>"actual"</code> or <code>"suppressed"</code> (a
+<code>"*"</code>-suppressed small cell). Additive; default output is unchanged.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -143,6 +153,12 @@ downloadable at all and requires an OPRA request.</p>
     <code>"black"</code>, <code>"hispanic"</code>, <code>"lep"</code>, <code>"male"</code>, ...,
     plus disability categories like <code>"autism"</code> and (2025 state output
     only) age rows like <code>"age_6"</code>)</p></li>
+<li><p><code>subgroup_std</code> – the shared cross-domain subgroup vocabulary
+    (added immediately after <code>subgroup</code>). Standard demographic
+    subgroups map; placement-specific / non-demographic tokens
+    (<code>"total"</code>, disability categories, <code>age_*</code>, <code>lep</code>,
+    <code>native_american</code>) have no standard demographic equivalent and are
+    <code>NA</code> by design (the row's dimension is given by <code>dimension</code>).</p></li>
 <li><p><code>environment</code> – short code for the educational setting (see
     Details for valid values)</p></li>
 <li><p><code>count</code>, <code>percent</code> – counts and percents (0-100 scale)

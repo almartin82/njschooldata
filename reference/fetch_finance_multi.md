@@ -10,7 +10,8 @@ fetch_finance_multi(
   end_years = NULL,
   tidy = TRUE,
   use_cache = TRUE,
-  with_status = FALSE
+  with_status = FALSE,
+  level = "all"
 )
 ```
 
@@ -39,6 +40,11 @@ fetch_finance_multi(
 - with_status:
 
   logical, default `FALSE`. See
+  [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
+
+- level:
+
+  entity grain to return. See
   [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
 
 ## Value

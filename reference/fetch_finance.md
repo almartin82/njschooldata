@@ -13,7 +13,13 @@ code works unchanged.
 ## Usage
 
 ``` r
-fetch_finance(end_year, tidy = TRUE, use_cache = TRUE, with_status = FALSE)
+fetch_finance(
+  end_year,
+  tidy = TRUE,
+  use_cache = TRUE,
+  with_status = FALSE,
+  level = "all"
+)
 ```
 
 ## Arguments
@@ -41,6 +47,13 @@ fetch_finance(end_year, tidy = TRUE, use_cache = TRUE, with_status = FALSE)
   present values as `actual`, current per-pupil actuals not yet
   published as `not_yet_observed`, and missing values with absent
   per-pupil denominators as `not_published`.
+
+- level:
+
+  entity grain to return: `"all"` (default, state and district rows),
+  `"state"`, `"district"`, or `"school"`. School-level NJ finance is not
+  published in this fetcher; school requests return structural gap rows
+  only.
 
 ## Value
 
@@ -78,6 +91,13 @@ not yet published); years before 2019 carry per-pupil spending only.
 Values are nominal dollars exactly as published - no rescaling, no
 fabrication. The federal `nces_dist` identifier is attached from the
 bundled CCD crosswalk; unmatched districts keep `NA`.
+
+**Entity grain.** NJ finance in this front door is district/state only.
+NJ's school-level per-pupil expenditure reporting is a separate source
+that is not wired here, so `is_school` remains `FALSE`. If
+`level = "school"` is requested, the function returns structural gap
+rows; use `with_status = TRUE` to see `value_status = "not_published"`
+for those rows.
 
 ## Examples
 

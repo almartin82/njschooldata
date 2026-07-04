@@ -28,12 +28,12 @@ head(registry)
 #> # A tibble: 6 × 9
 #>   domain  metric   label unit  polarity is_rate denominator_metric era_break_set
 #>   <chr>   <chr>    <chr> <chr> <chr>    <lgl>   <chr>              <chr>        
-#> 1 finance per_pup… Tota… doll… neutral  TRUE    enrollment_denomi… NA           
-#> 2 finance per_pup… Inst… doll… neutral  TRUE    enrollment_denomi… NA           
-#> 3 finance per_pup… Supp… doll… neutral  TRUE    enrollment_denomi… NA           
-#> 4 finance per_pup… Admi… doll… neutral  TRUE    enrollment_denomi… NA           
-#> 5 finance per_pup… Oper… doll… neutral  TRUE    enrollment_denomi… NA           
-#> 6 finance per_pup… Food… doll… neutral  TRUE    enrollment_denomi… NA           
+#> 1 finance per_pup… Tota… doll… neutral  FALSE   NA                 NA           
+#> 2 finance per_pup… Inst… doll… neutral  FALSE   NA                 NA           
+#> 3 finance per_pup… Supp… doll… neutral  FALSE   NA                 NA           
+#> 4 finance per_pup… Admi… doll… neutral  FALSE   NA                 NA           
+#> 5 finance per_pup… Oper… doll… neutral  FALSE   NA                 NA           
+#> 6 finance per_pup… Food… doll… neutral  FALSE   NA                 NA           
 #> # ℹ 1 more variable: notes <chr>
 unique(registry$domain)
 #>  [1] "finance"            "graduation"         "assessment"        

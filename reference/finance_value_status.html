@@ -73,7 +73,8 @@ numeric values are actual.</p>
 <span>  <span class="va">end_year</span>,</span>
 <span>  is_per_pupil <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  enrollment_denominator <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  latest_observed_per_pupil_year <span class="op">=</span> <span class="fl">2024L</span></span>
+<span>  latest_observed_per_pupil_year <span class="op">=</span> <span class="fl">2024L</span>,</span>
+<span>  structural_not_published <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +106,11 @@ inferred from metric names beginning with <code>per_pupil</code>.</p></dd>
 <dt id="arg-latest-observed-per-pupil-year">latest_observed_per_pupil_year<a class="anchor" aria-label="anchor" href="#arg-latest-observed-per-pupil-year"></a></dt>
 <dd><p>Latest year with per-pupil actuals in
 the current finance source.</p></dd>
+
+
+<dt id="arg-structural-not-published">structural_not_published<a class="anchor" aria-label="anchor" href="#arg-structural-not-published"></a></dt>
+<dd><p>Optional logical vector for structural gaps
+known by the caller to be unpublished regardless of year.</p></dd>
 
 </dl></div>
     <div class="section level2">
