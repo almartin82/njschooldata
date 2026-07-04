@@ -4,7 +4,7 @@
 \alias{tidy_sped_state_disability}
 \title{Tidy the 2025+ "State Rates" by-disability sheet}
 \usage{
-tidy_sped_state_disability(df, end_year)
+tidy_sped_state_disability(df, end_year, with_status = FALSE)
 }
 \arguments{
 \item{df}{cleaned data frame: output of get_raw_sped(level = "state")

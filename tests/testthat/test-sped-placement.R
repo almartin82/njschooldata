@@ -705,3 +705,46 @@ test_that("fetch_sped_placement_multi covers 2020-2022 district 5-21 without gap
   # state-level rollup ships from the bundled PDF-transcribed CSV).
   expect_setequal(unique(df$end_year), c(2020L, 2021L, 2022L))
 })
+
+
+test_that("fetch_sped_placement rejects school level honestly", {
+  # No network: the guard fires before any download.
+  expect_error(
+    fetch_sped_placement(2025, level = "school"),
+    "school level"
+  )
+  expect_error(
+    fetch_sped_placement(2025, level = "school"),
+    "not_published"
+  )
+})
+
+
+test_that("finalize_sped_placement adds subgroup_std and opt-in value_status", {
+  df <- tibble::tibble(
+    end_year = rep(2025L, 4),
+    district_id = rep("3570", 4),
+    subgroup = c("black", "white", "autism", "lep"),
+    environment = rep("gen_ed_80_plus", 4),
+    count = c(100, 200, NA, 50),
+    percent = c(40, 55, NA, 30)
+  )
+
+  out <- finalize_sped_placement(df, with_status = TRUE)
+  # subgroup_std sits immediately after subgroup.
+  expect_equal(which(names(out) == "subgroup_std"),
+               which(names(out) == "subgroup") + 1)
+  # Standard demographic subgroups map; non-demographic tokens are NA by design.
+  expect_equal(out$subgroup_std[out$subgroup == "black"], "black")
+  expect_equal(out$subgroup_std[out$subgroup == "white"], "white")
+  expect_true(is.na(out$subgroup_std[out$subgroup == "autism"]))
+  expect_true(is.na(out$subgroup_std[out$subgroup == "lep"]))
+  # value_status classifies the count column: NA count => suppressed.
+  expect_equal(as.character(out$value_status),
+               c("actual", "actual", "suppressed", "actual"))
+
+  # Default (with_status = FALSE) adds no value_status column.
+  out_default <- finalize_sped_placement(df)
+  expect_false("value_status" %in% names(out_default))
+  expect_true("subgroup_std" %in% names(out_default))
+})

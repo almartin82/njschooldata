@@ -8,7 +8,8 @@ fetch_sped_placement_multi(
   end_years,
   age_group = "5-21",
   level = "district",
-  tidy = TRUE
+  tidy = TRUE,
+  with_status = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ fetch_sped_placement_multi(
 \item{level}{one of \code{"district"} or \code{"state"}}
 
 \item{tidy}{logical; passed through to \code{fetch_sped_placement()}}
+
+\item{with_status}{logical; passed through to \code{fetch_sped_placement()}}
 }
 \value{
 a single tibble with all successfully-fetched years bound together.

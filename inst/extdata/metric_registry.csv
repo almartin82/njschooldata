@@ -117,6 +117,7 @@ special_ed,sped_classification_rate,Special education classification rate,percen
 special_ed,sped_rate,Special education classification rate,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
 special_ed,sped_rate_no_speech,Special education classification rate without speech,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
 special_ed,sped_num,Special education student count,count,neutral,FALSE,,,Emitted by fetch_sped
+special_ed,sped_num_no_speech,Special education student count without speech,count,neutral,FALSE,,,Emitted by fetch_sped when the no-speech column is published
 special_ed,gened_num,General education enrollment count,count,neutral,FALSE,,,Emitted by fetch_sped
 special_ed,count,Special education placement count,count,neutral,FALSE,,,Emitted by fetch_sped_placement
 special_ed,percent,Special education placement percent,percent,neutral,TRUE,subgroup_total,,Emitted by fetch_sped_placement

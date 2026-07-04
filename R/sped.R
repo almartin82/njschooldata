@@ -3,10 +3,142 @@
 #' @return vector of valid end years for SPED data
 #' @keywords internal
 get_valid_sped_years <- function() {
- # As of 2024, NJ DOE restructured their website.
- # Historical data (2003-2019) URLs no longer work.
- # Only current data is available at new URL structure.
- c(2024, 2025)
+  2015L:2025L
+}
+
+
+sped_classification_base_url <- function() {
+  "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/"
+}
+
+
+sped_classification_source <- function(end_year, level = "district") {
+  end_year <- as.integer(end_year)
+  base <- sped_classification_base_url()
+
+  district <- list(
+    "2025" = list(
+      url = paste0(
+        base, "2025_618data/",
+        "2025IDEA618PublicReporting_ClassificationRates.xlsx"
+      ),
+      zip_member = NA_character_,
+      skip = 4L,
+      sheet = "District Rates",
+      format = "district"
+    ),
+    "2024" = list(
+      url = paste0(
+        base, "2023_618data/",
+        "DistrictWide_ClassificationRate_2324_public.xlsx"
+      ),
+      zip_member = NA_character_,
+      skip = 3L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2023" = list(
+      url = paste0(
+        base, "2022public618data/",
+        "District_Enrollment_vs_SpecialED_Rates_Publicdata_3_21Age.xlsx"
+      ),
+      zip_member = NA_character_,
+      skip = 3L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2022" = list(
+      url = paste0(base, "2022%20data/Lea_Classification_Pub.xlsx"),
+      zip_member = NA_character_,
+      skip = 5L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2021" = list(
+      url = paste0(base, "2020.zip"),
+      zip_member = "2020/Lea_Classification_Pub.xlsx",
+      skip = 4L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2020" = list(
+      url = paste0(base, "2019.zip"),
+      zip_member = "2019/Lea_classification_Pub.xlsx",
+      skip = 5L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2019" = list(
+      url = paste0(base, "2018.zip"),
+      zip_member = "2018/LEA_Classification2.xlsx",
+      skip = 5L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2018" = list(
+      url = paste0(base, "2017.zip"),
+      zip_member = "2017/Lea_Classification.xlsx",
+      skip = 0L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2017" = list(
+      url = paste0(base, "2016.zip"),
+      zip_member = "2016/LEA_Classificatiom.xlsx",
+      skip = 4L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2016" = list(
+      url = paste0(base, "2015.zip"),
+      zip_member = "2015/LEA_Classification.xlsx",
+      skip = 4L,
+      sheet = NA_character_,
+      format = "district"
+    ),
+    "2015" = list(
+      url = paste0(base, "2014.zip"),
+      zip_member = "2014/District_Classification_Rate.xlsx",
+      skip = 4L,
+      sheet = NA_character_,
+      format = "district"
+    )
+  )
+
+  state <- list(
+    "2025" = list(
+      url = paste0(
+        base, "2025_618data/",
+        "2025IDEA618PublicReporting_ClassificationRates.xlsx"
+      ),
+      zip_member = NA_character_,
+      skip = 4L,
+      sheet = "State Rates",
+      format = "state_2025"
+    )
+  )
+
+  sources <- if (level == "state") state else district
+  src <- sources[[as.character(end_year)]]
+  if (is.null(src)) {
+    if (level == "state") {
+      # The by-disability-category STATE table is only published in the 2025
+      # consolidated IDEA-618 workbook ("State Rates" sheet). Earlier years
+      # publish the DISTRICT classification rate (all years 2015-2024, via
+      # level = "district") but NOT a clean public-only state-by-disability
+      # table -- that gap is left honest rather than transcribed/derived.
+      stop(paste0(
+        "State-level SPED counts by disability category are only available ",
+        "for end_year >= 2025 (NJ DOE introduced the 'State Rates' table in ",
+        "the 2025 consolidated IDEA-618 workbook). For by-disability counts ",
+        "in earlier years use fetch_sped_placement(level = 'state')."
+      ), call. = FALSE)
+    }
+    stop(sprintf("No SPED classification source configured for %d.", end_year),
+         call. = FALSE)
+  }
+
+  src
 }
 
 
@@ -16,32 +148,36 @@ get_valid_sped_years <- function() {
 #' @return URL string for the SPED data file
 #' @keywords internal
 build_sped_url <- function(end_year) {
-  base <- "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/"
+  sped_classification_source(end_year, level = "district")$url
+}
 
-  # 2025 (SY2024-25): NJ DOE switched to the consolidated IDEA-618 public
-  # reporting naming convention. The classification-rate workbook lives in
-  # the 2025_618data/ folder and carries BOTH a "District Rates" sheet (the
-  # district-level total classification rate, same shape as earlier years)
-  # and a "State Rates" sheet (counts + classification rate by IDEA
-  # disability category). See get_raw_sped() for sheet dispatch.
-  if (end_year >= 2025L) {
-    return(paste0(
-      base, end_year, "_618data/",
-      end_year, "IDEA618PublicReporting_ClassificationRates.xlsx"
-    ))
+
+download_sped_classification_workbook <- function(source, end_year) {
+  if (!check_url_accessible(source$url)) {
+    stop(paste0("SPED data URL is not accessible: ", source$url))
   }
 
-  # Pre-2025 URL structure (2024 verified live): academic year format,
-  # eg 2023-2024 data = "2324", in the prior-year-labeled folder.
-  year_suffix <- paste0(
-    substr(as.character(end_year - 1), 3, 4),
-    substr(as.character(end_year), 3, 4)
-  )
+  is_zip <- grepl("\\.zip$", source$url)
+  tf <- tempfile(fileext = if (is_zip) ".zip" else ".xlsx")
+  utils::download.file(source$url, tf, mode = "wb", quiet = TRUE)
 
-  paste0(
-    base, end_year - 1, "_618data/DistrictWide_ClassificationRate_",
-    year_suffix, "_public.xlsx"
+  if (!is_zip) {
+    return(tf)
+  }
+
+  if (is.na(source$zip_member) || !nzchar(source$zip_member)) {
+    stop(sprintf(
+      "Internal error: missing zip member for SPED classification %d.",
+      end_year
+    ), call. = FALSE)
+  }
+
+  extract_dir <- tempfile("sped_classification_zip_")
+  dir.create(extract_dir, recursive = TRUE, showWarnings = FALSE)
+  extracted <- utils::unzip(
+    tf, files = source$zip_member, exdir = extract_dir, junkpaths = TRUE
   )
+  extracted[[1]]
 }
 
 
@@ -63,47 +199,29 @@ get_raw_sped <- function(end_year, level = "district") {
     stop(paste0(
       end_year, " is not a valid end_year for SPED data. ",
       "Valid years are: ", paste(valid_years, collapse = ", "), ". ",
-      "Historical data (2003-2019) is no longer available from NJ DOE. ",
-      "Data prior to 2014 requires an OPRA request."
+      "Data prior to end_year 2015 requires an OPRA request."
     ))
   }
   if (!level %in% c("district", "state")) {
     stop("level must be one of 'district' or 'state'.", call. = FALSE)
   }
-  if (level == "state" && end_year < 2025L) {
-    stop(paste0(
-      "State-level SPED counts by disability category are only available ",
-      "for end_year >= 2025 (NJ DOE introduced the 'State Rates' table in ",
-      "the 2025 consolidated IDEA-618 workbook). For by-disability counts ",
-      "in earlier years use fetch_sped_placement(level = 'state')."
-    ), call. = FALSE)
-  }
 
-  sped_url <- build_sped_url(end_year)
+  source <- sped_classification_source(end_year, level = level)
 
-  # Check URL accessibility before attempting download
-  if (!check_url_accessible(sped_url)) {
-    stop(paste0("SPED data URL is not accessible: ", sped_url))
-  }
+  tf <- download_sped_classification_workbook(source, end_year)
 
-  tf <- tempfile(fileext = ".xlsx")
-  utils::download.file(sped_url, tf, mode = 'wb', quiet = TRUE)
-
-  if (end_year >= 2025L) {
-    # 2025+ consolidated workbook: two sheets, each with the column-header
-    # row at row 5 (skip = 4). "District Rates" parses through the standard
-    # clean_sped_names()/clean_sped_df() pipeline; "State Rates" is a
-    # by-disability table handled by tidy_sped_state_disability().
-    sheet <- if (level == "state") "State Rates" else "District Rates"
-    sped <- readxl::read_excel(
-      tf, sheet = sheet, skip = 4, na = c('-', '*', 'N', 'S')
-    )
-  } else {
-    # Pre-2025 single-sheet workbook has 3 header rows.
-    sped <- readxl::read_excel(
-      tf, skip = 3, na = c('-', '*', 'N', 'S')
-    )
-  }
+  # Every supported source (district 2015-2024 single-sheet workbooks, the
+  # 2025 consolidated "District Rates" / "State Rates" sheets) reads through
+  # the same header-skip path. Reading as text keeps a trailing "end of
+  # worksheet" sentinel row from coercing count/rate columns; clean_sped_df()
+  # / tidy_sped_state_disability() coerce to numeric downstream.
+  sped <- readxl::read_excel(
+    tf,
+    sheet = if (is.na(source$sheet)) 1 else source$sheet,
+    skip = source$skip,
+    na = c('-', '*', 'N', 'S'),
+    col_types = "text"
+  )
 
   sped$end_year <- end_year
 
@@ -192,6 +310,7 @@ clean_sped_names <- function(df) {
     "LEA" = "gened_num",
     "All Students Count" = "gened_num",
     "Total Enrollment" = "gened_num",
+    "General Education Enrollement Count" = "gened_num",
 
     #special ed classification rate
     "Percent Classified" = "sped_rate",
@@ -199,6 +318,8 @@ clean_sped_names <- function(df) {
     "Clsfd Rate" = "sped_rate",
     "CLASSIFICATION RATE" = "sped_rate",
     "District Classification Rate" = "sped_rate",
+    "Special Education Count" = "sped_num",
+    "Classified Student Count" = "sped_num",
 
     #special ed classification rate no speech
     "Percent Classified Without Speech" = "sped_rate_no_speech"
@@ -211,21 +332,58 @@ clean_sped_names <- function(df) {
 }
 
 
+append_sped_entity_flags <- function(df,
+                                     is_state = FALSE,
+                                     is_district = FALSE,
+                                     is_school = FALSE) {
+  if (!"is_state" %in% names(df)) {
+    df$is_state <- is_state
+  }
+  if (!"is_county" %in% names(df)) {
+    df$is_county <- FALSE
+  }
+  if (!"is_district" %in% names(df)) {
+    df$is_district <- is_district
+  }
+  if (!"is_school" %in% names(df)) {
+    df$is_school <- is_school
+  }
+  if (!"is_charter" %in% names(df)) {
+    df$is_charter <- if ("county_id" %in% names(df)) df$county_id == "80" else FALSE
+  }
+  if (!"is_charter_sector" %in% names(df)) {
+    df$is_charter_sector <- FALSE
+  }
+  if (!"is_allpublic" %in% names(df)) {
+    df$is_allpublic <- FALSE
+  }
+
+  df
+}
+
+
 #' Clean SPED data
 #'
 #' @description Cleans and standardizes SPED data from NJ DOE.
 #' @param df raw data frame with cleaned names, output of get_raw_sped with clean_sped_names applied.
 #' @param end_year academic year, ending year - eg 2023-2024 is 2024.
+#' @param with_status logical. If \code{TRUE}, appends \code{value_status}
+#'   classified from the raw \code{sped_rate} token before numeric coercion.
 #'
 #' @return cleaned data frame
 #' @export
 
-clean_sped_df <- function(df, end_year) {
+clean_sped_df <- function(df, end_year, with_status = FALSE) {
+  # Classify from the RAW classification-rate token before numeric coercion so
+  # a suppressed cell reads as suppression, not a fabricated 0. Attach it as a
+  # column so it survives the row filter below (opt-in; dropped when FALSE).
+  if (isTRUE(with_status) && "sped_rate" %in% names(df)) {
+    df$value_status <- classify_value_status(df[["sped_rate"]])
+  }
 
-  # Coerce value columns to numeric. The 2025 "District Rates" sheet reads
-  # the count/rate columns as character (a trailing "end of worksheet"
-  # sentinel row forces text); pre-2025 sheets already parse as numeric, so
-  # this is a no-op for those years.
+  # Coerce value columns to numeric. Sheets are read as text so a trailing
+  # "end of worksheet" sentinel row does not force count/rate columns to
+  # character; coerce them here.
   num_cols <- intersect(
     c("gened_num", "sped_num", "sped_rate",
       "sped_num_no_speech", "sped_rate_no_speech"),
@@ -243,9 +401,10 @@ clean_sped_df <- function(df, end_year) {
     df$county_id <- county_name_to_id(df$county_name)
   }
 
-  # Return df with proper column order
-  # Use any_of() to handle columns that may not exist in all years
-  df %>%
+  # Curate column order. any_of() tolerates columns absent in some years and
+  # keeps the opt-in value_status when present. Existing columns/order are
+  # preserved; entity flags are appended additively.
+  df <- df %>%
     dplyr::select(
       dplyr::any_of(c(
         'end_year', 'county_id', 'county_name',
@@ -253,10 +412,14 @@ clean_sped_df <- function(df, end_year) {
         'gened_num', 'sped_num',
         'sped_rate',
         'sped_num_no_speech',
-        'sped_rate_no_speech'
+        'sped_rate_no_speech',
+        'value_status'
       ))
     )
 
+  df <- append_sped_entity_flags(df, is_district = TRUE)
+
+  df
 }
 
 
@@ -272,7 +435,7 @@ clean_sped_df <- function(df, end_year) {
 #' @keywords internal
 standardize_sped_disability_category <- function(x) {
   out <- standardize_sped_placement_subgroups(x)
-  out[x %in% c("Statewide Total", "Total", "Statewide total")] <-
+  out[x %in% c("Statewide Total", "Total", "TOTAL", "Statewide total")] <-
     "all_disabilities"
   out
 }
@@ -293,7 +456,7 @@ standardize_sped_disability_category <- function(x) {
 #' @return tidy tibble: end_year, is_state, disability_category, n_students,
 #'   sped_rate, suppressed
 #' @keywords internal
-tidy_sped_state_disability <- function(df, end_year) {
+tidy_sped_state_disability <- function(df, end_year, with_status = FALSE) {
   # clean_sped_names() maps the workbook's "Disability Category" header to
   # itself if unmapped; resolve the label column robustly.
   dis_col <- intersect(
@@ -313,12 +476,13 @@ tidy_sped_state_disability <- function(df, end_year) {
   df <- df[keep, , drop = FALSE]
   raw_label <- raw_label[keep]
 
-  n_students <- suppressWarnings(as.numeric(df[["sped_num"]]))
+  raw_count <- df[["sped_num"]]
+  n_students <- suppressWarnings(as.numeric(raw_count))
   # Source reports the classification rate as a decimal (0.0227 = 2.27%);
   # store on the same 0-100 scale used by the district output.
   sped_rate <- round(suppressWarnings(as.numeric(df[["sped_rate"]])) * 100, 2)
 
-  tibble::tibble(
+  out <- tibble::tibble(
     end_year = end_year,
     is_state = TRUE,
     disability_category = standardize_sped_disability_category(raw_label),
@@ -326,6 +490,15 @@ tidy_sped_state_disability <- function(df, end_year) {
     sped_rate = sped_rate,
     suppressed = is.na(n_students)
   )
+
+  out <- append_sped_entity_flags(out, is_state = TRUE)
+  if (isTRUE(with_status)) {
+    # Classify from the RAW child-count token, before numeric coercion, so a
+    # suppressed cell reads as suppression rather than a fabricated 0.
+    out$value_status <- classify_value_status(raw_count)
+  }
+
+  out
 }
 
 
@@ -338,19 +511,34 @@ tidy_sped_state_disability <- function(df, end_year) {
 #'   district). With \code{level = "state"} returns the statewide count of
 #'   students with IEPs by IDEA disability category (2025+ only).
 #'
-#'   Historical district data (2003-2019) is no longer accessible via URL and
-#'   requires an OPRA request. For by-disability counts and educational
-#'   placement (LRE) across 2020-2025, see \code{\link{fetch_sped_placement}}.
+#'   District-level classification is available for every end_year 2015-2025
+#'   (the 2015-2024 archives live in the year-labeled folders/zips of the IDEA
+#'   618 public-reporting directory; 2025 is the consolidated workbook). Data
+#'   before end_year 2015 requires an OPRA request. The statewide
+#'   by-disability-category table is only published for 2025+ (NJ DOE did not
+#'   release a clean public-only state-by-disability workbook for earlier
+#'   years); that gap is left honest rather than derived. For by-disability
+#'   counts and educational placement (LRE) across 2020-2025, see
+#'   \code{\link{fetch_sped_placement}}.
 #'
 #' @param end_year ending school year (e.g., 2025 for the 2024-2025 school
-#'   year). Valid years: 2024, 2025.
+#'   year). Valid years: 2015-2025 (district); 2025 (state).
 #' @param level one of \code{"district"} (default) or \code{"state"}. The
 #'   \code{"state"} by-disability table is only published for 2025+.
+#' @param with_status logical, default \code{FALSE}. When \code{TRUE}, appends
+#'   a \code{value_status} column classified from the raw published token
+#'   (before numeric coercion) so suppressed cells are distinguishable from a
+#'   true zero. Additive; default output is unchanged.
 #'
 #' @return For \code{level = "district"}: a data frame with columns end_year,
 #'   county_id, county_name, district_id, district_name, gened_num, sped_num,
-#'   sped_rate. For \code{level = "state"}: a tibble with columns end_year,
-#'   is_state, disability_category, n_students, sped_rate, suppressed.
+#'   sped_rate, plus the standard entity flags (is_state, is_county,
+#'   is_district, is_school, is_charter, is_charter_sector, is_allpublic). For
+#'   \code{level = "state"}: a tibble with columns end_year, is_state,
+#'   disability_category, n_students, sped_rate, suppressed, plus the entity
+#'   flags. Metric polarity/denominator metadata for \code{sped_rate},
+#'   \code{sped_num} and \code{gened_num} is available via
+#'   \code{\link{metric_meta}} / \code{\link{annotate_metric}}.
 #'
 #' @seealso \code{\link{fetch_sped_placement}} for IDEA 618 educational
 #'   environment / placement data and multi-year by-disability counts.
@@ -373,7 +561,7 @@ tidy_sped_state_disability <- function(df, end_year) {
 #' fetch_sped(2025, level = "state") %>%
 #'   arrange(desc(n_students))
 #' }
-fetch_sped <- function(end_year, level = "district") {
+fetch_sped <- function(end_year, level = "district", with_status = FALSE) {
   if (!level %in% c("district", "state")) {
     stop("level must be one of 'district' or 'state'.", call. = FALSE)
   }
@@ -382,11 +570,11 @@ fetch_sped <- function(end_year, level = "district") {
     return(
       get_raw_sped(end_year, level = "state") %>%
         clean_sped_names() %>%
-        tidy_sped_state_disability(end_year)
+        tidy_sped_state_disability(end_year, with_status = with_status)
     )
   }
 
   get_raw_sped(end_year, level = "district") %>%
     clean_sped_names() %>%
-    clean_sped_df(., end_year)
+    clean_sped_df(., end_year, with_status = with_status)
 }
