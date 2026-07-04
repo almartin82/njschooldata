@@ -82,6 +82,18 @@ fetch_sat_participation <- function(end_year, level = "school") {
         state_act = act_state,
         state_psat = psat_state
       )
+  } else if ("sat_district" %in% names(df)) {
+    df <- df %>%
+      dplyr::mutate(
+        sat = dplyr::if_else(is_state, sat_state, sat_district),
+        act = dplyr::if_else(is_state, act_state, act_district),
+        psat = dplyr::if_else(is_state, psat_state, psat_district)
+      ) %>%
+      dplyr::rename(
+        state_sat = sat_state,
+        state_act = act_state,
+        state_psat = psat_state
+      )
   }
 
   df <- df %>%
@@ -166,23 +178,53 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
     avg <- njschooldata::fetch_spr_data(
       sheet_name = "PSATSATACT_AverageScore", end_year = end_year, level = level
     )
-    avg <- filter_spr_to_year(avg, end_year) %>%
+    avg <- filter_spr_to_year(avg, end_year)
+    if ("average_score_school" %in% names(avg)) {
+      avg <- avg %>%
+        dplyr::rename(
+          school_avg = average_score_school,
+          state_avg = average_score_state
+        )
+    } else {
+      avg <- avg %>%
+        dplyr::mutate(
+          school_avg = dplyr::if_else(
+            is_state, average_score_state, average_score_district
+          ),
+          state_avg = average_score_state
+        )
+    }
+    avg <- avg %>%
       dplyr::rename(
         test_type = test,
-        subject = subject,
-        school_avg = average_score_school,
-        state_avg = average_score_state
+        subject = subject
       )
 
     bm <- njschooldata::fetch_spr_data(
       sheet_name = "PSATSATACT_Benchmark", end_year = end_year, level = level
     )
-    bm <- filter_spr_to_year(bm, end_year) %>%
+    bm <- filter_spr_to_year(bm, end_year)
+    if ("students_meeting_benchmark_school" %in% names(bm)) {
+      bm <- bm %>%
+        dplyr::rename(
+          pct_benchmark = students_meeting_benchmark_school,
+          state_pct_benchmark = students_meeting_benchmark_state
+        )
+    } else {
+      bm <- bm %>%
+        dplyr::mutate(
+          pct_benchmark = dplyr::if_else(
+            is_state,
+            students_meeting_benchmark_state,
+            students_meeting_benchmark_district
+          ),
+          state_pct_benchmark = students_meeting_benchmark_state
+        )
+    }
+    bm <- bm %>%
       dplyr::rename(
         test_type = test,
-        subject = subject,
-        pct_benchmark = students_meeting_benchmark_school,
-        state_pct_benchmark = students_meeting_benchmark_state
+        subject = subject
       ) %>%
       dplyr::select(
         dplyr::any_of(c("county_id", "district_id", "school_id", "school_year",
@@ -213,11 +255,14 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
       )
   }
 
-  # Filter by test type if specified
-  df <- df %>%
-    dplyr::filter(
-      test_type %in% c(test_type, "All", toupper(test_type))
-    )
+  requested_test_type <- as.character(test_type)
+  if (length(requested_test_type) != 1 || is.na(requested_test_type)) {
+    stop("test_type must be a single value.", call. = FALSE)
+  }
+  if (tolower(requested_test_type) != "all") {
+    keep_tests <- unique(c(requested_test_type, toupper(requested_test_type), "All"))
+    df <- df[df$test_type %in% keep_tests, , drop = FALSE]
+  }
 
   df
 }
@@ -265,27 +310,47 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
 #' }
 fetch_ap_participation <- function(end_year, level = "school") {
   if (end_year >= 2025) {
-    # FOLLOW-UP / NOT YET SUPPORTED FOR 2025.
-    #
-    # The 2024-25 redesign replaced APIBCourseworkPartPerf with two sheets,
-    # AP_IB_Dual_Participation and AP_IB_Dual_PartStudentGroup. The
-    # AP_IB_Dual_Participation sheet is *malformed* at the school level: it
-    # declares a single 19-column table (CountyCode..Dual_State, no extra
-    # dimension column) yet emits thousands of rows per school per year where
-    # APIB_Enrolled_School is constant but APIB_Exams_School / AP3_IB4_School /
-    # Dual_School vary with no column to disambiguate them (e.g. Newark school
-    # 010, SY2024-25: 4,913 rows, 2,448 distinct value tuples). Without a
-    # verifiable key to collapse those rows to one-per-school, reconstructing
-    # the historical output would require guessing, which would fabricate data.
-    # Leaving the 2025 path unimplemented until the source sheet is corrected or
-    # a documented grouping key is identified.
-    stop(
-      "fetch_ap_participation() is not yet available for end_year 2025. ",
-      "The 2024-25 AP_IB_Dual_Participation SPR sheet is malformed at the ",
-      "school level (many rows per school with no disambiguating column), so a ",
-      "reliable one-row-per-school mapping cannot be derived. This is a known ",
-      "follow-up; 2017-2024 are unaffected."
+    df <- fetch_advanced_course_access(
+      end_year = end_year,
+      type = "participation_by_group",
+      level = level
     )
+    df <- df[df$subgroup == "total population", , drop = FALSE]
+
+    if (level == "district") {
+      apib_entity <- ifelse(df$is_state, df$apib_pct_state, df$apib_pct_district)
+      dual_entity <- ifelse(df$is_state, df$dual_pct_state, df$dual_pct_district)
+    } else {
+      apib_entity <- df$apib_pct_school
+      dual_entity <- df$dual_pct_school
+    }
+
+    df$apib_coursework_school <- apib_entity
+    df$apib_coursework_state <- df$apib_pct_state
+    df$apib_exam_school <- NA_real_
+    df$apib_exam_state <- NA_real_
+    df$ap3_ib4_school <- NA_real_
+    df$ap3_ib4_state <- NA_real_
+    df$dual_enrollment_school <- dual_entity
+    df$dual_enrollment_state <- df$dual_pct_state
+
+    return(df %>%
+      dplyr::select(
+        end_year,
+        county_id, county_name,
+        district_id, district_name,
+        school_id, school_name,
+        apib_coursework_school,
+        apib_coursework_state,
+        apib_exam_school,
+        apib_exam_state,
+        ap3_ib4_school,
+        ap3_ib4_state,
+        dual_enrollment_school,
+        dual_enrollment_state,
+        is_state, is_county, is_district, is_school,
+        is_charter, is_charter_sector, is_allpublic
+      ))
   }
 
   df <- njschooldata::fetch_spr_data(
@@ -294,10 +359,25 @@ fetch_ap_participation <- function(end_year, level = "school") {
     level = level
   )
 
+  if ("apib_course_district" %in% names(df)) {
+    df$apib_course_district[df$is_state] <- df$apib_course_state[df$is_state]
+    df$apib_exam_district[df$is_state] <- df$apib_exam_state[df$is_state]
+    df$ap_3_ib_4_district[df$is_state] <- df$ap_3_ib_4_state[df$is_state]
+    df$dual_district[df$is_state] <- df$dual_state[df$is_state]
+
+    df <- df %>%
+      dplyr::rename(
+        apib_course_school = apib_course_district,
+        apib_exam_school = apib_exam_district,
+        ap_3_ib_4_school = ap_3_ib_4_district,
+        dual_school = dual_district
+      )
+  }
+
   # Rename columns (after clean_name_vector conversion)
-  # APIB_COURSE_SCHOOL -> apib_course_school
-  # AP3_IB4_SCHOOL     -> ap_3_ib_4_school
-  # DUAL_SCHOOL        -> dual_school
+  # APIB_COURSE_SCHOOL / APIB_COURSE_DISTRICT -> apib_course_school
+  # AP3_IB4_SCHOOL / AP3_IB4_DISTRICT         -> ap_3_ib_4_school
+  # DUAL_SCHOOL / DUAL_DISTRICT               -> dual_school
   df <- df %>%
     dplyr::rename(
       apib_coursework_school = apib_course_school,
@@ -437,6 +517,18 @@ fetch_cte_participation <- function(end_year, level = "school") {
       dplyr::rename(
         school_cteparticipants = cteparticipants_school,
         school_cteconcentrators = cteconcentrators_school,
+        state_cteparticipants = cteparticipants_state,
+        state_cteconcentrators = cteconcentrators_state
+      )
+  } else if ("cteparticipants_district" %in% names(df)) {
+    df <- df %>%
+      dplyr::mutate(
+        school_cteparticipants = dplyr::if_else(
+          is_state, cteparticipants_state, cteparticipants_district
+        ),
+        school_cteconcentrators = dplyr::if_else(
+          is_state, cteconcentrators_state, cteconcentrators_district
+        ),
         state_cteparticipants = cteparticipants_state,
         state_cteconcentrators = cteconcentrators_state
       )
@@ -591,11 +683,20 @@ fetch_work_based_learning <- function(end_year, level = "school") {
     end_year, "WorkbasedLearningByCareerClust", "WorkBasedLearning"
   )
 
-  df <- njschooldata::fetch_spr_data(
-    sheet_name = sheet_name,
-    end_year = end_year,
-    level = level
+  df <- tryCatch(
+    njschooldata::fetch_spr_data(
+      sheet_name = sheet_name,
+      end_year = end_year,
+      level = level
+    ),
+    error = function(e) {
+      if (grepl("Sheet '.*' not found", conditionMessage(e))) {
+        return(empty_work_based_learning_frame())
+      }
+      stop(e)
+    }
   )
+  if (nrow(df) == 0) return(df)
 
   # Standardize the participation columns across years (after clean_name_vector).
   # 2017-2024: students_participating_in_work_based_learning,
@@ -608,6 +709,23 @@ fetch_work_based_learning <- function(end_year, level = "school") {
         students_participating_in_work_based_learning = work_based_learning_count_school,
         perc_students_participating_learning_by_cluster = work_based_learning_pct_school
       )
+  } else if ("work_based_learning_count_district" %in% names(df)) {
+    df <- df %>%
+      dplyr::mutate(
+        students_participating_in_work_based_learning = dplyr::if_else(
+          is_state,
+          work_based_learning_count_state,
+          work_based_learning_count_district
+        ),
+        perc_students_participating_learning_by_cluster = dplyr::if_else(
+          is_state,
+          work_based_learning_pct_state,
+          work_based_learning_pct_district
+        )
+      )
+  }
+  if (!"perc_students_participating_learning_by_cluster" %in% names(df)) {
+    df$perc_students_participating_learning_by_cluster <- NA_character_
   }
 
   # Rename columns (after clean_name_vector conversion)
@@ -630,6 +748,28 @@ fetch_work_based_learning <- function(end_year, level = "school") {
     )
 
   df
+}
+
+empty_work_based_learning_frame <- function() {
+  tibble::tibble(
+    end_year = numeric(0),
+    county_id = character(0),
+    county_name = character(0),
+    district_id = character(0),
+    district_name = character(0),
+    school_id = character(0),
+    school_name = character(0),
+    career_cluster = character(0),
+    students_participating = character(0),
+    pct_participating = character(0),
+    is_state = logical(0),
+    is_county = logical(0),
+    is_district = logical(0),
+    is_school = logical(0),
+    is_charter = logical(0),
+    is_charter_sector = logical(0),
+    is_allpublic = logical(0)
+  )
 }
 
 
@@ -673,11 +813,20 @@ fetch_work_based_learning <- function(end_year, level = "school") {
 #'   filter(!is.na(apprenticeship_count))
 #' }
 fetch_apprenticeship_data <- function(end_year, level = "school") {
-  df <- njschooldata::fetch_spr_data(
-    sheet_name = "Apprenticeship",
-    end_year = end_year,
-    level = level
+  df <- tryCatch(
+    njschooldata::fetch_spr_data(
+      sheet_name = "Apprenticeship",
+      end_year = end_year,
+      level = level
+    ),
+    error = function(e) {
+      if (grepl("Sheet '.*' not found", conditionMessage(e))) {
+        return(empty_apprenticeship_frame())
+      }
+      stop(e)
+    }
   )
+  if (nrow(df) == 0) return(df)
 
   # 2017-2024: the sheet had calendar-year columns 2016-2023 which
   # clean_name_vector turns into x_2016, x_2017, ... Rename them to
@@ -694,6 +843,25 @@ fetch_apprenticeship_data <- function(end_year, level = "school") {
   }
 
   df
+}
+
+empty_apprenticeship_frame <- function() {
+  tibble::tibble(
+    county_id = character(0),
+    county_name = character(0),
+    district_id = character(0),
+    district_name = character(0),
+    school_id = character(0),
+    school_name = character(0),
+    end_year = numeric(0),
+    is_state = logical(0),
+    is_county = logical(0),
+    is_district = logical(0),
+    is_school = logical(0),
+    is_charter = logical(0),
+    is_charter_sector = logical(0),
+    is_allpublic = logical(0)
+  )
 }
 
 
@@ -766,6 +934,9 @@ fetch_biliteracy_seal <- function(end_year, level = "school") {
         seals_earned = number_seals_earned,
         perc_12_graders = percentage_seals_earned
       )
+  }
+  if (!"perc_12_graders" %in% names(df)) {
+    df$perc_12_graders <- NA_character_
   }
 
   # Rename columns

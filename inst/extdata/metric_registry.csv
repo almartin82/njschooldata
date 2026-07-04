@@ -86,9 +86,13 @@ restraint,seclusion_count,Seclusion count,count,lower_is_better,FALSE,,,Emitted 
 restraint,seclusion_pct,Seclusion percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
 advanced,ap_participation,AP participation,percent,higher_is_better,TRUE,n_students,,Normalized analysis alias for AP participation fields
 advanced,apib_coursework_school,AP IB coursework participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,apib_coursework_state,AP IB statewide coursework participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_ap_participation state comparison
 advanced,apib_exam_school,AP IB exam participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,apib_exam_state,AP IB statewide exam participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_ap_participation state comparison
 advanced,ap3_ib4_school,AP 3 plus or IB 4 plus rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,ap3_ib4_state,AP 3 plus or IB 4 plus statewide rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_ap_participation state comparison
 advanced,dual_enrollment_school,Dual enrollment participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,dual_enrollment_state,Dual enrollment statewide participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_ap_participation state comparison
 advanced,apib_pct_school,AP IB participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
 advanced,apib_pct_district,AP IB district participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
 advanced,apib_pct_state,AP IB state participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
@@ -104,10 +108,26 @@ advanced,ap_access_rate,AP access rate,percent,higher_is_better,TRUE,total_stude
 advanced,stem_participation_rate,STEM participation rate,percent,higher_is_better,TRUE,n_total_students,,Emitted by calc_stem_participation_rate
 college_career,cte_participants,CTE participants,count,higher_is_better,FALSE,,,Emitted by fetch_cte_participation
 college_career,cte_concentrators,CTE concentrators,count,higher_is_better,FALSE,,,Emitted by fetch_cte_participation
+college_career,state_cte_participants,State CTE participants,count,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_cte_participation state comparison
+college_career,state_cte_concentrators,State CTE concentrators,count,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_cte_participation state comparison
 college_career,earned_one_credential,Students earning one credential,count,higher_is_better,FALSE,,,Emitted by fetch_industry_credentials
 college_career,credentials_earned,Industry credentials earned,count,higher_is_better,FALSE,,,Emitted by fetch_industry_credentials
 college_career,students_participating,Work based learning participants,count,higher_is_better,FALSE,,,Emitted by fetch_work_based_learning
 college_career,pct_participating,Work based learning participation rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_work_based_learning
+college_career,apprenticeship_count,Apprenticeship count,count,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_apprenticeship_data
+college_career,apprenticeship_8_year_total,Apprenticeship eight-year total,count,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_apprenticeship_data
+college_career,sat_participation,SAT participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_sat_participation and fetch_courses
+college_career,act_participation,ACT participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_sat_participation and fetch_courses
+college_career,psat_participation,PSAT participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_sat_participation and fetch_courses
+college_career,sat_participation_state,SAT statewide participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_participation state comparison
+college_career,act_participation_state,ACT statewide participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_participation state comparison
+college_career,psat_participation_state,PSAT statewide participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_participation state comparison
+college_career,college_exam_avg_score_school,College entrance exam average score,score,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_sat_performance
+college_career,college_exam_avg_score_district,College entrance exam district average score,score,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_sat_performance
+college_career,college_exam_avg_score_state,College entrance exam statewide average score,score,higher_is_better,FALSE,,,Emitted by fetch_courses for fetch_sat_performance
+college_career,college_exam_benchmark_school,College entrance exam benchmark rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_performance
+college_career,college_exam_benchmark_district,College entrance exam district benchmark rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_performance
+college_career,college_exam_benchmark_state,College entrance exam statewide benchmark rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_courses for fetch_sat_performance
 biliteracy,seals_earned,Seals of biliteracy earned,count,higher_is_better,FALSE,,,Emitted by fetch_biliteracy_seal
 biliteracy,pct_12th_graders,Twelfth graders earning seals,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_seal
 biliteracy,total_seals_earned,Total seals earned,count,higher_is_better,FALSE,,,Emitted by biliteracy summary and trends fetchers

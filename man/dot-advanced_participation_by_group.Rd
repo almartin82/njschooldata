@@ -4,7 +4,14 @@
 \alias{.advanced_participation_by_group}
 \title{Harmonize the AP/IB/dual participation-by-group sheet across the schema drift}
 \usage{
-.advanced_participation_by_group(end_year, level)
+.advanced_participation_by_group(end_year, level, coerce_values = TRUE)
+}
+\arguments{
+\item{end_year}{School year end.}
+
+\item{level}{One of \code{"school"} or \code{"district"}.}
+
+\item{coerce_values}{Whether to coerce published value tokens to numeric.}
 }
 \description{
 Harmonize the AP/IB/dual participation-by-group sheet across the schema drift

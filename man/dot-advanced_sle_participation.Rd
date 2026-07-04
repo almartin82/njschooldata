@@ -4,7 +4,14 @@
 \alias{.advanced_sle_participation}
 \title{Harmonize the SLE-participation sheet across the schema drift}
 \usage{
-.advanced_sle_participation(end_year, level)
+.advanced_sle_participation(end_year, level, coerce_values = TRUE)
+}
+\arguments{
+\item{end_year}{School year end.}
+
+\item{level}{One of \code{"school"} or \code{"district"}.}
+
+\item{coerce_values}{Whether to coerce published value tokens to numeric.}
 }
 \description{
 Harmonize the SLE-participation sheet across the schema drift
