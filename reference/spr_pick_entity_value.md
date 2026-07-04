@@ -5,7 +5,7 @@ Collapse an SPR school/district/state value triple to one column
 ## Usage
 
 ``` r
-spr_pick_entity_value(df, base, level)
+spr_pick_entity_value(df, base, level, with_status = FALSE)
 ```
 
 ## Arguments
@@ -24,6 +24,12 @@ spr_pick_entity_value(df, base, level)
 - level:
 
   One of `"school"` or `"district"`.
+
+- with_status:
+
+  Logical. If `TRUE`, return a list with the cleaned numeric `value` and
+  the `status` classified from the picked raw cell. The default `FALSE`
+  returns the legacy numeric vector.
 
 ## Value
 

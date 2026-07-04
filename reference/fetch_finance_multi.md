@@ -9,7 +9,8 @@ fetch_finance_multi(
   end_year_vector = NULL,
   end_years = NULL,
   tidy = TRUE,
-  use_cache = TRUE
+  use_cache = TRUE,
+  with_status = FALSE
 )
 ```
 
@@ -33,6 +34,11 @@ fetch_finance_multi(
 - use_cache:
 
   logical, default `TRUE`. See
+  [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
+
+- with_status:
+
+  logical, default `FALSE`. See
   [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
 
 ## Value

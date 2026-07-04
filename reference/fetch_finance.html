@@ -73,7 +73,7 @@ and total K-12 state aid from the Governor's Budget Message district details
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_finance</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span>, with_status <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -96,6 +96,13 @@ long frame and is reserved for a future wide form.</p></dd>
 fetchers; the underlying TGES/state-aid downloads use the package session
 cache.</p></dd>
 
+
+<dt id="arg-with-status">with_status<a class="anchor" aria-label="anchor" href="#arg-with-status"></a></dt>
+<dd><p>logical, default <code>FALSE</code>. If <code>TRUE</code>, adds
+<code>value_status</code>, classifying present values as <code>actual</code>, current
+per-pupil actuals not yet published as <code>not_yet_observed</code>, and missing
+values with absent per-pupil denominators as <code>not_published</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -103,7 +110,7 @@ cache.</p></dd>
   <code>state_id</code>, <code>entity_name</code>, <code>county</code>, <code>is_state</code>,
   <code>is_district</code>, <code>is_school</code>, <code>is_charter</code>, <code>nces_dist</code>,
   <code>nces_sch</code>, <code>metric</code>, <code>value</code>, <code>is_per_pupil</code>,
-  <code>enrollment_denominator</code>.</p>
+  <code>enrollment_denominator</code>, and optionally <code>value_status</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

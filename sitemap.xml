@@ -108,6 +108,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/charter_sector_sped_aggs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/check_url_accessible.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/city_ecosystem_summary.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/classify_value_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_6yr_grad_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_cds_fields.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/clean_enr_data.html</loc></url>
@@ -281,6 +282,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_work_based_learning.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_world_language_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/filter_spr_to_year.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/finance_value_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/format_duration.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/format_valid_values.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/friendly_district_names.html</loc></url>
@@ -452,11 +454,13 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/progress_enabled.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/progress_tracker.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rc_numeric_cleaner.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/rc_numeric_with_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rc_year_matcher.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/read_transcribed_pdf_slice.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/recover_suppressed_grate.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rs_split_student_group.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/rs_value_numeric.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/rs_value_with_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/school_name_to_id.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_gap.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sector_percentile_comparison.html</loc></url>
@@ -485,8 +489,10 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_sheet_mapping.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_split_student_group_grade.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_value_numeric.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/spr_value_with_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/staff_pad_code.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/staff_value_numeric.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/staff_value_with_status.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standard_assess.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_absence_subgroups.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/standardize_sped_disability_category.html</loc></url>

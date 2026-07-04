@@ -13,7 +13,7 @@ code works unchanged.
 ## Usage
 
 ``` r
-fetch_finance(end_year, tidy = TRUE, use_cache = TRUE)
+fetch_finance(end_year, tidy = TRUE, use_cache = TRUE, with_status = FALSE)
 ```
 
 ## Arguments
@@ -35,12 +35,19 @@ fetch_finance(end_year, tidy = TRUE, use_cache = TRUE)
   logical, default `TRUE`. Reserved for parity with other fetchers; the
   underlying TGES/state-aid downloads use the package session cache.
 
+- with_status:
+
+  logical, default `FALSE`. If `TRUE`, adds `value_status`, classifying
+  present values as `actual`, current per-pupil actuals not yet
+  published as `not_yet_observed`, and missing values with absent
+  per-pupil denominators as `not_published`.
+
 ## Value
 
 A tibble in the canonical finance schema: `end_year`, `state_id`,
 `entity_name`, `county`, `is_state`, `is_district`, `is_school`,
 `is_charter`, `nces_dist`, `nces_sch`, `metric`, `value`,
-`is_per_pupil`, `enrollment_denominator`.
+`is_per_pupil`, `enrollment_denominator`, and optionally `value_status`.
 
 ## Details
 

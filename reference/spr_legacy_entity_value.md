@@ -15,7 +15,7 @@ directly.
 ## Usage
 
 ``` r
-spr_legacy_entity_value(df, entity_col, state_col, level)
+spr_legacy_entity_value(df, entity_col, state_col, level, with_status = FALSE)
 ```
 
 ## Arguments
@@ -36,6 +36,12 @@ spr_legacy_entity_value(df, entity_col, state_col, level)
 - level:
 
   One of `"school"` or `"district"`.
+
+- with_status:
+
+  Logical. If `TRUE`, return a list with the cleaned numeric `value` and
+  the `status` classified from the picked raw cell. The default `FALSE`
+  returns the legacy numeric vector.
 
 ## Value
 
