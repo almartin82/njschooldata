@@ -6,7 +6,13 @@ database, broken down by student group and grade level.
 ## Usage
 
 ``` r
-fetch_disciplinary_removals(end_year, level = "school")
+fetch_disciplinary_removals(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE,
+  with_subgroup_std = FALSE
+)
 ```
 
 ## Arguments
@@ -19,6 +25,25 @@ fetch_disciplinary_removals(end_year, level = "school")
 - level:
 
   One of "school" or "district"
+
+- with_status:
+
+  Logical, default `FALSE`. If `TRUE`, appends `value_status`,
+  classified from the raw primary suspension-rate token before numeric
+  coercion.
+
+- with_denominator:
+
+  Logical, default `FALSE`. If `TRUE`, appends `n_students` from the
+  matching total-enrollment row in
+  [`fetch_enr`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  on `end_year` and CDS identifiers. Unmatched rows remain `NA`.
+
+- with_subgroup_std:
+
+  Logical, default `FALSE`. If `TRUE` and the source has a
+  student-group/grade label, appends normalized `subgroup`,
+  `subgroup_std`, and `grade_level` detail.
 
 ## Value
 

@@ -11,7 +11,13 @@ fetcher surfaces them in a cross-district comparable form.
 ## Usage
 
 ``` r
-fetch_restraint_seclusion(end_year, level = "school")
+fetch_restraint_seclusion(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE,
+  with_subgroup_std = FALSE
+)
 ```
 
 ## Arguments
@@ -24,6 +30,24 @@ fetch_restraint_seclusion(end_year, level = "school")
 
   Only `"school"` is supported (the DARS workbook is school-level only).
   Other values error.
+
+- with_status:
+
+  Logical, default `FALSE`. If `TRUE`, appends `value_status`,
+  classified from the raw `any_restraint_seclusion_count` token before
+  numeric coercion.
+
+- with_denominator:
+
+  Logical, default `FALSE`. If `TRUE`, appends `n_students` from the
+  matching total-enrollment row in
+  [`fetch_enr`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  on `end_year` and CDS identifiers. Unmatched rows remain `NA`.
+
+- with_subgroup_std:
+
+  Logical, default `FALSE`. If `TRUE`, adds `subgroup_std` immediately
+  after `subgroup`.
 
 ## Value
 

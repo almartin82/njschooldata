@@ -9,7 +9,12 @@ categories (violence, weapons, vandalism, substances, HIB, other).
 ## Usage
 
 ``` r
-fetch_police_notifications(end_year, level = "school")
+fetch_police_notifications(
+  end_year,
+  level = "school",
+  with_status = FALSE,
+  with_denominator = FALSE
+)
 ```
 
 ## Arguments
@@ -23,6 +28,21 @@ fetch_police_notifications(end_year, level = "school")
 
   One of `"school"` or `"district"`. `"school"` returns school-level
   data; `"district"` returns district and state-level data.
+
+- with_status:
+
+  Logical, default `FALSE`. If `TRUE`, appends row-level `value_status`,
+  classified from the raw incident-category cells before numeric
+  coercion. A row is `suppressed` when any category is suppressed,
+  `actual` when any category has a real number and none is suppressed,
+  and otherwise the most honest missing-data status available.
+
+- with_denominator:
+
+  Logical, default `FALSE`. If `TRUE`, appends `n_students` from the
+  matching total-enrollment row in
+  [`fetch_enr`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  on `end_year` and CDS identifiers. Unmatched rows remain `NA`.
 
 ## Value
 

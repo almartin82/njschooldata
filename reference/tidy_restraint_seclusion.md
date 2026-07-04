@@ -11,7 +11,7 @@ flags.
 ## Usage
 
 ``` r
-tidy_restraint_seclusion(df, end_year)
+tidy_restraint_seclusion(df, end_year, with_status = FALSE)
 ```
 
 ## Arguments
@@ -24,6 +24,11 @@ tidy_restraint_seclusion(df, end_year)
 - end_year:
 
   The school year end (added as a column).
+
+- with_status:
+
+  Logical. If `TRUE`, append `value_status` classified from the raw
+  `any_restraint_seclusion_count` token before numeric coercion.
 
 ## Value
 

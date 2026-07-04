@@ -35,6 +35,14 @@ Processed ACCESS dataframe with columns including:
 
 - proficient_above (L5 + L6 percentage)
 
+- subgroup, subgroup_std (always the English Learner group; \`lep\`)
+
+## See also
+
+\[fetch_ell()\] for the EL \*\*population\*\* feature (headcount and
+share of enrollment), which joins to these proficiency results on the
+CDS id backbone.
+
 ## Examples
 
 ``` r

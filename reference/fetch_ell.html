@@ -70,7 +70,7 @@ assessment (WIDA ACCESS), exposed separately via [fetch_access()].</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_ell</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_ell</span><span class="op">(</span><span class="va">end_year</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, use_cache <span class="op">=</span> <span class="cn">FALSE</span>, with_status <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -92,6 +92,15 @@ assessment (WIDA ACCESS), exposed separately via [fetch_access()].</p>
 <dd><p>if `TRUE`, uses the session cache to avoid re-downloading.
 See [njsd_cache_info()].</p></dd>
 
+
+<dt id="arg-with-status">with_status<a class="anchor" aria-label="anchor" href="#arg-with-status"></a></dt>
+<dd><p>if `TRUE` (and `tidy = TRUE`), appends a `value_status`
+column classifying, per row, why the headcount is present or absent
+(`actual` where a count is published, `not_published` for the percent-only
+district/school entity-years 2020-2022). Classified from the raw count
+token before numeric coercion; the count is never back-derived from the
+percent. Default `FALSE` (the column is additive and off by default).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -102,10 +111,17 @@ See [njsd_cache_info()].</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>New Jersey publishes a single current-EL headcount per entity, so the tidy
 output carries `el_status == "current"` and `subgroup == "total"` for every
-row. The EL share of enrollment (`pct_of_enrollment`, 0-100) is computed fresh
-from the published headcount; for the 2020-2022 district/school files, which
-publish only a percent, that published percent is carried through and
-`n_students` is `NA` (the count is never back-derived from the percent).</p>
+row. The source publishes only a total current-EL headcount, not a grade
+breakdown, so `grade_level == "TOTAL"`. The EL share of enrollment
+(`pct_of_enrollment`, 0-100) is computed fresh from the published headcount;
+for the 2020-2022 district/school files, which publish only a percent, that
+published percent is carried through and `n_students` is `NA` (the count is
+never back-derived from the percent).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>[fetch_access()] for EL **proficiency** (WIDA ACCESS), which joins to
+  this EL **population** feature on the CDS id backbone.</p></div>
     </div>
 
     <div class="section level2">

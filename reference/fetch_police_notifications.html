@@ -70,7 +70,12 @@ categories (violence, weapons, vandalism, substances, HIB, other).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_police_notifications</span><span class="op">(</span><span class="va">end_year</span>, level <span class="op">=</span> <span class="st">"school"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_police_notifications</span><span class="op">(</span></span>
+<span>  <span class="va">end_year</span>,</span>
+<span>  level <span class="op">=</span> <span class="st">"school"</span>,</span>
+<span>  with_status <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  with_denominator <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -86,6 +91,21 @@ year - e.g. the 2023-24 school year is <code>end_year</code> 2024.</p></dd>
 <dd><p>One of <code>"school"</code> or <code>"district"</code>. <code>"school"</code>
 returns school-level data; <code>"district"</code> returns district and
 state-level data.</p></dd>
+
+
+<dt id="arg-with-status">with_status<a class="anchor" aria-label="anchor" href="#arg-with-status"></a></dt>
+<dd><p>Logical, default <code>FALSE</code>. If <code>TRUE</code>, appends
+row-level <code>value_status</code>, classified from the raw incident-category
+cells before numeric coercion. A row is <code>suppressed</code> when any category
+is suppressed, <code>actual</code> when any category has a real number and none is
+suppressed, and otherwise the most honest missing-data status available.</p></dd>
+
+
+<dt id="arg-with-denominator">with_denominator<a class="anchor" aria-label="anchor" href="#arg-with-denominator"></a></dt>
+<dd><p>Logical, default <code>FALSE</code>. If <code>TRUE</code>,
+appends <code>n_students</code> from the matching total-enrollment row in
+<code><a href="fetch_enr.html">fetch_enr</a></code> on <code>end_year</code> and CDS identifiers. Unmatched
+rows remain <code>NA</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -23,7 +23,7 @@ A tibble containing registry rows.
 
 ``` r
 list_metrics()
-#> # A tibble: 144 × 9
+#> # A tibble: 149 × 9
 #>    domain   metric label unit  polarity is_rate denominator_metric era_break_set
 #>    <chr>    <chr>  <chr> <chr> <chr>    <lgl>   <chr>              <chr>        
 #>  1 finance  per_p… Tota… doll… neutral  TRUE    enrollment_denomi… NA           
@@ -36,7 +36,7 @@ list_metrics()
 #>  8 graduat… grad_… Grad… perc… higher_… TRUE    cohort_count       grad         
 #>  9 graduat… four_… Four… perc… higher_… TRUE    cohort_count       grad         
 #> 10 graduat… five_… Five… perc… higher_… TRUE    cohort_count       grad         
-#> # ℹ 134 more rows
+#> # ℹ 139 more rows
 #> # ℹ 1 more variable: notes <chr>
 list_metrics("finance")
 #> # A tibble: 7 × 9

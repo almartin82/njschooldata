@@ -5,7 +5,7 @@ Fetch NJ English Learner population data for multiple years
 ## Usage
 
 ``` r
-fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE)
+fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
 ```
 
 ## Arguments
@@ -22,10 +22,19 @@ fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE)
 
   if \`TRUE\`, uses the session cache.
 
+- with_status:
+
+  if \`TRUE\` (and \`tidy = TRUE\`), appends the additive
+  \`value_status\` column (see \[fetch_ell()\]).
+
 ## Value
 
 combined data.frame of EL population data for all available requested
 years. Unavailable years are skipped with a warning.
+
+## See also
+
+\[fetch_access()\] for EL proficiency (WIDA ACCESS).
 
 ## Examples
 

@@ -10,7 +10,7 @@ separately via \[fetch_access()\].
 ## Usage
 
 ``` r
-fetch_ell(end_year, tidy = TRUE, use_cache = FALSE)
+fetch_ell(end_year, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
 ```
 
 ## Arguments
@@ -31,6 +31,16 @@ fetch_ell(end_year, tidy = TRUE, use_cache = FALSE)
   if \`TRUE\`, uses the session cache to avoid re-downloading. See
   \[njsd_cache_info()\].
 
+- with_status:
+
+  if \`TRUE\` (and \`tidy = TRUE\`), appends a \`value_status\` column
+  classifying, per row, why the headcount is present or absent
+  (\`actual\` where a count is published, \`not_published\` for the
+  percent-only district/school entity-years 2020-2022). Classified from
+  the raw count token before numeric coercion; the count is never
+  back-derived from the percent. Default \`FALSE\` (the column is
+  additive and off by default).
+
 ## Value
 
 data.frame of EL population data. An out-of-range \`end_year\` returns
@@ -40,11 +50,18 @@ the empty, correctly-typed tidy frame.
 
 New Jersey publishes a single current-EL headcount per entity, so the
 tidy output carries \`el_status == "current"\` and \`subgroup ==
-"total"\` for every row. The EL share of enrollment
-(\`pct_of_enrollment\`, 0-100) is computed fresh from the published
-headcount; for the 2020-2022 district/school files, which publish only a
-percent, that published percent is carried through and \`n_students\` is
-\`NA\` (the count is never back-derived from the percent).
+"total"\` for every row. The source publishes only a total current-EL
+headcount, not a grade breakdown, so \`grade_level == "TOTAL"\`. The EL
+share of enrollment (\`pct_of_enrollment\`, 0-100) is computed fresh
+from the published headcount; for the 2020-2022 district/school files,
+which publish only a percent, that published percent is carried through
+and \`n_students\` is \`NA\` (the count is never back-derived from the
+percent).
+
+## See also
+
+\[fetch_access()\] for EL \*\*proficiency\*\* (WIDA ACCESS), which joins
+to this EL \*\*population\*\* feature on the CDS id backbone.
 
 ## Examples
 

@@ -10,4 +10,4 @@ ELL_TIDY_COLS
 
 ## Format
 
-An object of class `character` of length 22.
+An object of class `character` of length 23.
