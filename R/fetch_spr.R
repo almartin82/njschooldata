@@ -243,21 +243,11 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
   }
 
   # Add aggregation flags.
-  # The SPR District/State file marks its statewide aggregate row with the
-  # literal CDS codes county_id == "State" / district_id == "State" (it does NOT
-  # use the 99 / 9999 convention seen elsewhere). Recognize both so the state
-  # row is correctly flagged across all years and file layouts.
-  df <- df %>%
-    dplyr::mutate(
-      is_state = (district_id == "9999" & county_id == "99") |
-        (toupper(county_id) == "STATE"),
-      is_county = (district_id == "9999" & county_id != "99") & !is_state,
-      is_district = school_id %in% c("888", "997", "999") & !is_state,
-      is_school = !school_id %in% c("888", "997", "999") & !is_state,
-      is_charter = county_id == "80",
-      is_charter_sector = FALSE,
-      is_allpublic = FALSE
-    )
+  df <- assign_entity_flags(
+    df,
+    district_school_ids = c("888", "997", "999"),
+    recognize_state_label = TRUE
+  )
 
   # Remove rows without county_id (state summary sometimes has missing values)
   df <- df %>%

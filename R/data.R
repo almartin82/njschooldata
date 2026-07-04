@@ -355,3 +355,35 @@
 #' }
 #' @source NJ Department of Education
 "sped_lookup_map"
+
+#' Subgroup Standardization Crosswalk
+#'
+#' Maps the cleaned subgroup labels emitted by the three in-package subgroup
+#' cleaners (\code{clean_spr_subgroups}, \code{tidy_parcc_subgroup},
+#' \code{clean_6yr_grad_subgroups}) onto a single shared \code{subgroup_std}
+#' vocabulary. This lets code that consumes different source families filter on
+#' one common set of tokens. It is a non-breaking add-on: the source-specific
+#' \code{subgroup} values are unchanged, and \code{subgroup_std} is attached
+#' alongside them by \code{\link{add_subgroup_std}} /
+#' \code{\link{standardize_subgroup}}.
+#'
+#' Every \code{raw_value} is traced directly from the output of the three
+#' cleaners (not hand-invented). Labels with no standard equivalent (for
+#' example special-education accommodation flags or PARCC grade breakdowns) are
+#' listed with \code{subgroup_std = NA} so coverage is fully documented.
+#'
+#' @format A data frame with 4 columns:
+#' \describe{
+#'   \item{raw_value}{Cleaned subgroup label emitted by a cleaner}
+#'   \item{vocab_family}{Source cleaner family: one of \code{"spr"},
+#'     \code{"parcc"}, \code{"grad6yr"}}
+#'   \item{subgroup_std}{Standard subgroup token, or \code{NA} when the label
+#'     has no standard equivalent}
+#'   \item{dimension}{Conceptual dimension: one of \code{"total"},
+#'     \code{"econ"}, \code{"disability"}, \code{"el"}, \code{"race"},
+#'     \code{"gender"}, or \code{NA} for labels with no standard equivalent}
+#' }
+#' @seealso \code{\link{standardize_subgroup}}, \code{\link{add_subgroup_std}}
+#' @source Derived from the in-package subgroup cleaners; rebuild with
+#'   \code{data-raw/build_subgroup_crosswalk.R}
+"subgroup_crosswalk"

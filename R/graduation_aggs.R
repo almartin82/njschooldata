@@ -15,16 +15,19 @@
 #' @return data.frame with boolean aggregation flags
 #' @export
 id_grad_aggs <- function(df) {
+  input_cols <- names(df)
+
   # Note: school_id '888' is used for district totals in 2021+ data
-  df %>%
-    dplyr::mutate(
-      is_state = district_id == "9999" & county_id == "99",
-      is_county = district_id == "9999" & !county_id == "99",
-      is_district = school_id %in% c("888", "997", "999") & !is_state,
-      is_charter_sector = FALSE,
-      is_allpublic = FALSE,
-      is_school = !school_id %in% c("888", "997", "999") & !is_state,
-      is_charter = county_id == "80"
+  assign_entity_flags(
+    df,
+    district_school_ids = c("888", "997", "999"),
+    recognize_state_label = FALSE
+  ) %>%
+    dplyr::select(
+      dplyr::all_of(input_cols),
+      is_state, is_county, is_district,
+      is_charter_sector, is_allpublic,
+      is_school, is_charter
     )
 }
 
