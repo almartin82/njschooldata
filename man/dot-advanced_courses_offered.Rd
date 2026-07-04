@@ -4,7 +4,14 @@
 \alias{.advanced_courses_offered}
 \title{Harmonize the AP/IB courses-offered sheet across the schema drift}
 \usage{
-.advanced_courses_offered(end_year, level)
+.advanced_courses_offered(end_year, level, coerce_values = TRUE)
+}
+\arguments{
+\item{end_year}{School year end.}
+
+\item{level}{One of \code{"school"} or \code{"district"}.}
+
+\item{coerce_values}{Whether to coerce published value tokens to numeric.}
 }
 \description{
 Harmonize the AP/IB courses-offered sheet across the schema drift

@@ -106,6 +106,40 @@ standard_mapping <- data.frame(
   stringsAsFactors = FALSE
 )
 
+standard_mapping <- rbind(
+  standard_mapping,
+  data.frame(
+    raw_value = c(
+      "hispanic/latino",
+      "asian, native hawaiian, or pacific islander",
+      "migrant students",
+      "military-connected students",
+      "students experiencing homelessness",
+      "students in foster care",
+      "non-binary/undesignated gender"
+    ),
+    subgroup_std = c(
+      "hispanic",
+      "asian_pacific_islander",
+      "migrant",
+      "military_connected",
+      "homeless",
+      "foster_care",
+      "non_binary"
+    ),
+    dimension = c(
+      "race",
+      "race",
+      "migrant",
+      "military",
+      "homeless",
+      "foster_care",
+      "gender"
+    ),
+    stringsAsFactors = FALSE
+  )
+)
+
 build_family <- function(vocab_family, raw_values) {
   raw_values <- unique(raw_values)
   mapping_idx <- match(raw_values, standard_mapping$raw_value)
@@ -143,6 +177,13 @@ spr_inputs <- c(
   "Asian",
   "White",
   "Hispanic",
+  "Hispanic/Latino",
+  "Asian, Native Hawaiian, or Pacific Islander",
+  "Migrant Students",
+  "Military-Connected Students",
+  "Students Experiencing Homelessness",
+  "Students in Foster Care",
+  "Non-binary/Undesignated Gender",
   "Other",
   "Male",
   "Female"

@@ -43,8 +43,11 @@
 # -----------------------------------------------------------------------------
 
 #' Harmonize the AP/IB courses-offered sheet across the schema drift
+#' @param end_year School year end.
+#' @param level One of \code{"school"} or \code{"district"}.
+#' @param coerce_values Whether to coerce published value tokens to numeric.
 #' @keywords internal
-.advanced_courses_offered <- function(end_year, level) {
+.advanced_courses_offered <- function(end_year, level, coerce_values = TRUE) {
   # Sheet renamed in 2024-25 (the A-B-IB typo is the real 2025 sheet name):
   #   2017-2024: APIBCoursesOffered
   #   2025+:     ABIBCoursesOffered
@@ -74,8 +77,10 @@
     )
   }
 
-  df$students_enrolled <- spr_value_numeric(df$students_enrolled)
-  df$students_tested <- spr_value_numeric(df$students_tested)
+  if (isTRUE(coerce_values)) {
+    df$students_enrolled <- spr_value_numeric(df$students_enrolled)
+    df$students_tested <- spr_value_numeric(df$students_tested)
+  }
 
   df %>%
     dplyr::select(
@@ -96,8 +101,12 @@
 # -----------------------------------------------------------------------------
 
 #' Harmonize the AP/IB/dual participation-by-group sheet across the schema drift
+#' @param end_year School year end.
+#' @param level One of \code{"school"} or \code{"district"}.
+#' @param coerce_values Whether to coerce published value tokens to numeric.
 #' @keywords internal
-.advanced_participation_by_group <- function(end_year, level) {
+.advanced_participation_by_group <- function(end_year, level,
+                                             coerce_values = TRUE) {
   # Sheet renamed in 2024-25; absent before 2021.
   #   2021-2024: APIBDualEnrPartByStudentGrp
   #   2025+:     AP_IB_Dual_PartStudentGroup (multi-year trend table)
@@ -168,8 +177,10 @@
     "apib_pct_school", "apib_pct_district", "apib_pct_state",
     "dual_pct_school", "dual_pct_district", "dual_pct_state"
   )
-  for (col in pct_cols) {
-    if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+  if (isTRUE(coerce_values)) {
+    for (col in pct_cols) {
+      if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+    }
   }
 
   df %>%
@@ -193,8 +204,12 @@
 # -----------------------------------------------------------------------------
 
 #' Harmonize the SLE-participation sheet across the schema drift
+#' @param end_year School year end.
+#' @param level One of \code{"school"} or \code{"district"}.
+#' @param coerce_values Whether to coerce published value tokens to numeric.
 #' @keywords internal
-.advanced_sle_participation <- function(end_year, level) {
+.advanced_sle_participation <- function(end_year, level,
+                                        coerce_values = TRUE) {
   # Sheet renamed in 2023-24 (note: the boundary is 2024, NOT 2025):
   #   2017-2023: CTE_SLEParticipation (carries CTE / IVC columns too - only the
   #              SLE columns are surfaced here)
@@ -227,8 +242,10 @@
   nm[nm %in% c("sleperc")] <- entity_label
   names(df) <- nm
 
-  for (col in c("sle_pct_school", "sle_pct_district", "sle_pct_state")) {
-    if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+  if (isTRUE(coerce_values)) {
+    for (col in c("sle_pct_school", "sle_pct_district", "sle_pct_state")) {
+      if (col %in% names(df)) df[[col]] <- spr_value_numeric(df[[col]])
+    }
   }
 
   df %>%

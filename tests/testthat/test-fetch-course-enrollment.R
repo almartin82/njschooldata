@@ -152,6 +152,48 @@ test_that("fetch_arts_enrollment returns expected structure", {
   expect_true("level" %in% names(fn_args))
 })
 
+test_that("fetch_courses normalizes course enrollment counts", {
+  df <- fetch_courses("course_enrollment", 2024, subject = "science",
+                      with_status = TRUE)
+
+  expect_s3_class(df, "data.frame")
+  expect_true(all(c("course_subject", "course_name", "metric", "value",
+                    "value_status") %in% names(df)))
+  expect_true(all(df$course_subject == "science"))
+  expect_true("biology" %in% df$course_name)
+  expect_true(all(df$metric == "students_enrolled"))
+  expect_type(df$value, "double")
+  expect_true(all(!is.na(df$value_status)))
+})
+
+test_that("fetch_courses metric names are registered", {
+  emitted_metrics <- c(
+    "apib_pct_school", "apib_pct_district", "apib_pct_state",
+    "dual_pct_school", "dual_pct_district", "dual_pct_state",
+    "sle_pct_school", "sle_pct_district", "sle_pct_state",
+    "students_enrolled", "students_tested",
+    "apib_coursework_school", "apib_coursework_state",
+    "apib_exam_school", "apib_exam_state",
+    "ap3_ib4_school", "ap3_ib4_state",
+    "dual_enrollment_school", "dual_enrollment_state",
+    "cte_participants", "cte_concentrators",
+    "state_cte_participants", "state_cte_concentrators",
+    "earned_one_credential", "credentials_earned",
+    "students_participating", "pct_participating",
+    "apprenticeship_count", "apprenticeship_8_year_total",
+    "sat_participation", "act_participation", "psat_participation",
+    "sat_participation_state", "act_participation_state",
+    "psat_participation_state",
+    "college_exam_avg_score_school", "college_exam_avg_score_district",
+    "college_exam_avg_score_state",
+    "college_exam_benchmark_school", "college_exam_benchmark_district",
+    "college_exam_benchmark_state"
+  )
+
+  missing <- setdiff(emitted_metrics, load_metric_registry()$metric)
+  expect_length(missing, 0)
+})
+
 
 # ==============================================================================
 # calc_ap_access_rate() Tests

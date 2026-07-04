@@ -242,6 +242,37 @@ test_that("participation_by_group 2025 collapses to ONE school year per row", {
   expect_true(all(c("apib_pct_district", "dual_pct_district") %in% names(df)))
 })
 
+test_that("fetch_courses normalizes 2025 advanced access with subgroup status", {
+  local_big_download_timeout()
+  df <- fetch_courses("advanced_access", 2025, with_status = TRUE)
+  row <- df[
+    df$district_id == "0110" &
+      df$school_id == "010" &
+      df$subgroup == "total population" &
+      df$metric == "apib_pct_school",
+  ]
+
+  expect_equal(nrow(row), 1)
+  expect_equal(row$subgroup_std, "total_enrollment")
+  expect_equal(row$value, 17.7, tolerance = 0.1)
+  expect_equal(as.character(row$value_status), "actual")
+})
+
+test_that("fetch_courses normalizes 2025 courses offered from the renamed sheet", {
+  local_big_download_timeout()
+  df <- fetch_courses("courses_offered", 2025, with_status = TRUE)
+  row <- df[
+    df$district_id == "0110" &
+      df$school_id == "010" &
+      df$course_name == "AP Biology" &
+      df$metric == "students_enrolled",
+  ]
+
+  expect_equal(nrow(row), 1)
+  expect_equal(row$value, 28)
+  expect_equal(as.character(row$value_status), "actual")
+})
+
 test_that("participation_by_group coerces no-data text to NA, not a number", {
   local_big_download_timeout()
   raw <- fetch_spr_data("AP_IB_Dual_PartStudentGroup", 2025)

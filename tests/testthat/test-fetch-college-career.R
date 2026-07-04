@@ -101,6 +101,33 @@ test_that("fetch_ap_participation works across multiple years", {
   expect_s3_class(df_2022, "data.frame")
 })
 
+test_that("fetch_ap_participation returns the supported 2025 participation fields", {
+  df <- fetch_ap_participation(2025)
+  row <- df[
+    df$district_id == "0110" &
+      df$school_id == "010",
+  ]
+
+  expect_equal(nrow(row), 1)
+  expect_equal(row$apib_coursework_school, 17.7, tolerance = 0.1)
+  expect_equal(row$dual_enrollment_school, 30.6, tolerance = 0.1)
+  expect_true(is.na(row$apib_exam_school))
+  expect_true(is.na(row$ap3_ib4_school))
+})
+
+test_that("fetch_courses college_career handles 2025 district redesign sheets", {
+  df <- fetch_courses("college_career", 2025, level = "district",
+                      with_status = TRUE)
+
+  expect_true(all(c(
+    "sat_participation", "sat_performance", "ap_ib_participation",
+    "cte", "industry_credentials", "work_based_learning", "apprenticeship"
+  ) %in% df$course_domain))
+  expect_length(setdiff(unique(df$metric), load_metric_registry()$metric), 0)
+  expect_true("college_exam_benchmark_district" %in% df$metric)
+  expect_true(all(!is.na(df$value_status)))
+})
+
 
 # ==============================================================================
 # IB Participation Tests

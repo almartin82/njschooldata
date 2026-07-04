@@ -302,8 +302,16 @@ calc_ap_access_rate <- function(df, subgroup = "total population") {
 
   # Calculate AP access rate
   # All students in a school have access if school offers AP/IB
+  identity_cols <- c(
+    location_cols, "location_id",
+    "county_name", "district_name", "school_name",
+    "is_state", "is_county", "is_district", "is_school", "is_charter",
+    "is_charter_sector", "is_allpublic",
+    "has_ap", "has_ib", "has_both"
+  )
+
   ap_ib_summary <- ap_ib_access %>%
-    dplyr::select(dplyr::all_of(c(location_cols, "location_id", "has_ap", "has_ib", "has_both"))) %>%
+    dplyr::select(dplyr::any_of(identity_cols)) %>%
     dplyr::distinct() %>%
     dplyr::left_join(total_students, by = "location_id")
 
@@ -350,17 +358,22 @@ calc_ap_access_rate <- function(df, subgroup = "total population") {
   # Join back to original data
   # Get one row per location from original data
   original_cols <- df %>%
-    dplyr::select(dplyr::all_of(c(location_cols, "is_state", "is_county",
-                                   "is_district", "is_school", "is_charter",
-                                   "is_charter_sector", "is_allpublic"))) %>%
+    dplyr::select(dplyr::any_of(c(
+      location_cols, "county_name", "district_name", "school_name",
+      "is_state", "is_county", "is_district", "is_school", "is_charter",
+      "is_charter_sector", "is_allpublic"
+    ))) %>%
     dplyr::distinct()
 
   result <- original_cols %>%
     dplyr::left_join(
       ap_ib_summary %>%
-        dplyr::select(-dplyr::any_of(c("is_state", "is_county", "is_district",
-                                        "is_school", "is_charter",
-                                        "is_charter_sector", "is_allpublic"))),
+        dplyr::select(-dplyr::any_of(c(
+          "county_name", "district_name", "school_name",
+          "is_state", "is_county", "is_district",
+          "is_school", "is_charter",
+          "is_charter_sector", "is_allpublic"
+        ))),
       by = location_cols
     )
 
@@ -742,11 +755,15 @@ analyze_course_access_equity <- function(df_list, subgroup_cols = NULL) {
   # Ensure numeric
   combined[[count_col]] <- as.numeric(combined[[count_col]])
 
+  sum_course_values <- function(x) {
+    if (all(is.na(x))) NA_real_ else sum(x, na.rm = FALSE)
+  }
+
   # Calculate access rates by location, year, and subgroup
   access_rates <- combined %>%
     dplyr::group_by(year, location_id, !!dplyr::sym(subgroup_col)) %>%
     dplyr::summarise(
-      access_rate = sum(!!dplyr::sym(count_col), na.rm = TRUE),
+      access_rate = sum_course_values(!!dplyr::sym(count_col)),
       .groups = "drop"
     )
 
@@ -762,23 +779,32 @@ analyze_course_access_equity <- function(df_list, subgroup_cols = NULL) {
   # Calculate access gaps and disparity indices
   # Exclude total population from gap calculations
   equity_summary <- access_rates %>%
-    dplyr::filter(!!dplyr::sym(subgroup_col) != "total population") %>%
-    dplyr::mutate(
-      # Access gap: subgroup rate - total population rate (in percentage points)
-      # Note: If access_rate is already a count, we need to convert to rate first
-      # For now, assume we're working with raw counts and need to normalize
+    dplyr::filter(!!dplyr::sym(subgroup_col) != "total population")
 
-      # Actually, let's recalculate as rates
-      # This is complex because we need total enrollment by subgroup
-      # For simplicity, we'll use disparity_index as the primary metric
+  if (nrow(equity_summary) == 0) {
+    # Some course-enrollment sheets publish only total-population counts. Keep
+    # one honest row per entity-year so callers can still trend availability,
+    # but leave subgroup comparison metrics unknown rather than inventing a gap.
+    equity_summary <- access_rates %>%
+      dplyr::filter(!!dplyr::sym(subgroup_col) == "total population") %>%
+      dplyr::mutate(
+        !!dplyr::sym(subgroup_col) := NA_character_,
+        total_population_rate = access_rate,
+        disparity_index = NA_real_,
+        flag_large_gap = FALSE
+      )
+  } else {
+    equity_summary <- equity_summary %>%
+      dplyr::mutate(
+        # Disparity index: subgroup rate / total population rate. If the source
+        # did not publish a total-population row, leave the comparison unknown.
+        disparity_index = access_rate / total_population_rate,
 
-      # Disparity index: subgroup rate / total population rate
-      disparity_index = access_rate / total_population_rate,
-
-      # Flag large gaps (> 20% difference from parity)
-      # Disparity index < 0.8 or > 1.2 indicates >20% gap
-      flag_large_gap = disparity_index < 0.8 | disparity_index > 1.2
-    )
+        # Flag large gaps (> 20% difference from parity)
+        # Disparity index < 0.8 or > 1.2 indicates >20% gap
+        flag_large_gap = disparity_index < 0.8 | disparity_index > 1.2
+      )
+  }
 
   # Handle edge cases
   equity_summary$disparity_index[!is.finite(equity_summary$disparity_index)] <- NA

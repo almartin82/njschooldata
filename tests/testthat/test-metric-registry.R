@@ -28,6 +28,38 @@ test_that("finance metrics emitted by fetch_finance are registered", {
 })
 
 
+test_that("course metrics emitted by fetch_courses are registered", {
+  registry <- load_metric_registry()
+  course_metrics <- c(
+    "students_enrolled", "students_tested",
+    "apib_coursework_school", "apib_coursework_state",
+    "apib_exam_school", "apib_exam_state",
+    "ap3_ib4_school", "ap3_ib4_state",
+    "dual_enrollment_school", "dual_enrollment_state",
+    "apib_pct_school", "apib_pct_district", "apib_pct_state",
+    "dual_pct_school", "dual_pct_district", "dual_pct_state",
+    "sle_pct_school", "sle_pct_district", "sle_pct_state",
+    "cte_participants", "cte_concentrators",
+    "state_cte_participants", "state_cte_concentrators",
+    "earned_one_credential", "credentials_earned",
+    "students_participating", "pct_participating",
+    "apprenticeship_count", "apprenticeship_8_year_total",
+    "sat_participation", "act_participation", "psat_participation",
+    "sat_participation_state", "act_participation_state",
+    "psat_participation_state",
+    "college_exam_avg_score_school",
+    "college_exam_avg_score_district",
+    "college_exam_avg_score_state",
+    "college_exam_benchmark_school",
+    "college_exam_benchmark_district",
+    "college_exam_benchmark_state"
+  )
+
+  missing <- setdiff(course_metrics, registry$metric)
+  expect_length(missing, 0)
+})
+
+
 test_that("annotate_metric attaches row-wise metadata for long finance output", {
   df <- tibble::tibble(
     metric = c("per_pupil_total", "revenue_state"),
