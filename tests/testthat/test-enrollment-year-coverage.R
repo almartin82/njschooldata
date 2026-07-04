@@ -14,18 +14,20 @@
 
 wide_test_years <- list(
   # year, expected_cols, min_rows
-  # Pre-2020 format: separate program codes, ~26k rows, 39 cols
-  list(year = 2015, min_rows = 25000, expected_cols = 39),
-  list(year = 2018, min_rows = 25000, expected_cols = 39),
-  list(year = 2019, min_rows = 25000, expected_cols = 39),
-  # Post-2020 format: State/District/School sheets, ~57k rows, 26 cols
-  list(year = 2020, min_rows = 50000, expected_cols = 26),
-  list(year = 2021, min_rows = 50000, expected_cols = 26),
-  list(year = 2022, min_rows = 50000, expected_cols = 26),
+  # expected_cols includes the 2 NCES id columns (nces_dist, nces_sch) that
+  # fetch_enr() attaches to every result.
+  # Pre-2020 format: separate program codes, ~26k rows, 39 + 2 NCES = 41 cols
+  list(year = 2015, min_rows = 25000, expected_cols = 41),
+  list(year = 2018, min_rows = 25000, expected_cols = 41),
+  list(year = 2019, min_rows = 25000, expected_cols = 41),
+  # Post-2020 format: State/District/School sheets, ~57k rows, 26 + 2 NCES = 28 cols
+  list(year = 2020, min_rows = 50000, expected_cols = 28),
+  list(year = 2021, min_rows = 50000, expected_cols = 28),
+  list(year = 2022, min_rows = 50000, expected_cols = 28),
   # 2024+ ships ~101k rows (Ungraded column dropped, more school rows)
-  list(year = 2025, min_rows = 50000, expected_cols = 26),
+  list(year = 2025, min_rows = 50000, expected_cols = 28),
   # 2025-26 file shipped as "Enrollment_2526.zip" (capital E - filename case flip)
-  list(year = 2026, min_rows = 50000, expected_cols = 26)
+  list(year = 2026, min_rows = 50000, expected_cols = 28)
 )
 
 for (spec in wide_test_years) {

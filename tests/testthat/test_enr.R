@@ -41,7 +41,7 @@ test_that("fetch_enr correctly grabs the 2009 enrollment file", {
   fetch_2009 <- fetch_enr(2009)
 
   expect_equal(nrow(fetch_2009), 29491)
-  expect_equal(ncol(fetch_2009), 39)
+  expect_equal(ncol(fetch_2009), 41)  # 39 data + 2 NCES id cols (nces_dist, nces_sch)
   # Verified against raw NJ DOE source file: enrollment_0809.zip -> STAT_ENR.CSV
   expect_equal(sum(as.numeric(fetch_2009$row_total), na.rm = TRUE), 11034082)
 })
@@ -52,7 +52,7 @@ test_that("fetch_enr handles the 2016-17 enrollment file", {
 
   expect_s3_class(fetch_2017, 'data.frame')
   expect_equal(nrow(fetch_2017), 26467)
-  expect_equal(ncol(fetch_2017), 39)
+  expect_equal(ncol(fetch_2017), 41)  # 39 data + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 
@@ -61,7 +61,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file", {
 
   expect_s3_class(fetch_2018, 'data.frame')
   expect_equal(nrow(fetch_2018), 26484)
-  expect_equal(ncol(fetch_2018), 39)
+  expect_equal(ncol(fetch_2018), 41)  # 39 data + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 
@@ -78,7 +78,7 @@ test_that("fetch_enr handles the 2017-18 enrollment file, tidy TRUE", {
                   nrow(), 6e5)
   
   expect_equal(nrow(fetch_2018), 651701)
-  expect_equal(ncol(fetch_2018), 22)  # includes is_charter column
+  expect_equal(ncol(fetch_2018), 24)  # 22 data (incl is_charter) + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 
@@ -88,7 +88,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file", {
   expect_s3_class(fetch_2019, 'data.frame')
   
   expect_equal(nrow(fetch_2019), 26506)
-  expect_equal(ncol(fetch_2019), 39)
+  expect_equal(ncol(fetch_2019), 41)  # 39 data + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
@@ -96,7 +96,7 @@ test_that("fetch_enr handles the 2018-19 enrollment file, tidy = TRUE", {
   
   expect_s3_class(fetch_2019, 'data.frame')
   expect_equal(nrow(fetch_2019), 652214)
-  expect_equal(ncol(fetch_2019), 22)  # includes is_charter column
+  expect_equal(ncol(fetch_2019), 24)  # 22 data (incl is_charter) + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 
@@ -108,7 +108,7 @@ test_that("all enrollment data can be pulled", {
 
   expect_s3_class(enr_all, 'data.frame')
   expect_equal(nrow(enr_all), 727779)
-  expect_equal(ncol(enr_all), 42)
+  expect_equal(ncol(enr_all), 44)  # 42 data + 2 NCES id cols (nces_dist, nces_sch)
 })
 
 
