@@ -1,0 +1,145 @@
+domain,metric,label,unit,polarity,is_rate,denominator_metric,era_break_set,notes
+finance,per_pupil_total,Total expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_instruction,Instruction expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_support_services,Support services expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_administration,Administration expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_operations_maintenance,Operations and maintenance expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,per_pupil_food_service,Food service expenditures per pupil,dollars,neutral,TRUE,enrollment_denominator,,Emitted by fetch_finance .finance_metrics
+finance,revenue_state,State aid revenue,dollars,neutral,FALSE,,,Emitted by fetch_finance .finance_metrics
+graduation,grad_rate,Graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate
+graduation,four_yr_grad_rate,Four year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate when present
+graduation,five_yr_grad_rate,Five year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_grad_rate when present
+graduation,grad_rate_4yr,Four year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Used by issue tests and cohort comparisons
+graduation,grad_rate_5yr,Five year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Used by issue tests and cohort comparisons
+graduation,grad_rate_6yr,Six year graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_6yr_grad_rate
+graduation,cohort_count,Graduation cohort count,count,neutral,FALSE,,,Emitted by fetch_grad_rate and fetch_grad_count
+graduation,graduated_count,Graduated student count,count,neutral,FALSE,,,Emitted by fetch_grad_rate and fetch_grad_count
+graduation,continuing_rate,Continuing after six years rate,percent,neutral,TRUE,cohort_count,grad,Emitted by fetch_6yr_grad_rate
+graduation,non_continuing_rate,Non continuing after six years rate,percent,lower_is_better,TRUE,cohort_count,grad,Emitted by fetch_6yr_grad_rate
+graduation,persistence_rate,High school persistence rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_6yr_grad_rate
+graduation,graduated,Graduated cohort outcome rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_spr_grad_cohort
+graduation,continuing,Continuing cohort outcome rate,percent,neutral,TRUE,cohort_count,grad,Emitted by fetch_spr_grad_cohort
+graduation,non_continuing,Non continuing cohort outcome rate,percent,lower_is_better,TRUE,cohort_count,grad,Emitted by fetch_spr_grad_cohort
+graduation,persisting,High school persisting cohort rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_spr_grad_cohort
+graduation,graduation_rate_federal,Federal graduation rate,percent,higher_is_better,TRUE,cohort_count,grad,Emitted by fetch_spr_fed_grad
+graduation,dropout_rate,Dropout rate,percent,lower_is_better,TRUE,cohort_count,grad,Emitted by fetch_dropout_rates source schema
+assessment,proficient_above,Proficient or above rate,percent,higher_is_better,TRUE,number_of_valid_scale_scores,njsla,Emitted by fetch_parcc and ACCESS processing
+assessment,scale_score_mean,Mean scale score,scaled_score,higher_is_better,FALSE,,njsla,Emitted by fetch_parcc
+assessment,proficiency_rate,NJSLA proficiency rate,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,mean_scaled_score,Mean scaled score,scaled_score,higher_is_better,FALSE,,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,valid_scores,Valid assessment scores,count,neutral,FALSE,,njsla,Emitted by assessment fetchers
+assessment,number_of_valid_scale_scores,Valid scale score count,count,neutral,FALSE,,njsla,Emitted by processed assessment data
+assessment,pct_l1,Percent at level 1,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by assessment processing
+assessment,pct_l2,Percent at level 2,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by assessment processing
+assessment,pct_l3,Percent at level 3,percent,neutral,TRUE,valid_scores,njsla,Emitted by assessment processing
+assessment,pct_l4,Percent at level 4,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by assessment processing
+assessment,pct_l5,Percent at level 5,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by assessment processing
+assessment,pct_l6,Percent at level 6,percent,higher_is_better,TRUE,valid_scores,,Emitted by ACCESS processing
+assessment,level_1,Percent at NJSLA level 1,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,level_2,Percent at NJSLA level 2,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,level_3,Percent at NJSLA level 3,percent,neutral,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,level_4,Percent at NJSLA level 4,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,level_5,Percent at NJSLA level 5,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_proficiency_by_test
+assessment,level_1_percentage,Science level 1 percentage,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_science_grade
+assessment,level_2_percentage,Science level 2 percentage,percent,lower_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_science_grade
+assessment,level_3_percentage,Science level 3 percentage,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_science_grade
+assessment,level_4_percentage,Science level 4 percentage,percent,higher_is_better,TRUE,valid_scores,njsla,Emitted by fetch_spr_science_grade
+assessment,science_proficiency_rate,Science proficiency rate,percent,higher_is_better,TRUE,valid_scores,njsla,Normalized analysis alias for science level 3 plus level 4
+assessment,progress_toward_elp,Progress toward English language proficiency,percent,higher_is_better,TRUE,,,Emitted by fetch_spr_elp_progress
+attendance,chronically_absent_rate,Chronically absent rate,percent,lower_is_better,TRUE,,attendance,Emitted by fetch_chronic_absenteeism and fetch_absence
+attendance,chronic_absenteeism,Chronic absenteeism rate,percent,lower_is_better,TRUE,,attendance,Normalized analysis alias for chronically_absent_rate
+attendance,chronic_absenteeism_total,Total chronic absenteeism rate,percent,lower_is_better,TRUE,,attendance,Emitted by fetch_essa_chronic_absenteeism
+attendance,attendance_total,Total attendance rate,percent,higher_is_better,TRUE,,attendance,Emitted by fetch_essa_chronic_absenteeism
+attendance,avg_days_absent,Average days absent,days,lower_is_better,FALSE,,attendance,Emitted by fetch_days_absent when present
+attendance,median_days_absent,Median days absent,days,lower_is_better,FALSE,,attendance,Emitted by fetch_days_absent when present
+discipline,discipline_rate,Discipline incident rate,ratio,lower_is_better,TRUE,n_students,,Emitted by calc_discipline_rates_by_subgroup
+discipline,suspension_rate,Suspension rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for discipline suspension rates
+discipline,number_of_removals,Disciplinary removals,count,lower_is_better,FALSE,,,Emitted by disciplinary removals source schema
+discipline,percent_by_subgroup,Incident percent by subgroup,percent,neutral,TRUE,total_incidents,,Emitted by calc_discipline_rates_by_subgroup
+discipline,risk_ratio,Discipline risk ratio,ratio,lower_is_better,TRUE,total_pop_rate,,Emitted by calc_discipline_rates_by_subgroup
+discipline,violence,Violence incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,weapons,Weapons incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,vandalism,Vandalism incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,substances,Substance incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,hib,HIB incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,other_incidents,Other incidents,count,lower_is_better,FALSE,,,Emitted by fetch_police_notifications
+discipline,police_count,Police notifications,count,lower_is_better,FALSE,,,Emitted by SPR group grade detail helpers
+discipline,arrested_count,Student arrests,count,lower_is_better,FALSE,,,Emitted by fetch_arrests
+discipline,hib_alleged,HIB alleged investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
+discipline,hib_confirmed,HIB confirmed investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
+discipline,total_hib_investigations,Total HIB investigations,count,lower_is_better,FALSE,,,Emitted by fetch_hib_investigations
+restraint,restraint_rate,Restraint rate,percent,lower_is_better,TRUE,n_students,,Normalized analysis alias for restraint_pct
+restraint,any_restraint_seclusion_count,Any restraint or seclusion count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
+restraint,any_restraint_seclusion_pct,Any restraint or seclusion percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
+restraint,restraint_count,Restraint count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
+restraint,restraint_pct,Restraint percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
+restraint,restraint_physical_count,Physical restraint count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
+restraint,restraint_physical_pct,Physical restraint percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
+restraint,restraint_mechanical_count,Mechanical restraint count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
+restraint,restraint_mechanical_pct,Mechanical restraint percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
+restraint,seclusion_count,Seclusion count,count,lower_is_better,FALSE,,,Emitted by fetch_restraint_seclusion
+restraint,seclusion_pct,Seclusion percent,percent,lower_is_better,TRUE,n_students,,Emitted by fetch_restraint_seclusion
+advanced,ap_participation,AP participation,percent,higher_is_better,TRUE,n_students,,Normalized analysis alias for AP participation fields
+advanced,apib_coursework_school,AP IB coursework participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,apib_exam_school,AP IB exam participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,ap3_ib4_school,AP 3 plus or IB 4 plus rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,dual_enrollment_school,Dual enrollment participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_ap_participation
+advanced,apib_pct_school,AP IB participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,apib_pct_district,AP IB district participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,apib_pct_state,AP IB state participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,dual_pct_school,Dual enrollment participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,dual_pct_district,Dual enrollment district participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,dual_pct_state,Dual enrollment state participation by group,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,sle_pct_school,Structured learning experience participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,sle_pct_district,Structured learning experience district participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,sle_pct_state,Structured learning experience state participation,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_advanced_course_access
+advanced,students_enrolled,Students enrolled,count,neutral,FALSE,,,Emitted by advanced course and credential fetchers
+advanced,students_tested,Students tested,count,neutral,FALSE,,,Emitted by fetch_advanced_course_access
+advanced,ap_access_rate,AP access rate,percent,higher_is_better,TRUE,total_students,,Emitted by calc_ap_access_rate
+advanced,stem_participation_rate,STEM participation rate,percent,higher_is_better,TRUE,n_total_students,,Emitted by calc_stem_participation_rate
+college_career,cte_participants,CTE participants,count,higher_is_better,FALSE,,,Emitted by fetch_cte_participation
+college_career,cte_concentrators,CTE concentrators,count,higher_is_better,FALSE,,,Emitted by fetch_cte_participation
+college_career,earned_one_credential,Students earning one credential,count,higher_is_better,FALSE,,,Emitted by fetch_industry_credentials
+college_career,credentials_earned,Industry credentials earned,count,higher_is_better,FALSE,,,Emitted by fetch_industry_credentials
+college_career,students_participating,Work based learning participants,count,higher_is_better,FALSE,,,Emitted by fetch_work_based_learning
+college_career,pct_participating,Work based learning participation rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_work_based_learning
+biliteracy,seals_earned,Seals of biliteracy earned,count,higher_is_better,FALSE,,,Emitted by fetch_biliteracy_seal
+biliteracy,pct_12th_graders,Twelfth graders earning seals,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_seal
+biliteracy,total_seals_earned,Total seals earned,count,higher_is_better,FALSE,,,Emitted by biliteracy summary and trends fetchers
+biliteracy,unique_students_earning_seals,Unique students earning seals,count,higher_is_better,FALSE,,,Emitted by fetch_biliteracy_summary
+biliteracy,unique_students_earning_seals_pct,Unique students earning seals rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_summary
+biliteracy,multilingual_learners_earning_seals,Multilingual learners earning seals,count,higher_is_better,FALSE,,,Emitted by fetch_biliteracy_summary
+biliteracy,multilingual_learners_earning_seals_pct,Multilingual learners earning seals rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_summary
+biliteracy,students_earning_seal_pct_school,Students earning seal school rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_by_group
+biliteracy,students_earning_seal_pct_district,Students earning seal district rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_by_group
+biliteracy,students_earning_seal_pct_state,Students earning seal state rate,percent,higher_is_better,TRUE,n_students,,Emitted by fetch_biliteracy_by_group
+special_ed,sped_classification_rate,Special education classification rate,percent,neutral,TRUE,gened_num,,Normalized analysis alias for sped_rate
+special_ed,sped_rate,Special education classification rate,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
+special_ed,sped_rate_no_speech,Special education classification rate without speech,percent,neutral,TRUE,gened_num,,Emitted by fetch_sped
+special_ed,sped_num,Special education student count,count,neutral,FALSE,,,Emitted by fetch_sped
+special_ed,gened_num,General education enrollment count,count,neutral,FALSE,,,Emitted by fetch_sped
+special_ed,count,Special education placement count,count,neutral,FALSE,,,Emitted by fetch_sped_placement
+special_ed,percent,Special education placement percent,percent,neutral,TRUE,subgroup_total,,Emitted by fetch_sped_placement
+special_ed,subgroup_total,Special education placement subgroup total,count,neutral,FALSE,,,Emitted by fetch_sped_placement
+el,el_share,English learner share,percent,neutral,TRUE,total_enrollment,,Normalized analysis alias for pct_of_enrollment
+el,pct_of_enrollment,English learner share of enrollment,percent,neutral,TRUE,total_enrollment,,Emitted by fetch_ell tidy output
+el,el_count,English learner count,count,neutral,FALSE,,,Emitted by fetch_ell wide output
+el,el_pct,English learner published percent,percent,neutral,TRUE,total_enrollment,,Emitted by fetch_ell wide output
+enrollment,n_students,Student count,count,neutral,FALSE,,,Emitted by enrollment EL and other tidy outputs
+enrollment,pct,Student subgroup share,percent,neutral,TRUE,row_total,,Emitted by tidy_enr
+enrollment,pct_total_enr,Percent of total enrollment,percent,neutral,TRUE,row_total,,Emitted by enrollment aggregations
+staff,staff_retention,Staff retention,percent,higher_is_better,TRUE,total_staff,,Normalized analysis alias for staff retention
+staff,retention_pct_district,District staff retention percent,percent,higher_is_better,TRUE,total_staff,,Emitted by fetch_spr_staff_retention
+staff,retention_pct_state,State staff retention percent,percent,higher_is_better,TRUE,total_staff,,Emitted by fetch_spr_staff_retention
+staff,retention_rate,Staff retention rate,percent,higher_is_better,TRUE,total_staff,,Emitted by analyze_retention_patterns
+staff,turnover_rate,Staff turnover rate,percent,lower_is_better,TRUE,total_staff,,Emitted by analyze_retention_patterns
+staff,stability_index,Staff stability index,index,higher_is_better,FALSE,,,Emitted by analyze_retention_patterns
+staff,student_staff_ratio,Student staff ratio,ratio,lower_is_better,TRUE,total_staff,,Emitted by calc_student_staff_ratio
+staff,diversity_index,Staff diversity index,index,neutral,FALSE,,,Emitted by calc_staff_diversity_metrics
+staff,racial_diversity_score,Racial diversity score,index,neutral,FALSE,,,Emitted by calc_staff_diversity_metrics
+staff,gender_diversity_score,Gender diversity score,index,neutral,FALSE,,,Emitted by calc_staff_diversity_metrics
+school_environment,length_of_day_minutes,Length of school day,minutes,neutral,FALSE,,,Emitted by fetch_school_day
+school_environment,instruction_full_time_minutes,Full time instruction minutes,minutes,higher_is_better,FALSE,,,Emitted by fetch_school_day
+school_environment,instruction_shared_time_minutes,Shared time instruction minutes,minutes,higher_is_better,FALSE,,,Emitted by fetch_school_day
+school_environment,student_device_ratio,Students per device ratio,ratio,lower_is_better,TRUE,device_count,,Emitted by fetch_device_ratios
+school_environment,students_per_device,Students per device,ratio,lower_is_better,TRUE,device_count,,Emitted by fetch_device_ratios

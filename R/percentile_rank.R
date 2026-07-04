@@ -89,6 +89,82 @@ add_percentile_rank <- function(df, metric_col, prefix = NULL) {
 }
 
 
+#' Add favorable-direction percentile rank columns for a registered metric
+#'
+#' @description
+#' Calculates percentile rank using the existing \code{add_percentile_rank()}
+#' primitive, then orients the rank calculation by registered metric polarity.
+#' For \code{lower_is_better} metrics, values are inverted before ranking so a
+#' higher favorable percentile means a better outcome. For
+#' \code{higher_is_better} and \code{neutral} metrics, the existing rank
+#' direction is preserved.
+#'
+#' This is an opt-in helper and does not change the default output of
+#' \code{add_percentile_rank()}.
+#'
+#' @param df A dataframe, optionally grouped. Grouping defines the comparison
+#'   set.
+#' @param metric_col Character. The column name to rank on.
+#' @param metric Character. Registry metric name used to look up polarity.
+#'   Defaults to \code{metric_col}.
+#' @param prefix Character. Optional prefix for output column names. If
+#'   \code{NULL}, uses \code{{metric_col}_favorable} as prefix.
+#'
+#' @return df with added \code{{prefix}_rank}, \code{{prefix}_n}, and
+#'   \code{{prefix}_percentile} columns.
+#'
+#' @examples
+#' test_df <- tibble::tibble(id = c("A", "B", "C"), dropout_rate = c(3, 8, 12))
+#' add_favorable_percentile_rank(test_df, "dropout_rate")
+#' grad_df <- tibble::tibble(id = c("A", "B", "C"), grad_rate = c(70, 80, 90))
+#' add_favorable_percentile_rank(grad_df, "grad_rate", prefix = "grad_fav")
+#'
+#' @export
+add_favorable_percentile_rank <- function(
+    df,
+    metric_col,
+    metric = metric_col,
+    prefix = NULL
+) {
+
+  if (!metric_col %in% names(df)) {
+    stop(sprintf("Column '%s' not found in dataframe", metric_col))
+  }
+  if (length(metric) != 1 || is.na(metric) || !nzchar(metric)) {
+    stop("metric must be a non-empty character scalar.", call. = FALSE)
+  }
+
+  if (is.null(prefix)) {
+    prefix <- paste0(metric_col, "_favorable")
+  }
+
+  meta <- metric_meta(metric)
+  polarity <- meta$polarity[[1]]
+  rank_col <- metric_col
+  temp_col <- NULL
+
+  if (identical(polarity, "lower_is_better")) {
+    temp_col <- paste0(".", metric_col, "_favorable_rank_value")
+    while (temp_col %in% names(df)) {
+      temp_col <- paste0(temp_col, "_")
+    }
+
+    metric_sym <- rlang::sym(metric_col)
+    df <- df %>%
+      dplyr::mutate(!!temp_col := -1 * !!metric_sym)
+    rank_col <- temp_col
+  }
+
+  out <- add_percentile_rank(df, rank_col, prefix = prefix)
+
+  if (!is.null(temp_col)) {
+    out <- out %>% dplyr::select(-dplyr::all_of(temp_col))
+  }
+
+  out
+}
+
+
 # -----------------------------------------------------------------------------
 # Peer Group Definition
 # -----------------------------------------------------------------------------
