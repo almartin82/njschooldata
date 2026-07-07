@@ -410,7 +410,7 @@ sessionInfo()
 #>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.5    evaluate_1.0.5   
 #>  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   
 #> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  
-#> [17] cli_3.6.6         crayon_1.5.3      rlang_1.2.0       bit64_4.8.2      
+#> [17] cli_3.6.6         crayon_1.5.3      rlang_1.3.0       bit64_4.8.2      
 #> [21] withr_3.0.3       cachem_1.1.0      yaml_2.3.12       otel_0.2.0       
 #> [25] parallel_4.6.1    tools_4.6.1       downloader_0.4.1  tzdb_0.5.0       
 #> [29] curl_7.1.0        vctrs_0.7.3       R6_2.6.1          lifecycle_1.0.5  

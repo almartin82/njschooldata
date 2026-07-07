@@ -747,7 +747,7 @@ sessionInfo()
 #>  [9] evaluate_1.0.5     grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3
 #> [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8        
 #> [17] purrr_1.2.2        codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4   
-#> [21] cli_3.6.6          rlang_1.2.0        withr_3.0.3        cachem_1.1.0      
+#> [21] cli_3.6.6          rlang_1.3.0        withr_3.0.3        cachem_1.1.0      
 #> [25] yaml_2.3.12        otel_0.2.0         downloader_0.4.1   tools_4.6.1       
 #> [29] tzdb_0.5.0         curl_7.1.0         vctrs_0.7.3        R6_2.6.1          
 #> [33] lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1   stringr_1.6.0     

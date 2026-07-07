@@ -107,7 +107,7 @@ print(sda_top)
 #>    entity_id                        entity_name  amount
 #> 1    13-3570      Newark Public School District 6349715
 #> 2    39-1320           Elizabeth Public Schools 4338569
-#> 3    17-2390         Jersey City Public Schools 3762452
+#> 3    17-2390 Jersey City Public School District 3762452
 #> 4    31-4010    Paterson Public School District 3348720
 #> 5    21-5210     Trenton Public School District 2115298
 #> 6    17-5240         Union City School District 1826500
@@ -467,7 +467,7 @@ sessionInfo()
 #>  [9] grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8         purrr_1.2.2       
 #> [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         
-#> [21] rlang_1.2.0        withr_3.0.3        cachem_1.1.0       yaml_2.3.12       
+#> [21] rlang_1.3.0        withr_3.0.3        cachem_1.1.0       yaml_2.3.12       
 #> [25] otel_0.2.0         tools_4.6.1        tzdb_0.5.0         curl_7.1.0        
 #> [29] vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5   
 #> [33] snakecase_0.11.1   stringr_1.6.0      fs_2.1.0           ragg_1.5.2        

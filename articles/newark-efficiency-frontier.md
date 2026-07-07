@@ -512,7 +512,7 @@ sessionInfo()
 #> [49] bit64_4.8.2        lubridate_1.9.5    timechange_0.4.0   rmarkdown_2.31    
 #> [53] httr_1.4.8         bit_4.6.0          otel_0.2.0         cellranger_1.1.0  
 #> [57] ragg_1.5.2         hms_1.1.4          evaluate_1.0.5     knitr_1.51        
-#> [61] mgcv_1.9-4         rlang_1.2.0        Rcpp_1.1.1-1.1     glue_1.8.1        
+#> [61] mgcv_1.9-4         rlang_1.3.0        Rcpp_1.1.2         glue_1.8.1        
 #> [65] downloader_0.4.1   vroom_1.7.1        jsonlite_2.0.0     R6_2.6.1          
 #> [69] systemfonts_1.3.2  fs_2.1.0
 ```
