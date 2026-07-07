@@ -243,16 +243,35 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
       sheet_name = "PSAT-SAT-ACTPerformance",
       end_year = end_year,
       level = level
-    ) %>%
-      dplyr::rename(
-        test_type = test,
-        subject = subject,
-        school_avg = school_avg,
-        state_avg = state_avg,
-        benchmark = benchmark,
-        pct_benchmark = bt_pct,
-        state_pct_benchmark = state_bt_pct
-      )
+    )
+    if ("district_avg" %in% names(df)) {
+      # District workbook layout: the entity's average score arrives in
+      # district_avg and the benchmark rate in bt_pct, while the is_state
+      # aggregate row carries its values in state_avg / state_bt_pct. Map both
+      # to the standardized school_avg / pct_benchmark carrier via
+      # if_else(is_state, state, district) so state rows hold state values and
+      # district rows hold their own, mirroring the 2025 path.
+      df <- df %>%
+        dplyr::mutate(
+          school_avg = dplyr::if_else(is_state, state_avg, district_avg),
+          pct_benchmark = dplyr::if_else(is_state, state_bt_pct, bt_pct)
+        ) %>%
+        dplyr::rename(
+          test_type = test,
+          state_pct_benchmark = state_bt_pct
+        )
+    } else {
+      df <- df %>%
+        dplyr::rename(
+          test_type = test,
+          subject = subject,
+          school_avg = school_avg,
+          state_avg = state_avg,
+          benchmark = benchmark,
+          pct_benchmark = bt_pct,
+          state_pct_benchmark = state_bt_pct
+        )
+    }
   }
 
   requested_test_type <- as.character(test_type)
@@ -508,10 +527,19 @@ fetch_cte_participation <- function(end_year, level = "school") {
   )
 
   # Standardize column names across years (after clean_name_vector conversion).
-  # 2017-2024: SchoolCTEParticipants  -> school_cteparticipants
-  #            StateCTEConcentrators  -> state_cteconcentrators
-  # 2024-25:   CTEParticipants_School -> cteparticipants_school
-  #            CTEConcentrators_State -> cteconcentrators_state (+ _district)
+  # The school workbook always uses the school_* carrier, so its layout flows
+  # straight into the final rename. The district workbook uses a different
+  # prefix depending on the year, and the standardized school_* carrier holds
+  # the entity's own value via if_else(is_state, state, district).
+  # 2017-2024 school:   SchoolCTEParticipants   -> school_cteparticipants
+  #                     StateCTEConcentrators   -> state_cteconcentrators
+  # 2019 district:      SchoolCTEParticipants   -> school_cteparticipants
+  #                     (already the school_* carrier; flows through unchanged)
+  # 2020-2024 district: DistrictCTEParticipants -> district_cteparticipants
+  #                     StateCTEConcentrators   -> state_cteconcentrators
+  # 2024-25 school:     CTEParticipants_School  -> cteparticipants_school
+  # 2024-25 district:   CTEParticipants_District-> cteparticipants_district
+  #                     CTEConcentrators_State  -> cteconcentrators_state
   if ("cteparticipants_school" %in% names(df)) {
     df <- df %>%
       dplyr::rename(
@@ -531,6 +559,16 @@ fetch_cte_participation <- function(end_year, level = "school") {
         ),
         state_cteparticipants = cteparticipants_state,
         state_cteconcentrators = cteconcentrators_state
+      )
+  } else if ("district_cteparticipants" %in% names(df)) {
+    df <- df %>%
+      dplyr::mutate(
+        school_cteparticipants = dplyr::if_else(
+          is_state, state_cteparticipants, district_cteparticipants
+        ),
+        school_cteconcentrators = dplyr::if_else(
+          is_state, state_cteconcentrators, district_cteconcentrators
+        )
       )
   }
 
@@ -613,7 +651,25 @@ fetch_industry_credentials <- function(end_year, level = "school") {
     level = level
   )
 
-  # Columns are identical across years (after clean_name_vector conversion).
+  # The school workbook uses the students_enrolled_in_program /
+  # atleast_one_credential_earned carrier that the final rename expects. The
+  # district workbook (2017-2024) spells the same two counts differently, so map
+  # them to the standardized carrier first. This sheet has no state comparison
+  # column: each row (district or the is_state aggregate) already carries its
+  # own value, so this is a plain rename with no if_else needed.
+  # district 2017-2024: students_enrolled                             -> students_enrolled_in_program
+  #                     students_with_at_least_one_credential_earned  -> atleast_one_credential_earned
+  if ("students_enrolled" %in% names(df) &&
+      !"students_enrolled_in_program" %in% names(df)) {
+    df <- df %>%
+      dplyr::rename(
+        students_enrolled_in_program = students_enrolled,
+        atleast_one_credential_earned = students_with_at_least_one_credential_earned
+      )
+  }
+
+  # Columns now share the standardized names across years (after
+  # clean_name_vector conversion).
   df <- df %>%
     dplyr::rename(
       career_cluster = career_cluster,
