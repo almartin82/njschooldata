@@ -4,7 +4,7 @@
 \alias{fetch_spr_data}
 \title{Fetch SPR Data}
 \usage{
-fetch_spr_data(sheet_name, end_year, level = "school")
+fetch_spr_data(sheet_name, end_year, level = "school", clean_subgroups = TRUE)
 }
 \arguments{
 \item{sheet_name}{Exact sheet name from SPR database (case-sensitive).
@@ -15,6 +15,11 @@ year - eg 2020-21 school year is end_year '2021'.}
 
 \item{level}{One of "school" or "district". "school" returns school-level
 data, "district" returns district and state-level data.}
+
+\item{clean_subgroups}{Standardize \code{StudentGroup} labels via the package
+subgroup cleaner (default \code{TRUE}). Pass \code{FALSE} to keep the
+sheet's raw labels, e.g. when a sheet uses "Statewide" as a student group
+that must stay distinguishable from "Districtwide".}
 }
 \value{
 Data frame with standardized columns including:

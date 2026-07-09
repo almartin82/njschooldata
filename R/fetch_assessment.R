@@ -875,179 +875,26 @@ fetch_all_chronic_absenteeism <- function() {
 # Postsecondary Enrollment Functions
 # -----------------------------------------------------------------------------
 
-#' Parse postsecondary enrollment range string
+#' Legacy Postsecondary Enrollment Trends Workbook
 #'
-#' Extracts lower and upper bounds from range strings like "58.3-60.1%"
-#'
-#' @param range_string Character vector of range strings
-#' @return Data frame with lower_bound and upper_bound columns
-#' @keywords internal
-parse_postsec_range <- function(range_string) {
-  # Handle NA and "N" values
-  lower <- rep(NA_real_, length(range_string))
-  upper <- rep(NA_real_, length(range_string))
-
-  # Find valid ranges (contain a dash and percent)
-  valid <- !is.na(range_string) & grepl("-", range_string) & grepl("%", range_string)
-
-  if (any(valid)) {
-    # Extract the two numbers from strings like "58.3-60.1%"
-    cleaned <- gsub("%", "", range_string[valid])
-    parts <- strsplit(cleaned, "-")
-    lower[valid] <- as.numeric(sapply(parts, `[`, 1))
-    upper[valid] <- as.numeric(sapply(parts, `[`, 2))
-  }
-
-  data.frame(lower_bound = lower, upper_bound = upper)
-}
-
-
-#' Fetch Postsecondary Enrollment Rates
-#'
-#' Downloads postsecondary enrollment rate data from the NJ DOE website.
-#' Data is sourced from the National Student Clearinghouse and shows the
-#' percentage of high school graduates enrolling in postsecondary institutions.
+#' The standalone NJ DOE postsecondary enrollment trends workbook that this
+#' legacy function downloaded has been removed from the NJ DOE website.
 #'
 #' @details
-#' The data includes both school-level and district-level rates. Rates are
-#' reported as ranges because a small percentage of graduates cannot be
-#' matched to the National Student Clearinghouse database.
+#' The former source URL returned HTTP 404 when checked in July 2026. Use
+#' \code{\link{fetch_postsecondary_enrollment}} instead; it reads the
+#' postsecondary enrollment sheets from the School Performance Reports database
+#' workbooks for supported years.
 #'
-#' Two measurement types are available:
-#' \itemize{
-#'   \item \code{fall}: Enrollment in fall immediately after graduation
-#'   \item \code{16_month}: Enrollment within 16 months of graduation
-#' }
-#'
-#' The \code{lower_bound} represents confirmed enrollments only (conservative).
-#' The \code{upper_bound} assumes non-matched graduates also enrolled (optimistic).
-#'
-#' @return A data frame with postsecondary enrollment rates in long format,
-#'   containing columns for county, district, school identifiers, cohort_year,
-#'   measurement_type (fall or 16_month), lower_bound, and upper_bound.
+#' @return This function always errors.
 #' @export
-#' @examples
-#' \dontrun{
-#' # Get all postsecondary enrollment data
-#' postsec <- fetch_postsecondary()
-#'
-#' # Filter for 16-month rates only
-#' postsec_16mo <- postsec[postsec$measurement_type == "16_month", ]
-#'
-#' # Filter for district-level data only
-#' district_rates <- postsec[postsec$is_district, ]
-#' }
 fetch_postsecondary <- function() {
-
-  target_url <- paste0(
-    "https://www.nj.gov/education/schoolperformance/grad/docs/",
-    "Postsecondary_Enrollment_Rate_Trends_Fall_16month_Rates.xlsx"
+  stop(
+    paste0(
+      "The standalone NJ DOE postsecondary enrollment trends workbook was ",
+      "removed from the NJ DOE site (HTTP 404 observed July 2026). Use ",
+      "fetch_postsecondary_enrollment() instead."
+    ),
+    call. = FALSE
   )
-
-  tname <- tempfile(pattern = "postsec", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
-
-  # Read with skip = 9 to get the header row
-  postsec_raw <- readxl::read_excel(
-    path = tname,
-    sheet = 1,
-    skip = 9,
-    na = c("N", "NA", ""),
-    guess_max = 5000
-  )
-
-  # Clean column names
-  postsec_raw <- janitor::clean_names(postsec_raw)
-
-  # Rename identifier columns
-  postsec_raw <- postsec_raw %>%
-    dplyr::rename(
-      cds_code = cds_county_district_school_code,
-      record_type = school_district_state
-    )
-
-  # Identify fall and 16-month columns
-  fall_cols <- grep("^fall_postsecondary", names(postsec_raw), value = TRUE)
-  month16_cols <- grep("^x16_month_postsecondary", names(postsec_raw), value = TRUE)
-
-  # Process fall enrollment columns
-  fall_data <- list()
-  for (col in fall_cols) {
-    # Extract year from column name (e.g., "fall_postsecondary_enrollment_class_of_2019")
-    year <- as.integer(gsub(".*class_of_", "", col))
-    bounds <- parse_postsec_range(postsec_raw[[col]])
-
-    fall_data[[as.character(year)]] <- postsec_raw %>%
-      dplyr::select(
-        cds_code, county_code, county_name, district_code, district_name,
-        school_code, school_name, record_type
-      ) %>%
-      dplyr::mutate(
-        cohort_year = year,
-        measurement_type = "fall",
-        lower_bound = bounds$lower_bound,
-        upper_bound = bounds$upper_bound
-      )
-  }
-
-  # Process 16-month enrollment columns
-  month16_data <- list()
-  for (col in month16_cols) {
-    # Extract year from column name
-    year <- as.integer(gsub(".*class_of_", "", col))
-    bounds <- parse_postsec_range(postsec_raw[[col]])
-
-    month16_data[[as.character(year)]] <- postsec_raw %>%
-      dplyr::select(
-        cds_code, county_code, county_name, district_code, district_name,
-        school_code, school_name, record_type
-      ) %>%
-      dplyr::mutate(
-        cohort_year = year,
-        measurement_type = "16_month",
-        lower_bound = bounds$lower_bound,
-        upper_bound = bounds$upper_bound
-      )
-  }
-
-  # Combine all data
-  postsec_long <- dplyr::bind_rows(
-    dplyr::bind_rows(fall_data),
-    dplyr::bind_rows(month16_data)
-  )
-
-  # Rename to standard column names
-  postsec_long <- postsec_long %>%
-    dplyr::rename(
-      county_id = county_code,
-      district_id = district_code,
-      school_id = school_code
-    )
-
-  # Add flags for record type
-
-  postsec_long <- postsec_long %>%
-    dplyr::mutate(
-      is_school = record_type == "School",
-      is_district = record_type == "District",
-      is_state = record_type == "State",
-      is_charter = county_id == "80"
-    )
-
-  # Remove rows without valid data
-  postsec_long <- postsec_long %>%
-    dplyr::filter(!is.na(lower_bound) | !is.na(upper_bound))
-
-  # Reorder columns
-  postsec_long %>%
-    dplyr::select(
-      cohort_year, measurement_type,
-      county_id, county_name,
-      district_id, district_name,
-      school_id, school_name,
-      cds_code, record_type,
-      lower_bound, upper_bound,
-      is_school, is_district, is_state, is_charter
-    ) %>%
-    dplyr::arrange(cohort_year, measurement_type, county_id, district_id, school_id)
 }

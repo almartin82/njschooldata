@@ -15,6 +15,29 @@
   mangled), "Multilingual Learners" / "Current - Ml" / "Former - Ml" (same
   tokens as the ELL-era labels), and "Non-Binary/Undesignated".
 
+## Postsecondary enrollment (college-going) restored from the SPR databases
+
+* New `fetch_postsecondary_enrollment(end_year, level)` reads the National
+  Student Clearinghouse postsecondary enrollment rates from the School
+  Performance Reports databases (end_years 2017-2023): a fall-after-graduation
+  window (class of the report year) and a 16-month window (class of the prior
+  year), by student group, with 2yr/4yr (and 16-month public/private,
+  in-state/out-of-state) splits carried as shares of enrollees. Values are
+  numeric lower/upper pairs: point values have equal bounds, the 2023 report's
+  ranges keep their published bounds (never midpointed), and suppressed cells
+  stay `NA`. The sheets' "Statewide" student-group rows are promoted to
+  deduplicated state-reference rows (`is_state`) so each entity has exactly one
+  "total population" row of its own. 2024 (sheets shipped empty) and 2025
+  (sheets removed) stop with an explanatory error: those classes are an
+  upstream gap.
+* The legacy `fetch_postsecondary()` now errors with an explanation: the
+  standalone trends workbook it downloaded was removed from the NJ DOE site
+  (HTTP 404, July 2026). Use `fetch_postsecondary_enrollment()`.
+* `fetch_spr_data()` gains a `clean_subgroups` argument (default `TRUE`,
+  unchanged behavior) so sheet-specific fetchers can opt out of subgroup
+  standardization when a sheet's raw labels carry meaning the cleaner would
+  collapse.
+
 ## Fetch fixes
 
 * `fetch_njgpa(2022, ...)` works again: the first (2021-22) administration is

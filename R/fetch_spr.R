@@ -140,6 +140,10 @@ clean_spr_subgroups <- function(group) {
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
+#' @param clean_subgroups Standardize \code{StudentGroup} labels via the package
+#'   subgroup cleaner (default \code{TRUE}). Pass \code{FALSE} to keep the
+#'   sheet's raw labels, e.g. when a sheet uses "Statewide" as a student group
+#'   that must stay distinguishable from "Districtwide".
 #'
 #' @return Data frame with standardized columns including:
 #'   \itemize{
@@ -162,9 +166,11 @@ clean_spr_subgroups <- function(group) {
 #' # Get teacher experience data
 #' teachers <- fetch_spr_data("TeachersExperience", 2023)
 #' }
-fetch_spr_data <- function(sheet_name, end_year, level = "school") {
+fetch_spr_data <- function(sheet_name, end_year, level = "school",
+                           clean_subgroups = TRUE) {
   # Check the parsed-sheet session cache first.
-  cache_key <- make_cache_key("fetch_spr_data", sheet_name, end_year, level)
+  cache_key <- make_cache_key("fetch_spr_data", sheet_name, end_year, level,
+                              clean_subgroups)
   cached <- cache_get(cache_key)
   if (!is.null(cached)) {
     return(cached)
@@ -238,7 +244,7 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school") {
     df <- df %>% dplyr::rename(subgroup = student_group)
   }
 
-  if ("subgroup" %in% names(df)) {
+  if ("subgroup" %in% names(df) && isTRUE(clean_subgroups)) {
     df$subgroup <- clean_spr_subgroups(df$subgroup)
   }
 

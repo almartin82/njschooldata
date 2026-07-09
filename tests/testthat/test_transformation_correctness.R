@@ -1264,25 +1264,6 @@ test_that("process_parcc removes footer/garbage rows", {
 
 
 # =============================================================================
-# 16. POSTSECONDARY ENROLLMENT PARSING
-# =============================================================================
-
-test_that("parse_postsec_range extracts bounds from range strings", {
-  input <- c("58.3-60.1%", "N", NA, "72.5-74.0%")
-  result <- parse_postsec_range(input)
-
-  expect_equal(result$lower_bound[1], 58.3)
-  expect_equal(result$upper_bound[1], 60.1)
-  expect_true(is.na(result$lower_bound[2]))
-  expect_true(is.na(result$upper_bound[2]))
-  expect_true(is.na(result$lower_bound[3]))
-  expect_true(is.na(result$upper_bound[3]))
-  expect_equal(result$lower_bound[4], 72.5)
-  expect_equal(result$upper_bound[4], 74.0)
-})
-
-
-# =============================================================================
 # 17. SPLIT ENROLLMENT COLUMNS (Pre-2010 format)
 # =============================================================================
 
