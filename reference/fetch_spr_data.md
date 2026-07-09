@@ -7,7 +7,7 @@ metrics.
 ## Usage
 
 ``` r
-fetch_spr_data(sheet_name, end_year, level = "school")
+fetch_spr_data(sheet_name, end_year, level = "school", clean_subgroups = TRUE)
 ```
 
 ## Arguments
@@ -26,6 +26,13 @@ fetch_spr_data(sheet_name, end_year, level = "school")
 
   One of "school" or "district". "school" returns school-level data,
   "district" returns district and state-level data.
+
+- clean_subgroups:
+
+  Standardize `StudentGroup` labels via the package subgroup cleaner
+  (default `TRUE`). Pass `FALSE` to keep the sheet's raw labels, e.g.
+  when a sheet uses "Statewide" as a student group that must stay
+  distinguishable from "Districtwide".
 
 ## Value
 

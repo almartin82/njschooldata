@@ -494,7 +494,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] scales_1.4.0        tidyr_1.3.2         dplyr_1.2.1        
-#> [4] ggplot2_4.0.3       njschooldata_0.9.25
+#> [4] ggplot2_4.0.3       njschooldata_0.9.26
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       xfun_0.59          bslib_0.11.0       ggrepel_0.9.8     
@@ -504,7 +504,7 @@ sessionInfo()
 #> [17] desc_1.4.3         readxl_1.5.0       lifecycle_1.0.5    compiler_4.6.1    
 #> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.0.5  janitor_2.2.1     
 #> [25] codetools_0.2-20   snakecase_0.11.1   htmltools_0.5.9    sass_0.4.10       
-#> [29] yaml_2.3.12        pillar_1.11.1      pkgdown_2.2.0      crayon_1.5.3      
+#> [29] yaml_2.3.12        pillar_1.11.1      pkgdown_2.2.1      crayon_1.5.3      
 #> [33] jquerylib_0.1.4    cachem_1.1.0       nlme_3.1-169       tidyselect_1.2.1  
 #> [37] digest_0.6.39      stringi_1.8.7      purrr_1.2.2        splines_4.6.1     
 #> [41] labeling_0.4.3     fastmap_1.2.0      grid_4.6.1         cli_3.6.6         

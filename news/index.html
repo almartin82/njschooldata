@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,32 @@
       <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.26" id="njschooldata-0926">njschooldata 0.9.26<a class="anchor" aria-label="anchor" href="#njschooldata-0926"></a></h2>
+<div class="section level3">
+<h3 id="njgpa-and-science-subgroup-fix-district-grain-unlocked-0-9-26">NJGPA and Science subgroup fix (district grain unlocked)<a class="anchor" aria-label="anchor" href="#njgpa-and-science-subgroup-fix-district-grain-unlocked-0-9-26"></a></h3>
+<ul><li>
+<code><a href="../reference/process_parcc.html">process_parcc()</a></code> now maps the NJGPA and Science file columns so <code>subgroup</code> carries the actual student group (“All Students”, “White”, …) and <code>subgroup_type</code> carries the category (“Total”, “Race/Ethnicity”, …), matching the ELA/Math files. Previously the two were reversed for these assessments, so every district and school row surfaced with category labels in <code>subgroup</code> and subgroup-keyed consumers (e.g. filtering to <code>"total_population"</code>) silently found nothing. NJGPA district-level results (2022+) are now fully usable.</li>
+<li>
+<code><a href="../reference/tidy_parcc_subgroup.html">tidy_parcc_subgroup()</a></code> learned the 2024-25 label set: “Black or African American” (mapped before the shorter “African American” so it can’t be mangled), “Multilingual Learners” / “Current - Ml” / “Former - Ml” (same tokens as the ELL-era labels), and “Non-Binary/Undesignated”.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="postsecondary-enrollment-college-going-restored-from-the-spr-databases-0-9-26">Postsecondary enrollment (college-going) restored from the SPR databases<a class="anchor" aria-label="anchor" href="#postsecondary-enrollment-college-going-restored-from-the-spr-databases-0-9-26"></a></h3>
+<ul><li>New <code>fetch_postsecondary_enrollment(end_year, level)</code> reads the National Student Clearinghouse postsecondary enrollment rates from the School Performance Reports databases (end_years 2017-2023): a fall-after-graduation window (class of the report year) and a 16-month window (class of the prior year), by student group, with 2yr/4yr (and 16-month public/private, in-state/out-of-state) splits carried as shares of enrollees. Values are numeric lower/upper pairs: point values have equal bounds, the 2023 report’s ranges keep their published bounds (never midpointed), and suppressed cells stay <code>NA</code>. The sheets’ “Statewide” student-group rows are promoted to deduplicated state-reference rows (<code>is_state</code>) so each entity has exactly one “total population” row of its own. 2024 (sheets shipped empty) and 2025 (sheets removed) stop with an explanatory error: those classes are an upstream gap.</li>
+<li>The legacy <code><a href="../reference/fetch_postsecondary.html">fetch_postsecondary()</a></code> now errors with an explanation: the standalone trends workbook it downloaded was removed from the NJ DOE site (HTTP 404, July 2026). Use <code><a href="../reference/fetch_postsecondary_enrollment.html">fetch_postsecondary_enrollment()</a></code>.</li>
+<li>
+<code><a href="../reference/fetch_spr_data.html">fetch_spr_data()</a></code> gains a <code>clean_subgroups</code> argument (default <code>TRUE</code>, unchanged behavior) so sheet-specific fetchers can opt out of subgroup standardization when a sheet’s raw labels carry meaning the cleaner would collapse.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fetch-fixes-0-9-26">Fetch fixes<a class="anchor" aria-label="anchor" href="#fetch-fixes-0-9-26"></a></h3>
+<ul><li>
+<code>fetch_njgpa(2022, ...)</code> works again: the first (2021-22) administration is posted under the spring results directory, not the njgpa directory used by 2023+.</li>
+<li>
+<code>fetch_parcc(2019, "GEO", "math")</code> works again: the lone 2018-19 NJSLA geometry file is named plain “GEO” upstream (ALG01/ALG02 keep their zeros that year).</li>
+<li>
+<code><a href="../reference/fetch_math_course_enrollment.html">fetch_math_course_enrollment()</a></code> now normalizes the 2024-25 “Grade 08” style labels to the bare “8” used by earlier years, filters the 2024-25 sheet to the requested school year, and returns course enrollment counts as numerics with suppression markers (“N”, “n/a”) as <code>NA</code> – a masked count is missing, never zero.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.17" id="njschooldata-0917">njschooldata 0.9.17<a class="anchor" aria-label="anchor" href="#njschooldata-0917"></a></h2>
 <div class="section level3">
@@ -702,7 +728,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

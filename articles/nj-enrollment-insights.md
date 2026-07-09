@@ -739,7 +739,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] scales_1.4.0        dplyr_1.2.1         ggplot2_4.0.3      
-#> [4] njschooldata_0.9.25
+#> [4] njschooldata_0.9.26
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       
@@ -752,7 +752,7 @@ sessionInfo()
 #> [29] tzdb_0.5.0         curl_7.1.0         vctrs_0.7.3        R6_2.6.1          
 #> [33] lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1   stringr_1.6.0     
 #> [37] fs_2.1.0           ragg_1.5.2         janitor_2.2.1      pkgconfig_2.0.3   
-#> [41] desc_1.4.3         pkgdown_2.2.0      pillar_1.11.1      bslib_0.11.0      
+#> [41] desc_1.4.3         pkgdown_2.2.1      pillar_1.11.1      bslib_0.11.0      
 #> [45] gtable_0.3.6       glue_1.8.1         systemfonts_1.3.2  xfun_0.59         
 #> [49] tibble_3.3.1       tidyselect_1.2.1   knitr_1.51         farver_2.1.2      
 #> [53] htmltools_0.5.9    labeling_0.4.3     rmarkdown_2.31     readr_2.2.0       

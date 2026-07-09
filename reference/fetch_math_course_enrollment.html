@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,6 +77,17 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Data frame with math course enrollment</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Rows are one per entity x grade band. The <code>grade</code> column carries the
+grade as a bare string (<code>"6"</code>..<code>"12"</code>) plus the sheet's summary
+rows (<code>"Total"</code>, <code>"Enrolled in AP/IB Course"</code>, <code>"Enrolled in
+Dual Enrollment Course"</code>); the 2024-25 redesign's <code>"Grade 08"</code> style
+labels are normalized to the bare form. Course columns (e.g.
+<code>algebra_i</code>) are enrollment counts, returned as numerics; suppression
+markers (<code>"N"</code>, <code>"n/a"</code>) become <code>NA</code> – a masked count is
+missing, never zero.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -94,7 +105,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

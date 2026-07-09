@@ -1008,6 +1008,8 @@ Functions for SPR database data (2017-2024)
   : Fetch IB Participation Data
 - [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md)
   : Fetch Advanced-Coursework Access & Equity Data
+- [`fetch_postsecondary_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary_enrollment.md)
+  : Fetch Postsecondary Enrollment Rates from SPR Databases
 - [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md)
   : Fetch CTE Participation Data
 - [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md)
@@ -1192,7 +1194,7 @@ Additional NJ DOE data functions
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
 - [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
-  : Fetch Postsecondary Enrollment Rates
+  : Legacy Postsecondary Enrollment Trends Workbook
 - [`get_one_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_one_rc_database.md)
   : Get Raw Report Card Database
 - [`get_merged_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_merged_rc_database.md)
@@ -1616,7 +1618,9 @@ Additional exported functions
 - [`fetch_police_notifications_detail()`](https://almartin82.github.io/njschooldata/reference/fetch_police_notifications_detail.md)
   : Fetch Police Notifications Detail (by Student Group / Grade)
 - [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md)
-  : Fetch Postsecondary Enrollment Rates
+  : Legacy Postsecondary Enrollment Trends Workbook
+- [`fetch_postsecondary_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary_enrollment.md)
+  : Fetch Postsecondary Enrollment Rates from SPR Databases
 - [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)
   : Fetch Special Population data
 - [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md)

@@ -245,6 +245,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_police_notifications.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_police_notifications_detail.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_postsecondary_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.html</loc></url>
@@ -434,7 +435,6 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_parcc_subj.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_placement_count.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_placement_pct.html</loc></url>
-<url><loc>https://almartin82.github.io/njschooldata/reference/parse_postsec_range.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/parse_rank.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/peek.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/percentile_rank.html</loc></url>
