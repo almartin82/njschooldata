@@ -1,3 +1,34 @@
+# njschooldata 0.9.26
+
+## NJGPA and Science subgroup fix (district grain unlocked)
+
+* `process_parcc()` now maps the NJGPA and Science file columns so `subgroup`
+  carries the actual student group ("All Students", "White", ...) and
+  `subgroup_type` carries the category ("Total", "Race/Ethnicity", ...),
+  matching the ELA/Math files. Previously the two were reversed for these
+  assessments, so every district and school row surfaced with category labels
+  in `subgroup` and subgroup-keyed consumers (e.g. filtering to
+  `"total_population"`) silently found nothing. NJGPA district-level results
+  (2022+) are now fully usable.
+* `tidy_parcc_subgroup()` learned the 2024-25 label set: "Black or African
+  American" (mapped before the shorter "African American" so it can't be
+  mangled), "Multilingual Learners" / "Current - Ml" / "Former - Ml" (same
+  tokens as the ELL-era labels), and "Non-Binary/Undesignated".
+
+## Fetch fixes
+
+* `fetch_njgpa(2022, ...)` works again: the first (2021-22) administration is
+  posted under the spring results directory, not the njgpa directory used by
+  2023+.
+* `fetch_parcc(2019, "GEO", "math")` works again: the lone 2018-19 NJSLA
+  geometry file is named plain "GEO" upstream (ALG01/ALG02 keep their zeros
+  that year).
+* `fetch_math_course_enrollment()` now normalizes the 2024-25 "Grade 08" style
+  labels to the bare "8" used by earlier years, filters the 2024-25 sheet to
+  the requested school year, and returns course enrollment counts as numerics
+  with suppression markers ("N", "n/a") as `NA` -- a masked count is missing,
+  never zero.
+
 # njschooldata 0.9.17
 
 ## Federal NCES id linkage

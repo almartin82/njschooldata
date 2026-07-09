@@ -17,6 +17,16 @@ Data frame with math course enrollment
 \description{
 Downloads math course participation data from SPR database.
 }
+\details{
+Rows are one per entity x grade band. The \code{grade} column carries the
+grade as a bare string (\code{"6"}..\code{"12"}) plus the sheet's summary
+rows (\code{"Total"}, \code{"Enrolled in AP/IB Course"}, \code{"Enrolled in
+Dual Enrollment Course"}); the 2024-25 redesign's \code{"Grade 08"} style
+labels are normalized to the bare form. Course columns (e.g.
+\code{algebra_i}) are enrollment counts, returned as numerics; suppression
+markers (\code{"N"}, \code{"n/a"}) become \code{NA} -- a masked count is
+missing, never zero.
+}
 \examples{
 \dontrun{
 math <- fetch_math_course_enrollment(2024)

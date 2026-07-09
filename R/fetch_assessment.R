@@ -78,8 +78,14 @@ get_raw_sla <- function(end_year, grade_or_subj, subj) {
     subj_prefix <- parse_parcc_subj(subj)
   } else if (grepl("ALG|GEO", grade_or_subj)) {
     parcc_grade <- gsub("ALG", "ALG0", grade_or_subj)
-    # NJ DOE has used GEO01 (not GEO) since 2022; map GEO -> GEO01
-    parcc_grade <- gsub("^GEO$", "GEO01", parcc_grade)
+    # NJ DOE has used GEO01 (not GEO) since 2022, but the lone 2018-19 NJSLA
+    # geometry file is named plain "GEO" (ALG01/ALG02 keep their zeros that
+    # year); map GEO to the year's actual token.
+    if (end_year == 2019) {
+      parcc_grade <- gsub("^GEO01$", "GEO", parcc_grade)
+    } else {
+      parcc_grade <- gsub("^GEO$", "GEO01", parcc_grade)
+    }
     subj_prefix <- ""
   } else {
     parcc_grade <- grade_or_subj
@@ -150,8 +156,12 @@ get_raw_njgpa <- function(end_year, subj) {
     filename <- paste0(subj_prefix, "_NJGPA_DATA_", year_suffix, ".xlsx")
   }
 
+  # The first administration (2021-22) was posted under the spring results
+  # directory; 2023+ files live under a dedicated njgpa directory.
+  path_segment <- if (end_year == 2022) "/spring/" else "/njgpa/"
+
   target_url <- paste0(
-    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), "/njgpa/", filename
+    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), path_segment, filename
   )
 
   tname <- tempfile(pattern = "njgpa", tmpdir = tempdir(), fileext = ".xlsx")

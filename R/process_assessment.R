@@ -127,23 +127,31 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
 
   if (is_njgpa) {
     # NJGPA has only 2 performance levels (L1=not proficient, L2=proficient)
-    # Column structure similar to Science (no DFG)
+    # Column structure similar to Science (no DFG).
+    # NOTE the column order: in the raw NJGPA files (verified 2022-2025) the
+    # 7th column ("Subgroup") holds the CATEGORY (Total / Race/Ethnicity /
+    # Gender / Subgroup) and the 8th column ("Subgroup Type") holds the actual
+    # student group (All Students / White / Female / ...). We name them so that
+    # `subgroup` always carries the student group, matching the ELA/Math files.
     parcc_name_vector <- c(
       "county_code", "county_name",
       "district_code", "district_name",
       "school_code", "school_name",
-      "subgroup", "subgroup_type",
+      "subgroup_type", "subgroup",
       "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
       "scale_score_mean", "pct_l1", "pct_l2"
     )
     names(parcc_file) <- parcc_name_vector
   } else if (is_science) {
-    # Science files have different column structure
+    # Science files have different column structure.
+    # Same raw column order as NJGPA (verified 2019-2025): 7th column is the
+    # category, 8th column is the actual student group; name them so
+    # `subgroup` carries the student group, matching the ELA/Math files.
     parcc_name_vector <- c(
       "county_code", "county_name",
       "district_code", "district_name",
       "school_code", "school_name",
-      "subgroup", "subgroup_type",
+      "subgroup_type", "subgroup",
       "number_enrolled", "number_not_tested", "number_of_valid_scale_scores",
       "scale_score_mean", "pct_l1", "pct_l2", "pct_l3", "pct_l4"
     )
@@ -294,6 +302,9 @@ tidy_parcc_subgroup <- function(sv) {
   sv <- gsub("ALL STUDENTS", "total_population", sv, fixed = TRUE)
 
   sv <- gsub("WHITE", "white", sv, fixed = TRUE)
+  # 2024-25 files spell out "Black or African American"; map the longer label
+  # first so the "AFRICAN AMERICAN" replacement below cannot mangle it.
+  sv <- gsub("BLACK OR AFRICAN AMERICAN", "black", sv, fixed = TRUE)
   sv <- gsub("AFRICAN AMERICAN", "black", sv, fixed = TRUE)
   sv <- gsub("ASIAN", "asian", sv, fixed = TRUE)
   sv <- gsub("HISPANIC", "hispanic", sv, fixed = TRUE)
@@ -321,6 +332,15 @@ tidy_parcc_subgroup <- function(sv) {
   sv <- gsub("ENGLISH LANGUAGE LEARNERS", "lep_current_former", sv, fixed = TRUE)
   sv <- gsub("CURRENT - ELL", "lep_current", sv, fixed = TRUE)
   sv <- gsub("FORMER - ELL", "lep_former", sv, fixed = TRUE)
+
+  # 2024-25 files renamed English Language Learners to Multilingual Learners;
+  # same population, same standardized tokens.
+  sv <- gsub("MULTILINGUAL LEARNERS", "lep_current_former", sv, fixed = TRUE)
+  sv <- gsub("CURRENT - ML", "lep_current", sv, fixed = TRUE)
+  sv <- gsub("FORMER - ML", "lep_former", sv, fixed = TRUE)
+
+  # Gender category added in 2022+ files.
+  sv <- gsub("NON-BINARY/UNDESIGNATED", "nonbinary_undesignated", sv, fixed = TRUE)
 
   sv <- gsub("GRADE - other", "grade_other", sv, fixed = TRUE)
   sv <- gsub("GRADE - 06", "grade_06", sv, fixed = TRUE)

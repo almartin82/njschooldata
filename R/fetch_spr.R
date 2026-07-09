@@ -1522,6 +1522,16 @@ fetch_staff_ratios <- function(end_year, level = "school") {
 #'
 #' Downloads math course participation data from SPR database.
 #'
+#' @details
+#' Rows are one per entity x grade band. The \code{grade} column carries the
+#' grade as a bare string (\code{"6"}..\code{"12"}) plus the sheet's summary
+#' rows (\code{"Total"}, \code{"Enrolled in AP/IB Course"}, \code{"Enrolled in
+#' Dual Enrollment Course"}); the 2024-25 redesign's \code{"Grade 08"} style
+#' labels are normalized to the bare form. Course columns (e.g.
+#' \code{algebra_i}) are enrollment counts, returned as numerics; suppression
+#' markers (\code{"N"}, \code{"n/a"}) become \code{NA} -- a masked count is
+#' missing, never zero.
+#'
 #' @param end_year A school year (2017-2025)
 #' @param level One of "school" or "district"
 #'
@@ -1532,6 +1542,25 @@ fetch_staff_ratios <- function(end_year, level = "school") {
 #' }
 fetch_math_course_enrollment <- function(end_year, level = "school") {
   df <- fetch_spr_data("MathCourseParticipation", end_year, level)
+
+  # 2024-25 sheets carry a school_year column; keep the requested year's rows
+  # only (no-op for sheets without the column).
+  df <- filter_spr_to_year(df, end_year)
+
+  # Normalize the 2024-25 "Grade 08" style labels to the bare "8" used by
+  # every earlier year, so grade filters work across the redesign seam.
+  if ("grade" %in% names(df)) {
+    df$grade <- sub("^Grade\\s+0?", "", df$grade)
+  }
+
+  # Course enrollment counts: numeric, with suppression markers as NA.
+  course_cols <- intersect(
+    c("algebra_i", "geometry", "algebra_ii", "pre_calculus", "calculus",
+      "statistics", "other_math"),
+    names(df)
+  )
+  for (col in course_cols) df[[col]] <- spr_value_numeric(df[[col]])
+
   df
 }
 
