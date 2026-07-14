@@ -218,6 +218,23 @@ get_raw_enr <- function(end_year) {
 }
 
 
+#' Get the years for which NJ enrollment data is available
+#'
+#' Wraps [ENR_VALID_YEARS] (`R/config_years.R`), the single source of truth
+#' for enrollment year coverage, so consumers never have to hardcode or
+#' guess the valid range. The maximum value returned here MUST always equal
+#' the highest `end_year` that [fetch_enr()] actually serves; see
+#' `test-enrollment-year-coverage.R` for the contract test that enforces
+#' this.
+#'
+#' @return integer vector of valid `end_year` values
+#' @export
+#' @examples
+#' get_available_years()
+get_available_years <- function() {
+  as.integer(ENR_VALID_YEARS)
+}
+
 #' Gets and processes a NJ enrollment file
 #'
 #' `fetch_enr` is a wrapper around `get_raw_enr` and `process_enr` that

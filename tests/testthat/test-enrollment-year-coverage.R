@@ -8,6 +8,34 @@
 #
 # ==============================================================================
 
+# -- Truthful years contract ---------------------------------------------------
+# get_available_years() must exist, be exported, and be truthful: its max must
+# equal the highest end_year that fetch_enr() actually serves. This is a static
+# check against ENR_VALID_YEARS (fast, no network) plus a live check that the
+# claimed max year really does fetch (network-gated).
+
+test_that("get_available_years is exported and truthful about ENR_VALID_YEARS", {
+  expect_true(exists("get_available_years", mode = "function"))
+
+  years <- get_available_years()
+  expect_type(years, "integer")
+  expect_true(length(years) > 0)
+  expect_equal(years, as.integer(ENR_VALID_YEARS))
+  expect_equal(max(years), max(as.integer(ENR_VALID_YEARS)))
+})
+
+test_that("get_available_years max year actually fetches via fetch_enr", {
+  skip_on_cran()
+  skip_if_offline()
+
+  max_year <- max(get_available_years())
+  enr <- fetch_enr(max_year, use_cache = TRUE)
+
+  expect_s3_class(enr, "data.frame")
+  expect_gt(nrow(enr), 0)
+})
+
+
 # -- Wide format enrollment tests (2015-2025) ----------------------------------
 # Wide format works reliably for post-NJSMART years. We test a representative
 # set of years spanning format changes (pre-2020 vs post-2020 Excel layout).
