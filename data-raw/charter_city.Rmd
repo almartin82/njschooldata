@@ -1,6 +1,6 @@
 ---
 title: "Charter City"
-author: "Andrew Martin"
+author: "Andy Martin"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
