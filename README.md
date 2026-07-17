@@ -1,8 +1,6 @@
 # njschooldata
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/R-CMD-check.yaml)
-[![Python Tests](https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/python-tests.yml)
 [![pkgdown](https://github.com/almartin82/njschooldata/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/almartin82/njschooldata/actions/workflows/pkgdown.yaml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->

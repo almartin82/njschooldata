@@ -377,5 +377,4 @@ enr_2024 <- fetch_enr(2024)
 
 ## Contributors
 
-- Package modernization performed by Claude (Anthropic)
-- Original package by Andrew Martin (@almartin82)
+- Andy Martin (@almartin82)
