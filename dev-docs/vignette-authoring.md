@@ -42,3 +42,48 @@ failed because neither touched the committed figure binaries.
 - Do **not** commit `vignettes/<vignette>_cache/` directories. Cached plot chunks
   replay stale figures across build environments (the caschooldata 2026-03
   incident); keeping plots un-cached forces a fresh render every time.
+
+## Data vs Plot Chunk Separation (REQUIRED)
+
+**NEVER put data-fetching and ggplot code in the same cached chunk.** knitr
+chunk caching does not reliably replay figure output across environments. When
+a cached chunk's figure files aren't found, knitr silently drops them —
+producing HTML with code but no charts.
+
+**Pattern:**
+- Data-fetching chunks: `cache = TRUE` — expensive downloads are cached.
+- Plot chunks: `cache = FALSE` (or inherit the global default) — always
+  re-evaluated, always produce figures.
+
+**Example (correct):**
+```r
+```{r fetch-data, cache=TRUE}
+enr <- fetch_enr_multi(2018:2025, use_cache = TRUE)
+```
+
+```{r state-trend-chart}
+# cache = FALSE inherited from global default
+ggplot(state_trend, aes(x = end_year, y = n_students)) + ...
+```
+```
+
+**Example (broken — DO NOT DO):**
+```r
+```{r finding-1}
+# cache = TRUE inherited — THIS BREAKS FIGURE OUTPUT IN CI
+state_trend <- enr %>% filter(...)
+ggplot(state_trend, ...) + ...
+```
+```
+
+**If a single chunk both fetches data and plots, split it:** give the new
+fetch-only chunk a new label with `cache = TRUE`, and keep the plotting code
+under the ORIGINAL chunk label (figure filenames derive from the chunk label,
+and README images reference them, so plot chunk labels must not change).
+
+**INCIDENT REFERENCE (caschooldata, 2026-03):** All 5 CA vignettes had
+`cache = TRUE` globally. pkgdown CI builds produced HTML with zero `<img>`
+tags — ggplot code displayed but no rendered charts. Figure PNG files existed
+on gh-pages (from earlier builds with `clean: false`) but were never
+referenced by the HTML. Fixed by changing the global default to
+`cache = FALSE` and adding explicit `cache = TRUE` only on data-fetch chunks.

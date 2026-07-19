@@ -13,7 +13,9 @@ knitr::opts_chunk$set(
   comment = "#>",
   message = FALSE,
   warning = FALSE,
-  cache = TRUE
+  # Default OFF: only individual fetch chunks cache. A global cache=TRUE lets
+  # knitr silently drop figure output on cache hits (caschooldata, 2026-03).
+  cache = FALSE
 )
 ```
 
@@ -86,7 +88,7 @@ Data is provided at multiple aggregation levels, identified by boolean flags:
 
 ### Fetching Basic Enrollment
 
-```{r enrollment-basic}
+```{r enrollment-basic, cache = TRUE}
 # Get 2024 enrollment data (2023-24 school year)
 enr_2024 <- fetch_enr(2024)
 
@@ -100,7 +102,7 @@ dim(enr_2024)  # Rows and columns
 ### Wide vs. Tidy Format
 
 The `tidy` parameter transforms data for easier analysis:
-```{r enrollment-tidy}
+```{r enrollment-tidy, cache = TRUE}
 # Wide format (default) - one row per school, many demographic columns
 enr_wide <- fetch_enr(2024, tidy = FALSE)
 
@@ -135,7 +137,7 @@ state_totals <- enr_tidy %>%
 
 Use `fetch_parcc()` for both NJSLA (2019+) and PARCC (2015-2018) data:
 
-```{r assessment}
+```{r assessment, cache = TRUE}
 # Get 2024 Grade 4 Math results
 math_g4_2024 <- fetch_parcc(
   end_year = 2024,
@@ -185,7 +187,7 @@ njask_2010 <- fetch_old_nj_assess(
 
 ### Graduation Rates
 
-```{r graduation-rates}
+```{r graduation-rates, cache = TRUE}
 # Get 4-year graduation rates for 2024
 grad_rate_2024 <- fetch_grad_rate(
   end_year = 2024,
@@ -201,7 +203,7 @@ grad_rate_5yr <- fetch_grad_rate(
 
 ### Graduation Counts
 
-```{r graduation-counts}
+```{r graduation-counts, cache = TRUE}
 # Get graduation counts
 grad_count_2024 <- fetch_grad_count(end_year = 2024)
 ```
@@ -280,7 +282,7 @@ reliable_data <- enr_tidy %>%
 
 Use `purrr::map_df()` for combining multiple years:
 
-```{r multi-year}
+```{r multi-year, cache = TRUE}
 library(purrr)
 
 # Fetch 5 years of enrollment data
