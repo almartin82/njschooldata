@@ -1,3 +1,28 @@
+# njschooldata (development)
+
+## Directory converted to directory-contract/v1
+
+* `fetch_directory()` now takes ZERO arguments and returns the canonical triple
+  `list(entities, roles, meta)` defined by directory-contract/v1, replacing the
+  old `fetch_directory(level, use_cache)` data-frame interface. Entities are one
+  row per organization (district / school); roles are long, one row per
+  organization-role assignment. Native identifiers are New Jersey's
+  County-District-School (CDS) codes: `district_id` = county + district (6
+  digits), `school_id` = county + district + school (9 digits), verbatim with
+  leading zeros preserved. Verbatim job titles are kept in `title_raw`; the
+  canonical `role` comes from the visible, ordered role map in
+  `R/directory_role_map.R` (e.g. "Chief School Administrator" ->
+  `superintendent`, "Lead of Charter School" -> `superintendent`). Coverage:
+  district superintendents, business administrators, and special-education
+  coordinators; school principals. Source-declared vacancies are `person_name`
+  `NA` with `title_raw` retained. Unreachable sources return `source_status`
+  `source_unavailable` with empty tables and complete meta.
+* Removed the legacy exported directory front doors `get_district_directory()`,
+  `get_school_directory()`, and `clear_directory_cache()` (and their tests).
+  The internal raw fetchers `get_raw_school_directory()` /
+  `get_raw_district_directory()` and `process_school_directory()` /
+  `process_district_directory()` are retained for internal consumers.
+
 # njschooldata 0.9.26
 
 ## NJGPA and Science subgroup fix (district grain unlocked)
