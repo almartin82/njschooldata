@@ -142,7 +142,7 @@ test_that("directory-contract: string hygiene (no empty strings, values trimmed,
       if (!is.character(v)) next
       vv <- v[!is.na(v)]
       expect_false(any(vv == ""), info = paste("empty string in", col))
-      expect_true(all(vv == trimws(vv)), info = paste("untrimmed value in", col))
+      expect_true(all(vv == trimws(vv, whitespace = "[\\h\\v]")), info = paste("untrimmed value in", col))
       expect_false(any(is.na(validUTF8(vv))) || any(!validUTF8(vv)),
         info = paste("invalid UTF-8 in", col))
     }
