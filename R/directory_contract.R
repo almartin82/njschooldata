@@ -41,6 +41,18 @@ DC_ID_PLACEHOLDERS <- c(
 # key; every other role's collisions are counted in duplicate_key_count.
 DC_MULTI_PERSON_ROLES <- c("board_member", "other")
 
+#' Trim leading/trailing whitespace, Unicode-aware
+#'
+#' Strips ALL leading/trailing whitespace including Unicode spaces (e.g. NBSP,
+#' U+00A0) via the PCRE `[\h\v]` class (R >= 3.6). Plain `trimws()` strips only
+#' ASCII space, tab, CR, and LF, which the contract's trimming rule and the
+#' conformance test's string-hygiene check both reject.
+#' @keywords internal
+#' @noRd
+dc_trim <- function(x) {
+  trimws(as.character(x), whitespace = "[\\h\\v]")
+}
+
 #' Trim a character vector and convert blanks to NA
 #'
 #' The contract forbids empty strings anywhere and requires trimmed values.
@@ -48,7 +60,7 @@ DC_MULTI_PERSON_ROLES <- c("board_member", "other")
 #' @noRd
 dc_blank_to_na <- function(x) {
   if (!is.character(x)) x <- as.character(x)
-  x <- trimws(x)
+  x <- dc_trim(x)
   x[!nzchar(x)] <- NA_character_
   x
 }
@@ -63,7 +75,7 @@ dc_blank_to_na <- function(x) {
 dc_assemble_person_name <- function(first, last) {
   first <- dc_blank_to_na(first)
   last <- dc_blank_to_na(last)
-  out <- trimws(paste(
+  out <- dc_trim(paste(
     ifelse(is.na(first), "", first),
     ifelse(is.na(last), "", last)
   ))
@@ -75,7 +87,7 @@ dc_assemble_person_name <- function(first, last) {
 #' @keywords internal
 #' @noRd
 dc_is_id_placeholder <- function(x) {
-  !is.na(x) & tolower(trimws(x)) %in% DC_ID_PLACEHOLDERS
+  !is.na(x) & tolower(dc_trim(x)) %in% DC_ID_PLACEHOLDERS
 }
 
 #' ISO8601 UTC timestamp
