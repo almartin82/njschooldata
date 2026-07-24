@@ -13,8 +13,7 @@ process_school_directory(raw)
 
 - raw:
 
-  Data frame from
-  [`get_raw_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_raw_school_directory.md)
+  Data frame from `get_raw_school_directory()`
 
 ## Value
 

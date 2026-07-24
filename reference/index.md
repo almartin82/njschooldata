@@ -216,13 +216,8 @@ Functions for SPR database data (2017-2024)
 Functions for school and district metadata
 
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
-  : Fetch NJ School Directory Data
-- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
-  : Clear directory data from session cache
-- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
-  : Get NJ School Directory Data
-- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
-  : Get NJ District Directory Data
+  : Fetch the current New Jersey education directory
+  (directory-contract/v1)
 
 ## Charter Aggregations
 
@@ -566,8 +561,6 @@ Additional exported functions
   : Clean report card subgroup names to canonical lowercase form
 - [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
   : Clean SPED data
-- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
-  : Clear directory data from session cache
 - [`collapse_agg_names()`](https://almartin82.github.io/njschooldata/reference/collapse_agg_names.md)
   : Collapse repeated names in aggregation output
 - [`compare_discipline_across_years()`](https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.md)
@@ -669,7 +662,8 @@ Additional exported functions
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
-  : Fetch NJ School Directory Data
+  : Fetch the current New Jersey education directory
+  (directory-contract/v1)
 - [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
   : Fetch Disciplinary Removals Data
 - [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
@@ -839,8 +833,6 @@ Additional exported functions
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
   : Get districts in a specific District Factor Group
-- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
-  : Get NJ District Directory Data
 - [`get_era_breaks()`](https://almartin82.github.io/njschooldata/reference/get_era_breaks.md)
   : Get era break metadata
 - [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
@@ -858,8 +850,6 @@ Additional exported functions
   : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
   : Get multiple RC databases
-- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
-  : Get NJ School Directory Data
 - [`get_standalone_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.md)
   : Get Standalone Raw Report Card Database
 - [`get_valid_grades()`](https://almartin82.github.io/njschooldata/reference/get_valid_grades.md)

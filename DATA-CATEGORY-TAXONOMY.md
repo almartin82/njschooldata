@@ -10,7 +10,7 @@ Departments of Education.
 | 1 | **Enrollment & Demographics** | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | 2000-2025 | State, county, district, school. Race, gender, FRPL, LEP, migrant. Wide and tidy formats |
 | 2 | **Assessments / Test Scores** | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md), [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md), [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md), [`fetch_gepa()`](https://almartin82.github.io/njschooldata/reference/fetch_gepa.md), [`fetch_hspa()`](https://almartin82.github.io/njschooldata/reference/fetch_hspa.md) | 2004-2024 | NJSLA (2019+), PARCC (2015-2018), NJASK (2004-2014), HSPA, GEPA. ELA, Math, Science |
 | 3 | **Graduation Rates** | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md), [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md), [`fetch_6yr_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_6yr_grad_rate.md) | 2011-2024 | 4-yr and 6-yr ACGR, graduation counts. District and school level |
-| 4 | **School/District Directory** | [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md), [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md) | Current | Names, IDs, addresses, school type, grade span |
+| 4 | **School/District Directory** | `get_school_directory()`, `get_district_directory()` | Current | Names, IDs, addresses, school type, grade span |
 
 ## Tier 2 – ESSA-Required (federally mandated reporting)
 

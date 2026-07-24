@@ -245,40 +245,29 @@ Get metadata about schools and districts:
 
 ``` r
 
-# Current school directory with addresses, coordinates, grades served
-schools <- get_school_directory()
+# Current NJ education directory: entities (districts + schools) and
+# personnel roles (superintendents, principals, etc.), directory-contract/v1
+directory <- fetch_directory()
 
-# Current district directory
-districts <- get_district_directory()
+schools <- directory$entities[directory$entities$entity_type == "school", ]
+districts <- directory$entities[directory$entities$entity_type == "district", ]
+
+# Source status (the NJDOE Homeroom endpoints sit behind bot protection that
+# blocks some automated clients; when challenged, source_status reports
+# "source_unavailable" rather than silently returning empty data as if it
+# were a real zero)
+directory$meta$source_status
+#> [1] "source_unavailable"
 
 # View available columns
 names(schools)
-#>  [1] "county_id"                   "county_name"                
-#>  [3] "district_id"                 "district_name"              
-#>  [5] "school_id"                   "school_name"                
-#>  [7] "princ_title"                 "princ_first_name"           
-#>  [9] "princ_last_name"             "princ_title_2"              
-#> [11] "princ_email"                 "address1"                   
-#> [13] "address2"                    "city"                       
-#> [15] "state"                       "zip"                        
-#> [17] "mailing_address1"            "mailing_address2"           
-#> [19] "mailing_city"                "mailing_state"              
-#> [21] "mailing_zip"                 "hib_title1"                 
-#> [23] "hib_first_nname"             "hib_last_name"              
-#> [25] "hib_title2"                  "homeless_liaison_title1"    
-#> [27] "homeless_liaison_first_name" "homeless_liaison_last_name" 
-#> [29] "homeless_liaison_title2"     "phone"                      
-#> [31] "pre_k"                       "kindergarten"               
-#> [33] "grade_1"                     "grade_2"                    
-#> [35] "grade_3"                     "grade_4"                    
-#> [37] "grade_5"                     "grade_6"                    
-#> [39] "grade_7"                     "grade_8"                    
-#> [41] "grade_9"                     "grade_10"                   
-#> [43] "grade_11"                    "grade_12"                   
-#> [45] "post_grad"                   "adult_ed"                   
-#> [47] "nces_code"                   "fb_url"                     
-#> [49] "instagram_url"               "x_url"                      
-#> [51] "address"                     "cds_code"
+#>  [1] "state"              "entity_type"        "entity_subtype"    
+#>  [4] "district_id"        "school_id"          "district_name"     
+#>  [7] "school_name"        "nces_district_id"   "nces_school_id"    
+#> [10] "parent_district_id" "county_name"        "grades_served"     
+#> [13] "address"            "city"               "zip"               
+#> [16] "phone"              "website"            "status"            
+#> [19] "is_charter"
 ```
 
 ## Data Coverage Summary
@@ -410,14 +399,13 @@ sessionInfo()
 #>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.5    evaluate_1.0.5   
 #>  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   
 #> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  
-#> [17] cli_3.6.6         crayon_1.5.3      rlang_1.3.0       bit64_4.8.2      
-#> [21] withr_3.0.3       cachem_1.1.0      yaml_2.3.12       otel_0.2.0       
-#> [25] parallel_4.6.1    tools_4.6.1       downloader_0.4.1  tzdb_0.5.0       
-#> [29] curl_7.1.0        vctrs_0.7.3       R6_2.6.1          lifecycle_1.0.5  
-#> [33] lubridate_1.9.5   snakecase_0.11.1  stringr_1.6.0     bit_4.6.0        
-#> [37] fs_2.1.0          vroom_1.7.1       ragg_1.5.2        janitor_2.2.1    
-#> [41] pkgconfig_2.0.3   desc_1.4.3        pkgdown_2.2.1     pillar_1.11.1    
-#> [45] bslib_0.11.0      glue_1.8.1        systemfonts_1.3.2 xfun_0.60        
-#> [49] tibble_3.3.1      tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9  
-#> [53] rmarkdown_2.31    readr_2.2.0       compiler_4.6.1    readxl_1.5.0
+#> [17] cli_3.6.6         rlang_1.3.0       withr_3.0.3       cachem_1.1.0     
+#> [21] yaml_2.3.12       otel_0.2.0        tools_4.6.1       downloader_0.4.1 
+#> [25] tzdb_0.5.0        curl_7.1.0        vctrs_0.7.3       R6_2.6.1         
+#> [29] lifecycle_1.0.5   lubridate_1.9.5   snakecase_0.11.1  stringr_1.6.0    
+#> [33] fs_2.1.0          ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
+#> [37] desc_1.4.3        pkgdown_2.2.1     pillar_1.11.1     bslib_0.11.0     
+#> [41] glue_1.8.1        systemfonts_1.3.2 xfun_0.60         tibble_3.3.1     
+#> [45] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   
+#> [49] readr_2.2.0       compiler_4.6.1    readxl_1.5.0
 ```

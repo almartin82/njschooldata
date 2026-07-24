@@ -220,7 +220,7 @@ COVID Kindergarten
 | **Enrollment** | 2000-2026 | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
 | **Assessments** | 2004-2024 | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) / [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md) / [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md) | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) / [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 4-yr and 6-yr ACGR. District and school level |
-| **Directory** | Current | [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md) / [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md) | Names, IDs, addresses, school type |
+| **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
 | **Per-Pupil Spending** | 2001-2026 | [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md) / [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md) / [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md) | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md) / [`fetch_essa_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.md) | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) / [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md) / [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md) | By grade, by demographic. Cross-state standard via [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) |
@@ -1101,13 +1101,8 @@ Functions for SPR database data (2017-2024)
 Functions for school and district metadata
 
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
-  : Fetch NJ School Directory Data
-- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
-  : Clear directory data from session cache
-- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
-  : Get NJ School Directory Data
-- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
-  : Get NJ District Directory Data
+  : Fetch the current New Jersey education directory
+  (directory-contract/v1)
 
 ## Charter Aggregations
 
@@ -1451,8 +1446,6 @@ Additional exported functions
   : Clean report card subgroup names to canonical lowercase form
 - [`clean_sped_df()`](https://almartin82.github.io/njschooldata/reference/clean_sped_df.md)
   : Clean SPED data
-- [`clear_directory_cache()`](https://almartin82.github.io/njschooldata/reference/clear_directory_cache.md)
-  : Clear directory data from session cache
 - [`collapse_agg_names()`](https://almartin82.github.io/njschooldata/reference/collapse_agg_names.md)
   : Collapse repeated names in aggregation output
 - [`compare_discipline_across_years()`](https://almartin82.github.io/njschooldata/reference/compare_discipline_across_years.md)
@@ -1554,7 +1547,8 @@ Additional exported functions
 - [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md)
   : Fetch NJ District Factor Group (DFG) data
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
-  : Fetch NJ School Directory Data
+  : Fetch the current New Jersey education directory
+  (directory-contract/v1)
 - [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md)
   : Fetch Disciplinary Removals Data
 - [`fetch_dropout_rates()`](https://almartin82.github.io/njschooldata/reference/fetch_dropout_rates.md)
@@ -1724,8 +1718,6 @@ Additional exported functions
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
   : Get districts in a specific District Factor Group
-- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
-  : Get NJ District Directory Data
 - [`get_era_breaks()`](https://almartin82.github.io/njschooldata/reference/get_era_breaks.md)
   : Get era break metadata
 - [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
@@ -1743,8 +1735,6 @@ Additional exported functions
   : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
   : Get multiple RC databases
-- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
-  : Get NJ School Directory Data
 - [`get_standalone_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.md)
   : Get Standalone Raw Report Card Database
 - [`get_valid_grades()`](https://almartin82.github.io/njschooldata/reference/get_valid_grades.md)

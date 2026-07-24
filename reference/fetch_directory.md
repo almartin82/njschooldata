@@ -1,81 +1,51 @@
-# Fetch NJ School Directory Data
+# Fetch the current New Jersey education directory (directory-contract/v1)
 
-Downloads and processes the current school and/or district directory
-from the NJ Department of Education. The directory includes contact
-information, addresses, grade levels served, and administrative
-personnel.
+Downloads the current official New Jersey directory from the NJDOE
+Homeroom public download endpoints and returns the canonical triple
+`list(entities, roles, meta)` defined by directory-contract/v1.
+Districts (including single-site charter LEAs) are keyed by the county +
+district CDS code; schools by the county + district + school CDS code.
+District superintendents, business administrators, and special-education
+coordinators are attached as district-grain `roles`; school principals
+as school-grain `roles`. Source-declared vacancies are rows with
+`person_name` `NA` and the verbatim `title_raw` preserved.
 
 ## Usage
 
 ``` r
-fetch_directory(level = "school", use_cache = FALSE)
+fetch_directory()
 ```
-
-## Arguments
-
-- level:
-
-  Character string specifying what to return. One of:
-
-  - `"school"` - School-level directory only (default)
-
-  - `"district"` - District-level directory only
-
-  - `"both"` - Combined school and district data
-
-- use_cache:
-
-  Logical; if TRUE (default), use session cache to avoid re-downloading
-  data within the same R session.
 
 ## Value
 
-A data frame with directory data. The exact columns depend on the
-`level` parameter, but all include:
+A named list with components:
 
-- `county_id`, `county_name` - County identifiers
+- entities:
 
-- `district_id`, `district_name` - District identifiers
+  One row per organization (district / school), canonically sorted.
 
-- `entity_type` - "school" or "district"
+- roles:
 
-- `address`, `city`, `state`, `zip`
+  One row per organization-role assignment (long), canonically sorted.
 
-- `phone`
+- meta:
 
-- `is_charter`, `is_school`, `is_district` - Boolean flags
+  Self-describing metadata: schema version, sources, id scheme,
+  coverage, counts, and quality.
 
-- `cds_code` - Combined County-District-School code
+## Details
 
-School-level data additionally includes:
-
-- `school_id`, `school_name`
-
-- `principal_name`, `principal_email`
-
-- `grades_served` - Comma-separated grade levels
-
-District-level data additionally includes:
-
-- `superintendent_name`, `superintendent_email`
-
-- `website`
+The New Jersey source publishes SPLIT first/last name fields;
+`first_name` and `last_name` come directly from those source columns and
+`person_name` is assembled from them (see `R/directory_contract.R`).
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Get school directory
-schools <- fetch_directory()
-
-# Get district directory
-districts <- fetch_directory(level = "district")
-
-# Get both combined
-all_dir <- fetch_directory(level = "both")
-
-# Get charter school directory
-charters <- fetch_directory() %>%
-  dplyr::filter(is_charter)
+dir <- fetch_directory()
+dir$entities
+dir$roles
+dir$meta$counts
 } # }
 ```

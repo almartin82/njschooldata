@@ -921,10 +921,8 @@ new NJDOE pages / format.
 
 ### New features
 
-[`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
-and
-[`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
-read in metadata about schools and districts (eg, NCES ids!)
+`get_district_directory()` and `get_school_directory()` read in metadata
+about schools and districts (eg, NCES ids!)
 
 ### njschooldata 0.8.15
 
