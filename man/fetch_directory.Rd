@@ -2,65 +2,42 @@
 % Please edit documentation in R/fetch_directory.R
 \name{fetch_directory}
 \alias{fetch_directory}
-\title{Fetch NJ School Directory Data}
+\title{Fetch the current New Jersey education directory (directory-contract/v1)}
 \usage{
-fetch_directory(level = "school", use_cache = FALSE)
-}
-\arguments{
-\item{level}{Character string specifying what to return. One of:
-\itemize{
-  \item \code{"school"} - School-level directory only (default)
-  \item \code{"district"} - District-level directory only
-  \item \code{"both"} - Combined school and district data
-}}
-
-\item{use_cache}{Logical; if TRUE (default), use session cache to avoid
-re-downloading data within the same R session.}
+fetch_directory()
 }
 \value{
-A data frame with directory data. The exact columns depend on the
-  \code{level} parameter, but all include:
-  \itemize{
-    \item \code{county_id}, \code{county_name} - County identifiers
-    \item \code{district_id}, \code{district_name} - District identifiers
-    \item \code{entity_type} - "school" or "district"
-    \item \code{address}, \code{city}, \code{state}, \code{zip}
-    \item \code{phone}
-    \item \code{is_charter}, \code{is_school}, \code{is_district} - Boolean flags
-    \item \code{cds_code} - Combined County-District-School code
-  }
-
-  School-level data additionally includes:
-  \itemize{
-    \item \code{school_id}, \code{school_name}
-    \item \code{principal_name}, \code{principal_email}
-    \item \code{grades_served} - Comma-separated grade levels
-  }
-
-  District-level data additionally includes:
-  \itemize{
-    \item \code{superintendent_name}, \code{superintendent_email}
-    \item \code{website}
+A named list with components:
+  \describe{
+    \item{entities}{One row per organization (district / school),
+      canonically sorted.}
+    \item{roles}{One row per organization-role assignment (long),
+      canonically sorted.}
+    \item{meta}{Self-describing metadata: schema version, sources, id scheme,
+      coverage, counts, and quality.}
   }
 }
 \description{
-Downloads and processes the current school and/or district directory from
-the NJ Department of Education. The directory includes contact information,
-addresses, grade levels served, and administrative personnel.
+Downloads the current official New Jersey directory from the NJDOE Homeroom
+public download endpoints and returns the canonical triple
+\code{list(entities, roles, meta)} defined by directory-contract/v1.
+Districts (including single-site charter LEAs) are keyed by the county +
+district CDS code; schools by the county + district + school CDS code.
+District superintendents, business administrators, and special-education
+coordinators are attached as district-grain \code{roles}; school principals
+as school-grain \code{roles}. Source-declared vacancies are rows with
+\code{person_name} \code{NA} and the verbatim \code{title_raw} preserved.
+}
+\details{
+The New Jersey source publishes SPLIT first/last name fields; \code{first_name}
+and \code{last_name} come directly from those source columns and
+\code{person_name} is assembled from them (see \code{R/directory_contract.R}).
 }
 \examples{
 \dontrun{
-# Get school directory
-schools <- fetch_directory()
-
-# Get district directory
-districts <- fetch_directory(level = "district")
-
-# Get both combined
-all_dir <- fetch_directory(level = "both")
-
-# Get charter school directory
-charters <- fetch_directory() \%>\%
-  dplyr::filter(is_charter)
+dir <- fetch_directory()
+dir$entities
+dir$roles
+dir$meta$counts
 }
 }

@@ -213,11 +213,18 @@ grad_count_2024 <- fetch_grad_count(end_year = 2024)
 Get metadata about schools and districts:
 
 ```{r directories, cache = TRUE}
-# Current school directory with addresses, coordinates, grades served
-schools <- get_school_directory()
+# Current NJ education directory: entities (districts + schools) and
+# personnel roles (superintendents, principals, etc.), directory-contract/v1
+directory <- fetch_directory()
 
-# Current district directory
-districts <- get_district_directory()
+schools <- directory$entities[directory$entities$entity_type == "school", ]
+districts <- directory$entities[directory$entities$entity_type == "district", ]
+
+# Source status (the NJDOE Homeroom endpoints sit behind bot protection that
+# blocks some automated clients; when challenged, source_status reports
+# "source_unavailable" rather than silently returning empty data as if it
+# were a real zero)
+directory$meta$source_status
 
 # View available columns
 names(schools)
