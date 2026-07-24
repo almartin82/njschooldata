@@ -258,10 +258,8 @@
 <tr>
 <td><strong>Directory</strong></td>
 <td>Current</td>
-<td>
-<code>get_school_directory()</code> / <code>get_district_directory()</code>
-</td>
-<td>Names, IDs, addresses, school type</td>
+<td><code><a href="reference/fetch_directory.html">fetch_directory()</a></code></td>
+<td>School and district entities (<code>entities</code>), role holders like superintendents (<code>roles</code>), fetch metadata (<code>meta</code>). Names, IDs, addresses, school type</td>
 </tr>
 <tr>
 <td><strong>Per-Pupil Spending</strong></td>
@@ -405,8 +403,10 @@
 <span><span class="co"># Graduation rates</span></span>
 <span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># School directory</span></span>
-<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu">get_school_directory</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Directory (schools + districts, plus role holders like superintendents)</span></span>
+<span><span class="va">dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_directory.html">fetch_directory</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="va">dir</span><span class="op">$</span><span class="va">entities</span></span>
+<span><span class="va">supts</span> <span class="op">&lt;-</span> <span class="va">dir</span><span class="op">$</span><span class="va">roles</span><span class="op">[</span><span class="va">dir</span><span class="op">$</span><span class="va">roles</span><span class="op">$</span><span class="va">role</span> <span class="op">==</span> <span class="st">"superintendent"</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Facilities data</span></span>
 <span><span class="va">facilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_facilities.html">fetch_facilities</a></span><span class="op">(</span><span class="st">"finance"</span><span class="op">)</span></span>
@@ -431,12 +431,9 @@
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># Graduation rates</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># School directory</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Facilities data</span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>facilities <span class="op">=</span> njsd.fetch_facilities(<span class="st">"finance"</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>facility_points <span class="op">=</span> njsd.fetch_facility_gis(<span class="st">"school_points"</span>)</span></code></pre></div>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># Facilities data</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>facilities <span class="op">=</span> njsd.fetch_facilities(<span class="st">"finance"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>facility_points <span class="op">=</span> njsd.fetch_facility_gis(<span class="st">"school_points"</span>)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
