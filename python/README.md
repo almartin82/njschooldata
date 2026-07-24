@@ -51,10 +51,6 @@ access_2024 = njsd.fetch_access(2024)
 grate_2023 = njsd.fetch_grad_rate(2023)
 grate_5yr = njsd.fetch_grad_rate(2023, methodology="5 year")
 
-# School/district directories
-schools = njsd.get_school_directory()
-districts = njsd.get_district_directory()
-
 # Facilities
 facilities = njsd.fetch_facilities("finance")
 facility_points = njsd.fetch_facility_gis("school_points")
@@ -68,8 +64,6 @@ facility_points = njsd.fetch_facility_gis("school_points")
 | `fetch_parcc(end_year, grade_or_subj, subj, tidy=False)` | PARCC/NJSLA assessment data (2015-2024) |
 | `fetch_access(end_year, grade="all")` | ACCESS for ELLs data (2022-2024) |
 | `fetch_grad_rate(end_year, methodology="4 year")` | Graduation rates (2011-2024) |
-| `get_school_directory()` | Current school directory |
-| `get_district_directory()` | Current district directory |
 | `fetch_facilities(category, year=None)` | Facilities inventory, finance, environmental, project, capacity, closure, and attribute data |
 | `fetch_facility_gis(layer="school_points")` | NJGIN school point geometry as GeoDataFrame when spatial packages are installed |
 | `get_available_facilities()` | Facilities category/source metadata |
