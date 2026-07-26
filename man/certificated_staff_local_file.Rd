@@ -4,12 +4,19 @@
 \alias{certificated_staff_local_file}
 \title{Download (and, if zipped, extract) the certificated-staff data file}
 \usage{
-certificated_staff_local_file(end_year, work_dir)
+certificated_staff_local_file(
+  end_year,
+  work_dir,
+  download_fn = downloader::download
+)
 }
 \arguments{
 \item{end_year}{A covered school year end.}
 
 \item{work_dir}{A scratch directory the caller owns and cleans up.}
+
+\item{download_fn}{Download function with the same arguments used by
+\code{downloader::download}. Exposed for deterministic offline testing.}
 }
 \value{
 A list with \code{path}, \code{era}.

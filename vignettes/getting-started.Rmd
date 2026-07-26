@@ -226,9 +226,9 @@ districts <- directory$entities[directory$entities$entity_type == "district", ]
 # were a real zero)
 directory$meta$source_status
 
-# Compatibility data-frame views are also available for existing callers:
-schools_legacy <- get_school_directory()
-districts_legacy <- get_district_directory()
+# Existing callers can use the compatibility data-frame front doors
+# get_school_directory() and get_district_directory(). They make separate live
+# requests, so this vignette does not call them again after fetch_directory().
 
 # View available columns
 names(schools)
