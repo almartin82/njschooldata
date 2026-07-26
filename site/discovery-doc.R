@@ -10,6 +10,7 @@
 #   Rscript site/discovery-doc.R 4900 3570 ...   # several
 # =============================================================================
 suppressMessages({ library(dplyr); library(tidyr); library(purrr) })
+source(file.path("site", "R", "security.R"))
 
 SW   <- file.path("site", "_bundles", "_statewide")
 OUT  <- file.path("site", "_discovery"); dir.create(OUT, showWarnings = FALSE)
@@ -33,13 +34,21 @@ pc <- function(x, d = 1) ifelse(is.na(x), "n/a", paste0(formatC(x, format = "f",
 dol <- function(x) ifelse(is.na(x), "n/a", paste0("$", formatC(round(x), format = "d", big.mark = ",")))
 md_table <- function(df) {
   if (is.null(df) || !nrow(df)) return("_no data_\n")
-  hdr <- paste0("| ", paste(names(df), collapse = " | "), " |")
+  escape_cell <- function(x) {
+    x <- html_escape(x)
+    x <- gsub("[\r\n]+", " ", x)
+    gsub("|", "&#124;", x, fixed = TRUE)
+  }
+  hdr <- paste0("| ", paste(escape_cell(names(df)), collapse = " | "), " |")
   sep <- paste0("| ", paste(rep("---", ncol(df)), collapse = " | "), " |")
-  rows <- apply(df, 1, function(r) paste0("| ", paste(r, collapse = " | "), " |"))
+  rows <- apply(df, 1, function(r) {
+    paste0("| ", paste(escape_cell(r), collapse = " | "), " |")
+  })
   paste0(hdr, "\n", sep, "\n", paste(rows, collapse = "\n"), "\n")
 }
 
 build_discovery <- function(id) {
+  id <- safe_profile_id(id)
   meta <- SWD$dir %>% filter(district_id == id) %>% slice(1)
   if (!nrow(meta)) { warning("no directory row ", id); return(invisible(NULL)) }
   dfg <- SWD$dfg$dfg[match(id, SWD$dfg$district_id)]
@@ -262,18 +271,27 @@ build_discovery <- function(id) {
   }
 
   # ---------- assemble ----------
+  display_name <- html_escape(meta$district_name)
+  display_county <- html_escape(tools::toTitleCase(tolower(meta$county_name)))
+  display_superintendent <- if (is.na(meta$superintendent_name)) {
+    "n/a"
+  } else {
+    html_escape(meta$superintendent_name)
+  }
+  website <- safe_http_url(meta$website)
+  display_website <- if (is.na(website)) "n/a" else html_escape(website)
   hdr <- paste0(
-    "# Discovery doc: ", meta$district_name, "\n\n",
-    "- **district_id:** ", id, " · **county:** ", tools::toTitleCase(tolower(meta$county_name)),
+    "# Discovery doc: ", display_name, "\n\n",
+    "- **district_id:** ", id, " · **county:** ", display_county,
     " · **DFG:** ", ifelse(is.na(dfg), "none (charter/special)", dfg),
     " · **type:** ", ifelse(is_charter, "charter", "traditional"), "\n",
     "- **peer group:** ", n_peers, " districts in DFG ", ifelse(is.na(dfg),"(all)",dfg),
-    " · **superintendent:** ", ifelse(is.na(meta$superintendent_name),"n/a",meta$superintendent_name),
-    " · **website:** ", ifelse(is.na(meta$website),"n/a",meta$website), "\n\n",
+    " · **superintendent:** ", display_superintendent,
+    " · **website:** ", display_website, "\n\n",
     "_All figures computed from NJ DOE data via the njschooldata package. Every number below is real; cite exact values in stories. Peer comparisons use District Factor Group (DFG)._\n"
   )
   sig_md <- paste0("\n## SIGNALS — ranked candidate findings\n\n",
-                   paste(sprintf("%d. %s", seq_along(SIG), SIG), collapse = "\n"), "\n")
+                   paste(sprintf("%d. %s", seq_along(SIG), html_escape(SIG)), collapse = "\n"), "\n")
   tab_md <- paste0("\n## DATA TABLES (longitudinal, all categories)\n\n", paste(TAB, collapse = "\n\n"))
   writeLines(paste0(hdr, sig_md, tab_md), file.path(OUT, paste0(id, ".md")))
   DAT$signals <- SIG
@@ -282,6 +300,15 @@ build_discovery <- function(id) {
   invisible(NULL)
 }
 
-ids <- commandArgs(trailingOnly = TRUE)
-if (!length(ids)) ids <- "4900"
-for (id in ids) tryCatch(build_discovery(id), error=function(e) warning(id, ": ", conditionMessage(e)))
+main <- function() {
+  ids <- commandArgs(trailingOnly = TRUE)
+  if (!length(ids)) ids <- "4900"
+  for (id in ids) {
+    tryCatch(
+      build_discovery(id),
+      error = function(error) warning(id, ": ", conditionMessage(error))
+    )
+  }
+}
+
+if (sys.nframe() == 0L) main()

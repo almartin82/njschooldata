@@ -10,7 +10,8 @@ fetch_finance_multi(
   tidy = TRUE,
   use_cache = TRUE,
   with_status = FALSE,
-  level = "all"
+  level = "all",
+  allow_partial = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,9 @@ discovery tooling.}
 \code{\link{fetch_finance}}.}
 
 \item{level}{entity grain to return. See \code{\link{fetch_finance}}.}
+
+\item{allow_partial}{logical. See \code{\link{fetch_finance}}. The returned
+object records every requested year/component in \code{get_source_results()}.}
 }
 \value{
 A single tibble, the per-year results of \code{\link{fetch_finance}}

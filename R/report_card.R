@@ -39,19 +39,18 @@ clean_rc_subgroups <- function(group) {
 #' Get Raw Report Card Database
 #'
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
-#' school year is end_year '2015'.  valid values are 2003 to 2019
+#' school year is end_year '2015'. Valid values are 2012 to 2019.
 #'
 #' @return list of data frames
 #' @export
 
 get_one_rc_database <- function(end_year) {
-  
+  validate_end_year(end_year, "report_card")
+
   if (end_year >= 2017) {
     df_list <- get_merged_rc_database(end_year)
-  } else if (end_year >= 2003) {
-    df_list <- get_standalone_rc_database(end_year)
   } else {
-    stop('Year not covered by NJ report card data.')
+    df_list <- get_standalone_rc_database(end_year)
   }
   
   df_list
@@ -61,52 +60,20 @@ get_one_rc_database <- function(end_year) {
 #' Get Standalone Raw Report Card Database
 #'
 #' @param end_year a school year.  end_year is the end of the academic year - eg 2014-15
-#' school year is end_year '2015'.  valid values are 2003 to 2016
+#' school year is end_year '2015'. Valid values are 2012 to 2016.
 #'
 #' @return list of data frames
 
 get_standalone_rc_database <- function(end_year) {
-  
-  # NJ DOE retired the rc.doe.state.nj.us host (now 301 -> nj.gov/education/spr/)
-  # and the /education/schoolperformance/archive/ tree (now 404, see meta refresh
-  # at /education/schoolperformance/). Two new patterns took their place:
-  #
-  #   2011-12 -> 2014-15:  /education/spr/download/archive/<YYYYYY>/<file>
-  #                        (filenames preserved from the legacy tree)
-  #   2015-16 -> current:  /education/sprreports/download/DataFiles/<YYYY-YYYY>/
-  #                        Database_SchoolDetail.xlsx (renamed from
-  #                        PerformanceReports.xlsx). 2015-16 has no separate
-  #                        district workbook; the school workbook carries
-  #                        SchoolMedian + DistrictMedian + StatewideMedian
-  #                        columns, which is what get_and_process_msgp(2016)
-  #                        already expects.
-  pr_urls <- list(
-    "2016" = "https://www.nj.gov/education/sprreports/download/DataFiles/2015-2016/Database_SchoolDetail.xlsx",
-    "2015" = "https://www.nj.gov/education/spr/download/archive/201415/2015PRDATABASE.xlsx",
-    "2014" = "https://www.nj.gov/education/spr/download/archive/201314/2014%20performance%20report%20database.xlsx",
-    "2013" = "https://www.nj.gov/education/spr/download/archive/201213/nj%20pr13%20database.xlsx",
-    "2012" = "https://www.nj.gov/education/spr/download/archive/201112/nj%20pr12%20database.xlsx"
-
-    # 2003-2011 report cards deleted (no archive available on nj.gov or Wayback)
-    # "2011" = "http://www.nj.gov/education/reportcard/2011/database/RC11%20database.xls",
-    # "2010" = "http://www.nj.gov/education/reportcard/2010/database/RC10%20database.xls",
-    # "2009" = "http://www.nj.gov/education/reportcard/2009/database/RC09%20database.xls",
-    # "2008" = "http://www.nj.gov/education/reportcard/2008/database/nj_rc08.xls",
-    # "2007" = "http://www.nj.gov/education/reportcard/2007/database/nj_rc07.xls",
-    # "2006" = "http://www.nj.gov/education/reportcard/2006/database/nj_rc06_data.xls",
-    # "2005" = "http://www.nj.gov/education/reportcard/2005/database/NJ_RC05_DATA.XLS",
-    # "2004" = "http://www.nj.gov/education/reportcard/2004/database/nj_rc04_data.xls",
-    # "2003" = "http://www.nj.gov/education/reportcard/2003/database/nj_rc03_data.xls"
+  validate_end_year(end_year, "report_card")
+  if (end_year > 2016L) {
+    stop("Standalone report-card workbooks cover end_year 2012-2016.",
+         call. = FALSE)
+  }
+  url <- resolve_source_url("report_card", end_year, level = "school")
+  pr_list <- download_and_clean_pr(
+    tempfile(fileext = ".xlsx"), url, end_year
   )
-  
-  #temp file for downloading
-  file_exts <- c(
-    rep('xlsx', 5),
-    rep('xls', 9)
-  )
-  tmp_pr = tempfile(fileext = paste0('.', file_exts[1 + (2016-end_year)]))
-  
-  pr_list <- download_and_clean_pr(tmp_pr,  pr_urls[[as.character(end_year)]], end_year)
   
   pr_list
 }
@@ -117,57 +84,72 @@ get_standalone_rc_database <- function(end_year) {
 #' @param tmp_pr path to tempfile
 #' @param url url to download
 #' @param end_year report year
+#' @param request_fn Injectable transport request used by offline contract tests.
 #'
 #' @return list of dataframes
 
-download_and_clean_pr <- function(tmp_pr, url, end_year) {
-  #download to temp
-  download.file(url, destfile = tmp_pr, mode = "wb")
-  
-  #get the sheet names
-  sheets_pr <- readxl::excel_sheets(tmp_pr) %>%
-    clean_name_vector()
-  
-  #get all the data.frames as list
-  pr_list <- map(
-    .x = c(1:length(sheets_pr)),
-    .f = function(.x) {
-      readxl::read_excel(
-        tmp_pr, 
-        sheet = .x,
-        na = c('NA', 'N', '*', '**')
-      ) %>%
-      mutate(end_year = end_year) %>%
-      janitor::clean_names()
-    }
+download_and_clean_pr <- function(tmp_pr, url, end_year,
+                                  request_fn = .default_source_request) {
+  transport <- download_source(
+    url, source_type = "xlsx", cache_path = tmp_pr,
+    request_fn = request_fn
   )
-  
-  #rename each pr
-  names(pr_list) <- sheets_pr
-  
-  pr_list
+  path <- source_result_data(transport)
+  on.exit(unlink(path), add = TRUE)
+
+  pr_list <- tryCatch({
+    sheets_pr <- clean_name_vector(readxl::excel_sheets(path))
+    parsed <- map(seq_along(sheets_pr), function(index) {
+      readxl::read_excel(
+        path,
+        sheet = index,
+        na = c("NA", "N", "*", "**")
+      ) %>%
+        mutate(end_year = end_year) %>%
+        janitor::clean_names()
+    })
+    names(parsed) <- sheets_pr
+    parsed
+  }, error = identity)
+
+  if (inherits(pr_list, "error")) {
+    source_result_data(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(pr_list)
+    ))
+  }
+
+  attach_source_results(
+    pr_list,
+    source_result_record(transport, "report_card", end_year)
+  )
 }
 
 #' Get multiple RC databases
 #'
-#' @param end_year_vector vector of years.  Current valid values are 2003 to 2018. 
+#' @param end_year_vector vector of years. Current valid values are 2012 to 2019.
+#' @param allow_partial If `FALSE` (default), any unavailable or malformed year
+#'   aborts with the failed years and statuses. If `TRUE`, returns successful
+#'   years and records every requested year in [get_source_results()].
 #'
 #' @return a list of dataframes
 #' @export
 
-get_rc_databases <- function(end_year_vector = c(2003:2018)) {
-
-  all_prs <- map(
-    .x = end_year_vector,
-    .f = function(.x) {
-      print(.x)
-      get_one_rc_database(.x)
-    }
+get_rc_databases <- function(end_year_vector = 2012:2019,
+                             allow_partial = FALSE) {
+  captures <- lapply(end_year_vector, function(end_year) {
+    print(end_year)
+    capture_registered_source_call(
+      function() get_one_rc_database(end_year),
+      "report_card", end_year, domain = "report_card"
+    )
+  })
+  names(captures) <- as.character(end_year_vector)
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "Report-card multi-year request", combine = "list"
   )
-  
-  names(all_prs) <- end_year_vector
-  
-  all_prs
 }
 
 
@@ -179,28 +161,19 @@ get_rc_databases <- function(end_year_vector = c(2003:2018)) {
 #' @export
 
 get_merged_rc_database <- function(end_year) {
-  
-  # rc.doe.state.nj.us was retired; the merged-format PR databases moved to
-  # /education/sprreports/download/DataFiles/<YYYY-YYYY>/ and were renamed
-  # PerformanceReports.xlsx          -> Database_SchoolDetail.xlsx
-  # DistrictPerformanceReports.xlsx  -> Database_DistrictStateDetail.xlsx
-  pr_urls <- list(
-    "sch_2019"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_SchoolDetail.xlsx",
-    "dist_2019" = "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_DistrictStateDetail.xlsx",
-    "sch_2018"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_SchoolDetail.xlsx",
-    "dist_2018" = "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_DistrictStateDetail.xlsx",
-    "sch_2017"  = "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_SchoolDetail.xlsx",
-    "dist_2017" = "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_DistrictStateDetail.xlsx"
+  validate_end_year(end_year, "report_card")
+  if (end_year < 2017L) {
+    stop("Merged report-card workbooks cover end_year 2017-2019.",
+         call. = FALSE)
+  }
+  urls <- resolve_source_url("report_card", end_year)
+  dist_pr <- download_and_clean_pr(
+    tempfile(fileext = ".xlsx"), urls[["district"]], end_year
   )
-  
-  # get district and school df
-  dist <- pr_urls[[paste0('dist_', end_year)]]
-  sch <- pr_urls[[paste0('sch_', end_year)]]
-  
-  tmp_pr1 = tempfile(fileext = 'xlsx')
-  tmp_pr2 = tempfile(fileext = 'xlsx')
-  dist_pr = download_and_clean_pr(tmp_pr1, dist, end_year)
-  sch_pr = download_and_clean_pr(tmp_pr2, sch, end_year)
+  sch_pr <- download_and_clean_pr(
+    tempfile(fileext = ".xlsx"), urls[["school"]], end_year
+  )
+  source_records <- rbind(get_source_results(dist_pr), get_source_results(sch_pr))
   
   # exclude bad / duplicate data
   sch_pr <- sch_pr[!names(sch_pr) %in% c('per_pupil_expenditures')]
@@ -282,7 +255,7 @@ get_merged_rc_database <- function(end_year) {
   names(dist_dfs) <- dist_only
   
   # combine list of prs and return
-  c(combined, sch_dfs, dist_dfs)
+  attach_source_results(c(combined, sch_dfs, dist_dfs), source_records)
 }
 
 

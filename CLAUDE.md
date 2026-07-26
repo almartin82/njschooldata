@@ -42,6 +42,8 @@ the relevant doc only when the trigger applies, to keep context lean.
 | [`dev-docs/data-source-urls.md`](dev-docs/data-source-urls.md) | A fetcher 404s / returns HTML, a download is empty, or a fetch URL needs updating for a new year |
 | [`dev-docs/spr-coverage-gap.md`](dev-docs/spr-coverage-gap.md) | Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work |
 | [`dev-docs/tges-coverage.md`](dev-docs/tges-coverage.md) | Working on `fetch_tges()`/`get_raw_tges()`/`tidy_tges_data()`, adding a new TGES year, a TGES download 404s, or scoping TGES coverage |
+| [`dev-docs/live-test-inventory.md`](dev-docs/live-test-inventory.md) | Adding or moving a test that might access a public source |
+| [`dev-docs/source-outage-runbook.md`](dev-docs/source-outage-runbook.md) | Operating a strict profile build or triaging source-result failures |
 
 ## Vignette Code Must Run
 
@@ -72,7 +74,11 @@ Vignette analysis code MUST live in executable ` ```{r} ` chunks that run during
 ## Testing
 Run tests with: `devtools::test()` or `Rscript -e "devtools::test()"`
 
-**Note:** Tests are disabled in CI/CD due to NJ DOE network dependencies. Run locally before deploying.
+Offline tests are mandatory in pull-request CI and must remain deterministic with
+no NJ DOE access. Live source assertions use the shared opt-in flag
+`NJSCHOOLDATA_LIVE_TESTS=true`; without it they skip consistently. A scheduled or
+manually dispatched canary workflow owns live-source verification. Keep network-
+heavy vignette execution separate from the offline test decision.
 
 ## Federal NCES id linkage (enrollment)
 

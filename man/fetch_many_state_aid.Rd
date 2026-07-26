@@ -4,11 +4,15 @@
 \alias{fetch_many_state_aid}
 \title{Fetch Multiple Years of NJ K-12 State Aid}
 \usage{
-fetch_many_state_aid(end_year_vector)
+fetch_many_state_aid(end_year_vector, allow_partial = FALSE)
 }
 \arguments{
 \item{end_year_vector}{vector of school years (end of the academic year).
-Valid values are 2019 and later.}
+Valid values come from the authoritative source registry.}
+
+\item{allow_partial}{Return successful years when one request fails. The
+default is strict. In either mode, inspect \code{get_source_results()} for
+the status of every requested year.}
 }
 \value{
 A single tibble, the per-year results of \code{\link{fetch_state_aid}}

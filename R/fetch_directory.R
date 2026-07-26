@@ -82,6 +82,74 @@ get_raw_district_directory <- function() {
   source_result_data(.directory_source_result("district"))
 }
 
+.clean_directory_raw <- function(raw) {
+  df <- janitor::clean_names(raw)
+  char_cols <- names(df)[vapply(df, is.character, logical(1))]
+  for (col in char_cols) {
+    df[[col]] <- iconv(df[[col]], from = "", to = "UTF-8", sub = "")
+    df[[col]] <- kill_padformulas(df[[col]])
+    df[[col]] <- dc_blank_to_na(df[[col]])
+  }
+  df
+}
+
+.legacy_directory_table <- function(level) {
+  level <- match.arg(level, c("school", "district"))
+  result <- .directory_source_result(level)
+  result <- transform_source_result(result, function(raw) {
+    df <- .clean_directory_raw(raw)
+    address_parts <- c("address1", "city", "state", "zip")
+    missing <- setdiff(address_parts, names(df))
+    if (length(missing)) {
+      stop(
+        "Directory source is missing address columns: ",
+        paste(missing, collapse = ", "),
+        ".",
+        call. = FALSE
+      )
+    }
+    df$address <- paste0(
+      df$address1, ", ", df$city, ", ", df$state, " ", df$zip
+    )
+    names(df)[names(df) == "county_code"] <- "county_id"
+    names(df)[names(df) == "district_code"] <- "district_id"
+    if (level == "school") {
+      names(df)[names(df) == "school_code"] <- "school_id"
+      df$cds_code <- paste0(df$county_id, df$district_id, df$school_id)
+    } else {
+      df$cds_code <- paste0(df$county_id, df$district_id, "999")
+    }
+    df
+  })
+  data <- source_result_data(result)
+  attach_source_results(
+    data,
+    source_result_record(result, "directory", NA_integer_, level)
+  )
+}
+
+#' Get the current NJ school directory
+#'
+#' This compatibility front door returns the source-shaped school directory
+#' while using the registry-owned Homeroom endpoint and validated transport.
+#'
+#' @return A data frame of schools and associated metadata.
+#' @export
+get_school_directory <- function() {
+  .legacy_directory_table("school")
+}
+
+#' Get the current NJ district directory
+#'
+#' This compatibility front door returns the source-shaped district directory
+#' while using the registry-owned Homeroom endpoint and validated transport.
+#'
+#' @return A data frame of districts and associated metadata.
+#' @export
+get_district_directory <- function() {
+  .legacy_directory_table("district")
+}
+
 
 # -----------------------------------------------------------------------------
 # Processing Functions
@@ -294,7 +362,7 @@ process_district_directory <- function(raw) {
 # There is no level argument, no cache switch, and no tidy toggle: the function
 # represents "the directory as published right now".
 #
-# Sources (official NJDOE Homeroom, https://homeroom6.doe.nj.gov/directory/):
+# Sources (official NJDOE Homeroom; endpoints owned by source_registry.R):
 #   - Public School Districts download: superintendents, business
 #     administrators, and special-education coordinators per district.
 #   - Public Schools download (includes grade levels): principals per school.
@@ -304,11 +372,6 @@ process_district_directory <- function(raw) {
 #   - district_id = 2-digit county code + 4-digit district code (6 chars).
 #   - school_id   = district_id + 3-digit school code (9 chars), on school rows.
 # Verbatim, leading zeros preserved.
-
-DIRECTORY_DISTRICT_URL <-
-  "https://homeroom4.doe.nj.gov/public/districtpublicschools/download/"
-DIRECTORY_SCHOOL_URL <-
-  "https://homeroom4.doe.nj.gov/public/publicschools/download/"
 
 DIRECTORY_ID_SCHEME <- paste0(
   "NJ County-District-School (CDS) code: district_id = 2-digit county code + ",
@@ -362,45 +425,49 @@ dc_stop <- function(message, class) {
 #' }
 fetch_directory <- function() {
   retrieved_at <- dc_iso8601()
-
-  district_raw <- tryCatch(
-    download_nj_directory(DIRECTORY_DISTRICT_URL, "district"),
-    error = function(e) e
+  district_result <- .directory_source_result("district")
+  school_result <- .directory_source_result("school")
+  source_records <- rbind(
+    source_result_record(
+      district_result, "directory", NA_integer_, "district"
+    ),
+    source_result_record(
+      school_result, "directory", NA_integer_, "school"
+    )
   )
-  school_raw <- tryCatch(
-    download_nj_directory(DIRECTORY_SCHOOL_URL, "school"),
-    error = function(e) e
-  )
-
-  district_ok <- !inherits(district_raw, "error")
-  school_ok <- !inherits(school_raw, "error")
-
-  if (!district_ok && !school_ok) {
-    return(directory_source_unavailable(retrieved_at))
+  complete <- identical(district_result$source_status, "actual") &&
+    identical(school_result$source_status, "actual")
+  if (!complete) {
+    return(directory_source_unavailable(retrieved_at, source_records))
   }
 
-  entities_d <- if (district_ok) {
-    build_directory_entities_district(district_raw)
-  } else {
-    empty_directory_entities()
+  parsed <- tryCatch({
+    district_raw <- .clean_directory_raw(district_result$data)
+    school_raw <- .clean_directory_raw(school_result$data)
+    list(district = district_raw, school = school_raw)
+  }, error = identity)
+  if (inherits(parsed, "error")) {
+    parse_result <- new_source_result(
+      source_status = "parse_error",
+      error = conditionMessage(parsed)
+    )
+    source_records <- rbind(
+      source_records,
+      source_result_record(
+        parse_result, "directory", NA_integer_, "composition"
+      )
+    )
+    return(directory_source_unavailable(retrieved_at, source_records))
   }
-  entities_s <- if (school_ok) {
-    build_directory_entities_school(school_raw)
-  } else {
-    empty_directory_entities()
-  }
+  district_raw <- parsed$district
+  school_raw <- parsed$school
+
+  entities_d <- build_directory_entities_district(district_raw)
+  entities_s <- build_directory_entities_school(school_raw)
   entities <- dplyr::bind_rows(entities_d, entities_s)
 
-  roles_d <- if (district_ok) {
-    build_directory_roles_district(district_raw, entities_d)
-  } else {
-    empty_directory_roles()
-  }
-  roles_s <- if (school_ok) {
-    build_directory_roles_school(school_raw, entities_s)
-  } else {
-    empty_directory_roles()
-  }
+  roles_d <- build_directory_roles_district(district_raw, entities_d)
+  roles_s <- build_directory_roles_school(school_raw, entities_s)
   roles <- dplyr::bind_rows(roles_d, roles_s)
 
   # De-duplicate on the canonical keys (defensive; the source is single-row
@@ -416,20 +483,18 @@ fetch_directory <- function() {
   entities <- dc_sort_entities(entities)
   roles <- dc_sort_roles(roles)
 
-  source_status <- if (district_ok && school_ok) "ok" else "partial"
-
   sources <- list(
     list(
       name = "NJDOE Homeroom Public School Districts download",
-      url = DIRECTORY_DISTRICT_URL,
-      retrieved_at = if (district_ok) retrieved_at else NA_character_,
-      status = if (district_ok) "ok" else "failed"
+      url = resolve_source_url("directory", level = "district"),
+      retrieved_at = dc_iso8601(district_result$retrieved_at),
+      status = "ok"
     ),
     list(
       name = "NJDOE Homeroom Public Schools download (includes grade levels)",
-      url = DIRECTORY_SCHOOL_URL,
-      retrieved_at = if (school_ok) retrieved_at else NA_character_,
-      status = if (school_ok) "ok" else "failed"
+      url = resolve_source_url("directory", level = "school"),
+      retrieved_at = dc_iso8601(school_result$retrieved_at),
+      status = "ok"
     )
   )
 
@@ -463,80 +528,14 @@ fetch_directory <- function() {
     sources = sources,
     id_scheme = DIRECTORY_ID_SCHEME,
     coverage = coverage,
-    source_status = source_status,
+    source_status = "ok",
     retrieved_at = retrieved_at
   )
 
-  list(entities = entities, roles = roles, meta = meta)
-}
-
-
-# -----------------------------------------------------------------------------
-# Source download (self-contained; the directory endpoints are not part of the
-# registered source-transport allowlist)
-# -----------------------------------------------------------------------------
-
-#' Download and clean an NJDOE Homeroom directory CSV
-#'
-#' Downloads the CSV (three descriptive header rows precede the column header),
-#' reads it as all-character, then applies the standard NJ cleaning: UTF-8
-#' re-encode, strip Excel formula padding (\code{="01"} -> \code{01}), and trim.
-#' Errors (transport failure, HTTP error, or a response that is not the expected
-#' CSV) are raised and become source_status "partial"/"source_unavailable".
-#' @keywords internal
-#' @noRd
-download_nj_directory <- function(url, label) {
-  tmp <- tempfile(fileext = ".csv")
-  on.exit(unlink(tmp), add = TRUE)
-
-  response <- httr::GET(
-    url,
-    httr::write_disk(tmp, overwrite = TRUE),
-    httr::timeout(120),
-    httr::user_agent(paste0("njschooldata/", utils::packageVersion("njschooldata")))
+  attach_source_results(
+    list(entities = entities, roles = roles, meta = meta),
+    source_records
   )
-  if (httr::http_error(response)) {
-    dc_stop(
-      paste0("NJDOE ", label, " directory download failed: HTTP ",
-             httr::status_code(response)),
-      "directory_parse_error"
-    )
-  }
-
-  parsed <- tryCatch(
-    suppressWarnings(readr::read_csv(
-      tmp, skip = 3,
-      col_types = readr::cols(.default = readr::col_character()),
-      show_col_types = FALSE
-    )),
-    error = function(e) e
-  )
-  if (inherits(parsed, "error") || !is.data.frame(parsed) || nrow(parsed) == 0L) {
-    dc_stop(
-      paste0("NJDOE ", label, " directory response was not a parseable CSV"),
-      "directory_parse_error"
-    )
-  }
-
-  df <- janitor::clean_names(parsed)
-  required <- c("county_code", "district_code")
-  if (label == "school") required <- c(required, "school_code")
-  missing <- setdiff(required, names(df))
-  if (length(missing) > 0L) {
-    dc_stop(
-      paste0("NJDOE ", label, " directory is missing required columns: ",
-             paste(missing, collapse = ", ")),
-      "directory_parse_error"
-    )
-  }
-
-  char_cols <- names(df)[vapply(df, is.character, logical(1))]
-  for (col in char_cols) {
-    df[[col]] <- iconv(df[[col]], from = "", to = "UTF-8", sub = "")
-    df[[col]] <- kill_padformulas(df[[col]])
-    df[[col]] <- dc_blank_to_na(df[[col]])
-  }
-  df
 }
 
 
@@ -814,18 +813,19 @@ build_directory_roles_school <- function(s, entities) {
 #' Build the conforming declared-miss result when upstream is unreachable
 #' @keywords internal
 #' @noRd
-directory_source_unavailable <- function(retrieved_at) {
+directory_source_unavailable <- function(
+    retrieved_at, source_records = .empty_source_result_records()) {
   entities <- empty_directory_entities()
   roles <- empty_directory_roles()
   sources <- list(
     list(
       name = "NJDOE Homeroom Public School Districts download",
-      url = DIRECTORY_DISTRICT_URL,
+      url = resolve_source_url("directory", level = "district"),
       retrieved_at = NA_character_, status = "failed"
     ),
     list(
       name = "NJDOE Homeroom Public Schools download (includes grade levels)",
-      url = DIRECTORY_SCHOOL_URL,
+      url = resolve_source_url("directory", level = "school"),
       retrieved_at = NA_character_, status = "failed"
     )
   )
@@ -843,5 +843,8 @@ directory_source_unavailable <- function(retrieved_at) {
     id_scheme = DIRECTORY_ID_SCHEME, coverage = coverage,
     source_status = "source_unavailable", retrieved_at = retrieved_at
   )
-  list(entities = entities, roles = roles, meta = meta)
+  attach_source_results(
+    list(entities = entities, roles = roles, meta = meta),
+    source_records
+  )
 }

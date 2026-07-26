@@ -7,11 +7,10 @@
 get_raw_enr(end_year)
 }
 \arguments{
-\item{end_year}{A school year. Year is the end of the academic year - eg 2006-07
-school year is year '2007'. Valid values are 2000-2026.}
+\item{end_year}{A school-year end year. Valid values are 1999-2026.}
 }
 \value{
-Data frame with raw enrollment data
+Data frame with raw enrollment data.
 }
 \description{
 Read a zipped Excel fall enrollment file from the NJ state website

@@ -15,14 +15,14 @@ Single collapsed string
 \description{
 When aggregating across schools/districts, \code{toString()} produces
 long strings with duplicated names (e.g., the same school repeated for
-each grade). This function deduplicates: if all names are the same, returns
-the single name; if names differ, returns each unique name with its count.
+each grade). This function returns each unique name once with its input-row
+count, including the single-name case.
 }
 \examples{
 \dontrun{
 # Same school across grades
 collapse_agg_names(c("School A", "School A", "School A"))
-# => "School A"
+# => "School A (3)"
 
 # Multiple schools
 collapse_agg_names(c("School A", "School A", "School B"))

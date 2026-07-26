@@ -93,29 +93,12 @@ test_that("slugify_district ignores district_id when no collisions", {
 # ==============================================================================
 
 test_that("slugify_district produces unique slugs for all directory districts", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
-  # fetch_directory() (directory-contract/v1) returns list(entities, roles,
-  # meta); districts are entity_type == "district" rows in entities.
-  #
-  # The NJDOE Homeroom endpoints sit behind Incapsula bot protection that can
-  # challenge automated clients. Per the contract that is NOT an error: the
-  # fetcher reports source_status "source_unavailable" and returns empty
-  # tables, which is a conforming result. So skip on that declared status
-  # only.
-  #
-  # Deliberately NOT wrapped in tryCatch: the contract reserves errors for
-  # directory_parse_error and directory_integrity_error, meaning the source
-  # shape changed or an id would have to be synthesised. Those are real
-  # failures and must fail loudly here. Swallowing them into a skip is the
-  # pattern that let a broken directory surface sit unnoticed across this
-  # fleet for months.
   dir <- fetch_directory()
   if (identical(dir$meta$source_status, "source_unavailable")) {
-    skip("NJDOE Homeroom downloads were unreachable (bot-protection / outage)")
+    skip("NJDOE Homeroom downloads were unreachable")
   }
-
   districts <- unique(
     dir$entities[
       dir$entities$entity_type == "district",
@@ -151,7 +134,7 @@ test_that("slugify_district produces unique slugs for all directory districts", 
 # ==============================================================================
 
 test_that("slugify_district produces unique slugs for all enrollment districts", {
-  skip_on_cran()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE)
   districts <- unique(enr[enr$is_district == TRUE, c("district_name", "district_id")])

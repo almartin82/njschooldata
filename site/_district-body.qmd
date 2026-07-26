@@ -2,6 +2,7 @@
 source("R/theme.R")
 source("R/charts.R")
 source("R/bundle.R")
+source("R/security.R")
 library(dplyr); library(ggplot2); library(scales); library(knitr)
 b <- load_bundle(district_id)
 m <- b$meta
@@ -10,16 +11,19 @@ m <- b$meta
 ```{r header, echo=FALSE, results='asis'}
 dfg_txt <- if (!is.na(m$dfg)) paste0("DFG ", m$dfg) else "no DFG (charter / special)"
 type_txt <- if (isTRUE(m$is_charter)) "Charter" else "Traditional public"
-web_txt <- if (!is.null(m$website) && !is.na(m$website) && nzchar(m$website))
-  sprintf(" &nbsp;·&nbsp; [website](%s)", m$website) else ""
+website_url <- safe_http_url(m$website)
+web_txt <- if (!is.na(website_url))
+  sprintf(' &nbsp;·&nbsp; <a href="%s">website</a>', html_escape(website_url)) else ""
 cat(sprintf("**%s County** &nbsp;·&nbsp; %s district &nbsp;·&nbsp; %s\n\n",
-            tools::toTitleCase(tolower(m$county_name)), type_txt, dfg_txt))
+            html_escape(tools::toTitleCase(tolower(m$county_name))),
+            html_escape(type_txt), html_escape(dfg_txt)))
 if (has_data(b$enr_total)) {
   latest_enr <- b$enr_total %>% filter(end_year == max(end_year)) %>% slice(1)
   cat(sprintf("> **%s students** enrolled (%s) &nbsp;·&nbsp; district code `%s`%s\n\n",
-              fmt_int(latest_enr$n_students), latest_enr$end_year, m$district_id, web_txt))
+              fmt_int(latest_enr$n_students), latest_enr$end_year,
+              html_escape(m$district_id), web_txt))
 } else {
-  cat(sprintf("> District code `%s`%s\n\n", m$district_id, web_txt))
+  cat(sprintf("> District code `%s`%s\n\n", html_escape(m$district_id), web_txt))
 }
 ```
 
@@ -66,7 +70,7 @@ if (has_data(b$enr_special)) {
   lab <- c(econ_disadv="Economically disadvantaged", free_reduced_lunch="Free/reduced lunch",
            lep="English learners", special_ed="Students with disabilities")
   bullets <- latest %>% mutate(txt = sprintf("- **%s**: %s students (%s)",
-                ifelse(subgroup %in% names(lab), lab[subgroup], subgroup),
+                html_escape(ifelse(subgroup %in% names(lab), lab[subgroup], subgroup)),
                 fmt_int(n_students), fmt_pct(as_pct_scale(pct))))
   cat("**Special populations (", max(latest$end_year), "):**\n\n", sep="")
   cat(paste(bullets$txt, collapse = "\n"))

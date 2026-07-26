@@ -4,13 +4,17 @@
 \alias{fetch_all_parcc}
 \title{Fetch all PARCC results}
 \usage{
-fetch_all_parcc(include_science = TRUE)
+fetch_all_parcc(include_science = TRUE, allow_partial = FALSE)
 }
 \arguments{
 \item{include_science}{Include science assessments (2019+)? Default is TRUE.}
+
+\item{allow_partial}{If `FALSE` (default), any unavailable or unparseable
+requested source fails the combined request. If `TRUE`, successful sources
+are returned and every request is reported by [get_source_results()].}
 }
 \value{
-A data frame with all PARCC/NJSLA results
+A data frame with all PARCC/NJSLA results and source-result records.
 }
 \description{
 Convenience function to download and combine all PARCC/NJSLA results

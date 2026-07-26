@@ -16,6 +16,7 @@ def fetch_finance(
     use_cache: bool = True,
     with_status: bool = False,
     level: FinanceLevel = "all",
+    allow_partial: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch New Jersey school finance data in the canonical cross-state schema.
@@ -36,6 +37,9 @@ def fetch_finance(
     level : {"all", "state", "district", "school"}, default "all"
         Entity grain to return. ``"school"`` returns structural gap rows because
         school-level finance is not published by this R fetcher.
+    allow_partial : bool, default False
+        Return successful components when another finance source fails. Source
+        status remains attached by R; strict failure is the default.
 
     Returns
     -------
@@ -57,6 +61,7 @@ def fetch_finance(
         use_cache=use_cache,
         with_status=with_status,
         level=level,
+        allow_partial=allow_partial,
     )
 
 
@@ -67,6 +72,7 @@ def fetch_finance_multi(
     use_cache: bool = True,
     with_status: bool = False,
     level: FinanceLevel = "all",
+    allow_partial: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch New Jersey school finance data for multiple years.
@@ -84,6 +90,8 @@ def fetch_finance_multi(
         Add a ``value_status`` column for structural missingness.
     level : {"all", "state", "district", "school"}, default "all"
         Entity grain to return.
+    allow_partial : bool, default False
+        Permit explicitly partial per-year finance results.
 
     Returns
     -------
@@ -95,6 +103,7 @@ def fetch_finance_multi(
         "use_cache": use_cache,
         "with_status": with_status,
         "level": level,
+        "allow_partial": allow_partial,
     }
     if end_years is not None:
         kwargs["end_years"] = end_years

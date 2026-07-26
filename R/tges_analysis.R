@@ -1336,6 +1336,8 @@ tges_real_growth <- function(tges, years = NULL, deflator = NULL) {
 #'   \code{support_services_share}, \code{plant_ops_share}).
 #' @param calc_type Character. Composition calc type. Default \code{"Budgeted"}.
 #' @param dfg_revision Numeric. DFG revision for the reported \code{dfg} column.
+#'   Use \code{NULL} to omit the optional DFG lookup, including for fully
+#'   offline analysis.
 #'
 #' @return A tibble sorted by \code{distance} ascending, with the focal district
 #'   first (\code{is_focal = TRUE}, \code{distance = 0}) followed by the \code{n}
@@ -1411,12 +1413,16 @@ tges_find_peers <- function(tges,
   }
 
   # informational DFG (not part of the distance)
-  dfg_lk <- tryCatch(
-    fetch_dfg(revision = dfg_revision) %>%
-      dplyr::group_by(.data$district_id) %>%
-      dplyr::summarise(dfg = dplyr::first(.data$dfg), .groups = "drop"),
-    error = function(e) NULL
-  )
+  dfg_lk <- if (is.null(dfg_revision)) {
+    NULL
+  } else {
+    tryCatch(
+      fetch_dfg(revision = dfg_revision) %>%
+        dplyr::group_by(.data$district_id) %>%
+        dplyr::summarise(dfg = dplyr::first(.data$dfg), .groups = "drop"),
+      error = function(e) NULL
+    )
+  }
   if (!is.null(dfg_lk)) feat <- dplyr::left_join(feat, dfg_lk, by = "district_id")
   if (!"dfg" %in% names(feat)) feat$dfg <- NA_character_
 

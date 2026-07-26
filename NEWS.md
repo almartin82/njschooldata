@@ -1,20 +1,25 @@
 # njschooldata (development)
 
+## Source and release contracts hardened
+
+* Pull-request R and Python tests are deterministic and fixture-backed. Live NJ
+  DOE checks require `NJSCHOOLDATA_LIVE_TESTS=true` and run in a separate
+  scheduled/manual canary that distinguishes source outages from parser or
+  contract regressions.
+* One source registry now owns aliases, raw/tidy year coverage, deliberate
+  gaps, URLs, content types, and permitted hosts. Validated downloads carry
+  provenance and distinguish `source_unavailable` from `parse_error`.
+* Finance and profile-site builds are strict by default. Partial results require
+  an explicit opt-in and retain machine-readable source/build manifests.
+* Python 0.9.26 validates the loaded R package against `>=0.9.26,<0.10.0` and
+  checks curated wrapper signatures and coverage documentation against R.
+
 ## Fixed silent id fabrication in `pad_leading()`
 
-* `pad_leading()` (used to zero-pad `county_id`/`district_id`/`school_code` in
-  `pad_cds()`, `fetch_dfg()`, `fetch_tges()`, `fetch_state_aid()`, and the DFG
-  peer-group helpers) went through `as.numeric()` before padding. R reads
-  `E`/`e` as scientific notation, so a real alphanumeric id would have been
-  silently reinterpreted as a different, plausible-looking number with no
-  warning; a non-numeric value (the TGES district-average rows are coded
-  `"N.A."` by NJ DOE) became a fabricated `"00NA"`-style string once handed to
-  `sprintf("%0Nd", NA)` - confirmed live in `get_raw_tges(2023)`'s CSG tables.
-  `pad_leading()` now only pads values that are provably all digits
-  (`grepl("^[0-9]+$", x)`), using string concatenation instead of a numeric
-  round-trip (so it cannot overflow on unusually long digit strings either);
-  every other value, including real `NA` and the "N.A." placeholder text, is
-  left exactly as NJ DOE published it.
+* `pad_leading()` now pads only strings containing digits. It no longer sends
+  native identifiers through numeric coercion, so scientific-notation-like
+  identifiers, unusually long values, real `NA`, and NJ DOE placeholders such
+  as `"N.A."` remain exactly as published.
 
 ## Directory converted to directory-contract/v1
 
@@ -33,11 +38,12 @@
   coordinators; school principals. Source-declared vacancies are `person_name`
   `NA` with `title_raw` retained. Unreachable sources return `source_status`
   `source_unavailable` with empty tables and complete meta.
-* Removed the legacy exported directory front doors `get_district_directory()`,
-  `get_school_directory()`, and `clear_directory_cache()` (and their tests).
-  The internal raw fetchers `get_raw_school_directory()` /
-  `get_raw_district_directory()` and `process_school_directory()` /
-  `process_district_directory()` are retained for internal consumers.
+* `get_district_directory()` and `get_school_directory()` remain exported as
+  compatibility front doors returning the historical flattened data frames;
+  they now use the same registered Homeroom sources and validated transport as
+  the canonical contract. `clear_directory_cache()` is removed. Internal raw
+  and processing helpers remain available to package consumers such as
+  `geo.R`.
 
 # njschooldata 0.9.26
 

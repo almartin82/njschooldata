@@ -32,8 +32,7 @@ for (spec in parcc_ela_g4_pins) {
   yr <- spec$year
 
   test_that(paste("fetch_parcc Grade 4 ELA loads for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -42,8 +41,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA required columns present for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -64,8 +62,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA assess_name correct for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -75,8 +72,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA state proficiency matches pin for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -88,8 +84,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA state enrollment matches pin for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -101,8 +96,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA has expected subgroups for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -121,8 +115,7 @@ for (spec in parcc_ela_g4_pins) {
   })
 
   test_that(paste("fetch_parcc Grade 4 ELA proficiency levels sum correctly for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "ela", tidy = TRUE)
 
@@ -162,8 +155,7 @@ for (spec in parcc_math_g4_pins) {
   yr <- spec$year
 
   test_that(paste("fetch_parcc Grade 4 Math state proficiency matches pin for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     p <- fetch_parcc(yr, 4, "math", tidy = TRUE)
 
@@ -179,8 +171,7 @@ for (spec in parcc_math_g4_pins) {
 # -- Multiple grades per year -------------------------------------------------
 
 test_that("fetch_parcc works for standard ELA grades in 2024", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # NJSLA 2019+ has grades 3-9 for ELA (10 and 11 may not be available)
   # Grade 10 ELA was discontinued starting 2024
@@ -205,8 +196,7 @@ test_that("fetch_parcc works for standard ELA grades in 2024", {
 })
 
 test_that("fetch_parcc works for all standard Math grades in 2024", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   for (grade in 3:8) {
     p <- tryCatch(
@@ -225,8 +215,7 @@ test_that("fetch_parcc works for all standard Math grades in 2024", {
 })
 
 test_that("fetch_parcc works for HS math courses (ALG1, ALG2) in 2024", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # GEO was discontinued starting 2024 (Geometry integrated into other courses)
   for (course in c("ALG1", "ALG2")) {
@@ -252,8 +241,7 @@ test_that("fetch_parcc works for HS math courses (ALG1, ALG2) in 2024", {
 # -- Science assessments (2019+) -----------------------------------------------
 
 test_that("fetch_parcc science works for 2024 grades 5, 8, 11", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   for (grade in c(5, 8, 11)) {
     p <- tryCatch(
@@ -276,16 +264,14 @@ test_that("fetch_parcc science works for 2024 grades 5, 8, 11", {
 })
 
 test_that("fetch_parcc science rejects invalid grades", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   expect_error(fetch_parcc(2024, 3, "science"))
   expect_error(fetch_parcc(2024, 7, "science"))
 })
 
 test_that("fetch_parcc science rejects pre-2019 years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   expect_error(fetch_parcc(2018, 8, "science"))
 })
@@ -294,8 +280,7 @@ test_that("fetch_parcc science rejects pre-2019 years", {
 # -- NJGPA (graduation proficiency assessment, 2022+) --------------------------
 
 test_that("fetch_njgpa works for 2024 ELA", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   njgpa <- fetch_njgpa(2024, "ela")
 
@@ -312,8 +297,7 @@ test_that("fetch_njgpa works for 2024 ELA", {
 })
 
 test_that("fetch_njgpa works for 2024 Math", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   njgpa <- fetch_njgpa(2024, "math")
 
@@ -331,8 +315,7 @@ test_that("fetch_njgpa rejects pre-2022 years", {
 # -- Suppression marker handling -----------------------------------------------
 
 test_that("PARCC suppression markers produce NA not character values", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Fetch a year with known suppression (small subgroups)
   p <- fetch_parcc(2024, 4, "ela")
@@ -355,8 +338,7 @@ test_that("PARCC suppression markers produce NA not character values", {
 # -- Cross-year consistency (Grade 4 ELA) --------------------------------------
 
 test_that("PARCC state enrollment is consistent across years (no wild swings)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # NJ 4th grade enrollment should be in the 90k-110k range
   for (yr in c(2015, 2019, 2024)) {
@@ -371,8 +353,7 @@ test_that("PARCC state enrollment is consistent across years (no wild swings)", 
 })
 
 test_that("PARCC proficient_above is between 0 and 100 (with rounding tolerance)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela", tidy = TRUE)
 

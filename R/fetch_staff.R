@@ -218,8 +218,19 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
   category_col <- category_cols[1]
 
   # Find count column
-  count_cols <- grep("number|count|n_|staff|teachers", names(df),
-                     value = TRUE, ignore.case = TRUE)
+  preferred_count_cols <- c(
+    "number_staff", "staff_count", "n_staff", "number_teachers",
+    "teacher_count", "n_teachers"
+  )
+  count_cols <- intersect(preferred_count_cols, names(df))
+  if (!length(count_cols)) {
+    count_cols <- grep("number|count|n_|staff|teachers", names(df),
+                       value = TRUE, ignore.case = TRUE)
+    count_cols <- setdiff(
+      count_cols,
+      c("end_year", "county_id", "district_id", "school_id")
+    )
+  }
   count_cols <- count_cols[!grepl("student|enrollment", count_cols, ignore.case = TRUE)]
 
   if (length(count_cols) == 0) {

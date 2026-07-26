@@ -28,7 +28,7 @@ jobs:
           needs: test
 
       - name: Run directory conformance suite (offline, fixture-backed)
-        run: Rscript -e 'devtools::test(filter = "directory-contract", stop_on_failure = TRUE)'
+        run: Rscript -e 'testthat::test_local(".", filter = "^directory-contract$", stop_on_failure = TRUE)'
 
       - name: Run directory live guard (skips offline)
-        run: Rscript -e 'devtools::test(filter = "directory-live", stop_on_failure = TRUE)'
+        run: Rscript -e 'testthat::test_local(".", filter = "^live-directory", stop_on_failure = TRUE)'

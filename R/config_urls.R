@@ -2,9 +2,8 @@
 # URL Configuration for NJ DOE Data Sources
 # ==============================================================================
 #
-# This file centralizes all URL patterns used to fetch data from the
-# New Jersey Department of Education website. When URLs change (which
-# happens frequently), updates only need to be made here.
+# Compatibility helpers for callers that historically reached URL builders in
+# this file. Source ownership and URL patterns now live in source_registry.R.
 #
 # ==============================================================================
 
@@ -35,64 +34,12 @@ njdoe_base_urls <- list(
 #' @return Character string URL
 #' @keywords internal
 get_enr_url <- function(end_year) {
-  # URL patterns have changed over the years
-  if (end_year >= 2018) {
-    # Modern format: Excel files
-    sprintf(
-      "https://www.nj.gov/education/doedata/enr/enr%d.xlsx",
-      end_year
-    )
-  } else if (end_year >= 2010) {
-    # CSV format period
-    sprintf(
-      "https://www.nj.gov/education/data/enr/enr%d.csv",
-      end_year
-    )
-  } else {
-    # Legacy fixed-width format
-    sprintf(
-      "https://www.nj.gov/education/data/enr/enr%02d.txt",
-      end_year %% 100
-    )
-  }
+  resolve_source_url("enrollment", end_year = end_year)[1]
 }
 
 # -----------------------------------------------------------------------------
 # Graduation Data URL Configuration
 # -----------------------------------------------------------------------------
-
-#' Graduation data URL configuration table
-#'
-#' This table maps years and methodologies to their corresponding URLs.
-#' When NJ DOE changes URL patterns, update this table.
-#'
-#' @format A data frame with columns:
-#' \describe{
-#'   \item{end_year}{The graduation cohort year}
-#'   \item{methodology}{Either "4 year" or "5 year"}
-#'   \item{file_type}{File format ("xlsx", "xls", "csv")}
-#'   \item{skip_rows}{Number of header rows to skip when reading}
-#' }
-#' @keywords internal
-grad_url_config <- data.frame(
-  end_year = c(
-    # 4-year rates
-    2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011,
-    # 5-year rates
-    2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012
-  ),
-  methodology = c(
-    rep("4 year", 14),
-    rep("5 year", 13)
-  ),
-  file_type = c(
-    rep("xlsx", 27)
-  ),
-  skip_rows = c(
-    rep(3, 27)
-  ),
-  stringsAsFactors = FALSE
-)
 
 #' Get graduation data URL
 #'
@@ -101,34 +48,9 @@ grad_url_config <- data.frame(
 #' @return Character string URL
 #' @keywords internal
 get_grad_url <- function(end_year, methodology = "4 year") {
-  base <- "https://www.nj.gov/education/schoolperformance/grad/"
-
-  # URL format varies by year
-  if (end_year >= 2020) {
-    # Modern format
-    method_str <- gsub(" ", "-", methodology)
-    sprintf(
-      "%sCohort%%20%d%%20%s%%20Adjusted%%20Cohort%%20Graduation%%20Rate.xlsx",
-      base,
-      end_year,
-      gsub("-", "%%20", method_str)
-    )
-  } else if (end_year >= 2017) {
-    # Transition period format
-    sprintf(
-      "%s%d_%s_Rates.xlsx",
-      base,
-      end_year,
-      gsub(" ", "", methodology)
-    )
-  } else {
-    # Legacy format
-    sprintf(
-      "%sgrad%d.xlsx",
-      base,
-      end_year
-    )
-  }
+  methodology <- match.arg(methodology, c("4 year", "5 year"))
+  family <- if (methodology == "4 year") "grate_4yr" else "grate_5yr"
+  resolve_source_url(family, end_year = end_year)
 }
 
 # -----------------------------------------------------------------------------
@@ -143,72 +65,9 @@ get_grad_url <- function(end_year, methodology = "4 year") {
 #' @return Character string URL
 #' @keywords internal
 get_parcc_url <- function(end_year, grade, subj) {
-  stem <- njdoe_base_urls$assessment
-
-  # Pad grade if numeric
-  if (is.numeric(grade)) {
-    grade_str <- sprintf("%02d", grade)
-
-    # Year-specific quirks in grade formatting
-    if (end_year == 2017 && grade >= 10) {
-      grade_str <- paste0("0", grade_str)
-    }
-    if (end_year == 2018 && subj == "ela") {
-      grade_str <- paste0("0", grade_str)
-    }
-  } else {
-    grade_str <- grade
-  }
-
-  # Subject prefix
-  subj_prefix <- if (toupper(subj) == "ELA") "ELA" else "MAT"
-
-  # NJSLA (2019+) vs PARCC (2015-2018) format
-  if (end_year >= 2019) {
-    # NJSLA format
-    sprintf(
-      "%s%s%s/spring/%s%s%%20NJSLA%%20DATA%%20%d-%s.xlsx",
-      stem,
-      substr(end_year - 1, 3, 4),
-      substr(end_year, 3, 4),
-      subj_prefix,
-      grade_str,
-      end_year - 1,
-      substr(end_year, 3, 4)
-    )
-  } else {
-    # PARCC format
-    season <- if (end_year >= 2016) "spring/" else "parcc/"
-    sprintf(
-      "%s%s%s/%s%s%s.xlsx",
-      stem,
-      substr(end_year - 1, 3, 4),
-      substr(end_year, 3, 4),
-      season,
-      subj_prefix,
-      grade_str
-    )
-  }
-}
-
-# -----------------------------------------------------------------------------
-# School Directory URLs
-# -----------------------------------------------------------------------------
-
-#' Get school directory URL
-#'
-#' @return Character string URL
-#' @keywords internal
-get_school_directory_url <- function() {
-  paste0(njdoe_base_urls$schools, "schooldirectory.xlsx")
-}
-
-#' Get district directory URL
-#'
-#' @return Character string URL
-#' @keywords internal
-get_district_directory_url <- function() {
-  paste0(njdoe_base_urls$schools, "districtdirectory.xlsx")
+  resolve_source_url(
+    "parcc", end_year = end_year, grade = grade, subject = subj
+  )
 }
 
 # -----------------------------------------------------------------------------

@@ -120,8 +120,7 @@ test_that("fetch_arrests default level is 'school'", {
 # ==============================================================================
 
 test_that("fetch_police_notifications_detail returns expected structure (district, 2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications_detail(2025, level = "district")
@@ -159,8 +158,7 @@ test_that("fetch_police_notifications_detail returns expected structure (distric
 })
 
 test_that("fetch_police_notifications_detail derived subgroup labels are project-standard (2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications_detail(2025, level = "district")
@@ -192,8 +190,7 @@ test_that("fetch_police_notifications_detail derived subgroup labels are project
 })
 
 test_that("fetch_police_notifications_detail district file has state, county, and district rows (2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications_detail(2025, level = "district")
@@ -207,8 +204,7 @@ test_that("fetch_police_notifications_detail district file has state, county, an
 })
 
 test_that("fetch_police_notifications_detail preserves school_year on 2025 (redesign)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications_detail(2025, level = "district")
@@ -225,8 +221,7 @@ test_that("fetch_police_notifications_detail 2024 legacy sheet alias parses to s
   # 2024 SPR uses the legacy name PoliceNotificationByStuGroup; 2025 uses
   # PoliceNotificationsGroupGrade. Both must route through the same fetcher
   # and emit the same canonical column set.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df24 <- fetch_police_notifications_detail(2024, level = "district")
@@ -260,8 +255,7 @@ test_that("fetch_police_notifications_detail pinned values match NJ DOE workbook
   # Pinned against PoliceNotificationByStuGroup, District/State workbook SY2023-24,
   # Atlantic City School District (county 01, district 0110), district-total row.
   # Values transcribed directly from the published workbook.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ac <- fetch_police_notifications_detail(2024, level = "district") %>%
@@ -299,8 +293,7 @@ test_that("fetch_police_notifications_detail pinned values match NJ DOE workbook
 # ==============================================================================
 
 test_that("fetch_arrests returns expected structure (district, 2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_arrests(2024, level = "district")
@@ -336,8 +329,7 @@ test_that("fetch_arrests 2025 column rename: NJ DOE mislabeled police_* -> arres
   # Notifications sheet). The actual values are arrest counts. The fetcher
   # renames police_* -> arrested_* for SY2024-25 so the public API is
   # consistent with the 2024 SY2023-24 sheet (which uses arrested_* natively).
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_arrests(2025, level = "district")
@@ -351,8 +343,7 @@ test_that("fetch_arrests 2025 column rename: NJ DOE mislabeled police_* -> arres
 })
 
 test_that("fetch_arrests 2024 vs 2025 emit the same canonical column set", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df24 <- fetch_arrests(2024, level = "district")
@@ -384,8 +375,7 @@ test_that("fetch_arrests pinned values match NJ DOE workbook (Atlantic City, 202
   # Pinned against StuArrestbyStudentGroupGradelev, District/State workbook
   # SY2023-24, Atlantic City School District (county 01, district 0110),
   # district-total row.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ac <- fetch_arrests(2024, level = "district") %>%
@@ -418,8 +408,7 @@ test_that("fetch_police_notifications_detail sum-of-grade-rows reconciles to ent
   # within 5% of the entity-total ("total population" / "TOTAL") row. Small-cell
   # suppression at small grades can drop a few cases, so this is a loose
   # tolerance band rather than exact equality.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications_detail(2025, level = "district") %>%
@@ -443,8 +432,7 @@ test_that("fetch_police_notifications_detail sum-of-grade-rows reconciles to ent
 })
 
 test_that("fetch_arrests sum-of-grade-rows reconciles to entity-total (state, 2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_arrests(2025, level = "district") %>%
@@ -473,8 +461,7 @@ test_that("fetch_arrests sum-of-grade-rows reconciles to entity-total (state, 20
 # ==============================================================================
 
 test_that("fetch_police_notifications_detail works across supported year range", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   for (yr in c(2024, 2025)) {
@@ -490,8 +477,7 @@ test_that("fetch_police_notifications_detail works across supported year range",
 })
 
 test_that("fetch_arrests works across supported year range", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   for (yr in c(2024, 2025)) {

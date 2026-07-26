@@ -265,11 +265,13 @@ njsd_workbook_cache_dir <- function() {
 #' @keywords internal
 is_valid_xlsx <- function(path) {
   if (!file.exists(path)) return(FALSE)
-  if (isTRUE(file.info(path)$size < 1000)) return(FALSE)
-  con <- file(path, "rb")
-  on.exit(close(con))
-  sig <- readBin(con, what = "raw", n = 2L)
-  length(sig) == 2L && identical(sig, as.raw(c(0x50, 0x4B)))
+  is.null(tryCatch(
+    {
+      .validate_source_file(path, "xlsx")
+      NULL
+    },
+    error = identity
+  ))
 }
 
 #' Download an SPR workbook, caching it on disk
@@ -289,7 +291,8 @@ is_valid_xlsx <- function(path) {
 #' @param level One of \code{"school"} or \code{"district"}.
 #' @return Path to a local, validated \code{.xlsx} file.
 #' @keywords internal
-spr_cached_workbook <- function(end_year, level) {
+spr_cached_workbook_result <- function(end_year, level,
+                                       request_fn = .default_source_request) {
   url <- get_spr_url(end_year, level)  # also validates end_year / level
 
   use_cache <- isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
@@ -299,45 +302,23 @@ spr_cached_workbook <- function(end_year, level) {
     cache_dir <- njsd_workbook_cache_dir()
     dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
     dest <- file.path(cache_dir, sprintf("SPR_%s_%d.xlsx", level, end_year))
-    if (is_valid_xlsx(dest)) {
-      return(dest)
-    }
-    dl_dir <- cache_dir
+    cache_path <- dest
   } else {
-    dest <- tempfile(pattern = "spr_", fileext = ".xlsx")
-    dl_dir <- dirname(dest)
+    cache_path <- NULL
   }
 
-  # Download to a sibling temp file, validate, then move into place so an
-  # interrupted or failed download never leaves a corrupt file in the cache.
-  tmp <- tempfile(pattern = "spr_dl_", tmpdir = dl_dir, fileext = ".xlsx")
-  on.exit(unlink(tmp), add = TRUE)
+  download_source(
+    url,
+    source_type = "xlsx",
+    cache_path = cache_path,
+    timeout = 1200,
+    retries = 2L,
+    request_fn = request_fn
+  )
+}
 
-  # SPR workbooks are large (the 2024-25 District file is ~119 MB, the School
-  # file ~350 MB). R's default 60s download timeout truncates them on slower
-  # links (e.g. CI), so raise it for the duration of the download and restore it
-  # afterward.
-  old_timeout <- getOption("timeout")
-  on.exit(options(timeout = old_timeout), add = TRUE)
-  options(timeout = max(old_timeout, 1200))
-
-  downloader::download(url, destfile = tmp, mode = "wb")
-
-  if (!is_valid_xlsx(tmp)) {
-    stop(sprintf(
-      paste0(
-        "Downloaded SPR workbook for %d (%s) is not a valid .xlsx file -- the ",
-        "NJ DOE source may be unavailable or returned an error page.\n  URL: %s"
-      ),
-      end_year, level, url
-    ), call. = FALSE)
-  }
-
-  if (!file.rename(tmp, dest)) {
-    # rename() can fail across filesystems; fall back to copy.
-    file.copy(tmp, dest, overwrite = TRUE)
-  }
-  dest
+spr_cached_workbook <- function(end_year, level) {
+  source_result_data(spr_cached_workbook_result(end_year, level))
 }
 
 #' Inspect the on-disk SPR workbook cache

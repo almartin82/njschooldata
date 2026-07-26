@@ -45,7 +45,8 @@ Suggests:
     sp,
     testthat (>= 3.0.0),
     tidygeocoder,
-    withr
+    withr,
+    zip
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3

@@ -10,6 +10,7 @@
 # Then render with:  cd site && quarto render
 # =============================================================================
 suppressMessages({ library(dplyr) })
+source("site/R/security.R")
 
 SITE_DIR    <- "site"
 BUNDLE_DIR  <- file.path(SITE_DIR, "_bundles")
@@ -22,9 +23,6 @@ name_for <- function(id) {
   nm <- dir_all$district_name[match(id, dir_all$district_id)]
   if (is.na(nm)) id else nm
 }
-# escape double quotes for YAML title
-yaml_q <- function(s) gsub('"', "'", s, fixed = TRUE)
-
 args <- commandArgs(trailingOnly = TRUE)
 ids <- if (length(args)) args else {
   f <- list.files(BUNDLE_DIR, pattern = "^[0-9A-Za-z]+\\.rds$", full.names = FALSE)
@@ -32,23 +30,25 @@ ids <- if (length(args)) args else {
 }
 
 stub <- function(id) {
+  id <- safe_profile_id(id)
   sprintf(
 '---
-title: "%s"
+title: %s
 subtitle: "New Jersey district profile"
 ---
 
 ```{r}
 #| include: false
-district_id <- "%s"
+district_id <- %s
 ```
 
 {{< include _district-body.qmd >}}
-', yaml_q(name_for(id)), id)
+', yaml_scalar(name_for(id)), encodeString(id, quote = '"'))
 }
 
 n <- 0
 for (id in ids) {
+  id <- safe_profile_id(id)
   writeLines(stub(id), file.path(PROFILE_DIR, paste0(id, ".qmd")))
   n <- n + 1
 }

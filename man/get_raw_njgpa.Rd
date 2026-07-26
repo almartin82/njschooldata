@@ -2,20 +2,19 @@
 % Please edit documentation in R/fetch_assessment.R
 \name{get_raw_njgpa}
 \alias{get_raw_njgpa}
-\title{Reads the raw NJGPA Excel files from the state website}
+\title{Reads raw NJGPA data from the state website}
 \usage{
 get_raw_njgpa(end_year, subj)
 }
 \arguments{
-\item{end_year}{A school year. Valid values are 2022-2025.}
+\item{end_year}{School-year end year.}
 
-\item{subj}{NJGPA subject. c('ela' or 'math')}
+\item{subj}{Subject.}
 }
 \value{
-NJGPA dataframe
+NJGPA data frame.
 }
 \description{
-NJGPA (New Jersey Graduation Proficiency Assessment) is the graduation
-requirement assessment introduced in 2022.
+Reads raw NJGPA data from the state website
 }
 \keyword{internal}

@@ -4,15 +4,18 @@
 \alias{fetch_enr_years}
 \title{Fetch multiple years of enrollment data with progress}
 \usage{
-fetch_enr_years(years, tidy = TRUE)
+fetch_enr_years(years, tidy = TRUE, allow_partial = FALSE)
 }
 \arguments{
 \item{years}{Vector of years to fetch}
 
 \item{tidy}{Return tidy format? (default TRUE)}
+
+\item{allow_partial}{If `TRUE`, return successful years and attach status for
+missing/failed years. The default is strict.}
 }
 \value{
-Data frame with all enrollment data
+Data frame with all enrollment data and per-year source status.
 }
 \description{
 Fetch multiple years of enrollment data with progress

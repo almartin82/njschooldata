@@ -11,19 +11,11 @@
 #' Ensures a numeric value has exactly the specified number of digits by
 #' adding leading zeros.
 #'
-#' The naive implementation (\code{sprintf("%0Nd", as.numeric(vector))}) has
-#' two failure modes: R's numeric parser reads \code{E}/\code{e} as scientific
-#' notation, so \code{as.numeric("49E000")} is \code{49} with no warning - a
-#' real alphanumeric charter/renaissance code silently becomes a different,
-#' plausible-looking numeric id. And non-numeric text (state/county average
-#' rows are sometimes coded \code{"N.A."}) becomes \code{NA} which then prints
-#' as a fabricated \code{"0NA"}-style string once handed to \code{sprintf}
-#' (confirmed live in the TGES district-average rows). To avoid manufacturing
-#' a wrong-but-plausible id, only values that are provably all digits
-#' (\code{grepl("^[0-9]+$", x)}) are padded, and padding is done with plain
-#' string concatenation rather than a numeric round-trip so it never
-#' overflows on unusually long digit strings. Every other value (real
-#' \code{NA}, alphanumeric codes, "N.A." placeholder text, ...) is left
+#' Numeric coercion can interpret \code{E} or \code{e} as scientific notation
+#' and can turn non-numeric source values into plausible-looking fabricated
+#' identifiers. This implementation pads only values containing digits and
+#' uses string concatenation instead of a numeric round trip. Real \code{NA},
+#' alphanumeric codes, and source placeholders such as \code{"N.A."} are left
 #' exactly as published.
 #'
 #' @param vector character vector

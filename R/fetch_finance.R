@@ -43,7 +43,9 @@
   "revenue_state"
 )
 
-.finance_latest_observed_per_pupil_year <- 2024L
+.finance_latest_observed_per_pupil_year <- function() {
+  max(get_source_years("tges", "raw")) - 1L
+}
 .finance_per_pupil_metrics <- .finance_metrics[grepl("^per_pupil_", .finance_metrics)]
 .finance_levels <- c("all", "state", "district", "school")
 
@@ -56,24 +58,6 @@
 )
 
 .finance_cols_with_status <- c(.finance_cols, "value_status")
-
-
-#' Years for which NJ finance data is available
-#'
-#' @description The union of the two NJ DOE finance sources. The per-pupil
-#' spending side (TGES actuals) is available for \code{2001}-\code{2024}; the
-#' state-aid revenue side is available for \code{2019} onward. A given year emits
-#' whichever metrics its sources publish - recent years (2025+) carry
-#' \code{revenue_state} only, because that year's spending actuals are not yet
-#' published.
-#'
-#' @return integer vector of available \code{end_year}s
-#' @export
-get_available_finance_years <- function() {
-  spending <- 2001:.finance_latest_observed_per_pupil_year
-  revenue  <- 2019:2026
-  sort(unique(c(spending, revenue)))
-}
 
 
 normalize_finance_level <- function(level) {
@@ -194,7 +178,8 @@ finance_school_gap_frame <- function(end_year, with_status = FALSE) {
       end_year = out$end_year,
       is_per_pupil = out$is_per_pupil,
       enrollment_denominator = out$enrollment_denominator,
-      latest_observed_per_pupil_year = .finance_latest_observed_per_pupil_year,
+      latest_observed_per_pupil_year =
+        .finance_latest_observed_per_pupil_year(),
       structural_not_published = TRUE
     )
   }
@@ -206,7 +191,7 @@ finance_school_gap_frame <- function(end_year, with_status = FALSE) {
 
 add_unobserved_per_pupil_finance <- function(df, end_year) {
   if (is.null(df) || nrow(df) == 0 ||
-      end_year <= .finance_latest_observed_per_pupil_year) {
+      end_year <= .finance_latest_observed_per_pupil_year()) {
     return(df)
   }
 
@@ -291,19 +276,56 @@ sanitize_finance_quality <- function(df) {
 # ------------------------------------------------------------------------------
 # revenue side: total K-12 state aid per district (and the statewide total)
 # ------------------------------------------------------------------------------
-get_finance_revenue <- function(end_year) {
+get_finance_revenue_result <- function(end_year) {
   end_year <- as.integer(end_year)
-  if (end_year < 2019) return(NULL)
+  state_aid_years <- get_source_years("state_aid", "raw")
+  if (end_year < min(state_aid_years)) {
+    return(new_source_result(
+      source_status = "not_published",
+      warning = "The registered state-aid parser begins with end_year 2019."
+    ))
+  }
+  if (end_year > max(state_aid_years)) {
+    return(new_source_result(
+      source_status = "not_yet_observed",
+      warning = paste0(
+        "No state-aid source is registered after end_year ",
+        max(state_aid_years), "."
+      )
+    ))
+  }
+  source_url <- resolve_source_url("state_aid", end_year)[["direct"]]
 
-  sa <- tryCatch(fetch_state_aid(end_year), error = function(e) NULL)
-  if (is.null(sa)) return(NULL)
+  sa <- tryCatch(fetch_state_aid(end_year), error = identity)
+  if (inherits(sa, "error")) {
+    if (inherits(sa, "njsd_source_error") &&
+        inherits(sa$result, "njsd_source_result")) {
+      return(sa$result)
+    }
+    return(new_source_result(
+      source_status = if (inherits(sa, "njsd_parse_error")) {
+        "parse_error"
+      } else {
+        "source_unavailable"
+      }, source_url = source_url,
+      retrieved_at = Sys.time(), error = conditionMessage(sa)
+    ))
+  }
+  state_aid_record <- get_source_results(sa)[1, , drop = FALSE]
 
   # the published current-year total column normalizes to fy_NN_k_12_aid
   total_cat <- paste0("fy_", sprintf("%02d", end_year %% 100L), "_k_12_aid")
   rev <- sa[sa$aid_category == total_cat & (sa$is_district | sa$is_state), , drop = FALSE]
-  if (nrow(rev) == 0) return(NULL)
+  if (nrow(rev) == 0) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = source_url,
+      retrieved_at = Sys.time(),
+      error = paste0("State-aid source contained no rows for expected category ",
+                     total_cat, ".")
+    ))
+  }
 
-  tibble::tibble(
+  out <- tibble::tibble(
     end_year               = end_year,
     state_id               = ifelse(rev$is_state, NA_character_, rev$district_id),
     entity_name            = ifelse(rev$is_state, "New Jersey", rev$district_name),
@@ -317,6 +339,17 @@ get_finance_revenue <- function(end_year) {
     is_per_pupil           = FALSE,
     enrollment_denominator = NA_real_
   )
+  new_source_result(
+    data = out, source_status = "actual",
+    source_url = state_aid_record$source_url,
+    retrieved_at = state_aid_record$retrieved_at,
+    digest = state_aid_record$digest,
+    warning = state_aid_record$warning
+  )
+}
+
+get_finance_revenue <- function(end_year) {
+  source_result_data(get_finance_revenue_result(end_year))
 }
 
 
@@ -376,13 +409,42 @@ get_finance_revenue <- function(end_year) {
 }
 
 
-get_finance_spending <- function(end_year) {
+get_finance_spending_result <- function(end_year) {
   end_year   <- as.integer(end_year)
   report_year <- finance_tges_report_year(end_year)
-  if (report_year < 2002 || report_year > 2025) return(NULL)
+  source_url <- if (report_year %in% get_source_years("tges", "raw")) {
+    tges_url_for_year(report_year)
+  } else {
+    NA_character_
+  }
+  tges_years <- get_source_years("tges", "raw")
+  if (report_year > max(tges_years)) {
+    return(new_source_result(
+      source_status = "not_yet_observed", source_url = source_url,
+      warning = paste0("TGES actuals for end_year ", end_year,
+                       " require the not-yet-observed ", report_year, " guide.")
+    ))
+  }
+  if (report_year < min(tges_years)) {
+    return(new_source_result(
+      source_status = "not_published", source_url = source_url,
+      warning = "No registered TGES actuals exist for this end_year."
+    ))
+  }
 
-  tg <- tryCatch(fetch_tges(report_year), error = function(e) NULL)
-  if (is.null(tg)) return(NULL)
+  tg <- tryCatch(fetch_tges(report_year), error = identity)
+  if (inherits(tg, "error")) {
+    status <- if (inherits(tg, "njsd_parse_error")) {
+      "parse_error"
+    } else {
+      "source_unavailable"
+    }
+    return(new_source_result(
+      source_status = status, source_url = source_url,
+      retrieved_at = Sys.time(), error = conditionMessage(tg)
+    ))
+  }
+  provenance <- get_source_results(tg)
 
   pieces <- list(
     # per_pupil_total carries the published statewide-average row + the ADE+sent
@@ -398,10 +460,26 @@ get_finance_spending <- function(end_year) {
     .finance_pull_pp(tg, "CSG12", "Per Pupil costs", "per_pupil_food_service",           end_year)
   )
   pieces <- purrr::compact(pieces)
-  if (length(pieces) == 0) return(NULL)
+  if (length(pieces) == 0) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = source_url,
+      retrieved_at = if (nrow(provenance)) provenance$retrieved_at[[1]] else Sys.time(),
+      digest = if (nrow(provenance)) provenance$digest[[1]] else NULL,
+      error = paste0("TGES guide ", report_year,
+                     " contained none of the expected finance tables.")
+    ))
+  }
   out <- dplyr::bind_rows(pieces)
   attr(out, "tges_report_year") <- report_year
-  out
+  new_source_result(
+    data = out, source_status = "actual", source_url = source_url,
+    retrieved_at = if (nrow(provenance)) provenance$retrieved_at[[1]] else Sys.time(),
+    digest = if (nrow(provenance)) provenance$digest[[1]] else NULL
+  )
+}
+
+get_finance_spending <- function(end_year) {
+  source_result_data(get_finance_spending_result(end_year))
 }
 
 
@@ -463,6 +541,10 @@ get_finance_spending <- function(end_year) {
 #'   district rows), \code{"state"}, \code{"district"}, or \code{"school"}.
 #'   School-level NJ finance is not published in this fetcher; school requests
 #'   return structural gap rows only.
+#' @param allow_partial logical, default \code{FALSE}. Strict mode fails when a
+#'   required source is unavailable or cannot be parsed. Set \code{TRUE}
+#'   deliberately to return successful components and inspect
+#'   \code{get_source_results()} for the missing component.
 #'
 #' @return A tibble in the canonical finance schema: \code{end_year},
 #'   \code{state_id}, \code{entity_name}, \code{county}, \code{is_state},
@@ -497,20 +579,55 @@ get_finance_spending <- function(end_year) {
 #'
 #' @export
 fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
-                          with_status = FALSE, level = "all") {
+                          with_status = FALSE, level = "all",
+                          allow_partial = FALSE) {
   level <- normalize_finance_level(level)
   end_year <- as.integer(end_year)
   if (is.na(end_year)) stop("`end_year` must be a year, e.g. 2024.", call. = FALSE)
-
-  if (identical(level, "school")) {
-    return(tibble::as_tibble(finance_school_gap_frame(
-      end_year,
-      with_status = with_status
-    )))
+  finance_years <- get_source_years("finance")
+  if (!end_year %in% finance_years) {
+    result <- new_source_result(
+      source_status = source_gap_status("finance", end_year),
+      warning = paste0(
+        "Canonical finance coverage is registered for end_year ",
+        min(finance_years), " through ", max(finance_years), "."
+      )
+    )
+    if (!isTRUE(allow_partial)) source_result_data(result)
+    return(attach_source_results(
+      empty_finance_frame(with_status),
+      source_result_record(result, "finance", end_year)
+    ))
   }
 
-  spending <- get_finance_spending(end_year)
-  revenue  <- get_finance_revenue(end_year)
+  if (identical(level, "school")) {
+    out <- tibble::as_tibble(finance_school_gap_frame(
+      end_year,
+      with_status = with_status
+    ))
+    gap <- new_source_result(
+      source_status = "not_published",
+      warning = "The canonical NJ finance sources do not publish school rows."
+    )
+    return(attach_source_results(
+      out, source_result_record(gap, "finance", end_year, "school")
+    ))
+  }
+
+  source_results <- list(
+    spending = get_finance_spending_result(end_year),
+    state_aid = get_finance_revenue_result(end_year)
+  )
+  failures <- vapply(
+    source_results,
+    function(result) result$source_status %in% c("source_unavailable", "parse_error"),
+    logical(1)
+  )
+  if (any(failures) && !isTRUE(allow_partial)) {
+    source_result_data(source_results[[which(failures)[1]]])
+  }
+  spending <- source_result_data(source_results$spending, allow_partial = TRUE)
+  revenue <- source_result_data(source_results$state_aid, allow_partial = TRUE)
   tges_report_year <- attr(spending, "tges_report_year", exact = TRUE)
   if (is.null(tges_report_year)) {
     tges_report_year <- finance_tges_report_year(end_year)
@@ -524,7 +641,12 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 
   out <- dplyr::bind_rows(spending, revenue)
   if (is.null(out) || nrow(out) == 0) {
-    return(empty_finance_frame(with_status = with_status))
+    out <- empty_finance_frame(with_status = with_status)
+    records <- rbind(
+      source_result_record(source_results$spending, "finance", end_year, "spending"),
+      source_result_record(source_results$state_aid, "finance", end_year, "state_aid")
+    )
+    return(attach_source_results(out, records))
   }
 
   # the NJ DOE files carry some CP1252 bytes (e.g. a curly apostrophe 0x92 in
@@ -542,7 +664,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
       end_year = out$end_year,
       is_per_pupil = out$is_per_pupil,
       enrollment_denominator = out$enrollment_denominator,
-      latest_observed_per_pupil_year = .finance_latest_observed_per_pupil_year
+      latest_observed_per_pupil_year =
+        .finance_latest_observed_per_pupil_year()
     )
   }
   out <- filter_finance_level(out, level)
@@ -554,7 +677,12 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
   # there is one observation per entity-metric. Genuinely conflicting values
   # would survive this and be surfaced by the test suite.
   out <- dplyr::distinct(out)
-  tibble::as_tibble(out)
+  out <- tibble::as_tibble(out)
+  records <- rbind(
+    source_result_record(source_results$spending, "finance", end_year, "spending"),
+    source_result_record(source_results$state_aid, "finance", end_year, "state_aid")
+  )
+  attach_source_results(out, records)
 }
 
 
@@ -569,6 +697,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 #' @param with_status logical, default \code{FALSE}. See
 #'   \code{\link{fetch_finance}}.
 #' @param level entity grain to return. See \code{\link{fetch_finance}}.
+#' @param allow_partial logical. See \code{\link{fetch_finance}}. The returned
+#'   object records every requested year/component in \code{get_source_results()}.
 #'
 #' @return A single tibble, the per-year results of \code{\link{fetch_finance}}
 #'   stacked.
@@ -586,7 +716,8 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
 #' @export
 fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
                                 tidy = TRUE, use_cache = TRUE,
-                                with_status = FALSE, level = "all") {
+                                with_status = FALSE, level = "all",
+                                allow_partial = FALSE) {
   if (is.null(end_year_vector)) {
     end_year_vector <- end_years
   } else if (!is.null(end_years) &&
@@ -599,11 +730,22 @@ fetch_finance_multi <- function(end_year_vector = NULL, end_years = NULL,
     end_year_vector <- get_available_finance_years()
   }
 
-  purrr::map_dfr(end_year_vector, function(.y) {
+  per_year <- lapply(end_year_vector, function(.y) {
     message(.y)
-    fetch_finance(.y, tidy = tidy, use_cache = use_cache,
-                  with_status = with_status, level = level)
+    capture_source_call(
+      function() fetch_finance(
+        .y, tidy = tidy, use_cache = use_cache,
+        with_status = with_status, level = level,
+        allow_partial = allow_partial
+      ),
+      domain = "finance", end_year = .y
+    )
   })
+  combine_source_captures(
+    per_year, allow_partial = allow_partial,
+    context = "Finance multi-year request",
+    failure_statuses = c("source_unavailable", "parse_error")
+  )
 }
 
 

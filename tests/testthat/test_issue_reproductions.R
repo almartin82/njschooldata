@@ -10,7 +10,7 @@
 # Issue #158: geo address matching
 
 test_that("geo.R does not reference undefined 'address1' variable", {
-  geo_source <- readLines("../../R/geo.R")
+  geo_source <- readLines(package_source_path("R", "geo.R"))
   address1_lines <- grep("TRUE ~ address1", geo_source, fixed = TRUE)
   expect_equal(length(address1_lines), 0)
 })
@@ -85,7 +85,9 @@ test_that("clean_name_vector works with current snakecase version", {
 
 test_that("clean_name_vector parsing_option is within valid range", {
   # Verify the hardcoded parsing_option value is valid
-  source_code <- paste(readLines("../../R/utils_cleaning.R"), collapse = "\n")
+  source_code <- paste(
+    readLines(package_source_path("R", "utils_cleaning.R")), collapse = "\n"
+  )
   parsing_match <- regmatches(
     source_code,
     regexpr("parsing_option\\s*=\\s*-?\\d+", source_code)
@@ -109,7 +111,7 @@ test_that("clean_name_vector parsing_option is within valid range", {
 # Issue #71: CDS_Code should be lowercase
 
 test_that("no R source files use uppercase CDS_Code", {
-  r_files <- list.files("../../R", pattern = "\\.R$", full.names = TRUE)
+  r_files <- list.files(package_source_path("R"), pattern = "\\.R$", full.names = TRUE)
 
   for (f in r_files) {
     code <- readLines(f, warn = FALSE)
@@ -120,11 +122,10 @@ test_that("no R source files use uppercase CDS_Code", {
 })
 
 test_that("all enrollment/directory files use lowercase cds_code", {
-  key_files <- c(
-    "../../R/process_enrollment.R", "../../R/enrollment_names.R",
-    "../../R/charter.R", "../../R/tidy_enrollment.R",
-    "../../R/directory.R", "../../R/fetch_directory.R"
-  )
+  key_files <- file.path(package_source_path("R"), c(
+    "process_enrollment.R", "enrollment_names.R", "charter.R",
+    "tidy_enrollment.R", "fetch_directory.R"
+  ))
 
   for (f in key_files) {
     code <- readLines(f, warn = FALSE)
@@ -143,14 +144,14 @@ test_that("all enrollment/directory files use lowercase cds_code", {
 # Issue #62: district code padding consistency
 
 test_that("charter.R does not coerce district_id to numeric", {
-  charter_code <- readLines("../../R/charter.R")
+  charter_code <- readLines(package_source_path("R", "charter.R"))
   numeric_coercion <- grep("as\\.numeric\\(district_id\\)", charter_code)
   expect_equal(length(numeric_coercion), 0,
     info = "charter.R should use string comparison, not as.numeric(district_id)")
 })
 
 test_that("config_peer_groups.R pads codes before concatenation", {
-  peer_code <- readLines("../../R/config_peer_groups.R")
+  peer_code <- readLines(package_source_path("R", "config_peer_groups.R"))
   concat_lines <- grep("paste0.*county_id.*district_id", peer_code)
 
   for (line_num in concat_lines) {
@@ -190,11 +191,10 @@ test_that("pad_cds() function works correctly", {
 
 test_that("all modules use 'students with disabilities' for SWD subgroup", {
   # Verify no legacy naming variants remain as OUTPUT values in source code
-  files_to_check <- c(
-    "../../R/fetch_spr.R", "../../R/process_graduation.R",
-    "../../R/fetch_graduation.R", "../../R/special_pop.R",
-    "../../R/tidy_graduation.R", "../../R/percentile_rank.R"
-  )
+  files_to_check <- file.path(package_source_path("R"), c(
+    "fetch_spr.R", "process_graduation.R", "fetch_graduation.R",
+    "special_pop.R", "tidy_graduation.R", "percentile_rank.R"
+  ))
 
   for (f in files_to_check) {
     code <- readLines(f, warn = FALSE)
@@ -283,7 +283,7 @@ test_that("county_name_to_id returns NA for unknown county names", {
 test_that("county_name_to_id handles vector input", {
   input <- c("ESSEX", "HUDSON", "BERGEN", "FAKE")
   result <- county_name_to_id(input)
-  expect_equal(result, c("07", "09", "03", NA_character_))
+  expect_equal(result, c("07", "09", "02", NA_character_))
 })
 
 test_that("clean_sped_df adds county_id when only county_name is present", {
@@ -365,7 +365,7 @@ test_that("clean_rc_subgroups produces same output as clean_spr_subgroups for sh
 
 test_that("extract_rc_college_matric uses lowercase canonical subgroup names", {
   # Source code should not produce mixed-case subgroup values
-  rc_source <- readLines("../../R/report_card.R")
+  rc_source <- readLines(package_source_path("R", "report_card.R"))
 
   # Should NOT have mixed-case output values like 'Total Population' or 'Black'
   # (These indicate the legacy inline gsub approach rather than canonical cleaning)
@@ -467,7 +467,7 @@ test_that("ecosystem_trend includes rank and n columns for allpublic", {
 # Issue #134: fetch_special_pop should derive N from enrollment
 
 test_that("fetch_reportcard_special_pop output includes n_enrolled column", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   result <- tryCatch(
     fetch_reportcard_special_pop(2019),
@@ -486,7 +486,7 @@ test_that("fetch_reportcard_special_pop output includes n_enrolled column", {
 })
 
 test_that("fetch_reportcard_special_pop n_students is consistent with percent and n_enrolled", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   result <- tryCatch(
     fetch_reportcard_special_pop(2019),
@@ -514,7 +514,7 @@ test_that("fetch_reportcard_special_pop n_students is consistent with percent an
 })
 
 test_that("fetch_reportcard_special_pop includes enrollment from PR enrollment table", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # The issue specifically asks to "read from enrollment table in PR"
   # and "add that to special pop to infer N"
@@ -548,7 +548,7 @@ test_that("fetch_reportcard_special_pop includes enrollment from PR enrollment t
 # Issue #116: college matric missing enroll_any for certain years
 
 test_that("extract_rc_college_matric returns enroll_any for 2013", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   rc_2013 <- tryCatch(
     get_one_rc_database(2013),
@@ -571,7 +571,7 @@ test_that("extract_rc_college_matric returns enroll_any for 2013", {
 })
 
 test_that("extract_rc_college_matric returns correct enroll_4yr for 2017", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   rc_2017 <- tryCatch(
     get_one_rc_database(2017),
@@ -704,9 +704,10 @@ test_that("parcc_aggregate_calcs produces clean school names", {
 
   schools_str <- result$schools[1]
   school_parts <- trimws(strsplit(schools_str, ",")[[1]])
+  school_names <- sub(" \\([0-9]+\\)$", "", school_parts)
 
   # "School A" appears 4 times in input but should be collapsed
-  school_a_count <- sum(school_parts == "School A")
+  school_a_count <- sum(school_names == "School A")
 
   # After fix: School A should appear once (with count annotation)
   # Current behavior: School A appears 4 times
@@ -727,7 +728,7 @@ test_that("parcc_aggregate_calcs produces clean school names", {
 # Issue #103: grad count should have combined gender x race subgroups
 
 test_that("fetch_grad_count includes gender x race subgroups for years that have them", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Pre-2011 data should have gender x race subgroups like white_m, black_f
   result <- tryCatch(
@@ -754,7 +755,7 @@ test_that("grad count subgroups parallel enrollment subgroups", {
   # The issue says "similar to enr, wh_m + wh_f etc"
   # Grad count subgroups should use the same naming convention as enrollment
 
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- tryCatch(
     fetch_enr(2019, tidy = TRUE),
@@ -795,7 +796,7 @@ test_that("grad count subgroups parallel enrollment subgroups", {
 # Issue #106: grad_rate and five_yr_grad_rate column handling
 
 test_that("fetch_grad_rate returns single grad_rate column for 5-year data", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   result <- tryCatch(
     fetch_grad_rate(2013, methodology = "5 year"),
@@ -822,7 +823,7 @@ test_that("fetch_grad_rate returns single grad_rate column for 5-year data", {
 })
 
 test_that("5-year grad rate values are plausible (higher than 4-year)", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_4yr <- tryCatch(
     fetch_grad_rate(2013, methodology = "4 year"),
@@ -876,7 +877,7 @@ test_that("5-year grad rate values are plausible (higher than 4-year)", {
 # Issue #69: charter sector aggregations should report charter count
 
 test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- tryCatch(
     fetch_enr(2019, tidy = TRUE),
@@ -906,7 +907,7 @@ test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
 })
 
 test_that("charter_sector_grate_aggs includes n_charter_rows column", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate <- tryCatch(
     fetch_grad_rate(2019),
@@ -933,7 +934,7 @@ test_that("charter sector with single school is identifiable", {
   # The issue says: "some city charter 'sectors' are only one school -
   # make this easy to see"
 
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate <- tryCatch(
     fetch_grad_rate(2019),

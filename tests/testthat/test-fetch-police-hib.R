@@ -66,8 +66,7 @@ test_that("fetch_hib_investigations rejects invalid level", {
 # ==============================================================================
 
 test_that("fetch_police_notifications returns expected structure (district, 2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2024, level = "district")
@@ -98,8 +97,7 @@ test_that("fetch_police_notifications returns expected structure (district, 2024
 })
 
 test_that("fetch_police_notifications district file has state, county, and district rows", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2024, level = "district")
@@ -116,8 +114,7 @@ test_that("fetch_police_notifications district state row equals sum of district 
   # Sanity: in the District/State workbook the State aggregate equals the
   # statewide sum of district-level counts. Pinned to violence (the largest
   # category) for a tight aggregation check.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2024, level = "district")
@@ -129,8 +126,7 @@ test_that("fetch_police_notifications district state row equals sum of district 
 })
 
 test_that("fetch_police_notifications 2025 harmonizes 'hib' column from redesign", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2025, level = "district")
@@ -143,8 +139,7 @@ test_that("fetch_police_notifications 2025 harmonizes 'hib' column from redesign
 })
 
 test_that("fetch_police_notifications 2018 (legacy) harmonizes 'hib' column", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2018, level = "district")
@@ -157,8 +152,7 @@ test_that("fetch_police_notifications 2018 (legacy) harmonizes 'hib' column", {
 test_that("fetch_police_notifications pinned values match NJ DOE workbook (2024)", {
   # Pinned against PoliceNotifications, District/State workbook SY2023-24, Atlantic
   # City School District (county 01, district 0110), district-total row.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_police_notifications(2024, level = "district") %>%
@@ -176,8 +170,7 @@ test_that("fetch_police_notifications pinned values match NJ DOE workbook (2024)
 # ==============================================================================
 
 test_that("fetch_hib_investigations returns expected structure (district, 2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_hib_investigations(2024, level = "district")
@@ -206,8 +199,7 @@ test_that("fetch_hib_investigations returns expected structure (district, 2024)"
 test_that("fetch_hib_investigations exposes the 8 HIB nature categories", {
   # HIBInvestigations is long-format: one row per (entity x hib_nature). The
   # canonical eight nature categories are the same across every year.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_hib_investigations(2024, level = "district")
@@ -225,8 +217,7 @@ test_that("fetch_hib_investigations district state rows approximately sum the di
   # aggregate occasionally diverges from the bottom-up sum by a handful of
   # incidents (likely small-cell suppression or late-arriving counts), so this
   # asserts agreement within 1% rather than exact equality.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_hib_investigations(2024, level = "district")
@@ -250,8 +241,7 @@ test_that("fetch_hib_investigations district state rows approximately sum the di
 })
 
 test_that("fetch_hib_investigations 2025 preserves school_year column", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_hib_investigations(2025, level = "district")
@@ -266,8 +256,7 @@ test_that("fetch_hib_investigations 2025 preserves school_year column", {
 # ==============================================================================
 
 test_that("fetch_police_notifications works across the supported year range", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   for (yr in c(2018, 2019, 2024, 2025)) {
@@ -281,8 +270,7 @@ test_that("fetch_police_notifications works across the supported year range", {
 })
 
 test_that("fetch_hib_investigations works across the supported year range", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   for (yr in c(2018, 2019, 2024, 2025)) {

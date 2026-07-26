@@ -6,10 +6,14 @@
 # cache stores the downloaded workbook so a year/level file is fetched at most
 # once and reused across sheet reads and across sessions.
 
-test_that("is_valid_xlsx accepts a ZIP and rejects error pages / tiny files", {
-  ok <- tempfile(fileext = ".xlsx")
-  writeBin(c(as.raw(c(0x50, 0x4B, 0x03, 0x04)), as.raw(rep(0L, 2000))), ok)
-  expect_true(njschooldata:::is_valid_xlsx(ok))
+test_that("is_valid_xlsx accepts workbooks and rejects corrupt ZIP-like files", {
+  expect_true(njschooldata:::is_valid_xlsx(
+    source_adapter_fixture("spr-district-2025.xlsx")
+  ))
+
+  corrupt <- tempfile(fileext = ".xlsx")
+  writeBin(c(as.raw(c(0x50, 0x4B, 0x03, 0x04)), as.raw(rep(0L, 2000))), corrupt)
+  expect_false(njschooldata:::is_valid_xlsx(corrupt))
 
   html <- tempfile(fileext = ".xlsx")
   writeLines(rep("<html>Service Unavailable</html>", 200), html)
@@ -29,8 +33,7 @@ test_that("njsd_workbook_cache_dir honors the cache_dir option", {
 })
 
 test_that("an SPR workbook is cached on disk and reused across sheet reads", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   old <- options(
     njschooldata.cache_dir = file.path(tempdir(), "njsd-wbtest"),
@@ -61,8 +64,7 @@ test_that("an SPR workbook is cached on disk and reused across sheet reads", {
 })
 
 test_that("disk caching can be disabled via option", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   old <- options(
     njschooldata.cache_dir = file.path(tempdir(), "njsd-wbtest-off"),

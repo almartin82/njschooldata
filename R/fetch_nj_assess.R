@@ -619,7 +619,10 @@ common_fwf_req <- function(url, layout) {
   #got burned by bad layouts.  read in the raw file
   #this will take extra time, but it is worth it.
 
-  raw_fwf <- readLines(url)
+  transport <- download_source(url, source_type = "text")
+  source_path <- source_result_data(transport)
+  on.exit(unlink(source_path), add = TRUE)
+  raw_fwf <- readLines(source_path)
   raw_fwf <- iconv(raw_fwf, "LATIN2", "UTF-8")
   num_lines <- lapply(raw_fwf, nchar) %>% unlist()
 

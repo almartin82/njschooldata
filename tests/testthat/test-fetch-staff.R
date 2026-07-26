@@ -52,8 +52,8 @@ create_mock_staff_demographics <- function() {
     school_id = "010",
     school_name = "Test School",
     # Racial subgroups
-    subgroup = c("white", "black", "hispanic", "asian"),
-    number_staff = c(30, 20, 25, 15),  # 90 total staff
+    subgroup = c("white", "black", "hispanic", "asian", "male", "female"),
+    number_staff = c(30, 20, 25, 15, 45, 45),
     is_state = FALSE,
     is_county = FALSE,
     is_district = FALSE,

@@ -178,8 +178,7 @@ test_that("tges_efficiency requires district_id and the percentile column", {
 # --- live integration ----------------------------------------------------------
 
 test_that("tges_composition builds sane shares from the live 2024 guide", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   comp <- tges_composition(fetch_tges(2024), calc_type = "Budgeted")
   expect_true(all(c("classroom", "budgetary_pp", "classroom_share") %in% names(comp)))
   nwk <- comp[comp$district_id == "3570" & comp$end_year == 2024, ]
@@ -190,8 +189,7 @@ test_that("tges_composition builds sane shares from the live 2024 guide", {
 })
 
 test_that("tges_percentile_rank ranks the live 2024 CSG1 within enrollment bands", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   r <- tges_percentile_rank(fetch_tges(2024)$CSG1)
   expect_true(all(c("peer_rank", "peer_n", "peer_percentile") %in% names(r)))
   nwk <- r[r$district_id == "3570" & r$end_year == 2024, ]
@@ -447,8 +445,7 @@ test_that("tges_real_growth adds real-terms columns when given a deflator", {
 # --- live integration: comparative helpers ------------------------------------
 
 test_that("tges_revenue_mix and friends run on the live 2024 guide", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   tg <- fetch_tges(2024)
 
   rm <- tges_revenue_mix(tg)
@@ -781,7 +778,7 @@ test_that("tges_find_peers returns the focal first, then nearest by distance", {
 
   fp <- tges_find_peers(tg, "0001", n = 2,
                         features = c("ade", "budgetary_pp", "classroom_share",
-                                     "local_share"))
+                                     "local_share"), dfg_revision = NULL)
   expect_true(fp$is_focal[1])
   expect_equal(fp$distance[1], 0)
   expect_equal(nrow(fp), 3L)              # focal + 2 peers
@@ -790,10 +787,11 @@ test_that("tges_find_peers returns the focal first, then nearest by distance", {
 })
 
 test_that("tges_find_peers errors on unknown district and missing feature", {
-  expect_error(tges_find_peers(fake_full_tges(), "9999"),
+  expect_error(tges_find_peers(fake_full_tges(), "9999", dfg_revision = NULL),
                "not found")
   expect_error(
-    tges_find_peers(fake_full_tges(), "0001", features = c("nope_share")),
+    tges_find_peers(fake_full_tges(), "0001", features = c("nope_share"),
+                    dfg_revision = NULL),
     "not available"
   )
 })
@@ -803,7 +801,8 @@ test_that("tges_find_peers drops a zero-variance feature with a warning", {
   # federal_share is constant across districts -> zero variance
   expect_warning(
     fp <- tges_find_peers(tg, "0003",
-                          features = c("budgetary_pp", "federal_share")),
+                          features = c("budgetary_pp", "federal_share"),
+                          dfg_revision = NULL),
     "zero-variance"
   )
   expect_true(fp$is_focal[1])
@@ -1078,8 +1077,7 @@ test_that("tges_compare warns about district codes with no data", {
 # --- live integration: comparative layer --------------------------------------
 
 test_that("the cross-district layer runs on the live 2024 / multi-year guides", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   tgm <- fetch_many_tges(2019:2024)
   tg24 <- tgm[["2024"]]
 
@@ -1113,8 +1111,7 @@ test_that("the cross-district layer runs on the live 2024 / multi-year guides", 
 })
 
 test_that("tges_frontier runs on live spend joined to grad outcomes", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # suppressWarnings: fetch_grad_rate() emits a benign one_of() "unknown columns"
   # warning that is unrelated to the frontier under test.
   grate <- suppressWarnings(fetch_grad_rate(2023, methodology = "4 year")) %>%
@@ -1215,8 +1212,7 @@ test_that("tges_excluded_costs errors without the detail or CSG1 tables", {
 })
 
 test_that("tidy_total_spending_detail + tges_excluded_costs run on the live 2025 guide", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   tg <- fetch_tges(2025)
 
   # the Detail workbook parsed into clean component columns (banner skipped)

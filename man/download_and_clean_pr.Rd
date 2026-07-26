@@ -4,7 +4,12 @@
 \alias{download_and_clean_pr}
 \title{Download and clean performance report data}
 \usage{
-download_and_clean_pr(tmp_pr, url, end_year)
+download_and_clean_pr(
+  tmp_pr,
+  url,
+  end_year,
+  request_fn = .default_source_request
+)
 }
 \arguments{
 \item{tmp_pr}{path to tempfile}
@@ -12,6 +17,8 @@ download_and_clean_pr(tmp_pr, url, end_year)
 \item{url}{url to download}
 
 \item{end_year}{report year}
+
+\item{request_fn}{Injectable transport request used by offline contract tests.}
 }
 \value{
 list of dataframes

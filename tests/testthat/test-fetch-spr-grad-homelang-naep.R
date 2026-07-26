@@ -53,8 +53,7 @@ test_that("grad-pathways/home-language/NAEP error only below their real floor", 
 # ==============================================================================
 
 test_that("fetch_spr_grad_pathways returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_grad_pathways(2025)
@@ -75,8 +74,7 @@ test_that("fetch_spr_grad_pathways returns expected structure", {
 })
 
 test_that("fetch_spr_grad_pathways values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ref <- fetch_spr_grad_pathways(2025) %>%
@@ -99,8 +97,7 @@ test_that("fetch_spr_grad_pathways values match the raw NJ DOE file", {
 # ==============================================================================
 
 test_that("fetch_spr_home_language returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_home_language(2025)
@@ -115,8 +112,7 @@ test_that("fetch_spr_home_language returns expected structure", {
 })
 
 test_that("fetch_spr_home_language values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ref <- fetch_spr_home_language(2025) %>%
@@ -133,8 +129,7 @@ test_that("fetch_spr_home_language values match the raw NJ DOE file", {
 # ==============================================================================
 
 test_that("fetch_spr_naep returns the state/national summary structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_naep(2025)
@@ -156,8 +151,7 @@ test_that("fetch_spr_naep returns the state/national summary structure", {
 })
 
 test_that("fetch_spr_naep values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   g4math <- fetch_spr_naep(2025) %>%
@@ -186,8 +180,7 @@ test_that("fetch_spr_naep values match the raw NJ DOE file", {
 # ==============================================================================
 
 test_that("fetch_spr_home_language backfills to SY2017-18 with matching values", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_home_language(2024)
@@ -206,8 +199,7 @@ test_that("fetch_spr_home_language backfills to SY2017-18 with matching values",
 })
 
 test_that("fetch_spr_naep backfills to SY2016-17 and maps the legacy layout", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_naep(2024)
@@ -233,8 +225,7 @@ test_that("fetch_spr_naep backfills to SY2016-17 and maps the legacy layout", {
 })
 
 test_that("fetch_spr_grad_pathways backfills and harmonizes legacy columns", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_grad_pathways(2024)

@@ -94,14 +94,69 @@ test_that("tidy_state_aid pads codes and sets entity flags", {
 
 test_that("get_raw_state_aid rejects unsupported years", {
   expect_error(get_raw_state_aid(2018), "2019")
+  expect_error(get_raw_state_aid(2028), "2027")
+})
+
+test_that("state aid preserves transport provenance and types tidy parse failures", {
+  actual <- new_source_result(
+    data = fake_raw_state_aid(), source_status = "actual",
+    source_url = "https://www.nj.gov/education/stateaid/fixture.xlsx",
+    retrieved_at = as.POSIXct("2026-07-20", tz = "UTC"),
+    digest = paste(rep("a", 64), collapse = "")
+  )
+  local_mocked_bindings(
+    get_raw_state_aid_result = function(end_year) actual,
+    .package = "njschooldata"
+  )
+  out <- fetch_state_aid(2025)
+  status <- get_source_results(out)
+  expect_identical(status$source_status, "actual")
+  expect_identical(status$digest, actual$digest)
+
+  broken <- actual
+  broken$data <- data.frame()
+  local_mocked_bindings(
+    get_raw_state_aid_result = function(end_year) broken,
+    .package = "njschooldata"
+  )
+  expect_error(fetch_state_aid(2025), class = "njsd_parse_error")
+})
+
+test_that("state aid multi-year requests report failed years", {
+  local_mocked_bindings(
+    fetch_state_aid = function(end_year) {
+      if (end_year == 2025) {
+        result <- new_source_result(
+          source_status = "source_unavailable", error = "fixture HTTP 503"
+        )
+        source_result_data(result)
+      }
+      attach_source_results(
+        tidy_state_aid(fake_raw_state_aid(), end_year),
+        source_result_record(
+          new_source_result(data = TRUE, source_status = "actual"),
+          "state_aid", end_year
+        )
+      )
+    },
+    .package = "njschooldata"
+  )
+
+  expect_error(fetch_many_state_aid(2024:2025), class = "njsd_source_unavailable")
+  partial <- suppressMessages(fetch_many_state_aid(
+    2024:2025, allow_partial = TRUE
+  ))
+  expect_identical(
+    get_source_results(partial)$source_status,
+    c("actual", "source_unavailable")
+  )
 })
 
 
 # --- live integration -------------------------------------------------------
 
 test_that("fetch_state_aid pulls the current-year direct workbook", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   sa <- fetch_state_aid(2027)
 
   expect_gt(dplyr::n_distinct(sa$district_id[sa$is_district]), 500L)
@@ -124,8 +179,7 @@ test_that("fetch_state_aid pulls the current-year direct workbook", {
 })
 
 test_that("fetch_state_aid falls back to the zip bundle for prior years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # FY25 has no direct URL; this exercises the zip fallback + spaced member name
   sa <- fetch_state_aid(2025)
   expect_gt(dplyr::n_distinct(sa$district_id[sa$is_district]), 500L)
@@ -134,8 +188,7 @@ test_that("fetch_state_aid falls back to the zip bundle for prior years", {
 })
 
 test_that("fetch_many_state_aid stacks years into one long tibble", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   many <- fetch_many_state_aid(2026:2027)
   expect_setequal(sort(unique(many$end_year)), c(2026, 2027))
   expect_true(is.data.frame(many))

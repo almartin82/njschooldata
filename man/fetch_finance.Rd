@@ -9,7 +9,8 @@ fetch_finance(
   tidy = TRUE,
   use_cache = TRUE,
   with_status = FALSE,
-  level = "all"
+  level = "all",
+  allow_partial = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,11 @@ values with absent per-pupil denominators as \code{not_published}.}
 district rows), \code{"state"}, \code{"district"}, or \code{"school"}.
 School-level NJ finance is not published in this fetcher; school requests
 return structural gap rows only.}
+
+\item{allow_partial}{logical, default \code{FALSE}. Strict mode fails when a
+required source is unavailable or cannot be parsed. Set \code{TRUE}
+deliberately to return successful components and inspect
+\code{get_source_results()} for the missing component.}
 }
 \value{
 A tibble in the canonical finance schema: \code{end_year},

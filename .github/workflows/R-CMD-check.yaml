@@ -1,5 +1,4 @@
-# Simplified R-CMD-check workflow
-# Tests are skipped due to network calls to NJ DOE servers that timeout in CI
+# Deterministic package check. Live NJ DOE tests run only in live-canary.yaml.
 on:
   push:
     branches: [main, master]
@@ -17,6 +16,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      NJSCHOOLDATA_LIVE_TESTS: "false"
 
     steps:
       - uses: actions/checkout@v5
@@ -30,14 +30,16 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            any::zip
           needs: check
           dependencies: '"hard"'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          args: 'c("--no-manual", "--no-tests", "--no-vignettes", "--ignore-vignettes", "--no-build-vignettes")'
+          args: 'c("--no-manual", "--no-vignettes", "--ignore-vignettes", "--no-build-vignettes")'
           build_args: 'c("--no-manual", "--no-build-vignettes")'
           error-on: '"error"'
         env:

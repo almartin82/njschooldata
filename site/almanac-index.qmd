@@ -17,6 +17,7 @@ execute:
 
 ```{r setup, include=FALSE}
 library(dplyr)
+source("R/security.R")
 dir <- readRDS("_bundles/_statewide/directory.rds")
 dfg <- readRDS("_bundles/_statewide/dfg.rds")
 enr <- readRDS("_bundles/_statewide/enrollment.rds")
@@ -44,9 +45,12 @@ for (i in seq_len(nrow(tbl))) {
   r <- tbl[i,]
   cat('<div class="story" style="padding-top:1rem;margin-top:1rem;border-top:1px solid #c8c2b8;">\n')
   cat(sprintf('<span class="tag">%s &nbsp;·&nbsp; %s County &nbsp;·&nbsp; DFG %s &nbsp;·&nbsp; %s students</span>\n',
-              r$type, r$county, ifelse(is.na(r$dfg),"—",r$dfg), formatC(r$n,big.mark=",",format="d")))
-  cat(sprintf('<h2 style="font-size:1.4rem;margin:.2rem 0;"><a href="almanac-%s.html">%s</a></h2>\n',
-              r$district_id, r$district_name))
+              html_escape(r$type), html_escape(r$county),
+              html_escape(ifelse(is.na(r$dfg),"—",r$dfg)),
+              formatC(r$n,big.mark=",",format="d")))
+  cat(sprintf('<h2 style="font-size:1.4rem;margin:.2rem 0;"><a href="%s">%s</a></h2>\n',
+              safe_profile_href(r$district_id, prefix = "almanac-"),
+              html_escape(r$district_name)))
   cat('</div>\n')
 }
 ```

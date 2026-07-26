@@ -16,7 +16,12 @@ The package routes all access through three functions in `R/tges.R`:
 - `tidy_tges_data(list, end_year)` — apply a per-table cleaner to reshape each wide
   table to long/tidy. **Unknown tables are returned as-is** (the cleaner lookup
   falls through).
-- `fetch_tges(end_year)` — the two chained. `fetch_many_tges(years)` loops it.
+- `fetch_tges(end_year)` — the two chained. It is strict by default and attaches
+  stable source-result provenance.
+- `fetch_many_tges(years, allow_partial = FALSE)` — records the status of every
+  requested year. With the default it stops on an outage or parse regression;
+  `allow_partial = TRUE` returns successful years with the full request ledger in
+  `get_source_results()`.
 
 This doc catalogues which tables have tidy cleaners, the year/format coverage, and
 the few real gaps.
@@ -124,13 +129,14 @@ limitations, not unbuilt fetchers:
 
 ### When adding a new year
 
-1. Confirm the zip URL/layout in `tges_url_for_year()` (post-2023 years use a
-   per-year subfolder with an irregular bundle name — add to `special_urls`).
+1. Add the verified year and zip URL/layout to the TGES entry/resolver in
+   `R/source_registry.R` (post-2023 years use a per-year subfolder with an
+   irregular bundle name).
 2. Run `get_raw_tges(<year>)` and diff the returned `names()` against the cleaner
    keys in `tidy_tges_data()`. Any new key passes through raw — add a cleaner or
    confirm it's intentional.
-3. Extend the valid-year range in the `tges_url_for_year()` error message and the
-   roxygen `@param end_year` docs.
+3. Regenerate the registry-derived year documentation and confirm the resolver,
+   availability helper, validation, and fetcher contract tests agree.
 4. Add ground-truth assertions to `test-tges-ground-truth.R` pinning real values.
 
 ---

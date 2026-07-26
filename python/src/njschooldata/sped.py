@@ -6,7 +6,11 @@ from ._r_bridge import call_r_function, r_to_pandas
 
 
 @r_to_pandas
-def fetch_sped(end_year: int, level: str = "district") -> pd.DataFrame:
+def fetch_sped(
+    end_year: int,
+    level: str = "district",
+    with_status: bool = False,
+) -> pd.DataFrame:
     """
     Fetch New Jersey special education classification data.
 
@@ -18,6 +22,8 @@ def fetch_sped(end_year: int, level: str = "district") -> pd.DataFrame:
         ``"district"`` returns district-level classification rates.
         ``"state"`` returns statewide student counts by disability category
         where available.
+    with_status : bool, default False
+        Include row-level observation status fields where supported.
 
     Returns
     -------
@@ -25,7 +31,9 @@ def fetch_sped(end_year: int, level: str = "district") -> pd.DataFrame:
         For ``level="district"``, classification counts and rates by district.
         For ``level="state"``, child counts by disability category.
     """
-    return call_r_function("fetch_sped", end_year, level=level)
+    return call_r_function(
+        "fetch_sped", end_year, level=level, with_status=with_status
+    )
 
 
 @r_to_pandas
@@ -34,6 +42,7 @@ def fetch_sped_placement(
     age_group: str = "5-21",
     level: str = "district",
     tidy: bool = True,
+    with_status: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch special education placement / educational environment data.
@@ -51,6 +60,8 @@ def fetch_sped_placement(
         ``"district"`` or ``"state"``.
     tidy : bool, default True
         If True, returns the long tidy schema.
+    with_status : bool, default False
+        Include row-level observation status fields where supported.
 
     Returns
     -------
@@ -63,6 +74,7 @@ def fetch_sped_placement(
         age_group=age_group,
         level=level,
         tidy=tidy,
+        with_status=with_status,
     )
 
 
@@ -72,12 +84,15 @@ def fetch_sped_placement_multi(
     age_group: str = "5-21",
     level: str = "district",
     tidy: bool = True,
+    with_status: bool = False,
+    allow_partial: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch special education placement data for multiple years.
 
-    Per-year failures are surfaced by the R package as warnings and skipped,
-    matching the package's other multi-year wrappers.
+    Strict mode is the default. Set ``allow_partial=True`` to return successful
+    years while retaining per-year status in
+    ``DataFrame.attrs["source_results"]``.
     """
     return call_r_function(
         "fetch_sped_placement_multi",
@@ -85,4 +100,6 @@ def fetch_sped_placement_multi(
         age_group=age_group,
         level=level,
         tidy=tidy,
+        with_status=with_status,
+        allow_partial=allow_partial,
     )

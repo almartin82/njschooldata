@@ -1,0 +1,54 @@
+name: NJ DOE live-source canaries
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 11 * * 1"
+
+jobs:
+  r-live-canaries:
+    runs-on: ubuntu-latest
+    env:
+      NJSCHOOLDATA_LIVE_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
+          dependencies: 'c("hard", "soft")'
+      - name: Run classified R source canaries
+        run: Rscript tools/run-live-canaries.R
+      - name: Upload classified canary report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-canary-report
+          path: live-canary-report.json
+          if-no-files-found: warn
+
+  python-live-canaries:
+    runs-on: ubuntu-latest
+    env:
+      NJSCHOOLDATA_LIVE_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
+          dependencies: 'c("hard", "soft")'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install "./python[dev]"
+      - name: Run representative Python bridge canaries
+        working-directory: python
+        run: >-
+          pytest -m network -v --tb=short
+          tests/test_enrollment.py tests/test_assessment.py
+          tests/test_graduation.py tests/test_directory.py

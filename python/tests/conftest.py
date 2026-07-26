@@ -27,13 +27,15 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(config, items):
     """Skip tests based on environment."""
-    skip_network = pytest.mark.skip(reason="Network tests disabled in CI")
+    skip_network = pytest.mark.skip(
+        reason="Set NJSCHOOLDATA_LIVE_TESTS=true to run NJ DOE live-source tests"
+    )
     skip_r = pytest.mark.skip(reason="R or njschooldata not available")
 
-    in_ci = os.environ.get("CI", "false").lower() == "true"
+    live_tests = os.environ.get("NJSCHOOLDATA_LIVE_TESTS", "false").lower() == "true"
 
     for item in items:
-        if "network" in item.keywords and in_ci:
+        if "network" in item.keywords and not live_tests:
             item.add_marker(skip_network)
         if "requires_r" in item.keywords and not R_AVAILABLE:
             item.add_marker(skip_r)

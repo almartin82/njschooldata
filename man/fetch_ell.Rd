@@ -25,8 +25,8 @@ token before numeric coercion; the count is never back-derived from the
 percent. Default `FALSE` (the column is additive and off by default).}
 }
 \value{
-data.frame of EL population data. An out-of-range `end_year` returns
-  the empty, correctly-typed tidy frame.
+data.frame of EL population data with source provenance available
+  from [get_source_results()]. Unsupported years fail explicitly.
 }
 \description{
 Downloads and tidies the English Learner / Multilingual Learner headcount

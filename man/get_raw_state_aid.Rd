@@ -8,8 +8,8 @@ get_raw_state_aid(end_year)
 }
 \arguments{
 \item{end_year}{school year (end of the academic year): the 2025-26 year
-(state FY2026) is \code{end_year = 2026}. Valid values are 2019 and later;
-earlier years use a different layout that this fetcher does not yet parse.}
+(state FY2026) is \code{end_year = 2026}. Valid values are the registered
+2019-2027 sources; earlier years use a different unparsed layout.}
 }
 \value{
 a wide data frame (one row per district), header detected at the

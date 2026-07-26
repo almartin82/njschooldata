@@ -1,0 +1,5 @@
+NJDOE Homeroom district directory adapter fixture
+Minimal rows retained for deterministic parser tests
+See provenance.json
+"County Code","County Name","District Code","District Name","Supt Title","Supt First Name","Supt Last Name","Supt Title 2","Supt E Mail","BA First Name","BA Last Name","BA Email","BA Title2","Address1","Address2","City","State","Zip","Mailing Address1","Mailing Address2","Mailing Address3","Mailing City","Mailing State","Mailing Zip","Phone","Website","HIB First Name","HIB Last Name","HIB Title2","State Testing Coor First Name","State Testing Coor Last Name","School Safety Specialist First Name","School Safety Specialist Last Name","Chrt Sch Code","NCES ID"
+"21","AGENCY","1431","Marie H. Katzenbach School for the Deaf","Mrs.","Rasheda","Garcia","Superintendent","Rasheda.Garcia@mksd.org",,,"Ron.Pusillo@mksd.org","Business Administrator","320 Sullivan Way",,"Ewing","NJ","08628-3405","P.O. Box 535",,,"Trenton","NJ","08625","609-530-3112","www.mksd.org",,,"Anti-Bullying Coordinator",,,,,"",""

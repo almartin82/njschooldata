@@ -16,7 +16,7 @@ def fetch_grad_rate(
     Parameters
     ----------
     end_year : int
-        School year (2011-2024).
+        School year (2011-2025 for four-year rates).
     methodology : str, default "4 year"
         Graduation rate methodology: "4 year" or "5 year".
 

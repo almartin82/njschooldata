@@ -1,5 +1,5 @@
 skip_if_offline_facilities <- function() {
-  skip_on_cran()
+  skip_if_no_live_tests()
   ok <- tryCatch({
     resp <- httr::GET(
       "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Point_Locations_of_NJ/FeatureServer/0",

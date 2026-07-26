@@ -226,6 +226,10 @@ districts <- directory$entities[directory$entities$entity_type == "district", ]
 # were a real zero)
 directory$meta$source_status
 
+# Compatibility data-frame views are also available for existing callers:
+schools_legacy <- get_school_directory()
+districts_legacy <- get_district_directory()
+
 # View available columns
 names(schools)
 ```
@@ -234,11 +238,11 @@ names(schools)
 
 | Data Type | Function | Years Available |
 |-----------|----------|-----------------|
-| Enrollment | `fetch_enr()` | 2000-2026 |
-| NJSLA/PARCC | `fetch_parcc()` | 2015-2024 |
+| Enrollment | `fetch_enr()` | 1999-2026 |
+| NJSLA/PARCC | `fetch_parcc()` | 2015-2019, 2022-2025 |
 | NJASK | `fetch_old_nj_assess()` | 2004-2014 |
-| Graduation Rates | `fetch_grad_rate()` | 2011-2024 |
-| Graduation Counts | `fetch_grad_count()` | 2012-2024 |
+| Four-year Graduation Rates | `fetch_grad_rate()` | 2011-2025 |
+| Graduation Counts | `fetch_grad_count()` | 2012-2025 tidy; raw sources begin in 1998 |
 
 ## Common Subgroups
 

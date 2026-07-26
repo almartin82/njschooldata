@@ -58,8 +58,7 @@ test_that("ESSA suite errors (does not fabricate) for pre-2025 years", {
 # ==============================================================================
 
 test_that("fetch_spr_essa_targets proficiency returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_essa_targets(2025, indicator = "proficiency")
@@ -83,8 +82,7 @@ test_that("fetch_spr_essa_targets proficiency returns expected structure", {
 })
 
 test_that("fetch_spr_essa_targets proficiency values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ref <- fetch_spr_essa_targets(2025, indicator = "proficiency") %>%
@@ -102,8 +100,7 @@ test_that("fetch_spr_essa_targets proficiency values match the raw NJ DOE file",
 })
 
 test_that("fetch_spr_essa_targets growth uses state-standard columns (numeric, no %)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_essa_targets(2025, indicator = "growth")
@@ -125,8 +122,7 @@ test_that("fetch_spr_essa_targets growth uses state-standard columns (numeric, n
 })
 
 test_that("fetch_spr_essa_targets variants expose the right indicator columns", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   expect_true("target_state_average" %in%
@@ -140,8 +136,7 @@ test_that("fetch_spr_essa_targets variants expose the right indicator columns", 
 })
 
 test_that("fetch_spr_essa_targets district level flags state and district rows", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_essa_targets(2025, indicator = "graduation", level = "district")
@@ -157,8 +152,7 @@ test_that("fetch_spr_essa_targets district level flags state and district rows",
 # ==============================================================================
 
 test_that("fetch_spr_accountability_summative returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_accountability_summative(2025)
@@ -178,8 +172,7 @@ test_that("fetch_spr_accountability_summative returns expected structure", {
 })
 
 test_that("fetch_spr_accountability_summative values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   ref <- fetch_spr_accountability_summative(2025) %>%
@@ -201,8 +194,7 @@ test_that("fetch_spr_accountability_summative values match the raw NJ DOE file",
 # ==============================================================================
 
 test_that("fetch_spr_tsi returns expected structure with normalized names", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_tsi(2025)
@@ -222,8 +214,7 @@ test_that("fetch_spr_tsi returns expected structure with normalized names", {
 })
 
 test_that("fetch_spr_tsi identifies at least one school for TSI", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   identified <- fetch_spr_tsi(2025) %>%
@@ -239,8 +230,7 @@ test_that("fetch_spr_tsi identifies at least one school for TSI", {
 # ==============================================================================
 
 test_that("fetch_spr_essa_status_counts returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_essa_status_counts(2025)
@@ -258,8 +248,7 @@ test_that("fetch_spr_essa_status_counts returns expected structure", {
 })
 
 test_that("fetch_spr_essa_status_counts statewide totals match the raw file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   st <- fetch_spr_essa_status_counts(2025) %>%

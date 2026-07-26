@@ -4,10 +4,14 @@
 \alias{get_rc_databases}
 \title{Get multiple RC databases}
 \usage{
-get_rc_databases(end_year_vector = c(2003:2018))
+get_rc_databases(end_year_vector = 2012:2019, allow_partial = FALSE)
 }
 \arguments{
-\item{end_year_vector}{vector of years.  Current valid values are 2003 to 2018.}
+\item{end_year_vector}{vector of years. Current valid values are 2012 to 2019.}
+
+\item{allow_partial}{If `FALSE` (default), any unavailable or malformed year
+aborts with the failed years and statuses. If `TRUE`, returns successful
+years and records every requested year in [get_source_results()].}
 }
 \value{
 a list of dataframes

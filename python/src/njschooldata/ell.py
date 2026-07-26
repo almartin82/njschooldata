@@ -10,6 +10,7 @@ def fetch_ell(
     end_year: int,
     tidy: bool = True,
     use_cache: bool = False,
+    with_status: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch New Jersey English Learner population data for a single year.
@@ -27,6 +28,8 @@ def fetch_ell(
         the wider per-entity frame.
     use_cache : bool, default False
         Whether to use the R package source cache.
+    with_status : bool, default False
+        Include row-level observation status fields where supported.
 
     Returns
     -------
@@ -40,6 +43,7 @@ def fetch_ell(
         end_year,
         tidy=tidy,
         use_cache=use_cache,
+        with_status=with_status,
     )
 
 
@@ -48,6 +52,8 @@ def fetch_ell_multi(
     end_years: list[int],
     tidy: bool = True,
     use_cache: bool = False,
+    with_status: bool = False,
+    allow_partial: bool = False,
 ) -> pd.DataFrame:
     """
     Fetch New Jersey English Learner population data for multiple years.
@@ -60,6 +66,12 @@ def fetch_ell_multi(
         If True, returns the long tidy contract.
     use_cache : bool, default False
         Whether to use the R package source cache.
+    with_status : bool, default False
+        Include row-level observation status fields where supported.
+    allow_partial : bool, default False
+        If False, any unavailable or failed year aborts. If True, successful
+        years are returned and per-year source status is available in
+        ``DataFrame.attrs["source_results"]``.
 
     Returns
     -------
@@ -71,4 +83,6 @@ def fetch_ell_multi(
         end_years,
         tidy=tidy,
         use_cache=use_cache,
+        with_status=with_status,
+        allow_partial=allow_partial,
     )

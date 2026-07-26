@@ -62,8 +62,7 @@ test_that("fetch_spr_data validates level parameter", {
 })
 
 test_that("fetch_spr_data returns standard columns", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_spr_data("ChronicAbsenteeism", 2024)
 
   expect_true(all(spr_cols %in% names(df)))
@@ -71,8 +70,7 @@ test_that("fetch_spr_data returns standard columns", {
 })
 
 test_that("fetch_spr_data handles school level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "school")
 
   # Should have school-level data
@@ -84,8 +82,7 @@ test_that("fetch_spr_data handles school level", {
 })
 
 test_that("fetch_spr_data handles district level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "district")
 
   # All rows should have school_id = "999"
@@ -99,8 +96,7 @@ test_that("fetch_spr_data handles district level", {
 })
 
 test_that("fetch_spr_data adds aggregation flags correctly", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "school")
 
   # Check that flags are logical
@@ -112,8 +108,7 @@ test_that("fetch_spr_data adds aggregation flags correctly", {
 })
 
 test_that("fetch_spr_data cleans subgroup names", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_spr_data("ChronicAbsenteeism", 2024, level = "school")
 
   if ("subgroup" %in% names(df)) {
@@ -127,8 +122,7 @@ test_that("fetch_spr_data cleans subgroup names", {
 })
 
 test_that("fetch_spr_data errors on invalid sheet name", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   expect_error(
     fetch_spr_data("NonExistentSheet", 2024),
     "not found"
@@ -141,16 +135,14 @@ test_that("fetch_spr_data errors on invalid sheet name", {
 # ==============================================================================
 
 test_that("fetch_chronic_absenteeism returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_chronic_absenteeism(2024)
 
   expect_true(all(ca_cols %in% names(df)))
 })
 
 test_that("fetch_chronic_absenteeism works across multiple years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_2018 <- fetch_chronic_absenteeism(2018)
   df_2019 <- fetch_chronic_absenteeism(2019)
   df_2022 <- fetch_chronic_absenteeism(2022)
@@ -165,8 +157,7 @@ test_that("fetch_chronic_absenteeism works across multiple years", {
 })
 
 test_that("chronic absenteeism has reasonable values", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_chronic_absenteeism(2024)
 
   # Chronic absenteeism rate should be 0-100 or NA
@@ -175,8 +166,7 @@ test_that("chronic absenteeism has reasonable values", {
 })
 
 test_that("fetch_chronic_absenteeism includes subgroup data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_chronic_absenteeism(2024)
 
   # Should have subgroup column
@@ -188,8 +178,7 @@ test_that("fetch_chronic_absenteeism includes subgroup data", {
 
 
 test_that("fetch_chronic_absenteeism district level works", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_chronic_absenteeism(2024, level = "district")
 
   # All rows should be district/state/county level
@@ -205,16 +194,14 @@ test_that("fetch_chronic_absenteeism district level works", {
 # ==============================================================================
 
 test_that("fetch_absenteeism_by_grade returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_absenteeism_by_grade(2024)
 
   expect_true(all(ca_grade_cols %in% names(df)))
 })
 
 test_that("fetch_absenteeism_by_grade includes grade_level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_absenteeism_by_grade(2024)
 
   # Should have grade_level column
@@ -226,8 +213,7 @@ test_that("fetch_absenteeism_by_grade includes grade_level", {
 
 
 test_that("fetch_absenteeism_by_grade works across multiple years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_2018 <- fetch_absenteeism_by_grade(2018)
   df_2019 <- fetch_absenteeism_by_grade(2019)
   df_2022 <- fetch_absenteeism_by_grade(2022)
@@ -243,8 +229,7 @@ test_that("fetch_absenteeism_by_grade works across multiple years", {
 # ==============================================================================
 
 test_that("fetch_days_absent returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_days_absent(2024)
 
   # Should have all standard columns
@@ -256,8 +241,7 @@ test_that("fetch_days_absent returns expected structure", {
 })
 
 test_that("fetch_days_absent works across multiple years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_2018 <- fetch_days_absent(2018)
   df_2019 <- fetch_days_absent(2019)
   df_2022 <- fetch_days_absent(2022)
@@ -273,8 +257,7 @@ test_that("fetch_days_absent works across multiple years", {
 # ==============================================================================
 
 test_that("fetch_spr_data uses caching", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # Clear cache first
   njsd_cache_clear()
 
@@ -299,8 +282,7 @@ test_that("fetch_spr_data uses caching", {
 # ==============================================================================
 
 test_that("can extract multiple sheets from same year", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   chronic <- fetch_spr_data("ChronicAbsenteeism", 2024)
   by_grade <- fetch_spr_data("ChronicAbsenteeismByGrade", 2024)
   days <- fetch_spr_data("DaysAbsent", 2024)
@@ -311,8 +293,7 @@ test_that("can extract multiple sheets from same year", {
 })
 
 test_that("chronic absenteeism functions are consistent", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # Using fetch_spr_data directly vs using convenience function
   df1 <- fetch_spr_data("ChronicAbsenteeism", 2024)
   df2 <- fetch_chronic_absenteeism(2024)
@@ -325,8 +306,7 @@ test_that("chronic absenteeism functions are consistent", {
 })
 
 test_that("can combine multiple years of absenteeism data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_2022 <- fetch_chronic_absenteeism(2022)
   df_2023 <- fetch_chronic_absenteeism(2023)
 
@@ -345,8 +325,7 @@ test_that("can combine multiple years of absenteeism data", {
 # ==============================================================================
 
 test_that("list_spr_sheets returns all 63 sheets", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   sheets <- list_spr_sheets(2024)
 
   expect_type(sheets, "character")
@@ -357,8 +336,7 @@ test_that("list_spr_sheets returns all 63 sheets", {
 })
 
 test_that("list_spr_sheets returns alphabetically sorted list", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   sheets <- list_spr_sheets(2024)
 
   # Check if sorted
@@ -366,8 +344,7 @@ test_that("list_spr_sheets returns alphabetically sorted list", {
 })
 
 test_that("list_spr_sheets works for district level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   sheets <- list_spr_sheets(2024, level = "district")
 
   expect_type(sheets, "character")
@@ -375,8 +352,7 @@ test_that("list_spr_sheets works for district level", {
 })
 
 test_that("list_spr_sheets works across different years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   sheets_2024 <- list_spr_sheets(2024)
   sheets_2020 <- list_spr_sheets(2020)
   sheets_2018 <- list_spr_sheets(2018)
@@ -417,8 +393,7 @@ test_that("get_mapped_sheet_name returns most recent if year not in range", {
 # ==============================================================================
 
 test_that("fetch_teacher_experience returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_teacher_experience(2024)
 
   expect_s3_class(df, "data.frame")
@@ -428,8 +403,7 @@ test_that("fetch_teacher_experience returns expected structure", {
 })
 
 test_that("fetch_staff_demographics returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_staff_demographics(2024)
 
   expect_s3_class(df, "data.frame")
@@ -438,8 +412,7 @@ test_that("fetch_staff_demographics returns expected structure", {
 })
 
 test_that("fetch_disciplinary_removals returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_disciplinary_removals(2024)
 
   expect_s3_class(df, "data.frame")
@@ -448,8 +421,7 @@ test_that("fetch_disciplinary_removals returns expected structure", {
 })
 
 test_that("fetch_violence_vandalism_hib returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_violence_vandalism_hib(2024)
 
   expect_s3_class(df, "data.frame")
@@ -458,8 +430,7 @@ test_that("fetch_violence_vandalism_hib returns expected structure", {
 })
 
 test_that("fetch_staff_ratios returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_staff_ratios(2024)
 
   expect_s3_class(df, "data.frame")
@@ -468,8 +439,7 @@ test_that("fetch_staff_ratios returns expected structure", {
 })
 
 test_that("fetch_math_course_enrollment returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_math_course_enrollment(2024)
 
   expect_s3_class(df, "data.frame")
@@ -478,8 +448,7 @@ test_that("fetch_math_course_enrollment returns expected structure", {
 })
 
 test_that("fetch_dropout_rates returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_dropout_rates(2024)
 
   expect_s3_class(df, "data.frame")
@@ -488,8 +457,7 @@ test_that("fetch_dropout_rates returns expected structure", {
 })
 
 test_that("fetch_essa_status returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_status(2024)
 
   expect_s3_class(df, "data.frame")
@@ -498,8 +466,7 @@ test_that("fetch_essa_status returns expected structure", {
 })
 
 test_that("fetch_essa_status district level works for 2025 (sheet rename)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # The 2024-25 District/State DB removed the ESSAAccountabilityStatus sheet and
   # replaced it with ESSAAccountabilityStatusList. fetch_essa_status() must map
@@ -520,8 +487,7 @@ test_that("fetch_essa_status district level works for 2025 (sheet rename)", {
 })
 
 test_that("fetch_essa_status school level still uses ESSAAccountabilityStatus for 2025", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # The 2024-25 School DB is ~352 MB; allow a generous download timeout so the
   # large-file fetch does not trip R's 60s default.
@@ -543,8 +509,7 @@ test_that("fetch_essa_status school level still uses ESSAAccountabilityStatus fo
 # ==============================================================================
 
 test_that("fetch_spr_data works with different sheet categories", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # Attendance sheet
   df1 <- fetch_spr_data("DaysAbsent", 2024)
   expect_s3_class(df1, "data.frame")
@@ -567,8 +532,7 @@ test_that("fetch_spr_data works with different sheet categories", {
 })
 
 test_that("fetch_spr_data works across multiple years for different sheets", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # Test teacher experience across years
   df_teach_2024 <- fetch_teacher_experience(2024)
   df_teach_2020 <- fetch_teacher_experience(2020)
@@ -589,8 +553,7 @@ test_that("fetch_spr_data works across multiple years for different sheets", {
 # ESSA Accountability Function Tests
 
 test_that("fetch_essa_progress returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_progress(2024)
   
   expect_s3_class(df, "data.frame")
@@ -600,8 +563,7 @@ test_that("fetch_essa_progress returns expected structure", {
 })
 
 test_that("fetch_essa_progress works for district level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_progress(2024, level = "district")
   
   expect_s3_class(df, "data.frame")
@@ -609,8 +571,7 @@ test_that("fetch_essa_progress works for district level", {
 })
 
 test_that("identify_focus_schools returns focus schools only", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_status(2024)
   focus <- identify_focus_schools(df)
   
@@ -621,8 +582,7 @@ test_that("identify_focus_schools returns focus schools only", {
 })
 
 test_that("identify_focus_schools filters by year when specified", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_status(2020)
   focus <- identify_focus_schools(df, end_year = 2020)
   
@@ -630,8 +590,7 @@ test_that("identify_focus_schools filters by year when specified", {
 })
 
 test_that("track_essa_progress_over_time returns longitudinal data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_list <- list(
     "2020" = fetch_essa_status(2020),
     "2022" = fetch_essa_status(2022),
@@ -648,8 +607,7 @@ test_that("track_essa_progress_over_time returns longitudinal data", {
 })
 
 test_that("track_essa_progress_over_time filters by school_id", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_list <- list(
     "2020" = fetch_essa_status(2020),
     "2024" = fetch_essa_status(2024)
@@ -705,8 +663,7 @@ spr_cols <- c(
 )
 
 test_that("fetch_essa_progress returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_progress(2024)
   
   expect_s3_class(df, "data.frame")
@@ -716,8 +673,7 @@ test_that("fetch_essa_progress returns expected structure", {
 })
 
 test_that("fetch_essa_progress works for district level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_progress(2024, level = "district")
   
   expect_s3_class(df, "data.frame")
@@ -725,8 +681,7 @@ test_that("fetch_essa_progress works for district level", {
 })
 
 test_that("identify_focus_schools returns focus schools only", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_status(2024)
   focus <- identify_focus_schools(df)
   
@@ -737,8 +692,7 @@ test_that("identify_focus_schools returns focus schools only", {
 })
 
 test_that("identify_focus_schools filters by year when specified", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- fetch_essa_status(2020)
   focus <- identify_focus_schools(df, end_year = 2020)
   
@@ -746,8 +700,7 @@ test_that("identify_focus_schools filters by year when specified", {
 })
 
 test_that("track_essa_progress_over_time returns longitudinal data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_list <- list(
     "2020" = fetch_essa_status(2020),
     "2022" = fetch_essa_status(2022),
@@ -764,8 +717,7 @@ test_that("track_essa_progress_over_time returns longitudinal data", {
 })
 
 test_that("track_essa_progress_over_time filters by school_id", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   df_list <- list(
     "2020" = fetch_essa_status(2020),
     "2024" = fetch_essa_status(2024)

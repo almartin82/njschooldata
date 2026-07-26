@@ -78,7 +78,7 @@ reference:
       - tidy_absence
 
   - title: School Performance Reports (SPR)
-    desc: Functions for SPR database data (2017-2024)
+    desc: Functions for SPR database data (2017-2025)
     contents:
       - fetch_spr_data
       - list_spr_sheets
@@ -139,6 +139,8 @@ reference:
     desc: Functions for school and district metadata
     contents:
       - fetch_directory
+      - get_school_directory
+      - get_district_directory
 
   - title: Charter Aggregations
     desc: Functions for charter school sector aggregations
@@ -202,6 +204,15 @@ reference:
       - fetch_finance
       - fetch_finance_multi
       - get_available_finance_years
+
+  - title: Source Coverage and Provenance
+    desc: >
+      Authoritative year validation and request-level source status. Source
+      status is separate from row-level observation/value status.
+    contents:
+      - get_valid_years
+      - validate_end_year
+      - get_source_results
 
   - title: State Aid
     desc: >

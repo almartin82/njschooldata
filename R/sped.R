@@ -3,7 +3,7 @@
 #' @return vector of valid end years for SPED data
 #' @keywords internal
 get_valid_sped_years <- function() {
-  2015L:2025L
+  get_source_years("sped")
 }
 
 
@@ -152,32 +152,82 @@ build_sped_url <- function(end_year) {
 }
 
 
-download_sped_classification_workbook <- function(source, end_year) {
-  if (!check_url_accessible(source$url)) {
-    stop(paste0("SPED data URL is not accessible: ", source$url))
+download_sped_classification_workbook <- function(
+    source, end_year, request_fn = .default_source_request) {
+  is_zip <- grepl("[.]zip($|[?])", source$url, ignore.case = TRUE)
+  transport <- download_source(
+    source$url,
+    source_type = if (is_zip) "zip" else "xlsx",
+    request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual") || !is_zip) {
+    return(transport)
   }
-
-  is_zip <- grepl("\\.zip$", source$url)
-  tf <- tempfile(fileext = if (is_zip) ".zip" else ".xlsx")
-  utils::download.file(source$url, tf, mode = "wb", quiet = TRUE)
-
-  if (!is_zip) {
-    return(tf)
-  }
+  on.exit(unlink(transport$data), add = TRUE)
 
   if (is.na(source$zip_member) || !nzchar(source$zip_member)) {
-    stop(sprintf(
-      "Internal error: missing zip member for SPED classification %d.",
-      end_year
-    ), call. = FALSE)
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = sprintf(
+        "Internal error: missing zip member for SPED classification %d.",
+        end_year
+      )
+    ))
   }
 
   extract_dir <- tempfile("sped_classification_zip_")
   dir.create(extract_dir, recursive = TRUE, showWarnings = FALSE)
-  extracted <- utils::unzip(
-    tf, files = source$zip_member, exdir = extract_dir, junkpaths = TRUE
+  on.exit(unlink(extract_dir, recursive = TRUE), add = TRUE)
+  extracted <- tryCatch(
+    utils::unzip(
+      transport$data, files = source$zip_member,
+      exdir = extract_dir, junkpaths = TRUE
+    ),
+    error = identity
   )
-  extracted[[1]]
+  if (inherits(extracted, "error") || !length(extracted) ||
+      !file.exists(extracted[[1]])) {
+    message <- if (inherits(extracted, "error")) {
+      conditionMessage(extracted)
+    } else {
+      paste0("Archive does not contain expected member: ", source$zip_member)
+    }
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = message
+    ))
+  }
+
+  validation <- tryCatch(
+    {
+      .validate_source_file(extracted[[1]], "xlsx")
+      NULL
+    },
+    error = identity
+  )
+  if (inherits(validation, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(validation)
+    ))
+  }
+
+  workbook <- tempfile("sped-classification-", fileext = ".xlsx")
+  if (!file.copy(extracted[[1]], workbook, overwrite = TRUE)) {
+    return(new_source_result(
+      source_status = "source_unavailable", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = "Validated SPED workbook could not be promoted from its archive."
+    ))
+  }
+  new_source_result(
+    data = workbook, source_status = "actual",
+    source_url = transport$source_url, retrieved_at = transport$retrieved_at,
+    digest = transport$digest
+  )
 }
 
 
@@ -208,24 +258,38 @@ get_raw_sped <- function(end_year, level = "district") {
 
   source <- sped_classification_source(end_year, level = level)
 
-  tf <- download_sped_classification_workbook(source, end_year)
+  source_result <- download_sped_classification_workbook(source, end_year)
+  tf <- source_result_data(source_result)
+  on.exit(unlink(tf), add = TRUE)
 
   # Every supported source (district 2015-2024 single-sheet workbooks, the
   # 2025 consolidated "District Rates" / "State Rates" sheets) reads through
   # the same header-skip path. Reading as text keeps a trailing "end of
   # worksheet" sentinel row from coercing count/rate columns; clean_sped_df()
   # / tidy_sped_state_disability() coerce to numeric downstream.
-  sped <- readxl::read_excel(
-    tf,
-    sheet = if (is.na(source$sheet)) 1 else source$sheet,
-    skip = source$skip,
-    na = c('-', '*', 'N', 'S'),
-    col_types = "text"
+  sped <- tryCatch(
+    readxl::read_excel(
+      tf,
+      sheet = if (is.na(source$sheet)) 1 else source$sheet,
+      skip = source$skip,
+      na = c("-", "*", "N", "S"),
+      col_types = "text"
+    ),
+    error = identity
   )
+  if (inherits(sped, "error")) {
+    source_result_data(new_source_result(
+      source_status = "parse_error", source_url = source_result$source_url,
+      retrieved_at = source_result$retrieved_at, digest = source_result$digest,
+      error = conditionMessage(sped)
+    ))
+  }
 
   sped$end_year <- end_year
-
-  return(sped)
+  attach_source_results(
+    sped,
+    source_result_record(source_result, "sped", end_year, level)
+  )
 }
 
 
@@ -566,15 +630,29 @@ fetch_sped <- function(end_year, level = "district", with_status = FALSE) {
     stop("level must be one of 'district' or 'state'.", call. = FALSE)
   }
 
-  if (level == "state") {
-    return(
-      get_raw_sped(end_year, level = "state") %>%
+  raw <- get_raw_sped(end_year, level = level)
+  source_records <- get_source_results(raw)
+  out <- tryCatch(
+    if (level == "state") {
+      raw %>%
         clean_sped_names() %>%
         tidy_sped_state_disability(end_year, with_status = with_status)
-    )
+    } else {
+      raw %>%
+        clean_sped_names() %>%
+        clean_sped_df(., end_year, with_status = with_status)
+    },
+    error = identity
+  )
+  if (inherits(out, "error")) {
+    record <- select_source_result_record(raw)
+    source_result_data(new_source_result(
+      source_status = "parse_error",
+      source_url = if (nrow(record)) record$source_url[[1]] else NA_character_,
+      retrieved_at = if (nrow(record)) record$retrieved_at[[1]] else NULL,
+      digest = if (nrow(record)) record$digest[[1]] else NULL,
+      error = conditionMessage(out)
+    ))
   }
-
-  get_raw_sped(end_year, level = "district") %>%
-    clean_sped_names() %>%
-    clean_sped_df(., end_year, with_status = with_status)
+  attach_source_results(out, source_records)
 }

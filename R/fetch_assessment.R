@@ -7,172 +7,112 @@
 #
 # ==============================================================================
 
-#' Reads the raw PARCC Excel files from the state website
-#'
-#' Builds a URL and reads the xlsx file into a dataframe.
-#'
-#' @param end_year A school year. end_year is the end of the academic year - eg 2014-15
-#' school year is end_year 2015. Valid values are 2015-2018.
-#' @param grade_or_subj Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)
-#' @param subj PARCC subject. c('ela' or 'math')
-#' @return PARCC dataframe
+.parse_assessment_workbook <- function(path, skip) {
+  data <- readxl::read_excel(
+    path = path, skip = skip, na = "*", guess_max = 30000
+  )
+  if (nrow(data) < 3L) {
+    stop("Assessment workbook has no data rows before its two note rows.",
+         call. = FALSE)
+  }
+  data[seq_len(nrow(data) - 2L), , drop = FALSE]
+}
+
+.assessment_source_result <- function(url, skip,
+                                      request_fn = .default_source_request) {
+  transport <- download_source(
+    url, source_type = "xlsx", request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+  parsed <- tryCatch(
+    .parse_assessment_workbook(transport$data, skip),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error",
+      source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at,
+      digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed,
+    source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at,
+    digest = transport$digest
+  )
+}
+
+#' Retrieve raw PARCC data with source provenance
+#' @inheritParams get_raw_parcc
+#' @param request_fn Injectable transport request function.
+#' @return An `njsd_source_result`.
+#' @keywords internal
+get_raw_parcc_result <- function(end_year, grade_or_subj, subj,
+                                 request_fn = .default_source_request) {
+  validate_end_year(end_year, "parcc")
+  url <- resolve_source_url(
+    "parcc", end_year = end_year, grade = grade_or_subj, subject = subj
+  )
+  .assessment_source_result(url, skip = 2L, request_fn = request_fn)
+}
+
+#' Reads raw PARCC data from the state website
+#' @param end_year School-year end year.
+#' @param grade_or_subj Grade or course.
+#' @param subj Subject.
+#' @return PARCC data frame.
 #' @keywords internal
 get_raw_parcc <- function(end_year, grade_or_subj, subj) {
-
-  if (is.numeric(grade_or_subj)) {
-    parcc_grade <- pad_grade(grade_or_subj)
-
-    # In 2017 they forgot how grade levels work
-    if (end_year == 2017 & grade_or_subj >= 10) {
-      parcc_grade <- paste0("0", parcc_grade)
-    }
-    # In 2018 - honestly I just can't.
-    # Fine, state of NJ, ELA003. it's only broken code, not life and death.
-    if (end_year == 2018 & subj == "ela") {
-      parcc_grade <- paste0("0", parcc_grade)
-    }
-  } else {
-    parcc_grade <- grade_or_subj
-  }
-
-  stem <- "https://www.nj.gov/education/assessment/results/reports/"
-
-  # After 2016 they added a spring / fall element
-  # eg http://www.nj.gov/education/schools/achievement/16/parcc/spring/ELA03.xlsx
-  # We're pulling spring only (for now)
-  season_variant <- if (end_year >= 2016) {
-    "spring/"
-  } else {
-    "parcc/"
-  }
-
-  sy <- as.numeric(substr(end_year, 3, 4))
-
-  target_url <- paste0(
-    stem, sy - 1, sy, "/", season_variant,
-    parse_parcc_subj(subj), parcc_grade, ".xlsx"
-  )
-
-  tname <- tempfile(pattern = "parcc", tmpdir = tempdir(), fileext = ".xlsx")
-  tdir <- tempdir()
-  downloader::download(target_url, destfile = tname, mode = "wb")
-  parcc <- readxl::read_excel(path = tname, skip = 2, na = "*", guess_max = 30000)
-
-  # Last two rows are notes
-  parcc <- parcc[1:(nrow(parcc) - 2), ]
-  parcc
+  source_result_data(get_raw_parcc_result(end_year, grade_or_subj, subj))
 }
 
-
-#' Reads the raw NJSLA Excel files from the state website
-#'
-#' Builds a URL and reads the xlsx file into a dataframe.
-#'
+#' Retrieve raw NJSLA data with source provenance
 #' @inheritParams get_raw_parcc
-#' @return NJSLA dataframe
+#' @param request_fn Injectable transport request function.
+#' @return An `njsd_source_result`.
+#' @keywords internal
+get_raw_sla_result <- function(end_year, grade_or_subj, subj,
+                               request_fn = .default_source_request) {
+  validate_end_year(end_year, "parcc")
+  url <- resolve_source_url(
+    "parcc", end_year = end_year, grade = grade_or_subj, subject = subj
+  )
+  .assessment_source_result(url, skip = 2L, request_fn = request_fn)
+}
+
+#' Reads raw NJSLA data from the state website
+#' @inheritParams get_raw_parcc
+#' @return NJSLA data frame.
 #' @keywords internal
 get_raw_sla <- function(end_year, grade_or_subj, subj) {
-
-  if (is.numeric(grade_or_subj)) {
-    parcc_grade <- pad_grade(grade_or_subj)
-    subj_prefix <- parse_parcc_subj(subj)
-  } else if (grepl("ALG|GEO", grade_or_subj)) {
-    parcc_grade <- gsub("ALG", "ALG0", grade_or_subj)
-    # NJ DOE has used GEO01 (not GEO) since 2022, but the lone 2018-19 NJSLA
-    # geometry file is named plain "GEO" (ALG01/ALG02 keep their zeros that
-    # year); map GEO to the year's actual token.
-    if (end_year == 2019) {
-      parcc_grade <- gsub("^GEO01$", "GEO", parcc_grade)
-    } else {
-      parcc_grade <- gsub("^GEO$", "GEO01", parcc_grade)
-    }
-    subj_prefix <- ""
-  } else {
-    parcc_grade <- grade_or_subj
-    subj_prefix <- parse_parcc_subj(subj)
-  }
-
-  stem <- "https://www.nj.gov/education/assessment/results/reports/"
-  year_suffix <- paste0(end_year - 1, "-", substr(end_year, 3, 4))
-
-  # NJ DOE filename encoding has flip-flopped over the years:
-  #   2019:      ELA03%20NJSLA%20DATA%202018-19.xlsx (spaces)
-  #   2022-2024: ELA03_NJSLA_DATA_2021-22.xlsx       (underscores)
-  #   2025:      ELA03%20NJSLA%20DATA%202024-25.xlsx (spaces again)
-  if (end_year == 2019 || end_year >= 2025) {
-    filename <- paste0(
-      subj_prefix, parcc_grade, "%20NJSLA%20DATA%20", year_suffix, ".xlsx"
-    )
-  } else {
-    # 2022-2024 use underscores
-    filename <- paste0(
-      subj_prefix, parcc_grade, "_NJSLA_DATA_", year_suffix, ".xlsx"
-    )
-  }
-
-  target_url <- paste0(
-    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), "/spring/", filename
-  )
-
-  tname <- tempfile(pattern = "njsla", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
-  njsla <- readxl::read_excel(path = tname, skip = 2, na = "*", guess_max = 30000)
-
-  # Last two rows are notes
-  njsla <- njsla[1:(nrow(njsla) - 2), ]
-  njsla
+  source_result_data(get_raw_sla_result(end_year, grade_or_subj, subj))
 }
 
+#' Retrieve raw NJGPA data with source provenance
+#' @param end_year School-year end year.
+#' @param subj Subject.
+#' @param request_fn Injectable transport request function.
+#' @return An `njsd_source_result`.
+#' @keywords internal
+get_raw_njgpa_result <- function(end_year, subj,
+                                 request_fn = .default_source_request) {
+  validate_end_year(end_year, "njgpa")
+  url <- resolve_source_url("njgpa", end_year = end_year, subject = subj)
+  .assessment_source_result(url, skip = 3L, request_fn = request_fn)
+}
 
-#' Reads the raw NJGPA Excel files from the state website
-#'
-#' NJGPA (New Jersey Graduation Proficiency Assessment) is the graduation
-#' requirement assessment introduced in 2022.
-#'
-#' @param end_year A school year. Valid values are 2022-2025.
-#' @param subj NJGPA subject. c('ela' or 'math')
-#' @return NJGPA dataframe
+#' Reads raw NJGPA data from the state website
+#' @param end_year School-year end year.
+#' @param subj Subject.
+#' @return NJGPA data frame.
 #' @keywords internal
 get_raw_njgpa <- function(end_year, subj) {
-
-  if (end_year < 2022) {
-    stop("NJGPA data is only available starting in 2022")
-  }
-
-  subj <- tolower(subj)
-  subj_prefix <- if (subj == "ela") "ELAGP" else if (subj == "math") "MATGP" else {
-    stop("NJGPA subject must be 'ela' or 'math'")
-  }
-
-  stem <- "https://www.nj.gov/education/assessment/results/reports/"
-  year_suffix <- paste0(end_year - 1, "-", substr(end_year, 3, 4))
-
-  # NJ DOE filename encoding flip-flopped, mirroring the NJSLA files:
-  #   2022-2024: ELAGP_NJGPA_DATA_2021-22.xlsx       (underscores)
-  #   2025:      ELAGP%20NJGPA%20DATA%202024-25.xlsx (spaces)
-  if (end_year >= 2025) {
-    filename <- paste0(subj_prefix, "%20NJGPA%20DATA%20", year_suffix, ".xlsx")
-  } else {
-    filename <- paste0(subj_prefix, "_NJGPA_DATA_", year_suffix, ".xlsx")
-  }
-
-  # The first administration (2021-22) was posted under the spring results
-  # directory; 2023+ files live under a dedicated njgpa directory.
-  path_segment <- if (end_year == 2022) "/spring/" else "/njgpa/"
-
-  target_url <- paste0(
-    stem, substr(end_year - 1, 3, 4), substr(end_year, 3, 4), path_segment, filename
-  )
-
-  tname <- tempfile(pattern = "njgpa", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
-  # NJGPA files have 3 header rows (description, title, suppression notes)
-  # Row 4 contains actual column headers
-  njgpa <- readxl::read_excel(path = tname, skip = 3, na = "*", guess_max = 30000)
-
-  # Last two rows are notes
-  njgpa <- njgpa[1:(nrow(njgpa) - 2), ]
-  njgpa
+  source_result_data(get_raw_njgpa_result(end_year, subj))
 }
 
 
@@ -218,19 +158,27 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
   }
 
   if (end_year >= 2019) {
-    p <- get_raw_sla(end_year, grade_or_subj, subj)
+    source_result <- get_raw_sla_result(end_year, grade_or_subj, subj)
   } else {
-    p <- get_raw_parcc(end_year, grade_or_subj, subj)
+    source_result <- get_raw_parcc_result(end_year, grade_or_subj, subj)
   }
-  p <- process_parcc(p, end_year, grade_or_subj, subj)
+  source_result <- transform_source_result(source_result, function(p) {
+    p <- process_parcc(p, end_year, grade_or_subj, subj)
+    if (tidy) {
+      p$subgroup <- tidy_parcc_subgroup(p$subgroup)
+      p <- p %>% parcc_perf_level_counts()
+    }
+    p
+  })
+  p <- source_result_data(source_result)
 
-  if (tidy) {
-    p$subgroup <- tidy_parcc_subgroup(p$subgroup)
-
-    p <- p %>% parcc_perf_level_counts()
-  }
-
-  p
+  attach_source_results(
+    p,
+    source_result_record(
+      source_result, "parcc", end_year,
+      paste(toupper(subj), grade_or_subj, sep = "-")
+    )
+  )
 }
 
 
@@ -255,22 +203,58 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' }
 fetch_njgpa <- function(end_year, subj, tidy = FALSE) {
 
-  if (end_year < 2022) {
-    stop("NJGPA data is only available starting in 2022")
-  }
+  source_result <- get_raw_njgpa_result(end_year, subj)
+  source_result <- transform_source_result(source_result, function(p) {
+    # Use the same processing as PARCC/NJSLA
+    p <- process_parcc(p, end_year, grade = "GP", subj = subj)
+    if (tidy) {
+      p$subgroup <- tidy_parcc_subgroup(p$subgroup)
+      p <- p %>% parcc_perf_level_counts()
+    }
+    p
+  })
+  p <- source_result_data(source_result)
 
-  p <- get_raw_njgpa(end_year, subj)
-  # Use the same processing as PARCC/NJSLA
-  p <- process_parcc(p, end_year, grade = "GP", subj = subj)
-
-  if (tidy) {
-    p$subgroup <- tidy_parcc_subgroup(p$subgroup)
-    p <- p %>% parcc_perf_level_counts()
-  }
-
-  p
+  attach_source_results(
+    p,
+    source_result_record(
+      source_result, "njgpa", end_year, toupper(subj)
+    )
+  )
 }
 
+
+#' Build the registered PARCC/NJSLA request grid
+#'
+#' @param include_science Include science assessments (2019+)? Default is TRUE.
+#' @return A data frame with one row per requested year, grade, and subject.
+#' @keywords internal
+.parcc_request_grid <- function(include_science = TRUE) {
+  years <- get_source_years("parcc")
+  requests <- list()
+  for (year in years) {
+    ela_grades <- if (year >= 2019) 3:10 else 3:11
+    requests[[length(requests) + 1L]] <- expand.grid(
+      end_year = year, grade = ela_grades, subject = "ela",
+      stringsAsFactors = FALSE
+    )
+    requests[[length(requests) + 1L]] <- expand.grid(
+      end_year = year, grade = 3:8, subject = "math",
+      stringsAsFactors = FALSE
+    )
+    requests[[length(requests) + 1L]] <- expand.grid(
+      end_year = year, grade = c("ALG1", "GEO", "ALG2"), subject = "math",
+      stringsAsFactors = FALSE
+    )
+    if (isTRUE(include_science) && year >= 2019) {
+      requests[[length(requests) + 1L]] <- expand.grid(
+        end_year = year, grade = c(5, 8, 11), subject = "science",
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+  dplyr::bind_rows(requests)
+}
 
 #' Fetch all PARCC results
 #'
@@ -278,7 +262,10 @@ fetch_njgpa <- function(end_year, subj, tidy = FALSE) {
 #' into single data frame, including ELA, Math, and Science assessments.
 #'
 #' @param include_science Include science assessments (2019+)? Default is TRUE.
-#' @return A data frame with all PARCC/NJSLA results
+#' @param allow_partial If `FALSE` (default), any unavailable or unparseable
+#'   requested source fails the combined request. If `TRUE`, successful sources
+#'   are returned and every request is reported by [get_source_results()].
+#' @return A data frame with all PARCC/NJSLA results and source-result records.
 #' @export
 #' @examples
 #' \dontrun{
@@ -288,110 +275,31 @@ fetch_njgpa <- function(end_year, subj, tidy = FALSE) {
 #' # Exclude science assessments
 #' all_parcc_no_sci <- fetch_all_parcc(include_science = FALSE)
 #' }
-fetch_all_parcc <- function(include_science = TRUE) {
-
-  parcc_results <- list()
-
-  # PARCC years 2015-2018, NJSLA 2019+
-
-  # Note: 2020 assessments cancelled due to COVID-19
-  # Note: 2021 only has "Start Strong" pilot data, not standard NJSLA
-  valid_years <- c(2015:2019, 2022:2025)
-
-  for (i in valid_years) {
-    # Normal grade level tests
-    for (j in c(3:8)) {
-      for (k in c("ela", "math")) {
-
-        p <- tryCatch(
-          {
-            fetch_parcc(end_year = i, grade_or_subj = j, subj = k, tidy = TRUE)
-          },
-          error = function(e) {
-            message(sprintf("Could not fetch %s grade %d %s: %s", i, j, k, e$message))
-            NULL
-          }
-        )
-
-        if (!is.null(p)) {
-          parcc_results[[paste(i, j, k, sep = "_")]] <- p
-        }
-      }
-    }
-    # HS ELA
-    if (i >= 2019) {
-      # 11th grade optional and not reported starting in 2019
-      for (j in c(9:10)) {
-        p <- tryCatch(
-          {
-            fetch_parcc(end_year = i, grade_or_subj = j, subj = "ela", tidy = TRUE)
-          },
-          error = function(e) {
-            message(sprintf("Could not fetch %s grade %d ela: %s", i, j, e$message))
-            NULL
-          }
-        )
-
-        if (!is.null(p)) {
-          parcc_results[[paste(i, j, "ela", sep = "_")]] <- p
-        }
-      }
+fetch_all_parcc <- function(include_science = TRUE, allow_partial = FALSE) {
+  requests <- .parcc_request_grid(include_science)
+  captures <- lapply(seq_len(nrow(requests)), function(index) {
+    request <- requests[index, ]
+    grade <- if (grepl("^[0-9]+$", request$grade)) {
+      as.integer(request$grade)
     } else {
-      for (j in c(9:11)) {
-        p <- tryCatch(
-          {
-            fetch_parcc(end_year = i, grade_or_subj = j, subj = "ela", tidy = TRUE)
-          },
-          error = function(e) {
-            message(sprintf("Could not fetch %s grade %d ela: %s", i, j, e$message))
-            NULL
-          }
-        )
-
-        if (!is.null(p)) {
-          parcc_results[[paste(i, j, "ela", sep = "_")]] <- p
-        }
-      }
+      request$grade
     }
-
-    # Specific math tests
-    for (j in c("ALG1", "GEO", "ALG2")) {
-      p <- tryCatch(
-        {
-          fetch_parcc(end_year = i, grade_or_subj = j, subj = "math", tidy = TRUE)
-        },
-        error = function(e) {
-          message(sprintf("Could not fetch %s %s math: %s", i, j, e$message))
-          NULL
-        }
-      )
-
-      if (!is.null(p)) {
-        parcc_results[[paste(i, j, "math", sep = "_")]] <- p
-      }
-    }
-
-    # Science assessments (2019+ only, grades 5, 8, 11)
-    if (include_science && i >= 2019) {
-      for (j in c(5, 8, 11)) {
-        p <- tryCatch(
-          {
-            fetch_parcc(end_year = i, grade_or_subj = j, subj = "science", tidy = TRUE)
-          },
-          error = function(e) {
-            message(sprintf("Could not fetch %s grade %d science: %s", i, j, e$message))
-            NULL
-          }
-        )
-
-        if (!is.null(p)) {
-          parcc_results[[paste(i, j, "science", sep = "_")]] <- p
-        }
-      }
-    }
-  }
-
-  dplyr::bind_rows(parcc_results)
+    capture_source_call(
+      function() fetch_parcc(
+        end_year = request$end_year,
+        grade_or_subj = grade,
+        subj = request$subject,
+        tidy = TRUE
+      ),
+      domain = "parcc",
+      end_year = request$end_year,
+      component = paste(grade, request$subject, sep = "/")
+    )
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "PARCC/NJSLA multi-source request"
+  )
 }
 
 
@@ -400,39 +308,34 @@ fetch_all_parcc <- function(include_science = TRUE) {
 #' Convenience function to download and combine all NJGPA (graduation proficiency)
 #' results into a single data frame.
 #'
-#' @return A data frame with all NJGPA results (ELA and Math)
+#' @param allow_partial If `FALSE` (default), any unavailable or unparseable
+#'   subject fails the request. If `TRUE`, successful subjects are returned and
+#'   all subject/year statuses are available through [get_source_results()].
+#' @return A data frame with all NJGPA results (ELA and Math) and source status.
 #' @export
 #' @examples
 #' \dontrun{
 #' # Get all NJGPA results
 #' all_njgpa <- fetch_all_njgpa()
 #' }
-fetch_all_njgpa <- function() {
-
-  njgpa_results <- list()
-
-  # NJGPA started in 2022
-  valid_years <- c(2022:2025)
-
-  for (i in valid_years) {
-    for (k in c("ela", "math")) {
-      p <- tryCatch(
-        {
-          fetch_njgpa(end_year = i, subj = k, tidy = TRUE)
-        },
-        error = function(e) {
-          message(sprintf("Could not fetch NJGPA %s %s: %s", i, k, e$message))
-          NULL
-        }
-      )
-
-      if (!is.null(p)) {
-        njgpa_results[[paste(i, k, sep = "_")]] <- p
-      }
-    }
-  }
-
-  dplyr::bind_rows(njgpa_results)
+fetch_all_njgpa <- function(allow_partial = FALSE) {
+  requests <- expand.grid(
+    end_year = get_source_years("njgpa"),
+    subject = c("ela", "math"),
+    stringsAsFactors = FALSE
+  )
+  captures <- lapply(seq_len(nrow(requests)), function(index) {
+    request <- requests[index, ]
+    capture_source_call(
+      function() fetch_njgpa(request$end_year, request$subject, tidy = TRUE),
+      domain = "njgpa", end_year = request$end_year,
+      component = request$subject
+    )
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "NJGPA multi-source request"
+  )
 }
 
 
@@ -449,56 +352,31 @@ fetch_all_njgpa <- function() {
 #' @return URL string
 #' @keywords internal
 get_access_url <- function(end_year) {
-  if (end_year < 2022) {
-    stop("ACCESS for ELLs data is only available starting in 2022")
-  }
-
-  sy_start <- substr(end_year - 1, 3, 4)
-  sy_end <- substr(end_year, 3, 4)
-  year_suffix <- paste0(end_year - 1, "-", sy_end)
-
-  stem <- "https://www.nj.gov/education/assessment/results/reports/"
-
-
-  # URL structure differs by year
-  # 2023-2024: /access/ directory
-  # 2022: /dlm/ directory
-  if (end_year >= 2023) {
-    dir <- "access"
-  } else {
-    dir <- "dlm"
-  }
-
-  paste0(stem, sy_start, sy_end, "/", dir, "/ACCESS_ELLS_DataFile_", year_suffix, ".xlsx")
+  validate_end_year(end_year, "access")
+  resolve_source_url("access", end_year = end_year)
 }
 
 
-#' Reads the raw ACCESS for ELLs Excel file from the state website
+#' Parse a validated ACCESS for ELLs workbook
 #'
-#' Downloads the ACCESS file and reads a specific grade sheet.
+#' Reads a specific grade sheet from an adapter-validated local workbook.
 #'
-#' @param end_year A school year (2022-2025)
+#' @param path Path to a validated ACCESS workbook.
 #' @param grade Grade level: "K" or 0 for Kindergarten, or 1-12 for other grades.
 #'   Use "all" to get all grades combined.
 #' @return ACCESS dataframe for the specified grade
 #' @keywords internal
-get_raw_access <- function(end_year, grade = "all") {
-
-  target_url <- get_access_url(end_year)
-
-  tname <- tempfile(pattern = "access", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
-
+.parse_access_workbook <- function(path, grade = "all") {
   # Map grade to sheet name
   if (grade == "all") {
     # Read all grade sheets and combine
-    sheets <- readxl::excel_sheets(tname)
+    sheets <- readxl::excel_sheets(path)
     # Skip first sheet (Workbook Overview)
     grade_sheets <- sheets[sheets != sheets[1]]
 
     all_data <- lapply(grade_sheets, function(sheet) {
       df <- readxl::read_excel(
-        path = tname, sheet = sheet, skip = 3, na = "*", guess_max = 10000
+        path = path, sheet = sheet, skip = 3, na = "*", guess_max = 10000
       )
       # Extract grade from sheet name
       if (sheet == "Kindergarten") {
@@ -521,12 +399,43 @@ get_raw_access <- function(end_year, grade = "all") {
     }
 
     access_data <- readxl::read_excel(
-      path = tname, sheet = sheet_name, skip = 3, na = "*", guess_max = 10000
+      path = path, sheet = sheet_name, skip = 3, na = "*", guess_max = 10000
     )
     access_data$grade <- grade_label
   }
 
   access_data
+}
+
+get_raw_access_result <- function(end_year, grade = "all",
+                                  request_fn = .default_source_request) {
+  target_url <- get_access_url(end_year)
+  transport <- download_source(
+    target_url, source_type = "xlsx", request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+
+  parsed <- tryCatch(
+    .parse_access_workbook(transport$data, grade),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed, source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at, digest = transport$digest
+  )
+}
+
+get_raw_access <- function(end_year, grade = "all") {
+  source_result_data(get_raw_access_result(end_year, grade))
 }
 
 
@@ -646,13 +555,13 @@ process_access <- function(access_file, end_year) {
 #' access_k <- fetch_access(2024, grade = "K")
 #' }
 fetch_access <- function(end_year, grade = "all") {
-
-  if (end_year < 2022) {
-    stop("ACCESS for ELLs data is only available starting in 2022")
-  }
-
-  access_data <- get_raw_access(end_year, grade)
-  process_access(access_data, end_year)
+  source_result <- get_raw_access_result(end_year, grade)
+  access_data <- source_result_data(source_result)
+  out <- process_access(access_data, end_year)
+  attach_source_results(
+    out,
+    source_result_record(source_result, "access", end_year, as.character(grade))
+  )
 }
 
 
@@ -661,6 +570,9 @@ fetch_access <- function(end_year, grade = "all") {
 #' Convenience function to download and combine all available ACCESS
 #' for ELLs results into a single data frame.
 #'
+#' @param allow_partial If `FALSE` (default), a failed year aborts the request.
+#'   If `TRUE`, successful years are returned with request status available from
+#'   [get_source_results()].
 #' @return A data frame with all ACCESS results (2022-2025, all grades)
 #' @export
 #' @examples
@@ -668,30 +580,18 @@ fetch_access <- function(end_year, grade = "all") {
 #' # Get all ACCESS results (takes a while)
 #' all_access <- fetch_all_access()
 #' }
-fetch_all_access <- function() {
-
-  access_results <- list()
-
-  # ACCESS data available 2022-2025
-  valid_years <- c(2022:2025)
-
-  for (year in valid_years) {
-    result <- tryCatch(
-      {
-        fetch_access(end_year = year, grade = "all")
-      },
-      error = function(e) {
-        message(sprintf("Could not fetch ACCESS %s: %s", year, e$message))
-        NULL
-      }
+fetch_all_access <- function(allow_partial = FALSE) {
+  years <- get_source_years("access")
+  captures <- lapply(years, function(year) {
+    capture_source_call(
+      function() fetch_access(end_year = year, grade = "all"),
+      domain = "access", end_year = year, component = "all"
     )
-
-    if (!is.null(result)) {
-      access_results[[as.character(year)]] <- result
-    }
-  }
-
-  dplyr::bind_rows(access_results)
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "ACCESS multi-year request"
+  )
 }
 
 
@@ -707,29 +607,41 @@ fetch_all_access <- function() {
 #' @return URL string
 #' @keywords internal
 get_chronic_absenteeism_url <- function(end_year) {
+  validate_end_year(end_year, "essa_chronic_absence")
+  resolve_source_url("essa_chronic_absence", end_year = end_year)
+}
 
-  valid_years <- c(2017, 2018, 2019, 2022, 2023, 2024)
-  if (!end_year %in% valid_years) {
-    stop(paste0(
-      "Chronic absenteeism data is available for years: ",
-      paste(valid_years, collapse = ", "),
-      ". Years 2020-2021 were not reported due to COVID-19."
+.get_raw_essa_chronic_absence_result <- function(
+    end_year, request_fn = .default_source_request) {
+  target_url <- get_chronic_absenteeism_url(end_year)
+  transport <- download_source(
+    target_url, source_type = "xlsx", request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+
+  parsed <- tryCatch(
+    readxl::read_excel(
+      path = transport$data,
+      sheet = "Chronic Absenteeism",
+      skip = 6,
+      na = c("*", "N", "NA", ""),
+      guess_max = 5000
+    ),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(parsed)
     ))
   }
-
-  stem <- "https://www.nj.gov/education/title1/accountability/docs/"
-
-  # URL patterns differ by year
-  urls <- list(
-    "2024" = paste0(stem, "2024/2023_24_Accountability_Workbook_File_Comprehensive_Support_and_Improvement.xlsx"),
-    "2023" = paste0(stem, "2024/2022_2023_Accountability_Workbook_File_Comprehensive_Support_and_Improvement.xlsx"),
-    "2022" = paste0(stem, "22/Public_Comprehensive_Workbook_File_January_2023.xlsx"),
-    "2019" = paste0(stem, "19/2018-19%20Accountability%20Workbook%20File,%20Comprehensive%20Support%20and%20Improvement.xlsx"),
-    "2018" = paste0(stem, "18/Final%202017-18%20Accountability%20Workbook%20File,%20Comprehensive%20Support%20and%20Improvement.xlsx"),
-    "2017" = paste0(stem, "18/Final%202016-17%20Accountability%20Workbook%20File,%20Comprehensive%20Support%20and%20Improvement.xlsx")
+  new_source_result(
+    data = parsed, source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at, digest = transport$digest
   )
-
-  urls[[as.character(end_year)]]
 }
 
 
@@ -763,20 +675,8 @@ get_chronic_absenteeism_url <- function(end_year) {
 #' ca_2024$chronic_absent_black <- 100 - ca_2024$attendance_black
 #' }
 fetch_essa_chronic_absenteeism <- function(end_year) {
-
-  target_url <- get_chronic_absenteeism_url(end_year)
-
-  tname <- tempfile(pattern = "ca", tmpdir = tempdir(), fileext = ".xlsx")
-  downloader::download(target_url, destfile = tname, mode = "wb")
-
-  # Read Chronic Absenteeism sheet
-  ca_data <- readxl::read_excel(
-    path = tname,
-    sheet = "Chronic Absenteeism",
-    skip = 6,
-    na = c("*", "N", "NA", ""),
-    guess_max = 5000
-  )
+  source_result <- .get_raw_essa_chronic_absence_result(end_year)
+  ca_data <- source_result_data(source_result)
 
   # Standardize column names
   # The columns are: County Code, District Code, School Code, Configuration,
@@ -820,7 +720,7 @@ fetch_essa_chronic_absenteeism <- function(end_year) {
   ca_data$is_charter <- ca_data$county_id == "80"
 
   # Reorder columns
-  ca_data %>%
+  out <- ca_data %>%
     dplyr::select(
       testing_year,
       county_id, district_id, school_id, configuration,
@@ -828,6 +728,12 @@ fetch_essa_chronic_absenteeism <- function(end_year) {
       chronic_absenteeism_total,
       is_school, is_district, is_charter
     )
+  attach_source_results(
+    out,
+    source_result_record(
+      source_result, "essa_chronic_absence", end_year, "chronic"
+    )
+  )
 }
 
 
@@ -836,6 +742,9 @@ fetch_essa_chronic_absenteeism <- function(end_year) {
 #' Convenience function to download and combine all available chronic
 #' absenteeism data into a single data frame.
 #'
+#' @param allow_partial If `FALSE` (default), any failed year aborts the
+#'   combined request. If `TRUE`, successful years are returned with request
+#'   status available from [get_source_results()].
 #' @return A data frame with all chronic absenteeism results (2017-2019, 2022-2024)
 #' @export
 #' @examples
@@ -843,31 +752,19 @@ fetch_essa_chronic_absenteeism <- function(end_year) {
 #' # Get all chronic absenteeism data
 #' all_ca <- fetch_all_chronic_absenteeism()
 #' }
-fetch_all_chronic_absenteeism <- function() {
-
-  ca_results <- list()
-
-  # Chronic absenteeism data available 2017-2019, 2022-2024
-  # (2020-2021 not reported due to COVID)
-  valid_years <- c(2017, 2018, 2019, 2022, 2023, 2024)
-
-  for (year in valid_years) {
-    result <- tryCatch(
-      {
-        fetch_essa_chronic_absenteeism(end_year = year)
-      },
-      error = function(e) {
-        message(sprintf("Could not fetch chronic absenteeism %s: %s", year, e$message))
-        NULL
-      }
+fetch_all_chronic_absenteeism <- function(allow_partial = FALSE) {
+  years <- get_source_years("essa_chronic_absence")
+  captures <- lapply(years, function(year) {
+    capture_source_call(
+      function() fetch_essa_chronic_absenteeism(end_year = year),
+      domain = "essa_chronic_absence", end_year = year,
+      component = "chronic"
     )
-
-    if (!is.null(result)) {
-      ca_results[[as.character(year)]] <- result
-    }
-  }
-
-  dplyr::bind_rows(ca_results)
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "ESSA chronic-absence multi-year request"
+  )
 }
 
 

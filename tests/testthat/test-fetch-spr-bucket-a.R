@@ -71,8 +71,7 @@ test_that("normalize_grade_test maps pre-redesign labels to the 2025 form", {
 # ==============================================================================
 
 test_that("fetch_spr_proficiency_by_test returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_proficiency_by_test(2025, subject = "ela")
@@ -89,8 +88,7 @@ test_that("fetch_spr_proficiency_by_test returns expected structure", {
 })
 
 test_that("fetch_spr_proficiency_by_test matches published statewide cells", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   # ELA Grade 4, All Students, statewide (SY2024-25 District workbook).
@@ -119,8 +117,7 @@ test_that("fetch_spr_proficiency_by_test matches published statewide cells", {
 # ==============================================================================
 
 test_that("fetch_spr_science_grade returns expected structure and cells", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   sci <- fetch_spr_science_grade(2025, level = "district")
@@ -144,8 +141,7 @@ test_that("fetch_spr_science_grade returns expected structure and cells", {
 # ==============================================================================
 
 test_that("fetch_spr_elp_progress returns one progress rate per entity", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   elp <- fetch_spr_elp_progress(2025, level = "district")
@@ -166,8 +162,7 @@ test_that("fetch_spr_elp_progress returns one progress rate per entity", {
 # ==============================================================================
 
 test_that("fetch_spr_grad_cohort exposes 4/5/6-year cohorts", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   gc <- fetch_spr_grad_cohort(2025, level = "district")
@@ -192,8 +187,7 @@ test_that("fetch_spr_grad_cohort exposes 4/5/6-year cohorts", {
 # ==============================================================================
 
 test_that("fetch_spr_fed_grad reshapes 2025 redesign layout (long by cohort)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   fg <- fetch_spr_fed_grad(2025, level = "district")
@@ -210,8 +204,7 @@ test_that("fetch_spr_fed_grad reshapes 2025 redesign layout (long by cohort)", {
 })
 
 test_that("fetch_spr_fed_grad harmonizes the pre-redesign (2022) layout", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   fg <- fetch_spr_fed_grad(2022, level = "district")
@@ -253,8 +246,7 @@ test_that("Bucket A value coercion maps suppression text to NA, keeps real 0", {
 # ==============================================================================
 
 test_that("fetch_spr_grad_cohort backfills the pre-redesign cohort sheets", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   # 2024 reads the three separate NYr sheets and stacks them.
@@ -281,8 +273,7 @@ test_that("fetch_spr_grad_cohort backfills the pre-redesign cohort sheets", {
 })
 
 test_that("fetch_spr_proficiency_by_test backfills both pre-redesign eras", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   # 2022-2024 era (grade_subject + percent_testers_met_or_exceeded).
@@ -305,8 +296,7 @@ test_that("fetch_spr_proficiency_by_test backfills both pre-redesign eras", {
 })
 
 test_that("fetch_spr_science_grade backfills NJSLA science to 2019", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   # 2022-2024 era (percent_level entity / performance_level_perc state).

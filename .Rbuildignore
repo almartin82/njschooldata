@@ -28,3 +28,14 @@ TODO\.md$
 ^python$
 ^scratch$
 ^DATA-CATEGORY-TAXONOMY\.md$
+^\.gstack$
+^site/\.quarto$
+^site/_site$
+^site/_bundles$
+^site/_freeze$
+^site/_discovery$
+^site/_stories$
+^site/_almanac_figs$
+^site/[0-9]+[.]qmd$
+^site/almanac-[0-9]+[.]qmd$
+^site/.*[.]out$
