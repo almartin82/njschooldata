@@ -17,11 +17,12 @@
   coordinators; school principals. Source-declared vacancies are `person_name`
   `NA` with `title_raw` retained. Unreachable sources return `source_status`
   `source_unavailable` with empty tables and complete meta.
-* Removed the legacy exported directory front doors `get_district_directory()`,
-  `get_school_directory()`, and `clear_directory_cache()` (and their tests).
-  The internal raw fetchers `get_raw_school_directory()` /
-  `get_raw_district_directory()` and `process_school_directory()` /
-  `process_district_directory()` are retained for internal consumers.
+* `get_district_directory()` and `get_school_directory()` remain exported as
+  compatibility front doors returning the historical flattened data frames;
+  they now use the same registered Homeroom sources and validated transport as
+  the canonical contract. `clear_directory_cache()` is removed. Internal raw
+  and processing helpers remain available to package consumers such as
+  `geo.R`.
 
 # njschooldata 0.9.26
 
