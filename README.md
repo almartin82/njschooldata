@@ -169,7 +169,7 @@ k_trend %>%
 | **Enrollment** | 2000-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
 | **Assessments** | 2004-2024 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
 | **Graduation** | 2011-2024 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-yr and 6-yr ACGR. District and school level |
-| **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
+| **Directory** | Current | `fetch_directory()` | School and district entities (`entities`), role holders like superintendents (`roles`), fetch metadata (`meta`). Names, IDs, addresses, school type |
 | **Per-Pupil Spending** | 2001-2026 | `fetch_finance()` / `fetch_tges()` / `fetch_state_aid()` | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |
@@ -206,8 +206,10 @@ math_g4 <- fetch_parcc(2024, grade_or_subj = 4, subj = 'math')
 # Graduation rates
 grate <- fetch_grad_rate(2024)
 
-# School directory
-schools <- get_school_directory()
+# Directory (schools + districts, plus role holders like superintendents)
+dir <- fetch_directory()
+schools <- dir$entities
+supts <- dir$roles[dir$roles$role == "superintendent", ]
 
 # Facilities data
 facilities <- fetch_facilities("finance")
@@ -235,9 +237,6 @@ math_g4 = njsd.fetch_parcc(2024, 4, 'math')
 
 # Graduation rates
 grate = njsd.fetch_grad_rate(2024)
-
-# School directory
-schools = njsd.get_school_directory()
 
 # Facilities data
 facilities = njsd.fetch_facilities("finance")
