@@ -18,7 +18,7 @@ write_minimal_zip <- function(path) {
   dir.create(work)
   on.exit(unlink(work, recursive = TRUE), add = TRUE)
   writeLines("adapter boundary", file.path(work, "source.txt"))
-  zip::zipr(path, file.path(work, "source.txt"), root = work)
+  zip::zipr(path, "source.txt", root = work)
 }
 
 test_that("download adapter validates a ZIP and records provenance", {
