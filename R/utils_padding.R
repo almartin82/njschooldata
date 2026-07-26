@@ -11,13 +11,29 @@
 #' Ensures a numeric value has exactly the specified number of digits by
 #' adding leading zeros.
 #'
+#' Numeric coercion can interpret \code{E} or \code{e} as scientific notation
+#' and can turn non-numeric source values into plausible-looking fabricated
+#' identifiers. This implementation pads only values containing digits and
+#' uses string concatenation instead of a numeric round trip. Real \code{NA},
+#' alphanumeric codes, and source placeholders such as \code{"N.A."} are left
+#' exactly as published.
+#'
 #' @param vector character vector
 #' @param digits ensure exactly this many digits by leading zero-padding
 #'
 #' @return character vector
 #' @export
 pad_leading <- function(vector, digits) {
-  sprintf(paste0("%0", digits, "d"), as.numeric(vector))
+  chr <- as.character(vector)
+  is_numeric_id <- !is.na(chr) & grepl("^[0-9]+$", chr)
+
+  out <- chr
+  needs_pad <- is_numeric_id & nchar(chr) < digits
+  out[needs_pad] <- paste0(
+    strrep("0", digits - nchar(chr[needs_pad])),
+    chr[needs_pad]
+  )
+  out
 }
 
 

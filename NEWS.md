@@ -1,5 +1,26 @@
 # njschooldata (development)
 
+## Source and release contracts hardened
+
+* Pull-request R and Python tests are deterministic and fixture-backed. Live NJ
+  DOE checks require `NJSCHOOLDATA_LIVE_TESTS=true` and run in a separate
+  scheduled/manual canary that distinguishes source outages from parser or
+  contract regressions.
+* One source registry now owns aliases, raw/tidy year coverage, deliberate
+  gaps, URLs, content types, and permitted hosts. Validated downloads carry
+  provenance and distinguish `source_unavailable` from `parse_error`.
+* Finance and profile-site builds are strict by default. Partial results require
+  an explicit opt-in and retain machine-readable source/build manifests.
+* Python 0.9.26 validates the loaded R package against `>=0.9.26,<0.10.0` and
+  checks curated wrapper signatures and coverage documentation against R.
+
+## Fixed silent id fabrication in `pad_leading()`
+
+* `pad_leading()` now pads only strings containing digits. It no longer sends
+  native identifiers through numeric coercion, so scientific-notation-like
+  identifiers, unusually long values, real `NA`, and NJ DOE placeholders such
+  as `"N.A."` remain exactly as published.
+
 ## Directory converted to directory-contract/v1
 
 * `fetch_directory()` now takes ZERO arguments and returns the canonical triple

@@ -18,3 +18,11 @@ character vector
 Ensures a numeric value has exactly the specified number of digits by
 adding leading zeros.
 }
+\details{
+Numeric coercion can interpret \code{E} or \code{e} as scientific notation
+and can turn non-numeric source values into plausible-looking fabricated
+identifiers. This implementation pads only values containing digits and
+uses string concatenation instead of a numeric round trip. Real \code{NA},
+alphanumeric codes, and source placeholders such as \code{"N.A."} are left
+exactly as published.
+}

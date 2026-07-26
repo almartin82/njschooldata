@@ -136,6 +136,38 @@ test_that("pad_leading works for various digit counts", {
 })
 
 
+test_that("pad_leading never coerces a non-numeric id to a number", {
+  # R reads E/e as scientific notation inside as.numeric/as.integer, so a
+  # naive sprintf(fmt, as.numeric(x)) implementation turns a real alphanumeric
+  # charter/district code into a different, plausible-looking numeric id
+  # (as.numeric("49E000") is 49 with no NA and no warning). pad_leading must
+  # keep any non-digit-only id exactly as published instead of fabricating a
+  # padded number.
+  expect_equal(pad_leading("49E000", 4), "49E000")
+  expect_equal(pad_leading("6033A", 4), "6033A")
+  expect_equal(pad_leading(c("1", "6033A"), 4), c("0001", "6033A"))
+})
+
+
+test_that("pad_leading keeps real NA as NA, never a fabricated '0NA' string", {
+  # sprintf("%0Nd", NA) prints a fabricated "0NA"-style string, not a clean
+  # NA. This is the exact live bug: TGES district-average rows are coded
+  # "N.A." in the raw source, and the un-hardened pad_leading turned that
+  # into "00NA" - a wrong value that *looks* like a real 4-digit district id.
+  expect_true(is.na(pad_leading(NA, 4)))
+  expect_equal(pad_leading("N.A.", 4), "N.A.")
+  expect_false(grepl("^0+NA$", pad_leading("N.A.", 4)))
+})
+
+
+test_that("pad_leading pads a very long digit-only id without overflowing", {
+  # as.integer() overflows to NA above R's 32-bit integer range; pad_leading
+  # avoids that failure mode entirely by padding with string concatenation
+  # rather than a numeric round-trip.
+  expect_equal(pad_leading("99999999999", 4), "99999999999")
+})
+
+
 test_that("pad_grade zero-pads single-digit grades", {
   expect_equal(pad_grade(3), "03")
   expect_equal(pad_grade(8), "08")

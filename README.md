@@ -169,7 +169,7 @@ k_trend %>%
 | **Enrollment** | 1999-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
 | **Assessments** | 2004-2025 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA/PARCC is available for 2015-2019 and 2022-2025; 2020 was cancelled and 2021 used Start Strong. NJASK, HSPA, and GEPA provide legacy coverage |
 | **Graduation** | 2011-2025 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-year ACGR through 2025; graduation-count raw files begin in 1998 while the supported tidy count contract begins in 2012 |
-| **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
+| **Directory** | Current | `fetch_directory()` / `get_school_directory()` / `get_district_directory()` | Canonical entities/roles/provenance plus compatibility data-frame views |
 | **Per-Pupil Spending** | 2001-2026 | `fetch_finance()` / `fetch_tges()` / `fetch_state_aid()` | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |

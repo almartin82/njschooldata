@@ -96,6 +96,9 @@ test_that("slugify_district produces unique slugs for all directory districts", 
   skip_if_no_live_tests()
 
   dir <- fetch_directory()
+  if (identical(dir$meta$source_status, "source_unavailable")) {
+    skip("NJDOE Homeroom downloads were unreachable")
+  }
   districts <- unique(
     dir$entities[
       dir$entities$entity_type == "district",
