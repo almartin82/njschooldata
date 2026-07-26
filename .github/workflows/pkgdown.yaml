@@ -3,6 +3,8 @@
 on:
   push:
     branches: [main, master]
+  pull_request:
+    branches: [main, master]
   release:
     types: [published]
   workflow_dispatch:
@@ -17,6 +19,7 @@ jobs:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NJSCHOOLDATA_LIVE_TESTS: "false"
     permissions:
       contents: write
     steps:
@@ -33,7 +36,20 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      - name: Build offline documentation contract
+        if: github.event_name == 'pull_request'
+        run: |
+          pkgdown::build_home(preview = FALSE)
+          pkgdown::build_reference(
+            lazy = FALSE,
+            examples = FALSE,
+            preview = FALSE,
+            devel = FALSE
+          )
+        shell: Rscript {0}
+
       - name: Build site
+        if: github.event_name != 'pull_request'
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
