@@ -22,9 +22,15 @@ ell_cols <- c(
 )
 
 # fetch a count-complete year and a percent-only year once; reuse across tests.
-ell_2025 <- tryCatch(suppressWarnings(fetch_ell(2025)), error = function(e) NULL)
-ell_2015 <- tryCatch(suppressWarnings(fetch_ell(2015)), error = function(e) NULL)
-ell_2021 <- tryCatch(suppressWarnings(fetch_ell(2021)), error = function(e) NULL)
+ell_2025 <- if (live_tests_enabled()) {
+  tryCatch(suppressWarnings(fetch_ell(2025)), error = function(e) NULL)
+} else NULL
+ell_2015 <- if (live_tests_enabled()) {
+  tryCatch(suppressWarnings(fetch_ell(2015)), error = function(e) NULL)
+} else NULL
+ell_2021 <- if (live_tests_enabled()) {
+  tryCatch(suppressWarnings(fetch_ell(2021)), error = function(e) NULL)
+} else NULL
 have_2025 <- !is.null(ell_2025) && nrow(ell_2025) > 0
 have_2015 <- !is.null(ell_2015) && nrow(ell_2015) > 0
 have_2021 <- !is.null(ell_2021) && nrow(ell_2021) > 0
@@ -43,8 +49,12 @@ test_that("get_available_ell_years returns a sane integer range", {
   expect_false(2005 %in% yrs)
 })
 
-test_that("an out-of-range year returns the empty, correctly-typed tidy frame", {
-  e <- fetch_ell(2005)
+test_that("an out-of-range single-year request fails explicitly", {
+  expect_error(fetch_ell(2005), "not valid for ell data")
+})
+
+test_that("the internal empty EL contract remains correctly typed", {
+  e <- empty_ell_frame()
   expect_equal(names(e), ell_cols)
   expect_equal(nrow(e), 0L)
   expect_type(e$n_students, "double")
@@ -58,7 +68,7 @@ test_that("EL subgroup values standardize offline", {
 })
 
 test_that("empty EL frames carry subgroup_std after subgroup", {
-  e <- fetch_ell(2005)
+  e <- empty_ell_frame()
   expect_true("subgroup_std" %in% names(e))
   expect_equal(
     which(names(e) == "subgroup_std"),
@@ -66,10 +76,11 @@ test_that("empty EL frames carry subgroup_std after subgroup", {
   )
 })
 
-test_that("with_status appends value_status on empty tidy EL frames", {
-  e <- fetch_ell(2005, with_status = TRUE)
-  expect_true("value_status" %in% names(e))
-  expect_equal(nrow(e), 0L)
+test_that("with_status does not weaken strict single-year validation", {
+  expect_error(
+    fetch_ell(2005, with_status = TRUE),
+    "not valid for ell data"
+  )
 })
 
 test_that("ell_locate_cols handles the EL/MLL rename and percent spacing", {
@@ -93,11 +104,13 @@ test_that("ell_locate_cols handles the EL/MLL rename and percent spacing", {
 # ------------------------------------------------------------------------------
 
 test_that("fetch_ell emits exactly the canonical columns in order", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   expect_equal(names(ell_2025), ell_cols)
 })
 
 test_that("el_status and subgroup carry the documented constant values", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   expect_equal(unique(ell_2025$el_status), "current")
   expect_equal(unique(ell_2025$subgroup), "total")
@@ -105,6 +118,7 @@ test_that("el_status and subgroup carry the documented constant values", {
 })
 
 test_that("entity flags are mutually exclusive and cover every row", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   flagsum <- ell_2025$is_state + ell_2025$is_district + ell_2025$is_school
   expect_true(all(flagsum == 1))
@@ -117,6 +131,7 @@ test_that("entity flags are mutually exclusive and cover every row", {
 # ------------------------------------------------------------------------------
 
 test_that("counts and percentages are finite and non-negative", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   n <- ell_2025$n_students[!is.na(ell_2025$n_students)]
   expect_true(all(is.finite(n)))
@@ -128,6 +143,7 @@ test_that("counts and percentages are finite and non-negative", {
 })
 
 test_that("no duplicate rows per entity x el_status x subgroup", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   dupes <- ell_2025 %>%
     dplyr::count(cds_code, el_status, subgroup, grade_level) %>%
@@ -136,6 +152,7 @@ test_that("no duplicate rows per entity x el_status x subgroup", {
 })
 
 test_that("suppression bounds equal the point value (NJ does not suppress EL)", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   has_count <- !is.na(ell_2025$n_students)
   expect_true(all(ell_2025$n_students_lower[has_count] == ell_2025$n_students[has_count]))
@@ -150,6 +167,7 @@ test_that("suppression bounds equal the point value (NJ does not suppress EL)", 
 # ------------------------------------------------------------------------------
 
 test_that("state EL count equals the sum of district counts (count-complete year)", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   state_n <- ell_2025$n_students[ell_2025$is_state]
   dist_sum <- sum(ell_2025$n_students[ell_2025$is_district], na.rm = TRUE)
@@ -157,6 +175,7 @@ test_that("state EL count equals the sum of district counts (count-complete year
 })
 
 test_that("pct_of_enrollment reconciles with count / total enrollment", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   d <- ell_2025 %>%
     dplyr::filter(!is.na(n_students), total_enrollment > 0)
@@ -165,6 +184,7 @@ test_that("pct_of_enrollment reconciles with count / total enrollment", {
 })
 
 test_that("EL counts never exceed total enrollment", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   d <- ell_2025 %>% dplyr::filter(!is.na(n_students), !is.na(total_enrollment))
   expect_true(all(d$n_students <= d$total_enrollment + 1e-6))
@@ -176,6 +196,7 @@ test_that("EL counts never exceed total enrollment", {
 # ------------------------------------------------------------------------------
 
 test_that("2021 publishes a real statewide count but percent-only districts", {
+  skip_if_no_live_tests()
   skip_if_not(have_2021, "NJ DOE enrollment source unavailable")
   st <- ell_2021 %>% dplyr::filter(is_state)
   expect_false(is.na(st$n_students))            # state count is real
@@ -192,6 +213,7 @@ test_that("2021 publishes a real statewide count but percent-only districts", {
 # ------------------------------------------------------------------------------
 
 test_that("pinned statewide EL counts match the published files", {
+  skip_if_no_live_tests()
   skip_if_not(have_2015 && have_2025, "NJ DOE enrollment source unavailable")
   # 2014-15 file: statewide LEP = 70,119 of 1,369,379 enrolled
   st15 <- ell_2015 %>% dplyr::filter(is_state)
@@ -203,6 +225,7 @@ test_that("pinned statewide EL counts match the published files", {
 })
 
 test_that("pinned district value (Newark, 2024-25) matches the published file", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   nwk <- ell_2025 %>% dplyr::filter(district_id == "3570", is_district)
   expect_equal(nrow(nwk), 1L)
@@ -210,16 +233,20 @@ test_that("pinned district value (Newark, 2024-25) matches the published file", 
   expect_equal(nwk$total_enrollment, 43980, tolerance = 0.5)
 })
 
-test_that("fetch_ell_multi binds years and warns on unavailable ones", {
+test_that("fetch_ell_multi requires partial opt-in for unavailable years", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
-  expect_warning(
-    m <- fetch_ell_multi(c(2004, 2025)),
-    "Skipping years"
-  )
+  expect_error(fetch_ell_multi(c(2004, 2025)), class = "njsd_not_published")
+  m <- fetch_ell_multi(c(2004, 2025), allow_partial = TRUE)
   expect_true(all(m$end_year == 2025))
+  expect_identical(
+    get_source_results(m)$source_status,
+    c("not_published", "actual")
+  )
 })
 
 test_that("tidy = FALSE returns the wide per-entity frame with el_count", {
+  skip_if_no_live_tests()
   skip_if_not(have_2025, "NJ DOE enrollment source unavailable")
   w <- fetch_ell(2025, tidy = FALSE)
   expect_true("el_count" %in% names(w))

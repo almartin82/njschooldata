@@ -69,8 +69,7 @@ test_that("tidy_parcc_subgroup standardizes NJGPA/Science and 2024-25 labels", {
 })
 
 test_that("fetch_njgpa returns district rows keyed by standardized subgroups", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   g <- tryCatch(fetch_njgpa(2024, "ela", tidy = TRUE), error = function(e) NULL)
   skip_if(is.null(g), "NJ DOE NJGPA source unreachable")
   dist_total <- g[!is.na(g$is_district) & g$is_district &
@@ -83,16 +82,14 @@ test_that("fetch_njgpa returns district rows keyed by standardized subgroups", {
 })
 
 test_that("fetch_njgpa reaches the first (2021-22) administration", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   g <- tryCatch(fetch_njgpa(2022, "ela", tidy = TRUE), error = function(e) NULL)
   skip_if(is.null(g), "NJ DOE NJGPA source unreachable")
   expect_gt(sum(g$is_district & g$subgroup == "total_population", na.rm = TRUE), 300)
 })
 
 test_that("fetch_math_course_enrollment normalizes grades and masks to NA", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   m <- tryCatch(fetch_math_course_enrollment(2025, "district"),
                 error = function(e) NULL)
   skip_if(is.null(m), "NJ DOE SPR source unreachable")

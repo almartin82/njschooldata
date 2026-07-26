@@ -3,27 +3,6 @@
 # ==============================================================================
 
 # -----------------------------------------------------------------------------
-# Year Range Configuration
-# -----------------------------------------------------------------------------
-
-#' Valid year ranges by data type
-#' @keywords internal
-year_ranges <- list(
-  enrollment = list(min = 2000, max = 2026),
-  parcc = list(min = 2015, max = 2024, skip = 2020),
-  njask = list(min = 2004, max = 2014),
-  hspa = list(min = 2004, max = 2014),
-  gepa = list(min = 2004, max = 2007),
-  grad_rate = list(min = 2011, max = 2024),
-  grad_count = list(min = 2012, max = 2024),
-  sped = list(min = 2002, max = 2019),
-  tges = list(min = 1999, max = 2019),
-  report_card = list(min = 2003, max = 2019),
-  msgp = list(min = 2012, max = 2019),
-  special_pop = list(min = 2017, max = 2019)
-)
-
-# -----------------------------------------------------------------------------
 # Helper Functions
 # -----------------------------------------------------------------------------
 
@@ -43,27 +22,6 @@ format_valid_values <- function(values, max_show = 10) {
     shown <- values
   }
   paste(shown, collapse = ", ")
-}
-
-#' Get valid years for a data type
-#' @param data_type Character string identifying the data type
-#' @return Integer vector of valid years
-#' @export
-#' @examples
-#' get_valid_years("enrollment")
-#' get_valid_years("parcc")
-get_valid_years <- function(data_type) {
-  range <- year_ranges[[data_type]]
-  if (is.null(range)) {
-    stop(sprintf("Unknown data type: '%s'", data_type))
-  }
-
-  valid_years <- seq(range$min, range$max)
-  if (!is.null(range$skip)) {
-    valid_years <- valid_years[!valid_years %in% range$skip]
-  }
-
-  valid_years
 }
 
 # -----------------------------------------------------------------------------
@@ -87,8 +45,7 @@ get_valid_years <- function(data_type) {
 #' }
 validate_end_year <- function(end_year, data_type) {
   # Type check
-
-if (!is.numeric(end_year) || length(end_year) != 1) {
+  if (!is.numeric(end_year) || length(end_year) != 1) {
     stop(
       sprintf(
         "`end_year` must be a single numeric value, not %s.",
@@ -122,16 +79,16 @@ if (!is.numeric(end_year) || length(end_year) != 1) {
 
   # Range check
   if (!end_year %in% valid_years) {
-    range <- year_ranges[[data_type]]
-
-    # Special message for COVID year
-    if (!is.null(range$skip) && end_year %in% range$skip) {
+    family <- resolve_data_family(data_type)
+    entry <- get_source_registry()[[family]]
+    skipped_reason <- entry$skipped_reasons[[as.character(end_year)]]
+    if (!is.null(skipped_reason)) {
       stop(
         sprintf(
           "`end_year` = %d is not available for %s data.\n%s",
           end_year,
-          gsub("_", " ", data_type),
-          "Note: 2020 assessments were cancelled due to COVID-19."
+          gsub("_", " ", family),
+          skipped_reason
         ),
         call. = FALSE
       )

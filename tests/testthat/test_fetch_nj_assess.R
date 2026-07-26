@@ -14,7 +14,7 @@ test_that("valid_call correctly identifies status of years/grade pairs", {
 })
 
 test_that("standard_assess correctly calls data for 2014", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   hspa_ex <- tryCatch(standard_assess(2014, 11), error = function(e) NULL)
   skip_if(is.null(hspa_ex), "Legacy assessment data URL not accessible")
@@ -45,7 +45,7 @@ test_that("standard_assess correctly calls data for 2014", {
 
 
 test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   #2014 njask
   njask_14 <- tryCatch(fetch_old_nj_assess(2014, 6), error = function(e) NULL)

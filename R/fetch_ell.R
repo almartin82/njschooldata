@@ -2,16 +2,6 @@
 # English Learner (EL) Population Data — public interface
 # ==============================================================================
 
-#' Get the years for which NJ English Learner population data is available
-#'
-#' @return integer vector of valid `end_year` values
-#' @export
-#' @examples
-#' get_available_ell_years()
-get_available_ell_years <- function() {
-  as.integer(ELL_VALID_YEARS)
-}
-
 #' Fetch New Jersey English Learner (EL) population data
 #'
 #' Downloads and tidies the English Learner / Multilingual Learner headcount
@@ -42,8 +32,8 @@ get_available_ell_years <- function() {
 #'   district/school entity-years 2020-2022). Classified from the raw count
 #'   token before numeric coercion; the count is never back-derived from the
 #'   percent. Default `FALSE` (the column is additive and off by default).
-#' @return data.frame of EL population data. An out-of-range `end_year` returns
-#'   the empty, correctly-typed tidy frame.
+#' @return data.frame of EL population data with source provenance available
+#'   from [get_source_results()]. Unsupported years fail explicitly.
 #' @seealso [fetch_access()] for EL **proficiency** (WIDA ACCESS), which joins to
 #'   this EL **population** feature on the CDS id backbone.
 #' @export
@@ -67,13 +57,7 @@ get_available_ell_years <- function() {
 #' }
 fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
                       with_status = FALSE) {
-  if (!end_year %in% ELL_VALID_YEARS) {
-    out <- empty_ell_frame()
-    if (with_status && tidy) {
-      out$value_status <- classify_value_status(character(0))
-    }
-    return(out)
-  }
+  validate_end_year(end_year, "ell")
 
   if (use_cache) {
     key <- make_cache_key(
@@ -86,7 +70,8 @@ fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
     }
   }
 
-  processed <- get_raw_ell(end_year) %>% process_ell()
+  source_result <- get_raw_ell_result(end_year)
+  processed <- source_result_data(source_result) %>% process_ell()
   out <- if (tidy) tidy_ell(processed) else processed
 
   if (with_status && tidy) {
@@ -98,6 +83,11 @@ fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
       )
     out <- dplyr::left_join(out, status, by = c("end_year", "cds_code"))
   }
+
+  out <- attach_source_results(
+    out,
+    source_result_record(source_result, "ell", end_year, "enrollment")
+  )
 
   if (use_cache) {
     cache_set(key, out)
@@ -112,8 +102,10 @@ fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
 #' @param use_cache if `TRUE`, uses the session cache.
 #' @param with_status if `TRUE` (and `tidy = TRUE`), appends the additive
 #'   `value_status` column (see [fetch_ell()]).
-#' @return combined data.frame of EL population data for all available
-#'   requested years. Unavailable years are skipped with a warning.
+#' @param allow_partial If `FALSE` (default), unavailable or failed years abort
+#'   the request. If `TRUE`, successful years are returned with every request
+#'   reported by [get_source_results()].
+#' @return combined data.frame of EL population data and source-result status.
 #' @seealso [fetch_access()] for EL proficiency (WIDA ACCESS).
 #' @export
 #' @examples
@@ -125,27 +117,26 @@ fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
 #'   select(end_year, n_students, pct_of_enrollment)
 #' }
 fetch_ell_multi <- function(end_years, tidy = TRUE, use_cache = FALSE,
-                            with_status = FALSE) {
-  available <- end_years[end_years %in% ELL_VALID_YEARS]
-  skipped <- setdiff(end_years, available)
-  if (length(skipped) > 0) {
-    warning(
-      "Skipping years without EL data: ",
-      paste(sort(skipped), collapse = ", ")
+                            with_status = FALSE, allow_partial = FALSE) {
+  captures <- lapply(sort(unique(end_years)), function(year) {
+    capture_registered_source_call(
+      function() fetch_ell(
+        year, tidy = tidy, use_cache = use_cache, with_status = with_status
+      ),
+      "ell", year, domain = "ell", component = "enrollment"
     )
-  }
-  if (length(available) == 0) {
+  })
+  out <- combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "EL population multi-year request"
+  )
+  if (nrow(out) == 0L) {
+    records <- get_source_results(out)
     out <- empty_ell_frame()
     if (with_status && tidy) {
       out$value_status <- classify_value_status(character(0))
     }
-    return(out)
+    out <- attach_source_results(out, records)
   }
-
-  purrr::map_df(
-    sort(available),
-    function(.y) fetch_ell(
-      .y, tidy = tidy, use_cache = use_cache, with_status = with_status
-    )
-  )
+  out
 }

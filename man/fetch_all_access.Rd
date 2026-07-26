@@ -4,7 +4,12 @@
 \alias{fetch_all_access}
 \title{Fetch all ACCESS for ELLs results}
 \usage{
-fetch_all_access()
+fetch_all_access(allow_partial = FALSE)
+}
+\arguments{
+\item{allow_partial}{If `FALSE` (default), a failed year aborts the request.
+If `TRUE`, successful years are returned with request status available from
+[get_source_results()].}
 }
 \value{
 A data frame with all ACCESS results (2022-2025, all grades)

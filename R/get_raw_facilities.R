@@ -14,41 +14,7 @@
 #' @return Named list of source descriptors.
 #' @keywords internal
 facilities_sources <- function() {
-  list(
-    njdoe_cds = list(
-      url = "https://www.nj.gov/education/sleds/keydocs/docs/County_District_School_Code_List.xlsx",
-      agency = "NJDOE",
-      source_type = "xlsx",
-      vintage = "CDS list current as of 2026-06-15"
-    ),
-    njgin_school_points = list(
-      url = paste0(
-        "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/",
-        "School_Point_Locations_of_NJ/FeatureServer/0/query"
-      ),
-      agency = "NJGIN",
-      source_type = "arcgis",
-      vintage = "NJGIN school points modified 2023-05-10"
-    ),
-    njsda_active_projects = list(
-      url = "https://www.njsda.gov/Projects/CapitalProgram",
-      agency = "NJSDA",
-      source_type = "html",
-      vintage = "NJSDA active capital portfolio, accessed 2026-06-22"
-    ),
-    njdoe_sda_allocation = list(
-      url = "https://www.nj.gov/education/facilities/docs/SDA/DistrictAllocationTable.xlsx",
-      agency = "NJDOE",
-      source_type = "xlsx",
-      vintage = "FY2026 SDA Emergent/Capital Maintenance allocation"
-    ),
-    njdoe_lead_soa = list(
-      url = "https://www.nj.gov/education/lead/docs/24-25SOA_SubmissionsLeadDW102825.xlsx",
-      agency = "NJDOE",
-      source_type = "xlsx",
-      vintage = "2024-2025 Lead SOA submissions, file dated 2025-10-28"
-    )
-  )
+  get_source_registry()$facilities$sources
 }
 
 #' Internal facilities cache directory
@@ -114,13 +80,7 @@ get_raw_facilities <- function(source, use_cache = TRUE) {
 #' Internal: download an XLSX and validate ZIP magic bytes
 #' @keywords internal
 facilities_download_xlsx <- function(url) {
-  dest <- tempfile(fileext = ".xlsx")
-  utils::download.file(url, dest, mode = "wb", quiet = TRUE)
-  magic <- readBin(dest, what = "raw", n = 4)
-  if (!identical(as.integer(magic), as.integer(charToRaw("PK\003\004")))) {
-    stop("Downloaded file is not a valid XLSX: ", url, call. = FALSE)
-  }
-  dest
+  source_result_data(download_source(url, source_type = "xlsx"))
 }
 
 #' Internal: fetch and read the NJDOE CDS workbook

@@ -100,7 +100,7 @@
 #' @return integer vector of supported end years
 #' @keywords internal
 get_valid_sped_placement_years <- function() {
-  2020L:2025L
+  get_source_years("sped_placement")
 }
 
 
@@ -2052,21 +2052,24 @@ finalize_sped_placement <- function(df, with_status = FALSE) {
 #' Fetch NJ SPED placement data for multiple years
 #'
 #' Convenience wrapper that calls \code{\link{fetch_sped_placement}} for each
-#' year and binds the results. Per-year failures are surfaced as warnings and
-#' the year is skipped, matching the package's existing multi-year wrappers.
+#' year and binds the results. Strict mode is the default; partial results must
+#' be requested explicitly and retain per-year source status.
 #'
 #' Every \code{(end_year, age_group, level)} combination across 2020-2025
 #' returns data, so \code{fetch_sped_placement_multi(2020:2025)} produces a
-#' single bound tibble covering the whole range. Per-year failures (network
-#' errors, e.g.) surface as warnings and the year is skipped.
+#' single bound tibble covering the whole range. A per-year failure aborts in
+#' strict mode; partial results require \code{allow_partial = TRUE}.
 #'
 #' @param end_years integer vector of school years
 #' @param age_group one of \code{"5-21"} or \code{"3-5"}
 #' @param level one of \code{"district"} or \code{"state"}
 #' @param tidy logical; passed through to \code{fetch_sped_placement()}
 #' @param with_status logical; passed through to \code{fetch_sped_placement()}
+#' @param allow_partial logical; if \code{FALSE} (default), any failed or
+#'   unsupported year aborts the request. If \code{TRUE}, successful years are
+#'   returned with status available from \code{get_source_results()}.
 #'
-#' @return a single tibble with all successfully-fetched years bound together.
+#' @return A single tibble with source-result provenance.
 #'
 #' @seealso \code{\link{fetch_sped_placement}}
 #'
@@ -2085,39 +2088,23 @@ fetch_sped_placement_multi <- function(end_years,
                                        age_group = "5-21",
                                        level = "district",
                                        tidy = TRUE,
-                                       with_status = FALSE) {
-  results <- list()
-  for (yr in end_years) {
-    result <- tryCatch(
-      fetch_sped_placement(
-        end_year = yr,
+                                       with_status = FALSE,
+                                       allow_partial = FALSE) {
+  captures <- lapply(sort(unique(end_years)), function(year) {
+    capture_registered_source_call(
+      function() fetch_sped_placement(
+        end_year = year,
         age_group = age_group,
         level = level,
         tidy = tidy,
         with_status = with_status
       ),
-      error = function(e) {
-        warning(
-          sprintf(
-            "Could not fetch SPED placement data for %d: %s",
-            yr, e$message
-          ),
-          call. = FALSE
-        )
-        NULL
-      }
+      "sped_placement", year, domain = "sped_placement",
+      component = paste(age_group, level, sep = "/")
     )
-    if (!is.null(result)) {
-      results[[as.character(yr)]] <- result
-    }
-  }
-
-  if (length(results) == 0) {
-    stop(
-      "No SPED placement data could be fetched for any requested year.",
-      call. = FALSE
-    )
-  }
-
-  dplyr::bind_rows(results)
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "SPED placement multi-year request"
+  )
 }

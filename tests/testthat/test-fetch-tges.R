@@ -44,8 +44,7 @@ test_that("tges_url_for_year rejects out-of-range years", {
 # ==============================================================================
 
 test_that("fetch_tges(2025) returns tidied per-pupil cost tables", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   res <- fetch_tges(2025)
 
@@ -68,8 +67,7 @@ test_that("fetch_tges(2025) returns tidied per-pupil cost tables", {
 test_that("fetch_tges(2025) coerces the N.R. marker instead of erroring", {
   # Regression: 2025 CSG1AA_AVGS has "N.R." in one year's per-pupil column,
   # which flipped it to character and broke bind_rows(). It must coerce to NA.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   avgs <- fetch_tges(2025)[["CSG1AA_AVGS"]]
   expect_s3_class(avgs, "data.frame")
@@ -79,8 +77,7 @@ test_that("fetch_tges(2025) coerces the N.R. marker instead of erroring", {
 })
 
 test_that("fetch_tges handles the legacy CSG era (2010)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   res <- fetch_tges(2010)
   expect_true("CSG1" %in% names(res))

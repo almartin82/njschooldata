@@ -93,10 +93,15 @@ test_that("slugify_district ignores district_id when no collisions", {
 # ==============================================================================
 
 test_that("slugify_district produces unique slugs for all directory districts", {
-  skip_on_cran()
+  skip_if_no_live_tests()
 
-  dir <- fetch_directory(level = "district")
-  districts <- unique(dir[, c("district_name", "district_id")])
+  dir <- fetch_directory()
+  districts <- unique(
+    dir$entities[
+      dir$entities$entity_type == "district",
+      c("district_name", "district_id")
+    ]
+  )
   districts <- districts[
     is.na(districts$district_name) == FALSE &
     is.na(districts$district_id) == FALSE,
@@ -126,7 +131,7 @@ test_that("slugify_district produces unique slugs for all directory districts", 
 # ==============================================================================
 
 test_that("slugify_district produces unique slugs for all enrollment districts", {
-  skip_on_cran()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE)
   districts <- unique(enr[enr$is_district == TRUE, c("district_name", "district_id")])

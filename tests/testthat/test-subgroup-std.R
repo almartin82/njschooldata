@@ -26,12 +26,15 @@ test_that("every crosswalk raw_value maps to a valid token or explicit NA", {
     "total_enrollment", "econ_disadv", "non_econ_disadv", "special_ed",
     "lep", "lep_current", "lep_former", "native_american", "asian", "black",
     "hispanic", "pacific_islander", "white", "multiracial", "other",
-    "male", "female", "non_binary"
+    "male", "female", "non_binary", "asian_pacific_islander", "migrant",
+    "military_connected", "homeless", "foster_care"
   )
   vals <- subgroup_crosswalk$subgroup_std
   expect_true(all(is.na(vals) | vals %in% std_vocab))
-  # families are exactly the three cleaners
-  expect_setequal(unique(subgroup_crosswalk$vocab_family), c("spr", "parcc", "grad6yr"))
+  expect_setequal(
+    unique(subgroup_crosswalk$vocab_family),
+    c("spr", "parcc", "grad6yr", "ell")
+  )
 })
 
 test_that("add_subgroup_std inserts subgroup_std immediately after subgroup", {

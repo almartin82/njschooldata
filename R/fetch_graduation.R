@@ -15,160 +15,86 @@
 #' @return data.frame with raw data from state file
 #' @keywords internal
 get_raw_grad_file <- function(end_year, methodology = "4 year") {
-
-  if (end_year < 1998 | end_year > 2025) {
-    stop("year not yet supported. Valid years are 1998-2025.")
-  }
-
-  # In 2026 NJ DOE retired the /schoolperformance/grad/ tree (data/ and docs/)
-  # and consolidated every cohort file under /spr/adddata/doc/acgrdocs/. Most
-  # filenames are unchanged; a few lost their spaces. URLs below point at the
-  # current acgrdocs location.
-
-  ########## 4 year ##########
-  if (methodology == "4 year") {
-    # Before cohort grad rate
-    if (end_year <= 2010) {
-      grd_constant <- "https://www.state.nj.us/education/data/grd/grd"
-      grate_file <- paste0(grd_constant, substr(end_year + 1, 3, 4), "/grd.zip") %>%
-        unzipper()
-
-      if (grepl(".csv", tolower(grate_file))) {
-        df <- readr::read_csv(grate_file, show_col_types = FALSE)
-      } else if (grepl(".xls", tolower(grate_file))) {
-        df <- readxl::read_xls(grate_file)
-      }
-
-      # 2011 is insane, no other way to describe it
-    } else if (end_year == 2011) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls"
-      grate_file <- tempfile(fileext = ".xls")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file)
-
-      grate_indices <- c(1:7, 9)
-      df <- df[, grate_indices] %>%
-        dplyr::mutate("GRADUATED_COUNT" = NA_integer_)
-
-      # 2012 they transition the format but post it in a weird location
-    } else if (end_year == 2012) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_grd.xls"
-      grate_file <- tempfile(fileext = ".xls")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file)
-
-      # 2013 on is the cohort grad rate era
-    } else if (end_year >= 2013 & end_year <= 2017) {
-      basic_suffix <- "_4Year.xlsx"
-      num_skip <- 0
-
-      grate_url <- paste0(
-        "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR",
-        end_year, basic_suffix
-      )
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-
-      # Starting in 2018 the URLs are inconsistent, so hard code them
-    } else if (end_year == 2018) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx"
-      num_skip <- 3
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2019) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
-      num_skip <- 3
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2020) {
-      # 2020+ files include graduate counts (hence the larger header skip)
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2021) {
-      # 2020+ files include graduate counts (hence the larger header skip)
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2022) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2023) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2024) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    } else if (end_year == 2025) {
-      # Cohort2025 keeps the row-6 header (num_skip = 5) but renamed columns:
-      # "Graduation Rate" -> "Adjusted Cohort Graduation Rate",
-      # "Cohort Count" -> "Adjusted Cohort Count" (handled in process_grate()).
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
-      num_skip <- 5
-      grate_file <- tempfile(fileext = ".xlsx")
-      httr::GET(url = grate_url, httr::write_disk(grate_file))
-      df <- readxl::read_excel(grate_file, skip = num_skip)
-    }
-
-    ########## 5 year ##########
-  } else if (methodology == "5 year") {
-
-    if (end_year < 2012) {
-      stop(paste0("5 year grad rate not available for ending year ", end_year))
-    } else if (end_year == 2012) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4And5YearCohort12.xlsx"
-      num_skip <- 0
-    } else if (end_year == 2013) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4And5YearCohort13.xlsx"
-      num_skip <- 0
-    } else if (end_year == 2014) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4And5YearCohort14.xlsx"
-      num_skip <- 0
-    } else if (end_year == 2015) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4And5YearCohort14.xlsx"
-      num_skip <- 0
-    } else if (end_year == 2016) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4And5YearCohort.xlsx"
-      num_skip <- 0
-    } else if (end_year == 2017) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4and5YearGraduationRates.xlsx"
-      num_skip <- 3
-    } else if (end_year == 2018) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
-      num_skip <- 3
-    } else if (end_year == 2019) {
-      grate_url <- "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
-      num_skip <- 3
-    }
-
-    grate_file <- tempfile(fileext = ".xlsx")
-    httr::GET(url = grate_url, httr::write_disk(grate_file))
-    df <- readxl::read_excel(grate_file, skip = num_skip)
-  } else {
-    stop(paste0("invalid methodology: ", methodology))
-  }
-
-  df$end_year <- end_year
-
-  df
+  source_result_data(get_raw_grad_file_result(end_year, methodology))
 }
 
+#' Retrieve and parse a graduation artifact with source provenance
+#'
+#' @param end_year School-year end year.
+#' @param methodology One of `"4 year"` or `"5 year"`.
+#' @param request_fn Injectable transport request function.
+#' @return An `njsd_source_result`.
+#' @keywords internal
+get_raw_grad_file_result <- function(end_year, methodology = "4 year",
+                                     request_fn = .default_source_request) {
+  methodology <- match.arg(methodology, c("4 year", "5 year"))
+  valid <- if (methodology == "4 year") {
+    get_source_years("grad_count", capability = "raw")
+  } else {
+    get_source_years("grate_5yr", capability = "raw")
+  }
+  if (!end_year %in% valid) {
+    stop("No registered ", methodology, " graduation source for end_year ",
+         end_year, ".", call. = FALSE)
+  }
+  descriptor <- .graduation_source_descriptor(end_year, methodology)
+  transport <- download_source(
+    descriptor$url,
+    source_type = descriptor$source_type,
+    request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+
+  parsed <- tryCatch({
+    source_path <- transport$data
+    unpack_dir <- NULL
+    if (descriptor$source_type == "zip") {
+      unpack_dir <- tempfile("graduation-unpack-")
+      dir.create(unpack_dir)
+      on.exit(unlink(unpack_dir, recursive = TRUE), add = TRUE)
+      listing <- utils::unzip(source_path, list = TRUE)
+      members <- listing$Name[grepl("[.](csv|xlsx?|xls)$", listing$Name,
+                                    ignore.case = TRUE)]
+      if (!length(members)) {
+        stop("Graduation archive contains no CSV or Excel data file.",
+             call. = FALSE)
+      }
+      utils::unzip(source_path, files = members[1], exdir = unpack_dir)
+      source_path <- file.path(unpack_dir, members[1])
+    }
+
+    extension <- tolower(tools::file_ext(source_path))
+    data <- if (extension == "csv") {
+      readr::read_csv(source_path, show_col_types = FALSE)
+    } else {
+      readxl::read_excel(source_path, skip = descriptor$skip)
+    }
+    if (methodology == "4 year" && end_year == 2011) {
+      data <- data[, c(1:7, 9)] %>%
+        dplyr::mutate(GRADUATED_COUNT = NA_integer_)
+    }
+    data$end_year <- end_year
+    data
+  }, error = identity)
+
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error",
+      source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at,
+      digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed,
+    source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at,
+    digest = transport$digest
+  )
+}
 
 #' Get NJ graduation count data
 #'
@@ -181,10 +107,14 @@ get_grad_count <- function(end_year) {
     stop(paste0(end_year, " not yet supported. Valid years are 2012-2025."))
   }
 
-  df <- get_raw_grad_file(end_year)
+  source_result <- get_raw_grad_file_result(end_year)
+  df <- source_result_data(source_result)
 
-  df %>%
+  df <- df %>%
     process_grate(end_year)
+  attach_source_results(
+    df, source_result_record(source_result, "grad_count", end_year, "4-year")
+  )
 }
 
 
@@ -201,11 +131,18 @@ get_grad_rate <- function(end_year, methodology) {
     stop("year not yet supported. Valid years are 2011-2025.")
   }
 
-  df <- get_raw_grad_file(end_year, methodology) %>%
+  source_result <- get_raw_grad_file_result(end_year, methodology)
+  df <- source_result_data(source_result) %>%
     dplyr::mutate("methodology" = methodology)
 
-  df %>%
+  df <- df %>%
     process_grate(end_year)
+  attach_source_results(
+    df,
+    source_result_record(
+      source_result, "graduation_rate", end_year, methodology
+    )
+  )
 }
 
 
@@ -223,7 +160,9 @@ get_grad_rate <- function(end_year, methodology) {
 #' gcount_2023 <- fetch_grad_count(2023)
 #' }
 fetch_grad_count <- function(end_year) {
-  df <- get_grad_count(end_year) %>%
+  df <- get_grad_count(end_year)
+  source_records <- get_source_results(df)
+  df <- df %>%
     process_grad_count(end_year)
 
   df <- tidy_grad_count(df, end_year)
@@ -249,7 +188,7 @@ fetch_grad_count <- function(end_year) {
   df <- df %>%
     dplyr::select(dplyr::one_of(possible_cols))
 
-  return(df)
+  attach_source_results(df, source_records)
 }
 
 
@@ -272,7 +211,9 @@ fetch_grad_count <- function(end_year) {
 #' grate_5yr <- fetch_grad_rate(2019, methodology = "5 year")
 #' }
 fetch_grad_rate <- function(end_year, methodology = "4 year") {
-  df <- get_grad_rate(end_year, methodology) %>%
+  df <- get_grad_rate(end_year, methodology)
+  source_records <- get_source_results(df)
+  df <- df %>%
     process_grad_rate(end_year, methodology)
 
   df <- tidy_grad_rate(df, end_year, methodology)
@@ -299,7 +240,7 @@ fetch_grad_rate <- function(end_year, methodology = "4 year") {
       is_allpublic
     )
 
-  return(df)
+  attach_source_results(df, source_records)
 }
 
 
@@ -319,29 +260,15 @@ fetch_grad_rate <- function(end_year, methodology = "4 year") {
 #' @return URL string
 #' @keywords internal
 get_spr_6yr_grad_url <- function(end_year, level = "school") {
-  valid_years <- c(2021, 2022, 2023, 2024, 2025)
-  if (!end_year %in% valid_years) {
+  if (!end_year %in% get_source_years("grate_6yr")) {
     stop(paste0(
       "6-year graduation rate data is available for years: ",
-      paste(valid_years, collapse = ", "),
+      paste(get_source_years("grate_6yr"), collapse = ", "),
       ". Earlier years do not include 6-year graduation cohort profiles."
     ))
   }
-
-  # Convert end_year to academic year format (e.g., 2024 -> "2023-2024")
-  academic_year <- paste0(end_year - 1, "-", end_year)
-
-  stem <- "https://www.nj.gov/education/sprreports/download/DataFiles/"
-
-  file_name <- if (level == "school") {
-    "Database_SchoolDetail.xlsx"
-  } else if (level == "district") {
-    "Database_DistrictStateDetail.xlsx"
-  } else {
-    stop("level must be one of 'school' or 'district'")
-  }
-
-  paste0(stem, academic_year, "/", file_name)
+  level <- match.arg(level, c("school", "district"))
+  resolve_source_url("grate_6yr", end_year = end_year, level = level)
 }
 
 
@@ -408,19 +335,11 @@ clean_6yr_grad_subgroups <- function(group) {
 #' grad6_dist <- fetch_6yr_grad_rate(2024, level = "district")
 #' }
 fetch_6yr_grad_rate <- function(end_year, level = "school") {
+  get_spr_6yr_grad_url(end_year, level)
+  source_result <- spr_cached_workbook_result(end_year, level)
+  tname <- source_result_data(source_result)
 
-  target_url <- get_spr_6yr_grad_url(end_year, level)
-
-  tname <- tempfile(pattern = "spr_6yr", tmpdir = tempdir(), fileext = ".xlsx")
-
-  # The SPR database files are large (the 2024-25 school file is ~368 MB), so
-  # bump the download timeout above R's 60-second default for the duration of
-  # the fetch and restore it afterward.
-  old_timeout <- getOption("timeout")
-  on.exit(options(timeout = old_timeout), add = TRUE)
-  options(timeout = max(old_timeout, 1200))
-
-  downloader::download(target_url, destfile = tname, mode = "wb")
+  parsed <- tryCatch({
 
   if (end_year >= 2025) {
     # SY2024-25 restructured the SPR database: the 6-year cohort profile moved
@@ -641,8 +560,8 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
     )
 
   # Reorder columns
-  df %>%
-    dplyr::select(
+    df %>%
+      dplyr::select(
       end_year,
       county_id, county_name,
       district_id, district_name,
@@ -653,6 +572,24 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
     )
+  }, error = identity)
+
+  if (inherits(parsed, "error")) {
+    parse_result <- new_source_result(
+      source_status = "parse_error",
+      source_url = source_result$source_url,
+      retrieved_at = source_result$retrieved_at,
+      digest = source_result$digest,
+      error = conditionMessage(parsed)
+    )
+    source_result_data(parse_result)
+  }
+  attach_source_results(
+    parsed,
+    source_result_record(
+      source_result, "grate_6yr", end_year, level
+    )
+  )
 }
 
 
@@ -663,6 +600,9 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
 #'
 #' @param level One of "school", "district", or "both". "both" combines
 #'   school and district data. Default is "school".
+#' @param allow_partial If `FALSE` (default), any failed year/level aborts the
+#'   request. If `TRUE`, successful requests are returned with status available
+#'   from [get_source_results()].
 #' @return A data frame with all 6-year graduation rate results (2021-2025)
 #' @export
 #' @examples
@@ -673,46 +613,27 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
 #' # Get both school and district data
 #' all_grad6_both <- fetch_all_6yr_grad_rate(level = "both")
 #' }
-fetch_all_6yr_grad_rate <- function(level = "school") {
-
-  results <- list()
-
-  # 6-year graduation data available 2021-2025
-  valid_years <- c(2021, 2022, 2023, 2024, 2025)
-
-  if (level == "both") {
-    for (year in valid_years) {
-      for (lvl in c("school", "district")) {
-        result <- tryCatch(
-          {
-            fetch_6yr_grad_rate(end_year = year, level = lvl)
-          },
-          error = function(e) {
-            message(sprintf("Could not fetch 6yr grad rate %s %s: %s", year, lvl, e$message))
-            NULL
-          }
-        )
-        if (!is.null(result)) {
-          results[[paste(year, lvl, sep = "_")]] <- result
-        }
-      }
-    }
+fetch_all_6yr_grad_rate <- function(level = "school", allow_partial = FALSE) {
+  levels <- if (identical(level, "both")) {
+    c("school", "district")
   } else {
-    for (year in valid_years) {
-      result <- tryCatch(
-        {
-          fetch_6yr_grad_rate(end_year = year, level = level)
-        },
-        error = function(e) {
-          message(sprintf("Could not fetch 6yr grad rate %s: %s", year, e$message))
-          NULL
-        }
-      )
-      if (!is.null(result)) {
-        results[[as.character(year)]] <- result
-      }
-    }
+    match.arg(level, c("school", "district"))
   }
-
-  dplyr::bind_rows(results)
+  requests <- expand.grid(
+    end_year = get_source_years("grate_6yr"),
+    level = levels,
+    stringsAsFactors = FALSE
+  )
+  captures <- lapply(seq_len(nrow(requests)), function(index) {
+    request <- requests[index, ]
+    capture_source_call(
+      function() fetch_6yr_grad_rate(request$end_year, request$level),
+      domain = "grate_6yr", end_year = request$end_year,
+      component = request$level
+    )
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "Six-year graduation multi-source request"
+  )
 }

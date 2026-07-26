@@ -32,7 +32,9 @@ allowed (e.g. \code{total_pp}, \code{federal_share},
 
 \item{calc_type}{Character. Composition calc type. Default \code{"Budgeted"}.}
 
-\item{dfg_revision}{Numeric. DFG revision for the reported \code{dfg} column.}
+\item{dfg_revision}{Numeric. DFG revision for the reported \code{dfg} column.
+Use \code{NULL} to omit the optional DFG lookup, including for fully
+offline analysis.}
 }
 \value{
 A tibble sorted by \code{distance} ascending, with the focal district

@@ -7,8 +7,7 @@
 get_raw_sped(end_year, level = "district")
 }
 \arguments{
-\item{end_year}{A school year. Year is the end of the academic year - eg 2006-07
-school year is year '2007'. Valid values are 2000-2026.}
+\item{end_year}{A school-year end year. Valid values are 1999-2026.}
 
 \item{level}{one of \code{"district"} (default; district-level total
 classification rate, all supported years) or \code{"state"} (state-level

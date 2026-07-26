@@ -28,39 +28,29 @@
 #'   resolves)
 #' @keywords internal
 ell_enr_zip_url <- function(end_year) {
-  yy <- substr(end_year, 3, 4)
-  prev_yy <- substr(end_year - 1, 3, 4)
-  base_url <- paste0(
-    "https://www.nj.gov/education/doedata/enr/enr", yy, "/"
-  )
-  candidates <- paste0(
-    base_url, c("enrollment_", "Enrollment_"), prev_yy, yy, ".zip"
-  )
-  for (candidate in candidates) {
-    if (check_url_accessible(candidate)) {
-      return(candidate)
-    }
-  }
-  candidates[1]
+  validate_end_year(end_year, "ell")
+  resolve_source_url("ell", end_year = end_year)[1]
 }
 
-#' Download and unzip the NJ enrollment workbook, return the .xlsx path
+#' Parse the modern EL worksheets from a validated enrollment archive
 #'
-#' @param end_year ending academic year (>= 2020, the multi-sheet xlsx era)
-#' @return character path to the unzipped .xlsx
+#' @param archive Path to a validated enrollment ZIP.
+#' @param end_year Ending academic year.
+#' @return List with entity and statewide published EL observations.
 #' @keywords internal
-ell_download_xlsx <- function(end_year) {
-  url <- ell_enr_zip_url(end_year)
-  tname <- tempfile(pattern = "ell_enr", tmpdir = tempdir(), fileext = ".zip")
-  tdir <- tempfile(pattern = "ell_dir")
+.parse_modern_ell_archive <- function(archive, end_year) {
+  tdir <- tempfile(pattern = "ell-unpack-")
   dir.create(tdir)
-  downloader::download(url, dest = tname, mode = "wb")
-  utils::unzip(tname, exdir = tdir)
+  on.exit(unlink(tdir, recursive = TRUE), add = TRUE)
+  utils::unzip(archive, exdir = tdir)
   files <- list.files(tdir, pattern = "\\.xlsx?$", full.names = TRUE)
   if (length(files) == 0) {
     stop("No Excel file found in enrollment archive for ", end_year)
   }
-  files[1]
+  list(
+    entities = ell_read_modern_entities(files[1], end_year),
+    state = ell_read_modern_state(files[1], end_year)
+  )
 }
 
 #' Locate the EL count and EL percent columns on a raw enrollment sheet
@@ -188,18 +178,22 @@ ell_read_modern_state <- function(xlsx, end_year) {
 #' @return data.frame with entity identifiers, `total_enrollment`, `el_count`
 #'   (NA where only a percent is published), and `el_pct`.
 #' @keywords internal
-get_raw_ell <- function(end_year) {
-  if (!end_year %in% ELL_VALID_YEARS) {
-    stop(
-      "EL population data is only available for ",
-      min(ELL_VALID_YEARS), "-", max(ELL_VALID_YEARS),
-      " (requested ", end_year, ")."
-    )
-  }
-
+get_raw_ell_result <- function(end_year,
+                               request_fn = .default_source_request) {
+  validate_end_year(end_year, "ell")
   # Entity scaffold: the all-students total row per entity (program code 55)
   # carries real ids, names, CDS code, NCES ids, and total enrollment.
-  enr <- fetch_enr(end_year)
+  enr <- tryCatch(fetch_enr(end_year), error = identity)
+  if (inherits(enr, "error")) {
+    if (inherits(enr, "njsd_source_error") &&
+        inherits(enr$result, "njsd_source_result")) {
+      return(enr$result)
+    }
+    return(new_source_result(
+      source_status = "parse_error", error = conditionMessage(enr)
+    ))
+  }
+  enrollment_records <- get_source_results(enr)
   scaffold <- enr %>%
     dplyr::filter(.data$program_code == "55") %>%
     dplyr::select(
@@ -218,10 +212,24 @@ get_raw_ell <- function(end_year) {
     # The enrollment `lep` column IS the published headcount for these years.
     scaffold$el_count <- scaffold$lep_enr
     scaffold$el_pct <- NA_real_
+    source <- if (nrow(enrollment_records)) enrollment_records[1, ] else NULL
   } else {
-    xlsx <- ell_download_xlsx(end_year)
-    ent_el <- ell_read_modern_entities(xlsx, end_year)
-    st_el <- ell_read_modern_state(xlsx, end_year)
+    transport <- .download_enrollment_source(end_year, request_fn)
+    if (!identical(transport$source_status, "actual")) return(transport)
+    on.exit(unlink(transport$data), add = TRUE)
+    parsed <- tryCatch(
+      .parse_modern_ell_archive(transport$data, end_year),
+      error = identity
+    )
+    if (inherits(parsed, "error")) {
+      return(new_source_result(
+        source_status = "parse_error", source_url = transport$source_url,
+        retrieved_at = transport$retrieved_at, digest = transport$digest,
+        error = conditionMessage(parsed)
+      ))
+    }
+    ent_el <- parsed$entities
+    st_el <- parsed$state
 
     # de-dup the entity EL table on cds (defensive against repeated rows)
     ent_el <- ent_el[!duplicated(ent_el$cds_code), ]
@@ -233,9 +241,24 @@ get_raw_ell <- function(end_year) {
     is_state_row <- scaffold$district_id == "9999" & scaffold$county_id == "99"
     scaffold$el_count[is_state_row] <- st_el$el_count
     scaffold$el_pct[is_state_row] <- st_el$el_pct
+    source <- source_result_record(transport, "ell", end_year, "enrollment")
   }
 
   scaffold$lep_enr <- NULL
   scaffold$end_year <- end_year
-  scaffold
+  if (is.null(source)) {
+    return(new_source_result(data = scaffold, source_status = "actual"))
+  }
+  new_source_result(
+    data = scaffold,
+    source_status = "actual",
+    source_url = source$source_url[[1]],
+    retrieved_at = source$retrieved_at[[1]],
+    digest = source$digest[[1]],
+    warning = source$warning[[1]]
+  )
+}
+
+get_raw_ell <- function(end_year) {
+  source_result_data(get_raw_ell_result(end_year))
 }

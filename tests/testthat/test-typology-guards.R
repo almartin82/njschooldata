@@ -18,8 +18,7 @@
 # -- Percentage division-by-zero guards (enrollment) ---------------------------
 
 test_that("enrollment tidy pct has no Inf from division by zero", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -32,8 +31,7 @@ test_that("enrollment tidy pct has no Inf from division by zero", {
 })
 
 test_that("enrollment tidy pct is in 0-1 range (not 0-100)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -49,8 +47,7 @@ test_that("enrollment tidy pct is in 0-1 range (not 0-100)", {
 # -- Percentage scale consistency (graduation) ---------------------------------
 
 test_that("graduation rate is in 0-1 scale (not 0-100)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gr <- fetch_grad_rate(2024)
 
@@ -62,8 +59,7 @@ test_that("graduation rate is in 0-1 scale (not 0-100)", {
 })
 
 test_that("PARCC proficiency is in 0-100 scale (not 0-1)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela")
 
@@ -84,8 +80,7 @@ test_that("PARCC proficiency is in 0-100 scale (not 0-1)", {
 # -- Column type correctness (enrollment) --------------------------------------
 
 test_that("enrollment wide format column types are correct", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -114,8 +109,7 @@ test_that("enrollment wide format column types are correct", {
 })
 
 test_that("enrollment tidy format column types are correct", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -139,8 +133,7 @@ test_that("enrollment tidy format column types are correct", {
 # -- Column type correctness (graduation) --------------------------------------
 
 test_that("graduation rate column types are correct", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gr <- fetch_grad_rate(2024)
 
@@ -162,8 +155,7 @@ test_that("graduation rate column types are correct", {
 # -- Column type correctness (assessment) --------------------------------------
 
 test_that("PARCC column types are correct", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela")
 
@@ -183,8 +175,7 @@ test_that("PARCC column types are correct", {
 # -- Row count minimum tests ---------------------------------------------------
 
 test_that("enrollment has enough rows to be plausible", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -195,8 +186,7 @@ test_that("enrollment has enough rows to be plausible", {
 })
 
 test_that("PARCC has enough rows to be plausible", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela")
 
@@ -207,8 +197,7 @@ test_that("PARCC has enough rows to be plausible", {
 })
 
 test_that("graduation rate has enough rows to be plausible", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gr <- fetch_grad_rate(2024)
 
@@ -221,8 +210,7 @@ test_that("graduation rate has enough rows to be plausible", {
 # -- Subgroup value set validation (enrollment) --------------------------------
 
 test_that("enrollment subgroups match expected canonical set", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -245,8 +233,7 @@ test_that("enrollment subgroups match expected canonical set", {
 })
 
 test_that("enrollment subgroups do NOT contain non-standard names", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -268,8 +255,7 @@ test_that("enrollment subgroups do NOT contain non-standard names", {
 # -- Grade value set validation (enrollment) -----------------------------------
 
 test_that("enrollment grade levels match expected set", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -289,8 +275,7 @@ test_that("enrollment grade levels match expected set", {
 })
 
 test_that("enrollment grade normalization: KF/KH -> K, PF/PH -> PK", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -312,8 +297,7 @@ test_that("enrollment grade normalization: KF/KH -> K, PF/PH -> PK", {
 # -- Grade value set validation (wide enrollment) ------------------------------
 
 test_that("enrollment wide grade levels are uppercase", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -328,8 +312,7 @@ test_that("enrollment wide grade levels are uppercase", {
 # -- Zero vs NA distinction (enrollment) ---------------------------------------
 
 test_that("enrollment n_students uses 0, not NA, for real zeros", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -343,8 +326,7 @@ test_that("enrollment n_students uses 0, not NA, for real zeros", {
 })
 
 test_that("enrollment row_total (wide) is never NA for real data rows", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -363,8 +345,7 @@ test_that("enrollment row_total (wide) is never NA for real data rows", {
 # -- No duplicate rows --------------------------------------------------------
 
 test_that("enrollment tidy has no exact duplicate rows for named programs", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -379,8 +360,7 @@ test_that("enrollment tidy has no exact duplicate rows for named programs", {
 })
 
 test_that("enrollment tidy has unique rows per entity-program-grade-subgroup", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -398,8 +378,7 @@ test_that("enrollment tidy has unique rows per entity-program-grade-subgroup", {
 })
 
 test_that("PARCC has no duplicate rows per entity-subgroup", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela")
 
@@ -413,8 +392,7 @@ test_that("PARCC has no duplicate rows per entity-subgroup", {
 })
 
 test_that("graduation rate has no duplicate rows per entity-subgroup", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gr <- fetch_grad_rate(2024)
 
@@ -430,8 +408,7 @@ test_that("graduation rate has no duplicate rows per entity-subgroup", {
 # -- cds_code format validation -----------------------------------------------
 
 test_that("enrollment cds_code has consistent 9-char format for real data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -446,8 +423,7 @@ test_that("enrollment cds_code has consistent 9-char format for real data", {
 })
 
 test_that("enrollment county_id is zero-padded to 2 digits for real data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -460,8 +436,7 @@ test_that("enrollment county_id is zero-padded to 2 digits for real data", {
 })
 
 test_that("enrollment district_id is zero-padded to 4 digits", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -471,8 +446,7 @@ test_that("enrollment district_id is zero-padded to 4 digits", {
 })
 
 test_that("enrollment school_id is zero-padded to 3 digits", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, use_cache = TRUE)
 
@@ -485,8 +459,7 @@ test_that("enrollment school_id is zero-padded to 3 digits", {
 # -- Entity flag consistency ---------------------------------------------------
 
 test_that("enrollment charter schools are in county 80", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -498,8 +471,7 @@ test_that("enrollment charter schools are in county 80", {
 })
 
 test_that("enrollment state rows have county_id 99 and district_id 9999", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -513,8 +485,7 @@ test_that("enrollment state rows have county_id 99 and district_id 9999", {
 })
 
 test_that("enrollment district rows have school_id 999", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -530,8 +501,7 @@ test_that("enrollment district rows have school_id 999", {
 # -- Assessment performance level consistency ----------------------------------
 
 test_that("PARCC ELA/Math has 5 performance levels", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 4, "ela")
 
@@ -544,8 +514,7 @@ test_that("PARCC ELA/Math has 5 performance levels", {
 })
 
 test_that("PARCC Science has 4 performance levels (pct_l5 always NA)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   p <- fetch_parcc(2024, 8, "science")
 
@@ -555,8 +524,7 @@ test_that("PARCC Science has 4 performance levels (pct_l5 always NA)", {
 })
 
 test_that("NJGPA has 2 performance levels (pct_l3/l4/l5 always NA)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   njgpa <- fetch_njgpa(2024, "ela")
 
@@ -576,6 +544,7 @@ test_that("validate_end_year rejects invalid enrollment years", {
 })
 
 test_that("validate_end_year accepts valid enrollment years", {
+  expect_true(validate_end_year(1999, "enrollment"))
   expect_true(validate_end_year(2000, "enrollment"))
   expect_true(validate_end_year(2024, "enrollment"))
 })
@@ -591,7 +560,7 @@ test_that("validate_end_year accepts valid PARCC years", {
 
 test_that("get_valid_years returns correct years for each data type", {
   enr_years <- get_valid_years("enrollment")
-  expect_equal(min(enr_years), 2000)
+  expect_equal(min(enr_years), 1999)
   expect_equal(max(enr_years), 2026)
 
   parcc_years <- get_valid_years("parcc")
@@ -601,7 +570,7 @@ test_that("get_valid_years returns correct years for each data type", {
 
   grate_years <- get_valid_years("grad_rate")
   expect_equal(min(grate_years), 2011)
-  expect_equal(max(grate_years), 2024)
+  expect_equal(max(grate_years), 2025)
 })
 
 test_that("get_valid_grades returns expected grades", {

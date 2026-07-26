@@ -166,20 +166,22 @@ k_trend %>%
 
 | Category | Years | Function | Details |
 |----------|-------|----------|---------|
-| **Enrollment** | 2000-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
-| **Assessments** | 2004-2024 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
-| **Graduation** | 2011-2024 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-yr and 6-yr ACGR. District and school level |
+| **Enrollment** | 1999-2026 | `fetch_enr()` | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
+| **Assessments** | 2004-2025 | `fetch_parcc()` / `fetch_njask()` / `fetch_njgpa()` | NJSLA/PARCC is available for 2015-2019 and 2022-2025; 2020 was cancelled and 2021 used Start Strong. NJASK, HSPA, and GEPA provide legacy coverage |
+| **Graduation** | 2011-2025 | `fetch_grad_rate()` / `fetch_grad_count()` | 4-year ACGR through 2025; graduation-count raw files begin in 1998 while the supported tidy count contract begins in 2012 |
 | **Directory** | Current | `get_school_directory()` / `get_district_directory()` | Names, IDs, addresses, school type |
 | **Per-Pupil Spending** | 2001-2026 | `fetch_finance()` / `fetch_tges()` / `fetch_state_aid()` | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | `fetch_essa_status()` / `fetch_essa_progress()` | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | `fetch_absence()` / `fetch_chronic_absenteeism()` / `fetch_days_absent()` | By grade, by demographic. Cross-state standard via `fetch_absence()` |
 | **English Learners** | 2006-2026 | `fetch_ell()` | EL/Multilingual Learner headcount + share of enrollment. State, district, school. Federal NCES ids |
 | **EL Progress** | 2022-2024 | `fetch_access()` | WIDA ACCESS for ELLs |
-| **Special Ed** | 2020-2025 | `fetch_sped()` / `fetch_sped_placement()` | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
+| **Special Ed** | Classification 2015-2025; placement 2020-2025 | `fetch_sped()` / `fetch_sped_placement()` | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Facilities** | Current / FY2026 / 2024-2025 | `fetch_facilities()` / `fetch_facilities_multi()` / `fetch_facility_gis()` / `get_available_facilities()` | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
 | **Discipline** | Available; restraint & seclusion 2023-2024 | `fetch_disciplinary_removals()` / `fetch_violence_vandalism_hib()` / `fetch_restraint_seclusion()` | Suspensions, expulsions, HIB incidents; school-level restraint & seclusion events by student group |
 | **Staff** | Demographics/experience (SPR); evaluations 2014-2016; certificated FTE 2000-2008 & 2020-2026 | `fetch_staff_demographics()` / `fetch_teacher_experience()` / `fetch_staff_evaluations()` / `fetch_certificated_staff()` | Demographics, experience, ratios; summative evaluation rating distributions (teachers, principals/APs/VPs); deep certificated-staff FTE history by position, race, gender. State, county, district, school |
 | **College-Going** | Available | `fetch_postsecondary()` / `fetch_sat_participation()` / `fetch_ap_participation()` | Postsecondary enrollment, SAT, AP |
+| **Historical Report Cards** | 2012-2019 | `get_one_rc_database()` | Raw NJ performance-report workbooks. The removed 2003-2011 files are represented as unsupported rather than claimed as working coverage |
+| **District Factor Groups** | 1990 / 2000 revisions | `fetch_dfg()` | Socioeconomic comparison groups from the registered NJ DOE DFG workbook |
 | **Advanced-Coursework Access** | 2017-2025 (courses, SLE); 2021-2025 (by group) | `fetch_advanced_course_access()` | Which advanced courses a school offers (enrolled/tested), AP/IB/dual-enrollment participation by student group, and Structured Learning Experience participation. School + district/state |
 | **Courses** | Available | `fetch_math_course_enrollment()` / `fetch_cs_enrollment()` | Math, science, CS, arts, world languages |
 | **CTE** | Available | `fetch_cte_participation()` / `fetch_industry_credentials()` | Career pathways, credentials, apprenticeships |
@@ -263,7 +265,9 @@ Full analysis with 15 stories:
 
 **Source:** [New Jersey Department of Education](https://www.nj.gov/education/doedata/) -- all data comes directly from NJ DOE, not federal sources.
 
-**Available years:** Enrollment data from 2000-2026. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).
+**Available years:** `get_valid_years()` reads the package source registry. Enrollment is supported from 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020 was cancelled because of COVID-19 and 2021 used Start Strong. Four-year graduation is supported from 2011-2025. Where raw and tidy capabilities differ, such as graduation counts (raw 1998-2025, tidy 2012-2025), the registry records both instead of claiming unsupported tidy coverage.
+
+**Source failures and provenance:** Canonical fetchers are strict for transport and parser failures. Use `get_source_results(result)` to inspect request-level `source_status`, URL, retrieval time, digest, and warning/error context; this is separate from row-level `value_status`. `fetch_finance(..., allow_partial = TRUE)` and multi-source helpers only return incomplete results after explicit opt-in, with every component status attached.
 
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.
 

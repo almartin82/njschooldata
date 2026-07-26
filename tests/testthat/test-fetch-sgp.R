@@ -66,8 +66,7 @@ test_that("fetch_sgp gates each type at its real first year (no fabrication)", {
 # ==============================================================================
 
 test_that("fetch_sgp trends returns expected structure (school)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, type = "trends")
@@ -93,8 +92,7 @@ test_that("fetch_sgp trends returns expected structure (school)", {
 })
 
 test_that("fetch_sgp trends district level flags state and district rows", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, level = "district", type = "trends")
@@ -105,8 +103,7 @@ test_that("fetch_sgp trends district level flags state and district rows", {
 })
 
 test_that("fetch_sgp trends values match the raw NJ DOE file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, type = "trends")
@@ -131,8 +128,7 @@ test_that("fetch_sgp trends values match the raw NJ DOE file", {
 # ==============================================================================
 
 test_that("fetch_sgp by_grade returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, type = "by_grade")
@@ -147,8 +143,7 @@ test_that("fetch_sgp by_grade returns expected structure", {
 })
 
 test_that("fetch_sgp by_grade preserves half-point medians from the raw file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, type = "by_grade")
@@ -170,8 +165,7 @@ test_that("fetch_sgp by_grade preserves half-point medians from the raw file", {
 # ==============================================================================
 
 test_that("fetch_sgp by_performance_level returns expected structure", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2025, type = "by_performance_level")
@@ -195,8 +189,7 @@ test_that("fetch_sgp by_performance_level returns expected structure", {
 # 2023, 2024; by_performance_level to 2023, 2024.
 
 test_that("fetch_sgp by_grade backfill matches the raw legacy file (2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2024, level = "district", type = "by_grade")
@@ -215,8 +208,7 @@ test_that("fetch_sgp by_grade backfill matches the raw legacy file (2024)", {
 })
 
 test_that("fetch_sgp by_grade has no growth category before 2023", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2019, level = "district", type = "by_grade")
@@ -227,8 +219,7 @@ test_that("fetch_sgp by_grade has no growth category before 2023", {
 })
 
 test_that("fetch_sgp by_performance_level backfill matches the raw file (2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2024, level = "district", type = "by_performance_level")
@@ -245,8 +236,7 @@ test_that("fetch_sgp by_performance_level backfill matches the raw file (2024)",
 })
 
 test_that("fetch_sgp by_performance_level normalizes the level label (2023)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2023, level = "district", type = "by_performance_level")
@@ -263,8 +253,7 @@ test_that("fetch_sgp by_performance_level normalizes the level label (2023)", {
 # mislabels its subgroup column "SchoolYear"; the reshaper handles it.
 
 test_that("fetch_sgp trends backfill matches the raw file, district (2024)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2024, level = "district", type = "trends")
@@ -287,8 +276,7 @@ test_that("fetch_sgp trends backfill matches the raw file, district (2024)", {
 })
 
 test_that("fetch_sgp trends backfill keeps school subgroups (mislabeled column)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2024, level = "school", type = "trends")
@@ -309,8 +297,7 @@ test_that("fetch_sgp trends backfill keeps school subgroups (mislabeled column)"
 })
 
 test_that("fetch_sgp trends backfill matches the raw file, district (2019)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_sgp(2019, level = "district", type = "trends")

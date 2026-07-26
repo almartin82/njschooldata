@@ -155,128 +155,75 @@ format_duration <- function(seconds) {
 #' Downloads all available PARCC and NJSLA assessment results with
 #' progress indicators showing download status and ETA.
 #'
-#' @return A data frame with all PARCC/NJSLA results
+#' @param allow_partial If `TRUE`, return successful requests and attach status
+#'   for failures. The default is strict.
+#' @return A data frame with all PARCC/NJSLA results and source status.
 #' @export
 #' @examples
 #' \dontrun{
 #' all_results <- fetch_all_parcc_with_progress()
 #' }
-fetch_all_parcc_with_progress <- function() {
-  # Build list of all year/grade/subject combinations
-  valid_years <- c(2015:2019, 2021:2024)
-  grades_ela <- 3:11
-  grades_math <- 3:8
-  courses <- c("ALG1", "GEO", "ALG2")
-
-  # Count total items
-  total_items <- length(valid_years) * (
-    length(grades_ela) +  # ELA grades
-    length(grades_math) + # Math grades
-    length(courses)       # Math courses
-  )
-
-  # Adjust for NJSLA (2019+) dropping grade 11 ELA
-  njsla_years <- valid_years[valid_years >= 2019]
-  total_items <- total_items - length(njsla_years)
-
-  pb <- progress_tracker(total_items, "Fetching PARCC/NJSLA data")
-  results <- list()
-  item_count <- 0
-
-  for (yr in valid_years) {
-    # ELA grades
-    ela_grades <- if (yr >= 2019) 3:10 else 3:11
-
-    for (gr in ela_grades) {
-      item_count <- item_count + 1
-      item_name <- sprintf("%d Grade %d ELA", yr, gr)
-      pb$update(item_count, item_name)
-
-      result <- tryCatch({
-        fetch_parcc(end_year = yr, grade_or_subj = gr, subj = "ela", tidy = TRUE)
-      }, error = function(e) {
-        message(sprintf("  Warning: %s", e$message))
-        NULL
-      })
-
-      if (!is.null(result)) {
-        results[[paste(yr, gr, "ela", sep = "_")]] <- result
-      }
+fetch_all_parcc_with_progress <- function(allow_partial = FALSE) {
+  requests <- .parcc_request_grid(include_science = FALSE)
+  pb <- progress_tracker(nrow(requests), "Fetching PARCC/NJSLA data")
+  captures <- lapply(seq_len(nrow(requests)), function(index) {
+    request <- requests[index, ]
+    grade <- if (grepl("^[0-9]+$", request$grade)) {
+      as.integer(request$grade)
+    } else {
+      request$grade
     }
-
-    # Math grades
-    for (gr in grades_math) {
-      item_count <- item_count + 1
-      item_name <- sprintf("%d Grade %d Math", yr, gr)
-      pb$update(item_count, item_name)
-
-      result <- tryCatch({
-        fetch_parcc(end_year = yr, grade_or_subj = gr, subj = "math", tidy = TRUE)
-      }, error = function(e) {
-        message(sprintf("  Warning: %s", e$message))
-        NULL
-      })
-
-      if (!is.null(result)) {
-        results[[paste(yr, gr, "math", sep = "_")]] <- result
-      }
-    }
-
-    # Math courses
-    for (course in courses) {
-      item_count <- item_count + 1
-      item_name <- sprintf("%d %s", yr, course)
-      pb$update(item_count, item_name)
-
-      result <- tryCatch({
-        fetch_parcc(end_year = yr, grade_or_subj = course, subj = "math", tidy = TRUE)
-      }, error = function(e) {
-        message(sprintf("  Warning: %s", e$message))
-        NULL
-      })
-
-      if (!is.null(result)) {
-        results[[paste(yr, course, "math", sep = "_")]] <- result
-      }
-    }
-  }
-
+    pb$update(index, paste(request$end_year, grade, request$subject))
+    capture_source_call(
+      function() fetch_parcc(
+        request$end_year, grade, request$subject, tidy = TRUE
+      ),
+      "parcc", request$end_year, paste(grade, request$subject, sep = "/")
+    )
+  })
   pb$done()
-
-  message(sprintf("Successfully fetched %d datasets", length(results)))
-  dplyr::bind_rows(results)
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "PARCC/NJSLA multi-source request"
+  )
 }
 
 #' Fetch multiple years of enrollment data with progress
 #'
 #' @param years Vector of years to fetch
 #' @param tidy Return tidy format? (default TRUE)
-#' @return Data frame with all enrollment data
+#' @param allow_partial If `TRUE`, return successful years and attach status for
+#'   missing/failed years. The default is strict.
+#' @return Data frame with all enrollment data and per-year source status.
 #' @export
 #' @examples
 #' \dontrun{
 #' enr_5yr <- fetch_enr_years(2020:2024)
 #' }
-fetch_enr_years <- function(years, tidy = TRUE) {
+fetch_enr_years <- function(years, tidy = TRUE, allow_partial = FALSE) {
   pb <- progress_tracker(length(years), "Fetching enrollment data")
-  results <- list()
-
-  for (i in seq_along(years)) {
+  valid_years <- get_source_years("enrollment")
+  captures <- lapply(seq_along(years), function(i) {
     yr <- years[i]
     pb$update(i, sprintf("%d enrollment", yr))
-
-    result <- tryCatch({
-      fetch_enr(yr, tidy = tidy)
-    }, error = function(e) {
-      message(sprintf("  Warning: %s", e$message))
-      NULL
-    })
-
-    if (!is.null(result)) {
-      results[[as.character(yr)]] <- result
+    if (!yr %in% valid_years) {
+      status <- if (yr > max(valid_years)) {
+        "not_yet_observed"
+      } else {
+        "not_published"
+      }
+      return(source_gap_capture(
+        "enrollment", yr, source_status = status,
+        warning = "No registered enrollment source exists for this year."
+      ))
     }
-  }
-
+    capture_source_call(
+      function() fetch_enr(yr, tidy = tidy), "enrollment", yr
+    )
+  })
   pb$done()
-  dplyr::bind_rows(results)
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "Enrollment multi-year request"
+  )
 }

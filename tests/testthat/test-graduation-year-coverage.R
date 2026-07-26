@@ -37,8 +37,7 @@ for (spec in grate_4yr_pins) {
   yr <- spec$year
 
   test_that(paste("fetch_grad_rate 4yr loads without error for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -47,8 +46,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr has required columns for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -68,8 +66,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr state rate matches pin for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -88,8 +85,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr state cohort/grads match pins for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -105,8 +101,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr rates are in valid range for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -116,8 +111,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr has core subgroups for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -132,8 +126,7 @@ for (spec in grate_4yr_pins) {
   })
 
   test_that(paste("fetch_grad_rate 4yr entity flags work for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gr <- fetch_grad_rate(yr, methodology = "4 year")
 
@@ -170,8 +163,7 @@ for (spec in gcount_pins) {
   yr <- spec$year
 
   test_that(paste("fetch_grad_count loads without error for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gc <- fetch_grad_count(yr)
 
@@ -180,8 +172,7 @@ for (spec in gcount_pins) {
   })
 
   test_that(paste("fetch_grad_count has required columns for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gc <- fetch_grad_count(yr)
 
@@ -200,8 +191,7 @@ for (spec in gcount_pins) {
   })
 
   test_that(paste("fetch_grad_count state total matches pin for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     gc <- fetch_grad_count(yr)
 
@@ -222,8 +212,7 @@ for (spec in gcount_pins) {
 # -- Cross-year graduation rate consistency ------------------------------------
 
 test_that("state 4yr grad rate is monotonically reasonable (no wild swings)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # NJ state graduation rate has been between 85-95% for the past decade
   test_years <- c(2015, 2019, 2024)
@@ -242,8 +231,7 @@ test_that("state 4yr grad rate is monotonically reasonable (no wild swings)", {
 })
 
 test_that("year-over-year state grad rate change is < 5%", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   test_years <- c(2020, 2021, 2022, 2023, 2024)
 
@@ -271,8 +259,7 @@ test_that("year-over-year state grad rate change is < 5%", {
 # This test documents the naming inconsistency between years
 
 test_that("grad rate total subgroup naming change at 2020 boundary", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Pre-2020 uses "total population"
   gr2019 <- fetch_grad_rate(2019)
@@ -291,8 +278,7 @@ test_that("grad rate total subgroup naming change at 2020 boundary", {
 # -- 5-Year Graduation Rate ---------------------------------------------------
 
 test_that("fetch_grad_rate 5yr loads for 2019", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gr5 <- fetch_grad_rate(2019, methodology = "5 year")
 
@@ -309,8 +295,7 @@ test_that("fetch_grad_rate 5yr rejects pre-2012 years", {
 # -- Graduation count: no negative values --------------------------------------
 
 test_that("fetch_grad_count has no negative graduated_count", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gc <- fetch_grad_count(2024)
 
@@ -320,8 +305,7 @@ test_that("fetch_grad_count has no negative graduated_count", {
 })
 
 test_that("fetch_grad_count has no Inf/NaN in graduated_count", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   gc <- fetch_grad_count(2024)
 

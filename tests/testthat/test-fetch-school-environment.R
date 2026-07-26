@@ -25,6 +25,7 @@ spr_id_flag_cols <- c(
 )
 
 local_big_download_timeout <- function(seconds = 1200, env = parent.frame()) {
+  skip_if_no_live_tests()
   old <- getOption("timeout")
   options(timeout = seconds)
   withr::defer(options(timeout = old), envir = env)

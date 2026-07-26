@@ -6,7 +6,11 @@ from ._r_bridge import call_r_function, r_to_pandas
 
 
 @r_to_pandas
-def fetch_enr(end_year: int, tidy: bool = False) -> pd.DataFrame:
+def fetch_enr(
+    end_year: int,
+    tidy: bool = False,
+    use_cache: bool = False,
+) -> pd.DataFrame:
     """
     Fetch NJ school enrollment data for a given year.
 
@@ -14,9 +18,11 @@ def fetch_enr(end_year: int, tidy: bool = False) -> pd.DataFrame:
     ----------
     end_year : int
         School year (end of academic year, e.g., 2024 for 2023-24).
-        Valid values: 2000-2025.
+        Valid values: 1999-2026.
     tidy : bool, default False
         If True, returns long-format data suitable for longitudinal analysis.
+    use_cache : bool, default False
+        Whether to reuse a validated artifact from the R package source cache.
 
     Returns
     -------
@@ -30,4 +36,6 @@ def fetch_enr(end_year: int, tidy: bool = False) -> pd.DataFrame:
     >>> enr_2024 = njsd.fetch_enr(2024)
     >>> enr_tidy = njsd.fetch_enr(2024, tidy=True)
     """
-    return call_r_function("fetch_enr", end_year, tidy)
+    return call_r_function(
+        "fetch_enr", end_year, tidy=tidy, use_cache=use_cache
+    )

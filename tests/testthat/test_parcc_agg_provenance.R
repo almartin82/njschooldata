@@ -158,7 +158,7 @@ test_that("parcc_aggregate_calcs n_charter_rows is unchanged by new columns (#70
 
 test_that("calculate_agg_parcc_prof carries tests and n_schools through to output (#98, #70)", {
   # Integration test against live NJ DOE data; skips offline or if unavailable.
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   agg <- tryCatch(
     calculate_agg_parcc_prof(end_year = 2023, subj = "math", gradespan = "3-11"),

@@ -4,10 +4,15 @@
 \alias{fetch_all_njgpa}
 \title{Fetch all NJGPA results}
 \usage{
-fetch_all_njgpa()
+fetch_all_njgpa(allow_partial = FALSE)
+}
+\arguments{
+\item{allow_partial}{If `FALSE` (default), any unavailable or unparseable
+subject fails the request. If `TRUE`, successful subjects are returned and
+all subject/year statuses are available through [get_source_results()].}
 }
 \value{
-A data frame with all NJGPA results (ELA and Math)
+A data frame with all NJGPA results (ELA and Math) and source status.
 }
 \description{
 Convenience function to download and combine all NJGPA (graduation proficiency)

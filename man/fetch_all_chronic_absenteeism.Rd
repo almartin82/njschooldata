@@ -4,7 +4,12 @@
 \alias{fetch_all_chronic_absenteeism}
 \title{Fetch all Chronic Absenteeism data}
 \usage{
-fetch_all_chronic_absenteeism()
+fetch_all_chronic_absenteeism(allow_partial = FALSE)
+}
+\arguments{
+\item{allow_partial}{If `FALSE` (default), any failed year aborts the
+combined request. If `TRUE`, successful years are returned with request
+status available from [get_source_results()].}
 }
 \value{
 A data frame with all chronic absenteeism results (2017-2019, 2022-2024)

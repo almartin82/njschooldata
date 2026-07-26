@@ -1095,7 +1095,7 @@ test_that("clean_cds_fields standardizes CDS column names", {
 
 test_that("get_valid_years returns correct enrollment range", {
   years <- get_valid_years("enrollment")
-  expect_equal(min(years), 2000)
+  expect_equal(min(years), 1999)
   expect_equal(max(years), 2026)
 })
 
@@ -1104,7 +1104,7 @@ test_that("get_valid_years excludes COVID year for PARCC", {
   years <- get_valid_years("parcc")
   expect_false(2020 %in% years)
   expect_true(2019 %in% years)
-  expect_true(2021 %in% years)
+  expect_false(2021 %in% years)
 })
 
 

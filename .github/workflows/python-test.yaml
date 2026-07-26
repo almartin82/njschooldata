@@ -10,6 +10,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      NJSCHOOLDATA_LIVE_TESTS: "false"
 
     steps:
       - uses: actions/checkout@v5

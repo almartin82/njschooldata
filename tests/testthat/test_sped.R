@@ -4,7 +4,7 @@
 # New data uses a different URL structure at /education/specialed/monitor/ideapublicdata/
 
 test_that("fetch_sped returns expected structure for 2024 data", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Test current data year
   result <- tryCatch(
@@ -28,6 +28,25 @@ test_that("fetch_sped validates end_year parameter", {
 
 test_that("fetch_sped validates level parameter", {
   expect_error(fetch_sped(2025, level = "school"), "level")
+})
+
+test_that("fetch_sped reports tidy schema failures as parse errors", {
+  raw <- attach_source_results(
+    data.frame(end_year = 2025L),
+    source_result_record(new_source_result(
+      source_status = "actual",
+      source_url = "https://www.nj.gov/example/sped.xlsx"
+    ), "sped", 2025, "district")
+  )
+  local_mocked_bindings(
+    get_raw_sped = function(...) raw,
+    clean_sped_names = function(...) stop("classification schema changed"),
+    .package = "njschooldata"
+  )
+
+  error <- tryCatch(fetch_sped(2025), error = identity)
+  expect_s3_class(error, "njsd_parse_error")
+  expect_match(conditionMessage(error), "classification schema changed")
 })
 
 test_that("build_sped_url switches to the 2025 consolidated naming", {
@@ -91,7 +110,7 @@ test_that("tidy_sped_state_disability reshapes a State Rates frame", {
 # ------------------------------------------------------------------
 
 test_that("fetch_sped(2025) district returns the classification schema", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   result <- tryCatch(fetch_sped(2025), error = function(e) NULL)
   skip_if(is.null(result), "SPED 2025 workbook not accessible")
 
@@ -108,7 +127,7 @@ test_that("fetch_sped(2025) district returns the classification schema", {
 })
 
 test_that("fetch_sped(2025, level='state') gives child count by disability", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   s <- tryCatch(fetch_sped(2025, level = "state"), error = function(e) NULL)
   skip_if(is.null(s), "SPED 2025 workbook not accessible")
 
@@ -199,7 +218,7 @@ test_that("clean_sped_df appends entity flags and opt-in value_status", {
 
 
 test_that("historical district SPED years return the standard schema", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   res <- tryCatch(fetch_sped(2018), error = function(e) NULL)
   skip_if(is.null(res), "SPED 2018 archive not accessible")
 

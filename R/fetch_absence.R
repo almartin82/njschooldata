@@ -193,6 +193,9 @@ fetch_absence <- function(end_year, level = "school", type = "chronic",
 #'   or \code{"essa"}.
 #' @param tidy Logical; if \code{TRUE} (default), normalizes subgroup names.
 #' @param use_cache Logical; if \code{TRUE} (default), caches each year.
+#' @param allow_partial Logical; if \code{FALSE} (default), failed or
+#'   structurally unavailable years abort the request. If \code{TRUE},
+#'   successful years are returned with status from [get_source_results()].
 #'
 #' @return A data frame with all years bound together.
 #'
@@ -213,38 +216,27 @@ fetch_absence <- function(end_year, level = "school", type = "chronic",
 #'   select(end_year, chronically_absent_rate)
 #' }
 fetch_absence_multi <- function(end_years, level = "school", type = "chronic",
-                                tidy = TRUE, use_cache = TRUE) {
-
-  results <- list()
-
-  for (yr in end_years) {
-    result <- tryCatch(
-      {
-        fetch_absence(
-          end_year = yr,
-          level = level,
-          type = type,
-          tidy = tidy,
-          use_cache = use_cache
-        )
-      },
-      error = function(e) {
-        warning(
-          sprintf("Could not fetch absence data for %d: %s", yr, e$message),
-          call. = FALSE
-        )
-        NULL
-      }
+                                tidy = TRUE, use_cache = TRUE,
+                                allow_partial = FALSE) {
+  family <- if (identical(type, "essa")) {
+    "essa_chronic_absence"
+  } else {
+    "absence"
+  }
+  captures <- lapply(sort(unique(end_years)), function(year) {
+    capture_registered_source_call(
+      function() fetch_absence(
+        end_year = year,
+        level = level,
+        type = type,
+        tidy = tidy,
+        use_cache = use_cache
+      ),
+      family, year, domain = "absence", component = paste(type, level, sep = "/")
     )
-
-    if (!is.null(result)) {
-      results[[as.character(yr)]] <- result
-    }
-  }
-
-  if (length(results) == 0) {
-    stop("No absence data could be fetched for any requested year.", call. = FALSE)
-  }
-
-  dplyr::bind_rows(results)
+  })
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "Absence multi-year request"
+  )
 }

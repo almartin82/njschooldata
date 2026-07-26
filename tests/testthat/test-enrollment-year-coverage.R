@@ -25,8 +25,7 @@ test_that("get_available_years is exported and truthful about ENR_VALID_YEARS", 
 })
 
 test_that("get_available_years max year actually fetches via fetch_enr", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   max_year <- max(get_available_years())
   enr <- fetch_enr(max_year, use_cache = TRUE)
@@ -62,8 +61,7 @@ for (spec in wide_test_years) {
   yr <- spec$year
 
   test_that(paste("fetch_enr wide format loads for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, use_cache = TRUE)
 
@@ -73,8 +71,7 @@ for (spec in wide_test_years) {
   })
 
   test_that(paste("fetch_enr wide format has required columns for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, use_cache = TRUE)
 
@@ -92,8 +89,7 @@ for (spec in wide_test_years) {
   })
 
   test_that(paste("fetch_enr wide format has no Inf/NaN in row_total for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, use_cache = TRUE)
 
@@ -129,8 +125,7 @@ for (spec in tidy_test_years) {
   yr <- spec$year
 
   test_that(paste("fetch_enr tidy loads without error for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -139,8 +134,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy has required columns for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -158,8 +152,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy state total matches pinned value for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -173,8 +166,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy Newark total matches pinned value for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -194,8 +186,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy has expected subgroups for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -213,8 +204,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy has expected grade levels for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -237,8 +227,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy entity flags are mutually exclusive for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -255,8 +244,7 @@ for (spec in tidy_test_years) {
   })
 
   test_that(paste("fetch_enr tidy has no Inf/NaN/negative n_students for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -274,8 +262,7 @@ for (spec in tidy_test_years) {
 # -- Cross-year consistency tests (tidy format) --------------------------------
 
 test_that("year-over-year state enrollment change is < 10%", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Use years we know work reliably with tidy=TRUE
   test_years <- c(2021, 2022, 2023, 2024, 2025, 2026)
@@ -299,8 +286,7 @@ test_that("year-over-year state enrollment change is < 10%", {
 })
 
 test_that("tidy enrollment schema is consistent across years", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # All tidy years should have the same column names
   ref_cols <- NULL
@@ -328,8 +314,7 @@ invariant_years <- c(2022, 2023, 2024, 2025, 2026)
 for (yr in invariant_years) {
 
   test_that(paste("state total equals sum of district totals for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -347,8 +332,7 @@ for (yr in invariant_years) {
   })
 
   test_that(paste("no state-level rows have NA grade_level for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     # Regression: NJ DOE ships "Eight Grade" (sic) as a row value on the State
     # worksheet. Before the typo fix this failed to map to grade "08" and the
@@ -364,8 +348,7 @@ for (yr in invariant_years) {
   })
 
   test_that(paste("state grade-8 equals sum of district grade-8 for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
 
@@ -384,8 +367,7 @@ for (yr in invariant_years) {
   })
 
   test_that(paste("state PK + K12UG equals total enrollment for", yr), {
-    skip_on_cran()
-    skip_if_offline()
+    skip_if_no_live_tests()
 
     # PreK + (K-12 inclusive of ungraded) must reconstruct the full state
     # total. K12UG (not K12) is used so the identity holds for both pre-2024
@@ -418,8 +400,7 @@ for (yr in invariant_years) {
 # headline -1.9% K-12 drop is real demographics, not an artifact.
 
 test_that("2025->2026 cohort retention is within believable bounds", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   e25 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
   e26 <- fetch_enr(2026, tidy = TRUE, use_cache = TRUE)
@@ -450,8 +431,7 @@ test_that("2025->2026 cohort retention is within believable bounds", {
 })
 
 test_that("2026 PreK rose while K-12 fell (documents the headline divergence)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   e25 <- fetch_enr(2025, tidy = TRUE, use_cache = TRUE)
   e26 <- fetch_enr(2026, tidy = TRUE, use_cache = TRUE)

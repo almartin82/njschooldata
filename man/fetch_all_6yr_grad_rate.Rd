@@ -4,11 +4,15 @@
 \alias{fetch_all_6yr_grad_rate}
 \title{Fetch all 6-Year Graduation Rate data}
 \usage{
-fetch_all_6yr_grad_rate(level = "school")
+fetch_all_6yr_grad_rate(level = "school", allow_partial = FALSE)
 }
 \arguments{
 \item{level}{One of "school", "district", or "both". "both" combines
 school and district data. Default is "school".}
+
+\item{allow_partial}{If `FALSE` (default), any failed year/level aborts the
+request. If `TRUE`, successful requests are returned with status available
+from [get_source_results()].}
 }
 \value{
 A data frame with all 6-year graduation rate results (2021-2025)

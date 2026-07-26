@@ -57,28 +57,20 @@ expand_street_types <- function(addr) {
 
 enrich_school_latlong <- function(df, use_cache=TRUE, api_key='') {
 
-  # download and clean
-  nj_sch <- httr::GET('https://homeroom5.doe.state.nj.us/directory/schoolDL.php') %>%
-    httr::content(as="text") %>%
-    readr::read_csv(skip=3) %>%
-    rename(
-      district_id = `District Code`,
-      school_id = `School Code`
-    ) %>%
-    clean_names() %>%
+  # Reuse the registered, validated Homeroom directory adapter. Address
+  # enrichment stays local to this domain function.
+  nj_sch <- get_raw_school_directory() %>%
+    process_school_directory() %>%
     select(
       district_id,
       school_id,
-      address1,
+      address,
       city,
       state,
       zip
     ) %>%
     mutate(
-      district_id = kill_padformulas(district_id),
-      school_id = kill_padformulas(school_id),
-      zip = kill_padformulas(zip),
-      address = paste0(address1, ', ', city, ', ', state, ' ', zip, ' USA')
+      address = paste0(address, ', ', city, ', ', state, ' ', zip, ' USA')
       )
   
   
@@ -203,7 +195,7 @@ enrich_school_city_ward <- function(df) {
       stop("Package 'sp' is required for ward enrichment. Install it with: install.packages('sp')")
     }
     newark_wards <- geojsonio::geojson_read(
-      "http://data.ci.newark.nj.us/dataset/ba8f41a3-584b-4021-b8c3-30a7d1ae8ac3/resource/5b9c86cd-b57b-4341-8c4c-ee975d9e1904/download/wards2012.geojson",
+      "https://data.ci.newark.nj.us/dataset/ba8f41a3-584b-4021-b8c3-30a7d1ae8ac3/resource/5b9c86cd-b57b-4341-8c4c-ee975d9e1904/download/wards2012.geojson",
       what = "sp"
     )
     newark_wards$WARD_NAME <- as.character(newark_wards$WARD_NAME)

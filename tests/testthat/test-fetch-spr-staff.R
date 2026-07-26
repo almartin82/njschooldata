@@ -71,8 +71,7 @@ test_that("backfilled staff fetchers error only below their real floor", {
 # ==============================================================================
 
 test_that("fetch_spr_admin_experience returns numeric measures and keeps CDS", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_admin_experience(2025)
@@ -101,8 +100,7 @@ test_that("fetch_spr_admin_experience returns numeric measures and keeps CDS", {
 # ==============================================================================
 
 test_that("fetch_spr_staff_counts coerces counts and NA-fills missing", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_counts(2025)
@@ -131,8 +129,7 @@ test_that("fetch_spr_staff_counts coerces counts and NA-fills missing", {
 # ==============================================================================
 
 test_that("fetch_spr_staff_demo_subject preserves privacy ranges as character", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_demo_subject(2025)
@@ -162,8 +159,7 @@ test_that("fetch_spr_staff_demo_subject preserves privacy ranges as character", 
 # ==============================================================================
 
 test_that("fetch_spr_staff_education returns numeric degree shares", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_education(2025)
@@ -186,8 +182,7 @@ test_that("fetch_spr_staff_education returns numeric degree shares", {
 # ==============================================================================
 
 test_that("fetch_spr_staff_retention returns numeric retention rates", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_retention(2025)
@@ -208,8 +203,7 @@ test_that("fetch_spr_staff_retention returns numeric retention rates", {
 # ==============================================================================
 
 test_that("fetch_spr_teacher_exp_subject returns numeric experience shares", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_teacher_exp_subject(2025)
@@ -230,8 +224,7 @@ test_that("fetch_spr_teacher_exp_subject returns numeric experience shares", {
 # ==============================================================================
 
 test_that("fetch_spr_educator_equity returns the statewide summary (no CDS)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_educator_equity(2025)
@@ -264,8 +257,7 @@ test_that("fetch_spr_educator_equity returns the statewide summary (no CDS)", {
 # ==============================================================================
 
 test_that("fetch_spr_staff_counts backfills to SY2020-21 with matching values", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_counts(2024)
@@ -286,8 +278,7 @@ test_that("fetch_spr_staff_counts backfills to SY2020-21 with matching values", 
 })
 
 test_that("fetch_spr_staff_education backfills via TeachersAdminsLevelOfEducation", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_education(2024)
@@ -307,8 +298,7 @@ test_that("fetch_spr_staff_education backfills via TeachersAdminsLevelOfEducatio
 })
 
 test_that("fetch_spr_staff_retention backfills at district level", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   local_big_download_timeout()
 
   df <- fetch_spr_staff_retention(2024, level = "district")

@@ -4,14 +4,18 @@
 \alias{fetch_many_tges}
 \title{Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending}
 \usage{
-fetch_many_tges(end_year_vector)
+fetch_many_tges(end_year_vector, allow_partial = FALSE)
 }
 \arguments{
 \item{end_year_vector}{vector of years.  Current valid values
 are 2001 to 2025.}
+
+\item{allow_partial}{If `FALSE` (default), any failed or unsupported year
+aborts the request. If `TRUE`, successful years are returned and all
+request statuses are available through [get_source_results()].}
 }
 \value{
-list of lists of data frames
+Named list of per-year TGES tables with source-result provenance.
 }
 \description{
 Fetch Multiple Cleaned Taxpayer's Guides to Educational Spending

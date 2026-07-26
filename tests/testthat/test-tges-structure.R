@@ -12,8 +12,7 @@
 
 
 test_that("fetch returns a non-empty named list containing CSG1 for every year", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     res <- tges_tidy(y)
     expect_type(res, "list")
@@ -25,8 +24,7 @@ test_that("fetch returns a non-empty named list containing CSG1 for every year",
 
 test_that("no tidied table carries janitor-deduplicated (...N) columns", {
   # Regression guard for the personnel year-mask bug that duplicated columns.
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     res <- tges_tidy(y)
     dup_tables <- names(res)[vapply(
@@ -39,8 +37,7 @@ test_that("no tidied table carries janitor-deduplicated (...N) columns", {
 
 
 test_that("CSG1 budget table has the expected schema and 3-year window", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   needed <- c("group", "county_name", "district_id", "district_name",
               "Per Pupil costs", "District rank", "end_year", "indicator")
   for (y in tges_years_live) {
@@ -55,8 +52,7 @@ test_that("CSG1 budget table has the expected schema and 3-year window", {
 
 
 test_that("budget per-pupil costs are numeric and within a plausible range", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # New/non-operating districts (eg charters in their first year) legitimately
   # report $0, so the floor is >= 0; the upper bound and "real dollars present"
   # checks guard against scale/parse regressions.
@@ -74,8 +70,7 @@ test_that("budget per-pupil costs are numeric and within a plausible range", {
 
 
 test_that("district ranks are integers within a plausible range or NA", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # Rank 0 marks an unranked (non-operating / first-year charter) district.
   for (y in tges_years_live) {
     c1 <- tges_tidy(y)[["CSG1"]]
@@ -91,8 +86,7 @@ test_that("district ranks are integers within a plausible range or NA", {
 
 
 test_that("district codes are character and four characters wide", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     dc <- tges_tidy(y)[["CSG1"]]$district_id
     expect_type(dc, "character")
@@ -103,8 +97,7 @@ test_that("district codes are character and four characters wide", {
 
 
 test_that("budget tables reshape to exactly 3x the raw row count", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     raw <- tges_raw(y)
     tidy <- tges_tidy(y)
@@ -118,8 +111,7 @@ test_that("budget tables reshape to exactly 3x the raw row count", {
 
 
 test_that("personnel tables split into a 2-year window with no dup columns", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     raw <- tges_raw(y)
     tidy <- tges_tidy(y)
@@ -137,8 +129,7 @@ test_that("personnel tables split into a 2-year window with no dup columns", {
 
 
 test_that("personnel rank columns are integer and ratios are numeric", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     p <- tges_tidy(y)[["CSG16"]]
     if (is.null(p)) next
@@ -155,8 +146,7 @@ test_that("personnel rank columns are integer and ratios are numeric", {
 
 
 test_that("teacher salaries are plausible where reported", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     p <- tges_tidy(y)[["CSG16"]]
     if (is.null(p)) next
@@ -171,8 +161,7 @@ test_that("teacher salaries are plausible where reported", {
 
 
 test_that("VITSTAT is present and numeric in the TGES era (>=2011)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live[tges_years_live >= 2011]) {
     v <- tges_tidy(y)[["VITSTAT_TOTAL"]]
     expect_false(is.null(v), info = paste("year", y))
@@ -187,8 +176,7 @@ test_that("VITSTAT is present and numeric in the TGES era (>=2011)", {
 
 
 test_that("every tidied indicator table carries an end_year column", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   cleaned <- c(tges_budget_tables, tges_personnel_tables,
                "CSG1AA_AVGS", "CSG20", "CSG21", "VITSTAT_TOTAL")
   for (y in tges_years_live) {
@@ -202,8 +190,7 @@ test_that("every tidied indicator table carries an end_year column", {
 
 
 test_that("reported end_year values never exceed the reporting year", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     res <- tges_tidy(y)
     for (tb in intersect(tges_budget_tables, names(res))) {

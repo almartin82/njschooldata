@@ -35,8 +35,8 @@ ensure_appt_share <- function(df) {
 #'
 #' When aggregating across schools/districts, \code{toString()} produces
 #' long strings with duplicated names (e.g., the same school repeated for
-#' each grade). This function deduplicates: if all names are the same, returns
-#' the single name; if names differ, returns each unique name with its count.
+#' each grade). This function returns each unique name once with its input-row
+#' count, including the single-name case.
 #'
 #' @param name_vector Character vector of names to collapse
 #' @return Single collapsed string
@@ -45,21 +45,23 @@ ensure_appt_share <- function(df) {
 #' \dontrun{
 #' # Same school across grades
 #' collapse_agg_names(c("School A", "School A", "School A"))
-#' # => "School A"
+#' # => "School A (3)"
 #'
 #' # Multiple schools
 #' collapse_agg_names(c("School A", "School A", "School B"))
 #' # => "School A (2), School B (1)"
 #' }
 collapse_agg_names <- function(name_vector) {
+  delimited_input <- length(name_vector) == 1L && !is.na(name_vector) &&
+    grepl(",", name_vector, fixed = TRUE)
+  if (delimited_input) {
+    name_vector <- trimws(strsplit(name_vector, ",", fixed = TRUE)[[1]])
+  }
   counts <- table(name_vector)
 
-  if (length(counts) == 1) {
-    # All the same name — just return it once
-    return(names(counts)[1])
-  }
+  if (length(counts) == 1L && !delimited_input) return(names(counts)[[1]])
 
-  # Multiple unique names — include counts, sorted by frequency descending
+  # Include counts, sorted by frequency descending.
   counts <- sort(counts, decreasing = TRUE)
   paste0(names(counts), " (", counts, ")", collapse = ", ")
 }

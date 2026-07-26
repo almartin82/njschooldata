@@ -189,8 +189,7 @@ test_that("percentile_rank_trend() calculates year-over-year change", {
 # to 77% in 2018 and closed the gap with the state by seven percentage points"
 
 test_that("Newark graduation rate matches MarGrady 2018 finding (~77%)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year")
 
@@ -214,8 +213,7 @@ test_that("Newark graduation rate matches MarGrady 2018 finding (~77%)", {
 
 
 test_that("Newark graduation rate trend 2012-2018 shows improvement", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   years <- 2012:2018
 
@@ -264,8 +262,7 @@ test_that("Newark graduation rate trend 2012-2018 shows improvement", {
 
 test_that("grate_percentile_rank() calculates correctly for DFG A peers",
 {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Get 2018 graduation rates
   grate_2018 <- fetch_grad_rate(2018, "4 year")
@@ -311,8 +308,7 @@ test_that("grate_percentile_rank() calculates correctly for DFG A peers",
 
 
 test_that("percentile_rank_trend() tracks changes over time", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   # Note: MarGrady's 39th->78th percentile finding was for TEST SCORES
   # from 2006-2018. This test validates the trend-tracking methodology
@@ -374,8 +370,7 @@ test_that("percentile_rank_trend() tracks changes over time", {
 # -----------------------------------------------------------------------------
 
 test_that("grate_percentile_rank() wrapper works correctly", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year")
 
@@ -410,8 +405,7 @@ test_that("dfg_percentile_rank() wrapper requires dfg column", {
 
 
 test_that("dfg_percentile_rank() works with dfg column", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year") %>%
     add_dfg() %>%
@@ -429,8 +423,7 @@ test_that("dfg_percentile_rank() works with dfg column", {
 # -----------------------------------------------------------------------------
 
 test_that("parcc_percentile_rank() works correctly", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   parcc_2018 <- fetch_parcc(2018, 4, "ela", tidy = TRUE)
 
@@ -461,8 +454,7 @@ test_that("parcc_percentile_rank() works correctly", {
 # -----------------------------------------------------------------------------
 
 test_that("get_dfg_a_districts() returns expected districts", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   dfg_a <- get_dfg_a_districts()
 
@@ -477,8 +469,7 @@ test_that("get_dfg_a_districts() returns expected districts", {
 
 
 test_that("add_dfg() adds DFG classification", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   test_df <- tibble::tibble(
     district_id = c("133570", "130100"),  # Newark, another district
@@ -497,8 +488,7 @@ test_that("add_dfg() adds DFG classification", {
 # -----------------------------------------------------------------------------
 
 test_that("sector_percentile_comparison() differentiates sectors", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year")
 
@@ -536,8 +526,7 @@ test_that("sector_percentile_comparison() differentiates sectors", {
 # - Newark is INCLUDED in the denominator (compared to all DFG A peers)
 
 test_that("full MarGrady-style analysis workflow validates methodology", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   years <- c(2013, 2016, 2018)
 
@@ -769,8 +758,7 @@ test_that("gap_trajectory() tracks gap changes over time", {
 # -----------------------------------------------------------------------------
 
 test_that("calculate_subgroup_gap() works with real graduation data", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year") %>%
     dplyr::filter(is_district)
@@ -861,8 +849,7 @@ test_that("sector_gap() identifies district leader correctly", {
 # -----------------------------------------------------------------------------
 
 test_that("city_ecosystem_summary() returns all three sectors", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year") %>%
     dplyr::filter(subgroup == "total population")
@@ -923,8 +910,7 @@ test_that("charter_market_share() calculates share correctly", {
 # -----------------------------------------------------------------------------
 
 test_that("Newark charter sector can be aggregated", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year")
 
@@ -951,8 +937,7 @@ test_that("Newark charter sector can be aggregated", {
 
 
 test_that("Newark all-public can be aggregated", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   grate_2018 <- fetch_grad_rate(2018, "4 year")
 

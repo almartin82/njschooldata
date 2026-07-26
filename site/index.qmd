@@ -7,6 +7,7 @@ toc: false
 ```{r setup, include=FALSE}
 library(dplyr); library(DT)
 source("R/bundle.R")
+source("R/security.R")
 dir_all <- readRDS("_bundles/_statewide/directory.rds")
 dfg     <- readRDS("_bundles/_statewide/dfg.rds")
 enr     <- readRDS("_bundles/_statewide/enrollment.rds")
@@ -44,10 +45,12 @@ cat(sprintf("**%s districts** &nbsp;·&nbsp; **%s students** statewide &nbsp;·&
 disp <- tbl %>%
   mutate(District = ifelse(
     district_id %in% built,
-    sprintf('<a href="%s.html">%s</a>', district_id, district_name),
-    district_name)) %>%
-  transmute(District, County = county, Type = type,
-            DFG = ifelse(is.na(dfg), "—", dfg),
+    sprintf('<a href="%s">%s</a>',
+            vapply(district_id, safe_profile_href, character(1)),
+            html_escape(district_name)),
+    html_escape(district_name))) %>%
+  transmute(District, County = html_escape(county), Type = html_escape(type),
+            DFG = html_escape(ifelse(is.na(dfg), "—", dfg)),
             Enrollment = enrollment)
 
 datatable(disp, escape = FALSE, rownames = FALSE,

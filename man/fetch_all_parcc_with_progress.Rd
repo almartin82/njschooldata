@@ -4,10 +4,14 @@
 \alias{fetch_all_parcc_with_progress}
 \title{Fetch all PARCC/NJSLA results with progress}
 \usage{
-fetch_all_parcc_with_progress()
+fetch_all_parcc_with_progress(allow_partial = FALSE)
+}
+\arguments{
+\item{allow_partial}{If `TRUE`, return successful requests and attach status
+for failures. The default is strict.}
 }
 \value{
-A data frame with all PARCC/NJSLA results
+A data frame with all PARCC/NJSLA results and source status.
 }
 \description{
 Downloads all available PARCC and NJSLA assessment results with

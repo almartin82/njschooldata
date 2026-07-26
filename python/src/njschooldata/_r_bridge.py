@@ -7,6 +7,8 @@ from typing import Any, Callable
 
 import pandas as pd
 
+from ._generated_contract import R_PACKAGE_MAX_VERSION, R_PACKAGE_MIN_VERSION
+
 try:
     import rpy2.robjects as ro
     from rpy2.robjects import pandas2ri
@@ -24,9 +26,38 @@ else:
 # Lazy initialization of R package
 _njschooldata_r = None
 _r_fetchers_cache = None
+_r_package_version_cache = None
 
 _FETCHER_EXPORT_RE = re.compile(r"^(fetch|get|tidy)_")
 _NAMESPACE_EXPORT_RE = re.compile(r"^export\(([^)]+)\)\s*$")
+
+
+class RPackageCompatibilityError(RuntimeError):
+    """Raised when the loaded R package is outside Python's supported range."""
+
+
+def _version_tuple(version: str) -> tuple[int, ...]:
+    """Return a comparable numeric release tuple."""
+    match = re.match(r"^(\d+(?:\.\d+)*)", version)
+    if not match:
+        raise RPackageCompatibilityError(
+            f"Could not interpret njschooldata R package version {version!r}."
+        )
+    return tuple(int(part) for part in match.group(1).split("."))
+
+
+def _assert_supported_r_version(version: str) -> None:
+    """Raise an actionable error for an unsupported R package version."""
+    installed = _version_tuple(version)
+    minimum = _version_tuple(R_PACKAGE_MIN_VERSION)
+    maximum = _version_tuple(R_PACKAGE_MAX_VERSION)
+    if installed < minimum or installed >= maximum:
+        raise RPackageCompatibilityError(
+            "Unsupported njschooldata R package version "
+            f"{version}. This Python release supports R package versions "
+            f">={R_PACKAGE_MIN_VERSION},<{R_PACKAGE_MAX_VERSION}. Install a "
+            "compatible R package or upgrade the Python bindings."
+        )
 
 
 def _require_rpy2() -> None:
@@ -44,13 +75,34 @@ def _get_r_package():
     _require_rpy2()
     if _njschooldata_r is None:
         try:
-            _njschooldata_r = importr("njschooldata")
+            package = importr("njschooldata")
         except Exception as e:
             raise ImportError(
                 "The njschooldata R package must be installed. "
                 "Install it with: remotes::install_github('almartin82/njschooldata')"
             ) from e
+        get_r_package_version()
+        _njschooldata_r = package
     return _njschooldata_r
+
+
+def get_r_package_version() -> str:
+    """Return and validate the installed njschooldata R package version."""
+    global _r_package_version_cache
+    _require_rpy2()
+    if _r_package_version_cache is None:
+        try:
+            version = str(
+                ro.r('as.character(utils::packageVersion("njschooldata"))')[0]
+            )
+        except Exception as e:
+            raise ImportError(
+                "The njschooldata R package must be installed before using "
+                "the Python bridge."
+            ) from e
+        _assert_supported_r_version(version)
+        _r_package_version_cache = version
+    return _r_package_version_cache
 
 
 def _read_exports_from_r() -> list[str]:
@@ -129,18 +181,32 @@ def list_r_fetchers() -> list[str]:
 
 
 def r_to_pandas(func: Callable) -> Callable:
-    """Decorator to convert R data.frame results to pandas DataFrame."""
+    """Convert an R data.frame and retain its source-result contract."""
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> pd.DataFrame:
         _require_rpy2()
         result = func(*args, **kwargs)
+        source_results = None
+        if not isinstance(result, pd.DataFrame):
+            attributes = {
+                str(name) for name in getattr(result, "list_attrs", lambda: [])()
+            }
+            if "njsd_source_results" in attributes:
+                records = ro.r["attr"](result, "njsd_source_results", exact=True)
+                with localconverter(ro.default_converter + pandas2ri.converter):
+                    source_results = pandas2ri.rpy2py(records)
+
         # Use localconverter context for pandas conversion
         with localconverter(ro.default_converter + pandas2ri.converter):
             if isinstance(result, pd.DataFrame):
-                return result
-            if hasattr(result, "to_pandas"):
-                return result.to_pandas()
-            return pandas2ri.rpy2py(result)
+                converted = result
+            elif hasattr(result, "to_pandas"):
+                converted = result.to_pandas()
+            else:
+                converted = pandas2ri.rpy2py(result)
+        if isinstance(converted, pd.DataFrame) and isinstance(source_results, pd.DataFrame):
+            converted.attrs["source_results"] = source_results
+        return converted
     return wrapper
 
 

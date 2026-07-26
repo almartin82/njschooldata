@@ -16,14 +16,13 @@
 #' @return list of unzipped files in a temp directory
 #' @keywords internal
 unzipper <- function(url, file_pattern = "njschooldata") {
-  tname <- tempfile(pattern = file_pattern, tmpdir = tempdir())
-  tdir <- tempdir()
-  downloader::download(url, dest = tname, mode = "wb")
-  unzip_loc <- paste0(tempfile(pattern = "subfolder"))
+  transport <- download_source(url, source_type = "zip")
+  tname <- source_result_data(transport)
+  on.exit(unlink(tname), add = TRUE)
+  unzip_loc <- tempfile(pattern = paste0(file_pattern, "-unpack-"))
   dir.create(unzip_loc)
   utils::unzip(tname, exdir = unzip_loc)
-  new_files <- utils::unzip(tname, exdir = ".", list = TRUE)
-  closeAllConnections()
+  new_files <- utils::unzip(tname, list = TRUE)
 
-  paste(unzip_loc, new_files$Name, sep = "/")
+  file.path(unzip_loc, new_files$Name)
 }

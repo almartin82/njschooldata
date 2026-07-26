@@ -21,23 +21,6 @@
 # ==============================================================================
 
 
-# the two-digit-each year span code: end_year 2026 (FY26 / SY2025-26) -> "2526"
-state_aid_year_code <- function(end_year) {
-  end_year <- as.integer(end_year)
-  sprintf("%02d%02d", (end_year - 1L) %% 100L, end_year %% 100L)
-}
-
-
-# cheap real-.xlsx check: a valid workbook is a ZIP, so it starts with "PK"
-.is_xlsx_file <- function(path) {
-  if (!file.exists(path) || file.size(path) < 100) return(FALSE)
-  con <- file(path, "rb")
-  on.exit(close(con))
-  magic <- readBin(con, what = "raw", n = 2L)
-  length(magic) == 2L && magic[1] == as.raw(0x50) && magic[2] == as.raw(0x4b)
-}
-
-
 # standard, cross-year category names (labels drift year to year)
 .state_aid_known_categories <- c(
   "equalization_aid", "educational_adequacy_aid", "school_choice_aid",
@@ -82,72 +65,17 @@ normalize_state_aid_category <- function(raw) {
 }
 
 
-#' Get Raw NJ State Aid District Details
-#'
-#' @description Downloads one year of the NJ DOE K-12 State Aid "District Details"
-#' workbook. Tries the current-year direct URL first, then falls back to the
-#' archived per-year zip bundle and locates the district-details member by name.
-#'
-#' @param end_year school year (end of the academic year): the 2025-26 year
-#'   (state FY2026) is \code{end_year = 2026}. Valid values are 2019 and later;
-#'   earlier years use a different layout that this fetcher does not yet parse.
-#'
-#' @return a wide data frame (one row per district), header detected at the
-#'   first row carrying both "County" and "Dist"
-#' @keywords internal
-get_raw_state_aid <- function(end_year) {
-  end_year <- as.integer(end_year)
-  if (is.na(end_year) || end_year < 2019) {
-    stop("No NJ State Aid district-details parse is available for end_year ",
-         end_year, ". Valid values are 2019 and later (earlier years use a ",
-         "different layout).", call. = FALSE)
-  }
-
-  code <- state_aid_year_code(end_year)
-  yy   <- end_year %% 100L
-  base <- "https://www.nj.gov/education/stateaid"
-  direct_url <- sprintf("%s/%s/FY%02d_GBM_District_Details.xlsx", base, code, yy)
-
-  xlsx_path <- NULL
-
-  # 1) current-year direct workbook
-  tmp <- tempfile(fileext = ".xlsx")
-  got_direct <- tryCatch({
-    downloader::download(direct_url, dest = tmp, mode = "wb", quiet = TRUE)
-    .is_xlsx_file(tmp)
-  }, error = function(e) FALSE)
-
-  if (isTRUE(got_direct)) {
-    xlsx_path <- tmp
-  } else {
-    # 2) archived per-year zip bundle
-    zip_url <- sprintf("%s/zippedfiles/%s.zip", base, code)
-    ztmp <- tempfile(fileext = ".zip")
-    downloader::download(zip_url, dest = ztmp, mode = "wb", quiet = TRUE)
-    exdir <- tempfile()
-    dir.create(exdir)
-    utils::unzip(ztmp, exdir = exdir)
-
-    fs <- list.files(exdir, recursive = TRUE, full.names = TRUE, pattern = "[.]xlsx$")
-    b  <- basename(fs)
-    is_dd <- (
-      (grepl("district", b, ignore.case = TRUE) & grepl("detail", b, ignore.case = TRUE)) |
-        grepl("^district[.]xlsx$", b, ignore.case = TRUE)
-    ) & !grepl("county|preschool|prek|summary|adult|special|scenario|extraordinary|stabiliz|eligib",
-               b, ignore.case = TRUE)
-    cand <- fs[is_dd]
-    if (!length(cand)) {
-      stop("Could not locate a district-details workbook in ", zip_url,
-           ". Members: ", paste(b, collapse = ", "), call. = FALSE)
-    }
-    xlsx_path <- cand[1]
-  }
-
+# Parse one validated state-aid workbook. Transport and archive selection stay
+# outside this format-specific parser.
+.parse_state_aid_workbook <- function(xlsx_path, end_year) {
   # detect the header row (carries both "County" and "Dist"); default to row 5
-  top <- suppressMessages(readxl::read_excel(xlsx_path, col_names = FALSE, n_max = 10))
-  hdr <- which(apply(top, 1, function(r) {
-    rc <- as.character(r)
-    any(rc == "County", na.rm = TRUE) && any(rc == "Dist", na.rm = TRUE)
+  top <- suppressMessages(readxl::read_excel(
+    xlsx_path, col_names = FALSE, n_max = 10
+  ))
+  hdr <- which(apply(top, 1, function(row) {
+    values <- as.character(row)
+    any(values == "County", na.rm = TRUE) &&
+      any(values == "Dist", na.rm = TRUE)
   }))[1]
   if (is.na(hdr)) hdr <- 5L
 
@@ -155,6 +83,127 @@ get_raw_state_aid <- function(end_year) {
   df <- janitor::clean_names(df)
   df$report_year <- end_year
   df
+}
+
+.parse_state_aid_archive <- function(zip_path, end_year, source_url) {
+  members <- utils::unzip(zip_path, list = TRUE)$Name
+  basenames <- basename(members)
+  is_details <- (
+    (grepl("district", basenames, ignore.case = TRUE) &
+       grepl("detail", basenames, ignore.case = TRUE)) |
+      grepl("^district[.]xlsx$", basenames, ignore.case = TRUE)
+  ) & !grepl(
+    "county|preschool|prek|summary|adult|special|scenario|extraordinary|stabiliz|eligib",
+    basenames, ignore.case = TRUE
+  )
+  candidate <- members[is_details]
+  if (!length(candidate)) {
+    stop(
+      "Could not locate a district-details workbook in ", source_url,
+      ". Members: ", paste(basenames, collapse = ", "), call. = FALSE
+    )
+  }
+
+  extraction_dir <- tempfile("state-aid-")
+  dir.create(extraction_dir)
+  on.exit(unlink(extraction_dir, recursive = TRUE), add = TRUE)
+  extracted <- utils::unzip(
+    zip_path, files = candidate[1], exdir = extraction_dir,
+    junkpaths = TRUE
+  )
+  if (length(extracted) != 1L || !file.exists(extracted)) {
+    stop("State-aid archive member could not be extracted.", call. = FALSE)
+  }
+  .validate_source_file(extracted, "xlsx")
+  .parse_state_aid_workbook(extracted, end_year)
+}
+
+get_raw_state_aid_result <- function(
+    end_year, request_fn = .default_source_request) {
+  end_year <- as.integer(end_year)
+  valid_years <- get_source_years("state_aid", capability = "raw")
+  if (is.na(end_year) || !end_year %in% valid_years) {
+    stop("No NJ State Aid district-details parse is available for end_year ",
+         end_year, ". Valid values are ", min(valid_years), " through ",
+         max(valid_years), ".", call. = FALSE)
+  }
+
+  urls <- resolve_source_url("state_aid", end_year)
+  direct <- download_source(
+    urls[["direct"]], source_type = "xlsx", request_fn = request_fn
+  )
+  if (identical(direct$source_status, "actual")) {
+    on.exit(unlink(direct$data), add = TRUE)
+    parsed <- tryCatch(
+      .parse_state_aid_workbook(direct$data, end_year), error = identity
+    )
+    if (inherits(parsed, "error")) {
+      return(new_source_result(
+        source_status = "parse_error", source_url = direct$source_url,
+        retrieved_at = direct$retrieved_at, digest = direct$digest,
+        error = conditionMessage(parsed)
+      ))
+    }
+    return(new_source_result(
+      data = parsed, source_status = "actual",
+      source_url = direct$source_url, retrieved_at = direct$retrieved_at,
+      digest = direct$digest
+    ))
+  }
+
+  archive <- download_source(
+    urls[["archive"]], source_type = "zip", request_fn = request_fn
+  )
+  if (!identical(archive$source_status, "actual")) {
+    return(new_source_result(
+      source_status = archive$source_status,
+      source_url = archive$source_url,
+      retrieved_at = archive$retrieved_at,
+      digest = archive$digest,
+      error = paste0(
+        "Direct workbook candidate failed: ", direct$error,
+        "; archive candidate failed: ", archive$error
+      )
+    ))
+  }
+  on.exit(unlink(archive$data), add = TRUE)
+  parsed <- tryCatch(
+    .parse_state_aid_archive(archive$data, end_year, archive$source_url),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = archive$source_url,
+      retrieved_at = archive$retrieved_at, digest = archive$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed, source_status = "actual",
+    source_url = archive$source_url, retrieved_at = archive$retrieved_at,
+    digest = archive$digest,
+    warning = paste0(
+      "Archived ZIP fallback used after direct workbook candidate failed: ",
+      direct$error
+    )
+  )
+}
+
+#' Get Raw NJ State Aid District Details
+#'
+#' @description Downloads one year of the NJ DOE K-12 State Aid "District Details"
+#' workbook. Tries the current-year direct URL first, then falls back to the
+#' archived per-year zip bundle and locates the district-details member by name.
+#'
+#' @param end_year school year (end of the academic year): the 2025-26 year
+#'   (state FY2026) is \code{end_year = 2026}. Valid values are the registered
+#'   2019-2027 sources; earlier years use a different unparsed layout.
+#'
+#' @return a wide data frame (one row per district), header detected at the
+#'   first row carrying both "County" and "Dist"
+#' @keywords internal
+get_raw_state_aid <- function(end_year) {
+  source_result_data(get_raw_state_aid_result(end_year))
 }
 
 
@@ -246,7 +295,7 @@ tidy_state_aid <- function(df, end_year) {
 #' \code{transportation_aid} is a formula subsidy and is typically far below a
 #' district's actual transportation cost.
 #'
-#' Valid \code{end_year} values are 2019 and later. Each year's workbook is
+#' Valid \code{end_year} values are registered centrally. Each year's workbook is
 #' located by trying the current-year direct URL first, then the archived
 #' per-year zip bundle.
 #'
@@ -281,15 +330,31 @@ tidy_state_aid <- function(df, end_year) {
 #'
 #' @export
 fetch_state_aid <- function(end_year) {
-  get_raw_state_aid(end_year) %>%
-    tidy_state_aid(end_year)
+  result <- get_raw_state_aid_result(end_year)
+  raw <- source_result_data(result)
+  parsed <- tryCatch(tidy_state_aid(raw, end_year), error = identity)
+  if (inherits(parsed, "error")) {
+    result <- new_source_result(
+      source_status = "parse_error", source_url = result$source_url,
+      retrieved_at = result$retrieved_at, digest = result$digest,
+      warning = result$warning, error = conditionMessage(parsed)
+    )
+    source_result_data(result)
+  }
+  attach_source_results(
+    parsed,
+    source_result_record(result, "state_aid", end_year)
+  )
 }
 
 
 #' Fetch Multiple Years of NJ K-12 State Aid
 #'
 #' @param end_year_vector vector of school years (end of the academic year).
-#'   Valid values are 2019 and later.
+#'   Valid values come from the authoritative source registry.
+#' @param allow_partial Return successful years when one request fails. The
+#'   default is strict. In either mode, inspect \code{get_source_results()} for
+#'   the status of every requested year.
 #'
 #' @return A single tibble, the per-year results of \code{\link{fetch_state_aid}}
 #'   stacked (one row per district per category per year).
@@ -305,9 +370,15 @@ fetch_state_aid <- function(end_year) {
 #' }
 #'
 #' @export
-fetch_many_state_aid <- function(end_year_vector) {
-  purrr::map_dfr(end_year_vector, function(.y) {
+fetch_many_state_aid <- function(end_year_vector, allow_partial = FALSE) {
+  captured <- lapply(end_year_vector, function(.y) {
     message(.y)
-    fetch_state_aid(.y)
+    capture_source_call(
+      function() fetch_state_aid(.y), "state_aid", .y
+    )
   })
+  combine_source_captures(
+    captured, allow_partial = allow_partial,
+    context = "State-aid multi-year request"
+  )
 }

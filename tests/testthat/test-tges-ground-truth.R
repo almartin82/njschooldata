@@ -13,8 +13,7 @@
 
 
 test_that("CSG1 per-pupil cost and rank match the DOE file (pinned)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (a in tges_anchor_csg1) {
     yr <- a[[1]]; code <- a[[2]]; pp <- a[[3]]; rank <- a[[4]]
     row <- tges_district_row(yr, code, "CSG1")
@@ -26,8 +25,7 @@ test_that("CSG1 per-pupil cost and rank match the DOE file (pinned)", {
 
 
 test_that("CSG1 Absecon City names and peer group are correct (2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   row <- tges_district_row(2025, "0010", "CSG1")
   expect_match(toupper(row$district_name[1]), "ABSECON")
   expect_equal(row$end_year[1], 2025)
@@ -36,8 +34,7 @@ test_that("CSG1 Absecon City names and peer group are correct (2025)", {
 
 
 test_that("CSG16 personnel ratios/salaries match the DOE file (pinned, 2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # current (budgeted) year
   r25 <- tges_district_row(2025, "0010", "CSG16", row_year = 2025)
   expect_equal(r25[["Student/Teacher ratio"]][1], 9.2)
@@ -54,8 +51,7 @@ test_that("CSG16 personnel ratios/salaries match the DOE file (pinned, 2025)", {
 
 
 test_that("VITSTAT total spending and revenue mix match the DOE file (pinned, 2025)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   v <- tges_tidy(2025)[["VITSTAT_TOTAL"]]
   row <- v[!is.na(v$district_id) & v$district_id == "0010", , drop = FALSE]
   expect_equal(nrow(row), 1L)
@@ -67,8 +63,7 @@ test_that("VITSTAT total spending and revenue mix match the DOE file (pinned, 20
 
 
 test_that("the 2025 guide covers the expected number of NJ districts", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   c1 <- tges_tidy(2025)[["CSG1"]]
   codes <- unique(c1$district_id[!is.na(c1$district_id) & c1$district_id != "00NA"])
   # NJ has ~600 reporting districts; guard against a parser that loses rows
@@ -90,8 +85,7 @@ traces_to_raw <- function(tidy_vals, raw_vals, tol = 0.5) {
 
 
 test_that("tidy CSG1 per-pupil values trace back to the raw wide file", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in c(2025, 2020, 2011, 2010, 2004, 2001)) {
     raw <- tges_raw(y)[["CSG1"]]
     tidy <- tges_tidy(y)[["CSG1"]]
@@ -111,8 +105,7 @@ test_that("tidy CSG1 per-pupil values trace back to the raw wide file", {
 
 
 test_that("each district contributes exactly one row per reported year in CSG1", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in c(2025, 2015, 2010, 2003, 2001)) {
     c1 <- tges_tidy(y)[["CSG1"]]
     real <- c1[!is.na(c1$district_id) & c1$district_id != "00NA", ]
@@ -124,8 +117,7 @@ test_that("each district contributes exactly one row per reported year in CSG1",
 
 
 test_that("the wide->long reshape neither invents nor drops rows (CSG1)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   for (y in tges_years_live) {
     raw <- tges_raw(y)[["CSG1"]]
     tidy <- tges_tidy(y)[["CSG1"]]
@@ -135,8 +127,7 @@ test_that("the wide->long reshape neither invents nor drops rows (CSG1)", {
 
 
 test_that("Absecon per-pupil cost rose over the available history (sanity)", {
-  skip_on_cran()
-  skip_if_offline()
+  skip_if_no_live_tests()
   # 2010 -> 2025 is a real, large increase; guard against unit/scale regressions
   pp10 <- tges_district_row(2010, "0010", "CSG1")[["Per Pupil costs"]][1]
   pp25 <- tges_district_row(2025, "0010", "CSG1")[["Per Pupil costs"]][1]

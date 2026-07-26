@@ -14,7 +14,18 @@ Examples
 
 import functools
 
-from ._r_bridge import call_r_function, list_r_fetchers, r_to_pandas
+from ._generated_contract import (
+    PYTHON_PACKAGE_VERSION,
+    R_PACKAGE_MAX_VERSION,
+    R_PACKAGE_MIN_VERSION,
+)
+from ._r_bridge import (
+    RPackageCompatibilityError,
+    call_r_function,
+    get_r_package_version,
+    list_r_fetchers,
+    r_to_pandas,
+)
 from .enrollment import fetch_enr
 from .assessment import fetch_parcc, fetch_access
 from .graduation import fetch_grad_rate
@@ -29,7 +40,17 @@ from .finance import fetch_finance, fetch_finance_multi
 from .sped import fetch_sped, fetch_sped_placement, fetch_sped_placement_multi
 from .ell import fetch_ell, fetch_ell_multi
 
-__version__ = "0.9.0"
+__version__ = PYTHON_PACKAGE_VERSION
+SUPPORTED_R_PACKAGE = f">={R_PACKAGE_MIN_VERSION},<{R_PACKAGE_MAX_VERSION}"
+
+
+def version_info() -> dict[str, str]:
+    """Report Python and validated loaded-R package versions."""
+    return {
+        "python": __version__,
+        "r": get_r_package_version(),
+        "supported_r": SUPPORTED_R_PACKAGE,
+    }
 
 _CURATED_EXPORTS = [
     "fetch_enr",
@@ -49,6 +70,9 @@ _CURATED_EXPORTS = [
     "fetch_sped_placement_multi",
     "fetch_ell",
     "fetch_ell_multi",
+    "get_r_package_version",
+    "version_info",
+    "RPackageCompatibilityError",
 ]
 
 __all__ = sorted(set(_CURATED_EXPORTS).union(list_r_fetchers()))

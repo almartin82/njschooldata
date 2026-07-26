@@ -7,55 +7,21 @@
 #
 # ==============================================================================
 
-#' Read a zipped Excel fall enrollment file from the NJ state website
+#' Parse a validated zipped fall enrollment artifact
 #'
-#' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 2000-2026.
+#' @param tname Path to a validated NJ DOE enrollment ZIP.
+#' @param end_year A school year. Year is the end of the academic year - eg
+#'   2006-07 school year is year '2007'.
 #' @return Data frame with raw enrollment data
 #' @keywords internal
-get_raw_enr <- function(end_year) {
-
-  # Sometime in 2022 they ripped, replaced, and rationalized the
-  # url pattern for historic data
-  # 1999 data URL no longer works (removed from NJ DOE website)
-
-  # Build URL
-  yy <- substr(end_year, 3, 4)
-  prev_yy <- substr(end_year - 1, 3, 4)
-  enr_folder <- paste0("enr", yy)
-  base_url <- paste0(
-    "https://www.nj.gov/education/doedata/enr/", enr_folder, "/"
-  )
-
-  # NJ DOE is inconsistent about the leading-letter case of the zip filename.
-  # 2020-2025 used lowercase "enrollment_2425.zip"; the 2025-26 file ships as
-  # "Enrollment_2526.zip". Try known capitalizations and use the first that
-  # actually resolves so the fetcher survives future case flips either way.
-  enr_candidates <- paste0(
-    c("enrollment_", "Enrollment_"), prev_yy, yy, ".zip"
-  )
-  enr_url <- NULL
-  for (candidate in paste0(base_url, enr_candidates)) {
-    if (check_url_accessible(candidate)) {
-      enr_url <- candidate
-      break
-    }
-  }
-  # Fall back to the conventional lowercase name so a genuinely missing file
-  # still produces an informative download error rather than a silent NULL.
-  if (is.null(enr_url)) {
-    enr_url <- paste0(base_url, enr_candidates[1])
-  }
-
-  # Download and unzip
-  tname <- tempfile(pattern = "enr", tmpdir = tempdir(), fileext = ".zip")
-  tdir <- tempdir()
-  downloader::download(enr_url, dest = tname, mode = "wb")
-
+.parse_enr_archive <- function(tname, end_year) {
+  tdir <- tempfile(pattern = "enr-unpack-")
+  dir.create(tdir)
+  on.exit(unlink(tdir, recursive = TRUE), add = TRUE)
   utils::unzip(tname, exdir = tdir)
 
   # Read file
-  enr_files <- utils::unzip(tname, exdir = ".", list = TRUE)
+  enr_files <- utils::unzip(tname, list = TRUE)
 
   if (grepl(".xls", tolower(enr_files$Name[1]))) {
     this_file <- file.path(tdir, enr_files$Name[1])
@@ -217,23 +183,77 @@ get_raw_enr <- function(end_year) {
   return(enr)
 }
 
+#' Retrieve and parse one enrollment source
+#'
+#' @param end_year School-year end year.
+#' @param request_fn Injectable transport request function used by offline tests.
+#' @return An `njsd_source_result` containing raw enrollment data.
+#' @keywords internal
+.download_enrollment_source <- function(
+    end_year, request_fn = .default_source_request) {
+  validate_end_year(end_year, "enrollment")
+  candidates <- resolve_source_url("enrollment", end_year = end_year)
+  failures <- list()
 
-#' Get the years for which NJ enrollment data is available
-#'
-#' Wraps [ENR_VALID_YEARS] (`R/config_years.R`), the single source of truth
-#' for enrollment year coverage, so consumers never have to hardcode or
-#' guess the valid range. The maximum value returned here MUST always equal
-#' the highest `end_year` that [fetch_enr()] actually serves; see
-#' `test-enrollment-year-coverage.R` for the contract test that enforces
-#' this.
-#'
-#' @return integer vector of valid `end_year` values
-#' @export
-#' @examples
-#' get_available_years()
-get_available_years <- function() {
-  as.integer(ENR_VALID_YEARS)
+  for (candidate in candidates) {
+    transport <- download_source(
+      candidate,
+      source_type = "zip",
+      request_fn = request_fn
+    )
+    if (!identical(transport$source_status, "actual")) {
+      failures[[length(failures) + 1L]] <- transport
+      if (identical(transport$source_status, "parse_error")) return(transport)
+      next
+    }
+    return(transport)
+  }
+
+  errors <- vapply(failures, function(result) result$error, character(1))
+  new_source_result(
+    source_status = "source_unavailable",
+    source_url = candidates[1],
+    retrieved_at = if (length(failures)) failures[[length(failures)]]$retrieved_at else NULL,
+    error = paste(unique(errors[!is.na(errors)]), collapse = "; ")
+  )
 }
+
+get_raw_enr_result <- function(end_year, request_fn = .default_source_request) {
+  transport <- .download_enrollment_source(end_year, request_fn)
+  if (!identical(transport$source_status, "actual")) return(transport)
+
+  on.exit(unlink(transport$data), add = TRUE)
+  parsed <- tryCatch(
+    .parse_enr_archive(transport$data, end_year),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error",
+      source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at,
+      digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed,
+    source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at,
+    digest = transport$digest
+  )
+}
+
+#' Read a zipped Excel fall enrollment file from the NJ state website
+#'
+#' @param end_year A school-year end year. Valid values are 1999-2026.
+#' @return Data frame with raw enrollment data.
+#' @keywords internal
+get_raw_enr <- function(end_year) {
+  source_result_data(get_raw_enr_result(end_year))
+}
+
 
 #' Gets and processes a NJ enrollment file
 #'
@@ -241,7 +261,7 @@ get_available_years <- function() {
 #' downloads and cleans enrollment data for a given year.
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
-#' school year is year '2007'. Valid values are 2000-2026.
+#' school year is year '2007'. Valid values are 1999-2026.
 #' @param tidy If TRUE, takes the unwieldy wide data and normalizes into a
 #' long, tidy data frame with limited headers - constants (school/district name and code),
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
@@ -270,7 +290,8 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
     }
   }
 
-  enr_data <- get_raw_enr(end_year) %>%
+  source_result <- get_raw_enr_result(end_year)
+  enr_data <- source_result_data(source_result) %>%
     process_enr() %>%
     # Attach federal NCES ids (LEAID / NCESSCH) on the wide frame so they carry
     # through to tidy as well. Identifiers only — no federal data values.
@@ -280,6 +301,11 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
     enr_data <- tidy_enr(enr_data) %>%
       id_enr_aggs()
   }
+
+  enr_data <- attach_source_results(
+    enr_data,
+    source_result_record(source_result, "enrollment", end_year, "enrollment")
+  )
 
   if (use_cache) {
     cache_set(key, enr_data)

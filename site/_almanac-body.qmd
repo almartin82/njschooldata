@@ -2,6 +2,7 @@
 library(jsonlite); library(ggplot2); library(dplyr); library(knitr)
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || (length(a)==1 && is.na(a))) b else a
 source("R/story_charts.R")
+source("R/security.R")
 opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 d       <- readRDS(file.path("_discovery", paste0(district_id, ".rds")))
 stories <- fromJSON(file.path("_stories", paste0(district_id, ".json")), simplifyDataFrame = FALSE)
@@ -24,8 +25,9 @@ dfg_txt  <- if (!is.na(m$dfg)) paste0("DFG ", m$dfg) else "no DFG"
 enr_now  <- if (!is.null(d$enr_total) && nrow(d$enr_total)) tail(d$enr_total, 1) else NULL
 cat('<div class="almanac-masthead">\n')
 cat('<div class="kicker">NJ School Data Almanac</div>\n')
-cat('<div class="wordmark">', m$district_name, '</div>\n')
-cat('<div class="meta">', toupper(m$county), ' COUNTY &nbsp;·&nbsp; ', toupper(type_txt), ' &nbsp;·&nbsp; ', dfg_txt,
+cat('<div class="wordmark">', html_escape(m$district_name), '</div>\n')
+cat('<div class="meta">', html_escape(toupper(m$county)), ' COUNTY &nbsp;·&nbsp; ',
+    html_escape(toupper(type_txt)), ' &nbsp;·&nbsp; ', html_escape(dfg_txt),
     if (!is.null(enr_now)) paste0(' &nbsp;·&nbsp; ', formatC(enr_now$students, big.mark=",", format="d"), ' STUDENTS (', enr_now$year, ')') else '',
     '</div>\n')
 cat('</div>\n')
@@ -44,19 +46,26 @@ if (length(kf)) {
   for (k in kf) cat('<div class="kf"><div class="kf-val">', k[2], '</div><div class="kf-lab">', k[1], '</div></div>\n', sep="")
   cat('</div>\n')
 }
-cat('\n*', length(stories), ' things the data says about ', m$district_name,
+cat('\n*', length(stories), ' things the data says about ',
+    html_escape(m$district_name),
     '. Every figure is computed from New Jersey Department of Education data via the [njschooldata](https://github.com/almartin82/njschooldata) package — nothing is estimated. Comparisons use District Factor Group (DFG) peers',
-    if (!is.na(m$dfg)) paste0(" (", m$n_peers, " districts in DFG ", m$dfg, ")") else "", '.*\n\n', sep="")
+    if (!is.na(m$dfg)) paste0(
+      " (", as.integer(m$n_peers), " districts in DFG ", html_escape(m$dfg), ")"
+    ) else "", '.*\n\n', sep="")
 ```
 
 ```{r stories, results='asis'}
 for (i in seq_along(stories)) {
   s <- stories[[i]]
   cat('<div class="story">\n')
-  cat('<span class="rank">No. ', s$rank, '</span> <span class="tag">', toupper(gsub("_"," ", s$category %||% "")), '</span>\n', sep="")
-  cat('<h2>', s$headline, '</h2>\n', sep="")
-  if (!is.null(s$dek) && nzchar(s$dek)) cat('<p class="dek">', s$dek, '</p>\n', sep="")
-  cat('\n', s$narrative_md, '\n\n', sep="")
+  cat('<span class="rank">No. ', html_escape(s$rank),
+      '</span> <span class="tag">',
+      html_escape(toupper(gsub("_"," ", s$category %||% ""))), '</span>\n', sep="")
+  cat('<h2>', html_escape(s$headline), '</h2>\n', sep="")
+  if (!is.null(s$dek) && nzchar(s$dek)) {
+    cat('<p class="dek">', html_escape(s$dek), '</p>\n', sep="")
+  }
+  cat('\n', html_escape(s$narrative_md), '\n\n', sep="")
   if (nzchar(story_img[i])) cat('![](', story_img[i], ')\n\n', sep="")
   cat('<p class="seedata"><a href="#the-almanac">See the underlying data ›</a></p>\n')
   cat('</div>\n')

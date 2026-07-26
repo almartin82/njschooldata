@@ -5,7 +5,7 @@
 #
 # v1 (PR #278) covered end_year 2025 only; v2 extends coverage to 2020-2024.
 # Network tests hit the live NJ DOE source and are gated behind
-# skip_if_offline() the same way as the rest of the package's network tests.
+# skip_if_no_live_tests() the same way as the rest of the package's network tests.
 # ==============================================================================
 
 
@@ -271,7 +271,7 @@ test_that("tidy_pre2025_district_5_21_one expands 2020 disability codes", {
 # ------------------------------------------------------------------
 
 test_that("fetch_sped_placement (district 5-21) returns expected structure", {
-  skip_if_offline()
+  skip_if_no_live_tests()
 
   df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
   skip_if(is.null(df), "SPED placement workbook not accessible")
@@ -309,7 +309,7 @@ test_that("fetch_sped_placement (district 5-21) returns expected structure", {
 
 
 test_that("fetch_sped_placement entity flags are coherent", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
   skip_if(is.null(df), "SPED placement workbook not accessible")
 
@@ -320,7 +320,7 @@ test_that("fetch_sped_placement entity flags are coherent", {
 
 
 test_that("fetch_sped_placement counts sum to subgroup_total (fidelity)", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
   skip_if(is.null(df), "SPED placement workbook not accessible")
 
@@ -338,7 +338,7 @@ test_that("fetch_sped_placement counts sum to subgroup_total (fidelity)", {
 
 
 test_that("fetch_sped_placement(tidy=FALSE) returns raw workbook tibble", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   raw <- tryCatch(
     fetch_sped_placement(2025, tidy = FALSE),
     error = function(e) NULL
@@ -354,7 +354,7 @@ test_that("fetch_sped_placement(tidy=FALSE) returns raw workbook tibble", {
 
 
 test_that("fetch_sped_placement (state 5-21) returns 5 dimension breakdowns", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2025, level = "state"),
     error = function(e) NULL
@@ -371,7 +371,7 @@ test_that("fetch_sped_placement (state 5-21) returns 5 dimension breakdowns", {
 
 
 test_that("state 5-21: counts within a subgroup sum to subgroup_total", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2025, level = "state"),
     error = function(e) NULL
@@ -388,7 +388,7 @@ test_that("state 5-21: counts within a subgroup sum to subgroup_total", {
 
 
 test_that("fetch_sped_placement (district 3-5) returns districtwide totals", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2025, age_group = "3-5", level = "district"),
     error = function(e) NULL
@@ -401,7 +401,7 @@ test_that("fetch_sped_placement (district 3-5) returns districtwide totals", {
 
 
 test_that("fetch_sped_placement (state 3-5) uses preschool environments", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2025, age_group = "3-5", level = "state"),
     error = function(e) NULL
@@ -419,7 +419,7 @@ test_that("fetch_sped_placement (state 3-5) uses preschool environments", {
 # ------------------------------------------------------------------
 
 test_that("fetch_sped_placement (2024 district 5-21) returns canonical schema", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2024, age_group = "5-21", level = "district"),
     error = function(e) NULL
@@ -448,7 +448,7 @@ test_that("fetch_sped_placement (2024 district 5-21) returns canonical schema", 
 
 
 test_that("2024 schema matches 2025 schema", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df24 <- tryCatch(fetch_sped_placement(2024), error = function(e) NULL)
   df25 <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
   skip_if(is.null(df24) || is.null(df25), "Network or workbook unavailable")
@@ -457,7 +457,7 @@ test_that("2024 schema matches 2025 schema", {
 
 
 test_that("fetch_sped_placement (2022 district 5-21) parses race subgroups", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2022, age_group = "5-21", level = "district"),
     error = function(e) NULL
@@ -472,7 +472,7 @@ test_that("fetch_sped_placement (2022 district 5-21) parses race subgroups", {
 
 
 test_that("fetch_sped_placement (2020 district 5-21) expands abbrev codes", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2020, age_group = "5-21", level = "district"),
     error = function(e) NULL
@@ -490,7 +490,7 @@ test_that("fetch_sped_placement (2020 district 5-21) expands abbrev codes", {
 
 
 test_that("fetch_sped_placement (2021 district 3-5) returns districtwide totals", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2021, age_group = "3-5", level = "district"),
     error = function(e) NULL
@@ -504,7 +504,7 @@ test_that("fetch_sped_placement (2021 district 3-5) returns districtwide totals"
 
 
 test_that("fetch_sped_placement (2024 state 5-21) parses 4 dimensions", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2024, age_group = "5-21", level = "state"),
     error = function(e) NULL
@@ -520,7 +520,7 @@ test_that("fetch_sped_placement (2024 state 5-21) parses 4 dimensions", {
 
 
 test_that("2024 state 5-21 fidelity: env counts sum to subgroup_total", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2024, age_group = "5-21", level = "state"),
     error = function(e) NULL
@@ -539,7 +539,7 @@ test_that("2024 state 5-21 fidelity: env counts sum to subgroup_total", {
 
 
 test_that("2022 district 5-21 fidelity: env counts <= subgroup_total", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2022, age_group = "5-21", level = "district"),
     error = function(e) NULL
@@ -563,7 +563,7 @@ test_that("2022 district 5-21 fidelity: env counts <= subgroup_total", {
 
 
 test_that("fetch_sped_placement_multi binds years and skips bad ones", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- suppressWarnings(
     tryCatch(
       fetch_sped_placement_multi(c(1999L, 2025L)),
@@ -583,7 +583,7 @@ test_that("fetch_sped_placement_multi binds years and skips bad ones", {
 # ------------------------------------------------------------------
 
 test_that("fetch_sped_placement (2021 district 5-21) returns canonical schema", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2021, age_group = "5-21", level = "district"),
     error = function(e) NULL
@@ -603,7 +603,7 @@ test_that("fetch_sped_placement (2021 district 5-21) returns canonical schema", 
 
 
 test_that("fetch_sped_placement_multi(2020:2025) contains 2021/5-21 district rows", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- suppressWarnings(
     tryCatch(
       fetch_sped_placement_multi(2020:2025,
@@ -671,7 +671,7 @@ test_that("fetch_sped_placement(tidy=FALSE) on PDF slice returns tidy schema", {
 # ------------------------------------------------------------------
 
 test_that("fetch_sped_placement (2023 state 5-21) parses typo-named Excel", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement(2023, age_group = "5-21", level = "state"),
     error = function(e) NULL
@@ -693,7 +693,7 @@ test_that("fetch_sped_placement (2023 state 5-21) parses typo-named Excel", {
 
 
 test_that("fetch_sped_placement_multi covers 2020-2022 district 5-21 without gaps", {
-  skip_if_offline()
+  skip_if_no_live_tests()
   df <- tryCatch(
     fetch_sped_placement_multi(c(2020L, 2021L, 2022L)),
     error = function(e) NULL

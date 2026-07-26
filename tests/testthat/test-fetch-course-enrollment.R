@@ -153,6 +153,7 @@ test_that("fetch_arts_enrollment returns expected structure", {
 })
 
 test_that("fetch_courses normalizes course enrollment counts", {
+  skip_if_no_live_tests()
   df <- fetch_courses("course_enrollment", 2024, subject = "science",
                       with_status = TRUE)
 

@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NJSCHOOLDATA_LIVE_TESTS: "true"
+      PROFILE_SCOPE: ${{ github.event.inputs.scope || 'all' }}
     steps:
       - uses: actions/checkout@v5
 
@@ -49,15 +51,20 @@ jobs:
       - uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Build per-district data bundles
-        run: Rscript site/build-data.R ${{ github.event.inputs.scope || 'all' }}
+        run: |
+          read -r -a scope_args <<< "$PROFILE_SCOPE"
+          Rscript site/build-data.R "${scope_args[@]}"
 
       - name: Generate profile stubs
+        if: success()
         run: Rscript site/render-all.R
 
       - name: Render Quarto site
+        if: success()
         run: quarto render site
 
       - name: Deploy to gh-pages/profiles
+        if: success()
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           branch: gh-pages

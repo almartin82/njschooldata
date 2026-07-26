@@ -2,22 +2,21 @@
 % Please edit documentation in R/fetch_assessment.R
 \name{get_raw_parcc}
 \alias{get_raw_parcc}
-\title{Reads the raw PARCC Excel files from the state website}
+\title{Reads raw PARCC data from the state website}
 \usage{
 get_raw_parcc(end_year, grade_or_subj, subj)
 }
 \arguments{
-\item{end_year}{A school year. end_year is the end of the academic year - eg 2014-15
-school year is end_year 2015. Valid values are 2015-2018.}
+\item{end_year}{School-year end year.}
 
-\item{grade_or_subj}{Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)}
+\item{grade_or_subj}{Grade or course.}
 
-\item{subj}{PARCC subject. c('ela' or 'math')}
+\item{subj}{Subject.}
 }
 \value{
-PARCC dataframe
+PARCC data frame.
 }
 \description{
-Builds a URL and reads the xlsx file into a dataframe.
+Reads raw PARCC data from the state website
 }
 \keyword{internal}

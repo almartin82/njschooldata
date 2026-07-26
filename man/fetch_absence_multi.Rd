@@ -9,7 +9,8 @@ fetch_absence_multi(
   level = "school",
   type = "chronic",
   tidy = TRUE,
-  use_cache = TRUE
+  use_cache = TRUE,
+  allow_partial = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,10 @@ or \code{"essa"}.}
 \item{tidy}{Logical; if \code{TRUE} (default), normalizes subgroup names.}
 
 \item{use_cache}{Logical; if \code{TRUE} (default), caches each year.}
+
+\item{allow_partial}{Logical; if \code{FALSE} (default), failed or
+structurally unavailable years abort the request. If \code{TRUE},
+successful years are returned with status from [get_source_results()].}
 }
 \value{
 A data frame with all years bound together.

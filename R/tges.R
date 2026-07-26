@@ -28,27 +28,16 @@ parse_rank <- function(x) {
 #' @return character URL
 #' @keywords internal
 tges_url_for_year <- function(end_year) {
-  end_year <- as.integer(end_year)
-  base <- "https://www.nj.gov/education/guide/docs"
-
-  #2024 onward live in a per-year subfolder with non-uniform bundle names
-  special_urls <- list(
-    "2024" = paste0(base, "/2024/TGES24_Zipped.zip"),
-    "2025" = paste0(base, "/2025/TGES2025_Zipped.zip")
-  )
-
-  if (as.character(end_year) %in% names(special_urls)) {
-    special_urls[[as.character(end_year)]]
-  } else if (end_year >= 2011 && end_year <= 2023) {
-    paste0(base, "/", end_year, "_TGES.zip")
-  } else if (end_year >= 2001 && end_year <= 2010) {
-    paste0(base, "/", end_year, "_CSG.zip")
-  } else {
+  if (!end_year %in% get_source_years("tges")) {
     stop(
-      "No TGES download is available for end_year ", end_year,
-      ". Valid values are 2001-2025.", call. = FALSE
+      sprintf(
+        "Year %s is not available. Valid values are 2001-2025.",
+        paste(end_year, collapse = ", ")
+      ),
+      call. = FALSE
     )
   }
+  resolve_source_url("tges", end_year = end_year)
 }
 
 
@@ -65,111 +54,86 @@ tges_url_for_year <- function(end_year) {
 #' @return list of data frames
 #' @keywords internal
 get_raw_tges <- function(end_year) {
-  tges_url <- tges_url_for_year(end_year)
-
-  #download and unzip
-  tname <- tempfile(pattern = "tges", tmpdir = tempdir(), fileext = ".zip")
-  downloader::download(tges_url, dest = tname, mode = "wb")
-  unzip_loc <- paste0(tempfile(pattern = 'subfolder'))
-  dir.create(unzip_loc)
-  utils::unzip(tname, exdir = unzip_loc)
-
-  #tag csv or xlsx.  Zip members sit under a per-year subfolder
-  #(eg "2011_TGES/CSG1.CSV"), so key off the bare file name to keep the
-  #tidy_tges_data() lookups (CSG1, VITSTAT_TOTAL, ...) matching.
-  tges_files <- utils::unzip(tname, exdir = ".", list = TRUE)
-  tges_files$file <- tools::file_path_sans_ext(basename(tges_files$Name))
-  tges_files$extension <- tools::file_ext(tges_files$Name)
-  tges_files <- tges_files[tges_files$extension != "", , drop = FALSE]
-  
-  tges_csv <- tges_files %>%
-    filter(extension %in% c('CSV', 'csv'))
-  tges_excel <- tges_files %>%
-    filter(extension %in% c('XLS', 'XLSX', 'xls', 'xlsx'))
-  tges_dbf <- tges_files %>%
-    filter(extension %in% c('dbf', 'DBF'))
-  
-  #read csv
-  csv_list <- map2(
-    .x = tges_csv$Name,
-    .y = tges_csv$file,
-    .f = function(.x, .y) {
-      df <- readr::read_csv(
-        file.path(unzip_loc, .x),
-        col_types = cols()
-      ) %>%
-      mutate(
-        file_name = .y
-      ) %>%
-      janitor::clean_names()
-      
-      df <- clean_cds_fields(df, tges = TRUE)
-      df <- cds_codes_to_ids(df)
-      
-      #state/group average rows carry non-numeric codes; padding NAs them, which
-      #is expected, so quiet the "NAs introduced by coercion" coercion warning
-      if ('county_id' %in% names(df)) {
-        df$county_id <- suppressWarnings(pad_leading(df$county_id, 2))
-      }
-      if ('district_id' %in% names(df)) {
-        df$district_id <- suppressWarnings(pad_leading(df$district_id, 4))
-      }
-      df
-    }
-  )
-  names(csv_list) <- tges_csv$file %>% toupper()
-  
-  #read excel
-  excel_list <- map2(
-    .x = tges_excel$Name,
-    .y = tges_excel$file,
-    .f = function(.x, .y) {
-      #the Total Spending Detail workbooks (Detail_FY##.xlsx, 2024+ bundles) lead
-      #with a two-row description/title banner; the real header is on row 3.  Skip
-      #the banner so the 12 component columns parse, rather than the banner text.
-      skip_rows <- if (grepl('^Detail_FY', .y, ignore.case = TRUE)) 2L else 0L
-      df <- readxl::read_excel(
-        path = file.path(unzip_loc, .x),
-        skip = skip_rows
-      ) %>%
-      mutate(
-        file_name = .y
-      ) %>%
-      janitor::clean_names()
-
-      df <- clean_cds_fields(df, tges = TRUE)
-      df <- cds_codes_to_ids(df)
-      df
-    }
-  )
-  names(excel_list) <- tges_excel$file %>% toupper()
-  
-  #read dbf (1999-2002)
-  dbf_list <- map2(
-    .x = tges_dbf$Name,
-    .y = tges_dbf$file,
-    .f = function(.x, .y) {
-      df <- foreign::read.dbf(
-        file = file.path(unzip_loc, .x),
-        as.is = TRUE
-        ) %>%
-        mutate(
-          file_name = .y
-        ) %>%
-        janitor::clean_names()
-      
-      df <- clean_cds_fields(df, tges = TRUE)
-      df <- cds_codes_to_ids(df)
-      df
-    }
-  )
-  names(dbf_list) <- tges_dbf$file %>% toupper()
-
-  all_df <- c(csv_list, excel_list, dbf_list)
-
-  all_df
+  source_result_data(get_raw_tges_result(end_year))
 }
 
+.parse_tges_archive <- function(path) {
+  unpack_dir <- tempfile(pattern = "tges-unpack-")
+  dir.create(unpack_dir)
+  on.exit(unlink(unpack_dir, recursive = TRUE), add = TRUE)
+  utils::unzip(path, exdir = unpack_dir)
+
+  files <- utils::unzip(path, list = TRUE)
+  files$file <- tools::file_path_sans_ext(basename(files$Name))
+  files$extension <- tolower(tools::file_ext(files$Name))
+  files <- files[files$extension != "", , drop = FALSE]
+
+  read_one <- function(member, file_name, extension) {
+    source_path <- file.path(unpack_dir, member)
+    data <- if (extension == "csv") {
+      readr::read_csv(source_path, col_types = readr::cols())
+    } else if (extension %in% c("xls", "xlsx")) {
+      skip <- if (grepl("^Detail_FY", file_name, ignore.case = TRUE)) 2L else 0L
+      readxl::read_excel(source_path, skip = skip)
+    } else if (extension == "dbf") {
+      foreign::read.dbf(source_path, as.is = TRUE)
+    } else {
+      return(NULL)
+    }
+    data <- data %>%
+      dplyr::mutate(file_name = file_name) %>%
+      janitor::clean_names()
+    data <- clean_cds_fields(data, tges = TRUE)
+    data <- cds_codes_to_ids(data)
+    if ("county_id" %in% names(data)) {
+      data$county_id <- suppressWarnings(pad_leading(data$county_id, 2))
+    }
+    if ("district_id" %in% names(data)) {
+      data$district_id <- suppressWarnings(pad_leading(data$district_id, 4))
+    }
+    data
+  }
+
+  parsed <- purrr::pmap(
+    list(
+      member = files$Name,
+      file_name = files$file,
+      extension = files$extension
+    ),
+    read_one
+  )
+  keep <- !vapply(parsed, is.null, logical(1))
+  parsed <- parsed[keep]
+  names(parsed) <- toupper(files$file[keep])
+  if (!length(parsed)) {
+    stop("TGES archive contains no supported CSV, Excel, or DBF files.",
+         call. = FALSE)
+  }
+  parsed
+}
+
+get_raw_tges_result <- function(end_year,
+                                request_fn = .default_source_request) {
+  url <- tges_url_for_year(end_year)
+  transport <- download_source(
+    url, source_type = "zip", request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+  parsed <- tryCatch(.parse_tges_archive(transport$data), error = identity)
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  new_source_result(
+    data = parsed, source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at, digest = transport$digest
+  )
+}
 
 #' TGES name cleaner
 #' 
@@ -1031,8 +995,12 @@ tidy_tges_data <- function(list_of_dfs, end_year) {
 #' @export
 
 fetch_tges <- function(end_year) {
-  get_raw_tges(end_year) %>%
+  source_result <- get_raw_tges_result(end_year)
+  out <- source_result_data(source_result) %>%
     tidy_tges_data(end_year)
+  attach_source_results(
+    out, source_result_record(source_result, "tges", end_year, "guide")
+  )
 }
 
 
@@ -1040,20 +1008,23 @@ fetch_tges <- function(end_year) {
 #'
 #' @param end_year_vector vector of years.  Current valid values
 #' are 2001 to 2025.
+#' @param allow_partial If `FALSE` (default), any failed or unsupported year
+#'   aborts the request. If `TRUE`, successful years are returned and all
+#'   request statuses are available through [get_source_results()].
 #'
-#' @return list of lists of data frames
+#' @return Named list of per-year TGES tables with source-result provenance.
 #' @export
 
-fetch_many_tges <- function(end_year_vector) {
-  all_tges <- map(
-    .x = end_year_vector,
-    .f = function(.x) {
-      print(.x)
-      fetch_tges(.x)
-    }
+fetch_many_tges <- function(end_year_vector, allow_partial = FALSE) {
+  captures <- lapply(end_year_vector, function(year) {
+    capture_registered_source_call(
+      function() fetch_tges(year), "tges", year,
+      domain = "tges", component = "guide"
+    )
+  })
+  names(captures) <- as.character(end_year_vector)
+  combine_source_captures(
+    captures, allow_partial = allow_partial,
+    context = "TGES multi-year request", combine = "list"
   )
-  
-  names(all_tges) <- end_year_vector
-  
-  all_tges
 }

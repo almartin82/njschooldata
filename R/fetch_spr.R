@@ -4,7 +4,7 @@
 #
 # Functions for downloading and extracting data from the NJ DOE School
 # Performance Reports databases. The SPR databases contain 63+ sheets
-# covering various school performance metrics for years 2017-2024.
+# covering various school performance metrics for years 2017-2025.
 #
 # ==============================================================================
 
@@ -24,29 +24,13 @@
 #' @return URL string
 #' @keywords internal
 get_spr_url <- function(end_year, level = "school") {
-  valid_years <- 2017:2025
-
-  if (!end_year %in% valid_years) {
-    stop(paste0(
-      "SPR data available for years 2017-2025. ",
-      "Year ", end_year, " is not supported."
-    ))
+  if (!end_year %in% get_source_years("spr")) {
+    stop("SPR data available for years 2017-2025.", call. = FALSE)
   }
-
-  # Convert end_year to academic year format (e.g., 2024 -> "2023-2024")
-  academic_year <- paste0(end_year - 1, "-", end_year)
-
-  stem <- "https://www.nj.gov/education/sprreports/download/DataFiles/"
-
-  file_name <- if (level == "school") {
-    "Database_SchoolDetail.xlsx"
-  } else if (level == "district") {
-    "Database_DistrictStateDetail.xlsx"
-  } else {
-    stop("level must be one of 'school' or 'district'")
+  if (!level %in% c("school", "district")) {
+    stop("level must be one of 'school' or 'district'.", call. = FALSE)
   }
-
-  paste0(stem, academic_year, "/", file_name)
+  resolve_source_url("spr", end_year = end_year, level = level)
 }
 
 
@@ -177,7 +161,8 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   }
 
   # Get the workbook (downloaded once, then cached on disk across sessions).
-  tname <- spr_cached_workbook(end_year, level)
+  source_result <- spr_cached_workbook_result(end_year, level)
+  tname <- source_result_data(source_result)
 
   # The 2024-25 (end_year 2025) redesign moved the column headers down: row 1
   # holds a metadata note, rows 2-3 hold sheet/source notes, and the real header
@@ -259,9 +244,13 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   df <- df %>%
     dplyr::filter(!is.na(county_id))
 
+  df <- attach_source_results(
+    df,
+    source_result_record(source_result, "spr", end_year, level)
+  )
+
   # Cache result
   cache_set(cache_key, df)
-
   df
 }
 

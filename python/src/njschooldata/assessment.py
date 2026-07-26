@@ -20,7 +20,8 @@ def fetch_parcc(
     Parameters
     ----------
     end_year : int
-        School year (2015-2024). 2020 was cancelled due to COVID.
+        School year (2015-2019 or 2022-2025). 2020 was cancelled due to
+        COVID-19 and 2021 used Start Strong rather than NJSLA.
     grade_or_subj : int or str
         Grade level (3-11) or math subject code ('ALG1', 'GEO', 'ALG2').
     subj : str
