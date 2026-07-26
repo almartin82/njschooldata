@@ -235,31 +235,33 @@
 <tbody>
 <tr>
 <td><strong>Enrollment</strong></td>
-<td>2000-2026</td>
+<td>1999-2026</td>
 <td><code><a href="reference/fetch_enr.html">fetch_enr()</a></code></td>
 <td>State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (<code>nces_dist</code>/<code>nces_sch</code>)</td>
 </tr>
 <tr>
 <td><strong>Assessments</strong></td>
-<td>2004-2024</td>
+<td>2004-2025</td>
 <td>
 <code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code> / <code><a href="reference/fetch_njask.html">fetch_njask()</a></code> / <code><a href="reference/fetch_njgpa.html">fetch_njgpa()</a></code>
 </td>
-<td>NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science</td>
+<td>NJSLA/PARCC is available for 2015-2019 and 2022-2025; 2020 was cancelled and 2021 used Start Strong. NJASK, HSPA, and GEPA provide legacy coverage</td>
 </tr>
 <tr>
 <td><strong>Graduation</strong></td>
-<td>2011-2024</td>
+<td>2011-2025</td>
 <td>
 <code><a href="reference/fetch_grad_rate.html">fetch_grad_rate()</a></code> / <code><a href="reference/fetch_grad_count.html">fetch_grad_count()</a></code>
 </td>
-<td>4-yr and 6-yr ACGR. District and school level</td>
+<td>4-year ACGR through 2025; graduation-count raw files begin in 1998 while the supported tidy count contract begins in 2012</td>
 </tr>
 <tr>
 <td><strong>Directory</strong></td>
 <td>Current</td>
-<td><code><a href="reference/fetch_directory.html">fetch_directory()</a></code></td>
-<td>School and district entities (<code>entities</code>), role holders like superintendents (<code>roles</code>), fetch metadata (<code>meta</code>). Names, IDs, addresses, school type</td>
+<td>
+<code><a href="reference/fetch_directory.html">fetch_directory()</a></code> / <code><a href="reference/get_school_directory.html">get_school_directory()</a></code> / <code><a href="reference/get_district_directory.html">get_district_directory()</a></code>
+</td>
+<td>Canonical entities/roles/provenance plus compatibility data-frame views</td>
 </tr>
 <tr>
 <td><strong>Per-Pupil Spending</strong></td>
@@ -300,7 +302,7 @@
 </tr>
 <tr>
 <td><strong>Special Ed</strong></td>
-<td>2020-2025</td>
+<td>Classification 2015-2025; placement 2020-2025</td>
 <td>
 <code><a href="reference/fetch_sped.html">fetch_sped()</a></code> / <code><a href="reference/fetch_sped_placement.html">fetch_sped_placement()</a></code>
 </td>
@@ -337,6 +339,18 @@
 <code><a href="reference/fetch_postsecondary.html">fetch_postsecondary()</a></code> / <code><a href="reference/fetch_sat_participation.html">fetch_sat_participation()</a></code> / <code><a href="reference/fetch_ap_participation.html">fetch_ap_participation()</a></code>
 </td>
 <td>Postsecondary enrollment, SAT, AP</td>
+</tr>
+<tr>
+<td><strong>Historical Report Cards</strong></td>
+<td>2012-2019</td>
+<td><code><a href="reference/get_one_rc_database.html">get_one_rc_database()</a></code></td>
+<td>Raw NJ performance-report workbooks. The removed 2003-2011 files are represented as unsupported rather than claimed as working coverage</td>
+</tr>
+<tr>
+<td><strong>District Factor Groups</strong></td>
+<td>1990 / 2000 revisions</td>
+<td><code><a href="reference/fetch_dfg.html">fetch_dfg()</a></code></td>
+<td>Socioeconomic comparison groups from the registered NJ DOE DFG workbook</td>
 </tr>
 <tr>
 <td><strong>Advanced-Coursework Access</strong></td>
@@ -403,10 +417,8 @@
 <span><span class="co"># Graduation rates</span></span>
 <span><span class="va">grate</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_grad_rate.html">fetch_grad_rate</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Directory (schools + districts, plus role holders like superintendents)</span></span>
-<span><span class="va">dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_directory.html">fetch_directory</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="va">dir</span><span class="op">$</span><span class="va">entities</span></span>
-<span><span class="va">supts</span> <span class="op">&lt;-</span> <span class="va">dir</span><span class="op">$</span><span class="va">roles</span><span class="op">[</span><span class="va">dir</span><span class="op">$</span><span class="va">roles</span><span class="op">$</span><span class="va">role</span> <span class="op">==</span> <span class="st">"superintendent"</span>, <span class="op">]</span></span>
+<span><span class="co"># School directory</span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_school_directory.html">get_school_directory</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Facilities data</span></span>
 <span><span class="va">facilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_facilities.html">fetch_facilities</a></span><span class="op">(</span><span class="st">"finance"</span><span class="op">)</span></span>
@@ -431,9 +443,12 @@
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># Graduation rates</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>grate <span class="op">=</span> njsd.fetch_grad_rate(<span class="dv">2024</span>)</span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># Facilities data</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>facilities <span class="op">=</span> njsd.fetch_facilities(<span class="st">"finance"</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>facility_points <span class="op">=</span> njsd.fetch_facility_gis(<span class="st">"school_points"</span>)</span></code></pre></div>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># School directory</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>schools <span class="op">=</span> njsd.get_school_directory()</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Facilities data</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>facilities <span class="op">=</span> njsd.fetch_facilities(<span class="st">"finance"</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>facility_points <span class="op">=</span> njsd.fetch_facility_gis(<span class="st">"school_points"</span>)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -473,7 +488,8 @@
 <h2 id="data-notes">Data Notes<a class="anchor" aria-label="anchor" href="#data-notes"></a>
 </h2>
 <p><strong>Source:</strong> <a href="https://www.nj.gov/education/doedata/" class="external-link">New Jersey Department of Education</a> – all data comes directly from NJ DOE, not federal sources.</p>
-<p><strong>Available years:</strong> Enrollment data from 2000-2026. Tidy format (2020+) provides consistent structure with district, charter, and school-level records. Assessments from 2004-2024 span four different testing systems (GEPA, NJASK, PARCC, NJSLA).</p>
+<p><strong>Available years:</strong> <code><a href="reference/get_valid_years.html">get_valid_years()</a></code> reads the package source registry. Enrollment is supported from 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020 was cancelled because of COVID-19 and 2021 used Start Strong. Four-year graduation is supported from 2011-2025. Where raw and tidy capabilities differ, such as graduation counts (raw 1998-2025, tidy 2012-2025), the registry records both instead of claiming unsupported tidy coverage.</p>
+<p><strong>Source failures and provenance:</strong> Canonical fetchers are strict for transport and parser failures. Use <code>get_source_results(result)</code> to inspect request-level <code>source_status</code>, URL, retrieval time, digest, and warning/error context; this is separate from row-level <code>value_status</code>. <code>fetch_finance(..., allow_partial = TRUE)</code> and multi-source helpers only return incomplete results after explicit opt-in, with every component status attached.</p>
 <p><strong>Suppression rules:</strong> NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.</p>
 <p><strong>Census Day:</strong> NJ enrollment counts are based on October 15 enrollment (ASSA reporting).</p>
 <p><strong>Federal NCES linkage:</strong> <code><a href="reference/fetch_enr.html">fetch_enr()</a></code> attaches the federal NCES identifiers to every enrollment row – <code>nces_dist</code> (the 7-digit <code>LEAID</code>) and <code>nces_sch</code> (the 12-digit <code>NCESSCH</code>) – so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep <code>NA</code> rather than a guessed id.</p>

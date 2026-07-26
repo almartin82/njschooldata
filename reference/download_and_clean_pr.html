@@ -58,7 +58,12 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">download_and_clean_pr</span><span class="op">(</span><span class="va">tmp_pr</span>, <span class="va">url</span>, <span class="va">end_year</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">download_and_clean_pr</span><span class="op">(</span></span>
+<span>  <span class="va">tmp_pr</span>,</span>
+<span>  <span class="va">url</span>,</span>
+<span>  <span class="va">end_year</span>,</span>
+<span>  request_fn <span class="op">=</span> <span class="va">.default_source_request</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,6 +80,10 @@
 
 <dt id="arg-end-year">end_year<a class="anchor" aria-label="anchor" href="#arg-end-year"></a></dt>
 <dd><p>report year</p></dd>
+
+
+<dt id="arg-request-fn">request_fn<a class="anchor" aria-label="anchor" href="#arg-request-fn"></a></dt>
+<dd><p>Injectable transport request used by offline contract tests.</p></dd>
 
 </dl></div>
     <div class="section level2">

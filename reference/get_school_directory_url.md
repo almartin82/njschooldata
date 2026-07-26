@@ -1,6 +1,6 @@
-# Get school directory URL
+# Current Homeroom school-directory CSV endpoint
 
-Get school directory URL
+Current Homeroom school-directory CSV endpoint
 
 ## Usage
 
@@ -10,4 +10,4 @@ get_school_directory_url()
 
 ## Value
 
-Character string URL
+Character URL.

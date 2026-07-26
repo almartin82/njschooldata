@@ -5,15 +5,22 @@ Fetch Multiple Years of NJ K-12 State Aid
 ## Usage
 
 ``` r
-fetch_many_state_aid(end_year_vector)
+fetch_many_state_aid(end_year_vector, allow_partial = FALSE)
 ```
 
 ## Arguments
 
 - end_year_vector:
 
-  vector of school years (end of the academic year). Valid values are
-  2019 and later.
+  vector of school years (end of the academic year). Valid values come
+  from the authoritative source registry.
+
+- allow_partial:
+
+  Return successful years when one request fails. The default is strict.
+  In either mode, inspect
+  [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  for the status of every requested year.
 
 ## Value
 

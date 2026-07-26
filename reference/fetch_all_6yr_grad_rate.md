@@ -6,7 +6,7 @@ graduation rate data into a single data frame.
 ## Usage
 
 ``` r
-fetch_all_6yr_grad_rate(level = "school")
+fetch_all_6yr_grad_rate(level = "school", allow_partial = FALSE)
 ```
 
 ## Arguments
@@ -15,6 +15,12 @@ fetch_all_6yr_grad_rate(level = "school")
 
   One of "school", "district", or "both". "both" combines school and
   district data. Default is "school".
+
+- allow_partial:
+
+  If \`FALSE\` (default), any failed year/level aborts the request. If
+  \`TRUE\`, successful requests are returned with status available from
+  \[get_source_results()\].
 
 ## Value
 

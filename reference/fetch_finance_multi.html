@@ -64,7 +64,8 @@
 <span>  tidy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  use_cache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_status <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  level <span class="op">=</span> <span class="st">"all"</span></span>
+<span>  level <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  allow_partial <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -97,6 +98,11 @@ discovery tooling.</p></dd>
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
 <dd><p>entity grain to return. See <code><a href="fetch_finance.html">fetch_finance</a></code>.</p></dd>
+
+
+<dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>logical. See <code><a href="fetch_finance.html">fetch_finance</a></code>. The returned
+object records every requested year/component in <code><a href="get_source_results.html">get_source_results()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

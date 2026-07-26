@@ -78,7 +78,8 @@ and total K-12 state aid from the Governor's Budget Message district details
 <span>  tidy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  use_cache <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_status <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  level <span class="op">=</span> <span class="st">"all"</span></span>
+<span>  level <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  allow_partial <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,6 +116,13 @@ values with absent per-pupil denominators as <code>not_published</code>.</p></dd
 district rows), <code>"state"</code>, <code>"district"</code>, or <code>"school"</code>.
 School-level NJ finance is not published in this fetcher; school requests
 return structural gap rows only.</p></dd>
+
+
+<dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>logical, default <code>FALSE</code>. Strict mode fails when a
+required source is unavailable or cannot be parsed. Set <code>TRUE</code>
+deliberately to return successful components and inspect
+<code><a href="get_source_results.html">get_source_results()</a></code> for the missing component.</p></dd>
 
 </dl></div>
     <div class="section level2">

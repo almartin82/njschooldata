@@ -99,6 +99,10 @@
 <td>Triaging which redesigned 2024-25 SPR sheets to expose as new fetchers, or scoping SPR coverage work</td>
 </tr><tr><td><a href="dev-docs/tges-coverage.html"><code>dev-docs/tges-coverage.md</code></a></td>
 <td>Working on <code><a href="reference/fetch_tges.html">fetch_tges()</a></code>/<code><a href="reference/get_raw_tges.html">get_raw_tges()</a></code>/<code><a href="reference/tidy_tges_data.html">tidy_tges_data()</a></code>, adding a new TGES year, a TGES download 404s, or scoping TGES coverage</td>
+</tr><tr><td><a href="dev-docs/live-test-inventory.html"><code>dev-docs/live-test-inventory.md</code></a></td>
+<td>Adding or moving a test that might access a public source</td>
+</tr><tr><td><a href="dev-docs/source-outage-runbook.html"><code>dev-docs/source-outage-runbook.md</code></a></td>
+<td>Operating a strict profile build or triaging source-result failures</td>
 </tr></tbody></table></div>
 <div class="section level2">
 <h2 id="vignette-code-must-run">Vignette Code Must Run<a class="anchor" aria-label="anchor" href="#vignette-code-must-run"></a></h2>
@@ -132,7 +136,7 @@
 <div class="section level2">
 <h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h2>
 <p>Run tests with: <code>devtools::test()</code> or <code>Rscript -e "devtools::test()"</code></p>
-<p><strong>Note:</strong> Tests are disabled in CI/CD due to NJ DOE network dependencies. Run locally before deploying.</p>
+<p>Offline tests are mandatory in pull-request CI and must remain deterministic with no NJ DOE access. Live source assertions use the shared opt-in flag <code>NJSCHOOLDATA_LIVE_TESTS=true</code>; without it they skip consistently. A scheduled or manually dispatched canary workflow owns live-source verification. Keep network- heavy vignette execution separate from the offline test decision.</p>
 </div>
 <div class="section level2">
 <h2 id="federal-nces-id-linkage-enrollment">Federal NCES id linkage (enrollment)<a class="anchor" aria-label="anchor" href="#federal-nces-id-linkage-enrollment"></a></h2>

@@ -61,12 +61,21 @@ progress indicators showing download status and ETA.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_all_parcc_with_progress</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_all_parcc_with_progress</span><span class="op">(</span>allow_partial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>If `TRUE`, return successful requests and attach status
+for failures. The default is strict.</p></dd>
+
+</dl></div>
+    <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with all PARCC/NJSLA results</p>
+    <p>A data frame with all PARCC/NJSLA results and source status.</p>
     </div>
 
     <div class="section level2">

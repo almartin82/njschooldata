@@ -6,8 +6,16 @@ ELLs results into a single data frame.
 ## Usage
 
 ``` r
-fetch_all_access()
+fetch_all_access(allow_partial = FALSE)
 ```
+
+## Arguments
+
+- allow_partial:
+
+  If \`FALSE\` (default), a failed year aborts the request. If \`TRUE\`,
+  successful years are returned with request status available from
+  \[get_source_results()\].
 
 ## Value
 

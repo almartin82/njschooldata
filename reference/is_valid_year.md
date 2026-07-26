@@ -1,24 +1,27 @@
-# Check if year is valid for a data type
+# Check whether a year is supported
 
-Check if year is valid for a data type
+Check whether a year is supported
 
 ## Usage
 
 ``` r
-is_valid_year(end_year, data_type)
+is_valid_year(end_year, data_type, capability = c("tidy", "raw"))
 ```
 
 ## Arguments
 
 - end_year:
 
-  The school year (end year)
+  School-year end year.
 
 - data_type:
 
-  One of "enrollment", "parcc", "grate_4yr", "grate_5yr", "gcount",
-  "legacy_assess"
+  Registered family name or alias.
+
+- capability:
+
+  Either \`"tidy"\` or \`"raw"\`.
 
 ## Value
 
-Logical indicating if year is valid
+A single logical value.

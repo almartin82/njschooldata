@@ -13,7 +13,8 @@ fetch_absence_multi(
   level = "school",
   type = "chronic",
   tidy = TRUE,
-  use_cache = TRUE
+  use_cache = TRUE,
+  allow_partial = FALSE
 )
 ```
 
@@ -38,6 +39,12 @@ fetch_absence_multi(
 - use_cache:
 
   Logical; if `TRUE` (default), caches each year.
+
+- allow_partial:
+
+  Logical; if `FALSE` (default), failed or structurally unavailable
+  years abort the request. If `TRUE`, successful years are returned with
+  status from \[get_source_results()\].
 
 ## Value
 

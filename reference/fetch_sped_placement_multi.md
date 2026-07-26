@@ -2,9 +2,8 @@
 
 Convenience wrapper that calls
 [`fetch_sped_placement`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
-for each year and binds the results. Per-year failures are surfaced as
-warnings and the year is skipped, matching the package's existing
-multi-year wrappers.
+for each year and binds the results. Strict mode is the default; partial
+results must be requested explicitly and retain per-year source status.
 
 ## Usage
 
@@ -14,7 +13,8 @@ fetch_sped_placement_multi(
   age_group = "5-21",
   level = "district",
   tidy = TRUE,
-  with_status = FALSE
+  with_status = FALSE,
+  allow_partial = FALSE
 )
 ```
 
@@ -42,16 +42,23 @@ fetch_sped_placement_multi(
   logical; passed through to
   [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
 
+- allow_partial:
+
+  logical; if `FALSE` (default), any failed or unsupported year aborts
+  the request. If `TRUE`, successful years are returned with status
+  available from
+  [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md).
+
 ## Value
 
-a single tibble with all successfully-fetched years bound together.
+A single tibble with source-result provenance.
 
 ## Details
 
 Every `(end_year, age_group, level)` combination across 2020-2025
 returns data, so `fetch_sped_placement_multi(2020:2025)` produces a
-single bound tibble covering the whole range. Per-year failures (network
-errors, e.g.) surface as warnings and the year is skipped.
+single bound tibble covering the whole range. A per-year failure aborts
+in strict mode; partial results require `allow_partial = TRUE`.
 
 ## See also
 

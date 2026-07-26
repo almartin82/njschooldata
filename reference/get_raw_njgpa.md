@@ -1,7 +1,6 @@
-# Reads the raw NJGPA Excel files from the state website
+# Reads raw NJGPA data from the state website
 
-NJGPA (New Jersey Graduation Proficiency Assessment) is the graduation
-requirement assessment introduced in 2022.
+Reads raw NJGPA data from the state website
 
 ## Usage
 
@@ -13,12 +12,12 @@ get_raw_njgpa(end_year, subj)
 
 - end_year:
 
-  A school year. Valid values are 2022-2025.
+  School-year end year.
 
 - subj:
 
-  NJGPA subject. c('ela' or 'math')
+  Subject.
 
 ## Value
 
-NJGPA dataframe
+NJGPA data frame.

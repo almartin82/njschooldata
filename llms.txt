@@ -217,20 +217,22 @@ COVID Kindergarten
 
 | Category | Years | Function | Details |
 |----|----|----|----|
-| **Enrollment** | 2000-2026 | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
-| **Assessments** | 2004-2024 | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) / [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md) / [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md) | NJSLA, PARCC, NJASK, HSPA, GEPA. ELA, Math, Science |
-| **Graduation** | 2011-2024 | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) / [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 4-yr and 6-yr ACGR. District and school level |
-| **Directory** | Current | [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md) | School and district entities (`entities`), role holders like superintendents (`roles`), fetch metadata (`meta`). Names, IDs, addresses, school type |
+| **Enrollment** | 1999-2026 | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | State, county, district, school. Race, gender, FRPL, LEP, migrant. Federal NCES ids (`nces_dist`/`nces_sch`) |
+| **Assessments** | 2004-2025 | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) / [`fetch_njask()`](https://almartin82.github.io/njschooldata/reference/fetch_njask.md) / [`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md) | NJSLA/PARCC is available for 2015-2019 and 2022-2025; 2020 was cancelled and 2021 used Start Strong. NJASK, HSPA, and GEPA provide legacy coverage |
+| **Graduation** | 2011-2025 | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) / [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 4-year ACGR through 2025; graduation-count raw files begin in 1998 while the supported tidy count contract begins in 2012 |
+| **Directory** | Current | [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md) / [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md) / [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md) | Canonical entities/roles/provenance plus compatibility data-frame views |
 | **Per-Pupil Spending** | 2001-2026 | [`fetch_finance()`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md) / [`fetch_tges()`](https://almartin82.github.io/njschooldata/reference/fetch_tges.md) / [`fetch_state_aid()`](https://almartin82.github.io/njschooldata/reference/fetch_state_aid.md) | State, district. Per-pupil total + instruction/support/admin/operations/food, total K-12 state aid. Federal NCES ids (`nces_dist`) |
 | **Accountability** | 2018+ | [`fetch_essa_status()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md) / [`fetch_essa_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_essa_progress.md) | CSI/TSI lists, ESSA indicators |
 | **Chronic Absence** | 2017-2024 | [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) / [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md) / [`fetch_days_absent()`](https://almartin82.github.io/njschooldata/reference/fetch_days_absent.md) | By grade, by demographic. Cross-state standard via [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md) |
 | **English Learners** | 2006-2026 | [`fetch_ell()`](https://almartin82.github.io/njschooldata/reference/fetch_ell.md) | EL/Multilingual Learner headcount + share of enrollment. State, district, school. Federal NCES ids |
 | **EL Progress** | 2022-2024 | [`fetch_access()`](https://almartin82.github.io/njschooldata/reference/fetch_access.md) | WIDA ACCESS for ELLs |
-| **Special Ed** | 2020-2025 | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md) / [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md) | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
+| **Special Ed** | Classification 2015-2025; placement 2020-2025 | [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md) / [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md) | District classification rates + statewide child count by IDEA disability category. Educational environment (LRE) by disability, race, gender, LEP; state + district; ages 3-5 & 5-21 |
 | **Facilities** | Current / FY2026 / 2024-2025 | [`fetch_facilities()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities.md) / [`fetch_facilities_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_facilities_multi.md) / [`fetch_facility_gis()`](https://almartin82.github.io/njschooldata/reference/fetch_facility_gis.md) / [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md) | Inventory, CDS closures, SDA allocations, lead SOA, NJSDA active projects, and NJGIN school points. School, district, and project levels |
 | **Discipline** | Available; restraint & seclusion 2023-2024 | [`fetch_disciplinary_removals()`](https://almartin82.github.io/njschooldata/reference/fetch_disciplinary_removals.md) / [`fetch_violence_vandalism_hib()`](https://almartin82.github.io/njschooldata/reference/fetch_violence_vandalism_hib.md) / [`fetch_restraint_seclusion()`](https://almartin82.github.io/njschooldata/reference/fetch_restraint_seclusion.md) | Suspensions, expulsions, HIB incidents; school-level restraint & seclusion events by student group |
 | **Staff** | Demographics/experience (SPR); evaluations 2014-2016; certificated FTE 2000-2008 & 2020-2026 | [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md) / [`fetch_teacher_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_teacher_experience.md) / [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md) / [`fetch_certificated_staff()`](https://almartin82.github.io/njschooldata/reference/fetch_certificated_staff.md) | Demographics, experience, ratios; summative evaluation rating distributions (teachers, principals/APs/VPs); deep certificated-staff FTE history by position, race, gender. State, county, district, school |
 | **College-Going** | Available | [`fetch_postsecondary()`](https://almartin82.github.io/njschooldata/reference/fetch_postsecondary.md) / [`fetch_sat_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_sat_participation.md) / [`fetch_ap_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_ap_participation.md) | Postsecondary enrollment, SAT, AP |
+| **Historical Report Cards** | 2012-2019 | [`get_one_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_one_rc_database.md) | Raw NJ performance-report workbooks. The removed 2003-2011 files are represented as unsupported rather than claimed as working coverage |
+| **District Factor Groups** | 1990 / 2000 revisions | [`fetch_dfg()`](https://almartin82.github.io/njschooldata/reference/fetch_dfg.md) | Socioeconomic comparison groups from the registered NJ DOE DFG workbook |
 | **Advanced-Coursework Access** | 2017-2025 (courses, SLE); 2021-2025 (by group) | [`fetch_advanced_course_access()`](https://almartin82.github.io/njschooldata/reference/fetch_advanced_course_access.md) | Which advanced courses a school offers (enrolled/tested), AP/IB/dual-enrollment participation by student group, and Structured Learning Experience participation. School + district/state |
 | **Courses** | Available | [`fetch_math_course_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_math_course_enrollment.md) / [`fetch_cs_enrollment()`](https://almartin82.github.io/njschooldata/reference/fetch_cs_enrollment.md) | Math, science, CS, arts, world languages |
 | **CTE** | Available | [`fetch_cte_participation()`](https://almartin82.github.io/njschooldata/reference/fetch_cte_participation.md) / [`fetch_industry_credentials()`](https://almartin82.github.io/njschooldata/reference/fetch_industry_credentials.md) | Career pathways, credentials, apprenticeships |
@@ -259,10 +261,8 @@ math_g4 <- fetch_parcc(2024, grade_or_subj = 4, subj = 'math')
 # Graduation rates
 grate <- fetch_grad_rate(2024)
 
-# Directory (schools + districts, plus role holders like superintendents)
-dir <- fetch_directory()
-schools <- dir$entities
-supts <- dir$roles[dir$roles$role == "superintendent", ]
+# School directory
+schools <- get_school_directory()
 
 # Facilities data
 facilities <- fetch_facilities("finance")
@@ -290,6 +290,9 @@ math_g4 = njsd.fetch_parcc(2024, 4, 'math')
 
 # Graduation rates
 grate = njsd.fetch_grad_rate(2024)
+
+# School directory
+schools = njsd.get_school_directory()
 
 # Facilities data
 facilities = njsd.fetch_facilities("finance")
@@ -359,10 +362,22 @@ Full analysis with 15 stories:
 Education](https://www.nj.gov/education/doedata/) – all data comes
 directly from NJ DOE, not federal sources.
 
-**Available years:** Enrollment data from 2000-2026. Tidy format (2020+)
-provides consistent structure with district, charter, and school-level
-records. Assessments from 2004-2024 span four different testing systems
-(GEPA, NJASK, PARCC, NJSLA).
+**Available years:**
+[`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
+reads the package source registry. Enrollment is supported from
+1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020
+was cancelled because of COVID-19 and 2021 used Start Strong. Four-year
+graduation is supported from 2011-2025. Where raw and tidy capabilities
+differ, such as graduation counts (raw 1998-2025, tidy 2012-2025), the
+registry records both instead of claiming unsupported tidy coverage.
+
+**Source failures and provenance:** Canonical fetchers are strict for
+transport and parser failures. Use `get_source_results(result)` to
+inspect request-level `source_status`, URL, retrieval time, digest, and
+warning/error context; this is separate from row-level `value_status`.
+`fetch_finance(..., allow_partial = TRUE)` and multi-source helpers only
+return incomplete results after explicit opt-in, with every component
+status attached.
 
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data
 types. Enrollment data uses half-day weighting for programs like pre-K,
@@ -895,7 +910,7 @@ Functions for fetching and processing NJ school enrollment data
 - [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
   : Fetch multiple years of enrollment data with progress
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get the years for which NJ enrollment data is available
+  : Get enrollment years available from the tidy front door
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
   : Tidy enrollment data
 - [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
@@ -985,7 +1000,7 @@ Cross-state standard interface for chronic absenteeism data
 
 ## School Performance Reports (SPR)
 
-Functions for SPR database data (2017-2024)
+Functions for SPR database data (2017-2025)
 
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
   : Fetch SPR Data
@@ -1102,6 +1117,10 @@ Functions for school and district metadata
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
   : Fetch the current New Jersey education directory
   (directory-contract/v1)
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get the current NJ school directory
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get the current NJ district directory
 
 ## Charter Aggregations
 
@@ -1148,8 +1167,7 @@ enrollment)
 - [`fetch_ell_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_ell_multi.md)
   : Fetch NJ English Learner population data for multiple years
 - [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
-  : Get the years for which NJ English Learner population data is
-  available
+  : Get English Learner population years
 - [`tidy_ell()`](https://almartin82.github.io/njschooldata/reference/tidy_ell.md)
   : Tidy English Learner population data
 
@@ -1230,7 +1248,19 @@ standard metric vocabulary, so cross-state code works unchanged.
 - [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
   : Fetch multiple years of NJ school finance
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Years for which NJ finance data is available
+  : Get finance years with at least one registered component
+
+## Source Coverage and Provenance
+
+Authoritative year validation and request-level source status. Source
+status is separate from row-level observation/value status.
+
+- [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
+  : Get valid years for a data type
+- [`validate_end_year()`](https://almartin82.github.io/njschooldata/reference/validate_end_year.md)
+  : Validate end_year parameter
+- [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  : Inspect source-request status and provenance
 
 ## State Aid
 
@@ -1705,18 +1735,19 @@ Additional exported functions
 - [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
   : Geocoded School Addresses
 - [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
-  : Get the years for which NJ English Learner population data is
-  available
+  : Get English Learner population years
 - [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md)
   : What facilities categories are available for New Jersey
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Years for which NJ finance data is available
+  : Get finance years with at least one registered component
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get the years for which NJ enrollment data is available
+  : Get enrollment years available from the tidy front door
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
   : Get districts in a specific District Factor Group
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get the current NJ district directory
 - [`get_era_breaks()`](https://almartin82.github.io/njschooldata/reference/get_era_breaks.md)
   : Get era break metadata
 - [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
@@ -1734,10 +1765,16 @@ Additional exported functions
   : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
   : Get multiple RC databases
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get the current NJ school directory
+- [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  : Inspect source-request status and provenance
 - [`get_standalone_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.md)
   : Get Standalone Raw Report Card Database
 - [`get_valid_grades()`](https://almartin82.github.io/njschooldata/reference/get_valid_grades.md)
   : Get valid grades for an assessment type and year
+- [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
+  : Get valid years for a data type
 - [`grate_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/grate_aggregate_calcs.md)
   : Aggregate multiple grad rate rows and produce summary statistics
 - [`grate_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/grate_percentile_rank.md)

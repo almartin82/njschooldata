@@ -1,6 +1,6 @@
-# Get district directory URL
+# Current Homeroom district-directory CSV endpoint
 
-Get district directory URL
+Current Homeroom district-directory CSV endpoint
 
 ## Usage
 
@@ -10,4 +10,4 @@ get_district_directory_url()
 
 ## Value
 
-Character string URL
+Character URL.

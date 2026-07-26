@@ -43,8 +43,8 @@ fetch_ell(end_year, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
 
 ## Value
 
-data.frame of EL population data. An out-of-range \`end_year\` returns
-the empty, correctly-typed tidy frame.
+data.frame of EL population data with source provenance available from
+\[get_source_results()\]. Unsupported years fail explicitly.
 
 ## Details
 

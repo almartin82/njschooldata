@@ -1,6 +1,6 @@
-# Reads the raw NJSLA Excel files from the state website
+# Reads raw NJSLA data from the state website
 
-Builds a URL and reads the xlsx file into a dataframe.
+Reads raw NJSLA data from the state website
 
 ## Usage
 
@@ -12,17 +12,16 @@ get_raw_sla(end_year, grade_or_subj, subj)
 
 - end_year:
 
-  A school year. end_year is the end of the academic year - eg 2014-15
-  school year is end_year 2015. Valid values are 2015-2018.
+  School-year end year.
 
 - grade_or_subj:
 
-  Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2)
+  Grade or course.
 
 - subj:
 
-  PARCC subject. c('ela' or 'math')
+  Subject.
 
 ## Value
 
-NJSLA dataframe
+NJSLA data frame.

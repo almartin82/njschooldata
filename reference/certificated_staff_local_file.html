@@ -73,7 +73,11 @@ modern era).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">certificated_staff_local_file</span><span class="op">(</span><span class="va">end_year</span>, <span class="va">work_dir</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">certificated_staff_local_file</span><span class="op">(</span></span>
+<span>  <span class="va">end_year</span>,</span>
+<span>  <span class="va">work_dir</span>,</span>
+<span>  download_fn <span class="op">=</span> <span class="fu">downloader</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/downloader/man/download.html" class="external-link">download</a></span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -86,6 +90,11 @@ modern era).</p>
 
 <dt id="arg-work-dir">work_dir<a class="anchor" aria-label="anchor" href="#arg-work-dir"></a></dt>
 <dd><p>A scratch directory the caller owns and cleans up.</p></dd>
+
+
+<dt id="arg-download-fn">download_fn<a class="anchor" aria-label="anchor" href="#arg-download-fn"></a></dt>
+<dd><p>Download function with the same arguments used by
+<code><a href="https://rdrr.io/pkg/downloader/man/download.html" class="external-link">downloader::download</a></code>. Exposed for deterministic offline testing.</p></dd>
 
 </dl></div>
     <div class="section level2">

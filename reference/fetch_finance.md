@@ -18,7 +18,8 @@ fetch_finance(
   tidy = TRUE,
   use_cache = TRUE,
   with_status = FALSE,
-  level = "all"
+  level = "all",
+  allow_partial = FALSE
 )
 ```
 
@@ -54,6 +55,14 @@ fetch_finance(
   `"state"`, `"district"`, or `"school"`. School-level NJ finance is not
   published in this fetcher; school requests return structural gap rows
   only.
+
+- allow_partial:
+
+  logical, default `FALSE`. Strict mode fails when a required source is
+  unavailable or cannot be parsed. Set `TRUE` deliberately to return
+  successful components and inspect
+  [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  for the missing component.
 
 ## Value
 

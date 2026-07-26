@@ -230,8 +230,7 @@
   snake_case subgroup labels (`total`, `black`, `hispanic`, `lep`, …),
   and the cross-state entity flags (`is_state`, `is_district`,
   `is_charter`). The large workbook (~3 MB, 10 sheets) is cached on disk
-  via the same mechanism as the SPR workbooks
-  ([`spr_cached_workbook()`](https://almartin82.github.io/njschooldata/reference/spr_cached_workbook.md)),
+  via the same mechanism as the SPR workbooks (`spr_cached_workbook()`),
   so the second call in any session is effectively free. Currently
   supports SY2024-25 only – earlier years are published on nj.gov but
   spread across a dozen subgroup- specific files (and some are
@@ -921,8 +920,10 @@ new NJDOE pages / format.
 
 ### New features
 
-`get_district_directory()` and `get_school_directory()` read in metadata
-about schools and districts (eg, NCES ids!)
+[`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+and
+[`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+read in metadata about schools and districts (eg, NCES ids!)
 
 ### njschooldata 0.8.15
 

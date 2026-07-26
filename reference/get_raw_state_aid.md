@@ -16,8 +16,8 @@ get_raw_state_aid(end_year)
 - end_year:
 
   school year (end of the academic year): the 2025-26 year (state
-  FY2026) is `end_year = 2026`. Valid values are 2019 and later; earlier
-  years use a different layout that this fetcher does not yet parse.
+  FY2026) is `end_year = 2026`. Valid values are the registered
+  2019-2027 sources; earlier years use a different unparsed layout.
 
 ## Value
 

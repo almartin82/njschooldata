@@ -5,7 +5,12 @@ Download and clean performance report data
 ## Usage
 
 ``` r
-download_and_clean_pr(tmp_pr, url, end_year)
+download_and_clean_pr(
+  tmp_pr,
+  url,
+  end_year,
+  request_fn = .default_source_request
+)
 ```
 
 ## Arguments
@@ -21,6 +26,10 @@ download_and_clean_pr(tmp_pr, url, end_year)
 - end_year:
 
   report year
+
+- request_fn:
+
+  Injectable transport request used by offline contract tests.
 
 ## Value
 

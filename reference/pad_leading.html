@@ -80,6 +80,15 @@ adding leading zeros.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>character vector</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Numeric coercion can interpret <code>E</code> or <code>e</code> as scientific notation
+and can turn non-numeric source values into plausible-looking fabricated
+identifiers. This implementation pads only values containing digits and
+uses string concatenation instead of a numeric round trip. Real <code>NA</code>,
+alphanumeric codes, and source placeholders such as <code>"N.A."</code> are left
+exactly as published.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

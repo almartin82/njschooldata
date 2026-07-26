@@ -1,6 +1,8 @@
-# Get NJ District Directory Data
+# Get the current NJ district directory
 
-Get NJ District Directory Data
+This compatibility front door returns the source-shaped district
+directory while using the registry-owned Homeroom endpoint and validated
+transport.
 
 ## Usage
 
@@ -10,4 +12,4 @@ get_district_directory()
 
 ## Value
 
-dataframe of districts and associated metadata
+A data frame of districts and associated metadata.

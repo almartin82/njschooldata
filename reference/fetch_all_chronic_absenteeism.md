@@ -6,8 +6,16 @@ absenteeism data into a single data frame.
 ## Usage
 
 ``` r
-fetch_all_chronic_absenteeism()
+fetch_all_chronic_absenteeism(allow_partial = FALSE)
 ```
+
+## Arguments
+
+- allow_partial:
+
+  If \`FALSE\` (default), any failed year aborts the combined request.
+  If \`TRUE\`, successful years are returned with request status
+  available from \[get_source_results()\].
 
 ## Value
 

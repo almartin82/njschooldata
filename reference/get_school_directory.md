@@ -1,6 +1,8 @@
-# Get NJ School Directory Data
+# Get the current NJ school directory
 
-Get NJ School Directory Data
+This compatibility front door returns the source-shaped school directory
+while using the registry-owned Homeroom endpoint and validated
+transport.
 
 ## Usage
 
@@ -10,4 +12,4 @@ get_school_directory()
 
 ## Value
 
-dataframe of schools and associated metadata
+A data frame of schools and associated metadata.

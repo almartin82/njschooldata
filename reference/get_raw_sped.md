@@ -12,8 +12,7 @@ get_raw_sped(end_year, level = "district")
 
 - end_year:
 
-  A school year. Year is the end of the academic year - eg 2006-07
-  school year is year '2007'. Valid values are 2000-2026.
+  A school-year end year. Valid values are 1999-2026.
 
 - level:
 

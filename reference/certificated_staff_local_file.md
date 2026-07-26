@@ -11,7 +11,11 @@ legacy era, a `.xlsx` for the modern era).
 ## Usage
 
 ``` r
-certificated_staff_local_file(end_year, work_dir)
+certificated_staff_local_file(
+  end_year,
+  work_dir,
+  download_fn = downloader::download
+)
 ```
 
 ## Arguments
@@ -23,6 +27,12 @@ certificated_staff_local_file(end_year, work_dir)
 - work_dir:
 
   A scratch directory the caller owns and cleans up.
+
+- download_fn:
+
+  Download function with the same arguments used by
+  [`downloader::download`](https://rdrr.io/pkg/downloader/man/download.html).
+  Exposed for deterministic offline testing.
 
 ## Value
 

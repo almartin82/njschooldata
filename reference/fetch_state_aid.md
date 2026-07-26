@@ -42,9 +42,9 @@ workbook published with the Governor's Budget Message. These are
 in particular that `transportation_aid` is a formula subsidy and is
 typically far below a district's actual transportation cost.
 
-Valid `end_year` values are 2019 and later. Each year's workbook is
-located by trying the current-year direct URL first, then the archived
-per-year zip bundle.
+Valid `end_year` values are registered centrally. Each year's workbook
+is located by trying the current-year direct URL first, then the
+archived per-year zip bundle.
 
 ## Examples
 

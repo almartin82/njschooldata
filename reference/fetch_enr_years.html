@@ -58,7 +58,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_enr_years</span><span class="op">(</span><span class="va">years</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_enr_years</span><span class="op">(</span><span class="va">years</span>, tidy <span class="op">=</span> <span class="cn">TRUE</span>, allow_partial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,10 +72,15 @@
 <dt id="arg-tidy">tidy<a class="anchor" aria-label="anchor" href="#arg-tidy"></a></dt>
 <dd><p>Return tidy format? (default TRUE)</p></dd>
 
+
+<dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>If `TRUE`, return successful years and attach status for
+missing/failed years. The default is strict.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with all enrollment data</p>
+    <p>Data frame with all enrollment data and per-year source status.</p>
     </div>
 
     <div class="section level2">

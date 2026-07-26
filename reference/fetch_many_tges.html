@@ -58,7 +58,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_many_tges</span><span class="op">(</span><span class="va">end_year_vector</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_many_tges</span><span class="op">(</span><span class="va">end_year_vector</span>, allow_partial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,10 +69,16 @@
 <dd><p>vector of years.  Current valid values
 are 2001 to 2025.</p></dd>
 
+
+<dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>If `FALSE` (default), any failed or unsupported year
+aborts the request. If `TRUE`, successful years are returned and all
+request statuses are available through [get_source_results()].</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>list of lists of data frames</p>
+    <p>Named list of per-year TGES tables with source-result provenance.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

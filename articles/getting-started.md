@@ -259,6 +259,10 @@ districts <- directory$entities[directory$entities$entity_type == "district", ]
 directory$meta$source_status
 #> [1] "source_unavailable"
 
+# Existing callers can use the compatibility data-frame front doors
+# get_school_directory() and get_district_directory(). They make separate live
+# requests, so this vignette does not call them again after fetch_directory().
+
 # View available columns
 names(schools)
 #>  [1] "state"              "entity_type"        "entity_subtype"    
@@ -274,11 +278,11 @@ names(schools)
 
 | Data Type | Function | Years Available |
 |----|----|----|
-| Enrollment | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | 2000-2026 |
-| NJSLA/PARCC | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) | 2015-2024 |
+| Enrollment | [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md) | 1999-2026 |
+| NJSLA/PARCC | [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md) | 2015-2019, 2022-2025 |
 | NJASK | [`fetch_old_nj_assess()`](https://almartin82.github.io/njschooldata/reference/fetch_old_nj_assess.md) | 2004-2014 |
-| Graduation Rates | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) | 2011-2024 |
-| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 2012-2024 |
+| Four-year Graduation Rates | [`fetch_grad_rate()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_rate.md) | 2011-2025 |
+| Graduation Counts | [`fetch_grad_count()`](https://almartin82.github.io/njschooldata/reference/fetch_grad_count.md) | 2012-2025 tidy; raw sources begin in 1998 |
 
 ## Common Subgroups
 
@@ -395,17 +399,17 @@ sessionInfo()
 #> [1] purrr_1.2.2         dplyr_1.2.1         njschooldata_0.9.26
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    
-#>  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.5    evaluate_1.0.5   
-#>  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   
-#> [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  
-#> [17] cli_3.6.6         rlang_1.3.0       withr_3.0.3       cachem_1.1.0     
-#> [21] yaml_2.3.12       otel_0.2.0        tools_4.6.1       downloader_0.4.1 
-#> [25] tzdb_0.5.0        curl_7.1.0        vctrs_0.7.3       R6_2.6.1         
-#> [29] lifecycle_1.0.5   lubridate_1.9.5   snakecase_0.11.1  stringr_1.6.0    
-#> [33] fs_2.1.0          ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  
-#> [37] desc_1.4.3        pkgdown_2.2.1     pillar_1.11.1     bslib_0.11.0     
-#> [41] glue_1.8.1        systemfonts_1.3.2 xfun_0.60         tibble_3.3.1     
-#> [45] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   
-#> [49] readr_2.2.0       compiler_4.6.1    readxl_1.5.0
+#>  [1] jsonlite_2.0.0    compiler_4.6.1    tidyselect_1.2.1  stringr_1.6.0    
+#>  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2
+#>  [9] textshaping_1.0.5 readxl_1.5.0      yaml_2.3.12       fastmap_1.2.0    
+#> [13] readr_2.2.0       R6_2.6.1          generics_0.1.4    curl_7.1.0       
+#> [17] knitr_1.51        tibble_3.3.1      janitor_2.2.1     desc_1.4.3       
+#> [21] lubridate_1.9.5   tzdb_0.5.0        bslib_0.11.0      pillar_1.11.1    
+#> [25] rlang_1.3.0       cachem_1.1.0      stringi_1.8.7     xfun_0.60        
+#> [29] fs_2.1.0          sass_0.4.10       otel_0.2.0        timechange_0.4.0 
+#> [33] cli_3.6.6         withr_3.0.3       pkgdown_2.2.1     magrittr_2.0.5   
+#> [37] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      
+#> [41] evaluate_1.0.5    glue_1.8.1        cellranger_1.1.0  codetools_0.2-20 
+#> [45] ragg_1.5.2        httr_1.4.8        rmarkdown_2.31    tools_4.6.1      
+#> [49] pkgconfig_2.0.3   htmltools_0.5.9
 ```

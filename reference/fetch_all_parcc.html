@@ -61,7 +61,7 @@ into single data frame, including ELA, Math, and Science assessments.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_all_parcc</span><span class="op">(</span>include_science <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_all_parcc</span><span class="op">(</span>include_science <span class="op">=</span> <span class="cn">TRUE</span>, allow_partial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,10 +71,16 @@ into single data frame, including ELA, Math, and Science assessments.</p>
 <dl><dt id="arg-include-science">include_science<a class="anchor" aria-label="anchor" href="#arg-include-science"></a></dt>
 <dd><p>Include science assessments (2019+)? Default is TRUE.</p></dd>
 
+
+<dt id="arg-allow-partial">allow_partial<a class="anchor" aria-label="anchor" href="#arg-allow-partial"></a></dt>
+<dd><p>If `FALSE` (default), any unavailable or unparseable
+requested source fails the combined request. If `TRUE`, successful sources
+are returned and every request is reported by [get_source_results()].</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with all PARCC/NJSLA results</p>
+    <p>A data frame with all PARCC/NJSLA results and source-result records.</p>
     </div>
 
     <div class="section level2">

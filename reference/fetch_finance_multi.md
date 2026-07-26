@@ -11,7 +11,8 @@ fetch_finance_multi(
   tidy = TRUE,
   use_cache = TRUE,
   with_status = FALSE,
-  level = "all"
+  level = "all",
+  allow_partial = FALSE
 )
 ```
 
@@ -46,6 +47,13 @@ fetch_finance_multi(
 
   entity grain to return. See
   [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
+
+- allow_partial:
+
+  logical. See
+  [`fetch_finance`](https://almartin82.github.io/njschooldata/reference/fetch_finance.md).
+  The returned object records every requested year/component in
+  [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md).
 
 ## Value
 

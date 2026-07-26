@@ -403,6 +403,10 @@ COVID-19.</p>
 <span><span class="va">directory</span><span class="op">$</span><span class="va">meta</span><span class="op">$</span><span class="va">source_status</span></span>
 <span><span class="co">#&gt; [1] "source_unavailable"</span></span>
 <span></span>
+<span><span class="co"># Existing callers can use the compatibility data-frame front doors</span></span>
+<span><span class="co"># get_school_directory() and get_district_directory(). They make separate live</span></span>
+<span><span class="co"># requests, so this vignette does not call them again after fetch_directory().</span></span>
+<span></span>
 <span><span class="co"># View available columns</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "state"              "entity_type"        "entity_subtype"    </span></span>
@@ -417,6 +421,11 @@ COVID-19.</p>
 <h2 id="data-coverage-summary">Data Coverage Summary<a class="anchor" aria-label="anchor" href="#data-coverage-summary"></a>
 </h2>
 <table class="table">
+<colgroup>
+<col width="28%">
+<col width="26%">
+<col width="44%">
+</colgroup>
 <thead><tr class="header">
 <th>Data Type</th>
 <th>Function</th>
@@ -426,12 +435,12 @@ COVID-19.</p>
 <tr class="odd">
 <td>Enrollment</td>
 <td><code><a href="../reference/fetch_enr.html">fetch_enr()</a></code></td>
-<td>2000-2026</td>
+<td>1999-2026</td>
 </tr>
 <tr class="even">
 <td>NJSLA/PARCC</td>
 <td><code><a href="../reference/fetch_parcc.html">fetch_parcc()</a></code></td>
-<td>2015-2024</td>
+<td>2015-2019, 2022-2025</td>
 </tr>
 <tr class="odd">
 <td>NJASK</td>
@@ -439,14 +448,14 @@ COVID-19.</p>
 <td>2004-2014</td>
 </tr>
 <tr class="even">
-<td>Graduation Rates</td>
+<td>Four-year Graduation Rates</td>
 <td><code><a href="../reference/fetch_grad_rate.html">fetch_grad_rate()</a></code></td>
-<td>2011-2024</td>
+<td>2011-2025</td>
 </tr>
 <tr class="odd">
 <td>Graduation Counts</td>
 <td><code><a href="../reference/fetch_grad_count.html">fetch_grad_count()</a></code></td>
-<td>2012-2024</td>
+<td>2012-2025 tidy; raw sources begin in 1998</td>
 </tr>
 </tbody>
 </table>
@@ -583,19 +592,19 @@ for full documentation</li>
 <span><span class="co">#&gt; [1] purrr_1.2.2         dplyr_1.2.1         njschooldata_0.9.26</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] sass_0.4.10       generics_0.1.4    tidyr_1.3.2       stringi_1.8.7    </span></span>
-<span><span class="co">#&gt;  [5] hms_1.1.4         digest_0.6.39     magrittr_2.0.5    evaluate_1.0.5   </span></span>
-<span><span class="co">#&gt;  [9] timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0  jsonlite_2.0.0   </span></span>
-<span><span class="co">#&gt; [13] httr_1.4.8        codetools_0.2-20  textshaping_1.0.5 jquerylib_0.1.4  </span></span>
-<span><span class="co">#&gt; [17] cli_3.6.6         rlang_1.3.0       withr_3.0.3       cachem_1.1.0     </span></span>
-<span><span class="co">#&gt; [21] yaml_2.3.12       otel_0.2.0        tools_4.6.1       downloader_0.4.1 </span></span>
-<span><span class="co">#&gt; [25] tzdb_0.5.0        curl_7.1.0        vctrs_0.7.3       R6_2.6.1         </span></span>
-<span><span class="co">#&gt; [29] lifecycle_1.0.5   lubridate_1.9.5   snakecase_0.11.1  stringr_1.6.0    </span></span>
-<span><span class="co">#&gt; [33] fs_2.1.0          ragg_1.5.2        janitor_2.2.1     pkgconfig_2.0.3  </span></span>
-<span><span class="co">#&gt; [37] desc_1.4.3        pkgdown_2.2.1     pillar_1.11.1     bslib_0.11.0     </span></span>
-<span><span class="co">#&gt; [41] glue_1.8.1        systemfonts_1.3.2 xfun_0.60         tibble_3.3.1     </span></span>
-<span><span class="co">#&gt; [45] tidyselect_1.2.1  knitr_1.51        htmltools_0.5.9   rmarkdown_2.31   </span></span>
-<span><span class="co">#&gt; [49] readr_2.2.0       compiler_4.6.1    readxl_1.5.0</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] jsonlite_2.0.0    compiler_4.6.1    tidyselect_1.2.1  stringr_1.6.0    </span></span>
+<span><span class="co">#&gt;  [5] snakecase_0.11.1  tidyr_1.3.2       jquerylib_0.1.4   systemfonts_1.3.2</span></span>
+<span><span class="co">#&gt;  [9] textshaping_1.0.5 readxl_1.5.0      yaml_2.3.12       fastmap_1.2.0    </span></span>
+<span><span class="co">#&gt; [13] readr_2.2.0       R6_2.6.1          generics_0.1.4    curl_7.1.0       </span></span>
+<span><span class="co">#&gt; [17] knitr_1.51        tibble_3.3.1      janitor_2.2.1     desc_1.4.3       </span></span>
+<span><span class="co">#&gt; [21] lubridate_1.9.5   tzdb_0.5.0        bslib_0.11.0      pillar_1.11.1    </span></span>
+<span><span class="co">#&gt; [25] rlang_1.3.0       cachem_1.1.0      stringi_1.8.7     xfun_0.60        </span></span>
+<span><span class="co">#&gt; [29] fs_2.1.0          sass_0.4.10       otel_0.2.0        timechange_0.4.0 </span></span>
+<span><span class="co">#&gt; [33] cli_3.6.6         withr_3.0.3       pkgdown_2.2.1     magrittr_2.0.5   </span></span>
+<span><span class="co">#&gt; [37] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      </span></span>
+<span><span class="co">#&gt; [41] evaluate_1.0.5    glue_1.8.1        cellranger_1.1.0  codetools_0.2-20 </span></span>
+<span><span class="co">#&gt; [45] ragg_1.5.2        httr_1.4.8        rmarkdown_2.31    tools_4.6.1      </span></span>
+<span><span class="co">#&gt; [49] pkgconfig_2.0.3   htmltools_0.5.9</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

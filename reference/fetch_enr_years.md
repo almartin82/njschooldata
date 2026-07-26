@@ -5,7 +5,7 @@ Fetch multiple years of enrollment data with progress
 ## Usage
 
 ``` r
-fetch_enr_years(years, tidy = TRUE)
+fetch_enr_years(years, tidy = TRUE, allow_partial = FALSE)
 ```
 
 ## Arguments
@@ -18,9 +18,14 @@ fetch_enr_years(years, tidy = TRUE)
 
   Return tidy format? (default TRUE)
 
+- allow_partial:
+
+  If \`TRUE\`, return successful years and attach status for
+  missing/failed years. The default is strict.
+
 ## Value
 
-Data frame with all enrollment data
+Data frame with all enrollment data and per-year source status.
 
 ## Examples
 

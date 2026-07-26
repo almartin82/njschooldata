@@ -5,7 +5,13 @@ Fetch NJ English Learner population data for multiple years
 ## Usage
 
 ``` r
-fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
+fetch_ell_multi(
+  end_years,
+  tidy = TRUE,
+  use_cache = FALSE,
+  with_status = FALSE,
+  allow_partial = FALSE
+)
 ```
 
 ## Arguments
@@ -27,10 +33,15 @@ fetch_ell_multi(end_years, tidy = TRUE, use_cache = FALSE, with_status = FALSE)
   if \`TRUE\` (and \`tidy = TRUE\`), appends the additive
   \`value_status\` column (see \[fetch_ell()\]).
 
+- allow_partial:
+
+  If \`FALSE\` (default), unavailable or failed years abort the request.
+  If \`TRUE\`, successful years are returned with every request reported
+  by \[get_source_results()\].
+
 ## Value
 
-combined data.frame of EL population data for all available requested
-years. Unavailable years are skipped with a warning.
+combined data.frame of EL population data and source-result status.
 
 ## See also
 

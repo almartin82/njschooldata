@@ -117,8 +117,27 @@ traces to a downloaded NJ DOE file; the federal NCES identifier
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the spending side is published a year in arrears, so even years 2016-2024</span></span>
 <span><span class="co"># give a clean statewide actuals series; 2024 is the latest full cross-section.</span></span>
-<span><span class="va">fin_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_finance_multi.html">fetch_finance_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2022</span>, <span class="fl">2024</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">fin_2024</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_finance.html">fetch_finance</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fin_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_finance_multi.html">fetch_finance_multi</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2016</span>, <span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2022</span>, <span class="fl">2024</span><span class="op">)</span>,</span>
+<span>  allow_partial <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fin_2024</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_finance.html">fetch_finance</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Spending is complete for every requested year. The source ledger also makes</span></span>
+<span><span class="co"># the unavailable 2020 and 2022 state-aid components explicit.</span></span>
+<span><span class="fu"><a href="../reference/get_source_results.html">get_source_results</a></span><span class="op">(</span><span class="va">fin_multi</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">component</span>, <span class="va">source_status</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    end_year component source_status</span></span>
+<span><span class="co">#&gt; 1      2016  spending        actual</span></span>
+<span><span class="co">#&gt; 2      2016 state_aid not_published</span></span>
+<span><span class="co">#&gt; 3      2018  spending        actual</span></span>
+<span><span class="co">#&gt; 4      2018 state_aid not_published</span></span>
+<span><span class="co">#&gt; 5      2020  spending        actual</span></span>
+<span><span class="co">#&gt; 6      2020 state_aid   parse_error</span></span>
+<span><span class="co">#&gt; 7      2022  spending        actual</span></span>
+<span><span class="co">#&gt; 8      2022 state_aid   parse_error</span></span>
+<span><span class="co">#&gt; 9      2024  spending        actual</span></span>
+<span><span class="co">#&gt; 10     2024 state_aid        actual</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="story-1-new-jersey-per-pupil-spending-climbed-47-in-eight-years">Story 1: New Jersey per-pupil spending climbed 47% in eight
 years<a class="anchor" aria-label="anchor" href="#story-1-new-jersey-per-pupil-spending-climbed-47-in-eight-years"></a>
@@ -322,19 +341,19 @@ key.</p>
 <span><span class="co">#&gt;  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     stringi_1.8.7     </span></span>
 <span><span class="co">#&gt;  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5    </span></span>
 <span><span class="co">#&gt;  [9] grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     </span></span>
-<span><span class="co">#&gt; [13] cellranger_1.1.0   jsonlite_2.0.0     purrr_1.2.2        codetools_0.2-20  </span></span>
-<span><span class="co">#&gt; [17] textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6          crayon_1.5.3      </span></span>
-<span><span class="co">#&gt; [21] rlang_1.3.0        bit64_4.8.2        withr_3.0.3        cachem_1.1.0      </span></span>
-<span><span class="co">#&gt; [25] yaml_2.3.12        otel_0.2.0         parallel_4.6.1     downloader_0.4.1  </span></span>
-<span><span class="co">#&gt; [29] tools_4.6.1        tzdb_0.5.0         vctrs_0.7.3        R6_2.6.1          </span></span>
-<span><span class="co">#&gt; [33] lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1   stringr_1.6.0     </span></span>
-<span><span class="co">#&gt; [37] bit_4.6.0          fs_2.1.0           vroom_1.7.1        ragg_1.5.2        </span></span>
-<span><span class="co">#&gt; [41] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     </span></span>
-<span><span class="co">#&gt; [45] pillar_1.11.1      bslib_0.11.0       gtable_0.3.6       glue_1.8.1        </span></span>
-<span><span class="co">#&gt; [49] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  </span></span>
-<span><span class="co">#&gt; [53] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    </span></span>
-<span><span class="co">#&gt; [57] rmarkdown_2.31     readr_2.2.0        compiler_4.6.1     S7_0.2.2          </span></span>
-<span><span class="co">#&gt; [61] readxl_1.5.0</span></span></code></pre></div>
+<span><span class="co">#&gt; [13] cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8         purrr_1.2.2       </span></span>
+<span><span class="co">#&gt; [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         </span></span>
+<span><span class="co">#&gt; [21] crayon_1.5.3       rlang_1.3.0        bit64_4.8.2        withr_3.0.3       </span></span>
+<span><span class="co">#&gt; [25] cachem_1.1.0       yaml_2.3.12        otel_0.2.0         parallel_4.6.1    </span></span>
+<span><span class="co">#&gt; [29] tools_4.6.1        tzdb_0.5.0         curl_7.1.0         vctrs_0.7.3       </span></span>
+<span><span class="co">#&gt; [33] R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5    snakecase_0.11.1  </span></span>
+<span><span class="co">#&gt; [37] stringr_1.6.0      bit_4.6.0          fs_2.1.0           vroom_1.7.1       </span></span>
+<span><span class="co">#&gt; [41] ragg_1.5.2         janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3        </span></span>
+<span><span class="co">#&gt; [45] pkgdown_2.2.1      pillar_1.11.1      bslib_0.11.0       gtable_0.3.6      </span></span>
+<span><span class="co">#&gt; [49] glue_1.8.1         systemfonts_1.3.2  xfun_0.60          tibble_3.3.1      </span></span>
+<span><span class="co">#&gt; [53] tidyselect_1.2.1   knitr_1.51         farver_2.1.2       htmltools_0.5.9   </span></span>
+<span><span class="co">#&gt; [57] labeling_0.4.3     rmarkdown_2.31     readr_2.2.0        compiler_4.6.1    </span></span>
+<span><span class="co">#&gt; [61] S7_0.2.2           readxl_1.5.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

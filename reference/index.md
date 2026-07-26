@@ -11,7 +11,7 @@ Functions for fetching and processing NJ school enrollment data
 - [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
   : Fetch multiple years of enrollment data with progress
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get the years for which NJ enrollment data is available
+  : Get enrollment years available from the tidy front door
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
   : Tidy enrollment data
 - [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
@@ -101,7 +101,7 @@ Cross-state standard interface for chronic absenteeism data
 
 ## School Performance Reports (SPR)
 
-Functions for SPR database data (2017-2024)
+Functions for SPR database data (2017-2025)
 
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
   : Fetch SPR Data
@@ -218,6 +218,10 @@ Functions for school and district metadata
 - [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
   : Fetch the current New Jersey education directory
   (directory-contract/v1)
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get the current NJ school directory
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get the current NJ district directory
 
 ## Charter Aggregations
 
@@ -264,8 +268,7 @@ enrollment)
 - [`fetch_ell_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_ell_multi.md)
   : Fetch NJ English Learner population data for multiple years
 - [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
-  : Get the years for which NJ English Learner population data is
-  available
+  : Get English Learner population years
 - [`tidy_ell()`](https://almartin82.github.io/njschooldata/reference/tidy_ell.md)
   : Tidy English Learner population data
 
@@ -346,7 +349,19 @@ standard metric vocabulary, so cross-state code works unchanged.
 - [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
   : Fetch multiple years of NJ school finance
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Years for which NJ finance data is available
+  : Get finance years with at least one registered component
+
+## Source Coverage and Provenance
+
+Authoritative year validation and request-level source status. Source
+status is separate from row-level observation/value status.
+
+- [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
+  : Get valid years for a data type
+- [`validate_end_year()`](https://almartin82.github.io/njschooldata/reference/validate_end_year.md)
+  : Validate end_year parameter
+- [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  : Inspect source-request status and provenance
 
 ## State Aid
 
@@ -821,18 +836,19 @@ Additional exported functions
 - [`geocoded`](https://almartin82.github.io/njschooldata/reference/geocoded.md)
   : Geocoded School Addresses
 - [`get_available_ell_years()`](https://almartin82.github.io/njschooldata/reference/get_available_ell_years.md)
-  : Get the years for which NJ English Learner population data is
-  available
+  : Get English Learner population years
 - [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md)
   : What facilities categories are available for New Jersey
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Years for which NJ finance data is available
+  : Get finance years with at least one registered component
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get the years for which NJ enrollment data is available
+  : Get enrollment years available from the tidy front door
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
   : Get districts in a specific District Factor Group
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  : Get the current NJ district directory
 - [`get_era_breaks()`](https://almartin82.github.io/njschooldata/reference/get_era_breaks.md)
   : Get era break metadata
 - [`get_essa_file()`](https://almartin82.github.io/njschooldata/reference/get_essa_file.md)
@@ -850,10 +866,16 @@ Additional exported functions
   : Read one raw sheet from the SPED placement workbook
 - [`get_rc_databases()`](https://almartin82.github.io/njschooldata/reference/get_rc_databases.md)
   : Get multiple RC databases
+- [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  : Get the current NJ school directory
+- [`get_source_results()`](https://almartin82.github.io/njschooldata/reference/get_source_results.md)
+  : Inspect source-request status and provenance
 - [`get_standalone_rc_database()`](https://almartin82.github.io/njschooldata/reference/get_standalone_rc_database.md)
   : Get Standalone Raw Report Card Database
 - [`get_valid_grades()`](https://almartin82.github.io/njschooldata/reference/get_valid_grades.md)
   : Get valid grades for an assessment type and year
+- [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
+  : Get valid years for a data type
 - [`grate_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/grate_aggregate_calcs.md)
   : Aggregate multiple grad rate rows and produce summary statistics
 - [`grate_percentile_rank()`](https://almartin82.github.io/njschooldata/reference/grate_percentile_rank.md)

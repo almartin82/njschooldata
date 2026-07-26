@@ -86,7 +86,7 @@
           <code><a href="get_available_years.html">get_available_years()</a></code>
 
         </dt>
-        <dd>Get the years for which NJ enrollment data is available</dd>
+        <dd>Get enrollment years available from the tidy front door</dd>
 
         <dt>
 
@@ -357,7 +357,7 @@
       </dl></div><div class="section level2">
       <h2 id="school-performance-reports-spr-">School Performance Reports (SPR)<a class="anchor" aria-label="anchor" href="#school-performance-reports-spr-"></a></h2>
 
-      <div class="section-desc"><p>Functions for SPR database data (2017-2024)</p></div>
+      <div class="section-desc"><p>Functions for SPR database data (2017-2025)</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -750,6 +750,20 @@
 
         </dt>
         <dd>Fetch the current New Jersey education directory (directory-contract/v1)</dd>
+
+        <dt>
+
+          <code><a href="get_school_directory.html">get_school_directory()</a></code>
+
+        </dt>
+        <dd>Get the current NJ school directory</dd>
+
+        <dt>
+
+          <code><a href="get_district_directory.html">get_district_directory()</a></code>
+
+        </dt>
+        <dd>Get the current NJ district directory</dd>
       </dl></div><div class="section level2">
       <h2 id="charter-aggregations">Charter Aggregations<a class="anchor" aria-label="anchor" href="#charter-aggregations"></a></h2>
 
@@ -893,7 +907,7 @@
           <code><a href="get_available_ell_years.html">get_available_ell_years()</a></code>
 
         </dt>
-        <dd>Get the years for which NJ English Learner population data is available</dd>
+        <dd>Get English Learner population years</dd>
 
         <dt>
 
@@ -1125,7 +1139,37 @@
           <code><a href="get_available_finance_years.html">get_available_finance_years()</a></code>
 
         </dt>
-        <dd>Years for which NJ finance data is available</dd>
+        <dd>Get finance years with at least one registered component</dd>
+      </dl></div><div class="section level2">
+      <h2 id="source-coverage-and-provenance">Source Coverage and Provenance<a class="anchor" aria-label="anchor" href="#source-coverage-and-provenance"></a></h2>
+
+      <div class="section-desc"><p>Authoritative year validation and request-level source status. Source status is separate from row-level observation/value status.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="get_valid_years.html">get_valid_years()</a></code>
+
+        </dt>
+        <dd>Get valid years for a data type</dd>
+
+        <dt>
+
+          <code><a href="validate_end_year.html">validate_end_year()</a></code>
+
+        </dt>
+        <dd>Validate end_year parameter</dd>
+
+        <dt>
+
+          <code><a href="get_source_results.html">get_source_results()</a></code>
+
+        </dt>
+        <dd>Inspect source-request status and provenance</dd>
       </dl></div><div class="section level2">
       <h2 id="state-aid">State Aid<a class="anchor" aria-label="anchor" href="#state-aid"></a></h2>
 
@@ -2670,7 +2714,7 @@
           <code><a href="get_available_ell_years.html">get_available_ell_years()</a></code>
 
         </dt>
-        <dd>Get the years for which NJ English Learner population data is available</dd>
+        <dd>Get English Learner population years</dd>
 
         <dt>
 
@@ -2684,14 +2728,14 @@
           <code><a href="get_available_finance_years.html">get_available_finance_years()</a></code>
 
         </dt>
-        <dd>Years for which NJ finance data is available</dd>
+        <dd>Get finance years with at least one registered component</dd>
 
         <dt>
 
           <code><a href="get_available_years.html">get_available_years()</a></code>
 
         </dt>
-        <dd>Get the years for which NJ enrollment data is available</dd>
+        <dd>Get enrollment years available from the tidy front door</dd>
 
         <dt>
 
@@ -2706,6 +2750,13 @@
 
         </dt>
         <dd>Get districts in a specific District Factor Group</dd>
+
+        <dt>
+
+          <code><a href="get_district_directory.html">get_district_directory()</a></code>
+
+        </dt>
+        <dd>Get the current NJ district directory</dd>
 
         <dt>
 
@@ -2765,6 +2816,20 @@
 
         <dt>
 
+          <code><a href="get_school_directory.html">get_school_directory()</a></code>
+
+        </dt>
+        <dd>Get the current NJ school directory</dd>
+
+        <dt>
+
+          <code><a href="get_source_results.html">get_source_results()</a></code>
+
+        </dt>
+        <dd>Inspect source-request status and provenance</dd>
+
+        <dt>
+
           <code><a href="get_standalone_rc_database.html">get_standalone_rc_database()</a></code>
 
         </dt>
@@ -2776,6 +2841,13 @@
 
         </dt>
         <dd>Get valid grades for an assessment type and year</dd>
+
+        <dt>
+
+          <code><a href="get_valid_years.html">get_valid_years()</a></code>
+
+        </dt>
+        <dd>Get valid years for a data type</dd>
 
         <dt>
 

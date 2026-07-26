@@ -6,7 +6,7 @@ into single data frame, including ELA, Math, and Science assessments.
 ## Usage
 
 ``` r
-fetch_all_parcc(include_science = TRUE)
+fetch_all_parcc(include_science = TRUE, allow_partial = FALSE)
 ```
 
 ## Arguments
@@ -15,9 +15,15 @@ fetch_all_parcc(include_science = TRUE)
 
   Include science assessments (2019+)? Default is TRUE.
 
+- allow_partial:
+
+  If \`FALSE\` (default), any unavailable or unparseable requested
+  source fails the combined request. If \`TRUE\`, successful sources are
+  returned and every request is reported by \[get_source_results()\].
+
 ## Value
 
-A data frame with all PARCC/NJSLA results
+A data frame with all PARCC/NJSLA results and source-result records.
 
 ## Examples
 

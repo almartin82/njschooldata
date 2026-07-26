@@ -59,7 +59,8 @@ tges_find_peers(
 
 - dfg_revision:
 
-  Numeric. DFG revision for the reported `dfg` column.
+  Numeric. DFG revision for the reported `dfg` column. Use `NULL` to
+  omit the optional DFG lookup, including for fully offline analysis.
 
 ## Value
 
