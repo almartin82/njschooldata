@@ -70,6 +70,28 @@ test_that("fetch_certificated_staff rejects uncovered years and bad level", {
                "level must be")
 })
 
+test_that("legacy certificated-staff ZIP archives are validated as ZIPs", {
+  source_dir <- withr::local_tempdir()
+  source_csv <- file.path(source_dir, "cert.csv")
+  source_zip <- file.path(source_dir, "cert.zip")
+  writeLines("source-owned,data", source_csv)
+  zip::zipr(source_zip, source_csv, include_directories = FALSE)
+
+  work_dir <- withr::local_tempdir()
+  copy_download <- function(url, destfile, mode) {
+    file.copy(source_zip, destfile)
+  }
+  local <- certificated_staff_local_file(
+    2000,
+    work_dir,
+    download_fn = copy_download
+  )
+
+  expect_identical(local$era, "legacy")
+  expect_identical(basename(local$path), "cert.csv")
+  expect_identical(readLines(local$path), "source-owned,data")
+})
+
 
 # ==============================================================================
 # Suppression coercion (pure, no network) -- the load-bearing data-integrity test

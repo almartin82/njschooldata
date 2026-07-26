@@ -63,8 +63,16 @@ identifier (`nces_dist`) is attached as a join key only.
 ```{r fetch-finance, cache=TRUE}
 # the spending side is published a year in arrears, so even years 2016-2024
 # give a clean statewide actuals series; 2024 is the latest full cross-section.
-fin_multi <- fetch_finance_multi(c(2016, 2018, 2020, 2022, 2024))
+fin_multi <- fetch_finance_multi(
+  c(2016, 2018, 2020, 2022, 2024),
+  allow_partial = TRUE
+)
 fin_2024  <- fetch_finance(2024)
+
+# Spending is complete for every requested year. The source ledger also makes
+# the unavailable 2020 and 2022 state-aid components explicit.
+get_source_results(fin_multi) %>%
+  select(end_year, component, source_status)
 ```
 
 ## Story 1: New Jersey per-pupil spending climbed 47% in eight years

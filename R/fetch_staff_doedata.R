@@ -402,21 +402,34 @@ certificated_staff_source <- function(end_year) {
 #'
 #' @param end_year A covered school year end.
 #' @param work_dir A scratch directory the caller owns and cleans up.
+#' @param download_fn Download function with the same arguments used by
+#'   \code{downloader::download}. Exposed for deterministic offline testing.
 #' @return A list with \code{path}, \code{era}.
 #' @keywords internal
-certificated_staff_local_file <- function(end_year, work_dir) {
+certificated_staff_local_file <- function(
+    end_year,
+    work_dir,
+    download_fn = downloader::download) {
   src <- certificated_staff_source(end_year)
   ext <- if (src$archive) ".zip" else ".xlsx"
   dest <- file.path(work_dir, paste0("cert_", end_year, ext))
-  downloader::download(src$url, destfile = dest, mode = "wb")
+  download_fn(src$url, destfile = dest, mode = "wb")
 
-  if (!is_valid_xlsx(dest)) {
+  validation <- tryCatch(
+    {
+      .validate_source_file(dest, if (src$archive) "zip" else "xlsx")
+      NULL
+    },
+    error = identity
+  )
+  if (inherits(validation, "error")) {
     stop(sprintf(
       paste0(
         "Downloaded certificated-staff file for %d is not a valid archive/workbook ",
-        "-- the NJ DOE source may be unavailable or returned an error page.\n  URL: %s"
+        "-- the NJ DOE source may be unavailable or returned an error page.\n",
+        "  URL: %s\n  Validation error: %s"
       ),
-      end_year, src$url
+      end_year, src$url, conditionMessage(validation)
     ), call. = FALSE)
   }
 
@@ -748,8 +761,8 @@ fetch_certificated_staff <- function(end_year, level = "school") {
   cached <- cache_get(cache_key)
   if (!is.null(cached)) return(cached)
 
-  work_dir <- file.path(tempdir(), paste0("njcert_", end_year, "_", as.integer(stats::runif(1, 1, 1e6))))
-  dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
+  work_dir <- tempfile(pattern = paste0("njcert_", end_year, "_"))
+  dir.create(work_dir, recursive = TRUE)
   on.exit(unlink(work_dir, recursive = TRUE), add = TRUE)
 
   local <- certificated_staff_local_file(end_year, work_dir)
