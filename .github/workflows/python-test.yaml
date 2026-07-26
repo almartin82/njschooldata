@@ -31,7 +31,7 @@ jobs:
 
       - name: Install R package
         run: |
-          Rscript -e 'remotes::install_local(".", dependencies = TRUE)'
+          Rscript -e 'remotes::install_local(".", dependencies = TRUE, force = TRUE)'
 
       - name: Set up Python
         uses: actions/setup-python@v6
