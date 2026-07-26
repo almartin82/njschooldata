@@ -1,5 +1,21 @@
 # njschooldata (development)
 
+## Fixed silent id fabrication in `pad_leading()`
+
+* `pad_leading()` (used to zero-pad `county_id`/`district_id`/`school_code` in
+  `pad_cds()`, `fetch_dfg()`, `fetch_tges()`, `fetch_state_aid()`, and the DFG
+  peer-group helpers) went through `as.numeric()` before padding. R reads
+  `E`/`e` as scientific notation, so a real alphanumeric id would have been
+  silently reinterpreted as a different, plausible-looking number with no
+  warning; a non-numeric value (the TGES district-average rows are coded
+  `"N.A."` by NJ DOE) became a fabricated `"00NA"`-style string once handed to
+  `sprintf("%0Nd", NA)` - confirmed live in `get_raw_tges(2023)`'s CSG tables.
+  `pad_leading()` now only pads values that are provably all digits
+  (`grepl("^[0-9]+$", x)`), using string concatenation instead of a numeric
+  round-trip (so it cannot overflow on unusually long digit strings either);
+  every other value, including real `NA` and the "N.A." placeholder text, is
+  left exactly as NJ DOE published it.
+
 ## Directory converted to directory-contract/v1
 
 * `fetch_directory()` now takes ZERO arguments and returns the canonical triple

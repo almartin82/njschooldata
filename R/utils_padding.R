@@ -11,13 +11,37 @@
 #' Ensures a numeric value has exactly the specified number of digits by
 #' adding leading zeros.
 #'
+#' The naive implementation (\code{sprintf("%0Nd", as.numeric(vector))}) has
+#' two failure modes: R's numeric parser reads \code{E}/\code{e} as scientific
+#' notation, so \code{as.numeric("49E000")} is \code{49} with no warning - a
+#' real alphanumeric charter/renaissance code silently becomes a different,
+#' plausible-looking numeric id. And non-numeric text (state/county average
+#' rows are sometimes coded \code{"N.A."}) becomes \code{NA} which then prints
+#' as a fabricated \code{"0NA"}-style string once handed to \code{sprintf}
+#' (confirmed live in the TGES district-average rows). To avoid manufacturing
+#' a wrong-but-plausible id, only values that are provably all digits
+#' (\code{grepl("^[0-9]+$", x)}) are padded, and padding is done with plain
+#' string concatenation rather than a numeric round-trip so it never
+#' overflows on unusually long digit strings. Every other value (real
+#' \code{NA}, alphanumeric codes, "N.A." placeholder text, ...) is left
+#' exactly as published.
+#'
 #' @param vector character vector
 #' @param digits ensure exactly this many digits by leading zero-padding
 #'
 #' @return character vector
 #' @export
 pad_leading <- function(vector, digits) {
-  sprintf(paste0("%0", digits, "d"), as.numeric(vector))
+  chr <- as.character(vector)
+  is_numeric_id <- !is.na(chr) & grepl("^[0-9]+$", chr)
+
+  out <- chr
+  needs_pad <- is_numeric_id & nchar(chr) < digits
+  out[needs_pad] <- paste0(
+    strrep("0", digits - nchar(chr[needs_pad])),
+    chr[needs_pad]
+  )
+  out
 }
 
 
