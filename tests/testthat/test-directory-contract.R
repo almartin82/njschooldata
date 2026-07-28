@@ -71,8 +71,68 @@
   if (type == "character") is.character(df[[col]]) else is.logical(df[[col]])
 }
 
-.dc_pkg <- testthat::testing_package()
+# Resolve the package under test in EVERY harness context.
+#
+# testthat::testing_package() is populated only when the harness sets it, which
+# happens under devtools::test() and R CMD check. Under a bare
+# testthat::test_dir() or test_file() it returns "", and the whole gate then
+# degraded silently rather than erroring cleanly: asNamespace("") threw, and
+# .dc_state collapsed to "" so that every state assertion below compared the
+# real state code against "", while the two extension-prefix greps relaxed from
+# "^de_[a-z0-9_]+$" to "^_[a-z0-9_]+$". Bare runs reported failures that were
+# not real, which makes a real failure indistinguishable from a harness
+# artifact.
+#
+# Fall back to the DESCRIPTION shipped with the sources, covering the same
+# three contexts as the package-root discovery in
+# ctschooldata/tests/testthat/test-readme-vignette-parity.R. If neither route
+# names the package, stop. This gate must never skip and must never assert
+# against an empty state code: a scope that collapses to nothing passes green
+# and reads as clean to the next person.
+.dc_resolve_pkg <- function() {
+  harness <- testthat::testing_package()
+  if (nzchar(harness)) return(harness)
+
+  # testthat::test_path() ABORTS rather than returning when it cannot locate a
+  # test directory, so each candidate is computed defensively. A candidate that
+  # cannot be computed is skipped, never allowed to pre-empt the explicit,
+  # diagnosable failure at the bottom of this function with a bare
+  # "Can't find tests/testthat" from deep inside testthat.
+  .safe <- function(expr) tryCatch(expr, error = function(e) character(0))
+  candidates <- c(
+    .safe(testthat::test_path("..", "..")),                              # devtools::test(), test_dir()
+    .safe(Sys.glob(testthat::test_path("..", "..", "00_pkg_src", "*"))), # R CMD check
+    file.path(getwd(), "..", ".."),
+    getwd()
+  )
+  for (p in candidates) {
+    dcf <- file.path(p, "DESCRIPTION")
+    if (!file.exists(dcf)) next
+    nm <- tryCatch(
+      unname(read.dcf(dcf, fields = "Package")[1, 1]),
+      error = function(e) NA_character_
+    )
+    if (!is.na(nm) && nzchar(nm)) return(nm)
+  }
+
+  stop(
+    "directory-contract: cannot resolve the package under test. ",
+    "testthat::testing_package() returned \"\" and no DESCRIPTION carrying a ",
+    "Package field was found from getwd() = ", getwd(), ". Refusing to run: ",
+    "an unresolved package name empties .dc_state and relaxes every ",
+    "state-anchored assertion in this file."
+  )
+}
+
+.dc_pkg <- .dc_resolve_pkg()
 .dc_state <- substr(.dc_pkg, 1, 2)
+
+test_that("directory-contract: package under test resolves in this harness context", {
+  expect_true(nzchar(.dc_pkg))
+  expect_match(.dc_pkg, "^[a-z]{2}schooldata$")
+  expect_identical(nchar(.dc_state), 2L)
+  expect_true(isNamespace(asNamespace(.dc_pkg)))
+})
 
 .dc_fixture_path <- testthat::test_path(
   "fixtures", "directory-contract", "snapshot.rds"
