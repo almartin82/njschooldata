@@ -33,7 +33,8 @@ analysis/
 research-private/
 
 # pkgdown site (built on GitHub Pages)
-docs/
+docs/*
+!docs/source-validation-new_jersey_shipped_sources.md
 
 # Python
 __pycache__/
