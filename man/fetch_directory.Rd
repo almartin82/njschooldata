@@ -4,7 +4,17 @@
 \alias{fetch_directory}
 \title{Fetch the current New Jersey education directory (directory-contract/v1)}
 \usage{
-fetch_directory()
+fetch_directory(source = "package", max_age_days = NULL, refresh = FALSE)
+}
+\arguments{
+\item{source}{Acquisition source selector. The directory-contract/v1.1
+surface defaults to \code{"package"}; the existing NJ source adapter and
+official SPR fallback remain authoritative while a packaged snapshot is
+prepared.}
+
+\item{max_age_days}{Reserved directory-contract/v1.1 cache-age control.}
+
+\item{refresh}{Reserved directory-contract/v1.1 refresh control.}
 }
 \value{
 A named list with components:

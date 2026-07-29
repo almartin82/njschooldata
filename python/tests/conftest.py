@@ -4,15 +4,14 @@ import os
 
 import pytest
 
-# Check if R and njschooldata are available
-R_AVAILABLE = False
-try:
-    import rpy2.robjects as ro
-    from rpy2.robjects.packages import importr
-    importr("njschooldata")
-    R_AVAILABLE = True
-except Exception:
-    pass
+def _r_available():
+    """Probe R only when a collected test explicitly requires it."""
+    try:
+        from rpy2.robjects.packages import importr
+        importr("njschooldata")
+        return True
+    except Exception:
+        return False
 
 
 def pytest_configure(config):
@@ -33,11 +32,13 @@ def pytest_collection_modifyitems(config, items):
     skip_r = pytest.mark.skip(reason="R or njschooldata not available")
 
     live_tests = os.environ.get("NJSCHOOLDATA_LIVE_TESTS", "false").lower() == "true"
+    needs_r = any("requires_r" in item.keywords for item in items)
+    r_available = _r_available() if needs_r else False
 
     for item in items:
         if "network" in item.keywords and not live_tests:
             item.add_marker(skip_network)
-        if "requires_r" in item.keywords and not R_AVAILABLE:
+        if "requires_r" in item.keywords and not r_available:
             item.add_marker(skip_r)
 
 

@@ -3,7 +3,7 @@
 # MASTER COPY: contracts/directory/v1/conformance-test.R
 # This file must be BYTE-IDENTICAL in every conforming package. Never edit
 # it in-package; change the master copy and re-propagate to all packages.
-# The sha256 of this file is pinned in contracts/directory/v1/ledger.yaml.
+# Fleet byte identity is checked directly against this master copy.
 #
 # Runs fully offline against the package-owned fixture at
 # tests/testthat/fixtures/directory-contract/snapshot.rds (see
@@ -20,6 +20,8 @@
   "charter_school_leader", "primary_contact", "other"
 )
 
+.dc_multi_person_roles <- c("board_member", "other")
+
 .dc_entity_types <- c("state", "intermediate", "district", "school")
 
 .dc_entity_subtypes <- c(
@@ -28,6 +30,10 @@
 )
 
 .dc_source_statuses <- c("ok", "partial", "source_unavailable")
+
+.dc_directory_acquisition_args <- c(
+  "source", "max_age_days", "refresh", "use_cache"
+)
 
 .dc_id_placeholders <- c(
   "", "na", "n/a", "null", "none", "-", "--", "tbd", "unknown", "pending", "0"
@@ -65,6 +71,89 @@
 .dc_key <- function(...) {
   parts <- lapply(list(...), function(v) ifelse(is.na(v), "NA", v))
   do.call(paste, c(parts, sep = "\r"))
+}
+
+.dc_exact_assignment_duplicate_count <- function(r) {
+  if (!nrow(r)) return(0L)
+  key <- .dc_key(r$district_id, r$school_id, r$role, r$person_name)
+  as.integer(sum(duplicated(key)))
+}
+
+.dc_role_multiplicity_count <- function(r) {
+  keyed <- r[
+    !is.na(r$person_name) & !(r$role %in% .dc_multi_person_roles),
+    ,
+    drop = FALSE
+  ]
+  if (!nrow(keyed)) return(0L)
+  key <- .dc_key(keyed$district_id, keyed$school_id, keyed$role)
+  as.integer(sum(vapply(
+    split(keyed$person_name, key),
+    function(p) length(unique(p)) > 1,
+    logical(1)
+  )))
+}
+
+.dc_multiplicity_counter_matches <- function(r, reported) {
+  identical(as.integer(reported), .dc_role_multiplicity_count(r))
+}
+
+.dc_directory_signature_problem <- function(fn) {
+  if (!is.function(fn)) return("fetch_directory is not a function")
+
+  defaults <- formals(fn)
+  formal_names <- names(defaults)
+  unsupported <- setdiff(formal_names, .dc_directory_acquisition_args)
+  if (length(unsupported)) {
+    return(paste(
+      "unsupported argument(s):",
+      paste(unsupported, collapse = ", ")
+    ))
+  }
+  if (!"source" %in% formal_names) {
+    return("fetch_directory must declare source with a packaged default")
+  }
+
+  missing_default <- vapply(
+    defaults,
+    function(value) is.symbol(value) && identical(as.character(value), ""),
+    logical(1)
+  )
+  if (any(missing_default)) {
+    return(paste(
+      "every acquisition argument must have a default; missing:",
+      paste(formal_names[missing_default], collapse = ", ")
+    ))
+  }
+  if (!identical(defaults$source, "package")) {
+    return("source must default literally to \"package\"")
+  }
+  if (
+    "max_age_days" %in% formal_names &&
+    !is.null(defaults$max_age_days) &&
+    !(
+      is.numeric(defaults$max_age_days) &&
+      length(defaults$max_age_days) == 1L &&
+      is.finite(defaults$max_age_days) &&
+      defaults$max_age_days >= 0
+    )
+  ) {
+    return("max_age_days must default to NULL or one non-negative number")
+  }
+  if (
+    "refresh" %in% formal_names &&
+    !identical(defaults$refresh, FALSE)
+  ) {
+    return("refresh must default literally to FALSE")
+  }
+  if (
+    "use_cache" %in% formal_names &&
+    !is.null(defaults$use_cache)
+  ) {
+    return("deprecated use_cache must default literally to NULL")
+  }
+
+  NULL
 }
 
 .dc_col_type_ok <- function(df, col, type) {
@@ -147,6 +236,97 @@ test_that("directory-contract: fixture exists (missing fixture fails, never skip
 
 .dc_snap <- if (file.exists(.dc_fixture_path)) readRDS(.dc_fixture_path) else NULL
 
+test_that("directory-contract: constructed assignment and multiplicity semantics", {
+  role_rows <- function(role, person_name) {
+    data.frame(
+      district_id = rep("D1", length(person_name)),
+      school_id = rep("S1", length(person_name)),
+      role = rep(role, length(person_name)),
+      person_name = person_name,
+      stringsAsFactors = FALSE
+    )
+  }
+
+  exact_repeat <- role_rows("principal", c("Alex Principal", "Alex Principal"))
+  distinct_people <- role_rows("assistant_principal", c("Avery One", "Blake Two"))
+  vacancy_plus_named <- role_rows("principal", c(NA_character_, "Casey Named"))
+  exempt_people <- rbind(
+    role_rows("board_member", c("Devon Board", "Emery Board")),
+    role_rows("other", c("Frankie Other", "Gray Other"))
+  )
+  exempt_repeat <- role_rows("board_member", c("Devon Board", "Devon Board"))
+
+  expect_identical(.dc_exact_assignment_duplicate_count(exact_repeat), 1L)
+  expect_identical(.dc_role_multiplicity_count(exact_repeat), 0L)
+  expect_identical(.dc_exact_assignment_duplicate_count(distinct_people), 0L)
+  expect_identical(.dc_role_multiplicity_count(distinct_people), 1L)
+  expect_identical(.dc_role_multiplicity_count(vacancy_plus_named), 0L)
+  expect_identical(.dc_role_multiplicity_count(exempt_people), 0L)
+  expect_identical(.dc_exact_assignment_duplicate_count(exempt_repeat), 1L)
+  expect_true(.dc_multiplicity_counter_matches(distinct_people, 1L))
+  expect_false(.dc_multiplicity_counter_matches(distinct_people, 0L))
+  expect_false(.dc_multiplicity_counter_matches(distinct_people, 2L))
+})
+
+test_that("directory-contract: constructed acquisition signature semantics", {
+  valid_minimal <- function(source = "package") NULL
+  valid_full <- function(source = "package", max_age_days = NULL,
+                         refresh = FALSE, use_cache = NULL) NULL
+
+  expect_identical(.dc_directory_signature_problem(valid_minimal), NULL)
+  expect_identical(.dc_directory_signature_problem(valid_full), NULL)
+  expect_true(grepl(
+    "must declare source",
+    .dc_directory_signature_problem(function() NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "unsupported argument",
+    .dc_directory_signature_problem(
+      function(source = "package", tidy = TRUE) NULL
+    ),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "default literally",
+    .dc_directory_signature_problem(function(source = "live") NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "must have a default",
+    .dc_directory_signature_problem(function(source) NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "refresh must default",
+    .dc_directory_signature_problem(
+      function(source = "package", refresh = TRUE) NULL
+    ),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "source must default literally",
+    .dc_directory_signature_problem(
+      function(source = getOption("schooldata.source")) NULL
+    ),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "max_age_days must default",
+    .dc_directory_signature_problem(
+      function(source = "package", max_age_days = -1) NULL
+    ),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "use_cache must default",
+    .dc_directory_signature_problem(
+      function(source = "package", use_cache = TRUE) NULL
+    ),
+    fixed = TRUE
+  ))
+})
+
 test_that("directory-contract: top-level shape", {
   skip_if(is.null(.dc_snap), "fixture missing (already failed above)")
   expect_true(is.list(.dc_snap))
@@ -156,10 +336,14 @@ test_that("directory-contract: top-level shape", {
   expect_true(is.list(.dc_snap$meta) && !is.data.frame(.dc_snap$meta))
 })
 
-test_that("directory-contract: fetch_directory() has the uniform zero-argument signature", {
+test_that("directory-contract: fetch_directory() has an acquisition-only packaged-default signature", {
   fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
   expect_true(is.function(fn))
-  expect_identical(length(formals(fn)), 0L)
+  expect_identical(
+    .dc_directory_signature_problem(fn),
+    NULL,
+    info = .dc_directory_signature_problem(fn)
+  )
 })
 
 test_that("directory-contract: entities columns, types, and extension rule", {
@@ -260,8 +444,7 @@ test_that("directory-contract: dedup rules", {
   ekey <- .dc_key(e$entity_type, e$district_id, e$school_id)
   expect_false(any(duplicated(ekey)),
     info = "entities must be unique on (entity_type, district_id, school_id)")
-  rkey <- .dc_key(r$district_id, r$school_id, r$role, r$person_name)
-  expect_false(any(duplicated(rkey)),
+  expect_identical(.dc_exact_assignment_duplicate_count(r), 0L,
     info = "roles must be unique on (district_id, school_id, role, person_name)")
 })
 
@@ -377,16 +560,10 @@ test_that("directory-contract: quality invariants (integrity zeros are non-waiva
     as.character(q$unmapped_titles),
     sort(unique(r$title_raw[r$role == "other"]), method = "radix")
   )
-  multi_ok <- c("board_member", "other")
-  keyed <- r[!is.na(r$person_name) & !(r$role %in% multi_ok), , drop = FALSE]
-  if (nrow(keyed)) {
-    k <- .dc_key(keyed$district_id, keyed$school_id, keyed$role)
-    dupes <- sum(vapply(split(keyed$person_name, k),
-                        function(p) length(unique(p)) > 1, logical(1)))
-  } else {
-    dupes <- 0L
-  }
-  expect_identical(as.integer(q$duplicate_key_count), as.integer(dupes))
+  expect_identical(
+    .dc_role_multiplicity_count(r),
+    as.integer(q$duplicate_key_count)
+  )
   nc <- q$named_coverage
   expect_true(setequal(names(nc), unique(r$role)))
   for (ro in names(nc)) {

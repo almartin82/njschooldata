@@ -145,9 +145,9 @@ def list_r_fetchers() -> list[str]:
     """
     Return exported R fetch/get/tidy functions available through passthrough.
 
-    Names are read from the installed R namespace when available and cached for
-    the process. In source checkouts without R available, the repository
-    NAMESPACE file is used as a discovery fallback.
+    Names are read from the repository NAMESPACE first so a source checkout
+    cannot silently discover a stale installed R package. Installed-package
+    readers remain fallbacks for wheel installations.
     """
     global _r_fetchers_cache
     if _r_fetchers_cache is None:
@@ -155,9 +155,9 @@ def list_r_fetchers() -> list[str]:
         exports = []
 
         for reader in (
+            _read_exports_from_source_namespace,
             _read_exports_from_r,
             _read_exports_from_installed_namespace,
-            _read_exports_from_source_namespace,
         ):
             try:
                 exports = reader()

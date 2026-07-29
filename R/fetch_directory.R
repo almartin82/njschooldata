@@ -471,6 +471,13 @@ dc_stop <- function(message, class) {
 #' publishes combined names, which remain verbatim in \code{person_name} while
 #' the split fields remain \code{NA} (see \code{R/directory_contract.R}).
 #'
+#' @param source Acquisition source selector. The directory-contract/v1.1
+#'   surface defaults to \code{"package"}; the existing NJ source adapter and
+#'   official SPR fallback remain authoritative while a packaged snapshot is
+#'   prepared.
+#' @param max_age_days Reserved directory-contract/v1.1 cache-age control.
+#' @param refresh Reserved directory-contract/v1.1 refresh control.
+#'
 #' @return A named list with components:
 #'   \describe{
 #'     \item{entities}{One row per organization (district / school),
@@ -488,7 +495,8 @@ dc_stop <- function(message, class) {
 #' dir$roles
 #' dir$meta$counts
 #' }
-fetch_directory <- function() {
+fetch_directory <- function(
+    source = "package", max_age_days = NULL, refresh = FALSE) {
   retrieved_at <- dc_iso8601()
   district_result <- .directory_source_result("district")
   school_result <- .directory_source_result("school")
@@ -552,13 +560,8 @@ fetch_directory <- function() {
   entities <- entities[!duplicated(paste(
     entities$entity_type, entities$district_id, entities$school_id, sep = "\r"
   )), , drop = FALSE]
-  roles <- roles[!duplicated(paste(
-    roles$district_id, roles$school_id, roles$role, roles$person_name,
-    sep = "\r"
-  )), , drop = FALSE]
-
   entities <- dc_sort_entities(entities)
-  roles <- dc_sort_roles(roles)
+  roles <- nj_finalize_directory_roles(roles)
 
   sources <- list(
     list(
@@ -676,20 +679,27 @@ build_directory_from_spr <- function(
     status = "active",
     is_charter = x$county_code == "80"
   )
-  entities <- dc_sort_entities(dplyr::bind_rows(entities_d, entities_s))
+  entities <- dplyr::bind_rows(entities_d, entities_s)
+  entity_key <- paste(
+    entities$entity_type, entities$district_id, entities$school_id,
+    sep = "\r"
+  )
+  entities <- dc_sort_entities(
+    entities[!duplicated(entity_key), , drop = FALSE]
+  )
 
   roles_d <- dplyr::tibble(
     state = "nj",
-    district_id = district_id,
+    district_id = school_district_id,
     school_id = NA_character_,
     entity_type = "district",
     role = "superintendent",
     title_raw = "Superintendent",
-    person_name = d$d_superintendentname,
+    person_name = x$d_superintendentname,
     first_name = NA_character_,
     last_name = NA_character_,
-    email = d$d_superintendentemail,
-    phone = d$d_districtphone
+    email = x$d_superintendentemail,
+    phone = x$d_districtphone
   )
   roles_s <- dplyr::tibble(
     state = "nj",
@@ -704,7 +714,7 @@ build_directory_from_spr <- function(
     email = x$s_principalemail,
     phone = x$s_schoolphone
   )
-  roles <- dc_sort_roles(dplyr::bind_rows(roles_d, roles_s))
+  roles <- nj_finalize_directory_roles(dplyr::bind_rows(roles_d, roles_s))
 
   sources <- list(list(
     name = paste0(
@@ -744,6 +754,72 @@ build_directory_from_spr <- function(
     list(entities = entities, roles = roles, meta = meta),
     source_records
   )
+}
+
+
+#' Finalize canonical New Jersey directory role assignments
+#'
+#' Exact full-row repeats collapse. Rows that normalize to the same assignment
+#' but disagree on identity evidence fail closed rather than choosing a winner.
+#' Distinct people sharing an organization-role key remain distinct rows.
+#' @keywords internal
+#' @noRd
+nj_finalize_directory_roles <- function(roles) {
+  if (!is.data.frame(roles) || nrow(roles) == 0L) {
+    return(roles)
+  }
+
+  roles <- roles[!duplicated(roles), , drop = FALSE]
+
+  person <- dc_blank_to_na(roles$person_name)
+  key_part <- function(x) ifelse(is.na(x), "\u0001", as.character(x))
+  assignment_key <- paste(
+    key_part(roles$district_id),
+    key_part(roles$school_id),
+    key_part(roles$role),
+    key_part(person),
+    sep = "\r"
+  )
+  repeated <- split(seq_len(nrow(roles)), assignment_key)
+  repeated <- repeated[lengths(repeated) > 1L]
+
+  identity_columns <- intersect(
+    c("first_name", "last_name", "email", "phone"),
+    names(roles)
+  )
+  identity_columns <- unique(c(
+    identity_columns,
+    grep("^[a-z]{2}_[a-z0-9_]*id$", names(roles), value = TRUE)
+  ))
+  has_conflict <- function(indices) {
+    any(vapply(identity_columns, function(column) {
+      values <- dc_blank_to_na(roles[[column]][indices])
+      if (column %in% c("first_name", "last_name")) {
+        return(length(unique(values[!is.na(values)])) > 1L)
+      }
+      length(unique(ifelse(is.na(values), "\u0001", values))) > 1L
+    }, logical(1)))
+  }
+
+  if (length(repeated) > 0L && any(vapply(
+    repeated, has_conflict, logical(1)
+  ))) {
+    dc_stop(
+      paste0(
+        "same normalized New Jersey directory assignment has conflicting ",
+        "identity evidence; source review required"
+      ),
+      "directory_integrity_error"
+    )
+  }
+  if (length(repeated) > 0L) {
+    dc_stop(
+      "exact canonical directory assignment repeated after finalization",
+      "directory_integrity_error"
+    )
+  }
+
+  dc_sort_roles(roles)
 }
 
 
