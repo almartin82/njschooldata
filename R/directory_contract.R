@@ -9,17 +9,15 @@
 # placeholder_id_count) are computed honestly here; if either is non-zero the
 # package is blocked, and fetch_directory() raises rather than papering over it.
 #
-# NJ split-name rule (directory-contract/v1 source_vs_normalization):
-#   The New Jersey Homeroom directory publishes SPLIT name fields for every
-#   person slot (e.g. "Supt First Name" / "Supt Last Name", "Princ First Name"
-#   / "Princ Last Name"). We populate first_name / last_name directly from those
-#   source-provided split fields and assemble person_name as
-#   trimws(paste(first_name, last_name)) when at least one part is present.
-#   Assembling a display name from the source's OWN split parts is not synthesis
-#   -- it is reconstructing a value the source already carries in two columns.
-#   When both parts are absent the seat is a source-declared vacancy
-#   (person_name NA, title_raw retained). We never invent a name, and we never
-#   split a combined string heuristically.
+# NJ name rules (directory-contract/v1 source_vs_normalization):
+#   The primary Homeroom directory publishes SPLIT name fields for every person
+#   slot. We populate first_name / last_name directly from those source fields
+#   and assemble person_name from them. The official School Performance Reports
+#   fallback instead publishes combined Principal_Name and
+#   Superintendent_Name fields. We preserve those values verbatim in
+#   person_name and leave first_name / last_name NA; we never split a combined
+#   string heuristically. When a published seat has no name, person_name remains
+#   NA and title_raw retains the role encoded by the source field.
 
 DC_SCHEMA_VERSION <- "directory-contract/v1"
 

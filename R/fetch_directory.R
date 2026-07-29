@@ -66,6 +66,66 @@
   )
 }
 
+#' Download the NJDOE School Performance Reports contact roster
+#'
+#' This official NJDOE JSON is a narrower fallback for environments where the
+#' Homeroom downloads return an Imperva challenge. It publishes district
+#' superintendents and school principals with native CDS identifiers.
+#'
+#' @param request_fn Injectable transport request function.
+#' @return An `njsd_source_result`.
+#' @keywords internal
+.directory_spr_source_result <- function(
+    request_fn = .default_source_request) {
+  url <- resolve_source_url("directory_spr")
+  transport <- download_source(
+    url, source_type = "json", request_fn = request_fn
+  )
+  if (!identical(transport$source_status, "actual")) return(transport)
+  on.exit(unlink(transport$data), add = TRUE)
+  parsed <- tryCatch(
+    jsonlite::fromJSON(transport$data, simplifyDataFrame = TRUE),
+    error = identity
+  )
+  if (inherits(parsed, "error")) {
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = conditionMessage(parsed)
+    ))
+  }
+  parsed <- janitor::clean_names(parsed)
+  required <- c(
+    "school_year", "county_code", "county_name", "district_code",
+    "district_name", "school_code", "school_name",
+    "address1", "city", "zip_code", "s_schoolphone", "s_website",
+    "s_principalname", "s_principalemail",
+    "d_address", "d_city", "d_zip_code", "d_districtphone", "d_website",
+    "d_superintendentname", "d_superintendentemail"
+  )
+  missing <- setdiff(required, names(parsed))
+  if (!is.data.frame(parsed) || !nrow(parsed) || length(missing)) {
+    detail <- if (length(missing)) {
+      paste0("missing columns: ", paste(missing, collapse = ", "))
+    } else {
+      "no data rows"
+    }
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = paste0(
+        "Directory performance-report JSON failed its structural contract (",
+        detail, ")."
+      )
+    ))
+  }
+  new_source_result(
+    data = parsed, source_status = "actual",
+    source_url = transport$source_url,
+    retrieved_at = transport$retrieved_at, digest = transport$digest
+  )
+}
+
 get_raw_school_directory <- function() {
   source_result_data(.directory_source_result("school"))
 }
@@ -393,7 +453,10 @@ dc_stop <- function(message, class) {
 #' Fetch the current New Jersey education directory (directory-contract/v1)
 #'
 #' Downloads the current official New Jersey directory from the NJDOE Homeroom
-#' public download endpoints and returns the canonical triple
+#' public endpoints. When Homeroom blocks non-interactive requests, the function
+#' falls back to the latest official NJDOE School Performance Reports contact
+#' roster and narrows its declared coverage to district superintendents and
+#' school principals. It returns the canonical triple
 #' \code{list(entities, roles, meta)} defined by directory-contract/v1.
 #' Districts (including single-site charter LEAs) are keyed by the county +
 #' district CDS code; schools by the county + district + school CDS code.
@@ -402,9 +465,11 @@ dc_stop <- function(message, class) {
 #' as school-grain \code{roles}. Source-declared vacancies are rows with
 #' \code{person_name} \code{NA} and the verbatim \code{title_raw} preserved.
 #'
-#' The New Jersey source publishes SPLIT first/last name fields; \code{first_name}
-#' and \code{last_name} come directly from those source columns and
-#' \code{person_name} is assembled from them (see \code{R/directory_contract.R}).
+#' Homeroom publishes split first/last name fields; \code{first_name} and
+#' \code{last_name} come directly from those source columns and
+#' \code{person_name} is assembled from them. The performance-report fallback
+#' publishes combined names, which remain verbatim in \code{person_name} while
+#' the split fields remain \code{NA} (see \code{R/directory_contract.R}).
 #'
 #' @return A named list with components:
 #'   \describe{
@@ -438,6 +503,18 @@ fetch_directory <- function() {
   complete <- identical(district_result$source_status, "actual") &&
     identical(school_result$source_status, "actual")
   if (!complete) {
+    spr_result <- .directory_spr_source_result()
+    source_records <- rbind(
+      source_records,
+      source_result_record(
+        spr_result, "directory", 2025L, "spr_contacts"
+      )
+    )
+    if (identical(spr_result$source_status, "actual")) {
+      return(build_directory_from_spr(
+        spr_result$data, retrieved_at, spr_result, source_records
+      ))
+    }
     return(directory_source_unavailable(retrieved_at, source_records))
   }
 
@@ -532,6 +609,137 @@ fetch_directory <- function() {
     retrieved_at = retrieved_at
   )
 
+  attach_source_results(
+    list(entities = entities, roles = roles, meta = meta),
+    source_records
+  )
+}
+
+#' Build a directory-contract snapshot from NJDOE report contacts
+#'
+#' The fallback source publishes one row per school, repeating the district
+#' contact fields. Districts are de-duplicated on native county + district
+#' codes; schools remain one row per native CDS code.
+#'
+#' @keywords internal
+#' @noRd
+build_directory_from_spr <- function(
+    raw, retrieved_at, spr_result,
+    source_records = .empty_source_result_records()) {
+  x <- .clean_directory_raw(raw)
+  district_key <- paste(x$county_code, x$district_code, sep = "\r")
+  d <- x[!duplicated(district_key), , drop = FALSE]
+
+  district_id <- paste0(d$county_code, d$district_code)
+  school_district_id <- paste0(x$county_code, x$district_code)
+  school_id <- paste0(school_district_id, x$school_code)
+
+  entities_d <- dplyr::tibble(
+    state = "nj",
+    entity_type = "district",
+    entity_subtype = ifelse(d$county_code == "80", "charter", NA_character_),
+    district_id = district_id,
+    school_id = NA_character_,
+    district_name = d$district_name,
+    school_name = NA_character_,
+    nces_district_id = NA_character_,
+    nces_school_id = NA_character_,
+    parent_district_id = NA_character_,
+    county_name = d$county_name,
+    grades_served = NA_character_,
+    address = d$d_address,
+    city = d$d_city,
+    zip = d$d_zip_code,
+    phone = d$d_districtphone,
+    website = d$d_website,
+    status = "active",
+    is_charter = d$county_code == "80"
+  )
+  entities_s <- dplyr::tibble(
+    state = "nj",
+    entity_type = "school",
+    entity_subtype = ifelse(x$county_code == "80", "charter", NA_character_),
+    district_id = school_district_id,
+    school_id = school_id,
+    district_name = x$district_name,
+    school_name = x$school_name,
+    nces_district_id = NA_character_,
+    nces_school_id = NA_character_,
+    parent_district_id = NA_character_,
+    county_name = x$county_name,
+    grades_served = NA_character_,
+    address = x$address1,
+    city = x$city,
+    zip = x$zip_code,
+    phone = x$s_schoolphone,
+    website = x$s_website,
+    status = "active",
+    is_charter = x$county_code == "80"
+  )
+  entities <- dc_sort_entities(dplyr::bind_rows(entities_d, entities_s))
+
+  roles_d <- dplyr::tibble(
+    state = "nj",
+    district_id = district_id,
+    school_id = NA_character_,
+    entity_type = "district",
+    role = "superintendent",
+    title_raw = "Superintendent",
+    person_name = d$d_superintendentname,
+    first_name = NA_character_,
+    last_name = NA_character_,
+    email = d$d_superintendentemail,
+    phone = d$d_districtphone
+  )
+  roles_s <- dplyr::tibble(
+    state = "nj",
+    district_id = school_district_id,
+    school_id = school_id,
+    entity_type = "school",
+    role = "principal",
+    title_raw = "Principal",
+    person_name = x$s_principalname,
+    first_name = NA_character_,
+    last_name = NA_character_,
+    email = x$s_principalemail,
+    phone = x$s_schoolphone
+  )
+  roles <- dc_sort_roles(dplyr::bind_rows(roles_d, roles_s))
+
+  sources <- list(list(
+    name = paste0(
+      "NJDOE 2024-2025 School Performance Reports contact roster"
+    ),
+    url = spr_result$source_url,
+    retrieved_at = dc_iso8601(spr_result$retrieved_at),
+    status = "ok"
+  ))
+  coverage <- list(
+    district_roles = "superintendent",
+    school_roles = "principal",
+    org_only = FALSE,
+    principal_only = FALSE,
+    notes = paste0(
+      "Fallback to the latest published NJDOE School Performance Reports ",
+      "contact roster because the live Homeroom CSV downloads were ",
+      "unavailable. This 2024-2025 roster covers district superintendents and ",
+      "school principals only; names are source-published combined fields, so ",
+      "first_name and last_name remain NA. Role labels come from the published ",
+      "Superintendent_Name and Principal_Name field definitions. Business ",
+      "administrators and ",
+      "special-education directors are not present in this fallback source."
+    )
+  )
+  meta <- dc_build_meta(
+    entities = entities,
+    roles = roles,
+    state = "nj",
+    sources = sources,
+    id_scheme = DIRECTORY_ID_SCHEME,
+    coverage = coverage,
+    source_status = "ok",
+    retrieved_at = retrieved_at
+  )
   attach_source_results(
     list(entities = entities, roles = roles, meta = meta),
     source_records

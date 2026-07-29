@@ -45,18 +45,35 @@ test_that("directory-live: live fetch matches fixture coverage and does not coll
   expect_true(is.data.frame(live$entities))
   expect_true(is.data.frame(live$roles))
 
-  # Same coverage declaration as the fixture.
+  # The richer Homeroom source must retain the fixture coverage. When Imperva
+  # blocks Homeroom, the official NJDOE performance-report fallback declares
+  # its narrower superintendent/principal coverage explicitly instead.
   cov_live <- live$meta$coverage
   cov_fx <- fx$meta$coverage
+  source_urls <- vapply(
+    live$meta$sources, function(source) source$url, character(1)
+  )
+  is_spr_fallback <- any(grepl(
+    "www[.]nj[.]gov/education/spr/data/", source_urls
+  ))
   expect_identical(
     as.character(cov_live$entity_types), as.character(cov_fx$entity_types)
   )
-  expect_identical(
-    as.character(cov_live$district_roles), as.character(cov_fx$district_roles)
-  )
-  expect_identical(
-    as.character(cov_live$school_roles), as.character(cov_fx$school_roles)
-  )
+  if (is_spr_fallback) {
+    expect_identical(
+      as.character(cov_live$district_roles), "superintendent"
+    )
+    expect_identical(as.character(cov_live$school_roles), "principal")
+    expect_match(cov_live$notes, "2024-2025")
+    expect_match(cov_live$notes, "Business administrators")
+  } else {
+    expect_identical(
+      as.character(cov_live$district_roles), as.character(cov_fx$district_roles)
+    )
+    expect_identical(
+      as.character(cov_live$school_roles), as.character(cov_fx$school_roles)
+    )
+  }
   expect_identical(cov_live$org_only, cov_fx$org_only)
   expect_identical(cov_live$principal_only, cov_fx$principal_only)
 

@@ -67,6 +67,10 @@ test_that("aliases, validation, availability helpers, and resolvers agree", {
     resolve_source_url("directory", level = "district"),
     "https://homeroom4.doe.nj.gov/public/districtpublicschools/download/"
   )
+  expect_identical(
+    resolve_source_url("directory_spr"),
+    "https://www.nj.gov/education/spr/data/202425/schools.json"
+  )
 })
 
 test_that("raw and tidy capability differences are explicit", {
@@ -107,7 +111,7 @@ test_that("authority functions have exactly one top-level definition", {
   definitions <- unlist(lapply(r_files, readLines, warn = FALSE), use.names = FALSE)
 
   for (name in c("get_valid_years", "get_school_directory_url",
-                 "get_district_directory_url")) {
+                 "get_district_directory_url", "get_directory_spr_url")) {
     pattern <- paste0("^", name, "\\s*<-\\s*function\\s*\\(")
     expect_equal(sum(grepl(pattern, definitions)), 1L, info = name)
   }

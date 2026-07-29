@@ -248,6 +248,15 @@
     hosts = "homeroom4.doe.nj.gov",
     resolver = "directory"
   ),
+  directory_spr = list(
+    aliases = c("directory_spr", "directory_performance_contacts"),
+    raw_years = 2025L,
+    tidy_years = 2025L,
+    skipped_years = integer(),
+    source_type = "json",
+    hosts = "www.nj.gov",
+    resolver = "directory_spr"
+  ),
   essa = list(
     aliases = "essa",
     raw_years = 2017L,
@@ -714,6 +723,7 @@ resolve_source_url <- function(data_type, end_year = NULL, ...) {
       level <- match.arg(args$level %||% "school", c("school", "district"))
       if (level == "school") get_school_directory_url() else get_district_directory_url()
     },
+    directory_spr = get_directory_spr_url(),
     essa = {
       file_type <- match.arg(args$file_type, c("comprehensive", "targeted"))
       filename <- if (file_type == "comprehensive") {
@@ -782,4 +792,17 @@ get_school_directory_url <- function() {
 #' @keywords internal
 get_district_directory_url <- function() {
   "https://homeroom4.doe.nj.gov/public/districtpublicschools/download/"
+}
+
+#' Latest published NJDOE School Performance Reports contact roster
+#'
+#' The lightweight JSON backing NJDOE's public report search contains the same
+#' native CDS identifiers plus school principal and district superintendent
+#' contacts. It is the official fallback when Homeroom's Imperva policy blocks
+#' non-interactive clients.
+#'
+#' @return Character URL.
+#' @keywords internal
+get_directory_spr_url <- function() {
+  "https://www.nj.gov/education/spr/data/202425/schools.json"
 }

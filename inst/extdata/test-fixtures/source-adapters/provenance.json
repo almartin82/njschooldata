@@ -38,5 +38,13 @@
     "fixture_sha256": "ed8982f043b421e801e9546e3152c1d36c007767ea83bc0a6714d9c3b2942c4c",
     "retrieval": "state-derived statewide directory bundle",
     "extraction": "one observed district row; unretained raw fields left blank"
+  },
+  "directory_spr": {
+    "source_url": "https://www.nj.gov/education/spr/data/202425/schools.json",
+    "source_sha256": "17daa4c2db124a8955c7ffabea9261604702bdc8b764b18fff8c034feb106473",
+    "fixture": "directory-spr-2025.json",
+    "fixture_sha256": "bf97e7e5fd2bf838adb1050f0ae845f5d856d37a40a2fc708a5dbfe29fe8f962",
+    "retrieval": "direct HTTPS download",
+    "extraction": "one complete observed school row with its repeated district contact fields"
   }
 }

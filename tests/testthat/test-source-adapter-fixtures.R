@@ -113,6 +113,34 @@ test_that("directory adapter rejects plaintext error responses", {
   expect_match(result$error, "structural contract")
 })
 
+test_that("directory fetch falls back to NJDOE performance-report contacts", {
+  unavailable <- new_source_result(
+    source_status = "source_unavailable",
+    source_url = resolve_source_url("directory", level = "district"),
+    retrieved_at = as.POSIXct("2026-07-29", tz = "UTC"),
+    error = "fixture HTTP 403"
+  )
+  local_mocked_bindings(
+    .directory_source_result = function(level, request_fn = NULL) unavailable,
+    .default_source_request = fixture_request(
+      "directory-spr-2025.json", "application/json"
+    ),
+    .package = "njschooldata"
+  )
+
+  snapshot <- fetch_directory()
+
+  expect_identical(snapshot$meta$source_status, "ok")
+  expect_equal(snapshot$meta$counts$districts, 1L)
+  expect_equal(snapshot$meta$counts$schools, 1L)
+  expect_setequal(snapshot$roles$role, c("superintendent", "principal"))
+  expect_identical(
+    snapshot$roles$person_name,
+    c("Dr. Alan Burkhardt", "Dr. Alan Burkhardt")
+  )
+  expect_match(snapshot$meta$sources[[1]]$url, "www[.]nj[.]gov/education/spr/")
+})
+
 test_that("report-card workbooks cross the validated transport boundary", {
   url <- resolve_source_url("report_card", 2019)[["district"]]
   out <- download_and_clean_pr(

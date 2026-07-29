@@ -19,7 +19,10 @@ A named list with components:
 }
 \description{
 Downloads the current official New Jersey directory from the NJDOE Homeroom
-public download endpoints and returns the canonical triple
+public endpoints. When Homeroom blocks non-interactive requests, the function
+falls back to the latest official NJDOE School Performance Reports contact
+roster and narrows its declared coverage to district superintendents and
+school principals. It returns the canonical triple
 \code{list(entities, roles, meta)} defined by directory-contract/v1.
 Districts (including single-site charter LEAs) are keyed by the county +
 district CDS code; schools by the county + district + school CDS code.
@@ -29,9 +32,11 @@ as school-grain \code{roles}. Source-declared vacancies are rows with
 \code{person_name} \code{NA} and the verbatim \code{title_raw} preserved.
 }
 \details{
-The New Jersey source publishes SPLIT first/last name fields; \code{first_name}
-and \code{last_name} come directly from those source columns and
-\code{person_name} is assembled from them (see \code{R/directory_contract.R}).
+Homeroom publishes split first/last name fields; \code{first_name} and
+\code{last_name} come directly from those source columns and
+\code{person_name} is assembled from them. The performance-report fallback
+publishes combined names, which remain verbatim in \code{person_name} while
+the split fields remain \code{NA} (see \code{R/directory_contract.R}).
 }
 \examples{
 \dontrun{
