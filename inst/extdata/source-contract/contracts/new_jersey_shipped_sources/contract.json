@@ -1,0 +1,90 @@
+{
+  "category": "multi_family_state_sources",
+  "contract_id": "new_jersey_shipped_sources",
+  "execution": {
+    "max_in_flight_per_host": 1,
+    "minimum_delay_seconds": 2,
+    "mode": "manual_dispatch",
+    "request_budget": 6
+  },
+  "fingerprint_inputs": {
+    "dependency": [
+      "../../../DESCRIPTION",
+      "../../../python/pyproject.toml"
+    ],
+    "downloader": [
+      "../../../R/fetch_assessment.R",
+      "../../../R/fetch_directory.R",
+      "../../../R/fetch_enrollment.R",
+      "../../../R/source_transport.R",
+      "../../../R/tges.R"
+    ],
+    "endpoint": [
+      "../../../R/source_registry.R",
+      "../../../inst/extdata/test-fixtures/source-adapters/provenance.json",
+      "endpoints.md"
+    ],
+    "golden": [
+      "../../../inst/extdata/test-fixtures/source-adapters/README.md",
+      "../../../inst/extdata/test-fixtures/source-adapters/directory-district.csv",
+      "../../../inst/extdata/test-fixtures/source-adapters/directory-spr-2025.json",
+      "../../../inst/extdata/test-fixtures/source-adapters/enrollment-2020.zip",
+      "../../../inst/extdata/test-fixtures/source-adapters/njsla-ela04-2025.xlsx",
+      "../../../inst/extdata/test-fixtures/source-adapters/spr-district-2025.xlsx",
+      "../../../inst/extdata/test-fixtures/source-adapters/tges-2025.zip",
+      "../../../python/tests/test_directory.py",
+      "../../../tests/testthat/test-directory-multiplicity.R",
+      "../../../tests/testthat/test-source-adapter-fixtures.R"
+    ],
+    "normalization": [
+      "../../../R/directory_contract.R",
+      "../../../R/source_result.R",
+      "../../../python/src/njschooldata/_r_bridge.py",
+      "../../../python/src/njschooldata/directory.py"
+    ],
+    "parser": [
+      "../../../R/fetch_spr.R",
+      "../../../R/process_assessment.R",
+      "../../../R/process_enrollment.R"
+    ],
+    "schema": [
+      "artifact-manifest.json",
+      "contract.json",
+      "package-coverage.json"
+    ],
+    "shared_helper": [
+      "../../../R/cache.R",
+      "../../../R/utils_download.R",
+      "../../../tests/testthat/helper-source-tree.R",
+      "../../../tools/live-validation/run.py",
+      "../../../tools/run-live-canaries.R"
+    ]
+  },
+  "schema_version": "source-validation-contract/v1",
+  "selectors": [
+    {
+      "multi_value": true,
+      "name": "family",
+      "required": true
+    },
+    {
+      "multi_value": true,
+      "name": "key",
+      "required": false
+    }
+  ],
+  "source_validation_release": "source-validation-v1.0.0-rc.4",
+  "supported_runtimes": {
+    "python": [
+      "3.9",
+      "3.10",
+      "3.11",
+      "3.12"
+    ],
+    "r": [
+      "4.1",
+      "release",
+      "devel"
+    ]
+  }
+}

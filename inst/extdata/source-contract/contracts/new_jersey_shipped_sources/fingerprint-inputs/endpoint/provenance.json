@@ -1,0 +1,50 @@
+{
+  "assessment": {
+    "extraction": "headers/preamble plus minimal representative observed rows",
+    "fixture": "njsla-ela04-2025.xlsx",
+    "fixture_sha256": "4d3e17dfac93ddf271c23a75576adad2980a21d57afd871c0666ddb219e54f10",
+    "retrieval": "direct HTTPS download",
+    "source_sha256": "7b19cdc160a88f0a62325577f775e5045b791c465bf6b4d19b9507844c33f470",
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2425/spring/ELA04%20NJSLA%20DATA%202024-25.xlsx"
+  },
+  "enrollment": {
+    "extraction": "headers/preamble plus minimal representative observed rows",
+    "fixture": "enrollment-2020.zip",
+    "fixture_sha256": "e3c4e2ef22bbc2ee547e22c9d13ea49bfb730c735e105a62c010b70d6d00c12c",
+    "retrieval": "direct HTTPS download",
+    "source_sha256": "62aeab1ebf89a3313108a8d6bc426ec0a26cfb410f4f8e3a191d37608a9bce46",
+    "source_url": "https://www.nj.gov/education/doedata/enr/enr20/enrollment_1920.zip"
+  },
+  "finance": {
+    "extraction": "headers/preamble plus minimal representative observed rows",
+    "fixture": "tges-2025.zip",
+    "fixture_sha256": "86384eb9d2e146abfcb3f906ff9d434320e06ccfe30c4f27a0fd1f90a18131cc",
+    "retrieval": "direct HTTPS download",
+    "source_sha256": "c70cd4e54794718d160667f48bab52149f7c117585de4a128791614aea1d7713",
+    "source_url": "https://www.nj.gov/education/guide/docs/2025/TGES2025_Zipped.zip"
+  },
+  "spr": {
+    "extraction": "headers/preamble plus minimal representative observed rows",
+    "fixture": "spr-district-2025.xlsx",
+    "fixture_sha256": "4c1dab9b1defa4b9cc9b41c505348027007afea7f3e566358e2096361a732454",
+    "retrieval": "existing validated njschooldata workbook cache",
+    "source_sha256": "1445a4279ee2d64c3360d4c769465347b6685247f4e5d778f3f087ffb34e4ff7",
+    "source_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_DistrictStateDetail.xlsx"
+  },
+  "directory": {
+    "source_url": "https://homeroom5.doe.nj.gov/directory/districtDL.php",
+    "source_sha256": "80c30d12c8540af2d06aaaa1e75cf751ca0f78a0994abb384832fcc9159a9654",
+    "fixture": "directory-district.csv",
+    "fixture_sha256": "ed8982f043b421e801e9546e3152c1d36c007767ea83bc0a6714d9c3b2942c4c",
+    "retrieval": "state-derived statewide directory bundle",
+    "extraction": "one observed district row; unretained raw fields left blank"
+  },
+  "directory_spr": {
+    "source_url": "https://www.nj.gov/education/spr/data/202425/schools.json",
+    "source_sha256": "17daa4c2db124a8955c7ffabea9261604702bdc8b764b18fff8c034feb106473",
+    "fixture": "directory-spr-2025.json",
+    "fixture_sha256": "bf97e7e5fd2bf838adb1050f0ae845f5d856d37a40a2fc708a5dbfe29fe8f962",
+    "retrieval": "direct HTTPS download",
+    "extraction": "one complete observed school row with its repeated district contact fields"
+  }
+}

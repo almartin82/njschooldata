@@ -1,0 +1,10 @@
+{
+  "contracts": {
+    "new_jersey_shipped_sources": {
+      "lock": "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/release-lock.json",
+      "validator": "tools/source-validation/validate_contract.py",
+      "verifier": "tools/source-validation/verify_package.py"
+    }
+  },
+  "schema_version": "source-validation-contract-registry/v1"
+}

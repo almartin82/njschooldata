@@ -2,8 +2,6 @@ name: NJ DOE live-source canaries
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17 11 * * 1"
 
 jobs:
   r-live-canaries:

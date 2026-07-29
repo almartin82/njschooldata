@@ -1,0 +1,54 @@
+Package: njschooldata
+Type: Package
+Title: A Simple Interface for Accessing NJ DOE School Data in R and Python
+Description: R functions (with Python bindings) to import NJ school data,
+    including assessment, enrollment, and accountability data from the
+    New Jersey Department of Education.
+Version: 0.9.26
+Authors@R: person("Andy", "Martin", role = c("aut","cre"),
+    email = "almartin@gmail.com")
+License: MIT + file LICENSE
+URL: https://github.com/almartin82/njschooldata, https://almartin82.github.io/njschooldata/
+BugReports: https://github.com/almartin82/njschooldata/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    DescTools,
+    digest,
+    dplyr (>= 1.0.0),
+    downloader,
+    foreign,
+    gtools,
+    httr,
+    janitor,
+    jsonlite,
+    magrittr,
+    purrr,
+    readr,
+    readxl,
+    reshape2,
+    rlang (>= 0.4.0),
+    snakecase (>= 0.11.0),
+    stringr,
+    tibble,
+    tidyr (>= 1.0.0)
+Suggests:
+    covr,
+    forcats,
+    geojsonio,
+    ggplot2,
+    ggrepel,
+    knitr,
+    rmarkdown,
+    scales,
+    sf,
+    sp,
+    testthat (>= 3.0.0),
+    tidygeocoder,
+    withr,
+    zip
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
+Encoding: UTF-8
+Config/testthat/edition: 3
