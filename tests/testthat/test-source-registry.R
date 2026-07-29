@@ -58,6 +58,15 @@ test_that("aliases, validation, availability helpers, and resolvers agree", {
   expect_match(report_card_urls[["district"]],
                "Database_DistrictStateDetail[.]xlsx$")
   expect_match(resolve_source_url("dfg", revision = 2000), "DFG2000[.]xlsx$")
+
+  expect_identical(
+    resolve_source_url("directory", level = "school"),
+    "https://homeroom4.doe.nj.gov/public/publicschools/download/"
+  )
+  expect_identical(
+    resolve_source_url("directory", level = "district"),
+    "https://homeroom4.doe.nj.gov/public/districtpublicschools/download/"
+  )
 })
 
 test_that("raw and tidy capability differences are explicit", {
@@ -71,7 +80,8 @@ test_that("raw and tidy capability differences are explicit", {
 test_that("registered sources define the host allowlist", {
   hosts <- source_host_allowlist()
   expect_true("www.nj.gov" %in% hosts)
-  expect_true("homeroom5.doe.nj.gov" %in% hosts)
+  expect_true("homeroom4.doe.nj.gov" %in% hosts)
+  expect_false("homeroom5.doe.nj.gov" %in% hosts)
   expect_true("services2.arcgis.com" %in% hosts)
   expect_true("www.njsda.gov" %in% hosts)
   expect_true("web.archive.org" %in% hosts)

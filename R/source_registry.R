@@ -245,7 +245,7 @@
     tidy_years = integer(),
     skipped_years = integer(),
     source_type = "csv",
-    hosts = "homeroom5.doe.nj.gov",
+    hosts = "homeroom4.doe.nj.gov",
     resolver = "directory"
   ),
   essa = list(
@@ -773,7 +773,7 @@ resolve_source_url <- function(data_type, end_year = NULL, ...) {
 #' @return Character URL.
 #' @keywords internal
 get_school_directory_url <- function() {
-  "https://homeroom5.doe.nj.gov/directory/schoolDL.php"
+  "https://homeroom4.doe.nj.gov/public/publicschools/download/"
 }
 
 #' Current Homeroom district-directory CSV endpoint
@@ -781,5 +781,5 @@ get_school_directory_url <- function() {
 #' @return Character URL.
 #' @keywords internal
 get_district_directory_url <- function() {
-  "https://homeroom5.doe.nj.gov/directory/districtDL.php"
+  "https://homeroom4.doe.nj.gov/public/districtpublicschools/download/"
 }
