@@ -394,6 +394,7 @@ district_matric_aggs <- function(df) {
       # should aggregated districts be distinguished somehow?
       district_id = district_id,
       district_name = district_name,
+      # ID-SOURCE: not an NJDOE file/API - package-computed row, no vintage - the package assigns this value to a rollup row it computes itself, and NJDOE does not publish that row; "999" borrows the DISTRICT_TOTAL_SCHOOL_ID convention (R/config_constants.R) purely to label the computed row for downstream entity-flag machinery.
       school_id = "999",
       school_name = "Aggregated District Total",
       is_state = FALSE,
