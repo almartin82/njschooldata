@@ -38,14 +38,7 @@ jobs:
 
       - name: Build offline documentation contract
         if: github.event_name == 'pull_request'
-        run: |
-          pkgdown::build_home(preview = FALSE)
-          pkgdown::build_reference(
-            lazy = FALSE,
-            examples = FALSE,
-            preview = FALSE,
-            devel = FALSE
-          )
+        run: source("tools/docs/build-offline-docs.R")
         shell: Rscript {0}
 
       - name: Build site

@@ -15,9 +15,8 @@ navbar:
       aria-label: GitHub
 
 home:
-  links:
-    - text: Report a bug
-      href: https://github.com/almartin82/njschooldata/issues
+  sidebar:
+    html: tools/docs/home-sidebar.html
 
 reference:
   - title: Enrollment Data
