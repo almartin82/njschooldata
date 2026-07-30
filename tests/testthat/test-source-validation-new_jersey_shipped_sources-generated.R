@@ -3,7 +3,7 @@ test_that("source-validation lock and stable IDs execute", {
   expected <- c("SV-001", "SV-002", "SV-003", "SV-004", "SV-005", "SV-006", "SV-007", "SV-008", "SV-009", "SV-010", "SV-011", "SV-012", "SV-013", "SV-014", "SV-015", "SV-016", "SV-017")
   expect_gt(length(expected), 0)
   expect_identical(length(unique(expected)), length(expected))
-  expect_match("sha256:28578907869eccea249f22b471b2505e76b659b054a40446ecf33689b1e0eb07", "^sha256:[0-9a-f]{64}$")
+  expect_match("sha256:d05133ef5800d67075daa52e5d4608b595b29fc3bbc3de289ab6d2e2c90c9ddc", "^sha256:[0-9a-f]{64}$")
   assertions <- stats::setNames(rep.int(1L, length(expected)), expected)
   expect_true(all(assertions > 0L))
   expect_identical(names(assertions), expected)
