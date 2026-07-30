@@ -16,10 +16,13 @@
 assign_entity_flags <- function(df,
                                 district_school_ids = c("888", "997", "999"),
                                 recognize_state_label = TRUE,
-                                # "80" = NJDOE's own charter-sector county code
-                                # (dev-docs/sped-phase-1-findings.md IDEA-618
-                                # District Rates sheet; see CHARTER_COUNTY_ID
-                                # in R/config_constants.R for citation)
+                                # ID-SOURCE: NJDOE IDEA-618 "District Rates"
+                                # sheet, county_id field (dev-docs/
+                                # sped-phase-1-findings.md, verified live
+                                # 2026-06-13) - county 80 = "Charters" is
+                                # NJDOE's own charter-sector county code. Same
+                                # basis as CHARTER_COUNTY_ID in
+                                # R/config_constants.R.
                                 charter_county_id = "80",
                                 na_school_is_district = FALSE) {
   required_cols <- c("county_id", "district_id", "school_id")
