@@ -203,6 +203,10 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   }
 
   # For district files, add school columns (they don't exist in district files)
+  # "999" fills the missing school_id column on this NJDOE-published
+  # district-level SPR workbook with NJDOE's own district-total CDS code
+  # (see DISTRICT_TOTAL_SCHOOL_ID citation in R/config_constants.R); the row
+  # itself is a real published district record, not a computed rollup.
   if (level == "district") {
     df <- df %>%
       dplyr::mutate(

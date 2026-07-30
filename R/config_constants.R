@@ -11,22 +11,40 @@
 # -----------------------------------------------------------------------------
 
 #' State aggregate indicator codes
+#' Source: NJDOE IDEA-618 "District Rates" sheet, County Code column, Statewide
+#' Total row (dev-docs/sped-phase-1-findings.md, verified live 2026-06-13).
 #' @keywords internal
 STATE_COUNTY_ID <- "99"
 
 #' State aggregate indicator codes
+#' Source: NJDOE doedata staff-evaluation files (county "99"/district "9999"
+#' statewide row, published 2014-2015; see this package's CLAUDE.md "Valid
+#' Filter Values (staff evaluations...)"); corroborated by the literal raw
+#' "9999.000000" district_id parsed from legacy grate files in
+#' process_grate() (R/process_graduation.R).
 #' @keywords internal
 STATE_DISTRICT_ID <- "9999"
 
 #' District total school code
+#' Source: literal raw "999.000000" school_id parsed from legacy grate files
+#' in process_grate() (R/process_graduation.R) before normalization;
+#' corroborated by the Newark (county 13/district 3570) school_id "999"
+#' anchor verified against the bundled NJ CDS->NCES crosswalk in
+#' tests/testthat/test-id-preservation.R.
 #' @keywords internal
 DISTRICT_TOTAL_SCHOOL_ID <- "999"
 
 #' Alternative school code (used in some graduation files)
+#' Source: literal raw school_id "997" matched in pre-2011 grad-count files
+#' (R/tidy_graduation.R case_when, mapped to "districtwide").
 #' @keywords internal
 ALT_SCHOOL_ID <- "997"
 
 #' Charter county code (all charters are assigned to county 80)
+#' Source: NJDOE IDEA-618 "District Rates" sheet, county_id 80 = "Charters"
+#' (dev-docs/sped-phase-1-findings.md, verified live 2026-06-13);
+#' corroborated by the NJASK legacy layout's County_Code valid_values, where
+#' numeric county code "80" tags the charter sector (R/fetch_nj_assess.R).
 #' @keywords internal
 CHARTER_COUNTY_ID <- "80"
 

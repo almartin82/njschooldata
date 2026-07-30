@@ -63,7 +63,12 @@ SITE_MANIFEST_ATTR <- "njsd_site_manifest_records"
 
 # ---- small helpers ----------------------------------------------------------
 log_msg <- function(...) cat(format(Sys.time(), "%H:%M:%S"), "|", ..., "\n")
-`%||%` <- function(x, y) if (is.null(x)) y else x
+# %||% is internal to njschooldata (not exported); alias it rather than
+# keeping a second top-level definition here. A duplicate top-level def in
+# this write path can silently re-diverge from R/fetch_courses.R and would
+# then govern what gets written into site/_bundles/*.rds even after a fix
+# lands in R/. See CLAUDE.md campaign note (F1, 2026-07-29).
+`%||%` <- njschooldata:::`%||%`
 
 site_source_failure <- function(status, error) {
   njschooldata:::new_source_result(

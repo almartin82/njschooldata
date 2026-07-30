@@ -407,6 +407,10 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           continuing_rate = dplyr::if_else(.is_state_row, Continuing_State, Continuing_District),
           non_continuing_rate = dplyr::if_else(.is_state_row, NonContinuing_State, NonContinuing_District),
           persistence_rate = dplyr::if_else(.is_state_row, Persisting_State, Persisting_District),
+          # "999" fills the missing school_id column on this NJDOE-published
+          # district-level file with NJDOE's own district-total CDS code (see
+          # DISTRICT_TOTAL_SCHOOL_ID citation in R/config_constants.R); the
+          # row itself is a real published district record, not a computed rollup.
           school_id = "999",
           school_name = "District Total"
         ) %>%
@@ -498,6 +502,10 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           } else {
             NA_real_
           },
+          # "999" fills the missing school_id column on this NJDOE-published
+          # district-level file with NJDOE's own district-total CDS code (see
+          # DISTRICT_TOTAL_SCHOOL_ID citation in R/config_constants.R); the
+          # row itself is a real published district record, not a computed rollup.
           school_id = "999",
           school_name = "District Total"
         ) %>%

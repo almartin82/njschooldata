@@ -382,6 +382,15 @@ district_matric_aggs <- function(df) {
 
   sum_df %>%
     dplyr::mutate(
+      # PACKAGE-INVENTED AGGREGATE ID (flagged for Andy, 2026-07-29): this row
+      # is NOT an NJDOE-published district record. `sum_df` above sums
+      # SCHOOL-level matriculation rows into a district rollup this package
+      # computes itself (confirmed by tests/testthat/test-live-report_card.R,
+      # "district_matric_aggs aggregates correctly": the input has zero
+      # school_id=="999" rows before this mutate). "999" is borrowed from
+      # NJDOE's own district-total CDS convention (see DISTRICT_TOTAL_SCHOOL_ID
+      # in R/config_constants.R) purely to label this computed row for
+      # downstream entity-flag machinery; NJDOE does not publish this rollup.
       # should aggregated districts be distinguished somehow?
       district_id = district_id,
       district_name = district_name,
