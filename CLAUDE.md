@@ -2,6 +2,8 @@
 
 **NEVER use Urban Institute API, NCES CCD, or ANY federal data source** — the entire point of these packages is to provide STATE-LEVEL data directly from state DOEs. Federal sources aggregate/transform data differently and lose state-specific details. If a state DOE source is broken, FIX IT or find an alternative STATE source — do not fall back to federal data.
 
+**Federal IDENTIFIERS are allowed and ENCOURAGED.** The rule above applies to *values*, NOT to *join keys*. NCES identifiers (`LEAID` / `NCESSCH`) and the CCD `state_leaid` / `seasch` crosswalk used purely to attach them are explicitly welcome, and are bundled as a static, versioned, identifiers-only asset under `inst/extdata/crosswalk/`. Federal ids **supplement** the native state identifiers and never replace them: every state-assigned district/school id must be preserved. Do NOT delete `inst/extdata/crosswalk/`, `data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function — the July-19 draft to ban federal ids outright was rejected (2026-07-24). Every id must still trace to a real CCD row reached via a real state id: match exactly, leave unmatched rows `NA`, never fabricate or fuzzy-guess an id.
+
 **NEVER fabricate data in ANY form.** This is the single most important rule in the entire project. Violations include but are not limited to:
 
 - **Random generation:** `rnorm()`, `runif()`, `set.seed()`, `sample()`, `rlnorm()`, `rgamma()`, or any random number generation
