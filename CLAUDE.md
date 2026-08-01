@@ -1,8 +1,6 @@
 ## CRITICAL DATA SOURCE RULES
 
-**NEVER use Urban Institute API, NCES CCD, or ANY federal data source** — the entire point of these packages is to provide STATE-LEVEL data directly from state DOEs. Federal sources aggregate/transform data differently and lose state-specific details. If a state DOE source is broken, FIX IT or find an alternative STATE source — do not fall back to federal data.
-
-**Federal IDENTIFIERS are allowed and ENCOURAGED.** The rule above applies to *values*, NOT to *join keys*. NCES identifiers (`LEAID` / `NCESSCH`) and the CCD `state_leaid` / `seasch` crosswalk used purely to attach them are explicitly welcome, and are bundled as a static, versioned, identifiers-only asset under `inst/extdata/crosswalk/`. Federal ids **supplement** the native state identifiers and never replace them: every state-assigned district/school id must be preserved. Do NOT delete `inst/extdata/crosswalk/`, `data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function — the July-19 draft to ban federal ids outright was rejected (2026-07-24). Every id must still trace to a real CCD row reached via a real state id: match exactly, leave unmatched rows `NA`, never fabricate or fuzzy-guess an id.
+**Federal IDENTIFIERS are allowed and ENCOURAGED.** The federal-source ban applies to *values*, NOT to *join keys*. NCES identifiers (`LEAID` / `NCESSCH`) and the CCD `state_leaid` / `seasch` crosswalk used purely to attach them are explicitly welcome, and are bundled as a static, versioned, identifiers-only asset under `inst/extdata/crosswalk/`. Federal ids **supplement** the native state identifiers and never replace them: every state-assigned district/school id must be preserved. Do NOT delete `inst/extdata/crosswalk/`, `data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function — the July-19 draft to ban federal ids outright was rejected (2026-07-24). Every id must still trace to a real CCD row reached via a real state id: match exactly, leave unmatched rows `NA`, never fabricate or fuzzy-guess an id.
 
 **NEVER fabricate data in ANY form.** This is the single most important rule in the entire project. Violations include but are not limited to:
 
@@ -25,6 +23,76 @@ Before joining any external series to fetcher output: confirm the convention (an
 
 ---
 
+
+## Caching: point-in-time → CACHE. Always-on → NEVER cache. (REQUIRED)
+
+**If it is a point-in-time release, we cache it, and we return the cache by default.**
+
+A state's 2024 enrollment file is a frozen historical artifact — published once, never
+revised. Enrollment, assessment, graduation, finance, staff, SPED, ELL, absence,
+accountability and chronic absence are all point-in-time. Bundle the source parent, serve
+it offline, return the cached copy by default. Re-fetching a frozen release on every call
+is pure waste.
+
+**If it is an always-on source like a directory, we NEVER cache it.**
+
+Directory data is a current-state register: school and district names, addresses,
+contacts, grade spans, open/closed status, superintendents. **It changes rapidly.** A
+cached copy is wrong almost immediately, and a stale directory is worse than a slow one.
+`fetch_directory()` and every directory surface acquires live from the state DOE on every
+call. Do not add a cache layer to directory, do not bundle a directory snapshot in
+`inst/extdata/`, and do not serve directory from a retained parent.
+
+**The test: would the state ever revise this same file in place?**
+Yes → always-on source → live, never cached. No, they publish it once and move on →
+point-in-time release → cached, returned from cache by default.
+
+Regardless of live-vs-cached:
+
+- **A live fetch that fails must fail LOUDLY.** A well-formed "source unavailable" result
+  with 0 rows makes a family look healthy while serving nothing, and no test can catch it.
+- **Federal NCES ids stay.** `nces_dist`/`nces_sch` and the CCD crosswalk belong alongside
+  native state ids, in directory output as much as anywhere else. The July-19 draft
+  banning federal ids was rejected on 2026-07-24. Never delete `inst/extdata/crosswalk/`
+  or an `attach_*nces*()` function. Native state ids are never dropped or replaced.
+- **Never fabricate a value.** If the source does not publish it, it stays missing and
+  says so. This outranks everything above.
+- **A capability gap is a DECLARATION, never a shutdown.** Never gate a working function
+  to "Under Construction", and never narrow an advertised catalogue to green a gate.
+
+## Federal sources: NEVER for DATA. The NCES↔state id crosswalk is a FEATURE. (REQUIRED)
+
+**The one-line test: a federal VALUE is banned. A federal KEY is a feature.**
+
+**Never source DATA VALUES from a federal source** — not NCES CCD, not the Urban Institute
+Education Data Explorer, not any federal aggregator or API. Enrollment counts, demographics,
+assessment results, graduation rates, finance figures and staff counts must all come from the
+state DOE. Federal sources aggregate and transform differently and lose state-specific detail,
+and that loss is the entire reason these packages exist. If a state DOE source breaks, FIX IT
+or find another STATE source — never fall back to federal data for a value.
+
+**Shipping the bindings between NCES ids and native state ids is a FEATURE**, not a tolerated
+exception. It is the bridge from this state's own identifiers to the national universe and to
+every NCES-keyed consumer downstream. Ship it, document it, advertise it.
+
+- Bundle the crosswalk as a **static, versioned, identifiers-only asset** in
+  `inst/extdata/crosswalk/`, with a README noting the CCD vintage and stating that it carries
+  **zero data values**. No runtime CCD calls.
+- **Federal ids supplement, they never replace.** Every native state id must be preserved —
+  never drop a state-assigned district or school id, never substitute a federal id for one.
+  The state id is the primary identity; `nces_dist`/`nces_sch` sit alongside it.
+- Every id must trace to a real CCD row reached via a real state id. Match exactly, leave
+  unmatched rows `NA`, never fabricate or fuzzy-guess an id.
+
+**Never delete `inst/extdata/crosswalk/`, `data-raw/build_nces_crosswalk.R`, or any
+`attach_*nces*()` function**, and never add a gate forbidding `nces_dist`/`nces_sch`. The
+July-19 draft to ban federal ids outright was **REJECTED on 2026-07-24**.
+
+**Banned wording — delete on sight:** any blanket phrasing like "NEVER use Urban Institute
+API, NCES CCD, or ANY federal data source". An agent reading that sentence alone concludes the
+crosswalk must go, and five branches did exactly that on 2026-08-01. Always scope the ban to
+DATA VALUES and state the crosswalk carve-out in the same breath, so the two can never be read
+apart.
 
 # CLAUDE.md
 
