@@ -3,7 +3,9 @@
 \docType{data}
 \name{STATE_COUNTY_ID}
 \alias{STATE_COUNTY_ID}
-\title{State aggregate indicator codes}
+\title{State aggregate indicator codes
+Source: NJDOE IDEA-618 "District Rates" sheet, County Code column, Statewide
+Total row (dev-docs/sped-phase-1-findings.md, verified live 2026-06-13).}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -12,5 +14,7 @@ STATE_COUNTY_ID
 }
 \description{
 State aggregate indicator codes
+Source: NJDOE IDEA-618 "District Rates" sheet, County Code column, Statewide
+Total row (dev-docs/sped-phase-1-findings.md, verified live 2026-06-13).
 }
 \keyword{internal}

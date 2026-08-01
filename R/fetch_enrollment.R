@@ -7,6 +7,35 @@
 #
 # ==============================================================================
 
+#' Read an NJ DOE enrollment percentage column as published
+#'
+#' NJ DOE publishes some fall-enrollment percentages as a censoring token
+#' instead of a value - most visibly `">95"`, used from the 2019-20 file
+#' onward wherever a share exceeds 95 percent. A censored cell is UNKNOWN, not
+#' a number, so every non-numeric token becomes `NA` and stays `NA`. This
+#' mirrors the suppression handling already applied to graduation data in
+#' [process_grate()].
+#'
+#' Substituting a midpoint (or any other stand-in) for the token would invent
+#' the percentage, and because these populations are published only as
+#' percentages, the count derived by multiplying it by total enrollment would
+#' be an invented headcount presented as an NJ DOE figure.
+#'
+#' @param x A percentage column exactly as published.
+#' @return A numeric vector, `NA` wherever NJ DOE censored or omitted the value.
+#' @keywords internal
+enr_pct_published_value <- function(x) {
+  token <- trimws(as.character(x))
+  token <- sub("%$", "", token)
+
+  # A published percentage is a bare number and nothing else. Anything that is
+  # not (">95", "*", "N", "", ...) is the source declining to report a value.
+  published <- grepl("^[0-9]*\\.?[0-9]+$", token)
+  token[!published] <- NA_character_
+
+  as.numeric(token)
+}
+
 #' Parse a validated zipped fall enrollment artifact
 #'
 #' @param tname Path to a validated NJ DOE enrollment ZIP.
@@ -95,31 +124,27 @@
       # pivoting grade level columns long
       enr_dist_sch <- dplyr::bind_rows(enr_dist, enr_sch)
 
-      # In 2020 they decided not to report above 95%?!
-      # Set to 97.5 to split the difference
-      if (end_year == 2020) {
-        enr_dist_sch <- enr_dist_sch %>%
-          dplyr::mutate(
-            `%Free Lunch` = dplyr::if_else(`%Free Lunch` == ">95", "97.5", `%Free Lunch`),
-            `%Reduced Lunch` = dplyr::if_else(`%Reduced Lunch` == ">95", "97.5", `%Reduced Lunch`),
-            `%English Learners` = dplyr::if_else(`%English Learners` == ">95", "97.5", `%English Learners`),
-            `%Migrant` = dplyr::if_else(`%Migrant` == ">95", "97.5", `%Migrant`),
-            `%Military` = dplyr::if_else(`%Military` == ">95", "97.5", `%Military`),
-            `%Homeless` = dplyr::if_else(`%Homeless` == ">95", "97.5", `%Homeless`)
-          )
-      }
+      # Populations in this block are published only as percentages, so the
+      # count is derived as pct / 100 * Total Enrollment.
+      #
+      # NJ DOE censors a percentage above 95 as the token ">95" rather than a
+      # value. A censored cell is UNKNOWN. It stays NA, and the count derived
+      # from it is therefore NA too. Never substitute a midpoint for the token:
+      # the percentage would be invented, and the headcount produced by
+      # multiplying it by enrollment would be an invented headcount published
+      # as though NJ DOE had reported it.
+      pct_cols <- c(
+        "%Free Lunch", "%Reduced Lunch", "%English Learners",
+        "%Migrant", "%Military", "%Homeless"
+      )
 
-      enr_dist_sch <- enr_dist_sch %>%
-        dplyr::mutate(
-          # Populations in this mutate block are only reported as pcts,
-          # so convert percents into counts
-          `Free Lunch` = as.numeric(`%Free Lunch`) / 100 * `Total Enrollment`,
-          `Reduced Lunch` = as.numeric(`%Reduced Lunch`) / 100 * `Total Enrollment`,
-          `English Learners` = as.numeric(`%English Learners`) / 100 * `Total Enrollment`,
-          `Migrant` = as.numeric(`%Migrant`) / 100 * `Total Enrollment`,
-          `Military` = as.numeric(`%Military`) / 100 * `Total Enrollment`,
-          `Homeless` = as.numeric(`%Homeless`) / 100 * `Total Enrollment`
-        )
+      for (pct_col in pct_cols) {
+        if (!pct_col %in% names(enr_dist_sch)) next
+        count_col <- sub("^%", "", pct_col)
+        enr_dist_sch[[count_col]] <-
+          enr_pct_published_value(enr_dist_sch[[pct_col]]) / 100 *
+          enr_dist_sch[["Total Enrollment"]]
+      }
 
       # Determine the last grade column (Ungraded removed in 2024+)
       last_grade_col <- if ("Ungraded" %in% names(enr_dist_sch)) {

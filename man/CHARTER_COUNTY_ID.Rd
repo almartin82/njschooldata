@@ -3,7 +3,11 @@
 \docType{data}
 \name{CHARTER_COUNTY_ID}
 \alias{CHARTER_COUNTY_ID}
-\title{Charter county code (all charters are assigned to county 80)}
+\title{Charter county code (all charters are assigned to county 80)
+Source: NJDOE IDEA-618 "District Rates" sheet, county_id 80 = "Charters"
+(dev-docs/sped-phase-1-findings.md, verified live 2026-06-13);
+corroborated by the NJASK legacy layout's County_Code valid_values, where
+numeric county code "80" tags the charter sector (R/fetch_nj_assess.R).}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -12,5 +16,9 @@ CHARTER_COUNTY_ID
 }
 \description{
 Charter county code (all charters are assigned to county 80)
+Source: NJDOE IDEA-618 "District Rates" sheet, county_id 80 = "Charters"
+(dev-docs/sped-phase-1-findings.md, verified live 2026-06-13);
+corroborated by the NJASK legacy layout's County_Code valid_values, where
+numeric county code "80" tags the charter sector (R/fetch_nj_assess.R).
 }
 \keyword{internal}

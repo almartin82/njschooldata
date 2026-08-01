@@ -3,7 +3,12 @@
 \docType{data}
 \name{STATE_DISTRICT_ID}
 \alias{STATE_DISTRICT_ID}
-\title{State aggregate indicator codes}
+\title{State aggregate indicator codes
+Source: NJDOE doedata staff-evaluation files (county "99"/district "9999"
+statewide row, published 2014-2015; see this package's CLAUDE.md "Valid
+Filter Values (staff evaluations...)"); corroborated by the literal raw
+"9999.000000" district_id parsed from legacy grate files in
+process_grate() (R/process_graduation.R).}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -12,5 +17,10 @@ STATE_DISTRICT_ID
 }
 \description{
 State aggregate indicator codes
+Source: NJDOE doedata staff-evaluation files (county "99"/district "9999"
+statewide row, published 2014-2015; see this package's CLAUDE.md "Valid
+Filter Values (staff evaluations...)"); corroborated by the literal raw
+"9999.000000" district_id parsed from legacy grate files in
+process_grate() (R/process_graduation.R).
 }
 \keyword{internal}

@@ -3,7 +3,9 @@
 \docType{data}
 \name{ALT_SCHOOL_ID}
 \alias{ALT_SCHOOL_ID}
-\title{Alternative school code (used in some graduation files)}
+\title{Alternative school code (used in some graduation files)
+Source: literal raw school_id "997" matched in pre-2011 grad-count files
+(R/tidy_graduation.R case_when, mapped to "districtwide").}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -12,5 +14,7 @@ ALT_SCHOOL_ID
 }
 \description{
 Alternative school code (used in some graduation files)
+Source: literal raw school_id "997" matched in pre-2011 grad-count files
+(R/tidy_graduation.R case_when, mapped to "districtwide").
 }
 \keyword{internal}

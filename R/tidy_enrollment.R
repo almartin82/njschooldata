@@ -77,8 +77,20 @@ tidy_enr <- function(df) {
   total_counts <- df %>%
     dplyr::filter(program_code == "55") %>%
     # create free and reduced group
+    #
+    # free + reduced is a two-component total. If either component is unknown
+    # the combined total is UNKNOWN, so it is published as NA. `na.rm = TRUE`
+    # treated a withheld component as a zero, which understated the total when
+    # one component was missing and reported a flat 0 when both were -- a
+    # fabricated headcount for a district the source had declined to report.
     dplyr::rowwise() %>%
-    dplyr::mutate(free_reduced_lunch = sum(free_lunch, reduced_lunch, na.rm = TRUE))
+    dplyr::mutate(
+      free_reduced_lunch = if (anyNA(c(free_lunch, reduced_lunch))) {
+        NA_real_
+      } else {
+        sum(free_lunch, reduced_lunch)
+      }
+    )
 
   total_subgroups <- c("free_lunch", "reduced_lunch", "lep", "migrant", "free_reduced_lunch")
   total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
