@@ -49,8 +49,14 @@ point-in-time release → cached, returned from cache by default.
 
 Regardless of live-vs-cached:
 
-- **A live fetch that fails must fail LOUDLY.** A well-formed "source unavailable" result
-  with 0 rows makes a family look healthy while serving nothing, and no test can catch it.
+- **Never report a package bug as a source failure.** If the source responds correctly and
+  our own parse, join or build then fails, `stop()` loudly — returning `source_unavailable`
+  there blames the state DOE for our defect. Declaring a **genuine** upstream failure as a
+  structured 0-row miss is correct and honest: that is `directory-contract/v1`, and it is
+  what `nd` (upstream serving 153 bytes of HTML), `tn` (403) and `va` (500) correctly do.
+  The test is not "did we return 0 rows" — it is **"did the source actually fail?"** Keep
+  parsing OUTSIDE the acquisition `tryCatch`, and re-raise `directory_parse_error` /
+  `directory_integrity_error` unchanged rather than downgrading them.
 - **Federal NCES ids stay.** `nces_dist`/`nces_sch` and the CCD crosswalk belong alongside
   native state ids, in directory output as much as anywhere else. The July-19 draft
   banning federal ids was rejected on 2026-07-24. Never delete `inst/extdata/crosswalk/`
