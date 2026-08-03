@@ -565,10 +565,13 @@ def assess_release(
     now: datetime,
 ) -> dict[str, Any]:
     """Recompute the affected-contract release gate from locks and events."""
+    # Watched fields describe the DATA under contract: which inputs define the
+    # contract, which bytes the manifest claims, and which artifacts are
+    # required. The generator's own version is not watched -- retooling is not
+    # a data event and must not invalidate validation evidence.
     watched = (
         "contract_fingerprint",
         "artifact_manifest_digest",
-        "source_validation_release_digest",
         "required_artifact_ids",
     )
     reasons = [

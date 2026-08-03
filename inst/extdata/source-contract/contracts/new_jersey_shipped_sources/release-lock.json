@@ -1,6 +1,6 @@
 {
   "artifact_manifest_digest": "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b",
-  "contract_fingerprint": "sha256:d05133ef5800d67075daa52e5d4608b595b29fc3bbc3de289ab6d2e2c90c9ddc",
+  "contract_fingerprint": "sha256:2f37d3ac1e6dbb64636590ec20934e8827fd13caa41852e2ca5e364054a5ce40",
   "contract_id": "new_jersey_shipped_sources",
   "expected_test_ids": [
     "SV-001",
@@ -24,15 +24,15 @@
   "generated_files": {
     ".github/workflows/live-validation-new_jersey_shipped_sources.yml": "sha256:94878b6dc3fcd16ebfa5d2a6f06760bbe6183c90f7d5dad76fc46ecd0a9b2c10",
     ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:be0e97a0d8a126bcce1591093895dc297cd568c157e0272ff5dc9e8a556de1da",
-    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:59ac1b0195e4d13d1ac666cf7ff17b57089a9151a6729f5e004628650da3de3b",
-    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:4a3cf3692f596fcbba22979f8e2c50408e74409c6efd4144ce104ffcb61bdc0a",
+    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:7f3ea42e7e3de7ba735d2e4eba00b4b5757ec5242a95183b20c21d40c16bf6b8",
+    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:91f2974310da8793e98f317c70bfd289226bc8041bdcfcba41ddd45b38c51334",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json": "sha256:0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/contract.json": "sha256:0913258347c139149121e2fdd21b8b2f33571f5aafe6f18daf744c5d0db58360",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/DESCRIPTION": "sha256:d23f532b360e95a72b9887f8ebf7eac4f8915c35d9122a80a6569ede856cce48",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/pyproject.toml": "sha256:bf661984540a9a0c4ec5fb70724070041d060712efbea38a9ef25e75776616ee",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_assessment.R": "sha256:7beed9f9b3f5078e59fb81cb1d6005ca190e2ebdd3f2557cdc860f52e16f7642",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_directory.R": "sha256:b323686f5ff806e14e97073166437f5173d422a2fd8d74f5d10e111cb6ac76ce",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_enrollment.R": "sha256:9aa2ab434451794acd813a6db17b528552fdff68ef2f6cd6b99b806338c090a3",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_enrollment.R": "sha256:a1090102a32476cc3aae86b682e38f06b8d454948c6d1a9c1f51faa67387f055",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/source_transport.R": "sha256:2aac6afb1b95e8bf57fb802a34678ca8e5fc9fa417e29f45d44f16500e407db4",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/tges.R": "sha256:1d36ff3118ec5a77f9a1269acf0c52665e7ca57c8a64e39fa54e20fc0b69fc7d",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/endpoints.md": "sha256:6c8608610391b5ab90cadf6a73b2d3e22f7e43c6fc15858dcd901e49f98cccdf",
@@ -45,7 +45,7 @@
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/njsla-ela04-2025.xlsx": "sha256:4d3e17dfac93ddf271c23a75576adad2980a21d57afd871c0666ddb219e54f10",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/spr-district-2025.xlsx": "sha256:4c1dab9b1defa4b9cc9b41c505348027007afea7f3e566358e2096361a732454",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test-directory-multiplicity.R": "sha256:e8d0fed9929e58c01878b392bbadeee3988aa7f8f9cb769f93953fef2455b6ae",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test-source-adapter-fixtures.R": "sha256:5a80edbaf3edd3dbef1028612beae2536f9437ff5af6c6998c958831d0140abf",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test-source-adapter-fixtures.R": "sha256:58c77a7b19caa2cdf3f74e322f7acf086204a990fcae44070ba73cbbdd47eb44",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test_directory.py": "sha256:91fedaafb20262359419150abb6e4a18bffe8dc319bdc2d33b39441aa01ccbfd",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/tges-2025.zip": "sha256:86384eb9d2e146abfcb3f906ff9d434320e06ccfe30c4f27a0fd1f90a18131cc",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/normalization/_r_bridge.py": "sha256:76ba56892a24fce7971f0bef1019faf55642732b4856651ae65e20af7d46211a",
@@ -64,12 +64,12 @@
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run.py": "sha256:9b377aa913ab805b5a2115fb157737b4358eaaa96d52c005202c99d8b4fc7751",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/utils_download.R": "sha256:a320839de2a1ba4975b505a77c6db3fb35477ff15fe1c1e29d1d123ce7ab0cd4",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/runtime-metadata.json": "sha256:1c0426bb6f55dda5d57e325454ee3513b9e26b885a0f16d06bd35d73f3e9400b",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:9b4e432912957e0c0995cec7a381ce73ecd8e22b177648b893ea0a65b88cca28",
-    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:2df613401e8dc411abc1614b861b3724e4fb327ae9d13e27435a4b8666c3002d",
-    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:bb83b111e1b0447a7ecbce52631c6bd1053bfa8839f565000bf8b4a44c9d22fe",
-    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:c8e6aa1bf253e114927929edffed25d5051104a741ffc8d7617279d2b21a6b43",
-    "tools/source-validation/validate_contract.py": "sha256:be7efe97312246c93f20c41bff40d84f817d1c6fda51a499eea7a2012532d246",
-    "tools/source-validation/verify_package.py": "sha256:f886c2be45d2523c53503b2d8cf52f3c74e5b5a4ce63ce1ae11d0af4a4edd3ad"
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:3d7543cdd4e6e58fba2dfb2f9aae09131a0356831162088d7f9b41ee1a46de32",
+    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:7c10aa5079483139bf4548de8cb3c068903a1d16fb949caf6c69503af6bc4689",
+    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:77cd00ef4bdd9667f41ed4cdd7c2b08d0bb9e4079f3346edb11d150474ce5c99",
+    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:18d3f02db9a6cf5c23bd0e4c9ede80cf1f4d282ced99d05046b4986dae923aa7",
+    "tools/source-validation/validate_contract.py": "sha256:ff0f0989c174874bcaf30f229bcad8987b0f250421bbc735cc72802843185317",
+    "tools/source-validation/verify_package.py": "sha256:5340c89a7f53e3c26d0cbef3e02f5a579e5e976d51cd13fc46c5f94d5a912777"
   },
   "generator_version": "source-validation-generator/v1",
   "python_destination": "python/src/njschooldata",
@@ -77,8 +77,7 @@
   "runtime_metadata_digest": "sha256:2a63cd7b927200904bb67462cc5f4782f657755c832fdb4034bdb561f03c3580",
   "schema_version": "source-validation-release-lock/v1",
   "source_validation_release": "source-validation-v1.0.0-rc.4",
-  "source_validation_release_digest": "sha256:db1f6c415345b9c67359d62ad9ea71077f4ba34cc67c1a20bf7786f4bcb4e783",
-  "validator_checksum": "sha256:be7efe97312246c93f20c41bff40d84f817d1c6fda51a499eea7a2012532d246",
+  "validator_checksum": "sha256:ff0f0989c174874bcaf30f229bcad8987b0f250421bbc735cc72802843185317",
   "validator_destination": "tools/source-validation",
-  "verifier_checksum": "sha256:f886c2be45d2523c53503b2d8cf52f3c74e5b5a4ce63ce1ae11d0af4a4edd3ad"
+  "verifier_checksum": "sha256:5340c89a7f53e3c26d0cbef3e02f5a579e5e976d51cd13fc46c5f94d5a912777"
 }

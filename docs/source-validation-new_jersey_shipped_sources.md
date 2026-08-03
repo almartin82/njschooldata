@@ -2,7 +2,7 @@
 # Source validation
 
 This package embeds `source-validation-v1.0.0-rc.4` for `new_jersey_shipped_sources`.
-Its contract fingerprint is `sha256:d05133ef5800d67075daa52e5d4608b595b29fc3bbc3de289ab6d2e2c90c9ddc`, and its shipped artifact-manifest
+Its contract fingerprint is `sha256:2f37d3ac1e6dbb64636590ec20934e8827fd13caa41852e2ca5e364054a5ce40`, and its shipped artifact-manifest
 digest is `sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b`.
 
 Freshness is recomputed locally from immutable validation events. Routine

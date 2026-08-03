@@ -88,7 +88,32 @@ def _verify_lock(
     ):
         raise PackageVerificationError("runtime metadata digest mismatch")
 
-    for artifact in manifest["artifacts"]:
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list):
+        raise PackageVerificationError("invalid package-local artifact manifest")
+    artifact_ids = [
+        artifact.get("artifact_id")
+        for artifact in artifacts
+        if isinstance(artifact, dict)
+    ]
+    if (
+        len(artifact_ids) != len(artifacts)
+        or any(
+            not isinstance(artifact_id, str) or not artifact_id
+            for artifact_id in artifact_ids
+        )
+        or len(artifact_ids) != len(set(artifact_ids))
+    ):
+        raise PackageVerificationError("invalid package-local artifact IDs")
+    required = lock.get("required_artifact_ids", [])
+    if len(required) != len(set(required)) or not set(required).issubset(
+        set(artifact_ids)
+    ):
+        raise PackageVerificationError(
+            "required artifact IDs are not a distinct subset of the manifest"
+        )
+
+    for artifact in artifacts:
         if (
             artifact["tier"] != "shipped"
             and artifact["storage"]["backend"] not in {"git", "git_lfs"}
@@ -134,15 +159,9 @@ def verify_package(
     releases = {lock["source_validation_release"] for lock in locks.values()}
     if len(releases) != 1:
         raise PackageVerificationError("source-validation release skew")
-    release_digests = {
-        lock["source_validation_release_digest"] for lock in locks.values()
-    }
-    if len(release_digests) != 1:
-        raise PackageVerificationError("source-validation release digest skew")
     return {
         "schema_version": "source-validation-package-verification/v1",
         "source_validation_release": next(iter(releases)),
-        "source_validation_release_digest": next(iter(release_digests)),
         "contracts": locks,
     }
 

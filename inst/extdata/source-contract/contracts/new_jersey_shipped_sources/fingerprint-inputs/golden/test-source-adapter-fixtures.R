@@ -11,14 +11,52 @@ fixture_request <- function(name, content_type) {
   }
 }
 
-test_that("enrollment fixture preserves the intentional 2020 transformation", {
+test_that("a 2020 censored percentage is reported as unknown, not as a value", {
+  # cds_code 313970999 is a district whose 2019-20 free-lunch share NJ DOE
+  # published as the censoring token ">95" rather than a number.
+  #
+  # This test previously asserted pct == 0.975 and n_students == 13250.25.
+  # Neither figure was ever published by NJ DOE: the fetcher rewrote ">95" to
+  # "97.5" and multiplied that invented percentage by the district's 13,590
+  # enrolled students. The test named it "the intentional 2020 transformation"
+  # and locked it in. A withheld value is unknown and stays unknown.
   result <- get_raw_enr_result(
     2020,
     request_fn = fixture_request("enrollment-2020.zip", "application/zip")
   )
   expect_identical(result$source_status, "actual")
 
-  tidy <- suppressWarnings(tidy_enr(process_enr(result$data)))
+  raw <- result$data
+  # which() because some rows carry an NA county code, and an NA in a logical
+  # index would silently pull an extra NA row into every comparison below.
+  censored <- which(
+    raw[["County Code"]] == "31" & raw[["District Code"]] == "3970" &
+      raw[["School Code"]] == "999" & raw[["Grade"]] == "All Grades"
+  )
+  expect_length(censored, 1L)
+
+  # The censoring token survives into the raw frame as NJ DOE wrote it. The
+  # old code overwrote this very cell with the string "97.5".
+  expect_identical(raw[["%Free Lunch"]][censored], ">95")
+
+  # And the count derived from it is unknown, not 0.975 * 13590 = 13250.25.
+  expect_true(is.na(raw[["Free Lunch"]][censored]))
+  expect_false(identical(raw[["Free Lunch"]][censored], 13250.25))
+
+  # A percentage NJ DOE did publish still derives its count exactly, so the
+  # guard removes the invented values and nothing else.
+  published <- which(
+    raw[["County Code"]] == "05" & raw[["District Code"]] == "3650" &
+      raw[["School Code"]] == "300" & raw[["Grade"]] == "All Grades"
+  )
+  expect_length(published, 1L)
+  expect_identical(raw[["%Free Lunch"]][published], "9.8")
+  expect_equal(raw[["Free Lunch"]][published], 9.8 / 100 * 640)
+
+  # A real published 0 percent is a value, not a suppression, and stays 0.
+  expect_equal(raw[["Reduced Lunch"]][censored], 0)
+
+  tidy <- suppressWarnings(tidy_enr(process_enr(raw)))
   total <- tidy[
     tidy$grade_level == "TOTAL" &
       tidy$subgroup %in% c(
@@ -27,21 +65,21 @@ test_that("enrollment fixture preserves the intentional 2020 transformation", {
     c("cds_code", "subgroup", "n_students", "pct")
   ]
 
-  expect_equal(
-    total$n_students[total$cds_code == "313970999" &
-                       total$subgroup == "free_lunch"],
-    13250.25
-  )
-  expect_equal(
-    total$pct[total$cds_code == "313970999" &
-                total$subgroup == "free_lunch"],
-    0.975
-  )
-  expect_equal(
-    total$n_students[total$cds_code == "313970999" &
-                       total$subgroup == "free_reduced_lunch"],
-    13250.25
-  )
+  # tidy_enr drops rows whose value is unknown, so an unknown subgroup is
+  # ABSENT here rather than present-and-NA. Either is honest; publishing a
+  # number NJ DOE never reported is not. Assert no such number appears.
+  pick <- function(subgroup, column) {
+    total[[column]][total$cds_code == "313970999" &
+                      total$subgroup == subgroup]
+  }
+
+  expect_length(pick("free_lunch", "n_students"), 0L)
+  expect_false(13250.25 %in% pick("free_lunch", "n_students"))
+  expect_false(0.975 %in% pick("free_lunch", "pct"))
+
+  # An unknown component makes the combined total unknown. It must not collapse
+  # to 0, which would report the district as having no free/reduced students.
+  expect_false(0 %in% pick("free_reduced_lunch", "n_students"))
 })
 
 test_that("assessment fixture exercises the real workbook parser", {
