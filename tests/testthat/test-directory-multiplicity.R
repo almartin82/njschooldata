@@ -77,12 +77,8 @@ test_that("NJ SPR builder rejects conflicting assignment evidence", {
   )
 })
 
-test_that("directory surface declares a packaged acquisition default", {
+test_that("directory surface declares the live zero-argument contract", {
   fetcher <- get("fetch_directory", envir = asNamespace("njschooldata"))
 
-  expect_identical(formals(fetcher)$source, "package")
-  expect_setequal(
-    names(formals(fetcher)),
-    c("source", "max_age_days", "refresh")
-  )
+  expect_length(formals(fetcher), 0L)
 })

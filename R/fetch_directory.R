@@ -495,8 +495,21 @@ dc_stop <- function(message, class) {
 #' dir$roles
 #' dir$meta$counts
 #' }
-fetch_directory <- function(
-    source = "package", max_age_days = NULL, refresh = FALSE) {
+fetch_directory <- function() {
+  directory_live_acquire()
+}
+
+#' Acquire a fresh New Jersey directory response
+#'
+#' This zero-argument collaborator is the complete production acquisition path
+#' behind [fetch_directory()]. Each call starts a new source attempt and builds
+#' a new canonical response; it never uses the package fixture or a prior
+#' response.
+#'
+#' @return A canonical directory-contract/v1 triple.
+#' @keywords internal
+#' @noRd
+directory_live_acquire <- function() {
   retrieved_at <- dc_iso8601()
   district_result <- .directory_source_result("district")
   school_result <- .directory_source_result("school")

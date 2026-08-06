@@ -5,11 +5,12 @@
 # it in-package; change the master copy and re-propagate to all packages.
 # Fleet byte identity is checked directly against this master copy.
 #
-# Runs fully offline against the package-owned fixture at
+# Runs fully offline against package-owned fixtures and mocked live acquisition at
 # tests/testthat/fixtures/directory-contract/snapshot.rds (see
 # contracts/directory/v1/fixture-contract.md). A missing fixture FAILS the
-# suite; it never skips. Fixture staleness is guarded by the separate,
-# package-authored test-directory-live.R (skip_if_offline).
+# suite; it never skips. Production fetch_directory() is never invoked with its
+# real live collaborator by this file. Live validation remains a separate,
+# explicit maintainer action.
 
 .dc_schema_version <- "directory-contract/v1"
 
@@ -30,10 +31,6 @@
 )
 
 .dc_source_statuses <- c("ok", "partial", "source_unavailable")
-
-.dc_directory_acquisition_args <- c(
-  "source", "max_age_days", "refresh", "use_cache"
-)
 
 .dc_id_placeholders <- c(
   "", "na", "n/a", "null", "none", "-", "--", "tbd", "unknown", "pending", "0"
@@ -100,60 +97,112 @@
 
 .dc_directory_signature_problem <- function(fn) {
   if (!is.function(fn)) return("fetch_directory is not a function")
-
-  defaults <- formals(fn)
-  formal_names <- names(defaults)
-  unsupported <- setdiff(formal_names, .dc_directory_acquisition_args)
-  if (length(unsupported)) {
-    return(paste(
-      "unsupported argument(s):",
-      paste(unsupported, collapse = ", ")
-    ))
+  if (length(formals(fn)) != 0L) {
+    return("fetch_directory must have exactly zero arguments")
   }
-  if (!"source" %in% formal_names) {
-    return("fetch_directory must declare source with a packaged default")
-  }
-
-  missing_default <- vapply(
-    defaults,
-    function(value) is.symbol(value) && identical(as.character(value), ""),
-    logical(1)
-  )
-  if (any(missing_default)) {
-    return(paste(
-      "every acquisition argument must have a default; missing:",
-      paste(formal_names[missing_default], collapse = ", ")
-    ))
-  }
-  if (!identical(defaults$source, "package")) {
-    return("source must default literally to \"package\"")
-  }
-  if (
-    "max_age_days" %in% formal_names &&
-    !is.null(defaults$max_age_days) &&
-    !(
-      is.numeric(defaults$max_age_days) &&
-      length(defaults$max_age_days) == 1L &&
-      is.finite(defaults$max_age_days) &&
-      defaults$max_age_days >= 0
-    )
-  ) {
-    return("max_age_days must default to NULL or one non-negative number")
-  }
-  if (
-    "refresh" %in% formal_names &&
-    !identical(defaults$refresh, FALSE)
-  ) {
-    return("refresh must default literally to FALSE")
-  }
-  if (
-    "use_cache" %in% formal_names &&
-    !is.null(defaults$use_cache)
-  ) {
-    return("deprecated use_cache must default literally to NULL")
-  }
-
   NULL
+}
+
+.dc_count_symbol_calls <- function(expr, symbol) {
+  if (!is.call(expr)) return(0L)
+  here <- as.integer(identical(expr[[1]], as.name(symbol)))
+  here + sum(vapply(as.list(expr)[-1], .dc_count_symbol_calls, integer(1), symbol))
+}
+
+.dc_with_namespace_binding <- function(name, value, code) {
+  ns <- asNamespace(.dc_pkg)
+  if (!exists(name, envir = ns, inherits = FALSE)) {
+    stop("directory-contract: missing internal collaborator ", name)
+  }
+  old <- get(name, envir = ns, inherits = FALSE)
+  was_locked <- bindingIsLocked(name, ns)
+  if (was_locked) unlockBinding(name, ns)
+  assign(name, value, envir = ns)
+  on.exit({
+    assign(name, old, envir = ns)
+    if (was_locked) lockBinding(name, ns)
+  }, add = TRUE)
+  force(code)
+}
+
+.dc_mock_result <- function(marker, retrieved_at, source_status = "ok") {
+  empty_roles <- as.data.frame(
+    setNames(lapply(.dc_role_cols, function(type) character(0)), names(.dc_role_cols)),
+    stringsAsFactors = FALSE
+  )
+  empty_roles$phone <- character(0)
+  entities <- data.frame(
+    state = .dc_state,
+    entity_type = "district",
+    entity_subtype = NA_character_,
+    district_id = paste0("MOCK-", marker),
+    school_id = NA_character_,
+    district_name = paste("Mock district", marker),
+    school_name = NA_character_,
+    nces_district_id = NA_character_,
+    nces_school_id = NA_character_,
+    parent_district_id = NA_character_,
+    county_name = NA_character_,
+    grades_served = NA_character_,
+    address = NA_character_,
+    city = NA_character_,
+    zip = NA_character_,
+    phone = NA_character_,
+    website = NA_character_,
+    status = "active",
+    is_charter = NA,
+    stringsAsFactors = FALSE
+  )
+  list(
+    entities = entities,
+    roles = empty_roles,
+    meta = list(
+      schema_version = .dc_schema_version,
+      state = .dc_state,
+      retrieved_at = retrieved_at,
+      source_status = source_status,
+      sources = list(list(
+        name = "test-only live collaborator",
+        url = "https://example.invalid/current-attempt",
+        retrieved_at = retrieved_at,
+        status = "ok"
+      )),
+      id_scheme = "test-only mock identifier",
+      coverage = list(
+        entity_types = "district",
+        district_roles = character(0),
+        school_roles = character(0),
+        org_only = TRUE,
+        principal_only = FALSE,
+        notes = "Synthetic mock used only by the offline contract test."
+      ),
+      counts = list(
+        entities_total = 1L,
+        districts = 1L,
+        schools = 0L,
+        roles_total = 0L,
+        roles_by_role = list()
+      ),
+      quality = list(
+        named_coverage = list(),
+        missing_id_count = 0L,
+        placeholder_id_count = 0L,
+        duplicate_key_count = 0L,
+        unmapped_title_count = 0L,
+        unmapped_titles = character(0)
+      )
+    )
+  )
+}
+
+.dc_declared_miss <- function(retrieved_at) {
+  result <- .dc_mock_result("MISS", retrieved_at, "source_unavailable")
+  result$entities <- result$entities[0, , drop = FALSE]
+  result$meta$sources[[1]]$retrieved_at <- NULL
+  result$meta$sources[[1]]$status <- "failed"
+  result$meta$counts$entities_total <- 0L
+  result$meta$counts$districts <- 0L
+  result
 }
 
 .dc_col_type_ok <- function(df, col, type) {
@@ -268,61 +317,51 @@ test_that("directory-contract: constructed assignment and multiplicity semantics
   expect_false(.dc_multiplicity_counter_matches(distinct_people, 2L))
 })
 
-test_that("directory-contract: constructed acquisition signature semantics", {
-  valid_minimal <- function(source = "package") NULL
-  valid_full <- function(source = "package", max_age_days = NULL,
-                         refresh = FALSE, use_cache = NULL) NULL
-
-  expect_identical(.dc_directory_signature_problem(valid_minimal), NULL)
-  expect_identical(.dc_directory_signature_problem(valid_full), NULL)
+test_that("directory-contract: constructed live-only signature semantics", {
+  expect_identical(.dc_directory_signature_problem(function() NULL), NULL)
   expect_true(grepl(
-    "must declare source",
-    .dc_directory_signature_problem(function() NULL),
-    fixed = TRUE
-  ))
-  expect_true(grepl(
-    "unsupported argument",
-    .dc_directory_signature_problem(
-      function(source = "package", tidy = TRUE) NULL
-    ),
-    fixed = TRUE
-  ))
-  expect_true(grepl(
-    "default literally",
+    "zero arguments",
     .dc_directory_signature_problem(function(source = "live") NULL),
     fixed = TRUE
   ))
   expect_true(grepl(
-    "must have a default",
-    .dc_directory_signature_problem(function(source) NULL),
+    "zero arguments",
+    .dc_directory_signature_problem(function(source = "package") NULL),
     fixed = TRUE
   ))
   expect_true(grepl(
-    "refresh must default",
-    .dc_directory_signature_problem(
-      function(source = "package", refresh = TRUE) NULL
-    ),
+    "zero arguments",
+    .dc_directory_signature_problem(function(max_age_days = NULL) NULL),
     fixed = TRUE
   ))
   expect_true(grepl(
-    "source must default literally",
-    .dc_directory_signature_problem(
-      function(source = getOption("schooldata.source")) NULL
-    ),
+    "zero arguments",
+    .dc_directory_signature_problem(function(refresh = FALSE) NULL),
     fixed = TRUE
   ))
   expect_true(grepl(
-    "max_age_days must default",
-    .dc_directory_signature_problem(
-      function(source = "package", max_age_days = -1) NULL
-    ),
+    "zero arguments",
+    .dc_directory_signature_problem(function(use_cache = FALSE) NULL),
     fixed = TRUE
   ))
   expect_true(grepl(
-    "use_cache must default",
-    .dc_directory_signature_problem(
-      function(source = "package", use_cache = TRUE) NULL
-    ),
+    "zero arguments",
+    .dc_directory_signature_problem(function(end_year = NULL) NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "zero arguments",
+    .dc_directory_signature_problem(function(tidy = TRUE) NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "zero arguments",
+    .dc_directory_signature_problem(function(...) NULL),
+    fixed = TRUE
+  ))
+  expect_true(grepl(
+    "not a function",
+    .dc_directory_signature_problem(NULL),
     fixed = TRUE
   ))
 })
@@ -336,14 +375,98 @@ test_that("directory-contract: top-level shape", {
   expect_true(is.list(.dc_snap$meta) && !is.data.frame(.dc_snap$meta))
 })
 
-test_that("directory-contract: fetch_directory() has an acquisition-only packaged-default signature", {
+test_that("directory-contract: fetch_directory() has exactly zero arguments", {
   fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
   expect_true(is.function(fn))
+  expect_identical(length(formals(fn)), 0L)
   expect_identical(
     .dc_directory_signature_problem(fn),
     NULL,
     info = .dc_directory_signature_problem(fn)
   )
+})
+
+test_that("directory-contract: public path delegates once to the live collaborator", {
+  fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
+  acquire <- get0("directory_live_acquire", envir = asNamespace(.dc_pkg))
+  expect_true(is.function(acquire))
+  expect_identical(length(formals(acquire)), 0L)
+  expect_identical(.dc_count_symbol_calls(body(fn), "directory_live_acquire"), 1L)
+})
+
+test_that("directory-contract: every call reflects a fresh collaborator result", {
+  fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
+  calls <- 0L
+  responses <- list(
+    .dc_mock_result("FIRST", "2026-08-01T10:00:00Z"),
+    .dc_mock_result("SECOND", "2026-08-01T10:00:01Z")
+  )
+  acquire <- function() {
+    calls <<- calls + 1L
+    responses[[calls]]
+  }
+  .dc_with_namespace_binding("directory_live_acquire", acquire, {
+    first <- fn()
+    second <- fn()
+  })
+  expect_identical(calls, 2L)
+  expect_identical(first$entities$district_id, "MOCK-FIRST")
+  expect_identical(second$entities$district_id, "MOCK-SECOND")
+  expect_identical(first$meta$retrieved_at, "2026-08-01T10:00:00Z")
+  expect_identical(second$meta$retrieved_at, "2026-08-01T10:00:01Z")
+  expect_identical(
+    second$meta$sources[[1]]$retrieved_at,
+    "2026-08-01T10:00:01Z"
+  )
+})
+
+test_that("directory-contract: a failed attempt cannot reuse prior success", {
+  fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
+  calls <- 0L
+  responses <- list(
+    .dc_mock_result("SUCCESS", "2026-08-01T10:01:00Z"),
+    .dc_declared_miss("2026-08-01T10:01:01Z")
+  )
+  acquire <- function() {
+    calls <<- calls + 1L
+    responses[[calls]]
+  }
+  .dc_with_namespace_binding("directory_live_acquire", acquire, {
+    first <- fn()
+    failed <- fn()
+  })
+  expect_identical(calls, 2L)
+  expect_identical(first$meta$source_status, "ok")
+  expect_identical(failed$meta$source_status, "source_unavailable")
+  expect_identical(nrow(failed$entities), 0L)
+  expect_identical(nrow(failed$roles), 0L)
+  expect_identical(failed$meta$retrieved_at, "2026-08-01T10:01:01Z")
+  expect_null(failed$meta$sources[[1]]$retrieved_at)
+})
+
+test_that("directory-contract: partial means a current-attempt portion succeeded", {
+  fn <- get0("fetch_directory", envir = asNamespace(.dc_pkg))
+  partial <- .dc_mock_result(
+    "PARTIAL",
+    "2026-08-01T10:02:00Z",
+    source_status = "partial"
+  )
+  partial$meta$sources[[2]] <- list(
+    name = "test-only failed portion",
+    url = "https://example.invalid/failed-portion",
+    retrieved_at = NULL,
+    status = "failed"
+  )
+  .dc_with_namespace_binding("directory_live_acquire", function() partial, {
+    result <- fn()
+  })
+  expect_identical(result$meta$source_status, "partial")
+  expect_identical(nrow(result$entities), 1L)
+  expect_identical(
+    result$meta$sources[[1]]$retrieved_at,
+    "2026-08-01T10:02:00Z"
+  )
+  expect_null(result$meta$sources[[2]]$retrieved_at)
 })
 
 test_that("directory-contract: entities columns, types, and extension rule", {
