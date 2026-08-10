@@ -1069,6 +1069,56 @@ test_that("process_grate normalizes grad_rate to 0-1 scale", {
 })
 
 
+# -----------------------------------------------------------------------------
+# The statewide graduation row must survive process_grate() as is_state.
+#
+# NJDOE publishes the statewide graduation row as county 99 / district 9999 /
+# school 999 in every vintage: legacy STAT_GRD.CSV grd06 and grd09
+# ("99-NEW JERSEY", "9999-NEW JERSEY", "999-STATE TOTAL"), grd10 grd.xls
+# (CO CODE 99 / DIST CODE 9999 / SCH CODE 999) and the ACGR / Cohort series
+# 2011-2025 (ACGR2012_gradrate.xls: County 99 "STATE", District 9999
+# "STATE TOTAL", School 999 "STATE TOTAL").
+#
+# id_grad_aggs() decides is_state with recognize_state_label = FALSE, so the
+# ONLY thing that makes the statewide row statewide is district_id == "9999" &
+# county_id == "99". A sentinel normalization that drops a digit off the
+# district code silently demotes the statewide row to a school row. This test
+# fails if the float-formatted district sentinel is mapped to anything but
+# "9999".
+# -----------------------------------------------------------------------------
+test_that("statewide graduation row keeps district 9999 and satisfies is_state", {
+  raw <- data.frame(
+    COUNTY_ID = c("99", "13"),
+    COUNTY_NAME = c("STATE", "ESSEX"),
+    DISTRICT_ID = c("9999.000000", "3570"),
+    DISTRICT_NAME = c("STATE TOTAL", "NEWARK CITY"),
+    SCHOOL_CODE = c("999.000000", "010"),
+    SCHOOL_NAME = c("STATE TOTAL", "SCHOOL 010"),
+    SUBGROUP = c("Schoolwide", "Schoolwide"),
+    FOUR_YR_GRAD_RATE = c("0.8646", "0.7500"),
+    end_year = 2012,
+    stringsAsFactors = FALSE
+  )
+
+  processed <- process_grate(raw, 2012)
+
+  # The float-formatted sentinels normalize to NJDOE's published codes, and the
+  # district sentinel keeps all four nines.
+  expect_equal(processed$district_id[1], "9999")
+  expect_equal(processed$school_id[1], "999")
+
+  flagged <- id_grad_aggs(processed)
+
+  expect_true(flagged$is_state[1])
+  expect_false(flagged$is_district[1])
+  expect_false(flagged$is_school[1])
+
+  # The real district row is unaffected.
+  expect_false(flagged$is_state[2])
+  expect_true(flagged$is_school[2])
+})
+
+
 test_that("process_grate handles school_id 888 as 999 for 2019", {
   df <- data.frame(
     county_id = "01", county_name = "ATLANTIC",

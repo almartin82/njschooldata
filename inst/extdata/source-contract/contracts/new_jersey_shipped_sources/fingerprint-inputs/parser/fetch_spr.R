@@ -210,7 +210,7 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   if (level == "district") {
     df <- df %>%
       dplyr::mutate(
-        # ID-SOURCE: NJDOE legacy grate file, school_id field, pre-2009 vintage (raw "999.000000" parsed in process_grate(), R/process_graduation.R; corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R) - "999" is NJDOE's published district-total school code (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); this line fills a school_id column absent from this NJDOE-published district-level SPR workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
+        # ID-SOURCE: NJDOE SCHOOL / "SCH CODE" / "School Code" field - "999" is NJDOE's own published district-total school code, printed with that label in STAT_ENR.CSV ("999-DISTRICT TOTAL", 8,909 rows), STAT_GRD.CSV grd06/grd09 ("999-STATE TOTAL"), grd10 grd.xls (SCH NAME "DISTRICT TOTAL"/"STATE TOTAL", 2,365 rows) and every ACGR / Cohort file 2011-2025 (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R. This line fills a school_id column absent from this NJDOE-published district-level SPR workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
         school_id = "999",
         school_name = "District Total"
       )

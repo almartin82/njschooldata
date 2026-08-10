@@ -141,6 +141,23 @@ process_grate <- function(df, end_year) {
 
   df <- df %>%
     dplyr::mutate(
+      # ID-SOURCE: NJDOE graduation files, SCHOOL_CODE / "SCH CODE" / "School
+      #   Code" field. "999" is NJDOE's own published district-total / statewide
+      #   school code, printed with its own label in every vintage checked:
+      #   legacy STAT_GRD.CSV grd06 and grd09 publish "999-STATE TOTAL" on the
+      #   statewide row; grd10 grd.xls publishes SCH CODE "999" with SCH NAME
+      #   "DISTRICT TOTAL"/"STATE TOTAL" (2,365 rows); ACGR2012_gradrate.xls
+      #   publishes School "999" / SCH_NAME "DISTRICT TOTAL" on district rows and
+      #   "STATE TOTAL" on the statewide row; SCHOOL_CODE "999" is present in
+      #   every ACGR / Cohort file 2012-2025.
+      # The 2019 arm harmonizes a published code onto another published code
+      #   rather than inventing one: the 2019 file (ACGR2019_Cohort2019...xlsx)
+      #   publishes School Code "888" labelled "District" on 4,650 rows and
+      #   "999" labelled "State" on 15, so 2019 alone names the district total
+      #   "888" where 2011-2018 name it "999". Both codes are NJDOE's; both are
+      #   accepted by is_district in fetch_graduation.R, and is_state keys on
+      #   district_id/county_id, not school_id, so the statewide row is
+      #   unaffected by the remap.
       school_id = dplyr::case_when(
         school_id == "999.000000" ~ "999",
         school_id == "888" & end_year == 2019 ~ "999",
@@ -148,7 +165,25 @@ process_grate <- function(df, end_year) {
       )
     )
 
-  df$district_id <- ifelse(df$district_id == "9999.000000", "999", df$district_id)
+  # Both lines strip a float-formatted id back to NJDOE's own published code.
+  # The district line previously mapped "9999.000000" to "999" -- the statewide
+  # SCHOOL code, copied down from the school_id case_when above -- which drops a
+  # digit off the statewide DISTRICT code and makes the row fail
+  # is_state (district_id == "9999" & county_id == "99", R/entity_flags.R).
+  # ID-SOURCE: NJDOE graduation files, DISTRICT_ID / "DIST CODE" field. The
+  #   statewide row is county 99 / district 9999 / school 999 in every vintage
+  #   checked: legacy STAT_GRD.CSV grd06 and grd09 (10 rows each, published as
+  #   "99-NEW JERSEY","9999-NEW JERSEY","999-STATE TOTAL"); grd10 grd.xls
+  #   (CO CODE 99 / DIST CODE 9999 / SCH CODE 999, 10 rows); and the ACGR /
+  #   Cohort series 2011-2025 (ACGR2012_gradrate.xls carries a single
+  #   County 99 "STATE" / District 9999 "STATE TOTAL" / School 999 row; the
+  #   modern files carry 11-17 statewide rows each).
+  # LIMITATION: no currently reachable source year emits the dotted
+  #   "9999.000000" form -- every 2011-2025 file parses district_id as text
+  #   ("9999"), so this normalization is inert today. It is kept because the
+  #   package still registers pre-2011 raw graduation years, whose float-
+  #   formatted vintage is what the literal was written for.
+  df$district_id <- ifelse(df$district_id == "9999.000000", "9999", df$district_id)
 
   if ("grad_rate" %in% names(df)) {
     if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {

@@ -310,11 +310,31 @@ process_enr <- function(df) {
     split_enr_cols() %>%
     # Fill in state-level identifiers for rows from the State sheet
     # (these come through with NA county/district/school codes)
+    # ID-SOURCE: NJDOE enrollment file STAT_ENR.CSV (enrollment_0405.zip, the
+    #   SY2004-05 doedata release this same fetcher reads), COUNTY / DISTRICT /
+    #   SCHOOL fields. NJDOE publishes the statewide rows as "99-NEW JERSEY",
+    #   "9999-STATE TOTAL", "999-STATE TOTAL" -- 33 rows carrying all three
+    #   codes together -- and uses the same scheme for the intermediate
+    #   aggregates in the same file: "9999-COUNTY TOTAL" on 658 county rows and
+    #   "999-DISTRICT TOTAL" on 8,909 district rows. These are NJDOE's own
+    #   published enrollment aggregate codes, in this domain, from this series.
+    # LIMITATION: the modern workbook (enrollment_2425.xlsx and every year that
+    #   splits State/District/School onto separate sheets) puts the statewide
+    #   figures on a "State" sheet that carries no county/district/school code
+    #   columns at all -- which is why those rows arrive NA here. The codes
+    #   written back are the legacy file's published values, not values read
+    #   from the modern sheet.
     dplyr::mutate(
+      # ID-SOURCE: STAT_ENR.CSV COUNTY field -- NJDOE publishes the statewide
+      #   county code as "99" ("99-NEW JERSEY"); see the block above this mutate.
       county_id = dplyr::if_else(is.na(county_id), "99", county_id),
       county_name = dplyr::if_else(is.na(county_name), "STATE", county_name),
+      # ID-SOURCE: STAT_ENR.CSV DISTRICT field -- NJDOE publishes the statewide
+      #   district code as "9999" ("9999-STATE TOTAL"); see the block above.
       district_id = dplyr::if_else(is.na(district_id), "9999", district_id),
       district_name = dplyr::if_else(is.na(district_name), "New Jersey", district_name),
+      # ID-SOURCE: STAT_ENR.CSV SCHOOL field -- NJDOE publishes the statewide
+      #   school code as "999" ("999-STATE TOTAL"); see the block above.
       school_id = dplyr::if_else(is.na(school_id), "999", school_id),
       school_name = dplyr::if_else(is.na(school_name), "State Total", school_name)
     ) %>%

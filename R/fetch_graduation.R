@@ -411,7 +411,7 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           # district-level file with NJDOE's own district-total CDS code (see
           # DISTRICT_TOTAL_SCHOOL_ID citation in R/config_constants.R); the
           # row itself is a real published district record, not a computed rollup.
-          # ID-SOURCE: NJDOE legacy grate file, school_id field, pre-2009 vintage (raw "999.000000" parsed in process_grate(), R/process_graduation.R; corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R) - "999" is NJDOE's published district-total school code (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); this line fills a school_id column absent from this NJDOE-published SPR district-level 6-year cohort workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
+          # ID-SOURCE: NJDOE SCHOOL / "SCH CODE" / "School Code" field - "999" is NJDOE's own published district-total school code, printed with that label in STAT_ENR.CSV ("999-DISTRICT TOTAL", 8,909 rows), STAT_GRD.CSV grd06/grd09 ("999-STATE TOTAL"), grd10 grd.xls (SCH NAME "DISTRICT TOTAL"/"STATE TOTAL", 2,365 rows) and every ACGR / Cohort file 2011-2025 (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R. This line fills a school_id column absent from this NJDOE-published SPR district-level 6-year cohort workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
           school_id = "999",
           school_name = "District Total"
         ) %>%
@@ -507,7 +507,7 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
           # district-level file with NJDOE's own district-total CDS code (see
           # DISTRICT_TOTAL_SCHOOL_ID citation in R/config_constants.R); the
           # row itself is a real published district record, not a computed rollup.
-          # ID-SOURCE: NJDOE legacy grate file, school_id field, pre-2009 vintage (raw "999.000000" parsed in process_grate(), R/process_graduation.R; corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R) - "999" is NJDOE's published district-total school code (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); this line fills a school_id column absent from this NJDOE-published SPR district-level 6-year cohort workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
+          # ID-SOURCE: NJDOE SCHOOL / "SCH CODE" / "School Code" field - "999" is NJDOE's own published district-total school code, printed with that label in STAT_ENR.CSV ("999-DISTRICT TOTAL", 8,909 rows), STAT_GRD.CSV grd06/grd09 ("999-STATE TOTAL"), grd10 grd.xls (SCH NAME "DISTRICT TOTAL"/"STATE TOTAL", 2,365 rows) and every ACGR / Cohort file 2011-2025 (same basis as DISTRICT_TOTAL_SCHOOL_ID, R/config_constants.R); corroborated by the Newark CDS->NCES crosswalk anchor in tests/testthat/test-id-preservation.R. This line fills a school_id column absent from this NJDOE-published SPR district-level 6-year cohort workbook, on a row that IS an NJDOE-published district record, not a computed rollup.
           school_id = "999",
           school_name = "District Total"
         ) %>%
@@ -551,9 +551,31 @@ fetch_6yr_grad_rate <- function(end_year, level = "school") {
   # rather than the numeric 99/9999 codes used elsewhere. Normalize so the
   # aggregation flags below classify the statewide row as is_state (it was
   # silently FALSE for 2017-2024 before this).
+  # ID-SOURCE: NJDOE graduation files, COUNTY_ID / DISTRICT_ID fields. "99" and
+  #   "9999" are NJDOE's own published statewide county and district codes,
+  #   printed with their own labels in every graduation vintage checked: legacy
+  #   STAT_GRD.CSV grd06 and grd09 publish "99-NEW JERSEY","9999-NEW JERSEY" on
+  #   the statewide row (10 rows each); grd10 grd.xls publishes CO CODE "99" /
+  #   DIST CODE "9999" with names "NEW JERSEY"/"STATE TOTAL" (10 rows); and the
+  #   ACGR / Cohort series 2011-2025 publishes COUNTY_ID "99" ("STATE") with
+  #   DISTRICT_ID "9999" ("STATE TOTAL") on 11-17 rows per file.
+  # LIMITATION: the SPR cohort-profile sheet this function reads does NOT print
+  #   those codes -- verified in Database_DistrictStateDetail.xlsx SY2023-24,
+  #   whose 6YrGraduationCohortProfile sheet has CountyCode == DistrictCode ==
+  #   "State" on all 17 statewide rows and no numeric code anywhere. So the
+  #   codes are certified from NJDOE's other graduation publications, not from
+  #   this workbook; they are the same agency's same CDS scheme for the same
+  #   measure, which is why the substitution is a normalization and not an
+  #   invention.
   df <- df %>%
     dplyr::mutate(
+      # ID-SOURCE: NJDOE graduation files, DISTRICT_ID / "DIST CODE" field --
+      #   "9999" is NJDOE's published statewide district code (see the evidence
+      #   block above this mutate).
       district_id = dplyr::if_else(district_id == "State", "9999", district_id),
+      # ID-SOURCE: NJDOE graduation files, COUNTY_ID / "CO CODE" field -- "99"
+      #   is NJDOE's published statewide county code (see the evidence block
+      #   above this mutate).
       county_id = dplyr::if_else(county_id == "State", "99", county_id)
     )
 

@@ -272,10 +272,34 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
   )
 
   # Normalize state-level records to use standard codes
+  # ID-SOURCE: NJDOE enrollment file STAT_ENR.CSV (enrollment_0405.zip, SY2004-05
+  #   doedata release), COUNTY / DISTRICT / SCHOOL fields: the statewide rows are
+  #   published as "99-NEW JERSEY", "9999-STATE TOTAL", "999-STATE TOTAL" (33
+  #   rows carrying all three together). Corroborated in the graduation domain by
+  #   NJDOE's legacy STAT_GRD.CSV (grd06, grd09: "99-NEW JERSEY","9999-NEW
+  #   JERSEY","999-STATE TOTAL", 10 rows each), grd10 grd.xls (CO CODE 99 / DIST
+  #   CODE 9999 / SCH CODE 999) and the ACGR / Cohort series 2011-2025.
+  # LIMITATION: the PARCC/NJSLA workbooks this function parses do NOT print
+  #   these codes. Verified in ELA04.xlsx (Spring 2015 PARCC) and
+  #   ELA04_NJSLA_DATA_2023-24.xlsx: the statewide rows carry the literal
+  #   "STATE"/"State" in COUNTY CODE with District Code and School Code blank,
+  #   and no "99"/"9999"/"999" appears in any id column of either file. So the
+  #   substituted codes are certified from NJDOE's own enrollment and graduation
+  #   publications -- the same agency's same CDS scheme -- and not from the
+  #   assessment file itself. is_state is decided upstream by
+  #   assign_entity_flags(recognize_state_label = TRUE) reading that published
+  #   "State" label, so no row is classified statewide on the strength of a code
+  #   this line writes.
   parcc_file <- parcc_file %>%
     dplyr::mutate(
+      # ID-SOURCE: NJDOE COUNTY field -- "99" is NJDOE's published statewide
+      #   county code (evidence and limitation in the block above this mutate).
       county_id = ifelse(is_state, "99", county_id),
+      # ID-SOURCE: NJDOE DISTRICT field -- "9999" is NJDOE's published statewide
+      #   district code (evidence and limitation in the block above this mutate).
       district_id = ifelse(is_state, "9999", district_id),
+      # ID-SOURCE: NJDOE SCHOOL field -- "999" is NJDOE's published statewide /
+      #   district-total school code (evidence in the block above this mutate).
       school_id = ifelse(is_state, "999", school_id)
     )
 

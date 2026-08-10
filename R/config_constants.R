@@ -17,20 +17,28 @@
 STATE_COUNTY_ID <- "99"
 
 #' State aggregate indicator codes
-#' Source: NJDOE doedata staff-evaluation files (county "99"/district "9999"
-#' statewide row, published 2014-2015; see this package's CLAUDE.md "Valid
-#' Filter Values (staff evaluations...)"); corroborated by the literal raw
-#' "9999.000000" district_id parsed from legacy grate files in
-#' process_grate() (R/process_graduation.R).
+#' Source: NJDOE publishes "9999" as the statewide district code, labelled as
+#' such, across both of this package's oldest source families. Enrollment:
+#' STAT_ENR.CSV (enrollment_0405.zip, SY2004-05 doedata release), DISTRICT
+#' field, "9999-STATE TOTAL" on 33 rows (and "9999-COUNTY TOTAL" on 658 county
+#' rows). Graduation: STAT_GRD.CSV (grd06, grd09), DISTRICT field,
+#' "9999-NEW JERSEY" on 10 rows each; grd10 grd.xls, DIST CODE "9999" with
+#' DIST NAME "STATE TOTAL"; and DISTRICT_ID "9999" ("STATE TOTAL") in every
+#' ACGR / Cohort file 2011-2025. Also present as the statewide district code
+#' in the NJDOE doedata staff-evaluation files (2014-2015; see this package's
+#' CLAUDE.md "Valid Filter Values (staff evaluations...)").
 #' @keywords internal
 STATE_DISTRICT_ID <- "9999"
 
 #' District total school code
-#' Source: literal raw "999.000000" school_id parsed from legacy grate files
-#' in process_grate() (R/process_graduation.R) before normalization;
-#' corroborated by the Newark (county 13/district 3570) school_id "999"
-#' anchor verified against the bundled NJ CDS->NCES crosswalk in
-#' tests/testthat/test-id-preservation.R.
+#' Source: NJDOE publishes "999" as the district-total / statewide school code,
+#' labelled as such. Enrollment: STAT_ENR.CSV (enrollment_0405.zip), SCHOOL
+#' field, "999-DISTRICT TOTAL" on 8,909 rows and "999-STATE TOTAL" on 33.
+#' Graduation: STAT_GRD.CSV (grd06, grd09) "999-STATE TOTAL"; grd10 grd.xls
+#' SCH CODE "999" with SCH NAME "DISTRICT TOTAL"/"STATE TOTAL" (2,365 rows);
+#' School Code "999" in every ACGR / Cohort file 2011-2025. Corroborated by the
+#' Newark (county 13/district 3570) school_id "999" anchor verified against the
+#' bundled NJ CDS->NCES crosswalk in tests/testthat/test-id-preservation.R.
 #' @keywords internal
 DISTRICT_TOTAL_SCHOOL_ID <- "999"
 
