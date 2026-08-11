@@ -32,6 +32,92 @@ _FETCHER_EXPORT_RE = re.compile(r"^(fetch|get|tidy)_")
 _NAMESPACE_EXPORT_RE = re.compile(r"^export\(([^)]+)\)\s*$")
 
 
+R_INTEGER_NA = -2147483648
+"""R's NA sentinel for integer vectors (INT_MIN).
+
+rpy2 materialises ``NA_integer_`` as this raw number inside a NumPy int32
+column, so a value that is honestly missing in R arrives in pandas as the
+concrete number -2147483648: ``pd.isna()`` reports False, ``bool()`` reports
+True, and ``sum()`` silently returns a fabricated total. No NJ DOE source
+publishes a real value anywhere near INT_MIN, so the sentinel is unambiguous.
+"""
+
+# rpy2 surfaces R's NA for logical and character vectors as singleton sentinel
+# OBJECTS inside an object-dtype column, not as pandas missing values. Measured
+# on this repo's rpy2 3.6.6 / pandas 2.3.3:
+#
+#     is_charter=NA -> NALogicalType   pd.isna() -> False   bool() raises
+#     name=NA       -> NACharacterType pd.isna() -> False   bool() raises
+#     n=NA_integer_ -> -2147483648     pd.isna() -> False   bool() -> True
+#     x=NA_real_    -> NaN             pd.isna() -> True    (already correct)
+#
+# Only the double case survives the boundary honestly. The other three make
+# missing data read as present, and is_charter -- now genuinely three-valued on
+# the R side -- is exactly such a column: an honest R NA would otherwise reach
+# Python as a value that passes ``if row["is_charter"]:``.
+#
+# The test is on the type NAME, never on ``==``: comparing a logical or integer
+# NA singleton against INT_MIN answers True while the character and real ones
+# answer False, so an equality-based normaliser repairs some NA rows and passes
+# the rest through as real values.
+_R_NA_SENTINEL_TYPES = frozenset(
+    {"NALogicalType", "NACharacterType", "NAIntegerType", "NARealType"}
+)
+
+
+def _is_r_na_sentinel(value: Any) -> bool:
+    """True for any of rpy2's NA singleton objects, identified by type name."""
+    value_type = type(value)
+    return (
+        value_type.__name__ in _R_NA_SENTINEL_TYPES
+        and value_type.__module__.startswith("rpy2")
+    )
+
+
+def normalise_r_missingness(frame: Any) -> Any:
+    """Convert an R frame's missingness to pandas missingness, in place of none.
+
+    Object columns have their rpy2 NA singletons replaced with ``pd.NA``; a
+    column whose remaining values are all booleans is then widened to the
+    nullable ``boolean`` dtype, so a three-valued flag such as ``is_charter``
+    stays three-valued in Python. Integer columns carrying R's INT_MIN sentinel
+    widen to nullable ``Int64`` with those cells set to ``pd.NA``.
+
+    An all-NA object column is left as object/``pd.NA``: with no present value
+    to inspect there is no evidence it was logical rather than character, and
+    guessing a dtype is not this function's job.
+
+    Non-frame inputs pass through untouched.
+    """
+    if not isinstance(frame, pd.DataFrame):
+        return frame
+
+    object_cols = list(frame.select_dtypes(include=["object", "string"]).columns)
+    sentinel_cols = [
+        column
+        for column in frame.columns
+        if pd.api.types.is_integer_dtype(frame[column])
+        and bool((frame[column] == R_INTEGER_NA).any())
+    ]
+    if not object_cols and not sentinel_cols:
+        return frame
+
+    frame = frame.copy()
+    for column in object_cols:
+        cleaned = frame[column].map(
+            lambda value: pd.NA if _is_r_na_sentinel(value) else value
+        )
+        present = cleaned.dropna()
+        if len(present) > 0 and all(pd.api.types.is_bool(v) for v in present):
+            cleaned = cleaned.astype("boolean")
+        frame[column] = cleaned
+    for column in sentinel_cols:
+        frame[column] = frame[column].astype("Int64").mask(
+            frame[column] == R_INTEGER_NA, pd.NA
+        )
+    return frame
+
+
 class RPackageCompatibilityError(RuntimeError):
     """Raised when the loaded R package is outside Python's supported range."""
 
@@ -194,7 +280,9 @@ def r_to_pandas(func: Callable) -> Callable:
             if "njsd_source_results" in attributes:
                 records = ro.r["attr"](result, "njsd_source_results", exact=True)
                 with localconverter(ro.default_converter + pandas2ri.converter):
-                    source_results = pandas2ri.rpy2py(records)
+                    source_results = normalise_r_missingness(
+                        pandas2ri.rpy2py(records)
+                    )
 
         # Use localconverter context for pandas conversion
         with localconverter(ro.default_converter + pandas2ri.converter):
@@ -204,6 +292,10 @@ def r_to_pandas(func: Callable) -> Callable:
                 converted = result.to_pandas()
             else:
                 converted = pandas2ri.rpy2py(result)
+        # Missing must stay missing across the boundary. Without this an honest
+        # R `is_charter = NA` reaches pandas as an NALogicalType that pd.isna()
+        # reports as present, and an NA_integer_ as the truthy number INT_MIN.
+        converted = normalise_r_missingness(converted)
         if isinstance(converted, pd.DataFrame) and isinstance(source_results, pd.DataFrame):
             converted.attrs["source_results"] = source_results
         return converted

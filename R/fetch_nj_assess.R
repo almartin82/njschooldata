@@ -410,7 +410,14 @@ assign_legacy_assess_flags <- function(df) {
   df$is_district <- !is.na(df$district_code) & is.na(df$school_code) &
     !df$is_state & !df$is_dfg
   df$is_school <- !is.na(df$school_code)
-  df$is_charter <- !is.na(cc) & cc == "80"
+  # Charter status is three-valued and County_Code is its only evidence here.
+  # A published code IS an answer in both directions: "80" is NJDOE's charter
+  # sector, and any other published code (01..41, a DFG letter, "ST", "NS"/"SN")
+  # places the row outside it. A row with no County_Code at all is not a
+  # not-charter, it is a row the source said nothing about, so `==` is left to
+  # propagate NA. Guarding with `!is.na(cc) &` would answer FALSE there, on no
+  # evidence.
+  df$is_charter <- is_charter_district(cc)
   df$is_charter_sector <- FALSE
   df$is_allpublic <- FALSE
 

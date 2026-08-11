@@ -5,7 +5,12 @@ import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
 
-from ._r_bridge import _get_r_package, call_r_function, r_to_pandas
+from ._r_bridge import (
+    _get_r_package,
+    call_r_function,
+    normalise_r_missingness,
+    r_to_pandas,
+)
 
 
 @r_to_pandas
@@ -62,8 +67,8 @@ def fetch_facilities_multi(
             use_cache=use_cache,
         )
         if isinstance(r_df, pd.DataFrame):
-            return r_df
-        return pandas2ri.rpy2py(r_df)
+            return normalise_r_missingness(r_df)
+        return normalise_r_missingness(pandas2ri.rpy2py(r_df))
 
 
 def fetch_facility_gis(layer: str = "school_points", use_cache: bool = True):
@@ -78,6 +83,7 @@ def fetch_facility_gis(layer: str = "school_points", use_cache: bool = True):
     with localconverter(ro.default_converter + pandas2ri.converter):
         r_df = pkg.fetch_facility_gis(layer, sf=False, use_cache=use_cache)
         df = r_df if isinstance(r_df, pd.DataFrame) else pandas2ri.rpy2py(r_df)
+        df = normalise_r_missingness(df)
 
     try:
         import geopandas as gpd

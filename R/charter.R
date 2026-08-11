@@ -34,6 +34,7 @@
 #'   apportioned charters are duplicated, one per host city.
 #' @export
 
+
 id_charter_hosts <- function(df) {
   if (!('district_id' %in% names(df) | 'district_code' %in% names(df))) {
     stop("supplied dataframe must contain 'district_id' or 'district_code'")
@@ -62,6 +63,77 @@ id_charter_hosts <- function(df) {
   df_new <- apply_charter_apportionment(df_new, id_col = id_col)
 
   return(df_new)
+}
+
+
+#' Charter status for a host-joined frame, combining every available evidence
+#'
+#' The charter-sector and all-public aggregation helpers all begin by joining to
+#' the bundled \code{charter_city} host map. They used to derive charter status
+#' as \code{!is.na(host_district_id)} - pure roster membership - which is wrong
+#' in both directions:
+#'
+#' \itemize{
+#'   \item It \strong{overwrites a sourced flag with a guess.} \code{fetch_enr()}
+#'         output already carries \code{is_charter} from NJDOE's own county-80
+#'         code. Replacing it with "is this id in our bundled table" discards the
+#'         published fact.
+#'   \item \strong{Absence from the roster is not evidence of anything.} NJ opens
+#'         charters faster than a bundled table is refreshed. Measured against
+#'         live NJ DOE enrollment on 2026-08-10, the roster missed 2 real county-80
+#'         charters in end_year 2024 (Kindle Education Public Charter School,
+#'         People's Achieve Community Charter School) and 4 in 2026 (those two
+#'         plus Paterson Preparatory Charter School and Thrive Charter School).
+#'         Every one was typed \code{is_charter = FALSE} while the same row's
+#'         county code said \code{"80"}.
+#' }
+#'
+#' \strong{The county-80 convention is vintage-dependent} and must not be applied
+#' backwards. NJ enrollment files use county \code{"80"} for the charter sector
+#' only from \code{end_year} 2010; in 2006-2009 charters carry their HOST county
+#' code (verified live: 50 name-charter LEAs in 2006-2008 sit in counties 01, 07,
+#' 13 and 25, and county 80 does not appear in those files at all). So county 80
+#' is read as \emph{affirmative} evidence, never as the sole source of a denial,
+#' and roster membership supplements it rather than replacing it.
+#'
+#' Evidence is combined, never discarded:
+#' \enumerate{
+#'   \item start from any \code{is_charter} the caller already carried in;
+#'   \item fill unknowns from the published county code;
+#'   \item roster membership is affirmative - it can raise an unknown or a
+#'         stale FALSE to TRUE, because every LEA in \code{charter_city} is a
+#'         real NJ charter;
+#'   \item anything still unevidenced stays \code{NA}.
+#' }
+#'
+#' @param df output of \code{\link{id_charter_hosts}} (carries
+#'   \code{host_district_id}).
+#' @return A three-valued logical vector, one element per row of \code{df}.
+#' @keywords internal
+charter_flag_host_aware <- function(df) {
+  n <- nrow(df)
+
+  out <- if ('is_charter' %in% names(df)) as.logical(df$is_charter) else rep(NA, n)
+
+  county <- if ('county_id' %in% names(df)) {
+    as.character(df$county_id)
+  } else if ('county_code' %in% names(df)) {
+    as.character(df$county_code)
+  } else {
+    NULL
+  }
+  if (!is.null(county)) {
+    sourced <- is_charter_district(county)
+    fill <- is.na(out) & !is.na(sourced)
+    out[fill] <- sourced[fill]
+  }
+
+  # Roster membership is positive evidence only. Absence never demotes.
+  if ('host_district_id' %in% names(df)) {
+    out[!is.na(df$host_district_id)] <- TRUE
+  }
+
+  out
 }
 
 
@@ -333,7 +405,7 @@ allpublic_enr_aggs <- function(df) {
   # if charter, make host_district_id the district id
   df <- df %>%
     mutate(
-      is_charter = !is.na(host_district_id),
+      is_charter = charter_flag_host_aware(.),
       county_id = ifelse(!is.na(host_county_id), host_county_id, county_id),
       district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
     )
@@ -418,7 +490,7 @@ charter_sector_parcc_aggs <- function(df) {
   # id hosts 
   df <- id_charter_hosts(df) %>%
     mutate(
-      is_charter = !is.na(host_district_id)
+      is_charter = charter_flag_host_aware(.)
     )
   
   # charters are reported twice, one per school one per district
@@ -833,7 +905,7 @@ charter_sector_spec_pop_aggs <- function(df) {
     id_charter_hosts()
   
   df <- df %>%
-    mutate(is_charter = !is.na(host_district_id)) %>%
+    mutate(is_charter = charter_flag_host_aware(.)) %>%
     filter(school_id != '999') %>%
     group_by(
       end_year, 
@@ -880,7 +952,7 @@ allpublic_spec_pop_aggs <- function(df) {
     id_charter_hosts() %>%
     # if charter, make host_district_id the district_id
     mutate(
-      is_charter = !is.na(host_district_id),
+      is_charter = charter_flag_host_aware(.),
       district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
     )
   
@@ -950,7 +1022,7 @@ charter_sector_sped_aggs <- function(df) {
    
    # group by - host city and summarize
    df <- df %>% 
-      mutate(is_charter = !is.na(host_district_id)) %>%
+      mutate(is_charter = charter_flag_host_aware(.)) %>%
       group_by(
          end_year, 
          host_county_id, host_county_name,
@@ -998,7 +1070,7 @@ allpublic_sped_aggs <- function(df) {
    # if charter, make host_district_id the district id
    df <- df %>%
       mutate(
-         is_charter = !is.na(host_district_id),
+         is_charter = charter_flag_host_aware(.),
          district_id = ifelse(!is.na(host_district_id), host_district_id, district_id)
       )
    

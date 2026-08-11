@@ -4,11 +4,14 @@
 \name{DISTRICT_TOTAL_SCHOOL_ID}
 \alias{DISTRICT_TOTAL_SCHOOL_ID}
 \title{District total school code
-Source: literal raw "999.000000" school_id parsed from legacy grate files
-in process_grate() (R/process_graduation.R) before normalization;
-corroborated by the Newark (county 13/district 3570) school_id "999"
-anchor verified against the bundled NJ CDS->NCES crosswalk in
-tests/testthat/test-id-preservation.R.}
+Source: NJDOE publishes "999" as the district-total / statewide school code,
+labelled as such. Enrollment: STAT_ENR.CSV (enrollment_0405.zip), SCHOOL
+field, "999-DISTRICT TOTAL" on 8,909 rows and "999-STATE TOTAL" on 33.
+Graduation: STAT_GRD.CSV (grd06, grd09) "999-STATE TOTAL"; grd10 grd.xls
+SCH CODE "999" with SCH NAME "DISTRICT TOTAL"/"STATE TOTAL" (2,365 rows);
+School Code "999" in every ACGR / Cohort file 2011-2025. Corroborated by the
+Newark (county 13/district 3570) school_id "999" anchor verified against the
+bundled NJ CDS->NCES crosswalk in tests/testthat/test-id-preservation.R.}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -17,10 +20,13 @@ DISTRICT_TOTAL_SCHOOL_ID
 }
 \description{
 District total school code
-Source: literal raw "999.000000" school_id parsed from legacy grate files
-in process_grate() (R/process_graduation.R) before normalization;
-corroborated by the Newark (county 13/district 3570) school_id "999"
-anchor verified against the bundled NJ CDS->NCES crosswalk in
-tests/testthat/test-id-preservation.R.
+Source: NJDOE publishes "999" as the district-total / statewide school code,
+labelled as such. Enrollment: STAT_ENR.CSV (enrollment_0405.zip), SCHOOL
+field, "999-DISTRICT TOTAL" on 8,909 rows and "999-STATE TOTAL" on 33.
+Graduation: STAT_GRD.CSV (grd06, grd09) "999-STATE TOTAL"; grd10 grd.xls
+SCH CODE "999" with SCH NAME "DISTRICT TOTAL"/"STATE TOTAL" (2,365 rows);
+School Code "999" in every ACGR / Cohort file 2011-2025. Corroborated by the
+Newark (county 13/district 3570) school_id "999" anchor verified against the
+bundled NJ CDS->NCES crosswalk in tests/testthat/test-id-preservation.R.
 }
 \keyword{internal}

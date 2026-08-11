@@ -13,6 +13,43 @@
 
 **The test is simple: can you trace every number back to a downloaded file from a state DOE website?** If not, it is fabricated. There is no gray area. If the data source is unavailable, the package MUST use Under Construction status — not fake data.
 
+## `is_charter` is THREE-VALUED. Never guard the NA away. (REQUIRED)
+
+NJDOE assigns every charter LEA to county `"80"` (its own County column reads
+"Charters"), so the county code is the evidence, and it answers in both
+directions:
+
+| The source published | `is_charter` |
+|---|---|
+| county `"80"` | `TRUE` |
+| any other county code (`"01".."41"`, `"99"`, a DFG letter, `"ST"`/`"NS"`/`"SN"`) | `FALSE` -- a sourced fact, never sweep it into NA |
+| no county code at all | `NA` |
+
+**The banned idiom is `!is.na(x) & x == "80"`.** It reads as a careful NA guard
+and is the exact opposite: it *cannot return NA*, so it answers "not a charter"
+for every row the source never typed. `==` propagates NA on its own; leave it
+alone. `dplyr::coalesce(x, FALSE)`, `replace_na(x, FALSE)`,
+`any(x, na.rm = TRUE)` and `x %in% c(TRUE, "Y")` are the same fabrication in
+other clothes.
+
+`is_charter_district()` in `R/config_constants.R` is the single decider. Call it
+rather than re-deriving; new surfaces get a case in
+`tests/testthat/test-charter-provenance.R`, whose source scan fails on any new
+NA-collapsing guard.
+
+**The county-80 convention is VINTAGE-DEPENDENT.** Enrollment files use county
+80 only from `end_year` 2010; in 2006-2009 charters carry their HOST county code
+(verified live: 50 name-charter LEAs in 2006-2008 sit in counties 01, 07, 13 and
+25, and county 80 does not appear at all). So county 80 is affirmative evidence,
+never the sole basis for a denial in a pre-2010 vintage. The bundled
+`charter_city` host map is likewise affirmative-only: it lags NJ's charter
+openings (it missed 4 real county-80 charters in `end_year` 2026), so absence
+from it proves nothing and must never demote a sourced TRUE.
+
+Note that `is_charter_sector` is a different thing entirely -- a synthetic
+aggregate-ROW marker set by the `charter_sector_*_aggs()` helpers, not a claim
+about any school -- and is correctly initialised to FALSE.
+
 ## Year Convention: njschooldata is END-year (verify external sources before joining)
 
 Every fetcher in this package names a year by its **END year**: `end_year = 2024` means school year 2023-24. This is the canonical convention for all joins and trends.
@@ -423,7 +460,9 @@ fractional FTE preserved).
   - Entity flags: `is_school` (per-school) vs `is_district` (`school_id=="999"`).
     A **statewide** aggregate (county `"99"` / district `"9999"`) is published in
     **2014 and 2015** and flagged `is_state` (returned at `level="district"`);
-    **2016 has no statewide row**. `is_charter` flags county 80.
+    **2016 has no statewide row**. `is_charter` is county 80 (three-valued;
+    NA where no county code is published). This file family contains NO charter
+    LEA at all -- 0 county-80 rows and 0 name-charter LEAs in all three years.
   - CDS drift: the 2015 (1415) file drops leading zeros (district `"10"`); ids are
     re-padded to county 2 / district 4 / school 3.
 
@@ -450,7 +489,10 @@ fractional FTE preserved).
     and are NOT surfaced as a count.
   - Legacy entity conventions inside the single CSV: state = `CONAME=="STATE SUM"`,
     county = `DIST=="9998"` (CO SUMMARY), district total = `SCH=="998"` (DIST
-    SUMMARY), else school. `is_charter` flags county 80.
+    SUMMARY), else school. `is_charter` is county 80 (three-valued). The
+    **STATE SUM row publishes no county code** in 2000-2002 and 2020-2026, so
+    its `is_charter` is `NA`, not FALSE (2003-2008 publish `"99"` there, a
+    sourced FALSE). The 2000-2008 CSVs contain no charter LEA at all.
   - **Deferred:** the non-certificated (`ncs/`) series mirrors this but is not yet
     implemented.
 
@@ -548,7 +590,9 @@ statewide column). Where the column name embeds the grade/test, `grade_subject`/
 Two fetchers read NJ DOE IDEA-618 public-reporting special-education data
 (source `nj.gov/education/specialed/monitor/ideapublicdata/docs/`). Both carry
 the standard entity flags (`is_state`/`is_county`/`is_district`/`is_school`/
-`is_charter`/`is_charter_sector`/`is_allpublic`; `is_charter` flags county 80)
+`is_charter`/`is_charter_sector`/`is_allpublic`; `is_charter` is county 80,
+three-valued -- `level = "state"` output carries no county column at all, so its
+`is_charter` is `NA`)
 and an opt-in `with_status = FALSE` arg (TRUE appends a `value_status` factor
 classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
 0). Metric polarity/denominator metadata is in `metric_registry.csv`

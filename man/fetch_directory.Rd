@@ -4,7 +4,7 @@
 \alias{fetch_directory}
 \title{Fetch the current New Jersey education directory (directory-contract/v1)}
 \usage{
-fetch_directory(source = "package", max_age_days = NULL, refresh = FALSE)
+fetch_directory()
 }
 \arguments{
 \item{source}{Acquisition source selector. The directory-contract/v1.1

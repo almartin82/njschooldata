@@ -218,7 +218,11 @@ tidy_staff_evaluations <- function(df, end_year) {
   df$is_county <- FALSE
   df$is_district <- is_district
   df$is_school <- !is_state & !is_district
-  df$is_charter <- !is.na(df$county_id) & df$county_id == "80"
+  # Three-valued: county 80 is NJDOE's charter sector, any other PUBLISHED
+  # county code places the row outside it, and a row carrying no county code at
+  # all is unknown. `==` propagates that NA; an `!is.na()` guard would convert
+  # it into a fabricated "not a charter".
+  df$is_charter <- is_charter_district(df$county_id)
 
   df[, c(
     "end_year",
@@ -492,9 +496,14 @@ parse_certificated_legacy <- function(path, end_year) {
   is_district <- !is.na(d$SCH) & d$SCH == "998" & !is_county & !is_state
   is_school <- !is_state & !is_county & !is_district
 
+  # Compare charter status against the SAME normalized code that ships in the
+  # county_id column, not the raw field: a drift year writing "8" would ship
+  # county_id "08" while a raw comparison silently answered "not 80".
+  county_id <- staff_pad_code(d$CO, 2)
+
   out <- data.frame(
     end_year = end_year,
-    county_id = staff_pad_code(d$CO, 2),
+    county_id = county_id,
     county_name = d$CONAME,
     district_id = staff_pad_code(d$DIST, 4),
     district_name = d$DISTNAME,
@@ -516,7 +525,11 @@ parse_certificated_legacy <- function(path, end_year) {
     is_county = is_county,
     is_district = is_district,
     is_school = is_school,
-    is_charter = !is.na(d$CO) & d$CO == "80",
+    # Three-valued. The STATE SUM row carries NO county code, so the source
+    # never places it inside or outside the charter sector -- `==` yields NA
+    # there, which is the honest answer. An `!is.na()` guard would have called
+    # the statewide aggregate "not a charter" on no published evidence.
+    is_charter = is_charter_district(county_id),
     stringsAsFactors = FALSE
   )
   # Statewide rows carry no county/district code; keep county_name "STATE SUM".
@@ -628,7 +641,10 @@ parse_certificated_modern <- function(path, sheet, end_year) {
 
   level_flags <- modern_sheet_flags(sheet, nrow(out))
   out <- cbind(out, level_flags)
-  out$is_charter <- !is.na(out$county_id) & out$county_id == "80"
+  # Three-valued. The STATE sheet publishes no county code, so charter status
+  # is unknown on those rows and `==` propagates NA. Guarding the NA away would
+  # assert "not a charter" for a statewide aggregate the source never typed.
+  out$is_charter <- is_charter_district(out$county_id)
 
   # Drop the trailing sentinel row ("end of worksheet" / "end of table") and any
   # all-NA position rows.

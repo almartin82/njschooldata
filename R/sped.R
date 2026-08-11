@@ -413,7 +413,16 @@ append_sped_entity_flags <- function(df,
     df$is_school <- is_school
   }
   if (!"is_charter" %in% names(df)) {
-    df$is_charter <- if ("county_id" %in% names(df)) df$county_id == "80" else FALSE
+    # county_id is the only charter evidence NJ publishes here (county 80 =
+    # the charter sector). Where the frame carries no county_id column at all --
+    # the statewide by-disability rollup -- the source has said NOTHING about
+    # charter status, so the answer is NA. It used to be FALSE, which asserted
+    # "not a charter" for every statewide row on no evidence whatsoever.
+    df$is_charter <- if ("county_id" %in% names(df)) {
+      is_charter_district(df$county_id)
+    } else {
+      NA
+    }
   }
   if (!"is_charter_sector" %in% names(df)) {
     df$is_charter_sector <- FALSE
