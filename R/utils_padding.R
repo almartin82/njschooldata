@@ -1,10 +1,45 @@
 # ==============================================================================
-# Padding Utility Functions
+# Identifier Padding / Composition Utility Functions
 # ==============================================================================
 #
-# Functions for zero-padding numeric codes (county, district, school, grade).
+# Functions for zero-padding numeric codes (county, district, school, grade)
+# and for composing CDS-style identifiers without inventing one.
 #
 # ==============================================================================
+
+#' Blank a composite identifier whose parts were not all published
+#'
+#' \code{paste0()} renders \code{NA} as the two literal characters \code{"NA"},
+#' so \code{paste0(NA, "3570")} is the string \code{"NA3570"} -- a
+#' plausible-looking identifier that joins to nothing and reads as data. That is
+#' fabrication by concatenation, and it is the same defect as
+#' \code{sprintf("\%03d", NA)} producing \code{"0NA"}.
+#'
+#' Compose the identifier normally (so the construction stays readable at the
+#' call site), then pass the composite and each of its parts through this
+#' helper on the following line. Any row where a part is missing or blank gets
+#' \code{NA_character_} back, which is what a consumer can actually filter on.
+#'
+#' @param composite Character vector: the concatenated identifier.
+#' @param ... The parts the composite was built from. Length-1 constants (for
+#'   example a published \code{"999"} district-total sentinel) recycle.
+#'
+#' @return \code{composite}, with \code{NA_character_} wherever any part was
+#'   missing or blank.
+#' @keywords internal
+na_composite_id <- function(composite, ...) {
+  parts <- list(...)
+  out <- as.character(composite)
+  if (!length(parts)) return(out)
+
+  part_missing <- lapply(parts, function(p) {
+    p <- as.character(p)
+    is.na(p) | !nzchar(trimws(p))
+  })
+  missing <- rep_len(Reduce(`|`, part_missing), length(out))
+  out[missing] <- NA_character_
+  out
+}
 
 #' Pad leading digits
 #'

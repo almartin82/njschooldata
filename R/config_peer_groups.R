@@ -43,9 +43,22 @@ get_dfg_districts <- function(dfg_code, revision = 2000) {
   dfg_data %>%
     dplyr::filter(dfg == dfg_code) %>%
     dplyr::mutate(
-      district_id = paste0(pad_leading(county_id, 2), pad_leading(district_id, 4))
+      # ID-SOURCE: NJDOE District Factor Group workbook (nj.gov/education/
+      #   stateaid/dfg.shtml, 2000 and 1990 Census revisions), COUNTY CODE and
+      #   DISTRICT CODE fields, read by fetch_dfg(). The county+district
+      #   concatenation is NJDOE's own published CDS convention (Newark =
+      #   county "13" + district "3570" = "133570").
+      district_id_full = paste0(pad_leading(county_id, 2), pad_leading(district_id, 4)),
+      # paste0() renders a missing part as the two literal characters "NA", so
+      # an unpublished county code would ship "NA3570" as a peer-group key.
+      # A composite whose parts were not all published is missing, not an id.
+      district_id_full = na_composite_id(district_id_full, county_id, district_id)
     ) %>%
-    dplyr::pull(district_id)
+    # A district whose CDS the source never published cannot be a member of a
+    # peer group; it is dropped from the membership list, never emitted as a
+    # plausible-looking key that joins to nothing.
+    dplyr::filter(!is.na(district_id_full)) %>%
+    dplyr::pull(district_id_full)
 }
 
 
@@ -126,15 +139,25 @@ add_dfg <- function(df, revision = 2000) {
   # Create lookup with both full CDS format and district-only format
   dfg_slim <- dfg_data %>%
     dplyr::mutate(
+      # ID-SOURCE: NJDOE District Factor Group workbook (nj.gov/education/
+      #   stateaid/dfg.shtml), COUNTY CODE + DISTRICT CODE fields via
+      #   fetch_dfg(); county+district is NJDOE's own published CDS convention.
       district_id_full = paste0(pad_leading(county_id, 2), pad_leading(district_id, 4)),
+      # paste0() renders a missing part as the literal "NA" ("NA3570"), which
+      # would then join to real district rows by accident. Missing stays missing.
+      district_id_full = na_composite_id(district_id_full, county_id, district_id),
       district_id_short = district_id
     ) %>%
     dplyr::select(district_id_full, district_id_short, dfg)
 
-  # Try joining on full format first
+  # Try joining on full format first. dplyr's left_join() matches NA to NA by
+  # default, so an unkeyed lookup row would attach a DFG to every unkeyed row
+  # of `df`; drop the unkeyed lookup rows rather than let them match.
   df_joined <- df %>%
     dplyr::left_join(
-      dfg_slim %>% dplyr::select(district_id = district_id_full, dfg),
+      dfg_slim %>%
+        dplyr::filter(!is.na(district_id_full)) %>%
+        dplyr::select(district_id = district_id_full, dfg),
       by = "district_id"
     )
 
@@ -142,6 +165,7 @@ add_dfg <- function(df, revision = 2000) {
   unmatched <- is.na(df_joined$dfg)
   if (any(unmatched)) {
     dfg_short <- dfg_slim %>%
+      dplyr::filter(!is.na(district_id_short)) %>%
       dplyr::select(district_id = district_id_short, dfg_short = dfg)
 
     df_joined <- df_joined %>%

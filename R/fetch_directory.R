@@ -173,11 +173,18 @@ get_raw_district_directory <- function() {
     )
     names(df)[names(df) == "county_code"] <- "county_id"
     names(df)[names(df) == "district_code"] <- "district_id"
+    # .clean_directory_raw() has already turned blank cells into NA, and
+    # paste0() renders NA as the two literal characters "NA" -- so an unpublished
+    # county code would ship the CDS code "NA3570010". Compose, then blank any
+    # composite whose parts were not all published.
     if (level == "school") {
       names(df)[names(df) == "school_code"] <- "school_id"
       df$cds_code <- paste0(df$county_id, df$district_id, df$school_id)
+      df$cds_code <- na_composite_id(df$cds_code, df$county_id, df$district_id,
+                                     df$school_id)
     } else {
       df$cds_code <- paste0(df$county_id, df$district_id, "999")
+      df$cds_code <- na_composite_id(df$cds_code, df$county_id, df$district_id)
     }
     df
   })
@@ -315,7 +322,17 @@ process_school_directory <- function(raw) {
       is_charter = county_id == "80",
       is_school = TRUE,
       is_district = FALSE,
-      cds_code = paste0(county_id, district_id, school_id)
+      # ID-SOURCE: NJDOE Homeroom Public Schools directory download
+      #   (homeroom4.doe.nj.gov/public/publicschools/download/, current
+      #   always-on vintage), COUNTY CODE / DISTRICT CODE / SCHOOL CODE fields.
+      #   Concatenating the three is NJDOE's own published CDS convention (see
+      #   DIRECTORY_ID_SCHEME): 2-digit county + 4-digit district + 3-digit
+      #   school. No part is invented; each is carried verbatim.
+      # paste0() renders a missing part as the literal "NA", so an unpublished
+      # code would ship "NA3570010" as a CDS code. Compose, then blank the
+      # composite wherever a part was not published.
+      cds_code = paste0(county_id, district_id, school_id),
+      cds_code = na_composite_id(cds_code, county_id, district_id, school_id)
     )
 }
 
@@ -408,7 +425,19 @@ process_district_directory <- function(raw) {
       is_charter = county_id == "80",
       is_school = FALSE,
       is_district = TRUE,
-      cds_code = paste0(county_id, district_id, "999")
+      # ID-SOURCE: NJDOE Homeroom Public School Districts directory download
+      #   (homeroom4.doe.nj.gov/public/districtpublicschools/download/, current
+      #   always-on vintage), COUNTY CODE / DISTRICT CODE fields, carried
+      #   verbatim. The district file publishes no school code, and "999" is
+      #   NJDOE's own published district-total school code -- it appears as
+      #   "999-DISTRICT TOTAL" / "999-STATE TOTAL" in the SCHOOL field of the
+      #   doedata enrollment releases (see the ID-SOURCE block in
+      #   R/process_enrollment.R). It is a state sentinel, not our invention.
+      # paste0() renders a missing part as the literal "NA", so an unpublished
+      # code would ship "NA3570999" as a CDS code. Compose, then blank the
+      # composite wherever a part was not published.
+      cds_code = paste0(county_id, district_id, "999"),
+      cds_code = na_composite_id(cds_code, county_id, district_id)
     )
 }
 
@@ -645,6 +674,16 @@ build_directory_from_spr <- function(
   x <- .clean_directory_raw(raw)
   district_key <- paste(x$county_code, x$district_code, sep = "\r")
   d <- x[!duplicated(district_key), , drop = FALSE]
+
+  # .clean_directory_raw() turns blank cells into NA, and paste0() renders NA
+  # as the two literal characters "NA" -- so an unpublished county code would
+  # ship "NA3570" as a district_id. Refuse the source rather than invent one,
+  # exactly as build_directory_entities_district()/_school() do.
+  if (any(is.na(x$county_code)) || any(is.na(x$district_code)) ||
+      any(is.na(x$school_code))) {
+    dc_stop("SPR directory source has a missing county, district, or school code",
+            "directory_integrity_error")
+  }
 
   district_id <- paste0(d$county_code, d$district_code)
   school_district_id <- paste0(x$county_code, x$district_code)

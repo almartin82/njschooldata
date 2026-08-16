@@ -174,10 +174,17 @@ process_njdoe_cds_facilities <- function(raw, src) {
 #' Process NJGIN school points to inventory rows
 #' @keywords internal
 process_njgin_school_points <- function(raw, src) {
+  # The CDS fallback is a composite: paste() renders a missing part as the two
+  # literal characters "NA", so a point with no published CDS would ship the
+  # entity_id "NA-NA-NA". Compose, then blank the composite wherever a part was
+  # not published, so an unidentified point stays unidentified.
+  cds_fallback <- paste(raw$COUNTYCODE, raw$DIST_CODE, raw$SCHOOLCODE, sep = "-")
+  cds_fallback <- na_composite_id(cds_fallback, raw$COUNTYCODE, raw$DIST_CODE,
+                                  raw$SCHOOLCODE)
   raw$entity_id <- ifelse(
     !is.na(raw$OGIS_ID) & raw$OGIS_ID != "",
     as.character(raw$OGIS_ID),
-    paste(raw$COUNTYCODE, raw$DIST_CODE, raw$SCHOOLCODE, sep = "-")
+    cds_fallback
   )
   raw$entity_name <- ifelse(
     !is.na(raw$SCHOOLNAME) & raw$SCHOOLNAME != "",
@@ -256,8 +263,12 @@ process_njsda_active_projects <- function(raw, src) {
 #' Process NJDOE SDA district allocation workbook
 #' @keywords internal
 process_njdoe_sda_allocation <- function(raw, src) {
+  # paste() renders a missing part as the literal "NA", so an allocation row
+  # with no published district code would ship the entity_id "13-NA". Both
+  # parts must be published for the composite; otherwise fall back to the bare
+  # district code, which stays missing when the source never published it.
   raw$entity_id <- ifelse(
-    !is.na(raw$county_id),
+    !is.na(raw$county_id) & !is.na(raw$`District ID`),
     paste(raw$county_id, raw$`District ID`, sep = "-"),
     raw$`District ID`
   )
