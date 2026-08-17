@@ -2,8 +2,9 @@
 # rehosted the legacy NJASK/HSPA/GEPA summary files under nj.gov at
 # education/assessment/results/njask/njask{YY}/ (see nj_legacy_assess_url()).
 # 2005-2014 fetch live from nj.gov; 2004 (not rehosted) is recovered from the
-# Internet Archive. The tryCatch/skip_if guards below remain as a defensive net
-# against transient network failures.
+# Internet Archive, which rate-limits (HTTP 429) under repeated access. The
+# njsd_live() guards below skip on a declared source condition and on nothing
+# else -- a parse failure or a failed expectation still reaches the reporter.
 
 test_that("valid_call correctly identifies status of years/grade pairs", {
   expect_true(valid_call(2014, 8))
@@ -16,8 +17,7 @@ test_that("valid_call correctly identifies status of years/grade pairs", {
 test_that("standard_assess correctly calls data for 2014", {
   skip_if_no_live_tests()
 
-  hspa_ex <- tryCatch(standard_assess(2014, 11), error = function(e) NULL)
-  skip_if(is.null(hspa_ex), "Legacy assessment data URL not accessible")
+  hspa_ex <- njsd_live(standard_assess(2014, 11), "standard_assess(2014, 11)")
 
   expect_equal(nrow(hspa_ex), 742)
   expect_equal(ncol(hspa_ex), 560)
@@ -29,8 +29,7 @@ test_that("standard_assess correctly calls data for 2014", {
     174325.5, tolerance = 0.01
   )
 
-  njask_ex <- tryCatch(standard_assess(2014, 7), error = function(e) NULL)
-  skip_if(is.null(njask_ex), "Legacy assessment data URL not accessible")
+  njask_ex <- njsd_live(standard_assess(2014, 7), "standard_assess(2014, 7)")
 
   expect_equal(nrow(njask_ex), 1329)
   expect_equal(ncol(njask_ex), 551)
@@ -48,8 +47,10 @@ test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
   skip_if_no_live_tests()
 
   #2014 njask
-  njask_14 <- tryCatch(fetch_old_nj_assess(2014, 6), error = function(e) NULL)
-  skip_if(is.null(njask_14), "Legacy assessment data URL not accessible")
+  njask_14 <- njsd_live(
+    fetch_old_nj_assess(2014, 6),
+    "fetch_old_nj_assess(2014, 6)"
+  )
 
   expect_equal(nrow(njask_14), 1505)
   expect_equal(ncol(njask_14), 551)
@@ -58,8 +59,10 @@ test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
   )
 
   #2014 hspa
-  hspa_14 <- tryCatch(fetch_old_nj_assess(2014, 11), error = function(e) NULL)
-  skip_if(is.null(hspa_14), "Legacy assessment data URL not accessible")
+  hspa_14 <- njsd_live(
+    fetch_old_nj_assess(2014, 11),
+    "fetch_old_nj_assess(2014, 11)"
+  )
 
   expect_equal(nrow(hspa_14), 742)
   expect_equal(ncol(hspa_14), 560)
@@ -68,8 +71,10 @@ test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
   )
 
   #2007 gepa
-  gepa_07 <- tryCatch(fetch_old_nj_assess(2007, 11), error = function(e) NULL)
-  skip_if(is.null(gepa_07), "Legacy assessment data URL not accessible")
+  gepa_07 <- njsd_live(
+    fetch_old_nj_assess(2007, 11),
+    "fetch_old_nj_assess(2007, 11)"
+  )
 
   expect_equal(nrow(gepa_07), 681)
   expect_equal(ncol(gepa_07), 529)
@@ -78,8 +83,10 @@ test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
   )
 
   #2004 gr3
-  njask_04 <- tryCatch(fetch_old_nj_assess(2004, 3), error = function(e) NULL)
-  skip_if(is.null(njask_04), "Legacy assessment data URL not accessible")
+  njask_04 <- njsd_live(
+    fetch_old_nj_assess(2004, 3),
+    "fetch_old_nj_assess(2004, 3)"
+  )
 
   expect_equal(nrow(njask_04), 1956)
   expect_equal(ncol(njask_04), 363)

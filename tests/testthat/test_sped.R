@@ -7,13 +7,7 @@ test_that("fetch_sped returns expected structure for 2024 data", {
   skip_if_no_live_tests()
 
   # Test current data year
-  result <- tryCatch(
-    fetch_sped(2024),
-    error = function(e) NULL
-  )
-
-
-  skip_if(is.null(result), "SPED data URL not accessible")
+  result <- njsd_live(fetch_sped(2024), "fetch_sped(2024)")
 
   expect_s3_class(result, 'data.frame')
   expected_cols <- c("end_year", "county_name", "district_id", "district_name",
@@ -111,8 +105,7 @@ test_that("tidy_sped_state_disability reshapes a State Rates frame", {
 
 test_that("fetch_sped(2025) district returns the classification schema", {
   skip_if_no_live_tests()
-  result <- tryCatch(fetch_sped(2025), error = function(e) NULL)
-  skip_if(is.null(result), "SPED 2025 workbook not accessible")
+  result <- njsd_live(fetch_sped(2025), "fetch_sped(2025)")
 
   expected_cols <- c("end_year", "county_id", "county_name", "district_id",
                      "district_name", "gened_num", "sped_num", "sped_rate")
@@ -128,8 +121,10 @@ test_that("fetch_sped(2025) district returns the classification schema", {
 
 test_that("fetch_sped(2025, level='state') gives child count by disability", {
   skip_if_no_live_tests()
-  s <- tryCatch(fetch_sped(2025, level = "state"), error = function(e) NULL)
-  skip_if(is.null(s), "SPED 2025 workbook not accessible")
+  s <- njsd_live(
+    fetch_sped(2025, level = "state"),
+    'fetch_sped(2025, level = "state")'
+  )
 
   expect_true(all(c("end_year", "is_state", "disability_category",
                     "n_students", "sped_rate", "suppressed") %in% names(s)))
@@ -219,8 +214,7 @@ test_that("clean_sped_df appends entity flags and opt-in value_status", {
 
 test_that("historical district SPED years return the standard schema", {
   skip_if_no_live_tests()
-  res <- tryCatch(fetch_sped(2018), error = function(e) NULL)
-  skip_if(is.null(res), "SPED 2018 archive not accessible")
+  res <- njsd_live(fetch_sped(2018), "fetch_sped(2018)")
 
   expected_cols <- c("end_year", "county_id", "county_name", "district_id",
                      "district_name", "gened_num", "sped_num", "sped_rate")

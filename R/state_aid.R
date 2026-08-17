@@ -95,7 +95,14 @@ normalize_state_aid_category <- function(raw) {
   ) & !grepl(
     "county|preschool|prek|summary|adult|special|scenario|extraordinary|stabiliz|eligib",
     basenames, ignore.case = TRUE
-  )
+  ) &
+    # NJ DOE ships the district-details table twice, as a PDF and as a workbook
+    # with the same stem ("FY25 GBM District Details Rev.pdf" alongside
+    # ".xlsx"), and the PDF sorts first inside the archive. Without this the
+    # first candidate is the PDF, .validate_source_file() rejects it as "XLSX
+    # source is truncated or has no ZIP signature", and the whole year is
+    # reported as a parse_error.
+    grepl("[.]xls[xmb]?$", basenames, ignore.case = TRUE)
   candidate <- members[is_details]
   if (!length(candidate)) {
     stop(

@@ -273,8 +273,7 @@ test_that("tidy_pre2025_district_5_21_one expands 2020 disability codes", {
 test_that("fetch_sped_placement (district 5-21) returns expected structure", {
   skip_if_no_live_tests()
 
-  df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
-  skip_if(is.null(df), "SPED placement workbook not accessible")
+  df <- njsd_live(fetch_sped_placement(2025), "fetch_sped_placement(2025)")
 
   expected_cols <- c(
     "end_year", "county_id", "county_name",
@@ -310,8 +309,7 @@ test_that("fetch_sped_placement (district 5-21) returns expected structure", {
 
 test_that("fetch_sped_placement entity flags are coherent", {
   skip_if_no_live_tests()
-  df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
-  skip_if(is.null(df), "SPED placement workbook not accessible")
+  df <- njsd_live(fetch_sped_placement(2025), "fetch_sped_placement(2025)")
 
   expect_true(all(df$is_district))
   expect_false(any(df$is_state))
@@ -321,8 +319,7 @@ test_that("fetch_sped_placement entity flags are coherent", {
 
 test_that("fetch_sped_placement counts sum to subgroup_total (fidelity)", {
   skip_if_no_live_tests()
-  df <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
-  skip_if(is.null(df), "SPED placement workbook not accessible")
+  df <- njsd_live(fetch_sped_placement(2025), "fetch_sped_placement(2025)")
 
   newark <- df[
     df$district_name == "Newark Public School District" &
@@ -339,11 +336,10 @@ test_that("fetch_sped_placement counts sum to subgroup_total (fidelity)", {
 
 test_that("fetch_sped_placement(tidy=FALSE) returns raw workbook tibble", {
   skip_if_no_live_tests()
-  raw <- tryCatch(
+  raw <- njsd_live(
     fetch_sped_placement(2025, tidy = FALSE),
-    error = function(e) NULL
+    "fetch_sped_placement(2025, tidy = FALSE)"
   )
-  skip_if(is.null(raw), "SPED placement workbook not accessible")
 
   expect_true("County Code" %in% names(raw))
   expect_true("Student Group" %in% names(raw))
@@ -355,11 +351,10 @@ test_that("fetch_sped_placement(tidy=FALSE) returns raw workbook tibble", {
 
 test_that("fetch_sped_placement (state 5-21) returns 5 dimension breakdowns", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2025, level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2025, level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_setequal(
     unique(df$dimension),
@@ -372,11 +367,10 @@ test_that("fetch_sped_placement (state 5-21) returns 5 dimension breakdowns", {
 
 test_that("state 5-21: counts within a subgroup sum to subgroup_total", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2025, level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2025, level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   asian <- df[df$dimension == "racial_ethnic" & df$subgroup == "asian", ]
   skip_if(nrow(asian) == 0, "Asian subgroup missing from state sheet")
@@ -389,11 +383,10 @@ test_that("state 5-21: counts within a subgroup sum to subgroup_total", {
 
 test_that("fetch_sped_placement (district 3-5) returns districtwide totals", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2025, age_group = "3-5", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2025, age_group = "3-5", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(all(df$environment == "districtwide"))
   expect_true(all(df$is_district))
@@ -402,11 +395,10 @@ test_that("fetch_sped_placement (district 3-5) returns districtwide totals", {
 
 test_that("fetch_sped_placement (state 3-5) uses preschool environments", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2025, age_group = "3-5", level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2025, age_group = "3-5", level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true("ec_program_10plus_hrs" %in% df$environment)
   expect_true("separate_class" %in% df$environment)
@@ -420,11 +412,10 @@ test_that("fetch_sped_placement (state 3-5) uses preschool environments", {
 
 test_that("fetch_sped_placement (2024 district 5-21) returns canonical schema", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2024, age_group = "5-21", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2024, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   # Same columns as 2025
   expected_cols <- c(
@@ -449,20 +440,18 @@ test_that("fetch_sped_placement (2024 district 5-21) returns canonical schema", 
 
 test_that("2024 schema matches 2025 schema", {
   skip_if_no_live_tests()
-  df24 <- tryCatch(fetch_sped_placement(2024), error = function(e) NULL)
-  df25 <- tryCatch(fetch_sped_placement(2025), error = function(e) NULL)
-  skip_if(is.null(df24) || is.null(df25), "Network or workbook unavailable")
+  df24 <- njsd_live(fetch_sped_placement(2024), "fetch_sped_placement(2024)")
+  df25 <- njsd_live(fetch_sped_placement(2025), "fetch_sped_placement(2025)")
   expect_equal(sort(names(df24)), sort(names(df25)))
 })
 
 
 test_that("fetch_sped_placement (2022 district 5-21) parses race subgroups", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2022, age_group = "5-21", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2022, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(nrow(df) > 0)
   expect_equal(unique(df$end_year), 2022)
@@ -473,11 +462,10 @@ test_that("fetch_sped_placement (2022 district 5-21) parses race subgroups", {
 
 test_that("fetch_sped_placement (2020 district 5-21) expands abbrev codes", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2020, age_group = "5-21", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2020, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(nrow(df) > 0)
   expect_equal(unique(df$end_year), 2020)
@@ -491,11 +479,10 @@ test_that("fetch_sped_placement (2020 district 5-21) expands abbrev codes", {
 
 test_that("fetch_sped_placement (2021 district 3-5) returns districtwide totals", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2021, age_group = "3-5", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2021, age_group = "3-5", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(nrow(df) > 0)
   expect_true(all(df$environment == "districtwide"))
@@ -505,11 +492,10 @@ test_that("fetch_sped_placement (2021 district 3-5) returns districtwide totals"
 
 test_that("fetch_sped_placement (2024 state 5-21) parses 4 dimensions", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2024, age_group = "5-21", level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2024, age_group = "5-21", level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(all(df$is_state))
   expect_true(all(c("racial_ethnic", "gender", "disability",
@@ -521,11 +507,10 @@ test_that("fetch_sped_placement (2024 state 5-21) parses 4 dimensions", {
 
 test_that("2024 state 5-21 fidelity: env counts sum to subgroup_total", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2024, age_group = "5-21", level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2024, age_group = "5-21", level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   asian <- df[df$dimension == "racial_ethnic" & df$subgroup == "asian", ]
   skip_if(nrow(asian) == 0, "Asian subgroup missing from state file")
@@ -540,11 +525,10 @@ test_that("2024 state 5-21 fidelity: env counts sum to subgroup_total", {
 
 test_that("2022 district 5-21 fidelity: env counts <= subgroup_total", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2022, age_group = "5-21", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2022, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   # For one large district + total-equivalent subgroup, the env counts
   # should sum to the subgroup_total (which is itself the env-count sum,
@@ -562,18 +546,39 @@ test_that("2022 district 5-21 fidelity: env counts <= subgroup_total", {
 })
 
 
-test_that("fetch_sped_placement_multi binds years and skips bad ones", {
+test_that("fetch_sped_placement_multi aborts on an unpublished year in strict mode", {
   skip_if_no_live_tests()
-  df <- suppressWarnings(
-    tryCatch(
-      fetch_sped_placement_multi(c(1999L, 2025L)),
-      error = function(e) NULL
-    )
+
+  # Documented contract: "A per-year failure aborts in strict mode; partial
+  # results require allow_partial = TRUE." 1999 predates IDEA-618 placement
+  # reporting, so the whole request must stop, and it must say WHY -- the
+  # not_published class, not a transport failure.
+  expect_error(
+    suppressWarnings(fetch_sped_placement_multi(c(1999L, 2025L))),
+    class = "njsd_not_published"
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
+})
+
+
+test_that("fetch_sped_placement_multi(allow_partial) returns the published years", {
+  skip_if_no_live_tests()
+  df <- njsd_live(
+    suppressWarnings(
+      fetch_sped_placement_multi(c(1999L, 2025L), allow_partial = TRUE)
+    ),
+    "fetch_sped_placement_multi(c(1999L, 2025L), allow_partial = TRUE)"
+  )
 
   expect_true(nrow(df) > 0)
   expect_equal(unique(df$end_year), 2025)
+
+  # The unpublished year is declared in the provenance record, not dropped
+  # silently.
+  records <- get_source_results(df)
+  expect_true(1999 %in% records$end_year)
+  expect_equal(
+    records$source_status[records$end_year == 1999], "not_published"
+  )
 })
 
 
@@ -584,11 +589,10 @@ test_that("fetch_sped_placement_multi binds years and skips bad ones", {
 
 test_that("fetch_sped_placement (2021 district 5-21) returns canonical schema", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2021, age_group = "5-21", level = "district"),
-    error = function(e) NULL
+    'fetch_sped_placement(2021, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(nrow(df) > 0)
   expect_equal(unique(df$end_year), 2021)
@@ -604,14 +608,13 @@ test_that("fetch_sped_placement (2021 district 5-21) returns canonical schema", 
 
 test_that("fetch_sped_placement_multi(2020:2025) contains 2021/5-21 district rows", {
   skip_if_no_live_tests()
-  df <- suppressWarnings(
-    tryCatch(
+  df <- njsd_live(
+    suppressWarnings(
       fetch_sped_placement_multi(2020:2025,
-                                 age_group = "5-21", level = "district"),
-      error = function(e) NULL
-    )
+                                 age_group = "5-21", level = "district")
+    ),
+    'fetch_sped_placement_multi(2020:2025, age_group = "5-21", level = "district")'
   )
-  skip_if(is.null(df), "SPED placement workbook(s) not accessible")
 
   expect_true(any(df$end_year == 2021))
   # Every year between 2020 and 2025 should be represented (no Excel gap)
@@ -672,11 +675,10 @@ test_that("fetch_sped_placement(tidy=FALSE) on PDF slice returns tidy schema", {
 
 test_that("fetch_sped_placement (2023 state 5-21) parses typo-named Excel", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement(2023, age_group = "5-21", level = "state"),
-    error = function(e) NULL
+    'fetch_sped_placement(2023, age_group = "5-21", level = "state")'
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   expect_true(nrow(df) > 0)
   expect_true(all(df$is_state))
@@ -694,11 +696,10 @@ test_that("fetch_sped_placement (2023 state 5-21) parses typo-named Excel", {
 
 test_that("fetch_sped_placement_multi covers 2020-2022 district 5-21 without gaps", {
   skip_if_no_live_tests()
-  df <- tryCatch(
+  df <- njsd_live(
     fetch_sped_placement_multi(c(2020L, 2021L, 2022L)),
-    error = function(e) NULL
+    "fetch_sped_placement_multi(c(2020L, 2021L, 2022L))"
   )
-  skip_if(is.null(df), "SPED placement workbook not accessible")
 
   # All three years now present; 2021 is no longer short-circuited (the
   # district-level data was always available inside docs/2020.zip; the

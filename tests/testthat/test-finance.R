@@ -18,10 +18,35 @@ finance_metrics <- c(
 )
 
 # Fetch one year once only when live-source tests are explicitly enabled.
-fin <- if (live_tests_enabled()) {
-  tryCatch(suppressWarnings(fetch_finance(2024)), error = function(e) NULL)
-} else NULL
-have_data <- !is.null(fin) && nrow(fin) > 0
+#
+# The outcome is memoised so the workbook is downloaded once per run, but it is
+# resolved INSIDE a test rather than at file scope: a declared NJ DOE source
+# condition then produces a per-test skip naming the cause, while a parse error
+# or an unclassed failure reaches the reporter. The previous file-scope
+# `tryCatch(..., error = function(e) NULL)` plus
+# `skip_if_not(have_data, "NJ DOE finance source unavailable")` reported every
+# cause -- including our own parse bugs -- as a source outage.
+.finance_2024 <- new.env(parent = emptyenv())
+
+finance_2024 <- function() {
+  skip_if_no_live_tests()
+  if (is.null(.finance_2024$outcome)) {
+    .finance_2024$outcome <- tryCatch(
+      list(kind = "data", value = suppressWarnings(fetch_finance(2024))),
+      njsd_source_unavailable = function(e) list(kind = "skip", cond = e),
+      njsd_not_published = function(e) list(kind = "skip", cond = e),
+      njsd_not_yet_observed = function(e) list(kind = "skip", cond = e)
+    )
+  }
+  outcome <- .finance_2024$outcome
+  if (identical(outcome$kind, "skip")) {
+    testthat::skip(paste0(
+      "fetch_finance(2024): NJ DOE declared ", class(outcome$cond)[1], " -- ",
+      conditionMessage(outcome$cond)
+    ))
+  }
+  outcome$value
+}
 
 
 test_that("get_available_finance_years returns a sane integer range", {
@@ -95,29 +120,24 @@ test_that("finance FY/SY alignment assertion fails loudly on off-by-one rows", {
 })
 
 test_that("fetch_finance emits exactly the canonical columns in order", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   expect_equal(names(fin), finance_cols)
 })
 
 test_that("with_status is additive and preserves the default finance columns", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
 
-  fin_status <- tryCatch(
+  fin_status <- njsd_live(
     suppressWarnings(fetch_finance(2024, with_status = TRUE)),
-    error = function(e) NULL
+    "fetch_finance(2024, with_status = TRUE)"
   )
-  skip_if_no_live_tests()
-  skip_if(is.null(fin_status) || nrow(fin_status) == 0, "NJ DOE finance source unavailable")
 
   expect_equal(names(fin_status), finance_cols_with_status)
   expect_equal(fin_status[, finance_cols], fin)
 })
 
 test_that("metrics conform to the documented vocabulary", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   expect_true(all(unique(fin$metric) %in% finance_metrics))
   # the two standard cross-state names must be present for 2024
   expect_true("per_pupil_total" %in% fin$metric)
@@ -125,16 +145,14 @@ test_that("metrics conform to the documented vocabulary", {
 })
 
 test_that("values are non-negative and finite (NAs allowed for suppressed)", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   v <- fin$value[!is.na(fin$value)]
   expect_true(all(is.finite(v)))
   expect_true(all(v >= 0))
 })
 
 test_that("per-pupil flag matches the metric family", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   pp <- fin[grepl("^per_pupil_", fin$metric), ]
   rev <- fin[grepl("^revenue_", fin$metric), ]
   expect_true(all(pp$is_per_pupil))
@@ -142,8 +160,7 @@ test_that("per-pupil flag matches the metric family", {
 })
 
 test_that("there is a statewide aggregate row and it is positive", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   st <- fin[fin$is_state & fin$metric == "per_pupil_total", ]
   expect_equal(nrow(st), 1L)
   expect_true(st$value > 0)
@@ -152,16 +169,14 @@ test_that("there is a statewide aggregate row and it is positive", {
 })
 
 test_that("one observation per district per metric (no duplication)", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   d <- fin[fin$is_district, ]
   counts <- stats::aggregate(value ~ state_id + metric, data = d, FUN = length)
   expect_equal(sum(counts$value > 1), 0L)
 })
 
 test_that("entity flags are mutually consistent", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   expect_true(all(xor(fin$is_state, fin$is_district)))
   expect_true(all(!fin$is_school))
 })
@@ -180,8 +195,7 @@ test_that("school-level finance requests return a structural not-published gap",
 })
 
 test_that("nces_dist is attached to most districts and never fabricated for state rows", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   # state aggregate rows must not carry a district NCES id
   expect_true(all(is.na(fin$nces_dist[fin$is_state])))
   # nces_sch is always NA (NJ finance is district-level only)
@@ -192,15 +206,13 @@ test_that("nces_dist is attached to most districts and never fabricated for stat
 })
 
 test_that("per_pupil_total carries an enrollment denominator for districts", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   d <- fin[fin$is_district & fin$metric == "per_pupil_total", ]
   expect_true(mean(!is.na(d$enrollment_denominator)) > 0.85)
 })
 
 test_that("real per-pupil values above $100k pass through with raw fidelity", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
+  fin <- finance_2024()
   # County special-services districts genuinely spend more than $100k per pupil.
   # These were formerly NA-ed by a blunt magnitude cap; the canonical front door
   # now passes them through unchanged so the value matches the published source.
@@ -211,9 +223,7 @@ test_that("real per-pupil values above $100k pass through with raw fidelity", {
                               fin$metric == "per_pupil_total")]
   expect_true(length(bergen) == 1 && bergen > 100000)
 
-  tg <- tryCatch(suppressWarnings(fetch_tges(2025)), error = function(e) NULL)
-  skip_if_no_live_tests()
-  skip_if(is.null(tg), "TGES source unavailable")
+  tg <- njsd_live(suppressWarnings(fetch_tges(2025)), "fetch_tges(2025)")
   aa <- tg[["CSG1AA_AVGS"]]
   raw <- aa[which(aa$end_year == 2024 & aa$calc_type == "Actuals" &
                     aa$district_id == "0285"), "Per Pupil Total Expenditures",
@@ -223,8 +233,8 @@ test_that("real per-pupil values above $100k pass through with raw fidelity", {
 
 test_that("zero/blank per-pupil denominators are still NA-ed", {
   skip_if_no_live_tests()
-  f11 <- tryCatch(suppressWarnings(fetch_finance(2011)), error = function(e) NULL)
-  skip_if(is.null(f11) || nrow(f11) == 0, "NJ DOE finance source unavailable")
+  f11 <- njsd_live(suppressWarnings(fetch_finance(2011)), "fetch_finance(2011)")
+  expect_gt(nrow(f11), 0L)
   bad_denoms <- f11[f11$is_per_pupil & !is.na(f11$enrollment_denominator) &
                       f11$enrollment_denominator <= 0, ]
   expect_equal(nrow(bad_denoms), 0L)
@@ -232,21 +242,18 @@ test_that("zero/blank per-pupil denominators are still NA-ed", {
 
 test_that("fetch_finance_multi accepts the cross-state end_years alias", {
   skip_if_no_live_tests()
-  f <- tryCatch(
+  f <- njsd_live(
     suppressWarnings(fetch_finance_multi(end_years = c(2024, 2025))),
-    error = function(e) NULL
+    "fetch_finance_multi(end_years = c(2024, 2025))"
   )
-  skip_if(is.null(f) || nrow(f) == 0, "NJ DOE finance source unavailable")
+  expect_gt(nrow(f), 0L)
   expect_true(all(c(2024, 2025) %in% unique(f$end_year)))
   expect_equal(names(f), finance_cols)
 })
 
 test_that("tidy values match the raw TGES source (fidelity)", {
-  skip_if_no_live_tests()
-  skip_if_not(have_data, "NJ DOE finance source unavailable")
-  tg <- tryCatch(suppressWarnings(fetch_tges(2025)), error = function(e) NULL)
-  skip_if_no_live_tests()
-  skip_if(is.null(tg), "TGES source unavailable")
+  fin <- finance_2024()
+  tg <- njsd_live(suppressWarnings(fetch_tges(2025)), "fetch_tges(2025)")
   aa <- tg[["CSG1AA_AVGS"]]
   raw <- aa[which(aa$end_year == 2024 & aa$calc_type == "Actuals" &
                     aa$district_id == "3570"), "Per Pupil Total Expenditures",
@@ -258,19 +265,19 @@ test_that("tidy values match the raw TGES source (fidelity)", {
 
 test_that("a revenue-only recent year emits revenue_state and no spending", {
   skip_if_no_live_tests()
-  f25 <- tryCatch(suppressWarnings(fetch_finance(2025)), error = function(e) NULL)
-  skip_if(is.null(f25) || nrow(f25) == 0, "state aid source unavailable")
+  f25 <- njsd_live(suppressWarnings(fetch_finance(2025)), "fetch_finance(2025)")
+  expect_gt(nrow(f25), 0L)
   expect_true(all(f25$metric == "revenue_state"))
   expect_equal(names(f25), finance_cols)
 })
 
 test_that("with_status marks current-year per-pupil actuals as not yet observed", {
   skip_if_no_live_tests()
-  f25 <- tryCatch(
+  f25 <- njsd_live(
     suppressWarnings(fetch_finance(2025, with_status = TRUE)),
-    error = function(e) NULL
+    "fetch_finance(2025, with_status = TRUE)"
   )
-  skip_if(is.null(f25) || nrow(f25) == 0, "state aid source unavailable")
+  expect_gt(nrow(f25), 0L)
 
   pp <- f25[grepl("^per_pupil_", f25$metric), , drop = FALSE]
   rev <- f25[f25$metric == "revenue_state", , drop = FALSE]

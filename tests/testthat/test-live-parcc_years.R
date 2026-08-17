@@ -16,11 +16,9 @@ test_that("2015 PARCC URL pattern works (parcc subdirectory)", {
 
 test_that("2016-2018 PARCC URL pattern works (spring subdirectory)", {
   # 2016-2018 uses: /1617/spring/ELA03.xlsx
-  p <- tryCatch(
+  p <- njsd_live(
     fetch_parcc(2017, 3, "ela", tidy = TRUE),
-    error = function(e) {
-      skip(paste("Network error fetching 2017 data:", e$message))
-    }
+    'fetch_parcc(2017, 3, "ela", tidy = TRUE)'
   )
   expect_s3_class(p, "data.frame")
   expect_gt(nrow(p), 20000)

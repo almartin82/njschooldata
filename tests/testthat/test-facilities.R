@@ -1,14 +1,21 @@
-skip_if_offline_facilities <- function() {
-  skip_if_no_live_tests()
-  ok <- tryCatch({
-    resp <- httr::GET(
-      "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Point_Locations_of_NJ/FeatureServer/0",
-      query = list(f = "pjson"),
-      httr::timeout(15)
-    )
-    !httr::http_error(resp)
-  }, error = function(e) FALSE)
-  if (!isTRUE(ok)) skip("New Jersey facilities sources not reachable")
+# There is no connectivity probe here on purpose. The guard this file used to
+# open with pinged ONE ArcGIS feature server and skipped all seven category
+# tests when it did not answer -- even though six of those categories come from
+# www.nj.gov and www.njsda.gov and never touch ArcGIS. It answered "is that one
+# host up?" when the question is "did this fetch succeed?". The live fetches
+# below declare their own outcome instead: a real NJ DOE transport failure
+# arrives as njsd_source_unavailable and njsd_live() skips on it by class.
+# Nothing else becomes a skip.
+
+# Every live facilities fetch goes through here so a declared NJ DOE source
+# condition (njsd_source_unavailable / njsd_not_published / njsd_not_yet_observed)
+# becomes a skip that names the category, and a parse failure or a failed
+# expectation does not.
+facilities_live <- function(category) {
+  njsd_live(
+    fetch_facilities(category, use_cache = FALSE),
+    paste0('fetch_facilities("', category, '")')
+  )
 }
 
 shipped_facility_categories <- function() {
@@ -30,10 +37,10 @@ test_that("facilities category vocabulary is validated", {
 })
 
 test_that("every shipped category returns the canonical facilities contract", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
 
   for (category in shipped_facility_categories()) {
-    out <- fetch_facilities(category, use_cache = FALSE)
+    out <- facilities_live(category)
     expect_identical(names(out), facilities_columns(), info = category)
     expect_gt(nrow(out), 0, label = category)
     expect_true(is.character(out$value), info = category)
@@ -46,18 +53,18 @@ test_that("every shipped category returns the canonical facilities contract", {
 })
 
 test_that("blank source values are dropped rather than fabricated", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
   out <- dplyr::bind_rows(lapply(shipped_facility_categories(), function(category) {
-    fetch_facilities(category, use_cache = FALSE)
+    facilities_live(category)
   }))
   expect_false(any(is.na(out$value)))
   expect_false(any(out$value %in% c("", "NA", "N/A", "-", "null", "NULL")))
 })
 
 test_that("count and money metrics are finite and non-negative", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
   out <- dplyr::bind_rows(lapply(shipped_facility_categories(), function(category) {
-    fetch_facilities(category, use_cache = FALSE)
+    facilities_live(category)
   }))
   numeric_metrics <- c(
     "sda_grant_allocation", "n_outlets_tested", "n_outlets_exceeded",
@@ -72,9 +79,9 @@ test_that("count and money metrics are finite and non-negative", {
 })
 
 test_that("pinned inventory, finance, and environmental values match NJ sources", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
 
-  inventory <- fetch_facilities("inventory", use_cache = FALSE)
+  inventory <- facilities_live("inventory")
   attales <- inventory[
     inventory$entity_id == "01-0010-050" &
       inventory$metric == "school_category",
@@ -83,7 +90,7 @@ test_that("pinned inventory, finance, and environmental values match NJ sources"
   # Source: NJDOE NJSLEDS County District School Code List, CDS Codes sheet.
   expect_equal(attales$value[1], "Regular Resident School")
 
-  finance <- fetch_facilities("finance", use_cache = FALSE)
+  finance <- facilities_live("finance")
   pleasantville <- finance[
     finance$entity_id == "01-4180" &
       finance$metric == "sda_grant_allocation",
@@ -93,7 +100,7 @@ test_that("pinned inventory, finance, and environmental values match NJ sources"
   # DistrictAllocationTable.xlsx, Pleasantville City row.
   expect_equal(as.numeric(pleasantville$value[1]), 1000000)
 
-  env <- fetch_facilities("environmental", use_cache = FALSE)
+  env <- facilities_live("environmental")
   atlantic_city <- env[
     env$entity_id == "01-0110" &
       env$metric == "n_outlets_exceeded",
@@ -104,9 +111,9 @@ test_that("pinned inventory, finance, and environmental values match NJ sources"
 })
 
 test_that("pinned NJSDA project values match active project pages", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
 
-  capacity <- fetch_facilities("capacity", use_cache = FALSE)
+  capacity <- facilities_live("capacity")
   bridgeton_capacity <- capacity[
     capacity$entity_id == "11-0540-020" &
       capacity$metric == "added_capacity",
@@ -115,7 +122,7 @@ test_that("pinned NJSDA project values match active project pages", {
   # Source: NJSDA Bridgeton Senior H.S. active project page.
   expect_equal(as.numeric(bridgeton_capacity$value[1]), 326)
 
-  attrs <- fetch_facilities("attributes", use_cache = FALSE)
+  attrs <- facilities_live("attributes")
   bridgeton_year <- attrs[
     attrs$entity_id == "11-0540-020" &
       attrs$metric == "year_constructed",
@@ -123,7 +130,7 @@ test_that("pinned NJSDA project values match active project pages", {
   expect_gt(nrow(bridgeton_year), 0)
   expect_equal(as.numeric(bridgeton_year$value[1]), 1952)
 
-  projects <- fetch_facilities("projects", use_cache = FALSE)
+  projects <- facilities_live("projects")
   bridgeton_cost <- projects[
     projects$entity_id == "11-0540-020" &
       projects$metric == "total_estimated_project_cost",
@@ -133,28 +140,32 @@ test_that("pinned NJSDA project values match active project pages", {
 })
 
 test_that("entity levels reflect source grain and NCES ids attach only on CDS rows", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
 
-  expect_true(all(fetch_facilities("inventory", use_cache = FALSE)$entity_level == "school"))
-  expect_true(all(fetch_facilities("projects", use_cache = FALSE)$entity_level == "project"))
-  expect_true(all(fetch_facilities("capacity", use_cache = FALSE)$entity_level == "project"))
-  expect_true(all(fetch_facilities("finance", use_cache = FALSE)$entity_level == "district"))
-  expect_true(all(fetch_facilities("environmental", use_cache = FALSE)$entity_level %in% c("district", "school")))
-  expect_true(all(fetch_facilities("closures", use_cache = FALSE)$entity_level == "school"))
+  expect_true(all(facilities_live("inventory")$entity_level == "school"))
+  expect_true(all(facilities_live("projects")$entity_level == "project"))
+  expect_true(all(facilities_live("capacity")$entity_level == "project"))
+  expect_true(all(facilities_live("finance")$entity_level == "district"))
+  expect_true(all(facilities_live("environmental")$entity_level %in% c("district", "school")))
+  expect_true(all(facilities_live("closures")$entity_level == "school"))
 
-  inventory <- fetch_facilities("inventory", use_cache = FALSE)
+  inventory <- facilities_live("inventory")
   attales <- inventory[inventory$entity_id == "01-0010-050", ]
   expect_true(any(attales$nces_dist == "3400660", na.rm = TRUE))
   expect_true(any(!is.na(attales$nces_sch)))
 
-  projects <- fetch_facilities("projects", use_cache = FALSE)
+  projects <- facilities_live("projects")
   expect_true(all(is.na(projects$nces_dist)))
   expect_true(all(is.na(projects$nces_sch)))
 })
 
 test_that("fetch_facility_gis supports data-frame and sf modes", {
-  skip_if_offline_facilities()
+  skip_if_no_live_tests()
 
+  # Left unguarded: get_raw_facilities_arcgis() reaches NJGIN through
+  # httr::stop_for_status(), which raises an httr condition rather than one of
+  # the package's njsd_* source classes. Inventing a skip for it would be
+  # guessing, so an NJGIN outage fails this opt-in live test instead.
   df <- fetch_facility_gis("school_points", sf = FALSE, use_cache = FALSE)
   expect_s3_class(df, "data.frame")
   expect_true(all(c("latitude", "longitude", "wkt", "source_url") %in% names(df)))

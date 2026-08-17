@@ -469,11 +469,10 @@ test_that("ecosystem_trend includes rank and n columns for allpublic", {
 test_that("fetch_reportcard_special_pop output includes n_enrolled column", {
   skip_if_no_live_tests()
 
-  result <- tryCatch(
+  result <- njsd_live(
     fetch_reportcard_special_pop(2019),
-    error = function(e) NULL
+    "fetch_reportcard_special_pop(2019)"
   )
-  skip_if(is.null(result), "Report card data not accessible")
 
   expect_true("n_enrolled" %in% names(result),
     info = "fetch_reportcard_special_pop should include n_enrolled column")
@@ -488,11 +487,10 @@ test_that("fetch_reportcard_special_pop output includes n_enrolled column", {
 test_that("fetch_reportcard_special_pop n_students is consistent with percent and n_enrolled", {
   skip_if_no_live_tests()
 
-  result <- tryCatch(
+  result <- njsd_live(
     fetch_reportcard_special_pop(2019),
-    error = function(e) NULL
+    "fetch_reportcard_special_pop(2019)"
   )
-  skip_if(is.null(result), "Report card data not accessible")
 
   # Where we have both percent and n_enrolled, n_students should be derivable
   check <- result %>%
@@ -518,11 +516,10 @@ test_that("fetch_reportcard_special_pop includes enrollment from PR enrollment t
 
   # The issue specifically asks to "read from enrollment table in PR"
   # and "add that to special pop to infer N"
-  result <- tryCatch(
+  result <- njsd_live(
     fetch_reportcard_special_pop(2018),
-    error = function(e) NULL
+    "fetch_reportcard_special_pop(2018)"
   )
-  skip_if(is.null(result), "Report card data not accessible")
 
   # No row should have NA for n_enrolled when the school exists in enrollment
   schools_with_data <- result %>%
@@ -550,11 +547,7 @@ test_that("fetch_reportcard_special_pop includes enrollment from PR enrollment t
 test_that("extract_rc_college_matric returns enroll_any for 2013", {
   skip_if_no_live_tests()
 
-  rc_2013 <- tryCatch(
-    get_one_rc_database(2013),
-    error = function(e) NULL
-  )
-  skip_if(is.null(rc_2013), "2013 report card data not accessible")
+  rc_2013 <- njsd_live(get_one_rc_database(2013), "get_one_rc_database(2013)")
 
   matric <- extract_rc_college_matric(list(rc_2013))
 
@@ -573,11 +566,7 @@ test_that("extract_rc_college_matric returns enroll_any for 2013", {
 test_that("extract_rc_college_matric returns correct enroll_4yr for 2017", {
   skip_if_no_live_tests()
 
-  rc_2017 <- tryCatch(
-    get_one_rc_database(2017),
-    error = function(e) NULL
-  )
-  skip_if(is.null(rc_2017), "2017 report card data not accessible")
+  rc_2017 <- njsd_live(get_one_rc_database(2017), "get_one_rc_database(2017)")
 
   matric <- extract_rc_college_matric(list(rc_2017))
 
@@ -727,26 +716,38 @@ test_that("parcc_aggregate_calcs produces clean school names", {
 
 # Issue #103: grad count should have combined gender x race subgroups
 
-test_that("fetch_grad_count includes gender x race subgroups for years that have them", {
+test_that("fetch_grad_count declares its coverage floor rather than silently missing", {
+  # No network: get_grad_count() refuses the year before any download.
+  #
+  # Issue #103 asks for the pre-2011 gender x race subgroups (white_m,
+  # black_f, ...). process_grad_count() still carries that branch, but
+  # get_grad_count() stops below 2012, so the branch is unreachable and the
+  # subgroups do not exist for any year fetch_grad_count() will serve. That is
+  # a COVERAGE gap in this package, and the boundary is asserted here so it
+  # cannot move without a test noticing.
+  expect_error(fetch_grad_count(2010), "not yet supported")
+  expect_error(fetch_grad_count(2011), "not yet supported")
+})
+
+test_that("grad count carries no gender x race subgroups in its covered years", {
   skip_if_no_live_tests()
 
-  # Pre-2011 data should have gender x race subgroups like white_m, black_f
-  result <- tryCatch(
-    fetch_grad_count(2010),
-    error = function(e) NULL
-  )
-  skip_if(is.null(result), "2010 grad count data not accessible")
+  # The honest state of issue #103 for the years this package actually serves.
+  # 2012 is the coverage floor; NJ DOE's cohort file publishes race and gender
+  # separately, never crossed, so the crossed subgroups are absent. Asserted
+  # rather than skipped so that implementing #103 (or NJ DOE publishing the
+  # cross) turns this red and forces the expectation to be rewritten.
+  result <- njsd_live(fetch_grad_count(2012), "fetch_grad_count(2012)")
 
   subgroups <- unique(result$subgroup)
+  expect_gt(length(subgroups), 0L)
+  expect_true("total population" %in% subgroups)
 
-  # Should have combined gender x race subgroups like enrollment does
   gender_race <- c("white_m", "white_f", "black_m", "black_f",
                    "hispanic_m", "hispanic_f")
-
-  has_gender_race <- any(gender_race %in% subgroups)
-  expect_true(has_gender_race,
+  expect_false(any(gender_race %in% subgroups),
     info = paste(
-      "Pre-2011 grad count should have gender x race subgroups.",
+      "Gender x race grad-count subgroups (issue #103) are still unimplemented.",
       "Available subgroups:", paste(subgroups, collapse = ", ")
     ))
 })
@@ -757,15 +758,8 @@ test_that("grad count subgroups parallel enrollment subgroups", {
 
   skip_if_no_live_tests()
 
-  enr <- tryCatch(
-    fetch_enr(2019, tidy = TRUE),
-    error = function(e) NULL
-  )
-  gcount <- tryCatch(
-    fetch_grad_count(2019),
-    error = function(e) NULL
-  )
-  skip_if(is.null(enr) || is.null(gcount), "Data not accessible")
+  enr <- njsd_live(fetch_enr(2019, tidy = TRUE), "fetch_enr(2019, tidy = TRUE)")
+  gcount <- njsd_live(fetch_grad_count(2019), "fetch_grad_count(2019)")
 
   enr_subgroups <- unique(enr$subgroup)
   gc_subgroups <- unique(gcount$subgroup)
@@ -798,11 +792,10 @@ test_that("grad count subgroups parallel enrollment subgroups", {
 test_that("fetch_grad_rate returns single grad_rate column for 5-year data", {
   skip_if_no_live_tests()
 
-  result <- tryCatch(
+  result <- njsd_live(
     fetch_grad_rate(2013, methodology = "5 year"),
-    error = function(e) NULL
+    'fetch_grad_rate(2013, methodology = "5 year")'
   )
-  skip_if(is.null(result), "5-year grad rate data not accessible for 2013")
 
   # Should have a single grad_rate column (not separate grad_rate and five_yr_grad_rate)
   expect_true("grad_rate" %in% names(result),
@@ -825,47 +818,37 @@ test_that("fetch_grad_rate returns single grad_rate column for 5-year data", {
 test_that("5-year grad rate values are plausible (higher than 4-year)", {
   skip_if_no_live_tests()
 
-  grate_4yr <- tryCatch(
-    fetch_grad_rate(2013, methodology = "4 year"),
-    error = function(e) NULL
-  )
-  grate_5yr <- tryCatch(
+  # The bug issue #106 describes: NJ DOE's 5-year file publishes BOTH rates, so
+  # `grad_rate` can silently carry the 4-year value. The comparison therefore
+  # happens WITHIN the 5-year frame, against its own `four_yr_grad_rate`
+  # column, on the rows the source actually publishes.
+  #
+  # It used to join the 4-year and 5-year frames on district_id. NJ DOE
+  # publishes the 2013 5-year file at SCHOOL grain only -- 393 rows, zero with
+  # is_district -- so that join returned 0 rows and every assertion below it
+  # was stepped over on every run.
+  grate_5yr <- njsd_live(
     fetch_grad_rate(2013, methodology = "5 year"),
-    error = function(e) NULL
+    'fetch_grad_rate(2013, methodology = "5 year")'
   )
-  skip_if(is.null(grate_4yr) || is.null(grate_5yr),
-    "Grad rate data not accessible for 2013")
 
-  # Join on district to compare
-  comparison <- grate_4yr %>%
-    dplyr::filter(is_district, subgroup == "total population") %>%
-    dplyr::select(district_id, grad_rate_4yr = grad_rate) %>%
-    dplyr::inner_join(
-      grate_5yr %>%
-        dplyr::filter(is_district, subgroup == "total population") %>%
-        dplyr::select(district_id, grad_rate_5yr = grad_rate),
-      by = "district_id"
-    ) %>%
-    dplyr::filter(!is.na(grad_rate_4yr) & !is.na(grad_rate_5yr))
+  expect_true("four_yr_grad_rate" %in% names(grate_5yr))
 
-  skip_if(nrow(comparison) == 0, "No districts with both 4yr and 5yr rates")
+  comparison <- grate_5yr %>%
+    dplyr::filter(!is.na(grad_rate) & !is.na(four_yr_grad_rate))
+
+  expect_gt(nrow(comparison), 100L)
 
   # On average, 5-year rates should be >= 4-year rates
-  expect_true(
-    mean(comparison$grad_rate_5yr, na.rm = TRUE) >=
-      mean(comparison$grad_rate_4yr, na.rm = TRUE),
-    info = "Average 5-year grad rate should be >= average 4-year grad rate"
+  expect_gte(
+    mean(comparison$grad_rate),
+    mean(comparison$four_yr_grad_rate)
   )
 
-  # The grad_rate field should NOT still contain the 4-year rate
-  # (this is the bug: the 5yr file has both columns and the wrong one may be used)
-  # At least 20% of districts should show 5yr > 4yr
-  pct_higher <- mean(comparison$grad_rate_5yr > comparison$grad_rate_4yr)
-  expect_true(pct_higher >= 0.2,
-    info = sprintf(
-      "Only %.1f%% of districts show 5yr > 4yr. The grad_rate column may contain 4yr values.",
-      pct_higher * 100
-    ))
+  # The grad_rate field should NOT still contain the 4-year rate. If the wrong
+  # column were used, grad_rate would equal four_yr_grad_rate everywhere.
+  pct_higher <- mean(comparison$grad_rate > comparison$four_yr_grad_rate)
+  expect_gte(pct_higher, 0.2)
 })
 
 
@@ -879,17 +862,11 @@ test_that("5-year grad rate values are plausible (higher than 4-year)", {
 test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
   skip_if_no_live_tests()
 
-  enr <- tryCatch(
-    fetch_enr(2019, tidy = TRUE),
-    error = function(e) NULL
-  )
-  skip_if(is.null(enr), "Enrollment data not accessible")
+  enr <- njsd_live(fetch_enr(2019, tidy = TRUE), "fetch_enr(2019, tidy = TRUE)")
 
-  result <- tryCatch(
-    charter_sector_enr_aggs(enr),
-    error = function(e) NULL
-  )
-  skip_if(is.null(result), "Charter sector enrollment aggs failed")
+  # A pure in-memory aggregate over an already-fetched frame: it cannot raise
+  # a source condition, so it is left unguarded and any failure is ours.
+  result <- charter_sector_enr_aggs(enr)
 
   # Should have a column indicating how many charters are in the sector
   has_count_col <- any(c("n_schools", "n_charters", "n_charter_rows") %in% names(result))
@@ -909,17 +886,11 @@ test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
 test_that("charter_sector_grate_aggs includes n_charter_rows column", {
   skip_if_no_live_tests()
 
-  grate <- tryCatch(
-    fetch_grad_rate(2019),
-    error = function(e) NULL
-  )
-  skip_if(is.null(grate), "Grad rate data not accessible")
+  grate <- njsd_live(fetch_grad_rate(2019), "fetch_grad_rate(2019)")
 
-  result <- tryCatch(
-    charter_sector_grate_aggs(grate),
-    error = function(e) NULL
-  )
-  skip_if(is.null(result), "Charter sector grate aggs failed")
+  # A pure in-memory aggregate over an already-fetched frame: it cannot raise
+  # a source condition, so it is left unguarded and any failure is ours.
+  result <- charter_sector_grate_aggs(grate)
 
   # The aggregate calc function creates n_charter_rows but it may be
   # dropped by grate_column_order(). Issue #69 says it should be kept.
@@ -936,17 +907,11 @@ test_that("charter sector with single school is identifiable", {
 
   skip_if_no_live_tests()
 
-  grate <- tryCatch(
-    fetch_grad_rate(2019),
-    error = function(e) NULL
-  )
-  skip_if(is.null(grate), "Grad rate data not accessible")
+  grate <- njsd_live(fetch_grad_rate(2019), "fetch_grad_rate(2019)")
 
-  result <- tryCatch(
-    charter_sector_grate_aggs(grate),
-    error = function(e) NULL
-  )
-  skip_if(is.null(result), "Charter sector grate aggs failed")
+  # A pure in-memory aggregate over an already-fetched frame: it cannot raise
+  # a source condition, so it is left unguarded and any failure is ours.
+  result <- charter_sector_grate_aggs(grate)
 
   # n_charter_rows should be present and allow identifying single-school sectors
   skip_if_not("n_charter_rows" %in% names(result),

@@ -12,7 +12,8 @@
 # challenged, fetch_directory() honestly returns source_status
 # "source_unavailable" (a declared miss, not a crash); we skip in that case
 # rather than fail, because a bot-blocked runner is a source-availability
-# condition, not package drift.
+# condition, not package drift. Anything fetch_directory() actually raises is a
+# parse/integrity/schema defect of ours and is left to fail.
 
 test_that("directory-live: live fetch matches fixture coverage and does not collapse", {
   skip_if_no_live_tests()
@@ -26,12 +27,12 @@ test_that("directory-live: live fetch matches fixture coverage and does not coll
   )
   fx <- readRDS(fixture_path)
 
-  live <- tryCatch(
-    fetch_directory(),
-    error = function(e) {
-      testthat::skip(paste("live directory fetch failed:", conditionMessage(e)))
-    }
-  )
+  # Deliberately unguarded. fetch_directory() reports a genuine upstream
+  # failure as source_status "source_unavailable" (handled just below), so the
+  # only conditions it can raise are directory_parse_error /
+  # directory_integrity_error / directory_schema_error -- our own defects,
+  # which must reach the reporter rather than become a skip.
+  live <- fetch_directory()
 
   # A bot-blocked / unreachable source is a declared miss, not drift.
   if (identical(live$meta$source_status, "source_unavailable")) {
