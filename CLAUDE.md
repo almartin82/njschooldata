@@ -103,6 +103,40 @@ Regardless of live-vs-cached:
 - **A capability gap is a DECLARATION, never a shutdown.** Never gate a working function
   to "Under Construction", and never narrow an advertised catalogue to green a gate.
 
+## A diverged parser or location invalidates the cache (REQUIRED)
+
+A cached value is the output of one parser, run against one file, pulled from one
+address. Change any of the three and the cached value is no longer an answer to the
+caller's question, even though it is still a real state DOE number. No fabrication
+gate will catch it, because the digits are genuine and only the binding is wrong.
+
+**When you change a parser, processor, or tidier:** bump `schema_version` for every
+affected family in `R/cache_registry.R`, and recompute the derived cache from the
+retained source parent. Do not re-download: point-in-time releases are frozen, and if
+the parent's checksum still verifies, re-pulling it is waste.
+
+**When you change a download URL, endpoint, or anything about acquisition:** bump
+`source_identity`, re-acquire from the state DOE, then recompute everything
+downstream. Compare the new bytes against the old. Identical is a fine answer and
+worth stating. Different is a finding and must be reported, never absorbed silently.
+
+**Record the reason inline**, next to the bump, in the style already used in that
+file: what moved, what values it changed, and how many cells. A bump with no reason
+is unreviewable, and the next person will not know whether it is safe to coalesce.
+
+**Never carry a stale value forward.** If re-acquisition fails, the year is missing:
+declare it in `missing_years` or refuse. A carried-forward value is exactly a number
+produced by code the package no longer has.
+
+**Never report our own defect as a source failure.** If the source answers correctly
+and our parse then fails, `stop()` loudly.
+
+Directory data is exempt from the cache half of this rule for the obvious reason: it
+is always-on and never cached. The re-acquisition half still applies.
+
+Full text, the gate, and the list of packages currently in violation:
+[docs/plans/2026-08-18-001-parser-divergence-invalidates-cache.md](../docs/plans/2026-08-18-001-parser-divergence-invalidates-cache.md).
+
 ## Federal sources: NEVER for DATA. The NCES↔state id crosswalk is a FEATURE. (REQUIRED)
 
 **The one-line test: a federal VALUE is banned. A federal KEY is a feature.**
