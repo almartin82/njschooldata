@@ -21,6 +21,154 @@
     "SV-016",
     "SV-017"
   ],
+  "fingerprint_capture_provenance": {
+    "approved_by": "Andy Martin",
+    "approved_on": "2026-08-18",
+    "grandfathered": true,
+    "reason": "Capture provenance was ruled process ceremony rather than data provenance. This record was written in place from the captured copies rather than derived by regenerating the contract, so it records where each capture came from without asserting that the capture is current. source_checksum is the captured copy's hash, so a drifted package still fails with StaleCaptureError."
+  },
+  "fingerprint_sources": {
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/DESCRIPTION": {
+      "source_checksum": "d23f532b360e95a72b9887f8ebf7eac4f8915c35d9122a80a6569ede856cce48",
+      "source_path": "DESCRIPTION"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/pyproject.toml": {
+      "source_checksum": "bf661984540a9a0c4ec5fb70724070041d060712efbea38a9ef25e75776616ee",
+      "source_path": "python/pyproject.toml"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_assessment.R": {
+      "source_checksum": "7beed9f9b3f5078e59fb81cb1d6005ca190e2ebdd3f2557cdc860f52e16f7642",
+      "source_path": "R/fetch_assessment.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_directory.R": {
+      "source_checksum": "6e62ad953c1edb88ca2aac5665efdf8c37cf3f028a7673ab835786209fada73f",
+      "source_path": "R/fetch_directory.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_enrollment.R": {
+      "source_checksum": "a1090102a32476cc3aae86b682e38f06b8d454948c6d1a9c1f51faa67387f055",
+      "source_path": "R/fetch_enrollment.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/source_transport.R": {
+      "source_checksum": "2aac6afb1b95e8bf57fb802a34678ca8e5fc9fa417e29f45d44f16500e407db4",
+      "source_path": "R/source_transport.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/tges.R": {
+      "source_checksum": "1d36ff3118ec5a77f9a1269acf0c52665e7ca57c8a64e39fa54e20fc0b69fc7d",
+      "source_path": "R/tges.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/endpoints.md": {
+      "source_checksum": "6c8608610391b5ab90cadf6a73b2d3e22f7e43c6fc15858dcd901e49f98cccdf",
+      "source_path": "data-raw/source-validation-spec/new_jersey_shipped_sources/endpoints.md"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/provenance.json": {
+      "source_checksum": "47ddf66eb8489d28266f33f0c9d7ebd9603e1cee306f5bda64c83f48a5b6a6de",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/provenance.json"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/source_registry.R": {
+      "source_checksum": "c08f8185c2c98420776d24142048874f6e44860e0519107d2ac17989e18fdec6",
+      "source_path": "R/source_registry.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/README.md": {
+      "source_checksum": "6ab88c3a7c695ce8897c85f7c78d94f51131cf95e384d0afb4886ad4bb5c961a",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/README.md"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/directory-district.csv": {
+      "source_checksum": "ed8982f043b421e801e9546e3152c1d36c007767ea83bc0a6714d9c3b2942c4c",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/directory-district.csv"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/directory-spr-2025.json": {
+      "source_checksum": "bf97e7e5fd2bf838adb1050f0ae845f5d856d37a40a2fc708a5dbfe29fe8f962",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/directory-spr-2025.json"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/enrollment-2020.zip": {
+      "source_checksum": "e3c4e2ef22bbc2ee547e22c9d13ea49bfb730c735e105a62c010b70d6d00c12c",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/enrollment-2020.zip"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/njsla-ela04-2025.xlsx": {
+      "source_checksum": "4d3e17dfac93ddf271c23a75576adad2980a21d57afd871c0666ddb219e54f10",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/njsla-ela04-2025.xlsx"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/spr-district-2025.xlsx": {
+      "source_checksum": "4c1dab9b1defa4b9cc9b41c505348027007afea7f3e566358e2096361a732454",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/spr-district-2025.xlsx"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test-directory-multiplicity.R": {
+      "source_checksum": "edfccf69c1b71316606583bdfafa960455917534ad9a0c2d83622b4899baf267",
+      "source_path": "tests/testthat/test-directory-multiplicity.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test-source-adapter-fixtures.R": {
+      "source_checksum": "58c77a7b19caa2cdf3f74e322f7acf086204a990fcae44070ba73cbbdd47eb44",
+      "source_path": "tests/testthat/test-source-adapter-fixtures.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/test_directory.py": {
+      "source_checksum": "91fedaafb20262359419150abb6e4a18bffe8dc319bdc2d33b39441aa01ccbfd",
+      "source_path": "python/tests/test_directory.py"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/golden/tges-2025.zip": {
+      "source_checksum": "86384eb9d2e146abfcb3f906ff9d434320e06ccfe30c4f27a0fd1f90a18131cc",
+      "source_path": "inst/extdata/test-fixtures/source-adapters/tges-2025.zip"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/normalization/_r_bridge.py": {
+      "source_checksum": "bdf3aea5a311285b73240c9abcafb6326f2fe30d4cf9b18c8ba2ce0a0424cf63",
+      "source_path": "python/src/njschooldata/_r_bridge.py"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/normalization/directory.py": {
+      "source_checksum": "6e7d01f3879f7f42906b89df001342fb7dbaf1ee50ae3f302198751da58f100e",
+      "source_path": "python/src/njschooldata/directory.py"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/normalization/directory_contract.R": {
+      "source_checksum": "4c1fa765891b314e923ab3cfa825a5bd7bcd3f56fee46ebc356fdcd1bcce872f",
+      "source_path": "R/directory_contract.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/normalization/source_result.R": {
+      "source_checksum": "3165af5b6f4997c5fad6932bd4351c528aaaa2902cc071efc5dbd7968503bbea",
+      "source_path": "R/source_result.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/parser/fetch_spr.R": {
+      "source_checksum": "fec1b8385efcfcfa6ee907440f83a15a8b97c41dc4e19f29052f74484d28bd12",
+      "source_path": "R/fetch_spr.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/parser/process_assessment.R": {
+      "source_checksum": "24c3717636c1b09c577b5c7e7176e7f59653e03b566688248fdfa1f4c13dddde",
+      "source_path": "R/process_assessment.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/parser/process_enrollment.R": {
+      "source_checksum": "b1b42bf3ef8321ef0f1aa96dfd4e9b7c2ad520368d5fa4e114cadf0b5bc35176",
+      "source_path": "R/process_enrollment.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/artifact-manifest.json": {
+      "source_checksum": "0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
+      "source_path": "data-raw/source-validation-spec/new_jersey_shipped_sources/artifact-manifest.json"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/contract.json": {
+      "source_checksum": "0913258347c139149121e2fdd21b8b2f33571f5aafe6f18daf744c5d0db58360",
+      "source_path": "data-raw/source-validation-spec/new_jersey_shipped_sources/contract.json"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/package-coverage.json": {
+      "source_checksum": "db235625ff205743724645a9f940c864343540c56fcc6497288958e2253813fc",
+      "source_path": "data-raw/source-validation-spec/new_jersey_shipped_sources/package-coverage.json"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/cache.R": {
+      "source_checksum": "0a2be7b4eed05fe89876a08a34547d7e976abcae933fca377e9b0e9bae0f7169",
+      "source_path": "R/cache.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/helper-source-tree.R": {
+      "source_checksum": "c7cd60ffee762c52e75193bf5a99faa7b7aca168e744d696f74283dac57122e3",
+      "source_path": "tests/testthat/helper-source-tree.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run-live-canaries.R": {
+      "source_checksum": "3992b6ee561fa6abec1e4b0a56a065815dacd6af648a18ea6d6882f045493ba4",
+      "source_path": "tools/run-live-canaries.R"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run.py": {
+      "source_checksum": "9b377aa913ab805b5a2115fb157737b4358eaaa96d52c005202c99d8b4fc7751",
+      "source_path": "tools/live-validation/run.py"
+    },
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/utils_download.R": {
+      "source_checksum": "a320839de2a1ba4975b505a77c6db3fb35477ff15fe1c1e29d1d123ce7ab0cd4",
+      "source_path": "R/utils_download.R"
+    }
+  },
   "generated_files": {
     ".github/workflows/live-validation-new_jersey_shipped_sources.yml": "sha256:94878b6dc3fcd16ebfa5d2a6f06760bbe6183c90f7d5dad76fc46ecd0a9b2c10",
     ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:be0e97a0d8a126bcce1591093895dc297cd568c157e0272ff5dc9e8a556de1da",
