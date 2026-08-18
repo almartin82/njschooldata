@@ -853,23 +853,13 @@ nj_finalize_directory_roles <- function(roles) {
     }, logical(1)))
   }
 
-  if (length(repeated) > 0L && any(vapply(
-    repeated, has_conflict, logical(1)
-  ))) {
-    dc_stop(
-      paste0(
-        "same normalized New Jersey directory assignment has conflicting ",
-        "identity evidence; source review required"
-      ),
-      "directory_integrity_error"
-    )
-  }
   if (length(repeated) > 0L) {
-    dc_stop(
-      "exact canonical directory assignment repeated after finalization",
-      "directory_integrity_error"
+    roles <- dc_quarantine_assignment_conflicts(
+      roles, assignment_key,
+      sort(unlist(repeated, use.names = FALSE))
     )
   }
+
 
   dc_sort_roles(roles)
 }

@@ -71,10 +71,12 @@ test_that("NJ SPR builder rejects conflicting assignment evidence", {
     c("alex@example.org", "other@example.org")
   )
 
-  expect_error(
-    nj_build_spr_directory(source_rows),
-    class = "directory_integrity_error"
-  )
+    quarantined_result <- {
+    nj_build_spr_directory(source_rows)
+  }
+  quarantine <- attr(quarantined_result$roles, "directory_quarantine", exact = TRUE)
+  expect_true(is.list(quarantine))
+  expect_gt(quarantine$role_row_count, 0L)
 })
 
 test_that("directory surface declares the live zero-argument contract", {
