@@ -10,5 +10,10 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      # tools/live-validation/run.py is a hand-authored prerequisite. The
+      # generator emits this workflow but does NOT write that script, and never
+      # has -- there is no template for it and it is not in generated_files.
+      # Each package writes its own. If it is missing, this step dies at the
+      # shell and the job is not a guard.
       - run: python3 tools/live-validation/run.py

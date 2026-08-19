@@ -1,6 +1,64 @@
 # ==============================================================================
 # Caching System for njschooldata
 # ==============================================================================
+#
+# WHAT THIS CACHE IS, AND WHY THERE IS NO SCHEMA VERSION TO BUMP
+#
+# Two layers, and neither one can outlive a code change:
+#
+#  1. The processed cache below is an IN-MEMORY session cache. `.njsd_cache$data`
+#     is a plain list in a package environment, keyed by function name plus an
+#     md5 of the arguments (`make_cache_key()`). It has no schema version, no
+#     source identity, no on-disk persistence and no eviction policy, because it
+#     does not need one: it dies with the R session, and a changed parser cannot
+#     be loaded without starting a new one. There is no warm entry for a parser
+#     edit to keep serving.
+#  2. `njsd_workbook_cache_dir()` persists SPR workbooks to disk, but those are
+#     the RAW downloaded bytes, not parsed output. A parser change does not
+#     invalidate a source parent, and re-downloading a frozen release to run new
+#     code over it would be waste. Recompute from the retained parent; that is
+#     what this layer is for.
+#
+# So njschooldata has no schema-versioned cache families at all, and the
+# "bump schema_version when a parser moves" half of the parser-divergence rule
+# has nothing here to attach to. The re-acquisition half still binds: change a
+# download URL or endpoint and the workbook cache must be re-acquired and the
+# bytes compared.
+#
+# The contract fingerprint is likewise folded into NOTHING. `make_cache_key()`
+# hashes only the call arguments. `.source_validation_new_jersey_shipped_sources_fingerprint`
+# lives in the generated R and no cache path reads it. Packages differ on this
+# and there is no fleet convention -- some fold it into their cache key and
+# retire every processed entry automatically when a contract moves. This one
+# does not, and does not need to, for the reason above.
+#
+# 2026-08-18 regeneration: fingerprint moved, nothing to bump.
+#
+# The release lock's `fingerprint_sources` had been grandfathered in bare hex
+# while the verifier's `checksum_file()` emits `sha256:`-prefixed, so all 35
+# records compared unequal on FORMAT before content was ever reached, and
+# `_verify_capture_freshness()` -- which raises on the first entry of
+# `sorted(fingerprint_sources)` -- died on `dependency/DESCRIPTION`, a file
+# byte-identical to its live owner. Behind it, two captures had genuinely
+# drifted, both from 6e982fca "Keep composite identifiers missing when a part
+# was never published":
+#
+#   R/fetch_directory.R  na_composite_id() masks a CDS code whose county,
+#                        district or school part was never published, instead of
+#                        shipping paste0()'s literal "NA3570010"; the SPR
+#                        directory fallback now raises directory_integrity_error
+#                        rather than inventing an id. Directory is always-on and
+#                        never cached, so there is no cell to retire.
+#   R/fetch_spr.R        fetch_spr_science_grade() pads only a digits-only
+#                        token, so an unparseable grade cell stays NA instead of
+#                        becoming the string "NA", and "5E1" is no longer read
+#                        as 50. This DOES change values where the source ships a
+#                        non-numeric grade -- but only in a session cache that a
+#                        reload has already emptied.
+#
+# Recorded here rather than left silent: a non-bump with no reasoning is exactly
+# as unreviewable as a bump with none. The fingerprint moved off
+# sha256:56268bca5e5681a997d0dc3922c6414953a433020d8467e5f6f49c6be12cdd53.
 
 # Create package environment for session cache
 .njsd_cache <- new.env(parent = emptyenv())

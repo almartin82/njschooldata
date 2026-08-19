@@ -4138,8 +4138,15 @@ fetch_spr_science_grade <- function(end_year, level = "school") {
 
   # Normalize "Grade 5" or "5" -> "05" (NJSLA science is grades 5, 8, 11).
   df$grade_level <- gsub("^Grade\\s+", "", as.character(df$grade))
-  df$grade_level <- formatC(suppressWarnings(as.integer(df$grade_level)),
-                            width = 2, flag = "0")
+  # Pad ONLY a digits-only token. as.integer() reads "5E1" as 50 (scientific
+  # notation, no warning), and formatC(NA_integer_, width = 2, flag = "0")
+  # renders the two literal characters "NA" rather than a missing value -- so
+  # an unparseable grade cell would otherwise ship as the string "NA", which no
+  # consumer can filter as missing.
+  is_digit_grade <- !is.na(df$grade_level) & grepl("^[0-9]+$", df$grade_level)
+  padded_grade <- formatC(suppressWarnings(as.integer(df$grade_level)),
+                          width = 2, flag = "0")
+  df$grade_level <- ifelse(is_digit_grade, padded_grade, NA_character_)
 
   for (i in 1:4) {
     out_col <- paste0("level_", i, "_percentage")

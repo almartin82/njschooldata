@@ -8,5 +8,6 @@ jobs:
   deterministic-source-contract:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - run: python3 tools/source-validation/verify_package.py --package-root . --expected-release source-validation-v1.0.0-rc.4
       - run: python3 -m pytest tests/test_source_validation_new_jersey_shipped_sources_generated.py -q

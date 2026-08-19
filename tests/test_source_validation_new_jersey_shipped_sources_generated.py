@@ -11,7 +11,7 @@ from pathlib import Path
 
 CONTRACT_ID = "new_jersey_shipped_sources"
 SOURCE_VALIDATION_RELEASE = "source-validation-v1.0.0-rc.4"
-CONTRACT_FINGERPRINT = "sha256:56268bca5e5681a997d0dc3922c6414953a433020d8467e5f6f49c6be12cdd53"
+CONTRACT_FINGERPRINT = "sha256:6f97c5c815ff8ed7908d88a63a1bc6842aa390dcfa08e5f732dbe7a0df28f82d"
 ARTIFACT_MANIFEST_DIGEST = "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b"
 EXPECTED_TEST_IDS = ["SV-001","SV-002","SV-003","SV-004","SV-005","SV-006","SV-007","SV-008","SV-009","SV-010","SV-011","SV-012","SV-013","SV-014","SV-015","SV-016","SV-017"]
 
@@ -58,6 +58,32 @@ def test_generated_module_carries_the_recorded_identity():
     assert module.CONTRACT_FINGERPRINT == CONTRACT_FINGERPRINT
     assert module.ARTIFACT_MANIFEST_DIGEST == ARTIFACT_MANIFEST_DIGEST
     assert module.EXPECTED_TEST_IDS == EXPECTED_TEST_IDS
+
+
+def test_capture_tree_holds_nothing_but_the_declared_captures():
+    """A capture no declaration names is evidence of nothing.
+
+    The lock's own `fingerprint_sources` is checked against its own
+    `generated_files` elsewhere -- two records that agree with each other by
+    construction. This is the only assertion that reads the DIRECTORY, so it is
+    the only one that can see a capture left behind when a declaration was
+    renamed, moved between categories or dropped. `al` carried 33 such files and
+    `hi` one, each looking exactly like real provenance to a reader.
+
+    `__pycache__` is excluded deliberately: pytest writes it next to any
+    captured test module it imports, so it appears after this tree was last
+    written and belongs to the committed-junk sweep, not to provenance.
+    """
+    lock = _read_lock()
+    declared = set(lock["fingerprint_sources"])
+    assert declared, "the lock records no fingerprint captures at all"
+    capture_root = LOCK_PATH.parent / "fingerprint-inputs"
+    on_disk = {
+        path.relative_to(PACKAGE_ROOT).as_posix()
+        for path in capture_root.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts
+    }
+    assert on_disk == declared
 
 
 def test_release_lock_on_disk_matches_the_recorded_identity():
