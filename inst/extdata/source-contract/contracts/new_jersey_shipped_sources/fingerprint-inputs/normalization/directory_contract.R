@@ -18,6 +18,33 @@
 #   person_name and leave first_name / last_name NA; we never split a combined
 #   string heuristically. When a published seat has no name, person_name remains
 #   NA and title_raw retains the role encoded by the source field.
+#
+# WHY A CHANGE HERE REGENERATES THE CONTRACT BUT BUMPS NOTHING (2026-08-20)
+#
+# This file is declared in the contract's `normalization` fingerprint inputs
+# (data-raw/source-validation-spec/new_jersey_shipped_sources/contract.json), so
+# editing it diverges the stored capture and the capture must be regenerated in
+# the same commit. It does NOT bump schema_version and does NOT change
+# source_identity, because it is a directory surface only and the directory is
+# never cached, so no cached value is implicated. Verified on disk rather than
+# assumed:
+#
+#   * the only readers of the dc_* builders are R/fetch_directory.R and this
+#     file -- `grep -rn "dc_[a-z_]*(" R/` returns no other caller, so nothing
+#     outside the directory surface can carry a change here into a cached
+#     family;
+#   * fetch_directory() takes no arguments and is one call to
+#     directory_live_acquire(), which re-downloads both Homeroom CSVs (and, on
+#     an Imperva block, the SPR contact JSON) through download_source() with
+#     cache_path = NULL, into tempdir(), unlink()ed on exit;
+#   * no directory function calls cache_get()/cache_set()/make_cache_key(), and
+#     njschooldata has no cache_registry.R and no schema-versioned cache
+#     families at all (see the header of R/cache.R).
+#
+# The capture is the change detector and it stays. Never narrow or delete the
+# directory declarations in `fingerprint_inputs` to quiet a gate: keeping the
+# bytes is how a directory diff is visible at all. Snapshot everything, serve
+# none of it.
 
 DC_SCHEMA_VERSION <- "directory-contract/v1"
 
@@ -112,6 +139,48 @@ dc_sort_entities <- function(e) {
   e[o, , drop = FALSE]
 }
 
+#' Quarantine conflicting rows for one canonical assignment group
+#'
+#' A source can publish more than one email, phone number, or title for the
+#' same person. When the adapter cannot prove that repeated rows are the same
+#' assignment, it removes the entire conflicting group from the clean roles
+#' frame and preserves every source row as run-level evidence. It never picks
+#' a winning contact or title.
+#' @keywords internal
+#' @noRd
+dc_quarantine_assignment_conflicts <- function(roles, assignment_key,
+                                                 conflict_indices,
+                                                 conflict_rows = NULL) {
+  conflict_indices <- sort(unique(as.integer(conflict_indices)))
+  conflict_indices <- conflict_indices[
+    conflict_indices >= 1L & conflict_indices <= nrow(roles)
+  ]
+  if (!length(conflict_indices)) return(roles)
+
+  if (is.null(conflict_rows)) {
+    conflict_rows <- roles[conflict_indices, , drop = FALSE]
+  }
+  old <- attr(roles, "directory_quarantine", exact = TRUE)
+  if (is.list(old) && is.data.frame(old$conflict_rows)) {
+    conflict_rows <- rbind(old$conflict_rows, conflict_rows)
+  }
+  q <- list(
+    schema_version = "directory-row-quarantine/v1",
+    assignment_count = length(unique(assignment_key[conflict_indices])),
+    role_row_count = nrow(conflict_rows),
+    conflict_rows = conflict_rows
+  )
+  if (is.list(old)) {
+    q$assignment_count <- q$assignment_count +
+      as.integer(if (is.null(old$assignment_count)) 0L else old$assignment_count)
+  }
+  clean <- roles[-conflict_indices, , drop = FALSE]
+  row.names(clean) <- NULL
+  attr(clean, "directory_quarantine") <- q
+  clean
+}
+
+
 #' Canonically sort the roles frame (radix, locale-independent)
 #'
 #' Order: district_id, school_id (NA first), role by vocabulary order,
@@ -119,16 +188,21 @@ dc_sort_entities <- function(e) {
 #' @keywords internal
 #' @noRd
 dc_sort_roles <- function(r) {
-  if (nrow(r) == 0L) return(r)
-  o <- order(
-    r$district_id,
-    r$school_id,
-    match(r$role, DC_ROLES),
-    r$person_name,
-    method = "radix", na.last = FALSE
-  )
-  r[o, , drop = FALSE]
+  quarantine <- attr(r, "directory_quarantine", exact = TRUE)
+  if (nrow(r) > 0L) {
+    o <- order(
+      r$district_id,
+      r$school_id,
+      match(r$role, DC_ROLES),
+      r$person_name,
+      method = "radix", na.last = FALSE
+    )
+    r <- r[o, , drop = FALSE]
+  }
+  if (is.list(quarantine)) attr(r, "directory_quarantine") <- quarantine
+  r
 }
+
 
 #' Count identifier defects across both frames (must be zero to conform)
 #' @keywords internal
@@ -203,7 +277,11 @@ dc_roles_by_role <- function(roles) {
 #' @keywords internal
 #' @noRd
 dc_build_meta <- function(entities, roles, state, sources, id_scheme,
-                          coverage, source_status, retrieved_at) {
+                          coverage, source_status, retrieved_at,
+                          quarantine = NULL) {
+  if (is.null(quarantine)) {
+    quarantine <- attr(roles, "directory_quarantine", exact = TRUE)
+  }
   present_roles <- unique(roles$role)
   unmapped <- sort(unique(roles$title_raw[roles$role == "other"]),
                    method = "radix")
@@ -235,7 +313,15 @@ dc_build_meta <- function(entities, roles, state, sources, id_scheme,
     placeholder_id_count = dc_placeholder_id_count(entities, roles),
     duplicate_key_count = dc_duplicate_key_count(roles),
     unmapped_title_count = sum(roles$role == "other"),
-    unmapped_titles     = I(as.character(unmapped))
+    unmapped_titles     = I(as.character(unmapped)),
+    quarantined_role_count = if (is.list(quarantine)) {
+      as.integer(if (is.null(quarantine$role_row_count)) 0L else
+        quarantine$role_row_count)
+    } else 0L,
+    quarantined_assignment_count = if (is.list(quarantine)) {
+      as.integer(if (is.null(quarantine$assignment_count)) 0L else
+        quarantine$assignment_count)
+    } else 0L
   )
 
   list(

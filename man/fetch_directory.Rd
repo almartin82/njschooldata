@@ -6,16 +6,6 @@
 \usage{
 fetch_directory()
 }
-\arguments{
-\item{source}{Acquisition source selector. The directory-contract/v1.1
-surface defaults to \code{"package"}; the existing NJ source adapter and
-official SPR fallback remain authoritative while a packaged snapshot is
-prepared.}
-
-\item{max_age_days}{Reserved directory-contract/v1.1 cache-age control.}
-
-\item{refresh}{Reserved directory-contract/v1.1 refresh control.}
-}
 \value{
 A named list with components:
   \describe{
@@ -47,6 +37,10 @@ Homeroom publishes split first/last name fields; \code{first_name} and
 \code{person_name} is assembled from them. The performance-report fallback
 publishes combined names, which remain verbatim in \code{person_name} while
 the split fields remain \code{NA} (see \code{R/directory_contract.R}).
+
+This function takes no arguments, and deliberately offers no cache-age or
+refresh control: the directory is always-on, so there is no retained copy
+whose age a caller could trade against freshness.
 }
 \examples{
 \dontrun{

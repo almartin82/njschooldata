@@ -18,6 +18,33 @@
 #   person_name and leave first_name / last_name NA; we never split a combined
 #   string heuristically. When a published seat has no name, person_name remains
 #   NA and title_raw retains the role encoded by the source field.
+#
+# WHY A CHANGE HERE REGENERATES THE CONTRACT BUT BUMPS NOTHING (2026-08-20)
+#
+# This file is declared in the contract's `normalization` fingerprint inputs
+# (data-raw/source-validation-spec/new_jersey_shipped_sources/contract.json), so
+# editing it diverges the stored capture and the capture must be regenerated in
+# the same commit. It does NOT bump schema_version and does NOT change
+# source_identity, because it is a directory surface only and the directory is
+# never cached, so no cached value is implicated. Verified on disk rather than
+# assumed:
+#
+#   * the only readers of the dc_* builders are R/fetch_directory.R and this
+#     file -- `grep -rn "dc_[a-z_]*(" R/` returns no other caller, so nothing
+#     outside the directory surface can carry a change here into a cached
+#     family;
+#   * fetch_directory() takes no arguments and is one call to
+#     directory_live_acquire(), which re-downloads both Homeroom CSVs (and, on
+#     an Imperva block, the SPR contact JSON) through download_source() with
+#     cache_path = NULL, into tempdir(), unlink()ed on exit;
+#   * no directory function calls cache_get()/cache_set()/make_cache_key(), and
+#     njschooldata has no cache_registry.R and no schema-versioned cache
+#     families at all (see the header of R/cache.R).
+#
+# The capture is the change detector and it stays. Never narrow or delete the
+# directory declarations in `fingerprint_inputs` to quiet a gate: keeping the
+# bytes is how a directory diff is visible at all. Snapshot everything, serve
+# none of it.
 
 DC_SCHEMA_VERSION <- "directory-contract/v1"
 
@@ -112,12 +139,6 @@ dc_sort_entities <- function(e) {
   e[o, , drop = FALSE]
 }
 
-#' Canonically sort the roles frame (radix, locale-independent)
-#'
-#' Order: district_id, school_id (NA first), role by vocabulary order,
-#' person_name (NA first).
-#' @keywords internal
-#' @noRd
 #' Quarantine conflicting rows for one canonical assignment group
 #'
 #' A source can publish more than one email, phone number, or title for the
@@ -160,6 +181,12 @@ dc_quarantine_assignment_conflicts <- function(roles, assignment_key,
 }
 
 
+#' Canonically sort the roles frame (radix, locale-independent)
+#'
+#' Order: district_id, school_id (NA first), role by vocabulary order,
+#' person_name (NA first).
+#' @keywords internal
+#' @noRd
 dc_sort_roles <- function(r) {
   quarantine <- attr(r, "directory_quarantine", exact = TRUE)
   if (nrow(r) > 0L) {

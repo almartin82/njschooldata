@@ -34,6 +34,18 @@
 #
 # 2026-08-18 regeneration: fingerprint moved, nothing to bump.
 #
+# 2026-08-20 regeneration: same verdict, same reason. The 08-18 directory
+# quarantine commit (00857924) edited R/directory_contract.R and
+# R/fetch_directory.R without regenerating, so both captures diverged --
+# 81 and 20 lines. Both are directory files, directory is always-on and never
+# cached, and no directory function reaches cache_get()/cache_set() or passes
+# cache_path= to download_source(), so there is no cached value to retire and
+# nothing to bump. The reasoning lives beside each declaration, in the headers
+# of R/directory_contract.R and R/fetch_directory.R; this package has no
+# data-raw spec builder to hold it. The fingerprint is still folded NOWHERE, so
+# a future parser edit on a cached family has to be reasoned about by hand
+# here rather than being retired automatically.
+#
 # The release lock's `fingerprint_sources` had been grandfathered in bare hex
 # while the verifier's `checksum_file()` emits `sha256:`-prefixed, so all 35
 # records compared unequal on FORMAT before content was ever reached, and

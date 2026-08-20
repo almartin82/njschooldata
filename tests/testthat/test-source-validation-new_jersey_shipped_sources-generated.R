@@ -8,7 +8,7 @@ test_that("source-validation new_jersey_shipped_sources identity matches the pac
   # generator recorded here. Divergence means the two were written by different
   # generator runs.
   expect_identical(.source_validation_new_jersey_shipped_sources_release, "source-validation-v1.0.0-rc.4")
-  expect_identical(.source_validation_new_jersey_shipped_sources_fingerprint, "sha256:6f97c5c815ff8ed7908d88a63a1bc6842aa390dcfa08e5f732dbe7a0df28f82d")
+  expect_identical(.source_validation_new_jersey_shipped_sources_fingerprint, "sha256:36b75ad24020ddf110c28d7239227d144e08dd69ebb268e5303b1ab0509e92a9")
   expect_identical(
     .source_validation_new_jersey_shipped_sources_manifest_digest, "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b"
   )
@@ -21,7 +21,7 @@ test_that("source-validation new_jersey_shipped_sources identity matches the pac
   lock <- source_validation_new_jersey_shipped_sources_status()
   expect_identical(lock$contract_id, "new_jersey_shipped_sources")
   expect_identical(lock$source_validation_release, "source-validation-v1.0.0-rc.4")
-  expect_identical(lock$contract_fingerprint, "sha256:6f97c5c815ff8ed7908d88a63a1bc6842aa390dcfa08e5f732dbe7a0df28f82d")
+  expect_identical(lock$contract_fingerprint, "sha256:36b75ad24020ddf110c28d7239227d144e08dd69ebb268e5303b1ab0509e92a9")
   expect_identical(lock$artifact_manifest_digest, "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b")
   expect_identical(
     vapply(lock$expected_test_ids, as.character, character(1L), USE.NAMES = FALSE),

@@ -7,6 +7,37 @@
 #
 # Data sources: current Homeroom CSV endpoints registered in source_registry.R.
 #
+# THE DIRECTORY IS ACQUIRED LIVE ON EVERY CALL, AND NEVER SERVED FROM A CACHE.
+#
+# A directory is a current-state register -- names, addresses, contacts, grade
+# spans, superintendents, open/closed status -- so a retained copy is wrong
+# almost immediately and a stale directory is worse than a slow one. Every
+# entry point in this file therefore re-acquires:
+#
+#   fetch_directory()                 -> directory_live_acquire(), zero args
+#   get_school_directory()            -> .legacy_directory_table("school")
+#   get_district_directory()          -> .legacy_directory_table("district")
+#   get_raw_*_directory()             -> .directory_source_result(level)
+#
+# all of which bottom out in .directory_source_result() / and, on an Imperva
+# block, .directory_spr_source_result(). Both call download_source() WITHOUT a
+# cache_path, so the response lands in tempdir() and is unlink()ed on exit;
+# there is no code path by which a prior response can answer a directory
+# request. In particular the SPR fallback is a live pull of the NJDOE School
+# Performance Reports contact JSON -- it is NOT the on-disk SPR workbook cache
+# in R/cache.R, and spr_cached_workbook*() is never called from this file.
+# R/geo.R's enrich_school_latlong() is the only reader of this file outside the
+# directory surface; its `use_cache` argument selects the bundled geocoded
+# lat/lng dataset, not the directory, which it re-acquires live every call.
+#
+# CAPTURING the directory is a different thing from SERVING it, and capturing
+# is wanted: this file is a declared `downloader` fingerprint input, its bytes
+# are captured under inst/extdata/source-contract/, and that capture is the
+# instrument that makes a change to the directory adapter visible. Editing this
+# file therefore requires regenerating the contract in the same commit, but it
+# bumps no schema_version and changes no source_identity, because directory is
+# never cached and no cached value is implicated.
+#
 # ==============================================================================
 
 # -----------------------------------------------------------------------------
@@ -500,12 +531,9 @@ dc_stop <- function(message, class) {
 #' publishes combined names, which remain verbatim in \code{person_name} while
 #' the split fields remain \code{NA} (see \code{R/directory_contract.R}).
 #'
-#' @param source Acquisition source selector. The directory-contract/v1.1
-#'   surface defaults to \code{"package"}; the existing NJ source adapter and
-#'   official SPR fallback remain authoritative while a packaged snapshot is
-#'   prepared.
-#' @param max_age_days Reserved directory-contract/v1.1 cache-age control.
-#' @param refresh Reserved directory-contract/v1.1 refresh control.
+#' This function takes no arguments, and deliberately offers no cache-age or
+#' refresh control: the directory is always-on, so there is no retained copy
+#' whose age a caller could trade against freshness.
 #'
 #' @return A named list with components:
 #'   \describe{
