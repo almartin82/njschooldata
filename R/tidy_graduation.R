@@ -310,7 +310,7 @@ tidy_grad_count <- function(df, end_year) {
       to_tidy,
       function(.x) {
         df %>%
-          dplyr::rename(n_students = .x) %>%
+          dplyr::rename(n_students = dplyr::all_of(.x)) %>%
           dplyr::select(dplyr::one_of(invariants, "n_students", "row_total")) %>%
           dplyr::mutate(
             subgroup = .x,
