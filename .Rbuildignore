@@ -17,6 +17,7 @@
 ^CHANGES\.md$
 ^\.claude$
 ^CLAUDE\.md$
+^GOALS\.md$
 ^CODE_OF_CONDUCT\.md$
 ^nj-raw$
 ^research-private$

@@ -20,7 +20,7 @@ these live in `fetch_sped()` or report card data, not `fetch_enr()`.
 
 ## grade_level
 
-`PK`, `K` (normalized from KF/KH/KG), `01`-`12`, `TOTAL`
+`PK`, `K` (normalized from KF/KH/KG), `01`-`12`, `UG` (ungraded), `TOTAL`
 
 Aggregates from `enr_grade_aggs()`: `PK (Any)`, `K (Any)`, `K12`, `K12UG`,
 `K8`, `HS`
@@ -30,5 +30,5 @@ normalizes to `K`. Always filter on `K`, never `KF`.
 
 ## entity flags
 
-`is_state`, `is_county`, `is_district`, `is_charter`, `is_school`,
-`is_subprogram`
+`is_state`, `is_county`, `is_district`, `is_charter`, `is_charter_sector`,
+`is_allpublic`, `is_school`, `is_subprogram`
