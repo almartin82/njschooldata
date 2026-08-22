@@ -41,6 +41,24 @@ jobs:
         run: source("tools/docs/build-offline-docs.R")
         shell: Rscript {0}
 
+      # docs/ is gitignored except for the contract-declared source-validation
+      # report, so a fresh checkout leaves docs/ non-empty and without a
+      # pkgdown.yml marker. pkgdown's clean_site() refuses to touch a non-empty
+      # docs/ it did not build, which aborted every deploy from 2026-07-29
+      # onward. A local docs/ IS a built pkgdown site, so this never reproduced
+      # off CI. Move the tracked file aside; the checkout is ephemeral.
+      - name: Clear tracked files out of the pkgdown destination
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/docs-tracked"
+          git ls-files docs | while read -r f; do
+            dest="$RUNNER_TEMP/docs-tracked/${f#docs/}"
+            mkdir -p "$(dirname "$dest")"
+            mv "$f" "$dest"
+          done
+          ls -A docs 2>/dev/null || echo "docs/ is now empty"
+
       - name: Build site
         if: github.event_name != 'pull_request'
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
