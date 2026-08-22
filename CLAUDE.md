@@ -2,12 +2,19 @@
 
 ## CRITICAL DATA SOURCE RULES
 
-**NEVER use Urban Institute API, NCES CCD, or ANY federal data source**
-— the entire point of these packages is to provide STATE-LEVEL data
-directly from state DOEs. Federal sources aggregate/transform data
-differently and lose state-specific details. If a state DOE source is
-broken, FIX IT or find an alternative STATE source — do not fall back to
-federal data.
+**Federal IDENTIFIERS are allowed and ENCOURAGED.** The federal-source
+ban applies to *values*, NOT to *join keys*. NCES identifiers (`LEAID` /
+`NCESSCH`) and the CCD `state_leaid` / `seasch` crosswalk used purely to
+attach them are explicitly welcome, and are bundled as a static,
+versioned, identifiers-only asset under `inst/extdata/crosswalk/`.
+Federal ids **supplement** the native state identifiers and never
+replace them: every state-assigned district/school id must be preserved.
+Do NOT delete `inst/extdata/crosswalk/`,
+`data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function —
+the July-19 draft to ban federal ids outright was rejected (2026-07-24).
+Every id must still trace to a real CCD row reached via a real state id:
+match exactly, leave unmatched rows `NA`, never fabricate or fuzzy-guess
+an id.
 
 **NEVER fabricate data in ANY form.** This is the single most important
 rule in the entire project. Violations include but are not limited to:
@@ -41,6 +48,46 @@ file from a state DOE website?** If not, it is fabricated. There is no
 gray area. If the data source is unavailable, the package MUST use Under
 Construction status — not fake data.
 
+## `is_charter` is THREE-VALUED. Never guard the NA away. (REQUIRED)
+
+NJDOE assigns every charter LEA to county `"80"` (its own County column
+reads “Charters”), so the county code is the evidence, and it answers in
+both directions:
+
+| The source published | `is_charter` |
+|----|----|
+| county `"80"` | `TRUE` |
+| any other county code (`"01".."41"`, `"99"`, a DFG letter, `"ST"`/`"NS"`/`"SN"`) | `FALSE` – a sourced fact, never sweep it into NA |
+| no county code at all | `NA` |
+
+**The banned idiom is `!is.na(x) & x == "80"`.** It reads as a careful
+NA guard and is the exact opposite: it *cannot return NA*, so it answers
+“not a charter” for every row the source never typed. `==` propagates NA
+on its own; leave it alone. `dplyr::coalesce(x, FALSE)`,
+`replace_na(x, FALSE)`, `any(x, na.rm = TRUE)` and `x %in% c(TRUE, "Y")`
+are the same fabrication in other clothes.
+
+[`is_charter_district()`](https://almartin82.github.io/njschooldata/reference/is_charter_district.md)
+in `R/config_constants.R` is the single decider. Call it rather than
+re-deriving; new surfaces get a case in
+`tests/testthat/test-charter-provenance.R`, whose source scan fails on
+any new NA-collapsing guard.
+
+**The county-80 convention is VINTAGE-DEPENDENT.** Enrollment files use
+county 80 only from `end_year` 2010; in 2006-2009 charters carry their
+HOST county code (verified live: 50 name-charter LEAs in 2006-2008 sit
+in counties 01, 07, 13 and 25, and county 80 does not appear at all). So
+county 80 is affirmative evidence, never the sole basis for a denial in
+a pre-2010 vintage. The bundled `charter_city` host map is likewise
+affirmative-only: it lags NJ’s charter openings (it missed 4 real
+county-80 charters in `end_year` 2026), so absence from it proves
+nothing and must never demote a sourced TRUE.
+
+Note that `is_charter_sector` is a different thing entirely – a
+synthetic aggregate-ROW marker set by the `charter_sector_*_aggs()`
+helpers, not a claim about any school – and is correctly initialised to
+FALSE.
+
 ## Year Convention: njschooldata is END-year (verify external sources before joining)
 
 Every fetcher in this package names a year by its **END year**:
@@ -64,6 +111,142 @@ conversion. Treat year alignment as a validation gate, not an assumption
 decomposition, and trend.
 
 ------------------------------------------------------------------------
+
+## Caching: point-in-time → CACHE. Always-on → NEVER cache. (REQUIRED)
+
+**If it is a point-in-time release, we cache it, and we return the cache
+by default.**
+
+A state’s 2024 enrollment file is a frozen historical artifact —
+published once, never revised. Enrollment, assessment, graduation,
+finance, staff, SPED, ELL, absence, accountability and chronic absence
+are all point-in-time. Bundle the source parent, serve it offline,
+return the cached copy by default. Re-fetching a frozen release on every
+call is pure waste.
+
+**If it is an always-on source like a directory, we NEVER cache it.**
+
+Directory data is a current-state register: school and district names,
+addresses, contacts, grade spans, open/closed status, superintendents.
+**It changes rapidly.** A cached copy is wrong almost immediately, and a
+stale directory is worse than a slow one.
+[`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
+and every directory surface acquires live from the state DOE on every
+call. Do not add a cache layer to directory, do not bundle a directory
+snapshot in `inst/extdata/`, and do not serve directory from a retained
+parent.
+
+**The test: would the state ever revise this same file in place?** Yes →
+always-on source → live, never cached. No, they publish it once and move
+on → point-in-time release → cached, returned from cache by default.
+
+Regardless of live-vs-cached:
+
+- **Never report a package bug as a source failure.** If the source
+  responds correctly and our own parse, join or build then fails,
+  [`stop()`](https://rdrr.io/r/base/stop.html) loudly — returning
+  `source_unavailable` there blames the state DOE for our defect.
+  Declaring a **genuine** upstream failure as a structured 0-row miss is
+  correct and honest: that is `directory-contract/v1`, and it is what
+  `nd` (upstream serving 153 bytes of HTML), `tn` (403) and `va` (500)
+  correctly do. The test is not “did we return 0 rows” — it is **“did
+  the source actually fail?”** Keep parsing OUTSIDE the acquisition
+  `tryCatch`, and re-raise `directory_parse_error` /
+  `directory_integrity_error` unchanged rather than downgrading them.
+- **Federal NCES ids stay.** `nces_dist`/`nces_sch` and the CCD
+  crosswalk belong alongside native state ids, in directory output as
+  much as anywhere else. The July-19 draft banning federal ids was
+  rejected on 2026-07-24. Never delete `inst/extdata/crosswalk/` or an
+  `attach_*nces*()` function. Native state ids are never dropped or
+  replaced.
+- **Never fabricate a value.** If the source does not publish it, it
+  stays missing and says so. This outranks everything above.
+- **A capability gap is a DECLARATION, never a shutdown.** Never gate a
+  working function to “Under Construction”, and never narrow an
+  advertised catalogue to green a gate.
+
+## A diverged parser or location invalidates the cache (REQUIRED)
+
+A cached value is the output of one parser, run against one file, pulled
+from one address. Change any of the three and the cached value is no
+longer an answer to the caller’s question, even though it is still a
+real state DOE number. No fabrication gate will catch it, because the
+digits are genuine and only the binding is wrong.
+
+**When you change a parser, processor, or tidier:** bump
+`schema_version` for every affected family in `R/cache_registry.R`, and
+recompute the derived cache from the retained source parent. Do not
+re-download: point-in-time releases are frozen, and if the parent’s
+checksum still verifies, re-pulling it is waste.
+
+**When you change a download URL, endpoint, or anything about
+acquisition:** bump `source_identity`, re-acquire from the state DOE,
+then recompute everything downstream. Compare the new bytes against the
+old. Identical is a fine answer and worth stating. Different is a
+finding and must be reported, never absorbed silently.
+
+**Record the reason inline**, next to the bump, in the style already
+used in that file: what moved, what values it changed, and how many
+cells. A bump with no reason is unreviewable, and the next person will
+not know whether it is safe to coalesce.
+
+**Never carry a stale value forward.** If re-acquisition fails, the year
+is missing: declare it in `missing_years` or refuse. A carried-forward
+value is exactly a number produced by code the package no longer has.
+
+**Never report our own defect as a source failure.** If the source
+answers correctly and our parse then fails,
+[`stop()`](https://rdrr.io/r/base/stop.html) loudly.
+
+Directory data is exempt from the cache half of this rule for the
+obvious reason: it is always-on and never cached. The re-acquisition
+half still applies.
+
+Full text, the gate, and the list of packages currently in violation:
+[docs/plans/2026-08-18-001-parser-divergence-invalidates-cache.md](https://almartin82.github.io/docs/plans/2026-08-18-001-parser-divergence-invalidates-cache.md).
+
+## Federal sources: NEVER for DATA. The NCES↔︎state id crosswalk is a FEATURE. (REQUIRED)
+
+**The one-line test: a federal VALUE is banned. A federal KEY is a
+feature.**
+
+**Never source DATA VALUES from a federal source** — not NCES CCD, not
+the Urban Institute Education Data Explorer, not any federal aggregator
+or API. Enrollment counts, demographics, assessment results, graduation
+rates, finance figures and staff counts must all come from the state
+DOE. Federal sources aggregate and transform differently and lose
+state-specific detail, and that loss is the entire reason these packages
+exist. If a state DOE source breaks, FIX IT or find another STATE source
+— never fall back to federal data for a value.
+
+**Shipping the bindings between NCES ids and native state ids is a
+FEATURE**, not a tolerated exception. It is the bridge from this state’s
+own identifiers to the national universe and to every NCES-keyed
+consumer downstream. Ship it, document it, advertise it.
+
+- Bundle the crosswalk as a **static, versioned, identifiers-only
+  asset** in `inst/extdata/crosswalk/`, with a README noting the CCD
+  vintage and stating that it carries **zero data values**. No runtime
+  CCD calls.
+- **Federal ids supplement, they never replace.** Every native state id
+  must be preserved — never drop a state-assigned district or school id,
+  never substitute a federal id for one. The state id is the primary
+  identity; `nces_dist`/`nces_sch` sit alongside it.
+- Every id must trace to a real CCD row reached via a real state id.
+  Match exactly, leave unmatched rows `NA`, never fabricate or
+  fuzzy-guess an id.
+
+**Never delete `inst/extdata/crosswalk/`,
+`data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function**,
+and never add a gate forbidding `nces_dist`/`nces_sch`. The July-19
+draft to ban federal ids outright was **REJECTED on 2026-07-24**.
+
+**Banned wording — delete on sight:** any blanket phrasing like “NEVER
+use Urban Institute API, NCES CCD, or ANY federal data source”. An agent
+reading that sentence alone concludes the crosswalk must go, and five
+branches did exactly that on 2026-08-01. Always scope the ban to DATA
+VALUES and state the crosswalk carve-out in the same breath, so the two
+can never be read apart.
 
 ## Project Overview
 
@@ -477,7 +660,9 @@ a real `0` stays `0`; fractional FTE preserved).
     (`school_id=="999"`). A **statewide** aggregate (county `"99"` /
     district `"9999"`) is published in **2014 and 2015** and flagged
     `is_state` (returned at `level="district"`); **2016 has no statewide
-    row**. `is_charter` flags county 80.
+    row**. `is_charter` is county 80 (three-valued; NA where no county
+    code is published). This file family contains NO charter LEA at all
+    – 0 county-80 rows and 0 name-charter LEAs in all three years.
   - CDS drift: the 2015 (1415) file drops leading zeros (district
     `"10"`); ids are re-padded to county 2 / district 4 / school 3.
 - **`fetch_certificated_staff(end_year, level)`** - certificated-staff
@@ -506,7 +691,10 @@ a real `0` stays `0`; fractional FTE preserved).
   - Legacy entity conventions inside the single CSV: state =
     `CONAME=="STATE SUM"`, county = `DIST=="9998"` (CO SUMMARY),
     district total = `SCH=="998"` (DIST SUMMARY), else school.
-    `is_charter` flags county 80.
+    `is_charter` is county 80 (three-valued). The **STATE SUM row
+    publishes no county code** in 2000-2002 and 2020-2026, so its
+    `is_charter` is `NA`, not FALSE (2003-2008 publish `"99"` there, a
+    sourced FALSE). The 2000-2008 CSVs contain no charter LEA at all.
   - **Deferred:** the non-certificated (`ncs/`) series mirrors this but
     is not yet implemented.
 
@@ -629,11 +817,12 @@ Two fetchers read NJ DOE IDEA-618 public-reporting special-education
 data (source `nj.gov/education/specialed/monitor/ideapublicdata/docs/`).
 Both carry the standard entity flags
 (`is_state`/`is_county`/`is_district`/`is_school`/
-`is_charter`/`is_charter_sector`/`is_allpublic`; `is_charter` flags
-county 80) and an opt-in `with_status = FALSE` arg (TRUE appends a
-`value_status` factor classified BEFORE numeric coercion, so a
-suppressed cell is never a fabricated 0). Metric polarity/denominator
-metadata is in `metric_registry.csv`
+`is_charter`/`is_charter_sector`/`is_allpublic`; `is_charter` is county
+80, three-valued – `level = "state"` output carries no county column at
+all, so its `is_charter` is `NA`) and an opt-in `with_status = FALSE`
+arg (TRUE appends a `value_status` factor classified BEFORE numeric
+coercion, so a suppressed cell is never a fabricated 0). Metric
+polarity/denominator metadata is in `metric_registry.csv`
 (`sped_rate`/`sped_num`/`gened_num`/`sped_num_no_speech`, and placement
 `count`/ `percent`/`subgroup_total`).
 

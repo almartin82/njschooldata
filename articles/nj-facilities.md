@@ -305,28 +305,28 @@ print(project_top_costs)
 #> 8  39-1320-N22
 #> 9  17-5240-N10
 #> 10 21-5210-N09
-#>                                                          entity_name      cost
-#> 1                                  Passaic – New Passaic High School 328100000
-#> 2                                          Perth Amboy – High School 283800000
-#> 3                                       Paterson - STEAM High School 200800000
-#> 4                     Newark – New High School (New University H.S.) 153000000
-#> 5                                  West New York – New Middle School 121800000
-#> 6                                 Salem City – New Pre-K to 8 School 121300000
-#> 7              Camden – New High School (East Side H.S. Replacement) 115000000
-#> 8                 Elizabeth – New PreK-8 School (Battin Replacement) 101500000
-#> 9  Union City – New Esther Salas Middle School (Grade 7 to 9 School)  93700000
-#> 10                                   Trenton - New Elementary School  89400000
-#>    added_capacity year_constructed
-#> 1              NA               NA
-#> 2              NA               NA
-#> 3              NA               NA
-#> 4              NA               NA
-#> 5              NA               NA
-#> 6              NA               NA
-#> 7              NA               NA
-#> 8              NA               NA
-#> 9              NA               NA
-#> 10             NA               NA
+#>                                                                                                          entity_name
+#> 1                                                                                  Passaic – New Passaic High School
+#> 2                                                                                          Perth Amboy – High School
+#> 3                                                                                       Paterson - STEAM High School
+#> 4                                                                     Newark – New High School (New University H.S.)
+#> 5                                                                                  West New York – New Middle School
+#> 6                                                                                 Salem City – New Pre-K to 8 School
+#> 7                                                              Camden – New High School (East Side H.S. Replacement)
+#> 8                                                                 Elizabeth – New PreK-8 School (Battin Replacement)
+#> 9                                                  Union City – New Esther Salas Middle School (Grade 7 to 9 School)
+#> 10 Trenton - New Betty V. Coles Elementary School/ Miguel A. Hernandez Intermediate School (Dunn Middle School site)
+#>         cost added_capacity year_constructed
+#> 1  328100000             NA               NA
+#> 2  283800000             NA               NA
+#> 3  200800000             NA               NA
+#> 4  153000000             NA               NA
+#> 5  121800000             NA               NA
+#> 6  121300000             NA               NA
+#> 7  115000000             NA               NA
+#> 8  101500000             NA               NA
+#> 9   93700000             NA               NA
+#> 10  89400000             NA               NA
 ```
 
 ``` r
@@ -462,7 +462,7 @@ sessionInfo()
 #> [4] ggplot2_4.0.3       njschooldata_0.9.26
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     stringi_1.8.7     
+#>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     stringi_1.8.9     
 #>  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5    
 #>  [9] grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0     
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8         purrr_1.2.2       
@@ -472,7 +472,7 @@ sessionInfo()
 #> [29] vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5   
 #> [33] snakecase_0.11.1   stringr_1.6.0      fs_2.1.0           ragg_1.5.2        
 #> [37] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     
-#> [41] pillar_1.11.1      bslib_0.11.0       gtable_0.3.6       glue_1.8.1        
+#> [41] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        
 #> [45] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  
 #> [49] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
 #> [53] rmarkdown_2.31     readr_2.2.0        compiler_4.6.1     S7_0.2.2          

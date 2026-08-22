@@ -1,8 +1,11 @@
 # Fetch the current New Jersey education directory (directory-contract/v1)
 
 Downloads the current official New Jersey directory from the NJDOE
-Homeroom public download endpoints and returns the canonical triple
-`list(entities, roles, meta)` defined by directory-contract/v1.
+Homeroom public endpoints. When Homeroom blocks non-interactive
+requests, the function falls back to the latest official NJDOE School
+Performance Reports contact roster and narrows its declared coverage to
+district superintendents and school principals. It returns the canonical
+triple `list(entities, roles, meta)` defined by directory-contract/v1.
 Districts (including single-site charter LEAs) are keyed by the county +
 district CDS code; schools by the county + district + school CDS code.
 District superintendents, business administrators, and special-education
@@ -35,9 +38,15 @@ A named list with components:
 
 ## Details
 
-The New Jersey source publishes SPLIT first/last name fields;
-`first_name` and `last_name` come directly from those source columns and
-`person_name` is assembled from them (see `R/directory_contract.R`).
+Homeroom publishes split first/last name fields; `first_name` and
+`last_name` come directly from those source columns and `person_name` is
+assembled from them. The performance-report fallback publishes combined
+names, which remain verbatim in `person_name` while the split fields
+remain `NA` (see `R/directory_contract.R`).
+
+This function takes no arguments, and deliberately offers no cache-age
+or refresh control: the directory is always-on, so there is no retained
+copy whose age a caller could trade against freshness.
 
 ## Examples
 

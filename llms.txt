@@ -145,15 +145,15 @@ demo %>% select(end_year, subgroup, pct) %>%
   mutate(pct = round(pct * 100, 1)) %>%
   tidyr::pivot_wider(names_from = subgroup, values_from = pct)
 #> # A tibble: 7 x 5
-#>   end_year white hispanic black asian
-#>      <dbl> <dbl>    <dbl> <dbl> <dbl>
-#> 1     2020  42       30.3  14.6  10.3
-#> 2     2021  40.6     31.1  14.9  10.4
-#> 3     2022  39.6     32.1  14.8  10.3
-#> 4     2023  38.5     33.2  14.6  10.3
-#> 5     2024  37.6     34.1  14.4  10.3
-#> 6     2025  36.7     35.0  14.3  10.3
-#> 7     2026  36.5     35.2  14.1  10.4
+#>   end_year asian black hispanic white
+#>      <dbl> <dbl> <dbl>    <dbl> <dbl>
+#> 1     2020  10.3  14.6     30.3  42
+#> 2     2021  10.4  14.9     31.1  40.6
+#> 3     2022  10.3  14.8     32.1  39.6
+#> 4     2023  10.3  14.6     33.2  38.5
+#> 5     2024  10.3  14.4     34.1  37.6
+#> 6     2025  10.3  14.3     35    36.7
+#> 7     2026  10.4  14.1     35.2  36.5
 ```
 
 ![Demographic

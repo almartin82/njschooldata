@@ -1,6 +1,16 @@
-# State aggregate indicator codes
+# State aggregate indicator codes Source: NJDOE publishes "9999" as the statewide district code, labelled as such, across both of this package's oldest source families. Enrollment: STAT_ENR.CSV (enrollment_0405.zip, SY2004-05 doedata release), DISTRICT field, "9999-STATE TOTAL" on 33 rows (and "9999-COUNTY TOTAL" on 658 county rows). Graduation: STAT_GRD.CSV (grd06, grd09), DISTRICT field, "9999-NEW JERSEY" on 10 rows each; grd10 grd.xls, DIST CODE "9999" with DIST NAME "STATE TOTAL"; and DISTRICT_ID "9999" ("STATE TOTAL") in every ACGR / Cohort file 2011-2025. Also present as the statewide district code in the NJDOE doedata staff-evaluation files (2014-2015; see this package's CLAUDE.md "Valid Filter Values (staff evaluations...)").
 
-State aggregate indicator codes
+State aggregate indicator codes Source: NJDOE publishes "9999" as the
+statewide district code, labelled as such, across both of this package's
+oldest source families. Enrollment: STAT_ENR.CSV (enrollment_0405.zip,
+SY2004-05 doedata release), DISTRICT field, "9999-STATE TOTAL" on 33
+rows (and "9999-COUNTY TOTAL" on 658 county rows). Graduation:
+STAT_GRD.CSV (grd06, grd09), DISTRICT field, "9999-NEW JERSEY" on 10
+rows each; grd10 grd.xls, DIST CODE "9999" with DIST NAME "STATE TOTAL";
+and DISTRICT_ID "9999" ("STATE TOTAL") in every ACGR / Cohort file
+2011-2025. Also present as the statewide district code in the NJDOE
+doedata staff-evaluation files (2014-2015; see this package's CLAUDE.md
+"Valid Filter Values (staff evaluations...)").
 
 ## Usage
 

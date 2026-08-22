@@ -257,7 +257,7 @@ districts <- directory$entities[directory$entities$entity_type == "district", ]
 # "source_unavailable" rather than silently returning empty data as if it
 # were a real zero)
 directory$meta$source_status
-#> [1] "source_unavailable"
+#> [1] "ok"
 
 # Existing callers can use the compatibility data-frame front doors
 # get_school_directory() and get_district_directory(). They make separate live
@@ -404,8 +404,8 @@ sessionInfo()
 #>  [9] textshaping_1.0.5 readxl_1.5.0      yaml_2.3.12       fastmap_1.2.0    
 #> [13] readr_2.2.0       R6_2.6.1          generics_0.1.4    curl_7.1.0       
 #> [17] knitr_1.51        tibble_3.3.1      janitor_2.2.1     desc_1.4.3       
-#> [21] lubridate_1.9.5   tzdb_0.5.0        bslib_0.11.0      pillar_1.11.1    
-#> [25] rlang_1.3.0       cachem_1.1.0      stringi_1.8.7     xfun_0.60        
+#> [21] lubridate_1.9.5   tzdb_0.5.0        bslib_0.12.0      pillar_1.11.1    
+#> [25] rlang_1.3.0       cachem_1.1.0      stringi_1.8.9     xfun_0.60        
 #> [29] fs_2.1.0          sass_0.4.10       otel_0.2.0        timechange_0.4.0 
 #> [33] cli_3.6.6         withr_3.0.3       pkgdown_2.2.1     magrittr_2.0.5   
 #> [37] digest_0.6.39     hms_1.1.4         lifecycle_1.0.5   vctrs_0.7.3      
