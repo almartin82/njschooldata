@@ -36,6 +36,7 @@ from .directory import (
     DirectoryResult,
     fetch_directory,
 )
+from .directory_views import get_district_directory, get_school_directory
 from .facilities import (
     fetch_facilities,
     fetch_facilities_multi,
@@ -64,6 +65,8 @@ _CURATED_EXPORTS = [
     "fetch_access",
     "fetch_grad_rate",
     "fetch_directory",
+    "get_school_directory",
+    "get_district_directory",
     "DirectoryResult",
     "DirectoryError",
     "DirectoryParseError",
