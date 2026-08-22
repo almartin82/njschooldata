@@ -18,6 +18,8 @@
 ^\.claude$
 ^CLAUDE\.md$
 ^GOALS\.md$
+^tests/__pycache__$
+^\.pytest_cache$
 ^CODE_OF_CONDUCT\.md$
 ^nj-raw$
 ^research-private$
