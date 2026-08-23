@@ -7,6 +7,9 @@
 facilities_cache_dir()
 }
 \description{
-Internal facilities cache directory
+Lives under \code{\link{njsd_cache_root}}. Before 2026-08-23 this resolver
+called \code{tools::R_user_dir()} directly and so ignored every cache
+override the rest of the package honours -- including the one the test suite
+uses to keep itself out of the caller's real cache.
 }
 \keyword{internal}

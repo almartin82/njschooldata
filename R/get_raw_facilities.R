@@ -18,9 +18,15 @@ facilities_sources <- function() {
 }
 
 #' Internal facilities cache directory
+#'
+#' Lives under \code{\link{njsd_cache_root}}. Before 2026-08-23 this resolver
+#' called \code{tools::R_user_dir()} directly and so ignored every cache
+#' override the rest of the package honours -- including the one the test suite
+#' uses to keep itself out of the caller's real cache.
+#'
 #' @keywords internal
 facilities_cache_dir <- function() {
-  path <- file.path(tools::R_user_dir("njschooldata", "cache"), "facilities")
+  path <- file.path(njsd_cache_root(), "facilities")
   dir.create(path, recursive = TRUE, showWarnings = FALSE)
   path
 }

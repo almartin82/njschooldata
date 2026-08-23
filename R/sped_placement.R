@@ -391,14 +391,14 @@ enumerate_sped_placement_files <- function(end_year) {
 
 #' Directory holding cached SPED placement workbooks
 #'
+#' Lives under \code{\link{njsd_cache_root}}, so it follows
+#' \code{options(njschooldata.cache_dir)} and the \code{NJSCHOOLDATA_CACHE_DIR}
+#' environment variable like every other on-disk cache in the package.
+#'
 #' @return absolute path to the cache directory (created lazily on use)
 #' @keywords internal
 sped_placement_cache_dir <- function() {
-  base <- getOption(
-    "njschooldata.cache_dir",
-    tools::R_user_dir("njschooldata", which = "cache")
-  )
-  file.path(base, "sped-placement")
+  file.path(njsd_cache_root(), "sped-placement")
 }
 
 

@@ -1,5 +1,20 @@
 # njschooldata (development)
 
+## One cache root, and a test suite that stays out of yours
+
+* Every on-disk cache -- SPR workbooks, SPED placement workbooks, and the
+  facilities source snapshots -- now resolves through a single root.
+  `options(njschooldata.cache_dir)` still wins; the new `NJSCHOOLDATA_CACHE_DIR`
+  environment variable is consulted next; `tools::R_user_dir("njschooldata",
+  "cache")` remains the default, so nothing moves unless you move it.
+* `facilities_cache_dir()` had been reading `tools::R_user_dir()` directly and
+  honoured no override at all. It does now.
+* The test suite redirects that root into a per-process temp directory, so
+  running the tests no longer reads or writes the workbooks cached on the
+  machine running them. A test that passed only because a large workbook
+  happened to be warm now fails honestly, and no test can leave a value behind
+  for an ordinary call to serve.
+
 ## Source and release contracts hardened
 
 * Pull-request R and Python tests are deterministic and fixture-backed. Live NJ

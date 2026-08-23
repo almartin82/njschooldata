@@ -11,9 +11,11 @@ Absolute path to the workbook cache directory (it is not created by
   this getter).
 }
 \description{
-On-disk location where downloaded SPR Excel databases are cached. Defaults to
-a per-user cache directory (\code{tools::R_user_dir("njschooldata", "cache")});
-override with \code{options(njschooldata.cache_dir = "/path")}.
+On-disk location where downloaded SPR Excel databases are cached. Lives under
+\code{\link{njsd_cache_root}}, which defaults to
+\code{tools::R_user_dir("njschooldata", "cache")} and is overridden by
+\code{options(njschooldata.cache_dir = "/path")} or by the
+\code{NJSCHOOLDATA_CACHE_DIR} environment variable.
 }
 \examples{
 njsd_workbook_cache_dir()

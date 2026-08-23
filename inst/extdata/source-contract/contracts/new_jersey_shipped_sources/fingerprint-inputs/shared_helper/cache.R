@@ -72,6 +72,22 @@
 # as unreviewable as a bump with none. The fingerprint moved off
 # sha256:56268bca5e5681a997d0dc3922c6414953a433020d8467e5f6f49c6be12cdd53.
 
+# 2026-08-23 regeneration: cache isolation for the test suite. The three
+# on-disk caches -- spr-workbooks/ here, sped-placement/ in R/sped_placement.R
+# and facilities/ in R/get_raw_facilities.R -- now resolve through one root,
+# njsd_cache_root() below, which reads options(njschooldata.cache_dir) first,
+# then NJSCHOOLDATA_CACHE_DIR, then tools::R_user_dir() as before. Two things
+# this does NOT do: it does not change any cached bytes (an entry written
+# yesterday under the default root is byte-identical and still served today),
+# and it does not change a single download URL or endpoint, so nothing has to
+# be re-acquired. What it does change is that the suite can be pointed
+# somewhere else, which it now is: tests/testthat/setup-cache-isolation.R sets
+# the environment variable, so running the tests no longer reads or writes the
+# caller's own workbooks. facilities_cache_dir() had been calling
+# tools::R_user_dir() directly and honoured no override at all; that was the
+# one live bypass, and it is closed. Session cache untouched, so again there is
+# no schema version to bump.
+
 # Create package environment for session cache
 .njsd_cache <- new.env(parent = emptyenv())
 
@@ -294,6 +310,48 @@ njsd_cache_remove <- function(key) {
 }
 
 # -----------------------------------------------------------------------------
+# On-Disk Cache Root
+# -----------------------------------------------------------------------------
+#
+# Every on-disk cache njschooldata keeps -- SPR workbooks, SPED placement
+# workbooks, facilities source snapshots -- hangs off this one resolver, so
+# there is exactly one place that decides where the package writes.
+
+#' Root directory for njschooldata's on-disk caches
+#'
+#' Resolution order, most specific first:
+#' \enumerate{
+#'   \item \code{getOption("njschooldata.cache_dir")} -- an explicit, in-session
+#'     choice, so a caller that has deliberately redirected the cache still wins.
+#'   \item \code{Sys.getenv("NJSCHOOLDATA_CACHE_DIR")} -- an ambient override.
+#'     The test suite sets this (see
+#'     \code{tests/testthat/setup-cache-isolation.R}) so that running the tests
+#'     never reads or writes the caller's own cache; CI can set it for the same
+#'     reason.
+#'   \item \code{tools::R_user_dir("njschooldata", which = "cache")} -- the
+#'     default, unchanged from before either override existed.
+#' }
+#'
+#' The directory is not created by this getter; each cache creates its own
+#' subdirectory on first write.
+#'
+#' @return Absolute path to the cache root.
+#' @keywords internal
+njsd_cache_root <- function() {
+  option_root <- getOption("njschooldata.cache_dir", default = NULL)
+  if (!is.null(option_root) && nzchar(option_root)) {
+    return(option_root)
+  }
+
+  env_root <- Sys.getenv("NJSCHOOLDATA_CACHE_DIR", unset = "")
+  if (nzchar(env_root)) {
+    return(env_root)
+  }
+
+  tools::R_user_dir("njschooldata", which = "cache")
+}
+
+# -----------------------------------------------------------------------------
 # On-Disk Workbook Cache (SPR databases)
 # -----------------------------------------------------------------------------
 #
@@ -307,9 +365,11 @@ njsd_cache_remove <- function(key) {
 
 #' Directory holding cached SPR workbooks
 #'
-#' On-disk location where downloaded SPR Excel databases are cached. Defaults to
-#' a per-user cache directory (\code{tools::R_user_dir("njschooldata", "cache")});
-#' override with \code{options(njschooldata.cache_dir = "/path")}.
+#' On-disk location where downloaded SPR Excel databases are cached. Lives under
+#' \code{\link{njsd_cache_root}}, which defaults to
+#' \code{tools::R_user_dir("njschooldata", "cache")} and is overridden by
+#' \code{options(njschooldata.cache_dir = "/path")} or by the
+#' \code{NJSCHOOLDATA_CACHE_DIR} environment variable.
 #'
 #' @return Absolute path to the workbook cache directory (it is not created by
 #'   this getter).
@@ -317,11 +377,7 @@ njsd_cache_remove <- function(key) {
 #' @examples
 #' njsd_workbook_cache_dir()
 njsd_workbook_cache_dir <- function() {
-  base <- getOption(
-    "njschooldata.cache_dir",
-    tools::R_user_dir("njschooldata", which = "cache")
-  )
-  file.path(base, "spr-workbooks")
+  file.path(njsd_cache_root(), "spr-workbooks")
 }
 
 #' Is a file a real .xlsx (ZIP) rather than an HTTP error / bot page?

@@ -1,6 +1,6 @@
 {
   "artifact_manifest_digest": "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b",
-  "contract_fingerprint": "sha256:36b75ad24020ddf110c28d7239227d144e08dd69ebb268e5303b1ab0509e92a9",
+  "contract_fingerprint": "sha256:ddc91904ae85b5e1761bf7340b298f2a1995a1fa2d331c2e745313b49cbf205b",
   "contract_id": "new_jersey_shipped_sources",
   "expected_test_ids": [
     "SV-001",
@@ -143,7 +143,7 @@
       "source_path": "data-raw/source-validation-spec/new_jersey_shipped_sources/package-coverage.json"
     },
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/cache.R": {
-      "source_checksum": "sha256:6e19871ab9396eefcf27f90d4130b12792a62830f9d7c4a2b3d1920fc6585cce",
+      "source_checksum": "sha256:338f7cc3ec7aefc8b4dd68bf3b0a95d6cdf733ad6beef8b491116a4f74b9add1",
       "source_path": "R/cache.R"
     },
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/helper-source-tree.R": {
@@ -166,8 +166,8 @@
   "generated_files": {
     ".github/workflows/live-validation-new_jersey_shipped_sources.yml": "sha256:57c8bdd6b611dd16e5ae509a19874e770d446866ac246b2eac1c37495d6e5549",
     ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:212dddd1f9ed655d3a55670b26293eb3cce43a2e0cdef934e81b553f3e2c1bca",
-    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:b50c1d8d0971f7593c98dabdbf222e0d07b14e859632e5ae32283003145ce778",
-    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:8462a5d41b847fbec2a66030fe21642cbfc5c747320b8e26902f2845352c6753",
+    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:f6715df08cf67d45f09ce8c666a486db9b98b046759947c7465636015b0c63be",
+    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:95ee5f48291c2001a9ba4e45d734541bc89b9b5eaa934921e303dad779d11fdc",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json": "sha256:0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/contract.json": "sha256:0913258347c139149121e2fdd21b8b2f33571f5aafe6f18daf744c5d0db58360",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/DESCRIPTION": "sha256:d23f532b360e95a72b9887f8ebf7eac4f8915c35d9122a80a6569ede856cce48",
@@ -200,16 +200,16 @@
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/artifact-manifest.json": "sha256:0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/contract.json": "sha256:0913258347c139149121e2fdd21b8b2f33571f5aafe6f18daf744c5d0db58360",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/schema/package-coverage.json": "sha256:db235625ff205743724645a9f940c864343540c56fcc6497288958e2253813fc",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/cache.R": "sha256:6e19871ab9396eefcf27f90d4130b12792a62830f9d7c4a2b3d1920fc6585cce",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/cache.R": "sha256:338f7cc3ec7aefc8b4dd68bf3b0a95d6cdf733ad6beef8b491116a4f74b9add1",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/helper-source-tree.R": "sha256:c7cd60ffee762c52e75193bf5a99faa7b7aca168e744d696f74283dac57122e3",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run-live-canaries.R": "sha256:3992b6ee561fa6abec1e4b0a56a065815dacd6af648a18ea6d6882f045493ba4",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run.py": "sha256:9b377aa913ab805b5a2115fb157737b4358eaaa96d52c005202c99d8b4fc7751",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/utils_download.R": "sha256:a320839de2a1ba4975b505a77c6db3fb35477ff15fe1c1e29d1d123ce7ab0cd4",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/runtime-metadata.json": "sha256:1c0426bb6f55dda5d57e325454ee3513b9e26b885a0f16d06bd35d73f3e9400b",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:a4e5448a41b1276ae7e703ee9bc26f2698b34dc38d9fc5840c80cbcc8bcfd240",
-    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:9c1661581055da5f94d88806c162b799c44d9339ddbf7829528c85a68ba4175b",
-    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:538cb679652d6a4d69b6a2b3ebfe89ef5fce89d298f7b3edac0be8d6c6a6a194",
-    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:b12ad949cc51adc8cc7a7020604b75f203e7620fa31d16d2e48dde325f0cb944",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:23cf4fb367b141bd347813d089e306edd700570908fcd9c05b7f82198827288e",
+    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:5a3b5532444752aa514a16701d3ca3e52531f1e69b73f6550640a78db3425c58",
+    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:96a98048b76e4e7d966f762c96c3ef6c6ef4a8498c7f1f2e0bafa3aa70864b90",
+    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:2f5477b3560afca64eea83dbd10caa8133522ae0298ca55f061e10645c09549e",
     "tools/source-validation/validate_contract.py": "sha256:ff0f0989c174874bcaf30f229bcad8987b0f250421bbc735cc72802843185317",
     "tools/source-validation/verify_package.py": "sha256:78a049dfb1cfec46e7e34161fc2b1fc783925b18b289dcb5fb1aac9e63956595"
   },
