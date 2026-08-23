@@ -1,9 +1,11 @@
 # Directory holding cached SPR workbooks
 
-On-disk location where downloaded SPR Excel databases are cached.
-Defaults to a per-user cache directory
-(`tools::R_user_dir("njschooldata", "cache")`); override with
-`options(njschooldata.cache_dir = "/path")`.
+On-disk location where downloaded SPR Excel databases are cached. Lives
+under
+[`njsd_cache_root`](https://almartin82.github.io/njschooldata/reference/njsd_cache_root.md),
+which defaults to `tools::R_user_dir("njschooldata", "cache")` and is
+overridden by `options(njschooldata.cache_dir = "/path")` or by the
+`NJSCHOOLDATA_CACHE_DIR` environment variable.
 
 ## Usage
 
