@@ -3,7 +3,7 @@ name: Source contract
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, master]
 jobs:
   deterministic-source-contract:
     runs-on: ubuntu-latest

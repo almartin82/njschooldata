@@ -136,3 +136,18 @@ test_that("validated cache artifacts are reused atomically", {
   expect_identical(first$digest, second$digest)
   expect_match(second$warning, "cache", ignore.case = TRUE)
 })
+
+test_that("the shared transport identifies as a browser, not as njschooldata", {
+  # NJ DOE's Homeroom directory downloads answer a self-identifying agent with
+  # HTTP 403 and a 963-byte challenge page. get_school_directory() and
+  # get_district_directory() therefore stopped on every call and reported the
+  # refusal as `source_unavailable`, blaming NJ DOE for our own header.
+  agent <- .source_user_agent()
+
+  expect_true(is.character(agent) && length(agent) == 1L && nzchar(agent))
+  expect_match(agent, "^Mozilla/5\\.0 ")
+  expect_false(grepl("njschooldata", agent, fixed = TRUE))
+
+  default_agent <- eval(formals(.default_source_request)$user_agent)
+  expect_identical(default_agent, agent)
+})

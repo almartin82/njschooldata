@@ -28,12 +28,29 @@
   invisible(TRUE)
 }
 
-.default_source_request <- function(url, dest, timeout) {
+# NJ DOE's Homeroom directory downloads sit behind an Imperva policy that
+# answers a self-identifying agent string with HTTP 403 and a 963-byte
+# challenge page, while the identical request carrying a browser agent
+# returns the real CSV (961,540 bytes for the school download, 2,525 rows;
+# 426,689 bytes for the district download, 683 rows). That 403 is a property
+# of OUR request, not an NJ DOE outage, and reporting it as
+# `source_unavailable` blamed the department for our own header. The
+# facilities downloader has always sent the browser agent for the same
+# reason; the shared transport now does too.
+.source_user_agent <- function() {
+  paste0(
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ",
+    "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+  )
+}
+
+.default_source_request <- function(url, dest, timeout,
+                                    user_agent = .source_user_agent()) {
   response <- httr::GET(
     url,
     httr::write_disk(dest, overwrite = TRUE),
     httr::timeout(timeout),
-    httr::user_agent(paste0("njschooldata/", utils::packageVersion("njschooldata")))
+    httr::user_agent(user_agent)
   )
   list(
     status_code = httr::status_code(response),

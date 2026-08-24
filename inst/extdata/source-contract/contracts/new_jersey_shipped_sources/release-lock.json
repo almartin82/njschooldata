@@ -1,6 +1,6 @@
 {
   "artifact_manifest_digest": "sha256:a504663075c50fa7459965fc3a641935bac19e7fce0b67c6490dc915e46f5d8b",
-  "contract_fingerprint": "sha256:ddc91904ae85b5e1761bf7340b298f2a1995a1fa2d331c2e745313b49cbf205b",
+  "contract_fingerprint": "sha256:01384c3db08d508e202060996643cbf1f7c9c5b00c3d268f1fcb2ae97264b6f8",
   "contract_id": "new_jersey_shipped_sources",
   "expected_test_ids": [
     "SV-001",
@@ -43,7 +43,7 @@
       "source_path": "R/fetch_enrollment.R"
     },
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/source_transport.R": {
-      "source_checksum": "sha256:2aac6afb1b95e8bf57fb802a34678ca8e5fc9fa417e29f45d44f16500e407db4",
+      "source_checksum": "sha256:8bd64c5191ed18bac7f3cc13e6f5c78dcb979d4f3f041ef48952d537e8500101",
       "source_path": "R/source_transport.R"
     },
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/tges.R": {
@@ -165,9 +165,9 @@
   },
   "generated_files": {
     ".github/workflows/live-validation-new_jersey_shipped_sources.yml": "sha256:57c8bdd6b611dd16e5ae509a19874e770d446866ac246b2eac1c37495d6e5549",
-    ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:212dddd1f9ed655d3a55670b26293eb3cce43a2e0cdef934e81b553f3e2c1bca",
-    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:f6715df08cf67d45f09ce8c666a486db9b98b046759947c7465636015b0c63be",
-    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:95ee5f48291c2001a9ba4e45d734541bc89b9b5eaa934921e303dad779d11fdc",
+    ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:0506c70a3175ad6e83513bb968c34fe0de08c791b93a16c727a834808083ca61",
+    "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:87d144fd00710cceb3f282851c2d65eddf3afa37b84a970bd6dda63bfa2a60dc",
+    "docs/source-validation-new_jersey_shipped_sources.md": "sha256:b00903094ebf782bd53de0db6f556d761f1128a8bb5b61532a5dfc9e49309c97",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json": "sha256:0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/contract.json": "sha256:0913258347c139149121e2fdd21b8b2f33571f5aafe6f18daf744c5d0db58360",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/dependency/DESCRIPTION": "sha256:d23f532b360e95a72b9887f8ebf7eac4f8915c35d9122a80a6569ede856cce48",
@@ -175,7 +175,7 @@
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_assessment.R": "sha256:7beed9f9b3f5078e59fb81cb1d6005ca190e2ebdd3f2557cdc860f52e16f7642",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_directory.R": "sha256:5506f1d8c9deefcd5d7c1b2b44dc5af854c9985927dbd7863f4d877e6d7f4327",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/fetch_enrollment.R": "sha256:a1090102a32476cc3aae86b682e38f06b8d454948c6d1a9c1f51faa67387f055",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/source_transport.R": "sha256:2aac6afb1b95e8bf57fb802a34678ca8e5fc9fa417e29f45d44f16500e407db4",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/source_transport.R": "sha256:8bd64c5191ed18bac7f3cc13e6f5c78dcb979d4f3f041ef48952d537e8500101",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/downloader/tges.R": "sha256:1d36ff3118ec5a77f9a1269acf0c52665e7ca57c8a64e39fa54e20fc0b69fc7d",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/endpoints.md": "sha256:6c8608610391b5ab90cadf6a73b2d3e22f7e43c6fc15858dcd901e49f98cccdf",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/endpoint/provenance.json": "sha256:47ddf66eb8489d28266f33f0c9d7ebd9603e1cee306f5bda64c83f48a5b6a6de",
@@ -206,10 +206,10 @@
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/run.py": "sha256:9b377aa913ab805b5a2115fb157737b4358eaaa96d52c005202c99d8b4fc7751",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/fingerprint-inputs/shared_helper/utils_download.R": "sha256:a320839de2a1ba4975b505a77c6db3fb35477ff15fe1c1e29d1d123ce7ab0cd4",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/runtime-metadata.json": "sha256:1c0426bb6f55dda5d57e325454ee3513b9e26b885a0f16d06bd35d73f3e9400b",
-    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:23cf4fb367b141bd347813d089e306edd700570908fcd9c05b7f82198827288e",
-    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:5a3b5532444752aa514a16701d3ca3e52531f1e69b73f6550640a78db3425c58",
-    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:96a98048b76e4e7d966f762c96c3ef6c6ef4a8498c7f1f2e0bafa3aa70864b90",
-    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:2f5477b3560afca64eea83dbd10caa8133522ae0298ca55f061e10645c09549e",
+    "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/status.json": "sha256:eb0e28f4becdd0196bb5713f277864d824e8e6aebec6abc8d222b3d918153008",
+    "python/src/njschooldata/source_validation_new_jersey_shipped_sources_generated.py": "sha256:23691842a023634cbfd7ea9763e9945e5883d1fa811b151ffa5009e57be77ea3",
+    "tests/test_source_validation_new_jersey_shipped_sources_generated.py": "sha256:8ce4739f106bdde6a980cb138cee4fa6229d56fe73e6a22a722b475cbd6ba3c8",
+    "tests/testthat/test-source-validation-new_jersey_shipped_sources-generated.R": "sha256:7a9947b0e4fc3eb7b01da5987a489adc5827a0287d8c988c153ef059607cb1ae",
     "tools/source-validation/validate_contract.py": "sha256:ff0f0989c174874bcaf30f229bcad8987b0f250421bbc735cc72802843185317",
     "tools/source-validation/verify_package.py": "sha256:78a049dfb1cfec46e7e34161fc2b1fc783925b18b289dcb5fb1aac9e63956595"
   },
