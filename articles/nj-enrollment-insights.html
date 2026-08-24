@@ -493,10 +493,12 @@ Newark alone has 43,000.</p>
 <p><img src="nj-enrollment-insights_files/figure-html/top-10-districts-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
-<h2 id="multiracial-students-fastest-growing-category">10. Multiracial students: fastest-growing category<a class="anchor" aria-label="anchor" href="#multiracial-students-fastest-growing-category"></a>
+<h2 id="multiracial-students-went-from-2-4-to-3-5-of-enrollment">10. Multiracial students went from 2.4% to 3.5% of enrollment<a class="anchor" aria-label="anchor" href="#multiracial-students-went-from-2-4-to-3-5-of-enrollment"></a>
 </h2>
-<p>Multiracial students grew 46% since 2020 - from 2.4% to 3.5% of
-enrollment - making it the fastest-growing racial category in NJ.</p>
+<p>Multiracial enrollment grew 45% since 2020, from 32,600 to 47,200
+students, even as total enrollment slipped. Native American enrollment
+grew at a similar rate over the same years, but from a base of under
+2,000 students.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multi</span> <span class="op">&lt;-</span> <span class="va">state_summary</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subgroup</span> <span class="op">==</span> <span class="st">"multiracial"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span></span>
@@ -517,8 +519,8 @@ enrollment - making it the fastest-growing racial category in NJ.</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">multi</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">end_year</span>, y <span class="op">=</span> <span class="va">pct</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="va">nj_colors</span><span class="op">[</span><span class="st">"multiracial"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span>, color <span class="op">=</span> <span class="va">nj_colors</span><span class="op">[</span><span class="st">"multiracial"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Multiracial Students: Fastest-Growing Category"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"From 2.4% to 3.5% of enrollment since 2020 (46% growth)"</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Multiracial Students: 2.4% to 3.5% of Enrollment"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"From 32,600 to 47,200 students since 2020, a 45% rise"</span>,</span>
 <span>       x <span class="op">=</span> <span class="st">"School Year"</span>, y <span class="op">=</span> <span class="st">"Percent Multiracial"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_nj</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="nj-enrollment-insights_files/figure-html/multiracial-growth-1.png" class="r-plt" alt="" width="100%"></p>
