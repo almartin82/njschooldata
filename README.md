@@ -51,22 +51,22 @@ charter_trend <- enr_all %>%
 
 stopifnot(nrow(charter_trend) > 0)
 charter_trend
-#> # A tibble: 14 x 3
+#> # A tibble: 14 × 3
 #>    end_year sector      n_students
 #>       <dbl> <chr>            <dbl>
 #>  1     2020 Charter         55604.
-#>  2     2020 Traditional   1320225.
-#>  3     2021 Charter         57480
-#>  4     2021 Traditional   1304920
+#>  2     2020 Traditional   1320225 
+#>  3     2021 Charter         57480 
+#>  4     2021 Traditional   1304920 
 #>  5     2022 Charter         58776.
 #>  6     2022 Traditional   1302140.
 #>  7     2023 Charter         58568.
 #>  8     2023 Traditional   1313352.
-#>  9     2024 Charter         61295
-#> 10     2024 Traditional   1318693
+#>  9     2024 Charter         61295 
+#> 10     2024 Traditional   1318693 
 #> 11     2025 Charter         63810.
 #> 12     2025 Traditional   1317372.
-#> 13     2026 Charter         64037
+#> 13     2026 Charter         64037 
 #> 14     2026 Traditional   1293412.
 ```
 
@@ -102,10 +102,10 @@ stopifnot(nrow(demo) > 0)
 demo %>% select(end_year, subgroup, pct) %>%
   mutate(pct = round(pct * 100, 1)) %>%
   tidyr::pivot_wider(names_from = subgroup, values_from = pct)
-#> # A tibble: 7 x 5
+#> # A tibble: 7 × 5
 #>   end_year asian black hispanic white
 #>      <dbl> <dbl> <dbl>    <dbl> <dbl>
-#> 1     2020  10.3  14.6     30.3  42
+#> 1     2020  10.3  14.6     30.3  42  
 #> 2     2021  10.4  14.9     31.1  40.6
 #> 3     2022  10.3  14.8     32.1  39.6
 #> 4     2023  10.3  14.6     33.2  38.5
@@ -139,7 +139,7 @@ stopifnot(nrow(k_trend) > 0)
 k_trend %>%
   filter(grade_level %in% c("K", "PK")) %>%
   select(end_year, grade_label, n_students)
-#> # A tibble: 14 x 3
+#> # A tibble: 14 × 3
 #>    end_year grade_label  n_students
 #>       <dbl> <chr>             <dbl>
 #>  1     2020 Kindergarten      90818
@@ -295,21 +295,21 @@ state_total <- state_summary %>%
 
 stopifnot(nrow(state_total) > 0)
 state_total
-#> # A tibble: 7 x 6
-#>   end_year subgroup         grade_level n_students   total   pct
-#>      <dbl> <chr>            <chr>            <dbl>   <dbl> <dbl>
-#> 1     2020 total_enrollment TOTAL         1375828. 1375828.    1
-#> 2     2021 total_enrollment TOTAL         1362400  1362400     1
-#> 3     2022 total_enrollment TOTAL         1360916  1360916     1
-#> 4     2023 total_enrollment TOTAL         1371921  1371921     1
-#> 5     2024 total_enrollment TOTAL         1379988  1379988     1
-#> 6     2025 total_enrollment TOTAL         1381182  1381182     1
-#> 7     2026 total_enrollment TOTAL         1357450. 1357450.    1
+#> # A tibble: 7 × 6
+#>   end_year subgroup         grade_level n_students    total   pct
+#>      <dbl> <chr>            <chr>            <dbl>    <dbl> <dbl>
+#> 1     2020 total_enrollment TOTAL         1375828. 1375828.     1
+#> 2     2021 total_enrollment TOTAL         1362400  1362400      1
+#> 3     2022 total_enrollment TOTAL         1360916  1360916      1
+#> 4     2023 total_enrollment TOTAL         1371921  1371921      1
+#> 5     2024 total_enrollment TOTAL         1379988  1379988      1
+#> 6     2025 total_enrollment TOTAL         1381182  1381182      1
+#> 7     2026 total_enrollment TOTAL         1357450. 1357450.     1
 ```
 
 ![Statewide Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/statewide-enrollment-1.png)
 
-[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#new-jersey-educates-14-million-students)
+[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#new-jersey-educates-1-4-million-students)
 
 ### 5. Hispanic students hit 35% and rising
 
@@ -321,7 +321,7 @@ hispanic <- state_summary %>%
 
 stopifnot(nrow(hispanic) > 0)
 hispanic %>% select(end_year, n_students, pct)
-#> # A tibble: 7 x 3
+#> # A tibble: 7 × 3
 #>   end_year n_students   pct
 #>      <dbl>      <dbl> <dbl>
 #> 1     2020    417042. 0.303
@@ -352,26 +352,24 @@ big_three_trend <- enr_all %>%
 
 stopifnot(nrow(big_three_trend) > 0)
 big_three_trend %>% select(end_year, district_name, n_students)
-#> # A tibble: 18 x 3
-#>    end_year district_name                   n_students
-#>       <dbl> <chr>                                <dbl>
-#>  1     2021 Newark Public School District        40085
-#>  2     2021 Jersey City Public Schools           26541
-#>  3     2021 Paterson Public School District      25657
-#>  4     2022 Newark Public School District        40607
-#>  5     2022 Jersey City Public Schools           26890
-#>  6     2022 Paterson Public School District      24495
-#>  7     2023 Newark Public School District        41430
-#>  8     2023 Jersey City Public Schools           26418
-#>  9     2023 Paterson Public School District      26067
-#> 10     2024 Newark Public School District        42600
-#> 11     2024 Jersey City Public Schools           26023
+#>    end_year                   district_name n_students
+#> 1      2021   Newark Public School District      40085
+#> 2      2021      Jersey City Public Schools      26541
+#> 3      2021 Paterson Public School District      25657
+#> 4      2022   Newark Public School District      40607
+#> 5      2022      Jersey City Public Schools      26890
+#> 6      2022 Paterson Public School District      24495
+#> 7      2023   Newark Public School District      41430
+#> 8      2023      Jersey City Public Schools      26418
+#> 9      2023 Paterson Public School District      26067
+#> 10     2024   Newark Public School District      42600
+#> 11     2024      Jersey City Public Schools      26023
 #> 12     2024 Paterson Public School District      24090
-#> 13     2025 Newark Public School District        43980
-#> 14     2025 Jersey City Public Schools           25692
+#> 13     2025   Newark Public School District      43980
+#> 14     2025      Jersey City Public Schools      25692
 #> 15     2025 Paterson Public School District      23609
-#> 16     2026 Newark Public School District        43216
-#> 17     2026 Jersey City Public Schools           25307
+#> 16     2026   Newark Public School District      43216
+#> 17     2026      Jersey City Public Schools      25307
 #> 18     2026 Paterson Public School District      21849
 ```
 
@@ -396,24 +394,22 @@ frl <- enr_current %>%
 
 stopifnot(nrow(frl) > 0)
 frl %>% select(district_name, n_students, pct)
-#> # A tibble: 15 x 3
-#>    district_name                                             n_students   pct
-#>    <chr>                                                          <dbl> <dbl>
-#>  1 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation      2132. 0.98
-#>  2 Mastery Schools Of Camden, Inc.                                2788. 0.95
-#>  3 Camden Prep, Inc.                                              1425. 0.937
-#>  4 Passaic City School District                                  10132. 0.918
-#>  5 Lakewood Township School District                              3381. 0.898
-#>  6 Woodlynne School District                                       343  0.875
-#>  7 Union City School District                                    10409. 0.867
-#>  8 Seaside Heights School District                                 127. 0.847
-#>  9 Atlantic City School District                                  5104. 0.839
-#> 10 New Brunswick School District                                  6929. 0.838
-#> 11 Wildwood City School District                                   629. 0.831
-#> 12 Elizabeth Public Schools                                      22034. 0.825
-#> 13 West New York School District                                  6070. 0.821
-#> 14 Long Branch Public School District                             4069. 0.819
-#> 15 Bridgeton City School District                                 5013. 0.799
+#>                                                district_name n_students   pct
+#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation   2131.500 0.980
+#> 2                            Mastery Schools Of Camden, Inc.   2788.250 0.950
+#> 3                                          Camden Prep, Inc.   1425.177 0.937
+#> 4                               Passaic City School District  10131.966 0.918
+#> 5                          Lakewood Township School District   3381.419 0.898
+#> 6                                  Woodlynne School District    343.000 0.875
+#> 7                                 Union City School District  10409.202 0.867
+#> 8                            Seaside Heights School District    127.050 0.847
+#> 9                              Atlantic City School District   5104.476 0.839
+#> 10                             New Brunswick School District   6929.422 0.838
+#> 11                             Wildwood City School District    629.067 0.831
+#> 12                                  Elizabeth Public Schools  22034.100 0.825
+#> 13                             West New York School District   6069.653 0.821
+#> 14                        Long Branch Public School District   4069.202 0.819
+#> 15                            Bridgeton City School District   5012.926 0.799
 ```
 
 ![FRL Distribution](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/frl-distribution-1.png)
@@ -435,24 +431,22 @@ ell <- enr_current %>%
 
 stopifnot(nrow(ell) > 0)
 ell %>% select(district_name, n_students, pct)
-#> # A tibble: 15 x 3
-#>    district_name                           n_students   pct
-#>    <chr>                                        <dbl> <dbl>
-#>  1 Lakewood Township School District            1691. 0.449
-#>  2 Plainfield Public School District            4153. 0.436
-#>  3 Dover Public School District                 1375. 0.434
-#>  4 Irvington Public School District             3315. 0.421
-#>  5 Elizabeth Public Schools                    11057. 0.414
-#>  6 New Brunswick School District                3365. 0.407
-#>  7 Paterson Public School District              8849. 0.405
-#>  8 Trenton Public School District               5795. 0.403
-#>  9 Red Bank Borough Public School District       453. 0.396
-#> 10 Union City School District                   4694. 0.391
-#> 11 Perth Amboy Public School District           3820. 0.383
-#> 12 Passaic City School District                 4084. 0.37
-#> 13 Bridgeton City School District               2309. 0.368
-#> 14 Bound Brook School District                   650. 0.343
-#> 15 Palisades Park School District                560. 0.331
+#>                              district_name n_students   pct
+#> 1        Lakewood Township School District  1690.7095 0.449
+#> 2        Plainfield Public School District  4152.9000 0.436
+#> 3             Dover Public School District  1375.3460 0.434
+#> 4         Irvington Public School District  3314.9540 0.421
+#> 5                 Elizabeth Public Schools 11057.1120 0.414
+#> 6            New Brunswick School District  3365.4830 0.407
+#> 7          Paterson Public School District  8848.8450 0.405
+#> 8           Trenton Public School District  5794.9385 0.403
+#> 9  Red Bank Borough Public School District   452.6280 0.396
+#> 10              Union City School District  4694.3460 0.391
+#> 11      Perth Amboy Public School District  3820.4250 0.383
+#> 12            Passaic City School District  4083.6900 0.370
+#> 13          Bridgeton City School District  2308.8320 0.368
+#> 14             Bound Brook School District   650.1565 0.343
+#> 15          Palisades Park School District   559.7210 0.331
 ```
 
 ![ELL Concentration](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/ell-concentration-1.png)
@@ -473,28 +467,26 @@ top_10 <- enr_current %>%
 
 stopifnot(nrow(top_10) > 0)
 top_10 %>% select(district_name, n_students)
-#> # A tibble: 10 x 2
-#>    district_name                            n_students
-#>    <chr>                                         <dbl>
-#>  1 Newark Public School District                43216
-#>  2 Elizabeth Public Schools                     26708
-#>  3 Jersey City Public Schools                   25307
-#>  4 Paterson Public School District              21849
-#>  5 Edison Township School District              16191
-#>  6 Trenton Public School District               14380.
-#>  7 Toms River Regional School District          13925
-#>  8 Woodbridge Township School District          13425
-#>  9 Hamilton Township Public School District     12112
-#> 10 Union City School District                   12006
+#>                               district_name n_students
+#> 1             Newark Public School District    43216.0
+#> 2                  Elizabeth Public Schools    26708.0
+#> 3                Jersey City Public Schools    25307.0
+#> 4           Paterson Public School District    21849.0
+#> 5           Edison Township School District    16191.0
+#> 6            Trenton Public School District    14379.5
+#> 7       Toms River Regional School District    13925.0
+#> 8       Woodbridge Township School District    13425.0
+#> 9  Hamilton Township Public School District    12112.0
+#> 10               Union City School District    12006.0
 ```
 
 ![Top 10 Districts](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/top-10-districts-1.png)
 
 [(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#top-10-districts-serve-15-of-all-students)
 
-### 10. Multiracial students: fastest-growing category
+### 10. Multiracial students went from 2.4% to 3.5% of enrollment
 
-Multiracial students grew 46% since 2020 - from 2.4% to 3.5% of enrollment - making it the fastest-growing racial category in NJ.
+Multiracial enrollment grew 45% since 2020, from 32,600 to 47,200 students, even as total enrollment slipped. Native American enrollment grew at a similar rate over the same years, but from a base of under 2,000 students.
 
 ```r
 multi <- state_summary %>%
@@ -502,7 +494,7 @@ multi <- state_summary %>%
 
 stopifnot(nrow(multi) > 0)
 multi %>% select(end_year, n_students, pct)
-#> # A tibble: 7 x 3
+#> # A tibble: 7 × 3
 #>   end_year n_students    pct
 #>      <dbl>      <dbl>  <dbl>
 #> 1     2020     32622  0.0237
@@ -510,13 +502,13 @@ multi %>% select(end_year, n_students, pct)
 #> 3     2022     37474  0.0275
 #> 4     2023     40934. 0.0298
 #> 5     2024     43436. 0.0315
-#> 6     2025     45246. 0.0327
+#> 6     2025     45246. 0.0328
 #> 7     2026     47160  0.0347
 ```
 
 ![Multiracial Growth](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/multiracial-growth-1.png)
 
-[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#multiracial-students-fastest-growing-category)
+[(source)](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights.html#multiracial-students-went-from-2-4-to-3-5-of-enrollment)
 
 ### 11. Pre-K nearly doubled since 2020
 
@@ -528,7 +520,7 @@ prek <- state_summary %>%
 
 stopifnot(nrow(prek) > 0)
 prek %>% select(end_year, n_students)
-#> # A tibble: 7 x 2
+#> # A tibble: 7 × 2
 #>   end_year n_students
 #>      <dbl>      <dbl>
 #> 1     2020      45013
@@ -561,24 +553,24 @@ county_enr <- enr_current %>%
 
 stopifnot(nrow(county_enr) > 0)
 county_enr
-#> # A tibble: 15 x 4
+#> # A tibble: 15 × 4
 #>    county_name n_students n_districts county_label
-#>    <chr>            <dbl>       <int> <fct>
-#>  1 Bergen        130172.          76 Bergen
-#>  2 Essex         125813           23 Essex
-#>  3 Middlesex     121810.          25 Middlesex
-#>  4 Union          95696.          23 Union
-#>  5 Monmouth       87674           51 Monmouth
-#>  6 Hudson         80614           13 Hudson
-#>  7 Camden         77633           39 Camden
-#>  8 Passaic        73151           20 Passaic
-#>  9 Morris         72082           40 Morris
-#> 10 Burlington     68970           39 Burlington
-#> 11 Ocean          63832.          28 Ocean
-#> 12 Mercer         58960           12 Mercer
-#> 13 Somerset       48696.          19 Somerset
-#> 14 Gloucester     46076.          28 Gloucester
-#> 15 Atlantic       40586           24 Atlantic
+#>    <chr>            <dbl>       <int> <fct>       
+#>  1 Bergen         130172.          76 Bergen      
+#>  2 Essex          125813           23 Essex       
+#>  3 Middlesex      121810.          25 Middlesex   
+#>  4 Union           95696.          23 Union       
+#>  5 Monmouth        87674           51 Monmouth    
+#>  6 Hudson          80614           13 Hudson      
+#>  7 Camden          77633           39 Camden      
+#>  8 Passaic         73151           20 Passaic     
+#>  9 Morris          72082           40 Morris      
+#> 10 Burlington      68970           39 Burlington  
+#> 11 Ocean           63832.          28 Ocean       
+#> 12 Mercer          58960           12 Mercer      
+#> 13 Somerset        48696.          19 Somerset    
+#> 14 Gloucester      46076.          28 Gloucester  
+#> 15 Atlantic        40586           24 Atlantic
 ```
 
 ![County Enrollment](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/county-enrollment-1.png)
@@ -596,12 +588,12 @@ dist_sizes <- enr_current %>%
 
 stopifnot(nrow(dist_sizes) > 0)
 cat("Districts:", nrow(dist_sizes), "\n")
-#> Districts: 579
 cat("Median:", median(dist_sizes$n_students, na.rm = TRUE), "\n")
-#> Median: 1162
 cat("Under 1000:", sum(dist_sizes$n_students < 1000, na.rm = TRUE), "\n")
-#> Under 1000: 266
 cat("Over 10000:", sum(dist_sizes$n_students > 10000, na.rm = TRUE), "\n")
+#> Districts: 579
+#> Median: 1162
+#> Under 1000: 266
 #> Over 10000: 14
 ```
 
@@ -632,23 +624,23 @@ grade_enr <- state_summary %>%
 
 stopifnot(nrow(grade_enr) > 0)
 grade_enr %>% select(grade_label, n_students)
-#> # A tibble: 14 x 2
+#> # A tibble: 14 × 2
 #>    grade_label n_students
 #>    <fct>            <dbl>
-#>  1 Pre-K            88063
-#>  2 K                86554
-#>  3 Grade 01         91396
-#>  4 Grade 02         93705
-#>  5 Grade 03         94599
-#>  6 Grade 04         97367
-#>  7 Grade 05         96650
-#>  8 Grade 06         97968
-#>  9 Grade 07         98315
-#> 10 Grade 08         99814
-#> 11 Grade 09        102207
-#> 12 Grade 10        102068.
-#> 13 Grade 11        102865
-#> 14 Grade 12        105879
+#>  1 Pre-K           88063 
+#>  2 K               86554 
+#>  3 Grade 01        91396 
+#>  4 Grade 02        93705 
+#>  5 Grade 03        94599 
+#>  6 Grade 04        97367 
+#>  7 Grade 05        96650 
+#>  8 Grade 06        97968 
+#>  9 Grade 07        98315 
+#> 10 Grade 08        99814 
+#> 11 Grade 09       102207 
+#> 12 Grade 10       102068.
+#> 13 Grade 11       102865 
+#> 14 Grade 12       105879
 ```
 
 ![Grade Pyramid](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/grade-pyramid-1.png)
@@ -673,19 +665,28 @@ frl_extremes <- bind_rows(top_5, bottom_5) %>%
 
 stopifnot(nrow(frl_extremes) > 0)
 frl_extremes %>% select(district_name, n_students, pct, group)
-#> # A tibble: 10 x 4
-#>    district_name                                             n_students   pct group
-#>    <chr>                                                          <dbl> <dbl> <chr>
-#>  1 Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation      2132. 0.98  Highest FRL
-#>  2 Mastery Schools Of Camden, Inc.                                2788. 0.95  Highest FRL
-#>  3 Camden Prep, Inc.                                              1425. 0.937 Highest FRL
-#>  4 Passaic City School District                                  10132. 0.918 Highest FRL
-#>  5 Lakewood Township School District                              3381. 0.898 Highest FRL
-#>  6 Pequannock Township School District                             100. 0.05  Lowest FRL
-#>  7 Scotch Plains-Fanwood School District                           269. 0.047 Lowest FRL
-#>  8 Bernards Township School District                               131. 0.029 Lowest FRL
-#>  9 Ridgewood Public School District                                129. 0.024 Lowest FRL
-#> 10 Livingston Board Of Education School District                   121. 0.019 Lowest FRL
+#>                                                district_name n_students   pct
+#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation  2131.5000 0.980
+#> 2                            Mastery Schools Of Camden, Inc.  2788.2500 0.950
+#> 3                                          Camden Prep, Inc.  1425.1770 0.937
+#> 4                               Passaic City School District 10131.9660 0.918
+#> 5                          Lakewood Township School District  3381.4190 0.898
+#> 6                        Pequannock Township School District   100.0750 0.050
+#> 7                      Scotch Plains-Fanwood School District   268.6990 0.047
+#> 8                          Bernards Township School District   130.6740 0.029
+#> 9                           Ridgewood Public School District   128.9160 0.024
+#> 10             Livingston Board Of Education School District   121.0395 0.019
+#>          group
+#> 1  Highest FRL
+#> 2  Highest FRL
+#> 3  Highest FRL
+#> 4  Highest FRL
+#> 5  Highest FRL
+#> 6   Lowest FRL
+#> 7   Lowest FRL
+#> 8   Lowest FRL
+#> 9   Lowest FRL
+#> 10  Lowest FRL
 ```
 
 ![Poverty Gap](https://almartin82.github.io/njschooldata/articles/nj-enrollment-insights_files/figure-html/poverty-gap-1.png)
