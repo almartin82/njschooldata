@@ -248,6 +248,60 @@ branches did exactly that on 2026-08-01. Always scope the ban to DATA
 VALUES and state the crosswalk carve-out in the same breath, so the two
 can never be read apart.
 
+## Derived counts: labelled, never removed (REQUIRED, 2026-09-07)
+
+A handful of exported outputs compute a count as
+`pct / 100 * denominator` where both the percentage and the denominator
+are NJ DOE’s own published numbers for the same cell (same entity, year,
+grade/test, subgroup). This is arithmetic on two real state numbers, the
+mirror of computing a percentage from two published counts, so we keep
+it, and every such row carries a `value_source` column: `"published"` (a
+real state count), `"derived_from_pct"` (this row’s own pct times this
+row’s own denominator), or `"published_pct_only"` (NJ DOE published only
+a percentage; the count stays `NA`, never back-filled).
+
+| Site | Formula | Denominator | Where value_source lives |
+|----|----|----|----|
+| `special_pop.R:45` ([`get_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/get_reportcard_special_pop.md), exported via [`fetch_reportcard_special_pop()`](https://almartin82.github.io/njschooldata/reference/fetch_reportcard_special_pop.md)) | `n_students = round(percent / 100 * n_enrolled)` | this entity/year’s Report Card total enrollment (`grade_level == "TOTAL"`) | one column per row |
+| `report_card.R:788` ([`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)) | `n_students = round(percent / 100 * n_enrolled)` | same as above, joined by county/district/school id + end_year | one column per row |
+| `agg_calcs.R:136-140` ([`parcc_perf_level_counts()`](https://almartin82.github.io/njschooldata/reference/parcc_perf_level_counts.md), exported via [`fetch_parcc()`](https://almartin82.github.io/njschooldata/reference/fetch_parcc.md)/[`fetch_njgpa()`](https://almartin82.github.io/njschooldata/reference/fetch_njgpa.md)) | `num_l1..num_l5 = round(pct_lN / 100 * number_of_valid_scale_scores)` | this row’s own `number_of_valid_scale_scores` | one column per row; retained through [`parcc_column_order()`](https://almartin82.github.io/njschooldata/reference/parcc_column_order.md) via [`dplyr::one_of()`](https://tidyselect.r-lib.org/reference/one_of.html) (absent on [`parcc_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/parcc_aggregate_calcs.md) roll-ups, which are already-derived, not same-cell) |
+| `fetch_enrollment.R:143-146` ([`.parse_enr_archive()`](https://almartin82.github.io/njschooldata/reference/dot-parse_enr_archive.md) `pct_cols` loop, exported via [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)) | `free_lunch`/`reduced_lunch`/`lep`/`migrant`/`military`/`homeless` = `pct / 100 * row_total` (NOT rounded), 2020+ files only | this entity/year’s own `Total Enrollment` | wide output: per-field `<field>_value_source` (`free_lunch_value_source`, etc. – one wide row mixes columns of different provenance, so no single row-level column can describe it); tidy output ([`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)): one `value_source` column per subgroup row |
+
+**lep does NOT switch to `"published"` after NJ DOE begins publishing a
+real Multilingual Learners headcount (2024, the SY2023-24 file).**
+[`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)’s
+`lep` column stays `derived_from_pct` for the whole 2020+ range by
+design – this pipeline computes it from the percentage for its
+demographic-share workflow regardless of what else the source sheet
+carries that year.
+[`fetch_ell()`](#valid-filter-values-english-learners) is the function
+that reads NJ DOE’s real published count instead; do not duplicate its
+logic into
+[`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md).
+
+**Pre-2020 enrollment files** publish
+`free_lunch`/`reduced_lunch`/`lep`/`migrant` as real counts directly (no
+percentage column exists to derive from), so `value_source` there is
+always `"published"`. **The statewide enrollment row** is bound in
+straight from the State worksheet, which publishes these five
+populations as real counts with no percentage column at all – its
+per-field `_value_source` marker is genuinely absent (not “unknown”);
+[`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
+coalesces the missing marker to `"published"` for that row.
+**`free_reduced_lunch`** (tidy enrollment only) sums two
+already-labelled components and inherits the weaker of the two
+(`published_pct_only` if either component is, else `derived_from_pct` if
+either is, else `published`) rather than going unlabelled.
+
+**Race/gender enrollment subgroups and `total_enrollment`** are always
+`"published"` – NJ DOE ships them as real counts in every era; they are
+never percentage-derived.
+
+No gate script guards this convention (see the fleet’s “three gates
+only” rule – fabricated data and falsified tests, not documentation
+format). Mutation-checked coverage lives in
+`tests/testthat/test-derived-counts-labelled.R`.
+
 ## Project Overview
 
 R package for fetching and processing New Jersey school data from the NJ
@@ -451,6 +505,10 @@ WIDA ACCESS). Tidy by default.
   column directly and must NOT reuse
   [`get_raw_enr()`](https://almartin82.github.io/njschooldata/reference/get_raw_enr.md)’s
   EL value for 2020+.
+  [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)’s
+  own `lep`/`lep_value_source` stays `"derived_from_pct"` for the whole
+  2020+ range even after NJ DOE starts publishing a real count in 2024 –
+  see “Derived counts” above.
 - **No suppression:** NJ does not suppress EL counts; `n_students_lower`
   == `n_students_upper` == `n_students` wherever a count exists.
   Fractional `.5` values are real shared-time/vocational FTE, preserved

@@ -493,7 +493,7 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       xfun_0.60          bslib_0.12.0       ggrepel_0.9.8     
 #>  [5] lattice_0.22-9     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.1       
-#>  [9] generics_0.1.4     curl_7.1.0         parallel_4.6.1     tibble_3.3.1      
+#>  [9] generics_0.1.4     curl_8.0.0         parallel_4.6.1     tibble_3.3.1      
 #> [13] pkgconfig_2.0.3    Matrix_1.7-5       RColorBrewer_1.1-3 S7_0.2.2          
 #> [17] desc_1.4.3         readxl_1.5.0       lifecycle_1.0.5    compiler_4.6.1    
 #> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.0.5  janitor_2.2.1     
@@ -503,9 +503,9 @@ sessionInfo()
 #> [37] digest_0.6.39      stringi_1.8.9      purrr_1.2.2        labeling_0.4.3    
 #> [41] splines_4.6.1      fastmap_1.2.0      grid_4.6.1         cli_3.6.6         
 #> [45] magrittr_2.0.5     utf8_1.2.6         readr_2.2.0        withr_3.0.3       
-#> [49] bit64_4.8.4        lubridate_1.9.5    timechange_0.4.0   rmarkdown_2.31    
-#> [53] httr_1.4.8         bit_4.6.0          otel_0.2.0         cellranger_1.1.0  
-#> [57] ragg_1.5.2         hms_1.1.4          evaluate_1.0.5     knitr_1.51        
+#> [49] bit64_4.8.6        lubridate_1.9.5    timechange_0.4.0   rmarkdown_2.32    
+#> [53] httr_1.4.9         bit_4.6.0          otel_0.2.0         cellranger_1.1.0  
+#> [57] ragg_1.5.2         hms_1.1.4          evaluate_1.0.5     knitr_1.52        
 #> [61] mgcv_1.9-4         rlang_1.3.0        Rcpp_1.1.2         glue_1.8.1        
 #> [65] vroom_1.7.1        jsonlite_2.0.0     R6_2.6.1           systemfonts_1.3.2 
 #> [69] fs_2.1.0

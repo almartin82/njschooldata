@@ -453,7 +453,7 @@ sessionInfo()
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       
 #>  [5] stringi_1.8.9      hms_1.1.4          digest_0.6.39      magrittr_2.0.5    
 #>  [9] evaluate_1.0.5     grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3
-#> [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.8        
+#> [13] fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.9        
 #> [17] scales_1.4.0       codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4   
 #> [21] cli_3.6.6          rlang_1.3.0        withr_3.0.3        cachem_1.1.0      
 #> [25] yaml_2.3.12        otel_0.2.0         tools_4.6.1        tzdb_0.5.0        
@@ -462,7 +462,7 @@ sessionInfo()
 #> [37] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     
 #> [41] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        
 #> [45] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  
-#> [49] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
-#> [53] rmarkdown_2.31     readr_2.2.0        compiler_4.6.1     S7_0.2.2          
+#> [49] knitr_1.52         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
+#> [53] rmarkdown_2.32     readr_2.2.0        compiler_4.6.1     S7_0.2.2          
 #> [57] readxl_1.5.0
 ```

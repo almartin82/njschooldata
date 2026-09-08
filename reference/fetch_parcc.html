@@ -90,7 +90,11 @@ NJASK naming conventions and do some additional calculations? Default is FALSE.<
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Processed PARCC/NJSLA dataframe</p>
+    <p>Processed PARCC/NJSLA dataframe. `num_l1`..`num_l5` are computed
+from each row's own published performance-level percent and its own
+published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
+`value_source` marks each row `"derived_from_pct"` or, where
+`number_of_valid_scale_scores` was NA, `"published_pct_only"`.</p>
     </div>
 
     <div class="section level2">

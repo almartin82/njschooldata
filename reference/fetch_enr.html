@@ -86,7 +86,15 @@ See <code><a href="njsd_cache_info.html">njsd_cache_info</a></code> for cache de
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with processed enrollment data</p>
+    <p>Data frame with processed enrollment data. From 2020+ files,
+`free_lunch`/`reduced_lunch`/`lep`/`migrant`/`homeless` are computed as
+`pct / 100 * row_total` from NJ DOE's published percentage and this
+entity/year's own published total enrollment (never rounded to a whole
+student); `tidy = TRUE` output carries a `value_source` column
+(`"published"`, `"derived_from_pct"`, or `"published_pct_only"`; see
+<code><a href="tidy_enr.html">tidy_enr</a></code>) and `tidy = FALSE` wide output carries the same
+provenance per field as `&lt;field&gt;_value_source` (eg `lep_value_source`).
+Pre-2020 files publish these fields as real counts directly (`"published"`).</p>
     </div>
 
     <div class="section level2">

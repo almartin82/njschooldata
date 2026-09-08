@@ -383,6 +383,17 @@ status attached.
 types. Enrollment data uses half-day weighting for programs like pre-K,
 which can produce non-integer counts.
 
+**Derived counts:** Counts marked `value_source = "derived_from_pct"`
+(or, in wide enrollment output, `<field>_value_source`) are computed
+from a published percentage and the same-cell published denominator
+(`round(percent / 100 * n_enrolled)` for special-population/Report Card
+counts, `round(pct_lN / 100 * number_of_valid_scale_scores)` for
+PARCC/NJSLA/NJGPA performance levels, `pct / 100 * row_total` for 2020+
+enrollment’s free/reduced lunch, EL, migrant, and homeless counts).
+`"published_pct_only"` means NJ DOE published only a percentage and the
+count stays `NA`. See CLAUDE.md’s “Derived counts” section for the full
+site list and formulas.
+
 **Census Day:** NJ enrollment counts are based on October 15 enrollment
 (ASSA reporting).
 
@@ -1348,8 +1359,8 @@ Helper functions and lookups
 - [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
   : Enrich matriculation rates with counts from grad counts
 - [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
-  : Enrich report card subgroup percentages with best guesses at
-  subgroup numbers
+  : Enrich report card subgroup percentages with counts derived from the
+  same entity/year's published total enrollment
 - [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
   : Enrich School Data with City Ward
 - [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
@@ -1501,8 +1512,8 @@ Additional exported functions
 - [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
   : Enrich matriculation rates with counts from grad counts
 - [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
-  : Enrich report card subgroup percentages with best guesses at
-  subgroup numbers
+  : Enrich report card subgroup percentages with counts derived from the
+  same entity/year's published total enrollment
 - [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
   : Enrich School Data with City Ward
 - [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)

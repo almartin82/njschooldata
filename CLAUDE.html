@@ -135,6 +135,41 @@
 </ul><p><strong>Never delete <code>inst/extdata/crosswalk/</code>, <code>data-raw/build_nces_crosswalk.R</code>, or any <code>attach_*nces*()</code> function</strong>, and never add a gate forbidding <code>nces_dist</code>/<code>nces_sch</code>. The July-19 draft to ban federal ids outright was <strong>REJECTED on 2026-07-24</strong>.</p>
 <p><strong>Banned wording — delete on sight:</strong> any blanket phrasing like “NEVER use Urban Institute API, NCES CCD, or ANY federal data source”. An agent reading that sentence alone concludes the crosswalk must go, and five branches did exactly that on 2026-08-01. Always scope the ban to DATA VALUES and state the crosswalk carve-out in the same breath, so the two can never be read apart.</p>
 </div>
+<div class="section level2">
+<h2 id="derived-counts-labelled-never-removed-required-2026-09-07">Derived counts: labelled, never removed (REQUIRED, 2026-09-07)<a class="anchor" aria-label="anchor" href="#derived-counts-labelled-never-removed-required-2026-09-07"></a></h2>
+<p>A handful of exported outputs compute a count as <code>pct / 100 * denominator</code> where both the percentage and the denominator are NJ DOE’s own published numbers for the same cell (same entity, year, grade/test, subgroup). This is arithmetic on two real state numbers, the mirror of computing a percentage from two published counts, so we keep it, and every such row carries a <code>value_source</code> column: <code>"published"</code> (a real state count), <code>"derived_from_pct"</code> (this row’s own pct times this row’s own denominator), or <code>"published_pct_only"</code> (NJ DOE published only a percentage; the count stays <code>NA</code>, never back-filled).</p>
+<table class="table"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th>Site</th>
+<th>Formula</th>
+<th>Denominator</th>
+<th>Where value_source lives</th>
+</tr></thead><tbody><tr><td>
+<code>special_pop.R:45</code> (<code><a href="reference/get_reportcard_special_pop.html">get_reportcard_special_pop()</a></code>, exported via <code><a href="reference/fetch_reportcard_special_pop.html">fetch_reportcard_special_pop()</a></code>)</td>
+<td><code>n_students = round(percent / 100 * n_enrolled)</code></td>
+<td>this entity/year’s Report Card total enrollment (<code>grade_level == "TOTAL"</code>)</td>
+<td>one column per row</td>
+</tr><tr><td>
+<code>report_card.R:788</code> (<code><a href="reference/enrich_rc_enrollment.html">enrich_rc_enrollment()</a></code>)</td>
+<td><code>n_students = round(percent / 100 * n_enrolled)</code></td>
+<td>same as above, joined by county/district/school id + end_year</td>
+<td>one column per row</td>
+</tr><tr><td>
+<code>agg_calcs.R:136-140</code> (<code><a href="reference/parcc_perf_level_counts.html">parcc_perf_level_counts()</a></code>, exported via <code><a href="reference/fetch_parcc.html">fetch_parcc()</a></code>/<code><a href="reference/fetch_njgpa.html">fetch_njgpa()</a></code>)</td>
+<td><code>num_l1..num_l5 = round(pct_lN / 100 * number_of_valid_scale_scores)</code></td>
+<td>this row’s own <code>number_of_valid_scale_scores</code>
+</td>
+<td>one column per row; retained through <code><a href="reference/parcc_column_order.html">parcc_column_order()</a></code> via <code><a href="https://tidyselect.r-lib.org/reference/one_of.html" class="external-link">dplyr::one_of()</a></code> (absent on <code><a href="reference/parcc_aggregate_calcs.html">parcc_aggregate_calcs()</a></code> roll-ups, which are already-derived, not same-cell)</td>
+</tr><tr><td>
+<code>fetch_enrollment.R:143-146</code> (<code><a href="reference/dot-parse_enr_archive.html">.parse_enr_archive()</a></code> <code>pct_cols</code> loop, exported via <code><a href="reference/fetch_enr.html">fetch_enr()</a></code>)</td>
+<td>
+<code>free_lunch</code>/<code>reduced_lunch</code>/<code>lep</code>/<code>migrant</code>/<code>military</code>/<code>homeless</code> = <code>pct / 100 * row_total</code> (NOT rounded), 2020+ files only</td>
+<td>this entity/year’s own <code>Total Enrollment</code>
+</td>
+<td>wide output: per-field <code>&lt;field&gt;_value_source</code> (<code>free_lunch_value_source</code>, etc. – one wide row mixes columns of different provenance, so no single row-level column can describe it); tidy output (<code><a href="reference/tidy_enr.html">tidy_enr()</a></code>): one <code>value_source</code> column per subgroup row</td>
+</tr></tbody></table><p><strong>lep does NOT switch to <code>"published"</code> after NJ DOE begins publishing a real Multilingual Learners headcount (2024, the SY2023-24 file).</strong> <code><a href="reference/fetch_enr.html">fetch_enr()</a></code>’s <code>lep</code> column stays <code>derived_from_pct</code> for the whole 2020+ range by design – this pipeline computes it from the percentage for its demographic-share workflow regardless of what else the source sheet carries that year. <a href="#valid-filter-values-english-learners"><code>fetch_ell()</code></a> is the function that reads NJ DOE’s real published count instead; do not duplicate its logic into <code><a href="reference/fetch_enr.html">fetch_enr()</a></code>.</p>
+<p><strong>Pre-2020 enrollment files</strong> publish <code>free_lunch</code>/<code>reduced_lunch</code>/<code>lep</code>/<code>migrant</code> as real counts directly (no percentage column exists to derive from), so <code>value_source</code> there is always <code>"published"</code>. <strong>The statewide enrollment row</strong> is bound in straight from the State worksheet, which publishes these five populations as real counts with no percentage column at all – its per-field <code>_value_source</code> marker is genuinely absent (not “unknown”); <code><a href="reference/tidy_enr.html">tidy_enr()</a></code> coalesces the missing marker to <code>"published"</code> for that row. <strong><code>free_reduced_lunch</code></strong> (tidy enrollment only) sums two already-labelled components and inherits the weaker of the two (<code>published_pct_only</code> if either component is, else <code>derived_from_pct</code> if either is, else <code>published</code>) rather than going unlabelled.</p>
+<p><strong>Race/gender enrollment subgroups and <code>total_enrollment</code></strong> are always <code>"published"</code> – NJ DOE ships them as real counts in every era; they are never percentage-derived.</p>
+<p>No gate script guards this convention (see the fleet’s “three gates only” rule – fabricated data and falsified tests, not documentation format). Mutation-checked coverage lives in <code>tests/testthat/test-derived-counts-labelled.R</code>.</p>
+</div>
 <div id="claudemd" class="section level1">
 
 <div class="section level2">
@@ -252,7 +287,7 @@
 <li>
 <strong><code>n_students</code> vs <code>pct_of_enrollment</code> (the COVID gap):</strong> for <strong>2020, 2021, 2022</strong> the NJ DOE <em>district</em> and <em>school</em> worksheets publish only an EL <strong>percent</strong>, not a headcount — for those entity-years <code>n_students</code> is <code>NA</code> and only <code>pct_of_enrollment</code> (0-100) is populated. The <strong>statewide</strong> count is published every year, and full counts at every level return from <strong>2023</strong> on. <strong>NEVER back-derive the count from the percent</strong> for the gap years.</li>
 <li>
-<strong>Source-pipeline trap:</strong> <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code> overwrites the published EL count with <code>pct * total</code> for 2020+ (its demographic-share workflow), so the enrollment <code>lep</code> subgroup is derived for those years. <code><a href="reference/fetch_ell.html">fetch_ell()</a></code> reads the real <code>English Learners</code> / <code>Multilingual Learners</code> count column directly and must NOT reuse <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code>’s EL value for 2020+.</li>
+<strong>Source-pipeline trap:</strong> <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code> overwrites the published EL count with <code>pct * total</code> for 2020+ (its demographic-share workflow), so the enrollment <code>lep</code> subgroup is derived for those years. <code><a href="reference/fetch_ell.html">fetch_ell()</a></code> reads the real <code>English Learners</code> / <code>Multilingual Learners</code> count column directly and must NOT reuse <code><a href="reference/get_raw_enr.html">get_raw_enr()</a></code>’s EL value for 2020+. <code><a href="reference/fetch_enr.html">fetch_enr()</a></code>’s own <code>lep</code>/<code>lep_value_source</code> stays <code>"derived_from_pct"</code> for the whole 2020+ range even after NJ DOE starts publishing a real count in 2024 – see “Derived counts” above.</li>
 <li>
 <strong>No suppression:</strong> NJ does not suppress EL counts; <code>n_students_lower</code> == <code>n_students_upper</code> == <code>n_students</code> wherever a count exists. Fractional <code>.5</code> values are real shared-time/vocational FTE, preserved as published.</li>
 </ul></div>

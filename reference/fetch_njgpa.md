@@ -26,7 +26,9 @@ fetch_njgpa(end_year, subj, tidy = FALSE)
 
 ## Value
 
-Processed NJGPA dataframe
+Processed NJGPA dataframe, carrying the same
+\`num_l1\`/\`num_l2\`-plus-\`value_source\` derivation as
+\[fetch_parcc()\].
 
 ## Examples
 

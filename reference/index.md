@@ -446,8 +446,8 @@ Helper functions and lookups
 - [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
   : Enrich matriculation rates with counts from grad counts
 - [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
-  : Enrich report card subgroup percentages with best guesses at
-  subgroup numbers
+  : Enrich report card subgroup percentages with counts derived from the
+  same entity/year's published total enrollment
 - [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
   : Enrich School Data with City Ward
 - [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
@@ -599,8 +599,8 @@ Additional exported functions
 - [`enrich_matric_counts()`](https://almartin82.github.io/njschooldata/reference/enrich_matric_counts.md)
   : Enrich matriculation rates with counts from grad counts
 - [`enrich_rc_enrollment()`](https://almartin82.github.io/njschooldata/reference/enrich_rc_enrollment.md)
-  : Enrich report card subgroup percentages with best guesses at
-  subgroup numbers
+  : Enrich report card subgroup percentages with counts derived from the
+  same entity/year's published total enrollment
 - [`enrich_school_city_ward()`](https://almartin82.github.io/njschooldata/reference/enrich_school_city_ward.md)
   : Enrich School Data with City Ward
 - [`enrich_school_latlong()`](https://almartin82.github.io/njschooldata/reference/enrich_school_latlong.md)
