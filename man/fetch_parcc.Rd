@@ -20,7 +20,11 @@ Science assessments are only available for 2019+ and grades 5, 8, 11.}
 NJASK naming conventions and do some additional calculations? Default is FALSE.}
 }
 \value{
-Processed PARCC/NJSLA dataframe
+Processed PARCC/NJSLA dataframe. `num_l1`..`num_l5` are computed
+from each row's own published performance-level percent and its own
+published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
+`value_source` marks each row `"derived_from_pct"` or, where
+`number_of_valid_scale_scores` was NA, `"published_pct_only"`.
 }
 \description{
 `fetch_parcc` is a wrapper around `get_raw_parcc` and `process_parcc`

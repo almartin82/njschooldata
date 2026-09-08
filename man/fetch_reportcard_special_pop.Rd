@@ -10,7 +10,11 @@ fetch_reportcard_special_pop(end_year)
 \item{end_year}{ending academic year.  valid values are 2017, 2018, 2019}
 }
 \value{
-data.frame with special population enrollment data
+data.frame with special population enrollment data. `n_students`
+  is computed as `round(percent / 100 * n_enrolled)` from this subgroup's
+  own published percent and this entity/year's own published total
+  enrollment; `value_source` marks each row `"derived_from_pct"` or, where
+  either input was NA, `"published_pct_only"` (with `n_students` NA).
 }
 \description{
 Fetch Special Population data

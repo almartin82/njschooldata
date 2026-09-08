@@ -271,6 +271,8 @@ Full analysis with 15 stories:
 
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data types. Enrollment data uses half-day weighting for programs like pre-K, which can produce non-integer counts.
 
+**Derived counts:** Counts marked `value_source = "derived_from_pct"` (or, in wide enrollment output, `<field>_value_source`) are computed from a published percentage and the same-cell published denominator (`round(percent / 100 * n_enrolled)` for special-population/Report Card counts, `round(pct_lN / 100 * number_of_valid_scale_scores)` for PARCC/NJSLA/NJGPA performance levels, `pct / 100 * row_total` for 2020+ enrollment's free/reduced lunch, EL, migrant, and homeless counts). `"published_pct_only"` means NJ DOE published only a percentage and the count stays `NA`. See CLAUDE.md's "Derived counts" section for the full site list and formulas.
+
 **Census Day:** NJ enrollment counts are based on October 15 enrollment (ASSA reporting).
 
 **Federal NCES linkage:** `fetch_enr()` attaches the federal NCES identifiers to every enrollment row -- `nces_dist` (the 7-digit `LEAID`) and `nces_sch` (the 12-digit `NCESSCH`) -- so NJ districts and schools join cleanly to the national NCES universe. These are identifiers only; all data values still come from NJ DOE. The bridge is a bundled, versioned crosswalk (CCD 2024 + the NJ DOE directory); about 95% of districts and 97% of schools match, and entities absent from the crosswalk (new/closed/charter additions, state and county aggregate rows) keep `NA` rather than a guessed id.

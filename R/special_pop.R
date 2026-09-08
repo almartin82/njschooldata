@@ -37,15 +37,20 @@ get_reportcard_special_pop <- function(end_year) {
   
   out <- out %>%
     left_join(enr,
-              by = c("county_code", "district_code", 
-                     "school_code", "end_year")) %>% 
+              by = c("county_code", "district_code",
+                     "school_code", "end_year")) %>%
     # is there a better solution for below w/ recover_enrollment() ?
     mutate(n_enrolled = as.numeric(n_enrolled),
            percent = as.numeric(percent),
            n_students = round(percent / 100 * n_enrolled),
-           n_students = if_else(n_students == 0 & percent > 0, 1, n_students)) 
-    
-  
+           n_students = if_else(n_students == 0 & percent > 0, 1, n_students),
+           # n_students is arithmetic on two same-cell Report Card numbers
+           # (this subgroup's own published percent x this entity/year's own
+           # published total enrollment). NA whenever either input is NA --
+           # never a fabricated fallback.
+           value_source = if_else(is.na(n_students), "published_pct_only", "derived_from_pct"))
+
+
   return(out)
 }
 
@@ -98,7 +103,11 @@ process_reportcard_special_pop <- function(df) {
 #'
 #' @inheritParams get_reportcard_special_pop
 #'
-#' @return data.frame with special population enrollment data
+#' @return data.frame with special population enrollment data. `n_students`
+#'   is computed as `round(percent / 100 * n_enrolled)` from this subgroup's
+#'   own published percent and this entity/year's own published total
+#'   enrollment; `value_source` marks each row `"derived_from_pct"` or, where
+#'   either input was NA, `"published_pct_only"` (with `n_students` NA).
 #' @export
 
 fetch_reportcard_special_pop <- function(end_year) {
@@ -107,9 +116,9 @@ fetch_reportcard_special_pop <- function(end_year) {
     select(
       county_id,
       district_id,
-      school_id, school_name, 
-      end_year, 
-      subgroup, n_enrolled, percent, n_students,
+      school_id, school_name,
+      end_year,
+      subgroup, n_enrolled, percent, n_students, value_source,
       is_district, is_school
     )
 }

@@ -14,7 +14,8 @@ fetch_njgpa(end_year, subj, tidy = FALSE)
 \item{tidy}{Clean up the data frame? Default is FALSE.}
 }
 \value{
-Processed NJGPA dataframe
+Processed NJGPA dataframe, carrying the same
+`num_l1`/`num_l2`-plus-`value_source` derivation as [fetch_parcc()].
 }
 \description{
 Downloads and processes NJGPA assessment results. NJGPA is the graduation

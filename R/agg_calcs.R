@@ -124,11 +124,22 @@ gcount_aggregate_calcs <- function(df) {
 #' PARCC counts by performance level
 #'
 #' Calculates the count of students at each performance level based on
-#' percentages and total valid scores.
+#' percentages and total valid scores. This is a derivation by design: NJDOE
+#' publishes performance-level shares (`pct_l1`..`pct_l5`) but not the
+#' underlying counts, so this function exists to compute them from each row's
+#' own published percentage and its own published
+#' `number_of_valid_scale_scores` (the same-cell denominator those
+#' percentages are shares of).
 #'
 #' @param df dataframe, output of fetch_parcc
 #'
 #' @return df with counts of students by performance level
+#'   (`num_l1`..`num_l5` = `round(pct_lN / 100 * number_of_valid_scale_scores)`)
+#'   and a `value_source` column: `"derived_from_pct"` where
+#'   `number_of_valid_scale_scores` is non-NA, `"published_pct_only"` (with
+#'   every `num_lN` NA) where it is NA. A performance level a test does not
+#'   have (eg L3-L5 for NJGPA) carries `pct_lN`/`num_lN` NA regardless of
+#'   `value_source`, which describes the derivation method, not applicability.
 #' @export
 parcc_perf_level_counts <- function(df) {
   df %>%
@@ -137,7 +148,10 @@ parcc_perf_level_counts <- function(df) {
       num_l2 = round((pct_l2 / 100) * number_of_valid_scale_scores, 0),
       num_l3 = round((pct_l3 / 100) * number_of_valid_scale_scores, 0),
       num_l4 = round((pct_l4 / 100) * number_of_valid_scale_scores, 0),
-      num_l5 = round((pct_l5 / 100) * number_of_valid_scale_scores, 0)
+      num_l5 = round((pct_l5 / 100) * number_of_valid_scale_scores, 0),
+      value_source = dplyr::if_else(
+        is.na(number_of_valid_scale_scores), "published_pct_only", "derived_from_pct"
+      )
     )
 }
 

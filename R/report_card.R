@@ -754,12 +754,16 @@ extract_rc_enrollment <- function(list_of_prs, cds_identifiers = TRUE) {
 }
 
 
-#' Enrich report card subgroup percentages with best guesses at 
-#' subgroup numbers
-#' 
+#' Enrich report card subgroup percentages with counts derived from the
+#' same entity/year's published total enrollment
+#'
 #' @param df data frame of including subgroup percentages
-#' 
-#' @return data_frame
+#'
+#' @return data_frame with `n_students` computed as
+#'   `round(percent / 100 * n_enrolled)` -- this subgroup's own published
+#'   percent times this entity/year's own published total enrollment -- and
+#'   a `value_source` column marking each row `"derived_from_pct"` or, where
+#'   either input was NA, `"published_pct_only"` (with `n_students` NA).
 #' @export
 enrich_rc_enrollment <- function(df) {
 # not totally sure if this should be here - or where to put it!
@@ -770,24 +774,25 @@ enrich_rc_enrollment <- function(df) {
     get_rc_databases() %>%
     extract_rc_enrollment() %>%
     filter(grade_level == "TOTAL")
-  
+
   # prevent n_enrolled from being duplicated
   if ('n_enrolled' %in% names(df)) {
     df <- df %>% select(-n_enrolled)
   }
-  
-  df <- df %>% 
+
+  df <- df %>%
     left_join(
       enr_count,
       # line below will likely cause problems later
-      by = c("end_year", "county_id" = "county_code", 
+      by = c("end_year", "county_id" = "county_code",
              "district_id" = "district_code", "school_id" = "school_code")
     ) %>%
     # is there a better solution here w/ recover_enrollment() ?
     mutate(n_enrolled = as.numeric(n_enrolled),
            n_students = round(percent / 100 * n_enrolled),
-           n_students = if_else(n_students == 0 & percent > 0, 1, n_students)) 
-  
+           n_students = if_else(n_students == 0 & percent > 0, 1, n_students),
+           value_source = if_else(is.na(n_students), "published_pct_only", "derived_from_pct"))
+
   return(df)
 }
 

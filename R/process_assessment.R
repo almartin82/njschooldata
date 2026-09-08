@@ -93,6 +93,9 @@ parcc_column_order <- function(df) {
       scale_score_mean,
       pct_l1, pct_l2, pct_l3, pct_l4, pct_l5, proficient_above,
       num_l1, num_l2, num_l3, num_l4, num_l5,
+      # value_source is absent on rows that came through parcc_aggregate_calcs()
+      # (an already-derived roll-up, not a same-cell conversion), hence one_of().
+      dplyr::one_of("value_source"),
       dplyr::one_of("n_charter_rows", "n_schools", "tests", "districts", "schools"),
       is_state, is_dfg,
       is_district, is_school, is_charter,

@@ -125,7 +125,18 @@ enr_pct_published_value <- function(x) {
       enr_dist_sch <- dplyr::bind_rows(enr_dist, enr_sch)
 
       # Populations in this block are published only as percentages, so the
-      # count is derived as pct / 100 * Total Enrollment.
+      # count is derived as pct / 100 * Total Enrollment. A companion
+      # "<field> Value Source" column records the derivation per row so it
+      # can survive into `fetch_enr()`'s wide output and `tidy_enr()`'s long
+      # pivot (see get_enr_column_order() and tidy_enr()): "derived_from_pct"
+      # where the arithmetic produced a real number, "published_pct_only"
+      # where it did not (see the censoring note below). This label does NOT
+      # change for lep/English Learners after 2023 even though NJ DOE starts
+      # publishing a real Multilingual Learners headcount that year -- this
+      # pipeline keeps computing the pct-derived value for its
+      # demographic-share workflow regardless (see CLAUDE.md "Source-pipeline
+      # trap" under English Learners); `fetch_ell()` is the function that
+      # reads the real published count instead of this derived one.
       #
       # NJ DOE censors a percentage above 95 as the token ">95" rather than a
       # value. A censored cell is UNKNOWN. It stays NA, and the count derived
@@ -141,9 +152,16 @@ enr_pct_published_value <- function(x) {
       for (pct_col in pct_cols) {
         if (!pct_col %in% names(enr_dist_sch)) next
         count_col <- sub("^%", "", pct_col)
+        # Title Case, matching count_col, so clean_enr_names() maps it the
+        # same way as its sibling raw columns (eg "Free Lunch Value Source").
+        source_col <- paste0(count_col, " Value Source")
+
         enr_dist_sch[[count_col]] <-
           enr_pct_published_value(enr_dist_sch[[pct_col]]) / 100 *
           enr_dist_sch[["Total Enrollment"]]
+        enr_dist_sch[[source_col]] <- ifelse(
+          is.na(enr_dist_sch[[count_col]]), "published_pct_only", "derived_from_pct"
+        )
       }
 
       # Determine the last grade column (Ungraded removed in 2024+)
@@ -292,7 +310,15 @@ get_raw_enr <- function(end_year) {
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
 #' @param use_cache If TRUE, uses the session cache to avoid re-downloading data.
 #' See \code{\link{njsd_cache_info}} for cache details.
-#' @return Data frame with processed enrollment data
+#' @return Data frame with processed enrollment data. From 2020+ files,
+#' `free_lunch`/`reduced_lunch`/`lep`/`migrant`/`homeless` are computed as
+#' `pct / 100 * row_total` from NJ DOE's published percentage and this
+#' entity/year's own published total enrollment (never rounded to a whole
+#' student); `tidy = TRUE` output carries a `value_source` column
+#' (`"published"`, `"derived_from_pct"`, or `"published_pct_only"`; see
+#' \code{\link{tidy_enr}}) and `tidy = FALSE` wide output carries the same
+#' provenance per field as `<field>_value_source` (eg `lep_value_source`).
+#' Pre-2020 files publish these fields as real counts directly (`"published"`).
 #' @export
 #' @examples
 #' \dontrun{

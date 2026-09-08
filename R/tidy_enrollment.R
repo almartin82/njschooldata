@@ -12,7 +12,15 @@
 #' Transforms wide enrollment data to long format with subgroup column.
 #'
 #' @param df A wide data.frame of processed enrollment data - eg output of `fetch_enr`
-#' @return A long data.frame of tidied enrollment data
+#' @return A long data.frame of tidied enrollment data. Carries a `value_source`
+#'   column: `"published"` for race/gender/total_enrollment subgroups (always a
+#'   real published headcount) and for free_lunch/reduced_lunch/lep/migrant in
+#'   pre-2020 files; `"derived_from_pct"` or `"published_pct_only"` for
+#'   free_lunch/reduced_lunch/lep/migrant from 2020+ files, where NJ DOE
+#'   publishes only a percentage and the count is computed as
+#'   `pct / 100 * row_total` (see `fetch_enrollment.R`'s `pct_cols` loop; this
+#'   value is NOT rounded to a whole student); `free_reduced_lunch` inherits
+#'   the weaker of its two component labels since it sums them.
 #' @export
 tidy_enr <- function(df) {
 
@@ -48,6 +56,9 @@ tidy_enr <- function(df) {
   to_tidy <- to_tidy[to_tidy %in% names(df)]
 
   # iterate over cols to tidy, do calculations
+  # Race/gender subgroups are always a real published headcount (summed from
+  # published m/f component counts upstream in enr_aggs()), never derived from
+  # a percentage -- value_source is unconditionally "published".
   tidy_subgroups <- purrr::map_df(
     to_tidy,
     function(.x) {
@@ -56,21 +67,23 @@ tidy_enr <- function(df) {
         dplyr::select(dplyr::one_of(invariants, "n_students", "row_total")) %>%
         dplyr::mutate(
           subgroup = .x,
-          pct = n_students / row_total
+          pct = n_students / row_total,
+          value_source = "published"
         ) %>%
-        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct"))
+        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
     }
   )
 
-  # also extract row total as a "subgroup"
+  # also extract row total as a "subgroup" -- always a real published count
   tidy_total_enr <- df %>%
     dplyr::select(dplyr::one_of(invariants, "row_total")) %>%
     dplyr::mutate(
       n_students = row_total,
       subgroup = "total_enrollment",
-      pct = n_students / row_total
+      pct = n_students / row_total,
+      value_source = "published"
     ) %>%
-    dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct"))
+    dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
 
   # some subgroups are only reported for school totals
   # just total counts, for extracting total enr, free, reduced, migrant etc
@@ -96,17 +109,55 @@ tidy_enr <- function(df) {
   total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
 
   # iterate over cols to tidy, do calculations
+  #
+  # free_lunch/reduced_lunch/lep/migrant carry a per-field "<field>_value_source"
+  # column from fetch_enrollment.R's pct_cols loop for 2020+ files ("derived_from_pct"
+  # or "published_pct_only"). Pre-2020 files never create that column because the
+  # count there is a real published headcount, never derived from a percent --
+  # value_source defaults to "published" whenever the marker is absent.
+  # free_reduced_lunch has no marker of its own (it is a same-row sum of the two
+  # already-labelled components computed above); it inherits the weaker label.
   tidy_total_subgroups <- purrr::map_df(
     total_subgroups,
     function(.x) {
-      total_counts %>%
-        dplyr::rename(n_students = dplyr::all_of(.x)) %>%
-        dplyr::select(dplyr::one_of(invariants, "n_students", "row_total")) %>%
+      source_col <- paste0(.x, "_value_source")
+
+      df_i <- total_counts %>%
+        dplyr::rename(n_students = dplyr::all_of(.x))
+
+      if (source_col %in% names(df_i)) {
+        df_i <- df_i %>%
+          dplyr::rename(value_source = dplyr::all_of(source_col)) %>%
+          # The marker is only ever set for rows that went through the
+          # pct_cols derivation loop (district/school, 2020+). Rows that
+          # never went through it -- the statewide row, bound in separately
+          # from the State worksheet, which publishes these as real counts
+          # with no percentage column at all -- carry NA here, not because
+          # provenance is unknown but because no derivation was attempted.
+          dplyr::mutate(value_source = dplyr::coalesce(value_source, "published"))
+      } else if (identical(.x, "free_reduced_lunch") &&
+                   all(c("free_lunch_value_source", "reduced_lunch_value_source") %in% names(df_i))) {
+        df_i <- df_i %>%
+          dplyr::mutate(
+            value_source = dplyr::case_when(
+              free_lunch_value_source == "published_pct_only" |
+                reduced_lunch_value_source == "published_pct_only" ~ "published_pct_only",
+              free_lunch_value_source == "derived_from_pct" |
+                reduced_lunch_value_source == "derived_from_pct" ~ "derived_from_pct",
+              TRUE ~ "published"
+            )
+          )
+      } else {
+        df_i <- df_i %>% dplyr::mutate(value_source = "published")
+      }
+
+      df_i %>%
+        dplyr::select(dplyr::one_of(invariants, "n_students", "row_total", "value_source")) %>%
         dplyr::mutate(
           subgroup = .x,
           pct = n_students / row_total
         ) %>%
-        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct"))
+        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
     }
   )
 

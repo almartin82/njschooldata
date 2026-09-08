@@ -129,7 +129,11 @@ get_raw_njgpa <- function(end_year, subj) {
 #'   Science assessments are only available for 2019+ and grades 5, 8, 11.
 #' @param tidy Clean up the data frame to make it more compatible with
 #' NJASK naming conventions and do some additional calculations? Default is FALSE.
-#' @return Processed PARCC/NJSLA dataframe
+#' @return Processed PARCC/NJSLA dataframe. `num_l1`..`num_l5` are computed
+#' from each row's own published performance-level percent and its own
+#' published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
+#' `value_source` marks each row `"derived_from_pct"` or, where
+#' `number_of_valid_scale_scores` was NA, `"published_pct_only"`.
 #' @export
 #' @examples
 #' \dontrun{
@@ -191,7 +195,8 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' @param end_year A school year. Valid values are 2022-2025.
 #' @param subj Assessment subject: 'ela' or 'math'
 #' @param tidy Clean up the data frame? Default is FALSE.
-#' @return Processed NJGPA dataframe
+#' @return Processed NJGPA dataframe, carrying the same
+#' `num_l1`/`num_l2`-plus-`value_source` derivation as [fetch_parcc()].
 #' @export
 #' @examples
 #' \dontrun{

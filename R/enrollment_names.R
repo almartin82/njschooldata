@@ -211,7 +211,17 @@ clean_enr_names <- function(df) {
     "Homeless" = "homeless",
     "Military" = "military",
     "SPECED" = "special_ed",
-    "CHPT1" = "title_1"
+    "CHPT1" = "title_1",
+
+    # derived-count provenance markers (see fetch_enrollment.R's pct_cols
+    # loop, which names them "<Count Col> Value Source" to match its
+    # Title Case sibling columns).
+    "Free Lunch Value Source" = "free_lunch_value_source",
+    "Reduced Lunch Value Source" = "reduced_lunch_value_source",
+    "English Learners Value Source" = "lep_value_source",
+    "Migrant Value Source" = "migrant_value_source",
+    "Military Value Source" = "military_value_source",
+    "Homeless Value Source" = "homeless_value_source"
   )
 
   names(df) <- purrr::map_chr(names(df), ~clean_name(.x, clean))
@@ -268,7 +278,13 @@ get_enr_types <- function() {
     "military" = "numeric",
     "special_ed" = "numeric",
     "title_1" = "numeric",
-    "end_year" = "numeric"
+    "end_year" = "numeric",
+    "free_lunch_value_source" = "character",
+    "reduced_lunch_value_source" = "character",
+    "lep_value_source" = "character",
+    "migrant_value_source" = "character",
+    "military_value_source" = "character",
+    "homeless_value_source" = "character"
   )
 }
 
@@ -296,6 +312,13 @@ get_enr_column_order <- function() {
     "multiracial_m", "multiracial_f",
     "row_total",
     "free_lunch", "reduced_lunch", "lep", "migrant",
-    "homeless", "special_ed", "title_1", "grade_level"
+    "homeless", "special_ed", "title_1", "grade_level",
+    # value_source columns for the derived populations above (2020+ only;
+    # absent, via dplyr::any_of() in arrange_enr(), for pre-2020 files where
+    # these are real published counts, never derived from a percent). Kept
+    # per-field because a single wide row mixes columns of different
+    # provenance; see fetch_enrollment.R's pct_cols loop.
+    "free_lunch_value_source", "reduced_lunch_value_source",
+    "lep_value_source", "migrant_value_source", "homeless_value_source"
   )
 }
