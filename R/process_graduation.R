@@ -86,19 +86,30 @@ process_grate <- function(df, end_year) {
     "grad_rate", "cohort_count", "graduated_count"
   )
 
+  # NJDOE varies the Excel column type by vintage. The four-year rate column of
+  # the 2011 workbook (ACGR2012_gradrate.xls, "2011 Adjusted Cohort Grad Rate")
+  # is stored with the numeric Excel type, while later files store the same
+  # measure as text and use *, N, -, < and > as suppression tokens. Only the
+  # text form can carry a token, so a column readxl already returned as numeric
+  # is coerced straight through: its digits are never re-formatted, and the
+  # suppression test is applied to the text form exactly as before.
   for (i in numeric_cols) {
     if (i %in% names(df)) {
-      df <- df %>%
-        dplyr::mutate(
-          {{ i }} := as.numeric(
-            dplyr::if_else(
-              # Match suppressed data indicators: *, N, -, <, > (e.g., "<10%", ">90%")
-              stringr::str_detect(.data[[i]], "\\*|N|-|<|>"),
-              NA_character_,
-              .data[[i]]
+      if (is.numeric(df[[i]])) {
+        df[[i]] <- as.numeric(df[[i]])
+      } else {
+        df <- df %>%
+          dplyr::mutate(
+            {{ i }} := as.numeric(
+              dplyr::if_else(
+                # Match suppressed data indicators: *, N, -, <, > (e.g., "<10%", ">90%")
+                stringr::str_detect(as.character(.data[[i]]), "\\*|N|-|<|>"),
+                NA_character_,
+                as.character(.data[[i]])
+              )
             )
           )
-        )
+      }
     }
   }
 

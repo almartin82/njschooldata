@@ -3,13 +3,116 @@
 # ==============================================================================
 #
 # Exhaustive per-year tests for NJ graduation data (fetch_grad_rate and
-# fetch_grad_count). 4-year graduation rates available 2011-2024 (though
-# 2011 is rate-only, no subgroups). Graduation counts available 2012-2024.
+# fetch_grad_count). 4-year graduation rates available 2011-2025.
+# Graduation counts available 2012-2025.
+#
+# 2011 is covered by its own block at the top of this file rather than by the
+# shared pin loop below: its source workbook publishes a rate only, with no
+# cohort count, no graduate count and no student-group breakout, so the loop's
+# cohort/graduate/subgroup assertions have no published values to check. The
+# 2011 block asserts everything the 2011 workbook does publish. It is NOT
+# skipped or excluded.
 #
 # Pinned values verified against NJ DOE graduation files at:
 # https://www.nj.gov/education/schoolperformance/grad/
 #
 # ==============================================================================
+
+# -- 4-Year Graduation Rate: 2011 ---------------------------------------------
+#
+# The 2011 four-year cohort rate is published in ACGR2012_gradrate.xls (sheet
+# "Sheet1", 690 data rows), which carries both the 2012 and the 2011 rate. NJDOE
+# gives the 2011 rate column ("2011 Adjusted Cohort Grad Rate", column I) the
+# NUMERIC Excel type, where every later file stores the same measure as text.
+# process_grate() used to run the suppression-token test on that column
+# unconditionally, so 2011 failed with
+#   "Can't combine `true` <character> and `false` <double>".
+# Values below are read straight from the workbook cells:
+#   Sheet1!I691 = 0.8317  STATE TOTAL (County 99 / District 9999 / School 999)
+#   Sheet1!I683 = 0.9483  TEAM Academy Charter School (80 / 7325 / 965)
+#   Sheet1!I684 = 0.9483  TEAM Academy Charter School DISTRICT TOTAL (999)
+
+test_that("fetch_grad_rate 4yr loads without error for 2011", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  expect_s3_class(gr, "data.frame")
+  expect_equal(nrow(gr), 690)
+  expect_type(gr$grad_rate, "double")
+})
+
+test_that("fetch_grad_rate 4yr has required columns for 2011", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  required_cols <- c(
+    "end_year",
+    "county_id", "county_name",
+    "district_id", "district_name",
+    "school_id", "school_name",
+    "subgroup", "grad_rate",
+    "methodology",
+    "is_state", "is_district", "is_school", "is_charter"
+  )
+  for (col in required_cols) {
+    expect_true(col %in% names(gr), info = paste("Missing column:", col))
+  }
+})
+
+test_that("fetch_grad_rate 4yr state rate matches the 2011 workbook cell", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  state <- gr %>% dplyr::filter(is_state)
+
+  expect_equal(nrow(state), 1)
+  # Sheet1!I691 = 0.8317, i.e. the published statewide 83.17 percent
+  expect_equal(state$grad_rate, 0.8317, tolerance = 1e-9)
+})
+
+test_that("fetch_grad_rate 4yr TEAM Academy 2011 rate matches the workbook cell", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  team <- gr %>% dplyr::filter(district_id == "7325")
+
+  # One school row (School 965) and one district-total row (School 999)
+  expect_equal(nrow(team), 2)
+  expect_equal(sort(team$school_id), c("965", "999"))
+  # Sheet1!I683 and Sheet1!I684 both read 0.9483, i.e. 94.83 percent
+  expect_equal(team$grad_rate, c(0.9483, 0.9483), tolerance = 1e-9)
+  expect_true(all(team$is_charter))
+})
+
+test_that("fetch_grad_rate 4yr 2011 entity split matches the workbook", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  # Workbook "Level" column: 1 T (state), 294 D (district), 395 S (school)
+  expect_equal(sum(gr$is_state), 1)
+  expect_equal(sum(gr$is_district), 294)
+  expect_equal(sum(gr$is_school), 395)
+
+  valid_rates <- gr$grad_rate[!is.na(gr$grad_rate)]
+  expect_true(all(valid_rates >= 0 & valid_rates <= 1))
+})
+
+test_that("fetch_grad_rate 4yr 2011 publishes no cohort or graduate counts", {
+  skip_if_no_live_tests()
+
+  gr <- fetch_grad_rate(2011, methodology = "4 year")
+
+  # NJDOE published only a rate for the 2011 cohort. These stay NA and are
+  # never back-derived.
+  expect_true(all(is.na(gr$cohort_count)))
+  expect_true(all(is.na(gr$graduated_count)))
+})
+
 
 # -- 4-Year Graduation Rate: pinned state values per year ----------------------
 
