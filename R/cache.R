@@ -88,6 +88,18 @@
 # one live bypass, and it is closed. Session cache untouched, so again there is
 # no schema version to bump.
 
+# 2026-09-09 parser edit, nothing to bump. R/msgp.R now matches the statewide
+# row's CountyCode literal case-insensitively, so get_and_process_msgp(2017)
+# reads the published StateMedian instead of the blank DistrictMedian: 20
+# statewide schoolwide cells move from NA to the workbook's own value, and
+# nothing else in 2017 changes (62,981 non-statewide rows byte-identical). 2018
+# and 2019 already spelled the literal "State" and are byte-identical
+# throughout. get_and_process_msgp() reaches no on-disk cache at all -- it goes
+# through get_one_rc_database(), whose download_and_clean_pr() passes a
+# tempfile() as cache_path -- and the only thing standing between it and the
+# source is the in-memory session cache, which a reload has already emptied.
+# No URL or endpoint moved, so nothing is re-acquired.
+
 # Create package environment for session cache
 .njsd_cache <- new.env(parent = emptyenv())
 

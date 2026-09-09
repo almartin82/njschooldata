@@ -185,10 +185,21 @@ get_and_process_msgp <- function(end_year) {
     df_schoolwide <- df_list %>% 
       use_series('student_growth') %>%
       # diff sgp measures into single column
+      #
+      # The District/State workbook stamps the statewide row's CountyCode with
+      # the literal word "State" and leaves DistrictMedian blank there, so that
+      # row's value has to be read from StateMedian instead. NJDOE's casing of
+      # that literal drifts by workbook: Database_DistrictStateDetail.xlsx
+      # spells it "STATE" for 2016-2017 and "State" for 2017-2018 and 2018-2019.
+      # Match it case-insensitively and whitespace-trimmed, the same way
+      # assign_entity_flags(recognize_state_label = TRUE) does, or the statewide
+      # row falls through to the blank DistrictMedian and 20 published medians
+      # are reported as missing.
       mutate(
         median_sgp = case_when(
           source_file == 'school' ~ school_median,
-          source_file == 'district' & county_code == 'State' ~ state_median,
+          source_file == 'district' &
+            toupper(trimws(county_code)) == 'STATE' ~ state_median,
           source_file == 'district' ~ district_median,
           TRUE ~ NA_character_
         )
