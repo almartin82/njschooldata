@@ -468,7 +468,7 @@ tier, one table.
 sessionInfo()
 #> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.4 LTS
+#> Running under: Ubuntu 24.04.5 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -491,11 +491,11 @@ sessionInfo()
 #> [4] ggplot2_4.0.3       njschooldata_0.9.26
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       xfun_0.60          bslib_0.12.0       ggrepel_0.9.8     
+#>  [1] gtable_0.3.6       xfun_0.61          bslib_0.12.0       ggrepel_0.9.8     
 #>  [5] lattice_0.22-9     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.1       
 #>  [9] generics_0.1.4     curl_8.0.0         parallel_4.6.1     tibble_3.3.1      
 #> [13] pkgconfig_2.0.3    Matrix_1.7-5       RColorBrewer_1.1-3 S7_0.2.2          
-#> [17] desc_1.4.3         readxl_1.5.0       lifecycle_1.0.5    compiler_4.6.1    
+#> [17] desc_1.4.3         readxl_1.5.0.1     lifecycle_1.0.5    compiler_4.6.1    
 #> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.0.5  janitor_2.2.1     
 #> [25] codetools_0.2-20   snakecase_0.11.1   htmltools_0.5.9    sass_0.4.10       
 #> [29] yaml_2.3.12        pillar_1.11.1      pkgdown_2.2.1      crayon_1.5.3      
