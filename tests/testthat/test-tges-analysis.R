@@ -102,10 +102,11 @@ test_that("tges_percentile_rank ranks within the TGES enrollment-band group", {
 test_that("tges_percentile_rank drops average rows and honors prefix", {
   df <- tibble::tibble(
     county_name   = "X",
-    district_id = c("0001", "0002", "00NA"),
-    district_name = c("a", "b", "AVG"),
+    # one macOS-form and one Linux-form padded-NA average row; both drop
+    district_id = c("0001", "0002", "00NA", " NA"),
+    district_name = c("a", "b", "AVG", "AVG"),
     group         = "G",
-    `Per Pupil costs` = c(100, 300, NA),
+    `Per Pupil costs` = c(100, 300, NA, NA),
     end_year      = 2024
   )
   r <- tges_percentile_rank(df, peer = "statewide", prefix = "state")
@@ -1173,7 +1174,7 @@ test_that("tges_excluded_costs computes the wedge and drops average rows", {
   ec <- tges_excluded_costs(fake_tges_detail())
 
   expect_equal(nrow(ec), 2L)                       # 00NA average row dropped
-  expect_false(any(ec$district_id == "00NA"))
+  expect_false(any(grepl("^[0 ]*NA$", trimws(ec$district_id))))  # both forms
 
   nwk <- ec[ec$district_id == "3570", ]
   expect_equal(nwk$gce_excess_pp, 24000 - 21000)     # GCE - budgetary

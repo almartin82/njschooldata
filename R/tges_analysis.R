@@ -16,7 +16,8 @@
 # Design notes (see dev-docs/tges-coverage.md for the source schema):
 #   - TGES rows key on a 4-digit `district_id` (Newark = "3570"), which lines up
 #     directly with the `district_id` used by grate/parcc data. Group-average rows
-#     carry no real code (NA or "00NA") and are dropped.
+#     carry no real code (NA, the DOE's "N.A." placeholder, or a padded-NA
+#     fabrication -- "00NA" on macOS, " NA" on Linux) and are dropped.
 #   - Budget indicators carry `calc_type` ("Actuals"/"Budgeted"); compare like with
 #     like. The TGES-native peer set is the `group` column (enrollment band), which
 #     is also the set the published `District rank` is computed within.
@@ -47,11 +48,16 @@
   }
 }
 
-# real district rows only (drop group-average / sentinel rows)
+# real district rows only (drop group-average / sentinel rows).
+# The padded-NA fabrication takes one form per platform ("00NA" on macOS,
+# " NA" on Linux), so output matching on either literal is blind on the other.
+# Match both via a trimmed anchored pattern instead; a real NJ district code
+# is four digits, so nothing real can match. The DOE's published "N.A."
+# placeholder is left for the caller, exactly as before.
 .tges_real_districts <- function(df) {
   if ("district_id" %in% names(df)) {
-    df <- df %>%
-      dplyr::filter(!is.na(.data$district_id), .data$district_id != "00NA")
+    id <- trimws(as.character(df$district_id))
+    df <- df[!is.na(id) & !grepl("^[0 ]*NA$", id), , drop = FALSE]
   }
   df
 }

@@ -442,9 +442,11 @@ rank <- nwk_series("CSG1", "District rank", "Actuals")
 stopifnot(nrow(rank) > 0)
 
 # size of the peer group in the most recent guide, for context
+# (both padded-NA forms: "00NA" on macOS, " NA" on Linux)
 n_peers <- reports[["2025"]][["CSG1"]] %>%
   filter(group == "G. K-12 / 3501 +", end_year == 2024,
-         !is.na(district_id), district_id != "00NA") %>%
+         !is.na(district_id),
+         !grepl("^[0 ]*NA$", trimws(as.character(district_id)))) %>%
   distinct(district_id) %>%
   nrow()
 n_peers
