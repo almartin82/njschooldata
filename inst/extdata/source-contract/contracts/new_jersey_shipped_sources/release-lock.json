@@ -165,7 +165,7 @@
   },
   "generated_files": {
     ".github/workflows/live-validation-new_jersey_shipped_sources.yml": "sha256:57c8bdd6b611dd16e5ae509a19874e770d446866ac246b2eac1c37495d6e5549",
-    ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:0506c70a3175ad6e83513bb968c34fe0de08c791b93a16c727a834808083ca61",
+    ".github/workflows/source-contract-new_jersey_shipped_sources.yml": "sha256:c1048188b6374212dca9a577dc1d7a8c201ce5865ecb23bd4b0d70fc326eb595",
     "R/source_validation_new_jersey_shipped_sources_generated.R": "sha256:87d144fd00710cceb3f282851c2d65eddf3afa37b84a970bd6dda63bfa2a60dc",
     "docs/source-validation-new_jersey_shipped_sources.md": "sha256:b00903094ebf782bd53de0db6f556d761f1128a8bb5b61532a5dfc9e49309c97",
     "inst/extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json": "sha256:0adf11fd884f68dc36f3a0f92e7637c5217168185e6ed473c5d6cda026701298",
