@@ -33,6 +33,8 @@ jobs:
           extra-packages: |
             any::rcmdcheck
             any::zip
+            any::testthat
+            any::withr
           needs: check
           dependencies: '"hard"'
 
