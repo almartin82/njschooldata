@@ -16,9 +16,6 @@ ASSET_ROOT = DOCS_TOOL_ROOT / "pkgdown-cache"
 BUILD_SCRIPT = DOCS_TOOL_ROOT / "build-offline-docs.R"
 PKGDOWN_CONFIG = PACKAGE_ROOT / "_pkgdown.yml"
 PKGDOWN_WORKFLOW = PACKAGE_ROOT / ".github" / "workflows" / "pkgdown.yaml"
-SOURCE_VALIDATION_DOC = (
-    PACKAGE_ROOT / "docs" / "source-validation-new_jersey_shipped_sources.md"
-)
 
 
 def test_pkgdown_dependency_bytes_match_sri_and_license_provenance() -> None:
@@ -63,21 +60,6 @@ def test_offline_docs_builder_uses_only_verified_local_dependencies() -> None:
     assert "tryCatch" not in source
     assert "http://" not in source
     assert "https://" not in source
-
-
-def test_offline_docs_builder_preserves_tracked_source_validation_document() -> None:
-    source = BUILD_SCRIPT.read_text(encoding="utf-8")
-    assert "clean_site" not in source
-    assert SOURCE_VALIDATION_DOC.is_file()
-    assert SOURCE_VALIDATION_DOC.stat().st_size > 0
-    tracked = subprocess.run(
-        ["git", "ls-files", "--error-unmatch", "--", str(SOURCE_VALIDATION_DOC)],
-        cwd=PACKAGE_ROOT,
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    assert tracked.returncode == 0
 
 
 def test_home_sidebar_is_local_and_skips_pkgdown_cran_discovery() -> None:

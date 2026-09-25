@@ -9,6 +9,5 @@
   ],
   "reason": "The checked-in NJDOE-derived fixtures are deterministic parser goldens, but their complete parent source bytes are not shipped. They cannot satisfy derived-artifact lineage without those parent bytes.",
   "schema_version": "njschooldata-package-coverage/v1",
-  "source_validation_release": "source-validation-v1.0.0-rc.4",
   "state": "package_coverage_limited"
 }

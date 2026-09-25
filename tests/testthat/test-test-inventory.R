@@ -6,6 +6,9 @@ test_that("network-bearing R tests are explicitly gated", {
     # Argument validation fails before transport is reached.
     "test-absence-offline-contract.R",
     "test-source-adapter-fixtures.R",
+    # get_raw_sla_result() gets an injected request_fn that copies a
+    # checked-in fixture; no transport is reached.
+    "test-shipped-fixture-values.R",
     "test-source-registry.R",
     "test-source-result.R",
     "test-source-transport.R",

@@ -30,13 +30,8 @@
 # directory surface; its `use_cache` argument selects the bundled geocoded
 # lat/lng dataset, not the directory, which it re-acquires live every call.
 #
-# CAPTURING the directory is a different thing from SERVING it, and capturing
-# is wanted: this file is a declared `downloader` fingerprint input, its bytes
-# are captured under inst/extdata/source-contract/, and that capture is the
-# instrument that makes a change to the directory adapter visible. Editing this
-# file therefore requires regenerating the contract in the same commit, but it
-# bumps no schema_version and changes no source_identity, because directory is
-# never cached and no cached value is implicated.
+# Editing this file bumps no schema_version and changes no source_identity,
+# because directory is never cached and no cached value is implicated.
 #
 # ==============================================================================
 

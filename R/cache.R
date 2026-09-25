@@ -25,54 +25,12 @@
 # download URL or endpoint and the workbook cache must be re-acquired and the
 # bytes compared.
 #
-# The contract fingerprint is likewise folded into NOTHING. `make_cache_key()`
-# hashes only the call arguments. `.source_validation_new_jersey_shipped_sources_fingerprint`
-# lives in the generated R and no cache path reads it. Packages differ on this
-# and there is no fleet convention -- some fold it into their cache key and
-# retire every processed entry automatically when a contract moves. This one
-# does not, and does not need to, for the reason above.
-#
-# 2026-08-18 regeneration: fingerprint moved, nothing to bump.
-#
-# 2026-08-20 regeneration: same verdict, same reason. The 08-18 directory
-# quarantine commit (00857924) edited R/directory_contract.R and
-# R/fetch_directory.R without regenerating, so both captures diverged --
-# 81 and 20 lines. Both are directory files, directory is always-on and never
-# cached, and no directory function reaches cache_get()/cache_set() or passes
-# cache_path= to download_source(), so there is no cached value to retire and
-# nothing to bump. The reasoning lives beside each declaration, in the headers
-# of R/directory_contract.R and R/fetch_directory.R; this package has no
-# data-raw spec builder to hold it. The fingerprint is still folded NOWHERE, so
-# a future parser edit on a cached family has to be reasoned about by hand
-# here rather than being retired automatically.
-#
-# The release lock's `fingerprint_sources` had been grandfathered in bare hex
-# while the verifier's `checksum_file()` emits `sha256:`-prefixed, so all 35
-# records compared unequal on FORMAT before content was ever reached, and
-# `_verify_capture_freshness()` -- which raises on the first entry of
-# `sorted(fingerprint_sources)` -- died on `dependency/DESCRIPTION`, a file
-# byte-identical to its live owner. Behind it, two captures had genuinely
-# drifted, both from 6e982fca "Keep composite identifiers missing when a part
-# was never published":
-#
-#   R/fetch_directory.R  na_composite_id() masks a CDS code whose county,
-#                        district or school part was never published, instead of
-#                        shipping paste0()'s literal "NA3570010"; the SPR
-#                        directory fallback now raises directory_integrity_error
-#                        rather than inventing an id. Directory is always-on and
-#                        never cached, so there is no cell to retire.
-#   R/fetch_spr.R        fetch_spr_science_grade() pads only a digits-only
-#                        token, so an unparseable grade cell stays NA instead of
-#                        becoming the string "NA", and "5E1" is no longer read
-#                        as 50. This DOES change values where the source ships a
-#                        non-numeric grade -- but only in a session cache that a
-#                        reload has already emptied.
-#
-# Recorded here rather than left silent: a non-bump with no reasoning is exactly
-# as unreviewable as a bump with none. The fingerprint moved off
-# sha256:56268bca5e5681a997d0dc3922c6414953a433020d8467e5f6f49c6be12cdd53.
+# No code hash is folded into any cache key either: `make_cache_key()` hashes
+# only the call arguments. A parser edit on a cached family therefore has to
+# be reasoned about by hand here; nothing retires a cached entry
+# automatically when code changes.
 
-# 2026-08-23 regeneration: cache isolation for the test suite. The three
+# 2026-08-23: cache isolation for the test suite. The three
 # on-disk caches -- spr-workbooks/ here, sped-placement/ in R/sped_placement.R
 # and facilities/ in R/get_raw_facilities.R -- now resolve through one root,
 # njsd_cache_root() below, which reads options(njschooldata.cache_dir) first,
