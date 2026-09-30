@@ -58,6 +58,7 @@
       transport$data,
       skip = 3,
       col_types = readr::cols(.default = readr::col_character()),
+      locale = readr::locale(encoding = "Windows-1252"),
       show_col_types = FALSE
     ),
     error = identity
@@ -67,6 +68,31 @@
       source_status = "parse_error", source_url = transport$source_url,
       retrieved_at = transport$retrieved_at, digest = transport$digest,
       error = conditionMessage(parsed)
+    ))
+  }
+  # readr returns a table even when extra CSV fields shift every subsequent
+  # personnel column. Such a table is not a usable source: never infer shifts.
+  problems <- readr::problems(parsed)
+  if (nrow(problems)) {
+    names(parsed) <- janitor::make_clean_names(names(parsed))
+    details <- vapply(seq_len(min(nrow(problems), 5L)), function(i) {
+      row <- problems$row[i] - 1L # readr counts the column-name row
+      id <- if (row >= 1L && row <= nrow(parsed) &&
+                all(c("county_code", "district_code") %in% names(parsed))) {
+        paste0(kill_padformulas(parsed$county_code[row]),
+               kill_padformulas(parsed$district_code[row]))
+      } else NA_character_
+      paste0("CSV row ", problems$row[i], " (source line ",
+             problems$row[i] + 3L, "): expected ", problems$expected[i],
+             ", found ", problems$actual[i],
+             if (!is.na(id)) paste0("; district_id ", id) else "")
+    }, character(1))
+    return(new_source_result(
+      source_status = "parse_error", source_url = transport$source_url,
+      retrieved_at = transport$retrieved_at, digest = transport$digest,
+      error = paste0("Directory CSV has ", nrow(problems),
+                     " structural parse problem(s): ",
+                     paste(details, collapse = "; "), ".")
     ))
   }
   cleaned_names <- janitor::make_clean_names(names(parsed))
@@ -576,6 +602,19 @@ directory_live_acquire <- function() {
   complete <- identical(district_result$source_status, "actual") &&
     identical(school_result$source_status, "actual")
   if (!complete) {
+    # A fetched but malformed artifact is a structural blocker, not an outage.
+    # Falling back here would hide corruption behind a different role surface.
+    if (any(source_records$source_status == "parse_error")) {
+      failed <- source_records[source_records$source_status == "parse_error", ]
+      stop(structure(
+        list(message = paste0(
+          "NJDOE Homeroom directory structural failure: ",
+          paste(paste0(failed$source_url, ": ", failed$error,
+                       " [SHA-256 ", failed$digest, "]"), collapse = "; ")
+        ), call = NULL, source_results = source_records),
+        class = c("directory_parse_error", "error", "condition")
+      ))
+    }
     spr_result <- .directory_spr_source_result()
     source_records <- rbind(
       source_records,
@@ -769,7 +808,7 @@ build_directory_from_spr <- function(
     school_id = NA_character_,
     entity_type = "district",
     role = "superintendent",
-    title_raw = "Superintendent",
+    title_raw = NA_character_,
     person_name = x$d_superintendentname,
     first_name = NA_character_,
     last_name = NA_character_,
@@ -782,7 +821,7 @@ build_directory_from_spr <- function(
     school_id = school_id,
     entity_type = "school",
     role = "principal",
-    title_raw = "Principal",
+    title_raw = NA_character_,
     person_name = x$s_principalname,
     first_name = NA_character_,
     last_name = NA_character_,
@@ -802,6 +841,7 @@ build_directory_from_spr <- function(
   coverage <- list(
     district_roles = "superintendent",
     school_roles = "principal",
+    role_provenance = list(superintendent = "column", principal = "column"),
     org_only = FALSE,
     principal_only = FALSE,
     notes = paste0(
@@ -810,7 +850,8 @@ build_directory_from_spr <- function(
       "unavailable. This 2024-2025 roster covers district superintendents and ",
       "school principals only; names are source-published combined fields, so ",
       "first_name and last_name remain NA. Role labels come from the published ",
-      "Superintendent_Name and Principal_Name field definitions. Business ",
+      "Superintendent_Name and Principal_Name field definitions; the source ",
+      "publishes no job titles, so title_raw remains NA. Business ",
       "administrators and ",
       "special-education directors are not present in this fallback source."
     )

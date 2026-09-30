@@ -259,6 +259,94 @@ dc_roles_by_role <- function(roles) {
   stats::setNames(out, present)
 }
 
+DC_ROLE_PROVENANCE <- c(
+  "title", "mixed", "state_dictionary", "declared", "column", "grain"
+)
+
+dc_role_provenance <- function(declared, roles) {
+  empty <- stats::setNames(list(), character(0))
+  if (is.null(declared) || length(declared) == 0L) {
+    # Undeclared is only conforming while every row carries a title.
+    if (is.data.frame(roles) && nrow(roles) > 0L &&
+        any(is.na(roles$title_raw))) {
+      dc_stop(
+        paste0("role(s) carry no title_raw with no declared provenance: ",
+               paste(sort(unique(roles$role[is.na(roles$title_raw)])),
+                     collapse = ", ")),
+        "directory_integrity_error"
+      )
+    }
+    return(empty)
+  }
+
+  nm <- names(declared)
+  if (is.null(nm) || any(is.na(nm)) || any(!nzchar(nm)) || anyDuplicated(nm)) {
+    dc_stop(
+      "coverage$role_provenance must be a uniquely named role -> provenance map",
+      "directory_integrity_error"
+    )
+  }
+  value <- as.character(unlist(declared, use.names = FALSE))
+  if (length(value) != length(nm)) {
+    dc_stop(
+      "coverage$role_provenance must carry exactly one provenance per role",
+      "directory_integrity_error"
+    )
+  }
+  bad <- nm[!(nm %in% DC_ROLES)]
+  if (length(bad)) {
+    dc_stop(
+      paste0("coverage$role_provenance names non-canonical role(s): ",
+             paste(bad, collapse = ", ")),
+      "directory_integrity_error"
+    )
+  }
+  bad <- value[!(value %in% DC_ROLE_PROVENANCE)]
+  if (length(bad)) {
+    dc_stop(
+      paste0("coverage$role_provenance uses unknown provenance value(s): ",
+             paste(unique(bad), collapse = ", ")),
+      "directory_integrity_error"
+    )
+  }
+
+  # A "title" declaration is a falsifiable claim: every row of that role must
+  # actually carry the title it says the role came from.
+  if (is.data.frame(roles) && nrow(roles) > 0L) {
+    for (i in seq_along(nm)) {
+      rows <- roles$role == nm[i]
+      titled <- !is.na(roles$title_raw[rows])
+      if (value[i] == "title" && any(rows) && any(!titled)) {
+        dc_stop(
+          paste0("coverage$role_provenance declares role '", nm[i],
+                 "' as title-derived, but a row of that role has no title_raw"),
+          "directory_integrity_error"
+        )
+      }
+      if (value[i] == "mixed" && (!any(titled) || !any(!titled))) {
+        dc_stop("mixed provenance requires both titled and titleless rows",
+                "directory_integrity_error")
+      }
+      if (!value[i] %in% c("title", "mixed") && any(titled)) {
+        dc_stop("title-free provenance cannot carry a source title",
+                "directory_integrity_error")
+      }
+    }
+    undeclared <- setdiff(
+      unique(roles$role[is.na(roles$title_raw)]), nm
+    )
+    if (length(undeclared)) {
+      dc_stop(
+        paste0("role(s) carry no title_raw with no declared provenance: ",
+               paste(sort(undeclared), collapse = ", ")),
+        "directory_integrity_error"
+      )
+    }
+  }
+
+  stats::setNames(as.list(value), nm)
+}
+
 #' Build the conforming meta block from the frames
 #'
 #' Counts and quality are computed here from `entities`/`roles`; the caller
@@ -288,7 +376,8 @@ dc_build_meta <- function(entities, roles, state, sources, id_scheme,
     org_only       = isTRUE(coverage$org_only),
     principal_only = isTRUE(coverage$principal_only),
     notes          = if (is.null(coverage$notes)) NA_character_ else
-      as.character(coverage$notes)
+      as.character(coverage$notes),
+    role_provenance = dc_role_provenance(coverage$role_provenance, roles)
   )
 
   counts_out <- list(

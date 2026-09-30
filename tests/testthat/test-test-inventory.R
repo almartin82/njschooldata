@@ -17,6 +17,8 @@ test_that("network-bearing R tests are explicitly gated", {
     "test-site-build-contract.R",
     # Byte-identical conformance suite reads only a committed RDS fixture.
     "test-directory-contract.R",
+    # Homeroom byte fixtures and mocked acquisition; no live requests.
+    "test-directory-source-fidelity.R",
     # fetch_dfg() and fetch_spr_data() are replaced with in-memory fixtures via
     # local_mocked_bindings(); the assertions pin literals that the real
     # downloads could not produce, so a mock that failed to take effect fails

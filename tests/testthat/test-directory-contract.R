@@ -21,6 +21,30 @@
   "charter_school_leader", "primary_contact", "other"
 )
 
+# How a role was assigned, strongest first. Declare the WEAKEST guarantee that
+# holds for every row of that role. "title" is the only value that licenses
+# treating the role as the state's own statement about the person, and the only
+# one that requires a non-NA title_raw. There is deliberately no "none": every
+# row got its role somehow, and naming the weakest real mechanism beats a bucket
+# that flattens a state whose own data dictionary names the field into the same
+# cell as a state publishing an unlabelled contact and nothing else.
+.dc_role_provenance <- c(
+  "title", "mixed", "state_dictionary", "declared", "column", "grain"
+)
+
+# Above this many titled rows, a role declaring a title-asserting provenance
+# must show more than one distinct title. A genuine per-person title field
+# always varies at this scale; a synthesized constant is, by construction, the
+# same string every time. Below the threshold a uniform value is unremarkable,
+# so the rule stays silent there rather than guessing.
+.dc_title_constant_min_rows <- 25L
+
+# Provenances that assert the state named this person's job. "mixed" is here
+# because its titled rows make exactly the same claim "title" does: the split
+# population changes WHICH rows carry a title, never what a carried title has to
+# be.
+.dc_title_asserting <- c("title", "mixed")
+
 .dc_multi_person_roles <- c("board_member", "other")
 
 .dc_entity_types <- c("state", "intermediate", "district", "school")
@@ -63,6 +87,52 @@
 
 .dc_is_placeholder <- function(x, set) {
   !is.na(x) & tolower(trimws(x)) %in% set
+}
+
+# A source with no published job title emits title_raw = NA, never one of these.
+# A source-declared vacancy is person_name = NA with the row's real title kept,
+# so "vacant" is a placeholder here too: it describes the seat, not anyone's job.
+.dc_title_placeholders <- c(
+  "", "na", "n/a", "null", "none", "-", "--", "tbd", "unknown", "pending",
+  "vacant", "position vacant", "open"
+)
+
+.dc_title_honorifics <- c(
+  "mr", "mrs", "ms", "miss", "mx", "dr", "hon", "rev", "fr", "sr", "prof"
+)
+
+# Shapes a title_raw may never take: the source's own column identifier
+# ("headname", "super_name"), the label a published data dictionary gives that
+# column ("Principal Name", "Superintendent Name (Districts Only)"), or a bare
+# honorific ("Dr."). The field label is the subtle one and the reason this
+# exists. It is real published text, written by the state, and it reads like
+# prose, so it sails past a "did the state write this?" test. But it names the
+# COLUMN, not the human in it, so admitting it would leave the synthesis in
+# place wearing a more convincing string.
+.dc_rejected_title_shape <- function(x) {
+  text <- trimws(x)
+  out <- rep(NA_character_, length(text))
+  known <- !is.na(text)
+  label <- known & grepl("\\bnames?\\b", text, perl = TRUE, ignore.case = TRUE)
+  out[label] <- "a data-dictionary field label naming the column, not the person in it"
+  ident <- known & is.na(out) &
+    (grepl("_", text, fixed = TRUE) | grepl("^[a-z][a-z0-9]*$", text, perl = TRUE))
+  out[ident] <- "a bare source column identifier rather than published prose"
+  hon <- known & is.na(out) &
+    tolower(sub("\\.+$", "", text)) %in% .dc_title_honorifics
+  out[hon] <- "an honorific, which is a form of address and not a job"
+  out
+}
+
+# The declared provenance for each role, or NA where the package has not
+# declared one. NA is the legacy state, not a claim that nothing attests it.
+.dc_declared_provenance <- function(roles, coverage) {
+  prov <- coverage$role_provenance
+  if (is.null(prov) || !length(prov)) return(rep(NA_character_, length(roles)))
+  vapply(roles, function(ro) {
+    value <- prov[[ro]]
+    if (is.null(value) || !length(value)) NA_character_ else as.character(value)[1]
+  }, character(1), USE.NAMES = FALSE)
 }
 
 .dc_key <- function(...) {
@@ -555,7 +625,81 @@ test_that("directory-contract: vocabulary", {
 test_that("directory-contract: roles required fields and vacancy semantics", {
   skip_if(is.null(.dc_snap), "fixture missing")
   r <- .dc_snap$roles
-  expect_false(any(is.na(r$title_raw)))
+  # title_raw is the state's verbatim title or it is NA, and which one applies
+  # is not the package's free choice: it is fixed by the role's declared
+  # provenance, in BOTH directions.
+  #
+  #   role_provenance == "title"  <=>  title_raw is non-NA
+  #
+  # Requiring a non-NA title unconditionally is what pushed sources with no
+  # job-title field into synthesizing one, which validated cleanly here and was
+  # then read downstream as the state's own attestation of a person's job.
+  # Merely allowing NA would not have fixed it: a package could keep the
+  # synthesized string and declare "grain" beside it, and the row would still
+  # assert a title nobody published. Roles carrying no declaration stay on the
+  # legacy rule, so a package that has not migrated keeps passing.
+  declared <- .dc_declared_provenance(r$role, .dc_snap$meta$coverage)
+  legacy <- is.na(declared)
+  asserts <- !legacy & declared %in% .dc_title_asserting
+  by_title <- !legacy & declared == "title"
+  by_mixed <- !legacy & declared == "mixed"
+  by_other <- !legacy & !(declared %in% .dc_title_asserting)
+  expect_false(any(legacy & is.na(r$title_raw)),
+    info = "a role with no declared role_provenance must carry a title_raw")
+  expect_false(any(by_title & is.na(r$title_raw)),
+    info = "role_provenance 'title' claims the state named this job, so title_raw must be present")
+  expect_false(any(by_other & !is.na(r$title_raw)),
+    info = paste("a role_provenance other than 'title' or 'mixed' says the source",
+                 "publishes no per-person job title, so title_raw must be NA; a",
+                 "grain label, a column name and a data-dictionary field label are",
+                 "all not titles"))
+  # A title that IS present under "mixed" makes the same claim it would under
+  # "title", so it faces the identical placeholder and shape regime. The softer
+  # part of "mixed" is which rows carry a title, never what a carried title may
+  # be.
+  expect_false(any(asserts & .dc_is_placeholder(r$title_raw, .dc_title_placeholders)),
+    info = "a placeholder is not a job title; a source publishing none emits title_raw = NA")
+  shape <- .dc_rejected_title_shape(r$title_raw)
+  expect_false(any(asserts & !is.na(shape)),
+    info = paste("title_raw is", paste(unique(stats::na.omit(shape[asserts])), collapse = "; ")))
+
+  # "mixed" must actually be mixed. A role titled throughout has to say "title"
+  # and face the constant rule undiluted; a role titled nowhere has to say which
+  # weak signal it was really inferred from. Without both halves "mixed" is just
+  # a softer label over the same unattested claim.
+  for (ro in unique(r$role[by_mixed])) {
+    rows <- r$role == ro
+    expect_true(any(!is.na(r$title_raw[rows])),
+      info = paste0("role '", ro, "' declares role_provenance 'mixed' but carries ",
+                    "no title_raw at all; that role was inferred, not mixed"))
+    expect_true(any(is.na(r$title_raw[rows])),
+      info = paste0("role '", ro, "' declares role_provenance 'mixed' but every ",
+                    "row carries a title_raw; 'mixed' is not a gentler spelling ",
+                    "of 'title'"))
+  }
+
+  # The aggregate rules. The per-row checks above ask whether each string LOOKS
+  # like a job title, and cannot see the failure that motivated them: one
+  # constant standing in for thousands of different people's jobs looks
+  # perfectly ordinary one row at a time.
+  sole_title <- list()
+  for (ro in unique(r$role[asserts])) {
+    rows <- r$role == ro & !is.na(r$title_raw)
+    vals <- unique(trimws(r$title_raw[rows]))
+    expect_false(sum(rows) > .dc_title_constant_min_rows && length(vals) == 1L,
+      info = paste0("role '", ro, "' declares a title-asserting role_provenance on ",
+                    sum(rows), " rows that all carry the identical title_raw '",
+                    vals[1], "'; a published per-person job title varies across ",
+                    "that many people"))
+    if (length(vals) == 1L) sole_title[[vals[1]]] <- c(sole_title[[vals[1]]], ro)
+  }
+  for (val in names(sole_title)) {
+    expect_false(length(sole_title[[val]]) > 1L,
+      info = paste0("title_raw '", val, "' is the only title carried by roles ",
+                    paste(sole_title[[val]], collapse = ", "), ", which are ",
+                    "different jobs; one string cannot be the state's statement ",
+                    "of all of them"))
+  }
   expect_false(any(.dc_is_placeholder(r$person_name, .dc_person_placeholders)),
     info = "vacancies are person_name = NA, never placeholder strings")
 })
@@ -640,6 +784,23 @@ test_that("directory-contract: coverage declaration consistency", {
     info = "school-grain roles present must be declared in coverage.school_roles")
   expect_true(is.logical(cov$org_only) && length(cov$org_only) == 1)
   expect_true(is.logical(cov$principal_only) && length(cov$principal_only) == 1)
+  # role_provenance is optional (packages predating it keep validating) but it
+  # is never partial: declare any and you declare one per provided role, from
+  # the closed vocabulary. A half-filled map would let a role with an NA title
+  # slip through on a neighbouring role's declaration.
+  if (!is.null(cov$role_provenance) && length(cov$role_provenance)) {
+    prov <- cov$role_provenance
+    expect_true(all(names(prov) %in% .dc_roles),
+      info = "coverage.role_provenance keys must be canonical roles")
+    expect_true(all(vapply(prov, function(v) as.character(v)[1], character(1))
+                    %in% .dc_role_provenance),
+      info = paste("coverage.role_provenance values must be one of",
+                   paste(.dc_role_provenance, collapse = ", ")))
+    provided <- union(cov$district_roles, cov$school_roles)
+    expect_true(all(provided %in% names(prov)),
+      info = paste("coverage.role_provenance is declared but omits provided role(s):",
+                   paste(setdiff(provided, names(prov)), collapse = ", ")))
+  }
   if (isTRUE(cov$org_only)) {
     expect_identical(nrow(r), 0L)
     expect_identical(length(cov$district_roles), 0L)
