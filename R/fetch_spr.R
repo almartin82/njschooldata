@@ -2230,8 +2230,11 @@ identify_focus_schools <- function(df, end_year = NULL) {
 
   # Filter to specific year if requested
   if (!is.null(end_year)) {
+    if (length(end_year) != 1L) {
+      stop("end_year must be a single school year")
+    }
     df <- df %>%
-      dplyr::filter(end_year == as.numeric(end_year))
+      dplyr::filter(.data$end_year == as.numeric(.env$end_year))
   }
 
   # Filter to schools with some form of identification/support needed
@@ -2294,8 +2297,12 @@ identify_focus_schools <- function(df, end_year = NULL) {
 #'
 #' @param df_list A named list of data frames from different years. Each element
 #'   should be named by its end_year (e.g., list("2020" = df_2020, "2024" = df_2024)).
-#'   Data frames should be from \code{\link{fetch_essa_status}}.
-#' @param school_id Optional school code to track a specific school (e.g., "010")
+#'   Data frames should be school-level output from
+#'   \code{\link{fetch_essa_status}} (\code{level = "school"}).
+#' @param school_id Optional local school code (e.g., "010"). All schools with
+#'   that code are retained, with histories tracked separately by county,
+#'   district, and school identifiers. Each school must have one row per year;
+#'   duplicate school-year observations are rejected.
 #'
 #' @return List with two elements:
 #'   \itemize{
@@ -2403,6 +2410,19 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
     ))
   }
 
+  # A district-local school code is not a statewide identity. Ambiguous
+  # school-year rows cannot define a prior status or transition.
+  school_years <- combined %>%
+    dplyr::select(county_id, district_id, school_id, end_year)
+  duplicate <- anyDuplicated(school_years)
+  if (duplicate) {
+    stop(paste0(
+      "ESSA progress requires one row per county_id, district_id, school_id and end_year. ",
+      "Duplicate: ", paste(unlist(school_years[duplicate, ]), collapse = "/"),
+      ". Supply school-level fetch_essa_status() data (level = 'school')."
+    ))
+  }
+
   # Create focus_level for each row (consistent with identify_focus_schools)
   combined <- combined %>%
     dplyr::mutate(
@@ -2428,13 +2448,13 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
       )
     )
 
-  # Sort by school and year
+  # Sort by complete school identity and year
   combined <- combined %>%
-    dplyr::arrange(school_id, end_year)
+    dplyr::arrange(county_id, district_id, school_id, end_year)
 
   # Calculate status changes
   longitudinal <- combined %>%
-    dplyr::group_by(school_id) %>%
+    dplyr::group_by(county_id, district_id, school_id) %>%
     dplyr::mutate(
       prev_focus_level = dplyr::lag(focus_level),
       prev_end_year = dplyr::lag(end_year)
@@ -2475,6 +2495,7 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
       school_name,
       category_of_identification,
       focus_level,
+      prev_focus_level,
       status_change
     )
 
@@ -2483,7 +2504,7 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
   transitions <- longitudinal %>%
     dplyr::filter(status_change %in% c("Improvement", "Decline", "Stable")) %>%
     dplyr::mutate(
-      from_status = dplyr::lag(focus_level),
+      from_status = prev_focus_level,
       to_status = focus_level
     ) %>%
     dplyr::filter(!is.na(from_status)) %>%
@@ -2497,7 +2518,9 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
   # Calculate summary statistics
   n_improvements <- sum(longitudinal$status_change == "Improvement", na.rm = TRUE)
   n_declines <- sum(longitudinal$status_change == "Decline", na.rm = TRUE)
-  n_schools_tracked <- length(unique(longitudinal$school_id))
+  n_schools_tracked <- longitudinal %>%
+    dplyr::distinct(county_id, district_id, school_id) %>%
+    nrow()
 
   summary_stats <- list(
     n_schools_tracked = n_schools_tracked,
@@ -2508,7 +2531,7 @@ track_essa_progress_over_time <- function(df_list, school_id = NULL) {
 
   # Return results
   list(
-    longitudinal = longitudinal,
+    longitudinal = dplyr::select(longitudinal, -prev_focus_level),
     transitions = transitions,
     summary = summary_stats
   )
