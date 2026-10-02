@@ -9,9 +9,13 @@ track_essa_progress_over_time(df_list, school_id = NULL)
 \arguments{
 \item{df_list}{A named list of data frames from different years. Each element
 should be named by its end_year (e.g., list("2020" = df_2020, "2024" = df_2024)).
-Data frames should be from \code{\link{fetch_essa_status}}.}
+Data frames should be school-level output from
+\code{\link{fetch_essa_status}} (\code{level = "school"}).}
 
-\item{school_id}{Optional school code to track a specific school (e.g., "010")}
+\item{school_id}{Optional local school code (e.g., "010"). All schools with
+that code are retained, with histories tracked separately by county,
+district, and school identifiers. Each school must have one row per year;
+duplicate school-year observations are rejected.}
 }
 \value{
 List with two elements:
