@@ -290,7 +290,7 @@ project_top_costs <- project_profile %>%
 stopifnot(nrow(project_top_costs) > 0)
 print(project_summary)
 #>   active_projects total_estimated_cost projects_with_added_capacity
-#> 1              14           1893300000                            1
+#> 1              14           1913300000                            1
 #>   added_capacity
 #> 1            326
 print(project_top_costs)
@@ -320,7 +320,7 @@ print(project_top_costs)
 #> 1  328100000             NA               NA
 #> 2  283800000             NA               NA
 #> 3  200800000             NA               NA
-#> 4  153000000             NA               NA
+#> 4  173000000             NA               NA
 #> 5  121800000             NA               NA
 #> 6  121300000             NA               NA
 #> 7  115000000             NA               NA

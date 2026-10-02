@@ -16,12 +16,16 @@ track_essa_progress_over_time(df_list, school_id = NULL)
 
   A named list of data frames from different years. Each element should
   be named by its end_year (e.g., list("2020" = df_2020, "2024" =
-  df_2024)). Data frames should be from
-  [`fetch_essa_status`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md).
+  df_2024)). Data frames should be school-level output from
+  [`fetch_essa_status`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
+  (`level = "school"`).
 
 - school_id:
 
-  Optional school code to track a specific school (e.g., "010")
+  Optional local school code (e.g., "010"). All schools with that code
+  are retained, with histories tracked separately by county, district,
+  and school identifiers. Each school must have one row per year;
+  duplicate school-year observations are rejected.
 
 ## Value
 

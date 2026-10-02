@@ -74,11 +74,15 @@ patterns in school accountability status.</p>
 <dl><dt id="arg-df-list">df_list<a class="anchor" aria-label="anchor" href="#arg-df-list"></a></dt>
 <dd><p>A named list of data frames from different years. Each element
 should be named by its end_year (e.g., list("2020" = df_2020, "2024" = df_2024)).
-Data frames should be from <code><a href="fetch_essa_status.html">fetch_essa_status</a></code>.</p></dd>
+Data frames should be school-level output from
+<code><a href="fetch_essa_status.html">fetch_essa_status</a></code> (<code>level = "school"</code>).</p></dd>
 
 
 <dt id="arg-school-id">school_id<a class="anchor" aria-label="anchor" href="#arg-school-id"></a></dt>
-<dd><p>Optional school code to track a specific school (e.g., "010")</p></dd>
+<dd><p>Optional local school code (e.g., "010"). All schools with
+that code are retained, with histories tracked separately by county,
+district, and school identifiers. Each school must have one row per year;
+duplicate school-year observations are rejected.</p></dd>
 
 </dl></div>
     <div class="section level2">
