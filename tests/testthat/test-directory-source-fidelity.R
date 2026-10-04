@@ -6,45 +6,36 @@ nj_directory_byte_request <- function(name) {
   }
 }
 
-test_that("malformed Homeroom source rows cannot become personnel", {
-  for (name in c("hainesport-malformed.csv", "robeson-malformed.csv")) {
-    result <- suppressWarnings(.directory_source_result(
-      "district", request_fn = nj_directory_byte_request(name)
-    ))
-    expect_identical(result$source_status, "parse_error")
-    expect_null(result$data)
-    expect_match(result$error, "CSV row 3")
-    expect_match(result$error, "53 columns")
-    expect_match(result$error, if (grepl("hainesport", name)) {
-      "54 columns.*051910"
-    } else {
-      "55 columns.*806025"
-    })
-    expect_match(result$digest, "^[a-f0-9]{64}$")
-    expect_identical(result$source_url, get_district_directory_url())
-  }
+test_that("bounded source reconstruction restores every displaced field", {
+  h <- .directory_source_result("district", request_fn = nj_directory_byte_request("hainesport-malformed.csv"))
+  r <- .directory_source_result("district", request_fn = nj_directory_byte_request("robeson-malformed.csv"))
+  expect_identical(h$source_status, "actual")
+  expect_identical(r$source_status, "actual")
+  expect_identical(h$data[["SEC Last Name"]][2], "Procopio, Jr.")
+  expect_identical(h$data[["SEC Title2"]][2], "Supervisor of Special Services")
+  expect_identical(h$data[["Website"]][2], "www.hainesport.k12.nj.us")
+  expect_identical(r$data[["City"]][2], "Trenton")
+  expect_identical(r$data[["State"]][2], "NJ")
+  expect_identical(r$data[["BA First Name"]][2], "Brian")
+  expect_identical(r$data[["BA Last Name"]][2], "Falkowski")
+  expect_identical(r$data[["SEC First Name"]][2], "Ashanti")
+  expect_identical(r$data[["SEC Last Name"]][2], "Waters")
+  expect_identical(r$data[["Website"]][2], "www.paulrobesoncs.org")
+  expect_identical(kill_padformulas(r$data[["NCES ID"]][2]), "3400723")
+  expect_true(all(is.na(r$data[["X URL"]]) | r$data[["X URL"]] == ""))
+  expect_identical(ncol(h$data), 53L)
+  expect_identical(ncol(r$data), 53L)
 })
 
-test_that("malformed Homeroom is not hidden by a successful fallback", {
-  district <- suppressWarnings(.directory_source_result(
-    "district", request_fn = nj_directory_byte_request("robeson-malformed.csv")
-  ))
-  school <- .directory_source_result(
-    "school", request_fn = nj_directory_byte_request("school-slot-titles.csv")
-  )
-  local_mocked_bindings(
-    .directory_source_result = function(level) {
-      if (level == "district") district else school
-    },
-    .directory_spr_source_result = function() stop("fallback must not run"),
-    .package = "njschooldata"
-  )
-  failure <- tryCatch(fetch_directory(), error = identity)
-  expect_s3_class(failure, "directory_parse_error")
-  expect_match(conditionMessage(failure), "55 columns.*806025")
-  records <- failure$source_results
-  expect_identical(records$source_status, c("parse_error", "actual"))
-  expect_match(records$error[1], "55 columns.*806025")
+test_that("unknown overflow remains a structural error", {
+  result <- .directory_source_result("district", request_fn = function(url, dest, timeout) {
+    lines <- readLines(test_path("fixtures", "directory-source", "hainesport-malformed.csv"))
+    lines <- gsub("Procopio, Jr.", "Procopio, UNVERIFIED", lines, fixed = TRUE)
+    writeLines(lines, dest)
+    list(status_code = 200L, final_url = url, content_type = "text/csv")
+  })
+  expect_identical(result$source_status, "parse_error")
+  expect_null(result$data)
 })
 
 test_that("valid Homeroom rows preserve published roles and slot titles", {

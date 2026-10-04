@@ -1,3 +1,63 @@
+# Decode only two locally corroborated defect classes. No district IDs or
+# fixture values participate in production; every attempt examines fresh bytes.
+.directory_reconcile_overflow <- function(path, parsed, problems) {
+  lines <- readr::read_lines(path, locale = readr::locale(encoding = "Windows-1252"))
+  if (length(lines) != nrow(parsed) + 4L) return(NULL)
+  headers <- names(parsed)
+  if (length(headers) != 53L || !all(c("SEC Last Name", "Website", "NCES ID") %in% headers)) return(NULL)
+  aligned <- function(x) {
+    length(x) == 53L && identical(trimws(x[14]), "NJ") &&
+      identical(trimws(x[20]), "NJ") &&
+      grepl("^[0-9]{5}(-[0-9]{4})?$", kill_padformulas(x[15])) &&
+      grepl("^[0-9]{5}$", kill_padformulas(x[21])) &&
+      grepl("[0-9].*[0-9]", x[23]) && grepl("@", x[27], fixed = TRUE) &&
+      all(trimws(x[c(29, 33, 37, 41, 45)]) %in% c("", "Mr.", "Mrs.", "Ms.", "Dr.")) &&
+      grepl("^(www[.]|https?://)", x[49]) &&
+      grepl("^[0-9]{7}$", kill_padformulas(x[50]))
+  }
+  for (source_row in unique(problems$row)) {
+    idx <- source_row - 1L
+    x <- tryCatch(scan(text = lines[source_row + 3L], what = "", sep = ",",
+                       quote = '"', quiet = TRUE), error = function(e) NULL)
+    # scan removes CSV quote characters from Excel formula-style IDs. Restore
+    # that lexical wrapper so the existing native-ID parser receives the same
+    # values as readr on intact rows.
+    formula <- grepl("^=[0-9-]*$", x)
+    x[formula] <- paste0('="', substring(x[formula], 2L), '"')
+    candidates <- list()
+    if (length(x) == 54L) {
+      for (i in grep("Last Name$", headers)) {
+        suffix <- trimws(x[i + 1L])
+        combined <- paste0(x[i], ", ", suffix)
+        if (suffix %in% c("Jr.", "Sr.", "II", "III", "IV") && any(x == combined)) {
+          y <- x[-(i + 1L)]; y[i] <- combined
+          if (aligned(y)) candidates[[length(candidates) + 1L]] <- y
+        }
+      }
+    } else if (length(x) == 55L) {
+      # One empty overflow cell in each address block. Alternative removals
+      # are equivalent only when every resulting field is byte-identical after
+      # whitespace normalization. Never discard a populated address value.
+      for (i in 11:13) for (j in 17:20) {
+        if (!nzchar(trimws(x[i])) && !nzchar(trimws(x[j]))) {
+          y <- trimws(x[-c(i, j)])
+          if (aligned(y)) candidates[[length(candidates) + 1L]] <- y
+        }
+      }
+    }
+    candidates <- unique(candidates)
+    if (length(candidates) != 1L) return(NULL)
+    parsed[idx, ] <- as.list(candidates[[1L]])
+  }
+  attr(parsed, "problems") <- NULL
+  attr(parsed, "directory_reconstruction") <- paste0(
+    "Fresh CSV schema reconstruction: source line(s) ",
+    paste(unique(problems$row) + 3L, collapse = ", "),
+    "; repeated surname suffix or empty address overflow; all 53 fields retained."
+  )
+  parsed
+}
+
 # ==============================================================================
 # Directory Data Fetching Functions
 # ==============================================================================
@@ -54,13 +114,13 @@
   if (!identical(transport$source_status, "actual")) return(transport)
   on.exit(unlink(transport$data), add = TRUE)
   parsed <- tryCatch(
-    readr::read_csv(
+    suppressWarnings(readr::read_csv(
       transport$data,
       skip = 3,
       col_types = readr::cols(.default = readr::col_character()),
       locale = readr::locale(encoding = "Windows-1252"),
       show_col_types = FALSE
-    ),
+    )),
     error = identity
   )
   if (inherits(parsed, "error")) {
@@ -73,6 +133,13 @@
   # readr returns a table even when extra CSV fields shift every subsequent
   # personnel column. Such a table is not a usable source: never infer shifts.
   problems <- readr::problems(parsed)
+  if (nrow(problems) && level == "district") {
+    repaired <- .directory_reconcile_overflow(transport$data, parsed, problems)
+    if (!is.null(repaired)) {
+      parsed <- repaired
+      problems <- problems[0, , drop = FALSE]
+    }
+  }
   if (nrow(problems)) {
     names(parsed) <- janitor::make_clean_names(names(parsed))
     details <- vapply(seq_len(min(nrow(problems), 5L)), function(i) {
@@ -704,6 +771,10 @@ directory_live_acquire <- function() {
       "roles. Nonpublic schools (a separate Homeroom download) are not included."
     )
   )
+
+  repairs <- c(attr(district_result$data, "directory_reconstruction"),
+               attr(school_result$data, "directory_reconstruction"))
+  if (length(repairs)) coverage$notes <- paste(coverage$notes, paste(repairs, collapse = "; "))
 
   meta <- dc_build_meta(
     entities = entities,
