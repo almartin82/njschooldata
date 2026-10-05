@@ -5,6 +5,8 @@
 * Enrollment results retain official source bytes and provenance, select grade
   count columns without percentage rows, and preserve published English learner
   counts.
+* Enrollment cache entries now refetch when retained source bytes are missing or
+  changed, and grade-header drift fails loudly.
 
 ## One cache root, and a test suite that stays out of yours
 

@@ -134,6 +134,148 @@ test_that("enrollment retains exact source bytes and flat provenance", {
   expect_true("njsd_source_results" %in% names(attributes(uncached)))
 })
 
+test_that("processed enrollment cache refetches when retained source is missing", {
+  cache_root <- tempfile("nj-enrollment-cache-missing-source-")
+  dir.create(cache_root)
+  old_options <- options(njschooldata.cache_dir = cache_root)
+  on.exit(options(old_options), add = TRUE)
+  on.exit(unlink(cache_root, recursive = TRUE), add = TRUE)
+  njsd_cache_clear(reset_stats = TRUE)
+
+  requests <- 0L
+  request <- function(url, dest, timeout) {
+    requests <<- requests + 1L
+    file.copy(source_fixture("enrollment-2020.zip"), dest, overwrite = TRUE)
+    list(status_code = 200L, final_url = url, content_type = "application/zip")
+  }
+  local_mocked_bindings(
+    .default_source_request = request,
+    .package = "njschooldata"
+  )
+
+  first <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+  unlink(attr(first, "raw_path", exact = TRUE))
+
+  second <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+
+  expect_equal(requests, 2L)
+  expect_true(file.exists(attr(second, "raw_path", exact = TRUE)))
+  expect_identical(
+    attr(second, "raw_sha256", exact = TRUE),
+    digest::digest(
+      file = attr(second, "raw_path", exact = TRUE),
+      algo = "sha256", serialize = FALSE
+    )
+  )
+  expect_identical(
+    attr(second, "raw_sha256", exact = TRUE),
+    get_source_results(second)$digest[[1]]
+  )
+})
+
+test_that("processed enrollment cache refetches when retained source bytes change", {
+  cache_root <- tempfile("nj-enrollment-cache-changed-source-")
+  dir.create(cache_root)
+  old_options <- options(njschooldata.cache_dir = cache_root)
+  on.exit(options(old_options), add = TRUE)
+  on.exit(unlink(cache_root, recursive = TRUE), add = TRUE)
+  njsd_cache_clear(reset_stats = TRUE)
+
+  requests <- 0L
+  request <- function(url, dest, timeout) {
+    requests <<- requests + 1L
+    file.copy(source_fixture("enrollment-2020.zip"), dest, overwrite = TRUE)
+    list(status_code = 200L, final_url = url, content_type = "application/zip")
+  }
+  local_mocked_bindings(
+    .default_source_request = request,
+    .package = "njschooldata"
+  )
+
+  first <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+  raw_path <- attr(first, "raw_path", exact = TRUE)
+  bytes <- readBin(raw_path, what = "raw", n = file.info(raw_path)$size)
+  bytes[[1]] <- as.raw(bitwXor(as.integer(bytes[[1]]), 1L))
+  writeBin(bytes, raw_path)
+
+  second <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+
+  expect_equal(requests, 2L)
+  expect_identical(
+    attr(second, "raw_sha256", exact = TRUE),
+    digest::digest(file = raw_path, algo = "sha256", serialize = FALSE)
+  )
+  expect_identical(
+    attr(second, "raw_sha256", exact = TRUE),
+    get_source_results(second)$digest[[1]]
+  )
+})
+
+test_that("processed enrollment cache warm path reuses a valid source", {
+  cache_root <- tempfile("nj-enrollment-cache-warm-source-")
+  dir.create(cache_root)
+  old_options <- options(njschooldata.cache_dir = cache_root)
+  on.exit(options(old_options), add = TRUE)
+  on.exit(unlink(cache_root, recursive = TRUE), add = TRUE)
+  njsd_cache_clear(reset_stats = TRUE)
+
+  requests <- 0L
+  request <- function(url, dest, timeout) {
+    requests <<- requests + 1L
+    file.copy(source_fixture("enrollment-2020.zip"), dest, overwrite = TRUE)
+    list(status_code = 200L, final_url = url, content_type = "application/zip")
+  }
+  local_mocked_bindings(
+    .default_source_request = request,
+    .package = "njschooldata"
+  )
+
+  first <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+  second <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+
+  expect_equal(requests, 1L)
+  expect_identical(attributes(first), attributes(second))
+})
+
+test_that("renamed enrollment grade columns raise a typed schema error", {
+  work <- tempfile("nj-enrollment-grade-schema-")
+  dir.create(work)
+  on.exit(unlink(work, recursive = TRUE), add = TRUE)
+  utils::unzip(source_fixture("enrollment-2020.zip"), exdir = work)
+  workbook <- list.files(work, pattern = "[.]xlsx$", full.names = TRUE)[1]
+  district <- readxl::read_excel(
+    workbook, sheet = "District", skip = 2, .name_repair = "minimal"
+  )
+  headers <- names(.normalize_enr_headers(district))
+  headers[headers == "First Grade"] <- "Grade 1"
+
+  expect_error(
+    .enr_grade_count_columns(headers, end_year = 2020),
+    class = "njsd_enrollment_schema_error",
+    regexp = "Grade 1"
+  )
+})
+
+test_that("unknown non-percent enrollment columns inside the grade block fail", {
+  work <- tempfile("nj-enrollment-grade-block-")
+  dir.create(work)
+  on.exit(unlink(work, recursive = TRUE), add = TRUE)
+  utils::unzip(source_fixture("enrollment-2020.zip"), exdir = work)
+  workbook <- list.files(work, pattern = "[.]xlsx$", full.names = TRUE)[1]
+  district <- readxl::read_excel(
+    workbook, sheet = "District", skip = 2, .name_repair = "minimal"
+  )
+  headers <- names(.normalize_enr_headers(district))
+  second_grade <- match("Second Grade", headers)
+  headers <- append(headers, "Unexpected Grade Metric", after = second_grade - 1L)
+
+  expect_error(
+    .enr_grade_count_columns(headers, end_year = 2020),
+    class = "njsd_enrollment_schema_error",
+    regexp = "Unexpected Grade Metric"
+  )
+})
+
 test_that("enrollment parser never turns percentage columns into grade rows", {
   result <- get_raw_enr_result(
     2020,

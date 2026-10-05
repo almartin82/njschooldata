@@ -735,6 +735,27 @@ test_that("2025-26 tidy enrollment contains only grade count rows", {
 })
 
 
+test_that("2020-26 tidy enrollment row counts remain complete", {
+  expected <- c(
+    `2020` = 95338L,
+    `2021` = 95555L,
+    `2022` = 95405L,
+    `2023` = 95585L,
+    `2024` = 92221L,
+    `2025` = 92134L,
+    `2026` = 91989L
+  )
+  actual <- vapply(
+    names(expected),
+    function(year) nrow(fetch_enr(as.integer(year), tidy = TRUE, use_cache = FALSE)),
+    integer(1)
+  )
+  names(actual) <- names(expected)
+
+  expect_identical(actual, expected)
+})
+
+
 test_that("English learner labels follow the published workbook grain", {
   for (end_year in 2020:2026) {
     enr <- fetch_enr(end_year, tidy = TRUE, use_cache = FALSE)

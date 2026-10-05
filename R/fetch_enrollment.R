@@ -58,16 +58,80 @@ enr_pct_published_value <- function(x) {
     )
 }
 
-.enr_grade_count_columns <- function(column_names) {
+.enr_grade_count_names <- function(end_year = NULL) {
   grade_names <- c(
     "Pre-K Halfday", "Pre-K Fullday",
     "Kindergarten Halfday", "Kindergarten Fullday",
     "First Grade", "Second Grade", "Third Grade", "Fourth Grade",
     "Fifth Grade", "Sixth Grade", "Seventh Grade", "Eighth Grade",
-    "Ninth Grade", "Tenth Grade", "Eleventh Grade", "Twelfth Grade",
-    "Ungraded"
+    "Ninth Grade", "Tenth Grade", "Eleventh Grade", "Twelfth Grade"
   )
-  intersect(grade_names, column_names)
+  # Retained 2020-2026 District headers show every listed
+  # count column in every year. `Ungraded` is present through 2023 and absent
+  # in 2024-2026. The 2022-2023 spelling `Eight Grade` is normalized before
+  # this check; percentage companions are interleaved from 2024 onward.
+  if (is.null(end_year) || as.integer(end_year)[1] <= 2023L) {
+    c(grade_names, "Ungraded")
+  } else {
+    grade_names
+  }
+}
+
+.enr_schema_error <- function(missing, unexpected, end_year) {
+  details <- character()
+  if (length(missing)) {
+    details <- c(
+      details,
+      paste0("missing expected grade columns: ", paste(missing, collapse = ", "))
+    )
+  }
+  if (length(unexpected)) {
+    details <- c(
+      details,
+      paste0(
+        "unrecognised column(s) inside grade block: ",
+        paste(unexpected, collapse = ", ")
+      )
+    )
+  }
+  condition <- structure(
+    list(
+      message = paste0(
+        "Enrollment grade schema for ", end_year, " has ",
+        paste(details, collapse = "; "), "."
+      ),
+      call = NULL,
+      missing_columns = missing,
+      unexpected_columns = unexpected,
+      end_year = end_year
+    ),
+    class = c(
+      "njsd_enrollment_schema_error", "njsd_parse_error", "error", "condition"
+    )
+  )
+  stop(condition)
+}
+
+.enr_grade_count_columns <- function(column_names, end_year = NULL) {
+  grade_names <- .enr_grade_count_names(end_year)
+  missing <- setdiff(grade_names, column_names)
+  recognized <- intersect(grade_names, column_names)
+  unexpected <- character()
+
+  if (length(recognized)) {
+    positions <- match(recognized, column_names)
+    block <- column_names[seq.int(min(positions), max(positions))]
+    unexpected <- setdiff(
+      block,
+      c(grade_names, block[grepl("^%", block)])
+    )
+  }
+
+  if (length(missing) || length(unexpected)) {
+    .enr_schema_error(missing, unexpected, end_year %||% "unknown")
+  }
+
+  recognized
 }
 
 .enr_source_vintage <- function(end_year) {
@@ -86,7 +150,9 @@ enr_pct_published_value <- function(x) {
   dir.create(raw_dir, recursive = TRUE, showWarnings = FALSE)
   raw_path <- .enr_raw_cache_path(end_year, result$digest)
 
-  if (!file.exists(raw_path)) {
+  if (!file.exists(raw_path) ||
+      !identical(.source_digest(raw_path), result$digest)) {
+    if (file.exists(raw_path)) unlink(raw_path)
     moved <- file.rename(result$data, raw_path)
     if (!moved && !file.copy(result$data, raw_path, overwrite = FALSE) &&
         !file.exists(raw_path)) {
@@ -99,6 +165,25 @@ enr_pct_published_value <- function(x) {
   }
   .release_source_result(result)
   normalizePath(raw_path, mustWork = TRUE)
+}
+
+.enr_cached_source_is_valid <- function(data, end_year) {
+  records <- get_source_results(data)
+  if (!nrow(records)) return(FALSE)
+
+  digest <- as.character(records$digest[[1]])
+  if (length(digest) != 1L || is.na(digest) ||
+      !grepl("^[0-9a-f]{64}$", digest)) {
+    return(FALSE)
+  }
+
+  raw_path <- .enr_raw_cache_path(end_year, digest)
+  if (!file.exists(raw_path)) return(FALSE)
+
+  isTRUE(tryCatch(
+    identical(.source_digest(raw_path), digest),
+    error = function(error) FALSE
+  ))
 }
 
 .attach_enr_contract <- function(data, end_year, source_result = NULL) {
@@ -119,9 +204,19 @@ enr_pct_published_value <- function(x) {
     source_mode <- "live"
   }
 
+  raw_sha256 <- as.character(raw_sha256)[1]
+  if (!file.exists(raw_path) ||
+      !isTRUE(tryCatch(
+        identical(.source_digest(raw_path), raw_sha256),
+        error = function(error) FALSE
+      ))) {
+    stop("Enrollment source bytes are missing or do not match their digest.",
+         call. = FALSE)
+  }
+
   raw_path <- normalizePath(raw_path, mustWork = TRUE)
   attr(data, "raw_path") <- raw_path
-  attr(data, "raw_sha256") <- as.character(raw_sha256)[1]
+  attr(data, "raw_sha256") <- raw_sha256
   attr(data, "source_url") <- as.character(source_url)[1]
   attr(data, "source_mode") <- as.character(source_mode %||% "live")[1]
   attr(data, "source_vintage") <- .enr_source_vintage(end_year)
@@ -240,7 +335,7 @@ enr_pct_published_value <- function(x) {
       # Select only the named enrollment count columns. Percentage columns are
       # interleaved with these columns in recent NJ DOE workbooks.
       all_cols <- names(enr_dist_sch)
-      grade_cols <- .enr_grade_count_columns(all_cols)
+      grade_cols <- .enr_grade_count_columns(all_cols, end_year)
 
       enr <- enr_dist_sch %>%
         dplyr::select(
@@ -409,8 +504,11 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
     key <- make_cache_key("fetch_enr", end_year = end_year, tidy = tidy)
     cached <- cache_get(key)
     if (!is.null(cached)) {
-      message("Using cached enrollment data.")
-      return(.attach_enr_contract(cached, end_year))
+      if (.enr_cached_source_is_valid(cached, end_year)) {
+        message("Using cached enrollment data.")
+        return(.attach_enr_contract(cached, end_year))
+      }
+      message("Cached enrollment data has no matching retained source; refetching.")
     }
   }
 
