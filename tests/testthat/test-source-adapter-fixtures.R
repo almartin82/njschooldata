@@ -82,6 +82,68 @@ test_that("a 2020 censored percentage is reported as unknown, not as a value", {
   expect_false(0 %in% pick("free_reduced_lunch", "n_students"))
 })
 
+test_that("enrollment retains exact source bytes and flat provenance", {
+  cache_root <- tempfile("nj-enrollment-contract-")
+  dir.create(cache_root)
+  old_options <- options(njschooldata.cache_dir = cache_root)
+  on.exit(options(old_options), add = TRUE)
+  on.exit(unlink(cache_root, recursive = TRUE), add = TRUE)
+  njsd_cache_clear()
+
+  local_mocked_bindings(
+    .default_source_request = fixture_request(
+      "enrollment-2020.zip", "application/zip"
+    ),
+    .package = "njschooldata"
+  )
+
+  uncached <- fetch_enr(2020, tidy = TRUE, use_cache = FALSE)
+  cached <- fetch_enr(2020, tidy = TRUE, use_cache = TRUE)
+
+  check_contract <- function(data) {
+    raw_path <- attr(data, "raw_path", exact = TRUE)
+    raw_sha256 <- attr(data, "raw_sha256", exact = TRUE)
+    source_url <- attr(data, "source_url", exact = TRUE)
+    source_mode <- attr(data, "source_mode", exact = TRUE)
+    source_vintage <- attr(data, "source_vintage", exact = TRUE)
+    official_source <- attr(data, "official_source", exact = TRUE)
+
+    expect_type(raw_path, "character")
+    expect_length(raw_path, 1L)
+    expect_true(file.exists(raw_path))
+    expect_identical(raw_path, normalizePath(raw_path, mustWork = TRUE))
+    expect_type(raw_sha256, "character")
+    expect_match(raw_sha256, "^[0-9a-f]{64}$")
+    expect_identical(
+      raw_sha256,
+      digest::digest(file = raw_path, algo = "sha256", serialize = FALSE)
+    )
+    expect_match(source_url, "^https://")
+    expect_identical(source_mode, "live")
+    expect_identical(source_vintage, "2019-20")
+    expect_type(official_source, "logical")
+    expect_length(official_source, 1L)
+    expect_true(isTRUE(official_source))
+    expect_identical(get_source_results(data)$source_status, "actual")
+
+    c(raw_path, raw_sha256, source_url, source_mode, source_vintage,
+      as.character(official_source))
+  }
+
+  expect_identical(check_contract(uncached), check_contract(cached))
+  expect_true("njsd_source_results" %in% names(attributes(uncached)))
+})
+
+test_that("enrollment parser never turns percentage columns into grade rows", {
+  result <- get_raw_enr_result(
+    2020,
+    request_fn = fixture_request("enrollment-2020.zip", "application/zip")
+  )
+
+  expect_identical(result$source_status, "actual")
+  expect_false(any(grepl("^%", as.character(result$data$Grade))))
+})
+
 test_that("assessment fixture exercises the real workbook parser", {
   result <- get_raw_sla_result(
     2025, 4, "ela",

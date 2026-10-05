@@ -726,6 +726,55 @@ test_that("2025-26 enrollment data fetches correctly", {
 })
 
 
+test_that("2025-26 tidy enrollment contains only grade count rows", {
+  enr_2026 <- fetch_enr(2026, tidy = TRUE, use_cache = FALSE)
+
+  expect_false(anyNA(enr_2026$grade_level))
+  raw <- .parse_enr_archive(attr(enr_2026, "raw_path", exact = TRUE), 2026)
+  expect_false(any(grepl("^%", as.character(raw$Grade))))
+})
+
+
+test_that("English learner labels follow the published workbook grain", {
+  for (end_year in 2020:2026) {
+    enr <- fetch_enr(end_year, tidy = TRUE, use_cache = FALSE)
+    princeton <- enr %>% filter(
+      district_id == "4255",
+      school_id == "999",
+      grade_level == "TOTAL",
+      subgroup == "lep"
+    )
+    expect_length(princeton$n_students, 1L, info = as.character(end_year))
+
+    archive <- attr(enr, "raw_path", exact = TRUE)
+    work <- tempfile("nj-ell-columns-")
+    dir.create(work)
+    on.exit(unlink(work, recursive = TRUE), add = TRUE)
+    workbook <- utils::unzip(archive, exdir = work)[1]
+    district <- readxl::read_excel(workbook, sheet = "District", skip = 2)
+    cols <- ell_locate_cols(names(district))
+    has_published_count <- !is.na(cols$count)
+
+    expect_identical(
+      unique(princeton$value_source),
+      if (has_published_count) "published" else "derived_from_pct",
+      info = as.character(end_year)
+    )
+    if (has_published_count) {
+      source_row <- district[as.character(district[["District Code"]]) == "4255", , drop = FALSE]
+      expect_length(source_row[[cols$count]], 1L, info = as.character(end_year))
+      expect_equal(
+        princeton$n_students,
+        as.numeric(source_row[[cols$count]]),
+        info = as.character(end_year)
+      )
+    } else {
+      expect_false(is.na(princeton$n_students))
+    }
+  }
+})
+
+
 test_that("2023-24 enrollment data fetches correctly", {
   enr_2024 <- fetch_enr(2024, tidy = TRUE)
 

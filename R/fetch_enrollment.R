@@ -58,6 +58,77 @@ enr_pct_published_value <- function(x) {
     )
 }
 
+.enr_grade_count_columns <- function(column_names) {
+  grade_names <- c(
+    "Pre-K Halfday", "Pre-K Fullday",
+    "Kindergarten Halfday", "Kindergarten Fullday",
+    "First Grade", "Second Grade", "Third Grade", "Fourth Grade",
+    "Fifth Grade", "Sixth Grade", "Seventh Grade", "Eighth Grade",
+    "Ninth Grade", "Tenth Grade", "Eleventh Grade", "Twelfth Grade",
+    "Ungraded"
+  )
+  intersect(grade_names, column_names)
+}
+
+.enr_source_vintage <- function(end_year) {
+  paste0(end_year - 1L, "-", sprintf("%02d", end_year %% 100L))
+}
+
+.enr_raw_cache_path <- function(end_year, digest) {
+  file.path(
+    njsd_cache_root(), "enrollment-sources",
+    paste0("enrollment-", end_year, "-", digest, ".zip")
+  )
+}
+
+.retain_enr_source <- function(result, end_year) {
+  raw_dir <- file.path(njsd_cache_root(), "enrollment-sources")
+  dir.create(raw_dir, recursive = TRUE, showWarnings = FALSE)
+  raw_path <- .enr_raw_cache_path(end_year, result$digest)
+
+  if (!file.exists(raw_path)) {
+    moved <- file.rename(result$data, raw_path)
+    if (!moved && !file.copy(result$data, raw_path, overwrite = FALSE) &&
+        !file.exists(raw_path)) {
+      stop("Validated enrollment source could not be retained.", call. = FALSE)
+    }
+  }
+
+  if (!identical(.source_digest(raw_path), result$digest)) {
+    stop("Retained enrollment source digest differs from the download.", call. = FALSE)
+  }
+  .release_source_result(result)
+  normalizePath(raw_path, mustWork = TRUE)
+}
+
+.attach_enr_contract <- function(data, end_year, source_result = NULL) {
+  records <- get_source_results(data)
+  if (inherits(source_result, "njsd_source_result")) {
+    raw_path <- source_result$raw_path
+    raw_sha256 <- source_result$digest
+    source_url <- source_result$source_url
+    source_mode <- source_result$source_mode
+  } else {
+    if (!nrow(records)) {
+      stop("Enrollment data has no source provenance record.", call. = FALSE)
+    }
+    record <- records[1, , drop = FALSE]
+    raw_sha256 <- record$digest[[1]]
+    raw_path <- .enr_raw_cache_path(end_year, raw_sha256)
+    source_url <- record$source_url[[1]]
+    source_mode <- "live"
+  }
+
+  raw_path <- normalizePath(raw_path, mustWork = TRUE)
+  attr(data, "raw_path") <- raw_path
+  attr(data, "raw_sha256") <- as.character(raw_sha256)[1]
+  attr(data, "source_url") <- as.character(source_url)[1]
+  attr(data, "source_mode") <- as.character(source_mode %||% "live")[1]
+  attr(data, "source_vintage") <- .enr_source_vintage(end_year)
+  attr(data, "official_source") <- TRUE
+  data
+}
+
 
 #' Parse a validated zipped fall enrollment artifact
 #'
@@ -127,19 +198,14 @@ enr_pct_published_value <- function(x) {
       # pivoting grade level columns long
       enr_dist_sch <- dplyr::bind_rows(enr_dist, enr_sch)
 
-      # Populations in this block are published only as percentages, so the
-      # count is derived as pct / 100 * Total Enrollment. A companion
-      # "<field> Value Source" column records the derivation per row so it
-      # can survive into `fetch_enr()`'s wide output and `tidy_enr()`'s long
-      # pivot (see get_enr_column_order() and tidy_enr()): "derived_from_pct"
-      # where the arithmetic produced a real number, "published_pct_only"
-      # where it did not (see the censoring note below). This label does NOT
-      # change for lep/English Learners after 2023 even though NJ DOE starts
-      # publishing a real Multilingual Learners headcount that year -- this
-      # pipeline keeps computing the pct-derived value for its
-      # demographic-share workflow regardless (see CLAUDE.md "Source-pipeline
-      # trap" under English Learners); `fetch_ell()` is the function that
-      # reads the real published count instead of this derived one.
+      # Percentage columns are used to derive counts when the corresponding
+      # count is not published. A companion "<field> Value Source" column
+      # records the result per row so it can survive into `fetch_enr()`'s wide
+      # output and `tidy_enr()`'s long pivot (see get_enr_column_order() and
+      # tidy_enr()): "derived_from_pct" where the arithmetic produced a real
+      # number, "published_pct_only" where it did not, and "published" where
+      # the workbook also carries the count column. English Learners uses the
+      # published count when the workbook provides it.
       #
       # NJ DOE censors a percentage above 95 as the token ">95" rather than a
       # value. A censored cell is UNKNOWN. It stays NA, and the count derived
@@ -159,26 +225,22 @@ enr_pct_published_value <- function(x) {
         # same way as its sibling raw columns (eg "Free Lunch Value Source").
         source_col <- paste0(count_col, " Value Source")
 
-        enr_dist_sch[[count_col]] <-
-          enr_pct_published_value(enr_dist_sch[[pct_col]]) / 100 *
-          enr_dist_sch[["Total Enrollment"]]
-        enr_dist_sch[[source_col]] <- ifelse(
-          is.na(enr_dist_sch[[count_col]]), "published_pct_only", "derived_from_pct"
-        )
+        if (count_col == "English Learners" && count_col %in% names(enr_dist_sch)) {
+          enr_dist_sch[[source_col]] <- "published"
+        } else {
+          enr_dist_sch[[count_col]] <-
+            enr_pct_published_value(enr_dist_sch[[pct_col]]) / 100 *
+            enr_dist_sch[["Total Enrollment"]]
+          enr_dist_sch[[source_col]] <- ifelse(
+            is.na(enr_dist_sch[[count_col]]), "published_pct_only", "derived_from_pct"
+          )
+        }
       }
 
-      # Determine the last grade column (Ungraded removed in 2024+)
-      last_grade_col <- if ("Ungraded" %in% names(enr_dist_sch)) {
-        "Ungraded"
-      } else {
-        "Twelfth Grade"
-      }
-
-      # Get grade columns dynamically
+      # Select only the named enrollment count columns. Percentage columns are
+      # interleaved with these columns in recent NJ DOE workbooks.
       all_cols <- names(enr_dist_sch)
-      start_idx <- which(all_cols == "Pre-K Halfday")
-      end_idx <- which(all_cols == last_grade_col)
-      grade_cols <- all_cols[start_idx:end_idx]
+      grade_cols <- .enr_grade_count_columns(all_cols)
 
       enr <- enr_dist_sch %>%
         dplyr::select(
@@ -268,7 +330,7 @@ get_raw_enr_result <- function(end_year, request_fn = .default_source_request) {
   transport <- .download_enrollment_source(end_year, request_fn)
   if (!identical(transport$source_status, "actual")) return(transport)
 
-  on.exit(unlink(transport$data), add = TRUE)
+  on.exit(.release_source_result(transport), add = TRUE)
   parsed <- tryCatch(
     .parse_enr_archive(transport$data, end_year),
     error = identity
@@ -282,13 +344,19 @@ get_raw_enr_result <- function(end_year, request_fn = .default_source_request) {
       error = conditionMessage(parsed)
     ))
   }
-  new_source_result(
+  raw_path <- .retain_enr_source(transport, end_year)
+  result <- new_source_result(
     data = parsed,
     source_status = "actual",
     source_url = transport$source_url,
     retrieved_at = transport$retrieved_at,
     digest = transport$digest
   )
+  result$raw_path <- raw_path
+  result$source_mode <- "live"
+  result$source_vintage <- .enr_source_vintage(end_year)
+  result$official_source <- TRUE
+  result
 }
 
 #' Read a zipped Excel fall enrollment file from the NJ state website
@@ -314,10 +382,12 @@ get_raw_enr <- function(end_year) {
 #' @param use_cache If TRUE, uses the session cache to avoid re-downloading data.
 #' See \code{\link{njsd_cache_info}} for cache details.
 #' @return Data frame with processed enrollment data. From 2020+ files,
-#' `free_lunch`/`reduced_lunch`/`lep`/`migrant`/`homeless` are computed as
+#' `free_lunch`/`reduced_lunch`/`migrant`/`homeless` are computed as
 #' `pct / 100 * row_total` from NJ DOE's published percentage and this
 #' entity/year's own published total enrollment (never rounded to a whole
-#' student); `tidy = TRUE` output carries a `value_source` column
+#' student). For English Learners, a published count is preserved when the
+#' workbook provides one; otherwise the published percentage is used in the
+#' same calculation. `tidy = TRUE` output carries a `value_source` column
 #' (`"published"`, `"derived_from_pct"`, or `"published_pct_only"`; see
 #' \code{\link{tidy_enr}}) and `tidy = FALSE` wide output carries the same
 #' provenance per field as `<field>_value_source` (eg `lep_value_source`).
@@ -340,7 +410,7 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
     cached <- cache_get(key)
     if (!is.null(cached)) {
       message("Using cached enrollment data.")
-      return(cached)
+      return(.attach_enr_contract(cached, end_year))
     }
   }
 
@@ -365,5 +435,5 @@ fetch_enr <- function(end_year, tidy = FALSE, use_cache = FALSE) {
     cache_set(key, enr_data)
   }
 
-  enr_data
+  .attach_enr_contract(enr_data, end_year, source_result)
 }

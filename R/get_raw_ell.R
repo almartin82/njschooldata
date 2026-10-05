@@ -3,11 +3,10 @@
 # ==============================================================================
 #
 # Source: NJ DOE Fall Enrollment files (nj.gov/education/doedata/enr/).
-# Every NJ enrollment workbook reports an English Learner / Multilingual Learner
-# headcount alongside total enrollment. This module pulls the REAL published
-# EL headcount — it deliberately does NOT reuse the derived EL value that
-# `get_raw_enr()` computes for 2020+ (that pipeline overwrites the published
-# count with `pct * total` for its demographic-share workflow).
+# NJ enrollment workbooks report English Learner / Multilingual Learner data
+# alongside total enrollment. This module pulls the published EL headcount
+# where the workbook provides one. It does not reuse the derived EL value that
+# `get_raw_enr()` computes for percent-only 2020+ district and school rows.
 #
 # Data-integrity notes (verified against the published files, 2026-06):
 #   * 2006-2019: a real `LEP` count column at state/district/school level.
@@ -216,7 +215,7 @@ get_raw_ell_result <- function(end_year,
   } else {
     transport <- .download_enrollment_source(end_year, request_fn)
     if (!identical(transport$source_status, "actual")) return(transport)
-    on.exit(unlink(transport$data), add = TRUE)
+    on.exit(.release_source_result(transport), add = TRUE)
     parsed <- tryCatch(
       .parse_modern_ell_archive(transport$data, end_year),
       error = identity

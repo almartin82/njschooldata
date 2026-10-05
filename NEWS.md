@@ -1,5 +1,11 @@
 # njschooldata (development)
 
+## njschooldata 0.9.27
+
+* Enrollment results retain official source bytes and provenance, select grade
+  count columns without percentage rows, and preserve published English learner
+  counts.
+
 ## One cache root, and a test suite that stays out of yours
 
 * Every on-disk cache -- SPR workbooks, SPED placement workbooks, and the

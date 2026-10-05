@@ -547,18 +547,5 @@ with_cache <- function(fn, fn_name) {
 #' njsd_cache_info()
 #' }
 fetch_enr_cached <- function(end_year, tidy = FALSE) {
-  key <- make_cache_key("fetch_enr", end_year = end_year, tidy = tidy)
-
-  cached <- cache_get(key)
-  if (!is.null(cached)) {
-    message("Using cached enrollment data.")
-    return(cached)
-  }
-
-  # Fetch fresh
-  result <- fetch_enr(end_year, tidy)
-
-  # Cache and return
-  cache_set(key, result)
-  result
+  fetch_enr(end_year, tidy = tidy, use_cache = TRUE)
 }
