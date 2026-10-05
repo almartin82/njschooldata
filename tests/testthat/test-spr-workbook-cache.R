@@ -73,7 +73,9 @@ test_that("disk caching can be disabled via option", {
   )
   on.exit(options(old), add = TRUE)
 
-  path <- njschooldata:::spr_cached_workbook(2020, "district")
+  result <- njschooldata:::spr_cached_workbook_result(2020, "district")
+  on.exit(njschooldata:::.release_source_result(result), add = TRUE)
+  path <- njschooldata:::source_result_data(result)
   expect_true(file.exists(path))
   # Nothing is written to the cache directory when caching is off.
   expect_length(

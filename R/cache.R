@@ -10,9 +10,10 @@
 #     is a plain list in a package environment, keyed by function name plus an
 #     md5 of the arguments (`make_cache_key()`). It has no schema version, no
 #     source identity, no on-disk persistence and no eviction policy, because it
-#     does not need one: it dies with the R session, and a changed parser cannot
-#     be loaded without starting a new one. There is no warm entry for a parser
-#     edit to keep serving.
+#     does not need one: it dies with the R session, and expires when the R
+#     session ends. Start a fresh session after a parser repair, including
+#     dependent ELL scaffold consumers; reloading only functions into a running
+#     session can retain obsolete parsed entries.
 #  2. `njsd_workbook_cache_dir()` persists SPR workbooks to disk, but those are
 #     the RAW downloaded bytes, not parsed output. A parser change does not
 #     invalidate a source parent, and re-downloading a frozen release to run new
@@ -22,8 +23,9 @@
 # So njschooldata has no schema-versioned cache families at all, and the
 # "bump schema_version when a parser moves" half of the parser-divergence rule
 # has nothing here to attach to. The re-acquisition half still binds: change a
-# download URL or endpoint and the workbook cache must be re-acquired and the
-# bytes compared.
+# download URL or endpoint and the workbook cache reports an identity miss.
+# Explicit retained-source adoption or separately authorized acquisition is
+# required; a historical cache miss never grants permission to contact DOE.
 #
 # No code hash is folded into any cache key either: `make_cache_key()` hashes
 # only the call arguments. A parser edit on a cached family therefore has to
@@ -331,7 +333,9 @@ njsd_cache_root <- function() {
 # -- or rerunning in a fresh session -- used to re-download the entire file.
 # This disk cache stores the downloaded workbook itself, keyed by year + level,
 # so a workbook is fetched from NJ DOE at most once and reused across calls and
-# across sessions.
+# across sessions. Acquisition metadata lives beside each workbook in a
+# .source.rds sidecar; legacy entries remain intact and require explicit repair
+# instead of receiving an invented acquisition time or a new URL identity.
 
 #' Directory holding cached SPR workbooks
 #'
@@ -414,7 +418,13 @@ spr_cached_workbook_result <- function(end_year, level,
 }
 
 spr_cached_workbook <- function(end_year, level) {
-  source_result_data(spr_cached_workbook_result(end_year, level))
+  result <- spr_cached_workbook_result(end_year, level)
+  if (is.function(result$release)) {
+    on.exit(.release_source_result(result), add = TRUE)
+    stop("Owned workbook callers must retain and release the source result.",
+         call. = FALSE)
+  }
+  source_result_data(result)
 }
 
 #' Inspect the on-disk SPR workbook cache
@@ -468,8 +478,9 @@ njsd_workbook_cache_clear <- function(end_year = NULL) {
     sprintf("_%d\\.xlsx$", end_year)
   }
   files <- list.files(cache_dir, pattern = pattern, full.names = TRUE)
+  files <- files[!dir.exists(paste0(files, ".acquiring"))]
   bytes <- if (length(files) > 0) sum(file.info(files)$size) else 0
-  unlink(files)
+  unlink(c(files, paste0(files, ".source.rds")))
   message(sprintf(
     "Removed %d cached SPR workbook(s) (%.1f MB).",
     length(files), bytes / 1024 / 1024

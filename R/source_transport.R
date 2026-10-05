@@ -197,6 +197,40 @@
   )
 }
 
+# Explicit maintainer adoption of verified retained bytes; never performs a
+# request. The expected digest must come from the retained-source evidence.
+# Unknown original acquisition time remains NULL, not file mtime or adoption time.
+.adopt_source_cache <- function(cache_path, url, source_type, expected_digest,
+                                retrieved_at = NULL, final_url = url) {
+  .validate_source_url(url, source_host_allowlist())
+  .validate_source_url(final_url, source_host_allowlist(), redirect = TRUE)
+  .validate_source_file(cache_path, source_type)
+  if (!identical(.source_digest(cache_path), expected_digest)) {
+    stop("Retained source digest does not match adoption evidence.", call. = FALSE)
+  }
+  if (!is.null(retrieved_at) &&
+      (!inherits(retrieved_at, "POSIXct") || length(retrieved_at) != 1L ||
+       !is.finite(as.numeric(retrieved_at)))) {
+    stop("Acquisition time must be a recorded POSIXct or NULL.", call. = FALSE)
+  }
+  lock_path <- paste0(cache_path, ".acquiring")
+  if (!dir.create(lock_path, showWarnings = FALSE)) {
+    stop("Source cache acquisition is already active.", call. = FALSE)
+  }
+  on.exit(unlink(lock_path, recursive = TRUE), add = TRUE)
+  metadata <- list(version = 1L, requested_url = url, final_url = final_url,
+                   source_type = source_type, retrieved_at = retrieved_at,
+                   clock = if (is.null(retrieved_at)) "unknown" else "recorded",
+                   size = as.numeric(file.info(cache_path)$size), digest = expected_digest)
+  path <- tempfile(".njsd-adoption-", tmpdir = dirname(cache_path))
+  on.exit(unlink(path), add = TRUE)
+  saveRDS(metadata, path)
+  if (!file.rename(path, paste0(cache_path, ".source.rds"))) {
+    stop("Retained source metadata could not be atomically promoted.", call. = FALSE)
+  }
+  invisible(metadata)
+}
+
 #' Download and validate a registered NJ DOE source
 #'
 #' Downloads are written to a temporary file, validated, and then atomically
@@ -239,29 +273,68 @@ download_source <- function(url, source_type, cache_path = NULL,
     return(.source_failure("source_unavailable", url, initial_check))
   }
 
+  metadata_path <- if (!is.null(cache_path)) paste0(cache_path, ".source.rds") else NULL
   if (!is.null(cache_path) && file.exists(cache_path)) {
-    cache_check <- tryCatch(
-      {
-        .validate_source_file(cache_path, source_type)
-        NULL
-      },
-      error = identity
-    )
-    if (is.null(cache_check)) {
-      return(new_source_result(
-        data = cache_path,
-        source_status = "actual",
-        source_url = url,
-        retrieved_at = as.POSIXct(file.info(cache_path)$mtime, tz = "UTC"),
-        digest = .source_digest(cache_path),
-        warning = "Validated cache artifact reused."
-      ))
+    # Legacy or changed-source entries remain intact. A cache miss is not
+    # permission to reacquire historical DOE bytes or invent their clock.
+    metadata <- if (file.exists(metadata_path)) {
+      tryCatch(readRDS(metadata_path), error = function(e) NULL)
+    } else NULL
+    valid_metadata <- is.list(metadata) && identical(metadata$version, 1L) &&
+      identical(metadata$requested_url, url) &&
+      identical(metadata$source_type, source_type) &&
+      is.character(metadata$final_url) && length(metadata$final_url) == 1L &&
+      ((identical(metadata$clock, "unknown") && is.null(metadata$retrieved_at)) ||
+       (identical(metadata$clock, "recorded") &&
+        inherits(metadata$retrieved_at, "POSIXct") && length(metadata$retrieved_at) == 1L &&
+        is.finite(as.numeric(metadata$retrieved_at)))) && is.numeric(metadata$size) &&
+      length(metadata$size) == 1L && is.character(metadata$digest) &&
+      length(metadata$digest) == 1L
+    if (!isTRUE(valid_metadata)) {
+      return(.source_failure("source_unavailable", url, simpleError(
+        "Cached source identity is missing or differs; explicit source repair is required."
+      )))
     }
-    unlink(cache_path)
+    cache_check <- tryCatch({
+      .validate_source_url(metadata$final_url, allowed_hosts,
+                           allow_http = allow_http, redirect = TRUE)
+      .validate_source_file(cache_path, source_type)
+      if (!identical(as.numeric(file.info(cache_path)$size), metadata$size) ||
+          !identical(.source_digest(cache_path), metadata$digest)) {
+        stop("Cached source length or digest differs from acquisition metadata.")
+      }
+      NULL
+    }, error = identity)
+    if (inherits(cache_check, "error")) {
+      return(.source_failure("parse_error", url, cache_check))
+    }
+    result <- new_source_result(
+      data = cache_path, source_status = "actual",
+      source_url = metadata$final_url, retrieved_at = metadata$retrieved_at,
+      digest = metadata$digest, warning = "Validated cache artifact reused."
+    )
+    result$verified_at <- Sys.time()
+    result$requested_url <- metadata$requested_url
+    result$ownership <- "persistent"
+    return(result)
   }
 
   target_dir <- if (is.null(cache_path)) tempdir() else dirname(cache_path)
   if (!dir.exists(target_dir)) dir.create(target_dir, recursive = TRUE)
+  if (!is.null(cache_path)) {
+    lock_path <- paste0(cache_path, ".acquiring")
+    if (!dir.create(lock_path, showWarnings = FALSE)) {
+      return(.source_failure("source_unavailable", url, simpleError(
+        "Source cache acquisition is already active; retry after its owner exits."
+      )))
+    }
+    on.exit(unlink(lock_path, recursive = TRUE), add = TRUE)
+    # Another publisher may have completed between the initial lookup and lock.
+    if (file.exists(cache_path)) {
+      return(download_source(url, source_type, cache_path, timeout, retries,
+                             allowed_hosts, allow_http, request_fn, sleep_fn))
+    }
+  }
   temporary <- tempfile(
     pattern = ".njsd-download-", tmpdir = target_dir,
     fileext = paste0(".", source_type)
@@ -332,35 +405,31 @@ download_source <- function(url, source_type, cache_path = NULL,
   digest <- .source_digest(temporary)
   if (!is.null(cache_path)) {
     if (!file.rename(temporary, cache_path)) {
-      cache_check <- tryCatch(
-        {
-          .validate_source_file(cache_path, source_type)
-          NULL
-        },
-        error = identity
-      )
-      if (inherits(cache_check, "error")) {
-        return(.source_failure(
-          "source_unavailable", url,
-          simpleError(
-            "Validated artifact could not be atomically promoted to cache."
-          ),
-          retrieved_at
-        ))
-      }
-      digest <- .source_digest(cache_path)
-      cache_warning <- "Validated cache artifact created concurrently was reused."
-    } else {
-      cache_warning <- NULL
+      return(.source_failure("source_unavailable", url, simpleError(
+        "Validated artifact could not be atomically promoted to cache."
+      ), retrieved_at))
     }
+    metadata <- list(
+      version = 1L, requested_url = url, final_url = final_url,
+      source_type = source_type, retrieved_at = retrieved_at, clock = "recorded",
+      size = as.numeric(file.info(cache_path)$size), digest = digest
+    )
+    metadata_temp <- tempfile(".njsd-metadata-", tmpdir = target_dir)
+    on.exit(unlink(metadata_temp), add = TRUE)
+    saveRDS(metadata, metadata_temp)
+    if (!file.rename(metadata_temp, metadata_path)) {
+      return(.source_failure("source_unavailable", url, simpleError(
+        "Source acquisition metadata could not be atomically promoted."
+      ), retrieved_at))
+    }
+    cache_warning <- NULL
     data_path <- cache_path
   } else {
-    keep_temporary <- TRUE
     data_path <- temporary
     cache_warning <- NULL
   }
 
-  new_source_result(
+  result <- new_source_result(
     data = data_path,
     source_status = "actual",
     source_url = final_url,
@@ -368,4 +437,19 @@ download_source <- function(url, source_type, cache_path = NULL,
     digest = digest,
     warning = cache_warning
   )
+  result$ownership <- if (is.null(cache_path)) "temporary" else "persistent"
+  if (is.null(cache_path)) {
+    released <- FALSE
+    result$release <- function() {
+      if (!released) {
+        released <<- TRUE
+        unlink(data_path)
+      }
+      invisible(NULL)
+    }
+    # Retain only after the complete ownership handle exists. Construction
+    # errors/interruptions still belong to this function's on.exit cleanup.
+    keep_temporary <- TRUE
+  }
+  result
 }

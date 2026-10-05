@@ -36,6 +36,29 @@ enr_pct_published_value <- function(x) {
   as.numeric(token)
 }
 
+.normalize_enr_headers <- function(data) {
+  data %>%
+    dplyr::rename_with(
+      ~ dplyr::case_when(
+        . == "Pre -K Halfday" ~ "Pre-K Halfday",
+        . == "Pre-K FullDay" ~ "Pre-K Fullday",
+        . %in% c("Pre-K\r\n Full day", "Pre-K\n Full day") ~ "Pre-K Fullday",
+        . == "Pre-K Half Day" ~ "Pre-K Halfday",
+        . == "Eight Grade" ~ "Eighth Grade",
+        . == "Reduced_Lunch" ~ "Reduced Lunch",
+        . == "% Reduced_Lunch" ~ "%Reduced Lunch",
+        # 2024+ renamed English Learners to Multilingual Learners
+        . == "Multilingual Learners" ~ "English Learners",
+        . == "%Multilingual Learners" ~ "%English Learners",
+        # 2024+ renamed Hawaiian Native
+        . == "Hawaiian Native" ~ "Pacific Islander",
+        . == "%Hawaiian Native" ~ "%Pacific Islander",
+        TRUE ~ .
+      )
+    )
+}
+
+
 #' Parse a validated zipped fall enrollment artifact
 #'
 #' @param tname Path to a validated NJ DOE enrollment ZIP.
@@ -75,32 +98,12 @@ enr_pct_published_value <- function(x) {
       enr_dist <- readxl::read_excel(this_file, sheet = "District", skip = 2)
       enr_sch <- readxl::read_excel(this_file, sheet = "School", skip = 2)
 
-      # The delicious typos section (and column name changes over time)
-      typo_names <- . %>%
-        dplyr::rename_with(
-          ~ dplyr::case_when(
-            . == "Pre -K Halfday" ~ "Pre-K Halfday",
-            . == "Pre-K FullDay" ~ "Pre-K Fullday",
-            . == "Pre-K\r\n Full day" ~ "Pre-K Fullday",
-            . == "Pre-K Half Day" ~ "Pre-K Halfday",
-            . == "Eight Grade" ~ "Eighth Grade",
-            . == "Reduced_Lunch" ~ "Reduced Lunch",
-            . == "% Reduced_Lunch" ~ "%Reduced Lunch",
-            # 2024+ renamed English Learners to Multilingual Learners
-            . == "Multilingual Learners" ~ "English Learners",
-            . == "%Multilingual Learners" ~ "%English Learners",
-            # 2024+ renamed Hawaiian Native
-            . == "Hawaiian Native" ~ "Pacific Islander",
-            . == "%Hawaiian Native" ~ "%Pacific Islander",
-            TRUE ~ .
-          )
-        )
+      # Normalize observed spelling/header aliases before combining sheets.
+      enr_state <- enr_state %>% .normalize_enr_headers()
+      enr_dist <- enr_dist %>% .normalize_enr_headers()
+      enr_sch <- enr_sch %>% .normalize_enr_headers()
 
-      enr_state <- enr_state %>% typo_names()
-      enr_dist <- enr_dist %>% typo_names()
-      enr_sch <- enr_sch %>% typo_names()
-
-      # typo_names() only corrects column *names*. On the State worksheet the
+      # .normalize_enr_headers() only corrects column *names*. On the State worksheet the
       # grade labels live in row *values* of the `Grade` column, where NJ DOE
       # ships "Eight Grade" (sic). Left uncorrected this fails to map to grade
       # level "08", so state-level 8th grade enrollment silently lands in an

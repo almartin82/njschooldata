@@ -59,6 +59,13 @@ new_source_result <- function(data = NULL, source_status,
   )
 }
 
+.release_source_result <- function(result) {
+  # Borrowed cache paths have no release callback. A future lease can release
+  # its handle here without granting readers permission to delete its parent.
+  if (is.function(result$release)) result$release()
+  invisible(NULL)
+}
+
 #' Extract data from a source result
 #'
 #' @param result A source result.

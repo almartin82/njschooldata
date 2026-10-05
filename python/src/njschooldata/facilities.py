@@ -1,5 +1,7 @@
 """School facilities data functions."""
 
+from __future__ import annotations
+
 import pandas as pd
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri

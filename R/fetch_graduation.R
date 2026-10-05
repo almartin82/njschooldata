@@ -337,6 +337,7 @@ clean_6yr_grad_subgroups <- function(group) {
 fetch_6yr_grad_rate <- function(end_year, level = "school") {
   get_spr_6yr_grad_url(end_year, level)
   source_result <- spr_cached_workbook_result(end_year, level)
+  on.exit(.release_source_result(source_result), add = TRUE)
   tname <- source_result_data(source_result)
 
   parsed <- tryCatch({

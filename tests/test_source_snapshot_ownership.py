@@ -6,7 +6,9 @@ import json
 import os
 from pathlib import Path
 import subprocess
-import sys
+import shutil
+
+import pytest
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -42,27 +44,17 @@ def test_contract_does_not_overclaim_source_derived_fixture_slices():
     assert coverage["excluded_fixture_slices"]
 
 
-def test_explicit_live_entry_point_makes_no_request_without_artifacts():
-    runner = PACKAGE_ROOT / "tools" / "live-validation" / "run.py"
-    refused = subprocess.run(
-        [sys.executable, str(runner)],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert refused.returncode == 2
-    assert "No request was made" in refused.stderr
-
+@pytest.mark.parametrize("flag", [None, "false"])
+def test_manual_canary_refuses_before_loading_package(flag, tmp_path):
+    runner = PACKAGE_ROOT / "tools" / "run-live-canaries.R"
     environment = os.environ.copy()
-    environment["GITHUB_EVENT_NAME"] = "workflow_dispatch"
-    dispatched = subprocess.run(
-        [sys.executable, str(runner)],
-        capture_output=True,
-        text=True,
-        check=False,
-        env=environment,
+    environment.pop("NJSCHOOLDATA_LIVE_TESTS", None)
+    if flag is not None:
+        environment["NJSCHOOLDATA_LIVE_TESTS"] = flag
+    refused = subprocess.run(
+        [shutil.which("Rscript") or "Rscript", "--vanilla", str(runner)],
+        cwd=tmp_path, env=environment, capture_output=True, text=True, check=False,
     )
-    assert dispatched.returncode == 6
-    result = json.loads(dispatched.stdout)
-    assert result["request_count"] == 0
-    assert result["validation_clock_advanced"] is False
+    assert refused.returncode != 0
+    assert "Live canaries require NJSCHOOLDATA_LIVE_TESTS=true" in refused.stderr
+    assert list(tmp_path.iterdir()) == []

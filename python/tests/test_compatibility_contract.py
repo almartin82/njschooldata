@@ -190,3 +190,9 @@ def test_real_bridge_preserves_source_results_in_dataframe_attrs():
     source_results = converted.attrs["source_results"]
     assert source_results.iloc[0]["source_status"] == "actual"
     assert source_results.iloc[0]["digest"] == "sha256:fixture"
+
+
+def test_facilities_import_postpones_union_annotation_without_acquisition():
+    module = importlib.import_module("njschooldata.facilities")
+    annotation = inspect.signature(module.fetch_facilities).parameters["year"].annotation
+    assert annotation == "int | None"

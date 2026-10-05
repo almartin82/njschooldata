@@ -162,6 +162,7 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
 
   # Get the workbook (downloaded once, then cached on disk across sessions).
   source_result <- spr_cached_workbook_result(end_year, level)
+  on.exit(.release_source_result(source_result), add = TRUE)
   tname <- source_result_data(source_result)
 
   # The 2024-25 (end_year 2025) redesign moved the column headers down: row 1
@@ -171,21 +172,15 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   header_skip <- if (end_year >= 2025) 3 else 0
 
   # Read specific sheet
-  df <- tryCatch(
-    readxl::read_excel(
-      path = tname,
-      sheet = sheet_name,
-      skip = header_skip,
-      na = c("*", "N", "NA", "", "-"),
-      guess_max = 10000
-    ),
-    error = function(e) {
-      available_sheets <- paste(readxl::excel_sheets(tname), collapse = ", ")
-      stop(paste0(
-        "Sheet '", sheet_name, "' not found in ", end_year, " SPR database. ",
-        "Available sheets: ", available_sheets
-      ))
-    }
+  available_sheets <- readxl::excel_sheets(tname)
+  if (!sheet_name %in% available_sheets) {
+    stop(paste0("Sheet '", sheet_name, "' not found in ", end_year,
+                " SPR database. Available sheets: ",
+                paste(available_sheets, collapse = ", ")), call. = FALSE)
+  }
+  df <- readxl::read_excel(
+    path = tname, sheet = sheet_name, skip = header_skip,
+    na = c("*", "N", "NA", "", "-"), guess_max = 10000
   )
 
   # Clean column names FIRST
@@ -607,7 +602,9 @@ fetch_days_absent <- function(end_year, level = "school") {
 #' }
 list_spr_sheets <- function(end_year, level = "school") {
   # Get the workbook (downloaded once, then cached on disk across sessions).
-  tname <- spr_cached_workbook(end_year, level)
+  source_result <- spr_cached_workbook_result(end_year, level)
+  on.exit(.release_source_result(source_result), add = TRUE)
+  tname <- source_result_data(source_result)
 
   # Get sheet names
   sheets <- readxl::excel_sheets(tname)
@@ -2984,25 +2981,21 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
     return(cached)
   }
 
-  tname <- spr_cached_workbook(end_year, level)
+  source_result <- spr_cached_workbook_result(end_year, level)
+  on.exit(.release_source_result(source_result), add = TRUE)
+  tname <- source_result_data(source_result)
 
   header_skip <- if (end_year >= 2025) 3 else 0
 
-  df <- tryCatch(
-    readxl::read_excel(
-      path = tname,
-      sheet = sheet_name,
-      skip = header_skip,
-      na = c("*", "N", "NA", "", "-"),
-      guess_max = 10000
-    ),
-    error = function(e) {
-      available_sheets <- paste(readxl::excel_sheets(tname), collapse = ", ")
-      stop(paste0(
-        "Sheet '", sheet_name, "' not found in ", end_year, " SPR database. ",
-        "Available sheets: ", available_sheets
-      ))
-    }
+  available_sheets <- readxl::excel_sheets(tname)
+  if (!sheet_name %in% available_sheets) {
+    stop(paste0("Sheet '", sheet_name, "' not found in ", end_year,
+                " SPR database. Available sheets: ",
+                paste(available_sheets, collapse = ", ")), call. = FALSE)
+  }
+  df <- readxl::read_excel(
+    path = tname, sheet = sheet_name, skip = header_skip,
+    na = c("*", "N", "NA", "", "-"), guess_max = 10000
   )
 
   names(df) <- clean_name_vector(names(df))
@@ -4362,11 +4355,10 @@ fetch_spr_grad_cohort <- function(end_year, level = "school") {
     sheets <- c("4-Year" = "4YrGraduationCohortProfile",
                 "5-Year" = "5YrGraduationCohortProfile",
                 "6-Year" = "6YrGraduationCohortProfile")
+    if (end_year == 2020) sheets <- sheets[c("4-Year", "5-Year")]
     parts <- list()
     for (ct in names(sheets)) {
-      d <- tryCatch(fetch_spr_data(sheets[[ct]], end_year, level),
-                    error = function(e) NULL)
-      if (is.null(d)) next
+      d <- fetch_spr_data(sheets[[ct]], end_year, level)
       d$cohort_type <- ct
       d$graduated <- spr_legacy_entity_value(d, "graduates", "state_graduates", level)
       d$continuing <- spr_legacy_entity_value(d, "continuing_students",
