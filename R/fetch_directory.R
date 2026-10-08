@@ -738,12 +738,14 @@ directory_live_acquire <- function() {
     list(
       name = "NJDOE Homeroom Public School Districts download",
       url = resolve_source_url("directory", level = "district"),
+      digest = district_result$digest,
       retrieved_at = dc_iso8601(district_result$retrieved_at),
       status = "ok"
     ),
     list(
       name = "NJDOE Homeroom Public Schools download (includes grade levels)",
       url = resolve_source_url("directory", level = "school"),
+      digest = school_result$digest,
       retrieved_at = dc_iso8601(school_result$retrieved_at),
       status = "ok"
     )
@@ -906,6 +908,7 @@ build_directory_from_spr <- function(
       "NJDOE 2024-2025 School Performance Reports contact roster"
     ),
     url = spr_result$source_url,
+    digest = spr_result$digest,
     retrieved_at = dc_iso8601(spr_result$retrieved_at),
     status = "ok"
   ))
