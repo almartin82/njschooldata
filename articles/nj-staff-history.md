@@ -224,7 +224,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] ggplot2_4.0.3       tidyr_1.3.2         dplyr_1.2.1        
-#> [4] njschooldata_0.9.26
+#> [4] njschooldata_0.9.27
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      hms_1.1.4         

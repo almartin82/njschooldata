@@ -379,22 +379,22 @@ ell <- enr_current %>%
 
 stopifnot(nrow(ell) > 0)
 ell %>% select(district_name, n_students, pct)
-#>                              district_name n_students   pct
-#> 1        Lakewood Township School District  1690.7095 0.449
-#> 2        Plainfield Public School District  4152.9000 0.436
-#> 3             Dover Public School District  1375.3460 0.434
-#> 4         Irvington Public School District  3314.9540 0.421
-#> 5                 Elizabeth Public Schools 11057.1120 0.414
-#> 6            New Brunswick School District  3365.4830 0.407
-#> 7          Paterson Public School District  8848.8450 0.405
-#> 8           Trenton Public School District  5794.9385 0.403
-#> 9  Red Bank Borough Public School District   452.6280 0.396
-#> 10              Union City School District  4694.3460 0.391
-#> 11      Perth Amboy Public School District  3820.4250 0.383
-#> 12            Passaic City School District  4083.6900 0.370
-#> 13          Bridgeton City School District  2308.8320 0.368
-#> 14             Bound Brook School District   650.1565 0.343
-#> 15          Palisades Park School District   559.7210 0.331
+#>                              district_name n_students       pct
+#> 1        Lakewood Township School District     1689.5 0.4486788
+#> 2        Plainfield Public School District     4151.5 0.4358530
+#> 3             Dover Public School District     1376.0 0.4342064
+#> 4         Irvington Public School District     3313.0 0.4207518
+#> 5                 Elizabeth Public Schools    11050.0 0.4137337
+#> 6            New Brunswick School District     3367.0 0.4071835
+#> 7          Paterson Public School District     8845.0 0.4048240
+#> 8           Trenton Public School District     5800.0 0.4033520
+#> 9  Red Bank Borough Public School District      453.0 0.3963255
+#> 10              Union City School District     4691.0 0.3907213
+#> 11      Perth Amboy Public School District     3818.0 0.3827569
+#> 12            Passaic City School District     4088.0 0.3703905
+#> 13          Bridgeton City School District     2308.0 0.3678674
+#> 14             Bound Brook School District      651.0 0.3434450
+#> 15          Palisades Park School District      560.0 0.3311650
 
 ggplot(ell, aes(x = district_label, y = pct * 100)) +
   geom_col(fill = nj_colors["hispanic"]) +
@@ -741,7 +741,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] scales_1.4.0        dplyr_1.2.1         ggplot2_4.0.3      
-#> [4] njschooldata_0.9.26
+#> [4] njschooldata_0.9.27
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       

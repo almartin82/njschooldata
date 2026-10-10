@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -230,7 +230,7 @@
 <div class="section level2">
 <h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h2>
 <p>Run tests with: <code>devtools::test()</code> or <code>Rscript -e "devtools::test()"</code></p>
-<p>Offline tests are mandatory in pull-request CI and must remain deterministic with no NJ DOE access. Live source assertions use the shared opt-in flag <code>NJSCHOOLDATA_LIVE_TESTS=true</code>; without it they skip consistently. A scheduled or manually dispatched canary workflow owns live-source verification. Keep network- heavy vignette execution separate from the offline test decision.</p>
+<p>Offline tests are mandatory in pull-request CI and must remain deterministic with no NJ DOE access. Live source assertions use the shared opt-in flag <code>NJSCHOOLDATA_LIVE_TESTS=true</code>; without it they skip consistently. A manually dispatched canary workflow owns live-source verification. Keep network- heavy vignette execution separate from the offline test decision.</p>
 </div>
 <div class="section level2">
 <h2 id="federal-nces-id-linkage-enrollment">Federal NCES id linkage (enrollment)<a class="anchor" aria-label="anchor" href="#federal-nces-id-linkage-enrollment"></a></h2>
@@ -417,6 +417,8 @@
 <p>The cache validates responses and will NOT cache network errors or bot protection pages.</p>
 <p><strong>2. SPR workbook cache (on-disk, per year+level)</strong> — the SPR Excel databases are large (the 2024-25 District file is ~119 MB, the School file ~350 MB) and hold dozens of sheets. <code><a href="reference/fetch_spr_data.html">fetch_spr_data()</a></code>, <code><a href="reference/fetch_spr_sheet_raw.html">fetch_spr_sheet_raw()</a></code>, and <code><a href="reference/list_spr_sheets.html">list_spr_sheets()</a></code> download each workbook at most once and reuse the cached copy across sheet reads and across sessions (reading a second sheet from the same workbook drops from ~12s to ~0.1s): - <code><a href="reference/njsd_workbook_cache_dir.html">njsd_workbook_cache_dir()</a></code> - cache location (defaults to <code>tools::R_user_dir("njschooldata", "cache")</code>; override with <code>options(njschooldata.cache_dir=)</code>) - <code><a href="reference/njsd_workbook_cache_info.html">njsd_workbook_cache_info()</a></code> - list cached workbooks and sizes - <code><a href="reference/njsd_workbook_cache_clear.html">njsd_workbook_cache_clear()</a></code> / <code>njsd_workbook_cache_clear(end_year)</code> - delete cached workbooks - disable with <code>options(njschooldata.workbook_cache = FALSE)</code></p>
 <p>Downloads are validated as real <code>.xlsx</code> (ZIP magic bytes) before being cached, so an HTTP error or bot-protection page is never written to the cache or parsed as data. SPR workbooks for past years are static snapshots; clear the cache to force a refresh.</p>
+<p>Enrollment parser repairs require a fresh R session: processed enrollment and dependent ELL caches are session-only. Reuse retained source bytes; do not run live validation to refresh parsed results.</p>
+<p>SPR persistent sources now require a <code>.source.rds</code> acquisition sidecar with exact requested/final URL, length, digest and recorded time. Legacy or changed-identity entries are preserved and report an explicit miss without a request. A maintainer can adopt proven equivalent retained bytes using internal <code>.adopt_source_cache(path, url, source_type, expected_digest, retrieved_at = NULL)</code>; supply a recorded acquisition time only when evidence supports it. Unknown legacy clocks remain unknown. Corrupt metadata/bytes and active acquisitions are preserved for deliberate repair.</p>
 </div>
 </div>
 

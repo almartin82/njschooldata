@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -429,22 +429,22 @@ patterns.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ell</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">ell</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span>, <span class="va">pct</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                              district_name n_students   pct</span></span>
-<span><span class="co">#&gt; 1        Lakewood Township School District  1690.7095 0.449</span></span>
-<span><span class="co">#&gt; 2        Plainfield Public School District  4152.9000 0.436</span></span>
-<span><span class="co">#&gt; 3             Dover Public School District  1375.3460 0.434</span></span>
-<span><span class="co">#&gt; 4         Irvington Public School District  3314.9540 0.421</span></span>
-<span><span class="co">#&gt; 5                 Elizabeth Public Schools 11057.1120 0.414</span></span>
-<span><span class="co">#&gt; 6            New Brunswick School District  3365.4830 0.407</span></span>
-<span><span class="co">#&gt; 7          Paterson Public School District  8848.8450 0.405</span></span>
-<span><span class="co">#&gt; 8           Trenton Public School District  5794.9385 0.403</span></span>
-<span><span class="co">#&gt; 9  Red Bank Borough Public School District   452.6280 0.396</span></span>
-<span><span class="co">#&gt; 10              Union City School District  4694.3460 0.391</span></span>
-<span><span class="co">#&gt; 11      Perth Amboy Public School District  3820.4250 0.383</span></span>
-<span><span class="co">#&gt; 12            Passaic City School District  4083.6900 0.370</span></span>
-<span><span class="co">#&gt; 13          Bridgeton City School District  2308.8320 0.368</span></span>
-<span><span class="co">#&gt; 14             Bound Brook School District   650.1565 0.343</span></span>
-<span><span class="co">#&gt; 15          Palisades Park School District   559.7210 0.331</span></span>
+<span><span class="co">#&gt;                              district_name n_students       pct</span></span>
+<span><span class="co">#&gt; 1        Lakewood Township School District     1689.5 0.4486788</span></span>
+<span><span class="co">#&gt; 2        Plainfield Public School District     4151.5 0.4358530</span></span>
+<span><span class="co">#&gt; 3             Dover Public School District     1376.0 0.4342064</span></span>
+<span><span class="co">#&gt; 4         Irvington Public School District     3313.0 0.4207518</span></span>
+<span><span class="co">#&gt; 5                 Elizabeth Public Schools    11050.0 0.4137337</span></span>
+<span><span class="co">#&gt; 6            New Brunswick School District     3367.0 0.4071835</span></span>
+<span><span class="co">#&gt; 7          Paterson Public School District     8845.0 0.4048240</span></span>
+<span><span class="co">#&gt; 8           Trenton Public School District     5800.0 0.4033520</span></span>
+<span><span class="co">#&gt; 9  Red Bank Borough Public School District      453.0 0.3963255</span></span>
+<span><span class="co">#&gt; 10              Union City School District     4691.0 0.3907213</span></span>
+<span><span class="co">#&gt; 11      Perth Amboy Public School District     3818.0 0.3827569</span></span>
+<span><span class="co">#&gt; 12            Passaic City School District     4088.0 0.3703905</span></span>
+<span><span class="co">#&gt; 13          Bridgeton City School District     2308.0 0.3678674</span></span>
+<span><span class="co">#&gt; 14             Bound Brook School District      651.0 0.3434450</span></span>
+<span><span class="co">#&gt; 15          Palisades Park School District      560.0 0.3311650</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ell</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">district_label</span>, y <span class="op">=</span> <span class="va">pct</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">nj_colors</span><span class="op">[</span><span class="st">"hispanic"</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
@@ -768,7 +768,7 @@ extreme wealth inequality.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt; [1] scales_1.4.0        dplyr_1.2.1         ggplot2_4.0.3      </span></span>
-<span><span class="co">#&gt; [4] njschooldata_0.9.26</span></span>
+<span><span class="co">#&gt; [4] njschooldata_0.9.27</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] utf8_1.2.6         sass_0.4.10        generics_0.1.4     tidyr_1.3.2       </span></span>

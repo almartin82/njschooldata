@@ -371,9 +371,9 @@ Run tests with: `devtools::test()` or `Rscript -e "devtools::test()"`
 Offline tests are mandatory in pull-request CI and must remain
 deterministic with no NJ DOE access. Live source assertions use the
 shared opt-in flag `NJSCHOOLDATA_LIVE_TESTS=true`; without it they skip
-consistently. A scheduled or manually dispatched canary workflow owns
-live-source verification. Keep network- heavy vignette execution
-separate from the offline test decision.
+consistently. A manually dispatched canary workflow owns live-source
+verification. Keep network- heavy vignette execution separate from the
+offline test decision.
 
 ## Federal NCES id linkage (enrollment)
 
@@ -956,3 +956,17 @@ Downloads are validated as real `.xlsx` (ZIP magic bytes) before being
 cached, so an HTTP error or bot-protection page is never written to the
 cache or parsed as data. SPR workbooks for past years are static
 snapshots; clear the cache to force a refresh.
+
+Enrollment parser repairs require a fresh R session: processed
+enrollment and dependent ELL caches are session-only. Reuse retained
+source bytes; do not run live validation to refresh parsed results.
+
+SPR persistent sources now require a `.source.rds` acquisition sidecar
+with exact requested/final URL, length, digest and recorded time. Legacy
+or changed-identity entries are preserved and report an explicit miss
+without a request. A maintainer can adopt proven equivalent retained
+bytes using internal
+`.adopt_source_cache(path, url, source_type, expected_digest, retrieved_at = NULL)`;
+supply a recorded acquisition time only when evidence supports it.
+Unknown legacy clocks remain unknown. Corrupt metadata/bytes and active
+acquisitions are preserved for deliberate repair.
