@@ -433,7 +433,9 @@ source_host_allowlist <- function() {
   subject_prefix <- switch(subject,
     ela = "ELA",
     math = "MAT",
-    science = "SCI",
+    # NJDOE names the science files SC05/SC08/SC11 (2021-22 on); the 2018-19 results
+    # were published as PDF reports only, so a 2019 science request has no xlsx to find.
+    science = "SC",
     stop("`subject` must be one of: ela, math, science.", call. = FALSE)
   )
 
