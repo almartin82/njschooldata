@@ -52,7 +52,7 @@ add_subgroup_std <- function(df) {
 }
 
 subgroup_std_lookup <- function() {
-  lookup <- subgroup_crosswalk[, c("raw_value", "subgroup_std"), drop = FALSE]
+  lookup <- njschooldata::subgroup_crosswalk[, c("raw_value", "subgroup_std"), drop = FALSE]
   lookup <- unique(lookup)
 
   by_raw <- split(lookup$subgroup_std, lookup$raw_value)

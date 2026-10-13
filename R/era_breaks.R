@@ -18,9 +18,8 @@ ERA_TREND_GUARD_BREAK_TYPES <- c("scale_break", "definition_change", "covid_gap"
 #' get_era_breaks("njsla")
 #' get_era_breaks(c("grad", "attendance"))
 get_era_breaks <- function(break_set = NULL) {
-  validate_era_break_metadata(era_breaks)
-
-  out <- era_breaks
+  out <- njschooldata::era_breaks
+  validate_era_break_metadata(out)
   if (!is.null(break_set)) {
     out <- out[out$break_set %in% as.character(break_set), , drop = FALSE]
   }
@@ -144,7 +143,7 @@ era_breaks_for_set <- function(break_set) {
   breaks <- get_era_breaks(break_set)
 
   if (nrow(breaks) == 0) {
-    available <- paste(sort(unique(era_breaks$break_set)), collapse = ", ")
+    available <- paste(sort(unique(get_era_breaks()$break_set)), collapse = ", ")
     stop(
       "Unknown break_set '",
       break_set,
