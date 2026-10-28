@@ -65,6 +65,62 @@ jobs:
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
+      # pkgdown renders every root-level .md file into a page. Repository
+      # working notes must never reach the public site, so drop any root page
+      # that is not a standard site page before deploying. Subdirectories
+      # (reference/, articles/, news/, almanac/, profiles/, deps/) are kept.
+      - name: Filter internal pages from the built site
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          cd docs
+          allow="index 404 authors LICENSE LICENSE-text CODE_OF_CONDUCT DATA-CATEGORY-TAXONOMY"
+          deny="AGENTS CLAUDE TODO EXPANSION CHANGES GOALS"
+          for stem in $deny; do
+            rm -fv "$stem".md "$stem".html
+          done
+          for f in *.md *.html; do
+            [ -e "$f" ] || continue
+            stem="${f%.*}"
+            case " $allow " in
+              *" $stem "*) ;;
+              *) rm -fv "$f" ;;
+            esac
+          done
+          python3 - <<'PY'
+          import json, os, re
+          root = set(os.listdir("."))
+          def gone(url):
+              m = re.search(r"/([^/]+\.(?:html|md))$", url or "")
+              if not m:
+                  return False
+              # only root-level pages are filtered
+              is_root = not re.search(r"/(reference|articles|news|almanac|profiles|deps)/", url)
+              return is_root and m.group(1) not in root
+          if os.path.exists("search.json"):
+              with open("search.json") as fh:
+                  data = json.load(fh)
+              data = [d for d in data if not gone(d.get("path", ""))]
+              with open("search.json", "w") as fh:
+                  json.dump(data, fh)
+          if os.path.exists("sitemap.xml"):
+              with open("sitemap.xml") as fh:
+                  xml = fh.read()
+              xml = re.sub(r"\s*<url>\s*<loc>([^<]*)</loc>.*?</url>",
+                           lambda m: "" if gone(m.group(1)) else m.group(0),
+                           xml, flags=re.S)
+              with open("sitemap.xml", "w") as fh:
+                  fh.write(xml)
+          if os.path.exists("llms.txt"):
+              with open("llms.txt") as fh:
+                  lines = fh.readlines()
+              keep = [l for l in lines
+                      if not any(gone(u) for u in re.findall(r"\((https?://[^)\s]+)\)", l))]
+              with open("llms.txt", "w") as fh:
+                  fh.writelines(keep)
+          PY
+          ls -1 *.md *.html
+
       - name: Deploy to GitHub pages
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.8.0
