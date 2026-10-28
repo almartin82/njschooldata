@@ -1,5 +1,16 @@
 # njschooldata (development)
 
+* District profiles add retained-source-tested NJSLA grade proficiency and paired
+  subgroup gaps, suspension trends, HIB/police tables, and teacher workforce
+  detail. Missing source cells remain missing and comparisons keep native grain.
+* Profile percentages use explicit source units; values below one percent are
+  no longer inflated by a magnitude heuristic, and fractional enrollment counts
+  remain visible. Enrollment years no longer receive thousands separators.
+* District profiles show both suspension measures against same-year peers, with
+  gaps in district and peer lines preserved. Published HIB investigation totals
+  remain visible when confirmed counts are unavailable; absent assessment
+  subgroup pairs leave the gap section explicitly unavailable.
+
 ## njschooldata 0.9.27
 
 * Enrollment results retain official source bytes and provenance, select grade

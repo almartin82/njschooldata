@@ -4,6 +4,7 @@ source("R/charts.R")
 source("R/bundle.R")
 source("R/security.R")
 library(dplyr); library(ggplot2); library(scales); library(knitr)
+options(knitr.kable.NA = "not available")
 b <- load_bundle(district_id)
 m <- b$meta
 ```
@@ -31,8 +32,7 @@ if (has_data(b$enr_total)) {
 
 ```{r enr-trend, echo=FALSE}
 if (has_data(b$enr_total)) {
-  kable(b$enr_total %>% rename(`School year` = end_year, Students = n_students),
-        format.args = list(big.mark = ","), caption = "Total enrollment by year")
+  kable(b$enr_total %>% transmute(`School year` = as.character(end_year), Students = scales::comma(n_students)), caption = "Total enrollment by year")
 }
 ```
 
@@ -71,10 +71,45 @@ if (has_data(b$enr_special)) {
            lep="English learners", special_ed="Students with disabilities")
   bullets <- latest %>% mutate(txt = sprintf("- **%s**: %s students (%s)",
                 html_escape(ifelse(subgroup %in% names(lab), lab[subgroup], subgroup)),
-                fmt_int(n_students), fmt_pct(as_pct_scale(pct))))
+                fmt_int(n_students), fmt_pct(as_pct_scale(pct, multiplier = 100))))
   cat("**Special populations (", max(latest$end_year), "):**\n\n", sep="")
   cat(paste(bullets$txt, collapse = "\n"))
 }
+```
+
+NJ DOE enrollment publishes free/reduced-lunch participation, not an economically
+ disadvantaged headcount. Economic disadvantage elsewhere is a reporting subgroup.
+
+## Achievement
+
+```{r njsla-latest, echo=FALSE, results='asis'}
+if (has_data(b$njsla_latest) && any(is.finite(b$njsla_latest$proficiency_rate[b$njsla_latest$series == "District"]))) {
+  print(kable(b$njsla_latest, caption=paste("NJSLA grades 3–8",max(b$njsla_latest$end_year))))
+  print(chart_grade_proficiency(b$njsla_latest,"Elementary and middle-school proficiency"))
+} else cat("*NJSLA proficiency data not available for this district.*")
+```
+
+```{r njsla-trend, echo=FALSE, results='asis'}
+if (has_data(b$njsla_trend) && any(is.finite(b$njsla_trend$proficiency_rate))) {
+  print(kable(b$njsla_trend %>% select(end_year,subject,grade_test,proficiency_rate,valid_scores)))
+  print(ggplot(b$njsla_trend,aes(end_year,proficiency_rate,color=grade_test,group=interaction(grade_test,segment))) +
+    geom_line() + geom_point() + facet_wrap(~subject) +
+    scale_x_continuous(breaks=unique(b$njsla_trend$end_year)) +
+    labs(x=NULL,y="Proficient (%)",color="Grade") + theme_nj())
+} else cat("*NJSLA trend data not available for this district.*")
+```
+
+### Achievement gaps
+
+Rates and valid-score counts suppress independently. Gaps subtract the paired
+comparison group's published rate from the disadvantaged group's published rate;
+negative values indicate lower proficiency. Missing sides remain missing.
+
+```{r njsla-gaps, echo=FALSE, results='asis'}
+if (has_data(b$njsla_gaps) && any(is.finite(b$njsla_gaps$gap))) {
+  print(kable(b$njsla_gaps %>% select(end_year,subject,grade_test,comparison,rate_a,rate_b,gap)))
+  print(chart_gap(b$njsla_gaps,"Paired subgroup achievement gaps"))
+} else cat("*Not enough unsuppressed data for paired achievement gaps in this district.*")
 ```
 
 ## Spending
@@ -117,13 +152,25 @@ if (!isTRUE(m$is_charter) && has_data(b$tges_comp)) {
 }
 ```
 
+### State aid
+
+```{r aid-categories, echo=FALSE, results='asis'}
+if (!isTRUE(m$is_charter) && has_data(b$aid_categories) && any(is.finite(b$aid_categories$amount))) {
+  aid <- b$aid_categories %>% filter(end_year==max(end_year))
+  print(kable(aid %>% select(end_year,aid_category,amount),caption="State aid categories; roll-up totals excluded"))
+  print(ggplot(aid,aes(reorder(aid_category,amount),amount)) + geom_col(fill=nj_navy) +
+    coord_flip() + scale_y_continuous(labels=label_dollar()) +
+    labs(x=NULL,y="Dollars",title=paste("State aid",max(aid$end_year))) + theme_nj())
+} else cat("*State aid categories not available for this district.*")
+```
+
 ## Outcomes
 
 ```{r grad-trend, echo=FALSE}
 #| fig-cap: "Four-year graduation rate over time, with peer-group median."
 if (has_data(b$grad_trend)) {
-  gt <- b$grad_trend %>% mutate(grad_rate = as_pct_scale(grad_rate))
-  pv <- if (!is.null(b$grad_peer)) as_pct_scale(b$grad_peer$peer_median) else NULL
+  gt <- b$grad_trend %>% mutate(grad_rate = as_pct_scale(grad_rate, multiplier = 100))
+  pv <- if (!is.null(b$grad_peer)) as_pct_scale(b$grad_peer$peer_median, multiplier = 100) else NULL
   print(chart_trend(gt, "end_year", "grad_rate",
     title = "Four-year graduation rate", subtitle = "District-wide, vs peer median",
     ylab = "Graduation rate (%)", value_fmt = "pct", color = nj_teal, peer_value = pv))
@@ -134,7 +181,7 @@ if (has_data(b$grad_trend)) {
 if (has_data(b$grad_peer) && is.finite(b$grad_peer$value)) {
   gp <- b$grad_peer
   cat(sprintf("Latest four-year graduation rate: **%s** (%s) — %s.\n\n",
-    fmt_pct(as_pct_scale(gp$value)), gp$year, peer_phrase(gp$pctile, m$n_peers, m$dfg)))
+    fmt_pct(as_pct_scale(gp$value, multiplier = 100)), gp$year, peer_phrase(gp$pctile, m$n_peers, m$dfg)))
 }
 ```
 
@@ -167,6 +214,55 @@ if (has_data(b$absence_trend)) {
 } else cat("*Chronic absenteeism data not available for this district.*")
 ```
 
+### Discipline
+
+```{r discipline, echo=FALSE, results='asis'}
+if (has_data(b$discipline)) {
+  disc <- b$discipline %>% filter(profile_district_total %in% TRUE)
+  metrics <- c("any_susp_pct", "outof_school_pct")
+  if (nrow(disc) && any(is.finite(as.matrix(disc[metrics])))) {
+    print(kable(disc %>% select(end_year,any_susp_count,any_susp_pct,outof_school_count,outof_school_pct)))
+    if (has_data(b$discipline_peer)) print(kable(b$discipline_peer,
+      caption = "Same-year peer median suspension rates (%)"))
+    own <- disc %>% select(end_year, all_of(metrics)) %>% mutate(series = "District")
+    peer <- if (has_data(b$discipline_peer))
+      b$discipline_peer %>% select(end_year, all_of(metrics)) %>% mutate(series = "Peer median")
+    else NULL
+    rates <- bind_rows(own, peer) %>%
+      tidyr::pivot_longer(all_of(metrics), names_to = "metric", values_to = "value") %>%
+      arrange(series, metric, end_year) %>% group_by(series, metric) %>%
+      filter(any(is.finite(value))) %>%
+      mutate(segment = cumsum(c(TRUE, diff(end_year) != 1) | !is.finite(value) |
+        lag(!is.finite(value), default = FALSE))) %>% ungroup()
+    print(ggplot(rates, aes(end_year, value, color = series, linetype = series,
+      group = interaction(series, metric, segment))) +
+      geom_line(na.rm = TRUE) + geom_point(na.rm = TRUE) +
+      facet_wrap(~metric, labeller = as_labeller(c(any_susp_pct = "Any suspension",
+        outof_school_pct = "Out-of-school suspension"))) +
+      scale_color_manual(values = c(District = nj_navy, `Peer median` = "gray60")) +
+      scale_linetype_manual(values = c(District = "solid", `Peer median` = "dashed")) +
+      scale_y_continuous(labels = label_number(suffix = "%")) +
+      scale_x_continuous(breaks = unique(rates$end_year)) +
+      labs(x = NULL, y = "Students (%)", color = NULL, linetype = NULL,
+        subtitle = "Dashed: same-year peer median; lines stop at missing years or rates") + theme_nj())
+  } else cat("*Discipline rates not available for this district.*")
+} else cat("*Discipline data not available for this district.*")
+```
+
+```{r hib, echo=FALSE, results='asis'}
+if (has_data(b$hib) && any(is.finite(as.matrix(b$hib[c("hib_alleged", "hib_confirmed", "total_hib_investigations")])))) {
+  print(kable(b$hib %>% select(end_year,hib_nature,hib_alleged,hib_confirmed,total_hib_investigations),
+    caption="HIB investigations by nature; categories may overlap, so counts are not summed"))
+} else cat("*HIB investigations not available for this district.*")
+```
+
+```{r police, echo=FALSE, results='asis'}
+if (has_data(b$police)) {
+  print(kable(b$police %>% select(end_year,violence,weapons,vandalism,substances,hib,other_incidents),
+    caption="Police notifications by incident type"))
+} else cat("*Police notifications not available for this district.*")
+```
+
 ## Staff
 
 ```{r staff, echo=FALSE, results='asis'}
@@ -186,6 +282,35 @@ if (has_data(b$staff)) {
 } else cat("*Staffing ratio data not available for this district.*")
 ```
 
+### Teacher workforce
+
+```{r teacher-experience, echo=FALSE, results='asis'}
+if (has_data(b$teacher_exp)) {
+  print(kable(b$teacher_exp %>% select(end_year,any_of(c("teacher_avg_years_exp_district","teacher_avg_years_exp_state",
+    "percentage_of_out_of_field_teachers","percentage_of_out_of_field_teachers_state",
+    "percentage_teachers_with_provisional_credentials_district","percentage_teachers_with_provisional_credentials_state"))),
+    caption="Teacher experience (years) and credentials (percent); district and statewide"))
+} else cat("*Teacher experience data not available for this district.*")
+```
+
+```{r staff-retention, echo=FALSE, results='asis'}
+if (has_data(b$staff_retention)) {
+  print(kable(b$staff_retention %>% select(end_year,teachers_admins,retention_pct_district,retention_pct_state),
+    caption="Staff retained from the prior year (%)"))
+} else cat("*Staff retention data not available for this district.*")
+```
+
+```{r staff-demographics, echo=FALSE, results='asis'}
+if (has_data(b$staff_demo) && "teachers_admins_students" %in% names(b$staff_demo)) {
+  demo <- b$staff_demo %>% select(end_year,teachers_admins_students,ends_with("_district")) %>% select(-any_of("is_district"))
+  print(kable(demo,caption="Staff and student demographics (%)"))
+  plot_demo <- demo %>% tidyr::pivot_longer(ends_with("_district"),names_to="category",values_to="value") %>%
+    filter(!grepl("female|male|gender",category)) %>% rename(series=teachers_admins_students)
+  if (any(is.finite(plot_demo$value))) print(chart_group_compare(plot_demo,"Staff and student racial composition"))
+  else cat("*Staff demographic percentages not available for this district.*")
+} else cat("*Staff demographics not available for this district.*")
+```
+
 ---
 
 ```{r footer, echo=FALSE, results='asis'}
@@ -202,4 +327,21 @@ Suppression: small cells are suppressed at the source by NJ DOE and appear as mi
 if (is.na(b$enr_latest_year)) 2026 else b$enr_latest_year, m$district_id,
 if (has_data(b$grad_peer)) b$grad_peer$year else 2025, m$district_id,
 if (has_data(b$tges_pp)) max(b$tges_pp$end_year) else 2025))
+```
+
+```{r deeper-reproduce, echo=FALSE, results='asis'}
+calls <- c(njsla_trend="fetch_spr_proficiency_by_test",discipline="fetch_disciplinary_removals",
+  hib="fetch_hib_investigations",police="fetch_police_notifications",teacher_exp="fetch_teacher_experience",
+  staff_retention="fetch_spr_staff_retention",staff_demo="fetch_staff_demographics",aid_categories="fetch_state_aid")
+cat("\n### Reproduce deeper sections\n\n```r\n")
+for (field in names(calls)) if (has_data(b[[field]])) {
+  years <- sort(unique(b[[field]]$end_year))
+  for (year in years) {
+    extra <- if (field=="njsla_trend") ', subject = "ela"' else ""
+    level <- if (field=="aid_categories") "" else ', level = "district"'
+    cat(sprintf("%s(%s%s%s) # district %s\n",calls[[field]],year,extra,level,m$district_id))
+    if (field=="njsla_trend") cat(sprintf('fetch_spr_proficiency_by_test(%s, "math", level = "district")\n',year))
+  }
+}
+cat("```\n")
 ```

@@ -360,3 +360,182 @@ test_that("post-filter empty statewide aggregates cannot be cached", {
   expect_identical(aggregate$source_status, "parse_error")
   expect_false(aggregate$completed)
 })
+
+profile_retained_fixture <- function() {
+  readRDS(package_source_path('inst','extdata','test-fixtures','profile-sections','retained-spr.rds'))
+}
+
+profile_fixture_statewide <- function(site) {
+  original <- profile_retained_fixture()
+  sw <- list(njsla=dplyr::bind_rows(original[grepl('^(njsla|math)_',names(original))]))
+  for (name in c('discipline','hib','police','teacher_exp','staff_retention','staff_demo')) {
+    sw[[name]] <- dplyr::bind_rows(lapply(2022:2025,function(y) {
+      site$profile_spr_year(original[[paste(name,y,sep='_')]],y,name)
+    }))
+  }
+  sw
+}
+
+test_that('new required profile sources cannot silently disappear', {
+  site <- load_site_build_helpers()
+  site$register_build_requests()
+  required <- c('njsla','discipline','hib','police','teacher_exp','staff_retention','staff_demo')
+  expect_true(all(required %in% site$.build_manifest$rows$domain))
+  expect_true(all(site$.build_manifest$rows$required[site$.build_manifest$rows$domain %in% required]))
+  site$manifest_record('discipline',2025,status='parse_error',error='source read failed')
+  expect_error(site$assert_required_coverage(FALSE),'discipline/2025.*parse_error')
+})
+
+test_that('source-token numeric conversion preserves suppression and sub-one-percent values', {
+  site <- load_site_build_helpers()
+  expect_equal(site$spr_pct_numeric(c('63.2%','2,959','*','N','','0%','0.71%')),
+               c(63.2,2959,NA,NA,NA,0,0.71))
+  env <- new.env()
+  sys.source(package_source_path('site','R','bundle.R'),env)
+  expect_equal(env$as_pct_scale(c(0.71,0,NA)),c(0.71,0,NA))
+  expect_equal(env$as_pct_scale(c(.005,NA),multiplier=100),c(.5,NA))
+  expect_equal(env$fmt_int(32098.5),"32,098.5")
+})
+
+test_that('retained district SPR rows keep exact grade rates, years and unavailable counts', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  b <- site$profile_deeper_sections(sw,'3570',c('3570','4900'))
+  own <- b$njsla_latest %>% dplyr::filter(series=='District',subject=='ELA',grade_test=='Grade 3')
+  expect_equal(own$end_year,2025)
+  expect_equal(own$proficiency_rate,27.6)
+  expect_true(is.na(own$valid_scores))
+  expect_equal(b$teacher_exp$teacher_avg_years_exp_district,9.6)
+  expect_equal(b$teacher_exp$percentage_of_out_of_field_teachers,4.4)
+  expect_equal(b$police$violence,7)
+  expect_equal(b$police$hib,13)
+  expect_true(any(is.na(b$hib$hib_confirmed)))
+  # Every historical row stays in its own request year; 2024 long-form
+  # names are normalized without inventing a subgroup or rescaling rates.
+  source <- profile_retained_fixture()$discipline_2024
+  source <- source[source$district_id=='3570' & source$student_group_grade=='Districtwide',]
+  row <- b$discipline[b$discipline$end_year==2024 & b$discipline$profile_district_total %in% TRUE,]
+  expect_equal(row$any_susp_pct,site$spr_pct_numeric(source$percent_students_any_suspension))
+  expect_equal(sort(unique(b$discipline$end_year)),2022:2025)
+  expect_equal(b$discipline$any_susp_pct[b$discipline$end_year==2025 & b$discipline$profile_district_total],.95)
+  expect_error(site$profile_deeper_sections(replace(sw,'njsla',list(dplyr::bind_rows(sw$njsla,sw$njsla[1,]))),'3570',character()),'Duplicate profile')
+})
+
+test_that('paired gaps preserve independently missing sides and discontinuous years', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  b <- site$profile_assessment(sw$njsla,'3570',character())
+  expect_equal(b$njsla_gaps$gap,b$njsla_gaps$rate_a-b$njsla_gaps$rate_b)
+  g <- b$njsla_gaps
+  expect_true(any(!is.finite(g$gap)))
+  d <- sw$njsla[sw$njsla$end_year!=2023,]
+  z <- site$profile_assessment(d,'3570',character())$njsla_trend
+  expect_true(all(z$segment[z$end_year==2024]>z$segment[z$end_year==2022]))
+  expect_identical(site$profile_deeper_sections(sw,'1234',character()),list())
+})
+
+test_that('actual suppressed rows and absent domains render notices without charts', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  source_gaps <- site$profile_assessment(sw$njsla,'3570',character())$njsla_gaps
+  source_gaps <- source_gaps[!is.finite(source_gaps$gap),]
+  expect_gt(nrow(source_gaps),0)
+  env <- new.env(parent=globalenv())
+  sys.source(package_source_path('site','R','bundle.R'),env)
+  env$b <- list(njsla_latest=NULL,njsla_gaps=source_gaps,discipline=NULL)
+  env$chart_grade_proficiency <- env$chart_gap <- function(...) stop('Chart must not run')
+  lines <- readLines(package_source_path('site','_district-body.qmd'),warn=FALSE)
+  chunk <- function(name) {
+    start <- which(startsWith(lines,paste0('```{r ',name,',')))
+    finish <- which(seq_along(lines)>start & lines=='```')[1]
+    parse(text=lines[seq.int(start+1,finish-1)])
+  }
+  expect_match(paste(capture.output(eval(chunk('njsla-latest'),env)),collapse=' '),'not available')
+  expect_match(paste(capture.output(eval(chunk('njsla-gaps'),env)),collapse=' '),'Not enough unsuppressed data')
+  expect_match(paste(capture.output(eval(chunk('discipline'),env)),collapse=' '),'not available')
+})
+
+profile_template_chunk <- function(name) {
+  lines <- readLines(package_source_path('site', '_district-body.qmd'), warn = FALSE)
+  start <- which(startsWith(lines, paste0('```{r ', name, ',')))
+  finish <- which(seq_along(lines) > start & lines == '```')[1]
+  parse(text = lines[seq.int(start + 1, finish - 1)])
+}
+
+test_that('a genuine total-only assessment slice omits unavailable paired gaps', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  totals <- sw$njsla[tolower(sw$njsla$subgroup) == 'total population', ]
+  b <- site$profile_assessment(totals, '3570', character())
+  expect_gt(nrow(b$njsla_latest), 0)
+  expect_null(b$njsla_gaps)
+})
+
+test_that('both suspension measures retain source rates and same-year peer medians in the chart', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  b <- site$profile_deeper_sections(sw, '3570', c('0010', '4900'))
+  env <- new.env(parent = globalenv())
+  sys.source(package_source_path('site', 'R', 'bundle.R'), env)
+  sys.source(package_source_path('site', 'R', 'theme.R'), env)
+  env$b <- b
+  env$kable <- knitr::kable
+  env$label_number <- scales::label_number
+  printed <- list()
+  env$print <- function(x, ...) printed[[length(printed) + 1L]] <<- x
+  capture.output(eval(profile_template_chunk('discipline'), env))
+  plot <- printed[[length(printed)]]
+  expect_s3_class(plot, 'ggplot')
+  expect_setequal(unique(plot$data$metric), c('any_susp_pct', 'outof_school_pct'))
+  own <- plot$data[plot$data$series == 'District', ]
+  for (metric in c('any_susp_pct', 'outof_school_pct')) {
+    source <- b$discipline[b$discipline$profile_district_total %in% TRUE, ]
+    actual <- own[own$metric == metric, ]
+    expect_equal(actual$value, source[[metric]][match(actual$end_year, source$end_year)])
+    peer <- plot$data[plot$data$series == 'Peer median' & plot$data$metric == metric, ]
+    expect_gt(nrow(peer), 0)
+    expect_equal(peer$value, b$discipline_peer[[metric]][match(peer$end_year, b$discipline_peer$end_year)])
+  }
+  expect_match(paste(printed[[1]], collapse = '\n'), 'outof_school_pct')
+})
+
+test_that('missing discipline years break both district and peer chart lines', {
+  site <- load_site_build_helpers()
+  sw <- profile_fixture_statewide(site)
+  sw$discipline <- sw$discipline[sw$discipline$end_year != 2023, ]
+  b <- site$profile_deeper_sections(sw, '3570', c('0010', '4900'))
+  env <- new.env(parent = globalenv())
+  sys.source(package_source_path('site', 'R', 'bundle.R'), env)
+  sys.source(package_source_path('site', 'R', 'theme.R'), env)
+  env$b <- b
+  env$kable <- knitr::kable
+  env$label_number <- scales::label_number
+  plot <- NULL
+  env$print <- function(x, ...) if (inherits(x, 'ggplot')) plot <<- x
+  capture.output(eval(profile_template_chunk('discipline'), env))
+  d <- plot$data
+  expect_gt(nrow(d), 0)
+  for (series in c('District', 'Peer median')) for (metric in c('any_susp_pct', 'outof_school_pct')) {
+    z <- d[d$series == series & d$metric == metric, ]
+    expect_gt(z$segment[z$end_year == 2024], z$segment[z$end_year == 2022])
+  }
+})
+
+test_that('an independently unavailable HIB confirmed count retains its published investigation total', {
+  site <- load_site_build_helpers()
+  b <- site$profile_deeper_sections(profile_fixture_statewide(site), '3570', character())
+  b$hib <- b$hib[is.na(b$hib$hib_confirmed) & is.finite(b$hib$total_hib_investigations), ]
+  expect_gt(nrow(b$hib), 0)
+  env <- new.env(parent = globalenv())
+  sys.source(package_source_path('site', 'R', 'bundle.R'), env)
+  env$b <- b
+  env$kable <- knitr::kable
+  printed <- NULL
+  env$print <- function(x, ...) printed <<- x
+  out <- capture.output(eval(profile_template_chunk('hib'), env))
+  expect_false(any(grepl('not available', out)))
+  expect_s3_class(printed, 'knitr_kable')
+  expect_match(paste(printed, collapse = '\n'), 'No Identified Nature')
+  expect_match(paste(printed, collapse = '\n'), as.character(b$hib$total_hib_investigations))
+  expect_true(all(is.na(b$hib$hib_confirmed)))
+})

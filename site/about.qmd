@@ -19,7 +19,11 @@ number isn't published by the state, the section says so rather than guessing.
 | Spending | [Taxpayers' Guide to Educational Spending](https://www.nj.gov/education/guide/) (TGES) | 2014–2024 (actuals) |
 | Graduation | NJ DOE Four-Year Adjusted Cohort Graduation Rate | 2013–2025 |
 | High-school proficiency | NJGPA (NJ Graduation Proficiency Assessment) | 2022–2025 |
-| Chronic absenteeism | NJ School Performance Reports | 2019–2024 |
+| Chronic absenteeism | NJ School Performance Reports | Published years 2019–2025; 2020 unavailable |
+| NJSLA grades 3–8 and paired achievement gaps | NJ School Performance Reports, ELA/Math performance by test | 2022–2025 |
+| Suspensions, HIB and police notifications | NJ School Performance Reports | 2022–2025 |
+| Teacher experience, retention and staff/student demographics | NJ School Performance Reports | Latest available from 2022–2025 |
+| State aid categories | NJ DOE district aid allocations | Latest retained build year |
 | Staffing ratios | NJ School Performance Reports | latest year |
 
 ## How to read the comparisons
@@ -47,6 +51,22 @@ falls within its peer group on that metric, from the latest available year.
   rate; a profile marks such sections as not applicable rather than showing an
   empty chart.
 
+SPR percentages retain their published 0–100 units, including values below 1%.
+Enrollment shares and graduation proportions are converted explicitly for display.
+Counts and rates suppress independently; a published rate does not authorize an
+inferred count. Missing gap comparators remain missing. Each grade has its own
+NJSLA trend; lines stop at missing years or suppressed rates. HIB nature categories
+can overlap, so the profile prints their source counts without summing them.
+Published investigation totals remain visible when confirmed counts are unavailable.
+Discipline charts show both any-suspension and out-of-school-suspension rates,
+with the same-year peer median for each. District and peer lines stop at missing
+years or rates.
+
+The enrollment source publishes free/reduced-lunch participation, not an
+economically-disadvantaged headcount. Economic disadvantage is a reporting subgroup
+in assessments and climate data. Separate special-education classification counts
+and TGES revenue mix remain pending original-source verification for these profiles.
+
 ## Reproduce any number
 
 Everything here is one function call away:
@@ -56,10 +76,19 @@ Everything here is one function call away:
 remotes::install_github("almartin82/njschooldata")
 library(njschooldata)
 
-fetch_enr(2026, tidy = TRUE)        # enrollment, all districts
+fetch_enr(2026)        # enrollment, all districts
 fetch_grad_rate(2025)               # graduation rates
 fetch_tges(2024)                    # spending (Taxpayers' Guide)
-fetch_absence(2024, level = "district")  # chronic absenteeism
+fetch_absence(2025, level = "district")  # chronic absenteeism
+fetch_spr_proficiency_by_test(2025, "ela", level = "district")
+fetch_spr_proficiency_by_test(2025, "math", level = "district")
+fetch_disciplinary_removals(2025, level = "district")
+fetch_hib_investigations(2025, level = "district")
+fetch_police_notifications(2025, level = "district")
+fetch_teacher_experience(2025, level = "district")
+fetch_spr_staff_retention(2025, level = "district")
+fetch_staff_demographics(2025, level = "district")
+fetch_state_aid(2024)
 ```
 
 The full data engine — 80+ fetchers covering assessments, finance, staffing,

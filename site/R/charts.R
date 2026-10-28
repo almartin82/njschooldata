@@ -43,7 +43,7 @@ chart_composition <- function(comp_row, title, subtitle = NULL) {
   vals <- vapply(names(cats), function(k) {
     v <- comp_row[[paste0(k, "_share")]]; if (is.null(v) || length(v) == 0) NA_real_ else v[1]
   }, numeric(1))
-  d <- tibble(cat = unname(cats), share = as_pct_scale(vals)) %>%
+  d <- tibble(cat = unname(cats), share = as_pct_scale(vals, multiplier = 100)) %>%
     filter(is.finite(share)) %>% arrange(share) %>%
     mutate(cat = factor(cat, levels = cat))
   ggplot(d, aes(x = cat, y = share)) +
@@ -79,4 +79,36 @@ chart_vs_peer <- function(value, peer_median, title, subtitle = NULL,
     scale_y_continuous(labels = fmt, limits = c(0, NA)) +
     labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
     theme_nj() + theme(legend.position = "none")
+}
+
+# Explicit percentage-point units; no scale inferred from the district values.
+chart_grade_proficiency <- function(df, title, subtitle=NULL) {
+  df <- df[is.finite(df$proficiency_rate),]
+  stopifnot(nrow(df)>0)
+  ggplot(df,aes(grade_test,proficiency_rate,fill=series)) +
+    geom_col(position='dodge') + facet_wrap(~subject) +
+    scale_x_discrete(labels=function(x) sub('Grade ','',x,fixed=TRUE)) +
+    scale_y_continuous(labels=label_number(suffix='%')) +
+    labs(title=title,subtitle=subtitle,x='Grade',y='Proficient (%)',fill=NULL) + theme_nj()
+}
+chart_gap <- function(df,title,subtitle=NULL) {
+  df <- df[is.finite(df$gap),]
+  stopifnot(nrow(df)>0)
+  ggplot(df,aes(end_year,gap,color=grade_test,group=interaction(grade_test,segment))) +
+    geom_hline(yintercept=0,color='gray60') + geom_line() + geom_point() +
+    facet_grid(comparison~subject) + scale_x_continuous(breaks=unique(df$end_year)) +
+    labs(title=title,subtitle=subtitle,x=NULL,y='Percentage points',color='Grade') + theme_nj()
+}
+chart_group_compare <- function(df,title,subtitle=NULL) {
+  df <- df[is.finite(df$value),]
+  stopifnot(nrow(df)>0)
+  ggplot(df,aes(category,value,fill=series)) + geom_col(position='dodge') +
+    coord_flip() + scale_x_discrete(labels=function(x) {
+      labels <- c(white_district='White',twoor_more_races_district='Two or more races',
+        native_hawaiian_pacific_islander_district='Native Hawaiian / Pacific Islander',
+        hispanic_latino_district='Hispanic / Latino',black_african_american_district='Black / African American',
+        asian_district='Asian',american_indian_alaska_native_district='American Indian / Alaska Native')
+      ifelse(x %in% names(labels),labels[x],x)
+    }) + scale_y_continuous(labels=label_number(suffix='%')) +
+    labs(title=title,subtitle=subtitle,x=NULL,y='Percent',fill=NULL) + theme_nj()
 }

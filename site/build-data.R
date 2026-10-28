@@ -45,10 +45,11 @@ dir.create(SW_DIR, recursive = TRUE, showWarnings = FALSE)
 ENR_YEARS     <- 2015:2026
 GRAD_YEARS    <- 2013:2025
 NJGPA_YEARS   <- 2022:2025
-ABSENCE_YEARS <- 2019:2024
+ABSENCE_YEARS <- intersect(2019:2025, njschooldata:::get_source_years("absence"))
 TGES_YEARS    <- 2016:2025
 STAFF_YEARS   <- c(2024, 2023)   # try latest first
-AID_YEARS     <- c(2024, 2023)
+AID_YEARS     <- c(2024, 2023) # newer parents not independently verified here
+SPR_YEARS <- 2022:2025
 MANIFEST_PATH <- file.path(BUNDLE_DIR, "build-manifest.json")
 SITE_MANIFEST_ATTR <- "njsd_site_manifest_records"
 
@@ -60,6 +61,125 @@ SITE_MANIFEST_ATTR <- "njsd_site_manifest_records"
   retrieved_at = character(), digest = character(), warning = character(),
   error = character(), artifact = character(), stringsAsFactors = FALSE
 )
+
+# Pure profile slicing. SPR percentages are published on the 0-100 scale;
+# comma-separated counts are counts. Suppression never becomes zero.
+spr_pct_numeric <- function(x) {
+  suppressWarnings(as.numeric(gsub('[,%]', '', trimws(as.character(x)))))
+}
+
+profile_unique <- function(df, keys) {
+  if (nrow(df) && anyDuplicated(df[keys])) {
+    stop('Duplicate profile observations for ', paste(keys, collapse = ', '), call. = FALSE)
+  }
+  df
+}
+
+profile_slice <- function(df, id, keys = 'end_year', latest = FALSE) {
+  if (!is.data.frame(df) || !nrow(df)) return(NULL)
+  d <- df[df$is_district %in% TRUE & df$district_id == id, , drop = FALSE]
+  if (!nrow(d)) return(NULL)
+  if (latest) d <- d[d$end_year == max(d$end_year), , drop = FALSE]
+  profile_unique(d, keys)
+}
+
+# Convert only the documented numeric fields, leaving labels and native keys intact.
+profile_numeric <- function(d, cols) {
+  for (col in intersect(cols, names(d))) d[[col]] <- spr_pct_numeric(d[[col]])
+  d
+}
+
+profile_spr_year <- function(d, year, domain = NULL) {
+  if (identical(domain,"discipline")) {
+    # Original 2022/23 sheets contain one district-wide record; 2024 adds
+    # the published student-group dimension and spells its metric names out.
+    d$profile_district_total <- if (!"student_group_grade" %in% names(d)) TRUE else
+      d$student_group_grade %in% c("All Students","Districtwide")
+    if (!"student_group_grade" %in% names(d)) d$student_group_grade <- NA_character_
+    aliases <- c(in_school_count="number_students_in_school_suspension",
+      in_school_pct="percent_students_in_school_suspension",
+      outof_school_count="number_students_outof_school_suspension",
+      outof_school_pct="percent_students_outof_school_suspension",
+      any_susp_count="number_students_any_suspension",any_susp_pct="percent_students_any_suspension",
+      removal_count="number_stu_removalto_other_edu_prog",removal_pct="percent_stu_removalto_other_edu_prog",
+      expulsion_count="number_students_expulsions",expulsion_pct="percent_students_expulsions")
+    for (name in names(aliases)) if (!name %in% names(d) && aliases[[name]] %in% names(d)) d[[name]] <- d[[aliases[[name]]]]
+  }
+  # Redesigned and trend sheets may carry several school years. The request
+  # year is not evidence that every row belongs to it.
+  njschooldata:::filter_spr_to_year(d, year)
+}
+
+profile_assessment <- function(d, id, peers) {
+  if (!is.data.frame(d) || !nrow(d)) return(list())
+  grades <- paste('Grade', 3:8)
+  d <- d[d$grade_test %in% grades, , drop = FALSE]
+  profile_unique(d, c('end_year','district_id','school_id','subject','grade_test','subgroup'))
+  district <- d[d$is_district & d$district_id == id, , drop = FALSE]
+  total <- d[tolower(d$subgroup) == 'total population', , drop = FALSE]
+  own <- total[total$is_district & total$district_id == id, , drop = FALSE]
+  if (!nrow(own)) return(list())
+  year <- max(own$end_year)
+  latest <- own[own$end_year == year, , drop = FALSE] %>%
+    transmute(end_year, subject, grade_test, series = 'District', proficiency_rate, valid_scores)
+  state <- total[total$is_state & total$end_year == year, , drop = FALSE] %>%
+    transmute(end_year, subject, grade_test, series = 'State', proficiency_rate, valid_scores)
+  peer <- total[total$is_district & total$district_id %in% peers & total$end_year == year, , drop = FALSE] %>%
+    group_by(end_year, subject, grade_test) %>%
+    summarise(proficiency_rate = if (all(is.na(proficiency_rate))) NA_real_ else median(proficiency_rate, na.rm=TRUE),
+              valid_scores = NA_real_, .groups='drop') %>% mutate(series='Peer median')
+  # Each plotted grade remains a separate series. No means of changing grade
+  # sets or inferred weighting from independently suppressed valid-score counts.
+  trend <- own %>% arrange(subject,grade_test,end_year) %>%
+    group_by(subject,grade_test) %>% mutate(segment=cumsum(c(TRUE,diff(end_year)!=1) | !is.finite(proficiency_rate) | dplyr::lag(!is.finite(proficiency_rate),default=FALSE))) %>% ungroup()
+  pairs <- list('Economic disadvantage' = c('economically disadvantaged','non-economically disadvantaged students'),
+                'Disability' = c('students with disabilities','students without disabilities'))
+  gaps <- bind_rows(lapply(names(pairs),function(label) {
+    p <- pairs[[label]]
+    a <- district[tolower(district$subgroup)==p[1],] %>% select(end_year,subject,grade_test,rate_a=proficiency_rate)
+    z <- district[tolower(district$subgroup)==p[2],] %>% select(end_year,subject,grade_test,rate_b=proficiency_rate)
+    full_join(a,z,by=c('end_year','subject','grade_test')) %>%
+      mutate(comparison=label, gap=rate_a-rate_b)
+  })) %>% arrange(comparison,subject,grade_test,end_year) %>%
+    group_by(comparison,subject,grade_test) %>%
+    mutate(segment=cumsum(c(TRUE,diff(end_year)!=1) | !is.finite(gap) | dplyr::lag(!is.finite(gap),default=FALSE))) %>% ungroup()
+  b <- list(njsla_latest=bind_rows(latest,state,peer),njsla_trend=trend)
+  if (nrow(gaps)) b$njsla_gaps <- gaps
+  b
+}
+
+profile_deeper_sections <- function(sw, id, peers) {
+  b <- profile_assessment(sw$njsla,id,peers)
+  specs <- list(discipline=c('end_year','student_group_grade'),hib=c('end_year','hib_nature'),
+                police='end_year',teacher_exp='end_year',staff_retention=c('end_year','teachers_admins'),
+                staff_demo=c('end_year','teachers_admins_students'),sped='end_year')
+  numeric <- list(discipline=c('in_school_count','in_school_pct','outof_school_count','outof_school_pct','any_susp_count','any_susp_pct','removal_count','removal_pct','expulsion_count','expulsion_pct'),
+                  hib=c('hib_alleged','hib_confirmed','total_hib_investigations'),
+                  police=c('violence','weapons','vandalism','substances','hib','other_incidents'))
+  for (name in names(specs)) {
+    d <- profile_slice(sw[[name]], id, specs[[name]], latest = name != 'discipline')
+    if (is.null(d)) next
+    cols <- numeric[[name]]
+    if (name %in% c('teacher_exp','staff_retention','staff_demo')) {
+      cols <- grep('district|state|percentage_of_out_of_field_teachers', names(d), value=TRUE)
+      cols <- setdiff(cols,c('district_id','district_name','is_district','is_state'))
+    }
+    b[[name]] <- profile_numeric(d,cols)
+    if (name == 'discipline') {
+      all <- sw$discipline %>% filter(is_district, profile_district_total %in% TRUE,district_id %in% peers)
+      all <- profile_numeric(all,c('any_susp_pct','outof_school_pct'))
+      peer <- all %>% group_by(end_year) %>%
+        summarise(any_susp_pct=if(all(is.na(any_susp_pct))) NA_real_ else median(any_susp_pct,na.rm=TRUE),
+                  outof_school_pct=if(all(is.na(outof_school_pct))) NA_real_ else median(outof_school_pct,na.rm=TRUE),.groups='drop')
+      if (nrow(peer)) b$discipline_peer <- peer
+    }
+  }
+  if (is.data.frame(sw$aid) && 'is_aid_category' %in% names(sw$aid)) {
+    aid <- sw$aid %>% filter(is_district, district_id==id, is_aid_category %in% TRUE)
+    if (nrow(aid)) b$aid_categories <- profile_unique(aid,c('end_year','aid_category'))
+  }
+  b
+}
 
 # ---- small helpers ----------------------------------------------------------
 log_msg <- function(...) cat(format(Sys.time(), "%H:%M:%S"), "|", ..., "\n")
@@ -222,6 +342,10 @@ register_build_requests <- function() {
   )
   absence_gaps <- setdiff(ABSENCE_YEARS, absence_supported)
 
+  manifest_request("njsla", SPR_YEARS, c("ela", "math"))
+  for (name in c("discipline","hib","police","teacher_exp","staff_retention","staff_demo")) {
+    manifest_request(name, SPR_YEARS)
+  }
   manifest_request("directory")
   manifest_request("dfg")
   manifest_request("enrollment", ENR_YEARS)
@@ -585,9 +709,23 @@ assemble_statewide <- function(refresh = FALSE) {
   }, refresh, records_inside = TRUE, domain = "state_aid",
   manifest_domains = c("state_aid", "state_aid_candidate"))
 
+  njsla <- cache_or_build("profile_njsla", function() {
+    fetch_year_components(SPR_YEARS, c("ela","math"), function(y, subject) {
+      fetch_spr_proficiency_by_test(y, subject, level="district")
+    }, "njsla")
+  }, refresh, records_inside=TRUE, domain="njsla")
+  spr_fetchers <- list(discipline=fetch_disciplinary_removals, hib=fetch_hib_investigations,
+    police=fetch_police_notifications, teacher_exp=fetch_teacher_experience,
+    staff_retention=fetch_spr_staff_retention, staff_demo=fetch_staff_demographics)
+  spr <- lapply(names(spr_fetchers), function(name) {
+    cache_or_build(paste0("profile_",name), function() {
+      fetch_years(SPR_YEARS, function(y) profile_spr_year(spr_fetchers[[name]](y, level="district"), y, name), name)
+    }, refresh, records_inside=TRUE, domain=name)
+  })
+  names(spr) <- names(spr_fetchers)
   log_msg("STAGE 1 complete")
-  list(dir = dir_all, dfg = dfg, enr = enr, grad = grad, njgpa = njgpa,
-       absence = absence, tges = tges, staff = staff, aid = aid)
+  c(list(dir = dir_all, dfg = dfg, enr = enr, grad = grad, njgpa = njgpa,
+       absence = absence, tges = tges, staff = staff, aid = aid, njsla=njsla), spr)
 }
 
 # =============================================================================
@@ -633,7 +771,7 @@ build_bundle <- function(id, sw) {
   b$enr_grades <- e %>% filter(subgroup == "total_enrollment", end_year == b$enr_latest_year,
                                !grade_level %in% c("TOTAL")) %>%
     select(grade_level, n_students)
-  b$enr_special <- e %>% filter(subgroup %in% c("econ_disadv","free_reduced_lunch","lep","special_ed"),
+  b$enr_special <- e %>% filter(subgroup %in% c("free_reduced_lunch","lep"),
                                 grade_level == "TOTAL") %>%
     arrange(end_year) %>% select(end_year, subgroup, n_students, pct)
 
@@ -722,6 +860,7 @@ build_bundle <- function(id, sw) {
       select(any_of(c("aid_category","amount","end_year")))
   }
 
+  b <- c(b, profile_deeper_sections(sw, id, peers))
   out <- file.path(BUNDLE_DIR, paste0(id, ".rds"))
   saveRDS(b, out)
   invisible(b)

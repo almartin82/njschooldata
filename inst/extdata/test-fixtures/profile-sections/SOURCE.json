@@ -1,0 +1,44 @@
+{
+  "description": "Faithful district/state subsets of public fetcher outputs replayed from retained original NJ DOE SPR district workbooks; no typed data values. Parent bytes not newly acquired. Original acquisition time and legacy cache source-identity sidecars remain unverified.",
+  "district_ids": [
+    "3570",
+    "4900",
+    "0010",
+    "6010"
+  ],
+  "extraction": "docs/audits/2026-10-07-plan-execution/17-nj-evidence/observe.R and render.R; testthat injection replaces only the workbook transport with retained original path under OS network denial. Every source output column is retained. Includes 2022-2025 eight domain outputs (ELA, Math, discipline, HIB, police, experience, retention, demographics).",
+  "parents": [
+    {
+      "end_year": 2022,
+      "bytes": 23794959,
+      "sha256": "402cb2d2169065c8892e98c6c987a5dce98e7cbc07b3001f50c5aaac28a64bd1",
+      "path": "/Users/almartin/Library/Caches/org.R-project.R/R/njschooldata/spr-workbooks/SPR_district_2022.xlsx",
+      "url": "https://www.nj.gov/education/schoolperformance/",
+      "registered_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2021-2022/Database_DistrictStateDetail.xlsx"
+    },
+    {
+      "end_year": 2023,
+      "bytes": 26878567,
+      "sha256": "3485f3f514ec761115ff3ee26b3b9b2f2cb69561276dda839ed5efb646784454",
+      "path": "/Users/almartin/Library/Caches/org.R-project.R/R/njschooldata/spr-workbooks/SPR_district_2023.xlsx",
+      "url": "https://www.nj.gov/education/schoolperformance/",
+      "registered_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2022-2023/Database_DistrictStateDetail.xlsx"
+    },
+    {
+      "end_year": 2024,
+      "bytes": 30378206,
+      "sha256": "9228143c10c31a778d78b394fc789335780c90d65d368a6963874da569dc7710",
+      "path": "/Users/almartin/Library/Caches/org.R-project.R/R/njschooldata/spr-workbooks/SPR_district_2024.xlsx",
+      "url": "https://www.nj.gov/education/schoolperformance/",
+      "registered_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_DistrictStateDetail.xlsx"
+    },
+    {
+      "end_year": 2025,
+      "bytes": 119164900,
+      "sha256": "1445a4279ee2d64c3360d4c769465347b6685247f4e5d778f3f087ffb34e4ff7",
+      "path": "/Users/almartin/Library/Caches/org.R-project.R/R/njschooldata/spr-workbooks/SPR_district_2025.xlsx",
+      "url": "https://www.nj.gov/education/schoolperformance/",
+      "registered_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_DistrictStateDetail.xlsx"
+    }
+  ]
+}

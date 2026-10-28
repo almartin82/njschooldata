@@ -12,11 +12,11 @@ load_bundle <- function(id) {
 }
 
 # ---- formatting -------------------------------------------------------------
-fmt_int    <- function(x) ifelse(is.na(x), "n/a", formatC(round(x), format = "d", big.mark = ","))
+fmt_int    <- function(x) ifelse(is.na(x), "n/a", format(x, trim = TRUE, scientific = FALSE, digits = 15, big.mark = ","))
 fmt_dollar <- function(x) ifelse(is.na(x), "n/a", paste0("$", formatC(round(x), format = "d", big.mark = ",")))
 fmt_pct    <- function(x, digits = 1) ifelse(is.na(x), "n/a", paste0(formatC(x, format = "f", digits = digits), "%"))
-# grad/assess rates arrive as proportions (0-1) in some fetchers, percents in others
-as_pct_scale <- function(x) ifelse(!is.na(x) & max(x, na.rm = TRUE) <= 1.5, x * 100, x)
+# Scale is a property of the source field, never of the selected values.
+as_pct_scale <- function(x, multiplier = 1) x * multiplier
 
 #' TRUE when a section has usable data (non-null, has rows / finite values).
 has_data <- function(x) {
