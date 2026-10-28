@@ -35,6 +35,8 @@ jobs:
             any::zip
             any::testthat
             any::withr
+            any::ggplot2
+            any::knitr
           needs: check
           dependencies: '"hard"'
 

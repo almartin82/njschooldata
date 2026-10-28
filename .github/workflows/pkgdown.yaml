@@ -13,6 +13,8 @@ name: pkgdown
 
 jobs:
   pkgdown:
+    # Campaign documentation HOLD; release requires the reserved public review.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     # Only restrict concurrency for non-PR jobs
     concurrency:
