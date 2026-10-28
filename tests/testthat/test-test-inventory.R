@@ -19,6 +19,9 @@ test_that("network-bearing R tests are explicitly gated", {
     "test-directory-contract.R",
     # Homeroom byte fixtures and mocked acquisition; no live requests.
     "test-directory-source-fidelity.R",
+    # Both acquisition functions receive fixture-copy request_fn callbacks;
+    # fetch_directory() also receives the mocked Homeroom source results.
+    "test-directory-source-provenance.R",
     # Source transport, enrollment, and SPR calls inject request/read fixtures;
     # the URLs in this file are examples or inputs to mocked requests.
     "test-audit-round-a.R",

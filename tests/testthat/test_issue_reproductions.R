@@ -507,7 +507,7 @@ test_that("fetch_reportcard_special_pop n_students is consistent with percent an
     )
 
   # Allow rounding tolerance of 1
-  expect_true(all(check$diff <= 1, na.rm = TRUE),
+  expect_true(all(check$diff <= 1),
     info = "n_students should be derivable from percent and n_enrolled")
 })
 
@@ -641,11 +641,6 @@ test_that("collapse_agg_names deduplicates and counts repeated names", {
 })
 
 test_that("collapse_agg_names handles basic deduplication", {
-  skip_if_not(
-    exists("collapse_agg_names", where = asNamespace("njschooldata")),
-    "collapse_agg_names not yet implemented"
-  )
-
   # Single repeated name
   input <- "School A, School A, School A"
   result <- njschooldata::collapse_agg_names(input)
@@ -868,6 +863,7 @@ test_that("charter_sector_enr_aggs includes n_schools or n_charters column", {
   # a source condition, so it is left unguarded and any failure is ours.
   result <- charter_sector_enr_aggs(enr)
 
+  expect_gt(nrow(result), 0L)
   # Should have a column indicating how many charters are in the sector
   has_count_col <- any(c("n_schools", "n_charters", "n_charter_rows") %in% names(result))
   expect_true(has_count_col,
@@ -892,6 +888,7 @@ test_that("charter_sector_grate_aggs includes n_charter_rows column", {
   # a source condition, so it is left unguarded and any failure is ours.
   result <- charter_sector_grate_aggs(grate)
 
+  expect_gt(nrow(result), 0L)
   # The aggregate calc function creates n_charter_rows but it may be
   # dropped by grate_column_order(). Issue #69 says it should be kept.
   expect_true("n_charter_rows" %in% names(result),
@@ -901,10 +898,7 @@ test_that("charter_sector_grate_aggs includes n_charter_rows column", {
     ))
 })
 
-test_that("charter sector with single school is identifiable", {
-  # The issue says: "some city charter 'sectors' are only one school -
-  # make this easy to see"
-
+test_that("charter sector counts remain present, finite and positive", {
   skip_if_no_live_tests()
 
   grate <- njsd_live(fetch_grad_rate(2019), "fetch_grad_rate(2019)")
@@ -913,12 +907,8 @@ test_that("charter sector with single school is identifiable", {
   # a source condition, so it is left unguarded and any failure is ours.
   result <- charter_sector_grate_aggs(grate)
 
-  # n_charter_rows should be present and allow identifying single-school sectors
-  skip_if_not("n_charter_rows" %in% names(result),
-    "n_charter_rows column not yet retained in output")
-
-  # There should be at least one sector with a small number of charters
-  min_charters <- min(result$n_charter_rows, na.rm = TRUE)
-  expect_true(is.finite(min_charters),
-    info = "n_charter_rows should have finite values")
+  expect_gt(nrow(result), 0L)
+  expect_true("n_charter_rows" %in% names(result))
+  expect_true(all(is.finite(result$n_charter_rows)))
+  expect_true(all(result$n_charter_rows > 0))
 })

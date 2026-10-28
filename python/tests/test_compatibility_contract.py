@@ -157,10 +157,17 @@ def test_generated_signatures_match_loaded_r_package():
 
 @pytest.mark.requires_r
 def test_real_bridge_reports_versions_and_reads_registry_without_network():
+    # The bindings support an R release range; the two packages can have
+    # different patch releases. Read the installed release independently of
+    # the bridge's version cache so a stale or fabricated report still fails.
+    installed_r_version = str(_r_bridge.ro.r(
+        'as.character(utils::packageDescription("njschooldata")$Version)'
+    )[0])
+    _r_bridge._assert_supported_r_version(installed_r_version)
     versions = njschooldata.version_info()
     assert versions == {
         "python": PYTHON_PACKAGE_VERSION,
-        "r": PYTHON_PACKAGE_VERSION,
+        "r": installed_r_version,
         "supported_r": f">={R_PACKAGE_MIN_VERSION},<{R_PACKAGE_MAX_VERSION}",
     }
 

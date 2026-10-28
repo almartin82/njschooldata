@@ -657,7 +657,7 @@ test_that("all functions work together in pipeline", {
   expect_true(nrow(retention_result) > 0)
 })
 
-test_that("functions handle edge cases gracefully", {
+test_that("staff analyses reject incomplete empty input", {
   # Empty data frame
   empty_df <- tibble::tibble(
     end_year = integer(0),
@@ -665,10 +665,18 @@ test_that("functions handle edge cases gracefully", {
     school_id = character(0)
   )
 
-  # Should not crash, but may return empty or error appropriately
-  # (Actual behavior depends on implementation)
-  # Skipping actual test as it may fail
-  expect_true(TRUE)
+  expect_error(
+    calc_student_staff_ratio(empty_df),
+    "Cannot find student enrollment column", fixed = TRUE
+  )
+  expect_error(
+    calc_staff_diversity_metrics(empty_df),
+    "Cannot find demographic category column", fixed = TRUE
+  )
+  expect_error(
+    analyze_retention_patterns(empty_df),
+    "df_list must be a list of data frames", fixed = TRUE
+  )
 })
 
 test_that("functions handle real data structure", {
