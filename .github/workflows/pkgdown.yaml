@@ -125,6 +125,12 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
-          clean: false
+          # clean: true removes stale root pages left by earlier deploys.
+          # almanac/ is published separately and profiles/ by profiles.yml
+          # (target-folder: profiles), so both survive a docs deploy.
+          clean: true
+          clean-exclude: |
+            almanac/
+            profiles/
           branch: gh-pages
           folder: docs

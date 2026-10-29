@@ -6,7 +6,8 @@
 # network dependency to one explicit, infrequent job.
 #
 # Deploys into the `profiles/` subfolder of gh-pages. The pkgdown workflow deploys
-# the package docs to the gh-pages root with clean:false, so the two coexist:
+# the package docs to the gh-pages root with clean:true and excludes profiles/
+# (and almanac/) from cleaning, so the two coexist:
 #   almartin82.github.io/njschooldata/           -> package pkgdown site
 #   almartin82.github.io/njschooldata/profiles/  -> this district-profiles site
 name: profiles
