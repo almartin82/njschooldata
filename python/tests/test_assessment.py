@@ -4,6 +4,14 @@ import pytest
 import pandas as pd
 
 
+def _is_text_column(series):
+    """Text column under pandas 2 (object) or 3 (str): every present value is a str."""
+    if not (series.dtype == object or pd.api.types.is_string_dtype(series.dtype)):
+        return False
+    present = series.dropna()
+    return len(present) > 0 and all(isinstance(v, str) for v in present)
+
+
 class TestFetchParccSignature:
     """Unit tests for fetch_parcc function signature."""
 
@@ -116,7 +124,7 @@ class TestFetchAccessIntegration:
         from njschooldata import fetch_parcc
         result = fetch_parcc(2019, 4, "math")
         # Check ID columns are strings
-        assert result["district_id"].dtype == "object"
+        assert _is_text_column(result["district_id"])
         # Check numeric columns
         assert pd.api.types.is_numeric_dtype(result["number_of_valid_scale_scores"])
 
@@ -125,7 +133,7 @@ class TestFetchAccessIntegration:
         from njschooldata import fetch_access
         result = fetch_access(2024)
         # Check ID columns are strings
-        assert result["district_id"].dtype == "object"
+        assert _is_text_column(result["district_id"])
 
     def test_fetch_parcc_multiple_years(self):
         """Test fetching multiple years of data."""

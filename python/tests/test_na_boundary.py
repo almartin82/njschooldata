@@ -109,7 +109,7 @@ class TestThreeValuedCharterFlag:
     def test_input_frame_is_not_mutated(self):
         frame = self._frame()
         normalise_r_missingness(frame)
-        assert frame["is_charter"].dtype == object
+        assert frame["is_charter"].dtype == object  # pandas-dtype-name: ok (frame built by this test with R NA sentinel objects, asserting it is left unmutated)
 
 
 class TestIntegerSentinel:
@@ -149,8 +149,12 @@ class TestCharacterSentinel:
         )
         out = normalise_r_missingness(frame)
 
-        assert out["is_charter"].dtype == object
+        # Not guessed into boolean or numeric: every cell stays missing.
+        assert out["is_charter"].dtype != "boolean"
+        assert not pd.api.types.is_bool_dtype(out["is_charter"])
+        assert not pd.api.types.is_numeric_dtype(out["is_charter"])
         assert out["is_charter"].isna().all()
+        assert all(v is pd.NA or v is None for v in out["is_charter"])
 
 
 class TestPassthrough:

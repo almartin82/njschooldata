@@ -4,6 +4,14 @@ import pytest
 import pandas as pd
 
 
+def _is_text_column(series):
+    """Text column under pandas 2 (object) or 3 (str): every present value is a str."""
+    if not (series.dtype == object or pd.api.types.is_string_dtype(series.dtype)):
+        return False
+    present = series.dropna()
+    return len(present) > 0 and all(isinstance(v, str) for v in present)
+
+
 class TestFetchGradRateSignature:
     """Unit tests for fetch_grad_rate function signature."""
 
@@ -79,7 +87,7 @@ class TestFetchGradRateIntegration:
         from njschooldata import fetch_grad_rate
         result = fetch_grad_rate(2019)
         # Check ID columns are strings
-        assert result["district_id"].dtype == "object"
+        assert _is_text_column(result["district_id"])
         # Check numeric columns
         assert pd.api.types.is_numeric_dtype(result["grad_rate"])
 

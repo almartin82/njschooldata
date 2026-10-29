@@ -4,6 +4,14 @@ import pytest
 import pandas as pd
 
 
+def _is_text_column(series):
+    """Text column under pandas 2 (object) or 3 (str): every present value is a str."""
+    if not (series.dtype == object or pd.api.types.is_string_dtype(series.dtype)):
+        return False
+    present = series.dropna()
+    return len(present) > 0 and all(isinstance(v, str) for v in present)
+
+
 class TestFetchEnrSignature:
     """Unit tests for fetch_enr function signature and error handling."""
 
@@ -64,8 +72,8 @@ class TestFetchEnrIntegration:
         from njschooldata import fetch_enr
         result = fetch_enr(2020)
         # Check that ID columns are strings or objects
-        assert result["county_id"].dtype == "object"
-        assert result["district_id"].dtype == "object"
+        assert _is_text_column(result["county_id"])
+        assert _is_text_column(result["district_id"])
         # Check that enrollment columns are numeric
         assert pd.api.types.is_numeric_dtype(result["male"])
 
