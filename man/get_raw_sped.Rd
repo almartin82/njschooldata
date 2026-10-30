@@ -12,8 +12,7 @@ get_raw_sped(end_year, level = "district")
 \item{level}{one of \code{"district"} (default; district-level total
 classification rate, all supported years) or \code{"state"} (state-level
 counts + classification rate by IDEA disability category, 2025+ only --
-NJ DOE did not publish the by-disability state table in the older
-single-sheet workbooks).}
+this interface reads the consolidated 2025 workbook).}
 }
 \value{
 a dataframe with special ed counts, etc.

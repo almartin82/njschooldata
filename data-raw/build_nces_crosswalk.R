@@ -10,9 +10,9 @@
 #   1. NJ DOE directory ("Homeroom") — the state directory publishes the
 #      federal `NCES ID` (the full 7-digit LEAID) keyed by each district's
 #      CDS county/district code, and the per-school NCES fragment keyed by CDS
-#      county/district/school code. This is the bridge from CDS -> LEAID that
-#      the federal CCD does not carry directly (CCD's `state_leaid` is the NJ
-#      6-digit DOE LEA code, not the CDS district code).
+#      county/district/school code. This legacy builder uses that bridge;
+#      CCD also supports an exact direct district join on the six-digit
+#      county-plus-district suffix of `state_leaid` (see build_program_sources.py).
 #   2. CCD 2024 directory (via the Urban Institute Education Data API, a
 #      republication of the federal NCES Common Core of Data, fips=34) — the
 #      authoritative, versioned source of the 12-digit `NCESSCH`. The school
@@ -164,6 +164,18 @@ message("Wrote crosswalk: ",
 readme <- sprintf(
 "# NJ CDS -> NCES identifier crosswalk
 
+## Exact CCD state LEA keys for SpEd and EL
+
+`nj_ccd_state_leaid_2024.csv` contains 700 distinct CCD 2024 NJ
+`state_leaid` / `leaid` identifier pairs (`leaid` named `nces_dist`).
+Source: https://educationdata.urban.org/api/v1/school-districts/ccd/directory/2024/?fips=34
+It contains identifiers only, no population values. Rebuild with
+`python3 data-raw/build_program_sources.py`.
+Match exactly on `NJ-` + published two-digit county code + four-digit district
+code; unmatched keys remain NA. No district-only, name or directory fallback.
+
+## Existing CDS school bridge
+
 **Vintage:** CCD %d (school NCESSCH) + the current NJ DOE Homeroom directory
 (CDS -> LEAID bridge).
 
@@ -177,10 +189,10 @@ readme <- sprintf(
 CDS code (the package's `county_id` + `district_id` + `school_id`) to the
 7-digit NCES `LEAID` (`nces_dist`) and 12-digit `NCESSCH` (`nces_sch`).
 
-**How the join works:** the federal CCD's `state_leaid` is the NJ 6-digit DOE
-LEA code, not the CDS `district_id`, so CCD alone cannot be CDS-keyed. The NJ DOE
-directory carries BOTH the CDS code and the full 7-digit LEAID, providing the
-bridge. Schools join to CCD on the composite key (district LEAID + 3-digit
+**How this older bridge works:** the NJ DOE directory supplies the CDS code
+and full 7-digit LEAID. CCD also supports a direct county-plus-district join:
+its six-digit `state_leaid` suffix includes both codes, rather than the
+four-digit `district_id` alone. Schools join to CCD on the composite key (district LEAID + 3-digit
 school code) to get the 12-digit NCESSCH; NJ school codes are reused across
 districts, so the bare school code is never used alone. Every district LEAID is
 cross-validated against the CCD %d NJ universe; the build aborts on an

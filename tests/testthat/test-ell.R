@@ -18,7 +18,7 @@ ell_cols <- c(
   "is_state", "is_district", "is_school", "is_charter",
   "grade_level", "el_status", "subgroup", "subgroup_std",
   "n_students", "total_enrollment", "pct_of_enrollment",
-  "n_students_lower", "n_students_upper"
+  "n_students_lower", "n_students_upper", "suppressed"
 )
 
 # fetch a count-complete year and a percent-only year once; reuse across tests.

@@ -1,5 +1,195 @@
 {
-  "artifacts": [],
+  "schema_version": "source-validation-artifact-manifest/v1",
   "contract_id": "new_jersey_shipped_sources",
-  "schema_version": "source-validation-artifact-manifest/v1"
+  "artifacts": [
+    {
+      "artifact_id": "sped-2023",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/District_Enrollment_vs_SpecialED_Rates_Publicdata_3_21Age.xlsx",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/District_Enrollment_vs_SpecialED_Rates_Publicdata_3_21Age.xlsx",
+        "retrieved_at": "2026-10-30 11:32:39"
+      },
+      "tier": "shipped",
+      "byte_length": 50069,
+      "sha256": "2ff1d9d529ecb2cfeda61b3b572d810a2c10039197357fad87dd9305a05a9190",
+      "selectors": {
+        "family": "sped",
+        "key": "2023"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped-2023.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "sped-2024",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/DistrictWide_ClassificationRate_2324_public.xlsx",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/DistrictWide_ClassificationRate_2324_public.xlsx",
+        "retrieved_at": "2026-10-30 11:32:39"
+      },
+      "tier": "shipped",
+      "byte_length": 46536,
+      "sha256": "a1582687c7a281034fed107879f674ee5bea86c2b7eb3b01d55c85aa846c3d41",
+      "selectors": {
+        "family": "sped",
+        "key": "2024"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped-2024.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "sped-2025",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_ClassificationRates.xlsx",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_ClassificationRates.xlsx",
+        "retrieved_at": "2026-10-30 11:32:39"
+      },
+      "tier": "shipped",
+      "byte_length": 200265,
+      "sha256": "36ddf0e06470da9e79c9fb2ad5dc356ec0ff66a71428e0621d775df00f0cd38a",
+      "selectors": {
+        "family": "sped",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped-2025.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "sped_state-2023",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateClassificationRates_SpecialED_3-21.xlsx",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateClassificationRates_SpecialED_3-21.xlsx",
+        "retrieved_at": "2026-10-30 11:32:40"
+      },
+      "tier": "shipped",
+      "byte_length": 12905,
+      "sha256": "66e4ca20b8787e71e7f442954b8c4af5cf336cf005207592d8b88000981abd79",
+      "selectors": {
+        "family": "sped_state",
+        "key": "2023"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped_state-2023.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "sped_state-2024",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/StatewideClassificationRate_2324.xlsx",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/StatewideClassificationRate_2324.xlsx",
+        "retrieved_at": "2026-10-30 11:32:40"
+      },
+      "tier": "shipped",
+      "byte_length": 12523,
+      "sha256": "8b3f68a48d5f568b49b077216e7435347cf9aa7122a87202520121695ce0a1e1",
+      "selectors": {
+        "family": "sped_state",
+        "key": "2024"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped_state-2024.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2023",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/doedata/enr/enr23/enrollment_2223.zip",
+        "requested_url": "https://www.nj.gov/education/doedata/enr/enr23/enrollment_2223.zip",
+        "retrieved_at": "2026-10-30 11:32:40"
+      },
+      "tier": "shipped",
+      "byte_length": 1119856,
+      "sha256": "46c996cb75b7da56982a20adcfe5796a385e21a2b630489b77e603fea6479a68",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2023"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/enrollment-2023.zip"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2024",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/doedata/enr/enr24/enrollment_2324.zip",
+        "requested_url": "https://www.nj.gov/education/doedata/enr/enr24/enrollment_2324.zip",
+        "retrieved_at": "2026-10-30 11:32:43"
+      },
+      "tier": "shipped",
+      "byte_length": 1061242,
+      "sha256": "5eed219047d74508c73d7d7fc42bf1fc003f7806298a258ac575247e518e9083",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2024"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/enrollment-2024.zip"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2025",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/doedata/enr/enr25/enrollment_2425.zip",
+        "requested_url": "https://www.nj.gov/education/doedata/enr/enr25/enrollment_2425.zip",
+        "retrieved_at": "2026-10-30 11:32:45"
+      },
+      "tier": "shipped",
+      "byte_length": 1095121,
+      "sha256": "74bedb8c036c553e89ff8321d67056117d54bb54c8b8c14a54e174d6092ccefe",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/enrollment-2025.zip"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2026",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/doedata/enr/enr26/Enrollment_2526.zip",
+        "requested_url": "https://www.nj.gov/education/doedata/enr/enr26/Enrollment_2526.zip",
+        "retrieved_at": "2026-10-30 11:32:46"
+      },
+      "tier": "shipped",
+      "byte_length": 1061437,
+      "sha256": "c6ac6b5a5b31cb222ffd2ada58fa42955f73232c46b6dcdaad9a229842565795",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2026"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/enrollment-2026.zip"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    }
+  ]
 }

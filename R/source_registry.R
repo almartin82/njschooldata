@@ -649,7 +649,9 @@ resolve_source_url <- function(data_type, end_year = NULL, ...) {
       yy <- substr(end_year, 3, 4)
       prev_yy <- substr(end_year - 1L, 3, 4)
       base <- paste0("https://www.nj.gov/education/doedata/enr/enr", yy, "/")
-      paste0(base, c("enrollment_", "Enrollment_"), prev_yy, yy, ".zip")
+      prefixes <- if (end_year >= 2026L) c("Enrollment_", "enrollment_") else
+        c("enrollment_", "Enrollment_")
+      paste0(base, prefixes, prev_yy, yy, ".zip")
     },
     parcc = .assessment_source_url(
       as.integer(end_year), args$grade, args$subject

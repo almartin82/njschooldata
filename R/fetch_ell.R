@@ -19,6 +19,13 @@
 #' published percent is carried through and `n_students` is `NA` (the count is
 #' never back-derived from the percent).
 #'
+#' Complete NJDOE enrollment releases for 2023-2026 are shipped and read
+#' offline by default, with length and SHA-256 verification. `suppressed`
+#' reflects the published count token; a missing or percent-only count does
+#' not by itself imply suppression. State totals come only from the published
+#' All Grades row. NCES LEA identifiers use an exact CCD 2024 match on the
+#' full county-plus-district state LEA code.
+#'
 #' @param end_year ending academic year. Valid values: 2006-2026. See
 #'   [get_available_ell_years()].
 #' @param tidy if `TRUE` (default), returns the long cross-state tidy contract
@@ -81,6 +88,7 @@ fetch_ell <- function(end_year, tidy = TRUE, use_cache = FALSE,
         cds_code = .data$cds_code,
         value_status = classify_value_status(as.character(.data$el_count))
       )
+    status$value_status[processed$suppressed %in% TRUE] <- "suppressed"
     out <- dplyr::left_join(out, status, by = c("end_year", "cds_code"))
   }
 

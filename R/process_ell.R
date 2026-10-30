@@ -18,6 +18,7 @@
 #'   `pct_of_enrollment`
 #' @keywords internal
 process_ell <- function(df) {
+  df <- .attach_program_nces(df)
   df %>%
     dplyr::mutate(
       is_state = .data$district_id == "9999" & .data$county_id == "99",

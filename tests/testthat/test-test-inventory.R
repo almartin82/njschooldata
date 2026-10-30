@@ -2,6 +2,8 @@ test_that("network-bearing R tests are explicitly gated", {
   test_dir <- testthat::test_path()
   files <- list.files(test_dir, pattern = "^test.*[.]R$", full.names = TRUE)
   offline_contracts <- c(
+    # Complete package source files; the transport function throws if reached.
+    "test-program-contract.R",
     "test-finance-source-results.R",
     # Argument validation fails before transport is reached.
     "test-absence-offline-contract.R",

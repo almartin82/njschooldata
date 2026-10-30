@@ -7,7 +7,7 @@
     "spr-district-2025.xlsx",
     "tges-2025.zip"
   ],
-  "reason": "The checked-in NJDOE-derived fixtures are deterministic parser goldens, but their complete parent source bytes are not shipped. They cannot satisfy derived-artifact lineage without those parent bytes.",
+  "reason": "Complete NJDOE enrollment 2023-2026 and classification 2023-2025 releases are shipped in the artifact manifest. The separate fixture slices listed here remain parser goldens, not coverage for other families or years.",
   "schema_version": "njschooldata-package-coverage/v1",
   "state": "package_coverage_limited"
 }

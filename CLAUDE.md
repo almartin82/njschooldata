@@ -63,6 +63,10 @@ Before joining any external series to fetcher output: confirm the convention (an
 
 ## Caching: point-in-time → CACHE. Always-on → NEVER cache. (REQUIRED)
 
+For vignettes, set global knitr `cache = FALSE`. Put data fetching in separate
+chunks with `cache = TRUE`; plot chunks use `cache = FALSE` or inherit the global
+default. Never combine fetching and plotting in one cached chunk.
+
 **If it is a point-in-time release, we cache it, and we return the cache by default.**
 
 A state's 2024 enrollment file is a frozen historical artifact — published once, never

@@ -7,7 +7,13 @@ The source-adapter provenance ledger at
 NJDOE URL and full-source checksum used for each checked-in parser fixture.
 
 Those fixtures are deliberately small source-derived slices, not complete
-upstream artifacts. Their parent bytes are not checked in, so this contract
-uses the slices only as deterministic goldens and claims no shipped artifact
-coverage. Live validation is manual-only and has never been run for this
-contract.
+upstream artifacts. They remain excluded from shipped coverage.
+
+The manifest now separately declares complete NJDOE enrollment ZIP releases
+(2023-2026), district classification workbooks (2023-2025), and public statewide
+classification workbooks (2023-2024). These are immutable package sources under
+`inst/extdata/program-sources/`, checked by byte length and SHA-256 before use.
+Default downloads for those exact URLs read the package bytes. No DOE request is
+needed, even with `use_cache = FALSE`. Other source families retain their
+existing acquisition behavior. Rebuild explicitly with
+`python3 data-raw/build_program_sources.py`; this is never an automatic job.

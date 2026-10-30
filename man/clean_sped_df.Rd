@@ -12,7 +12,7 @@ clean_sped_df(df, end_year, with_status = FALSE)
 \item{end_year}{academic year, ending year - eg 2023-2024 is 2024.}
 
 \item{with_status}{logical. If \code{TRUE}, appends \code{value_status}
-classified from the raw \code{sped_rate} token before numeric coercion.}
+classified from the raw \code{sped_num} token before numeric coercion.}
 }
 \value{
 cleaned data frame

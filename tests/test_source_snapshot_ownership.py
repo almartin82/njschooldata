@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 import shutil
+import hashlib
 
 import pytest
 
@@ -38,8 +39,15 @@ def test_contract_does_not_overclaim_source_derived_fixture_slices():
     coverage = _read_json(SPEC_ROOT / "package-coverage.json")
     installed = _read_json(CONTRACT_ROOT / "artifact-manifest.json")
 
-    assert manifest["artifacts"] == []
-    assert installed["artifacts"] == []
+    assert manifest == installed
+    assert len(manifest["artifacts"]) == 9
+    for artifact in manifest["artifacts"]:
+        assert artifact["lineage"]["kind"] == "source"
+        assert artifact["source_identity"]["url"].startswith("https://www.nj.gov/")
+        content = (PACKAGE_ROOT / artifact["storage"]["path"]).read_bytes()
+        assert len(content) == artifact["byte_length"]
+        assert hashlib.sha256(content).hexdigest() == artifact["sha256"]
+        assert Path(artifact["storage"]["path"]).name not in coverage["excluded_fixture_slices"]
     assert coverage["state"] == "package_coverage_limited"
     assert coverage["excluded_fixture_slices"]
 

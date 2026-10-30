@@ -262,6 +262,11 @@ download_source <- function(url, source_type, cache_path = NULL,
   )
   retries <- max(0L, as.integer(retries))
 
+  if (identical(request_fn, .default_source_request)) {
+    packaged <- .package_source(url, source_type)
+    if (!is.null(packaged)) return(packaged)
+  }
+
   initial_check <- tryCatch(
     {
       .validate_source_url(url, allowed_hosts, allow_http = allow_http)

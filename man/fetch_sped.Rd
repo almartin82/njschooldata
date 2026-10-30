@@ -41,11 +41,26 @@ Fetches NJ DOE special education classification data (IDEA
   (the 2015-2024 archives live in the year-labeled folders/zips of the IDEA
   618 public-reporting directory; 2025 is the consolidated workbook). Data
   before end_year 2015 requires an OPRA request. The statewide
-  by-disability-category table is only published for 2025+ (NJ DOE did not
-  release a clean public-only state-by-disability workbook for earlier
-  years); that gap is left honest rather than derived. For by-disability
+  by-disability-category interface currently reads the consolidated 2025
+  workbook. For by-disability
   counts and educational placement (LRE) across 2020-2025, see
   \code{\link{fetch_sped_placement}}.
+}
+\details{
+The default output preserves `sped_num`, `gened_num`, and
+  `sped_rate` and adds `measure = "classification_count"`,
+  `disability_category = "all_disabilities"`, `subgroup = "total"`,
+  `age_group = "3_21"` (2023-2025), `grade_level = NA`, `n_students`,
+  `suppressed`, `pct_of_enrollment` (0-100), and `nces_dist`.
+  These are public IEP classification counts, not relabeled IDEA child
+  counts. Published statewide totals are included in the default output
+  for 2023-2025. Suppressed districts remain present even when their
+  enrollment denominator is suppressed. NCES identifiers come only from
+  an exact CCD 2024 match on the full county-plus-district state LEA code.
+  Complete NJDOE releases for 2023-2025 are shipped and used offline by
+  default, with length and SHA-256 verification. The 2025 workbook title
+  says 2023-24, but NJDOE's release page dates its count to October 15,
+  2024 (end year 2025).
 }
 \examples{
 \dontrun{

@@ -200,8 +200,9 @@ test_that("clean_sped_df appends entity flags and opt-in value_status", {
   expect_true(all(out$is_district))
   # county_id == "80" flags charter.
   expect_true(out$is_charter[out$county_id == "80"])
-  # Row with missing enrollment ("*") is dropped as a footer/suppressed row.
-  expect_false("3570" %in% out$district_id)
+  # Missing enrollment does not erase a district's published SpEd observation.
+  expect_true("3570" %in% out$district_id)
+  expect_equal(out$sped_num[out$district_id == "3570"], as.numeric(raw$sped_num[3]))
   # value_status is opt-in only.
   expect_false("value_status" %in% names(out))
 

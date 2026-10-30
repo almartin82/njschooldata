@@ -32,5 +32,70 @@
       "release",
       "devel"
     ]
-  }
+  },
+  "required_artifacts": [
+    {
+      "artifact_id": "sped-2023",
+      "selectors": {
+        "family": "sped",
+        "key": "2023"
+      }
+    },
+    {
+      "artifact_id": "sped-2024",
+      "selectors": {
+        "family": "sped",
+        "key": "2024"
+      }
+    },
+    {
+      "artifact_id": "sped-2025",
+      "selectors": {
+        "family": "sped",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "sped_state-2023",
+      "selectors": {
+        "family": "sped_state",
+        "key": "2023"
+      }
+    },
+    {
+      "artifact_id": "sped_state-2024",
+      "selectors": {
+        "family": "sped_state",
+        "key": "2024"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2023",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2023"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2024",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2024"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2025",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "enrollment-2026",
+      "selectors": {
+        "family": "enrollment",
+        "key": "2026"
+      }
+    }
+  ]
 }

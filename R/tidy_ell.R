@@ -13,7 +13,7 @@ ELL_TIDY_COLS <- c(
   "is_state", "is_district", "is_school", "is_charter",
   "grade_level", "el_status", "subgroup", "subgroup_std",
   "n_students", "total_enrollment", "pct_of_enrollment",
-  "n_students_lower", "n_students_upper"
+  "n_students_lower", "n_students_upper", "suppressed"
 )
 
 #' Tidy English Learner population data
@@ -37,6 +37,7 @@ tidy_ell <- function(df) {
       n_students_lower = .data$el_count,
       n_students_upper = .data$el_count
     )
+  if (!"suppressed" %in% names(out)) out$suppressed <- FALSE
 
   # standardized subgroup label (lands immediately after `subgroup`)
   out <- add_subgroup_std(out)
@@ -73,6 +74,7 @@ empty_ell_frame <- function() {
     n_students = numeric(0), total_enrollment = numeric(0),
     pct_of_enrollment = numeric(0),
     n_students_lower = numeric(0), n_students_upper = numeric(0),
+    suppressed = logical(0),
     stringsAsFactors = FALSE
   )
 }

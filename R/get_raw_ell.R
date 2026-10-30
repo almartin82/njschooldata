@@ -81,7 +81,7 @@ ell_locate_cols <- function(nm) {
 ell_read_modern_entities <- function(xlsx, end_year) {
   read_level <- function(sheet, has_school) {
     df <- as.data.frame(
-      readxl::read_excel(xlsx, sheet = sheet, skip = 2),
+      readxl::read_excel(xlsx, sheet = sheet, skip = 2, col_types = "text"),
       check.names = FALSE
     )
     names(df) <- trimws(names(df))
@@ -110,6 +110,7 @@ ell_read_modern_entities <- function(xlsx, end_year) {
       cds_code = paste0(county, district, school),
       el_count = el_count,
       el_pct = el_pct,
+      suppressed = if (!is.na(cols$count)) .program_suppressed(df[[cols$count]]) else FALSE,
       stringsAsFactors = FALSE
     )
     out[!is.na(out$cds_code) & !grepl("NA", out$cds_code), ]
@@ -134,7 +135,7 @@ ell_read_modern_state <- function(xlsx, end_year) {
   sheets <- readxl::excel_sheets(xlsx)
   state_sheet <- sheets[trimws(sheets) == "State"][1]
   df <- as.data.frame(
-    readxl::read_excel(xlsx, sheet = state_sheet, skip = 2),
+    readxl::read_excel(xlsx, sheet = state_sheet, skip = 2, col_types = "text"),
     check.names = FALSE
   )
   names(df) <- trimws(names(df))
@@ -143,15 +144,15 @@ ell_read_modern_state <- function(xlsx, end_year) {
 
   total_row <- which(tolower(trimws(df[[grade_col]])) == "all grades")
   if (length(total_row) == 0) {
-    # Fall back to summing the per-grade rows (drops sentinel/total artifacts).
-    if (!is.na(cols$count)) {
-      vals <- suppressWarnings(as.numeric(df[[cols$count]]))
-      return(list(el_count = sum(vals, na.rm = TRUE), el_pct = NA_real_))
-    }
-    return(list(el_count = NA_real_, el_pct = NA_real_))
+    return(list(el_count = NA_real_, el_pct = NA_real_,
+                suppressed = FALSE, total_published = FALSE))
   }
   total_row <- total_row[1]
   list(
+    total_published = TRUE,
+    suppressed = if (!is.na(cols$count)) {
+      .program_suppressed(df[[cols$count]][total_row])
+    } else FALSE,
     el_count = if (!is.na(cols$count)) {
       suppressWarnings(as.numeric(df[[cols$count]][total_row]))
     } else {
@@ -211,6 +212,7 @@ get_raw_ell_result <- function(end_year,
     # The enrollment `lep` column IS the published headcount for these years.
     scaffold$el_count <- scaffold$lep_enr
     scaffold$el_pct <- NA_real_
+    scaffold$suppressed <- FALSE
     source <- if (nrow(enrollment_records)) enrollment_records[1, ] else NULL
   } else {
     transport <- .download_enrollment_source(end_year, request_fn)
@@ -240,6 +242,8 @@ get_raw_ell_result <- function(end_year,
     is_state_row <- scaffold$district_id == "9999" & scaffold$county_id == "99"
     scaffold$el_count[is_state_row] <- st_el$el_count
     scaffold$el_pct[is_state_row] <- st_el$el_pct
+    scaffold$suppressed[is_state_row] <- st_el$suppressed
+    if (!st_el$total_published) scaffold <- scaffold[!is_state_row, ]
     source <- source_result_record(transport, "ell", end_year, "enrollment")
   }
 
