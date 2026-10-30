@@ -9,7 +9,7 @@
 # ==============================================================================
 
 # -- Truthful years contract ---------------------------------------------------
-# get_available_years() must exist, be exported, and be truthful: its max must
+# get_available_years("enrollment") must exist, be exported, and be truthful: its max must
 # equal the highest end_year that fetch_enr() actually serves. This is a static
 # check against ENR_VALID_YEARS (fast, no network) plus a live check that the
 # claimed max year really does fetch (network-gated).
@@ -17,7 +17,7 @@
 test_that("get_available_years is exported and truthful about ENR_VALID_YEARS", {
   expect_true(exists("get_available_years", mode = "function"))
 
-  years <- get_available_years()
+  years <- get_available_years("enrollment")
   expect_type(years, "integer")
   expect_true(length(years) > 0)
   expect_equal(years, as.integer(ENR_VALID_YEARS))
@@ -27,7 +27,7 @@ test_that("get_available_years is exported and truthful about ENR_VALID_YEARS", 
 test_that("get_available_years max year actually fetches via fetch_enr", {
   skip_if_no_live_tests()
 
-  max_year <- max(get_available_years())
+  max_year <- max(get_available_years("enrollment"))
   enr <- fetch_enr(max_year, use_cache = TRUE)
 
   expect_s3_class(enr, "data.frame")

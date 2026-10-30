@@ -1,5 +1,7 @@
 """Enrollment data functions."""
 
+from typing import Optional, Union
+
 import pandas as pd
 
 from ._r_bridge import call_r_function, r_to_pandas
@@ -39,3 +41,16 @@ def fetch_enr(
     return call_r_function(
         "fetch_enr", end_year, tidy=tidy, use_cache=use_cache
     )
+
+
+def get_available_years(type: Optional[str] = None) -> Union[list[int], pd.DataFrame]:
+    """Return served end years as list[int], or all coverage as a DataFrame.
+
+    With ``type="enrollment"``, return explicit years under default selectors.
+    With no type, return columns ``type``, ``end_year``, and ``fetcher``.
+    Known families whose coverage is undeclared raise an R error.
+    """
+    # Omitting the argument lets R supply NULL without converting Python None.
+    if type is None:
+        return r_to_pandas(call_r_function)("get_available_years")
+    return [int(year) for year in call_r_function("get_available_years", type=type)]

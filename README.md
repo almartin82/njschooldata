@@ -265,7 +265,12 @@ Full analysis with 15 stories:
 
 **Source:** [New Jersey Department of Education](https://www.nj.gov/education/doedata/) -- all data comes directly from NJ DOE, not federal sources.
 
-**Available years:** `get_valid_years()` reads the package source registry. Enrollment is supported from 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020 was cancelled because of COVID-19 and 2021 used Start Strong. Four-year graduation is supported from 2011-2025. Where raw and tidy capabilities differ, such as graduation counts (raw 1998-2025, tidy 2012-2025), the registry records both instead of claiming unsupported tidy coverage.
+**Available years:** `get_available_years("enrollment")` returns the explicit
+served enrollment end years under default arguments. `get_available_years()`
+returns a table with `type`, `end_year`, and `fetcher`; only enrollment coverage
+is declared so far. Other known families report "coverage not yet declared".
+
+**Registry coverage:** `get_valid_years()` reads the package source registry. Enrollment is supported from 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020 was cancelled because of COVID-19 and 2021 used Start Strong. Four-year graduation is supported from 2011-2025. Where raw and tidy capabilities differ, such as graduation counts (raw 1998-2025, tidy 2012-2025), the registry records both instead of claiming unsupported tidy coverage.
 
 **Source failures and provenance:** Canonical fetchers are strict for transport and parser failures. Use `get_source_results(result)` to inspect request-level `source_status`, URL, retrieval time, digest, and warning/error context; this is separate from row-level `value_status`. `fetch_finance(..., allow_partial = TRUE)` and multi-source helpers only return incomplete results after explicit opt-in, with every component status attached.
 

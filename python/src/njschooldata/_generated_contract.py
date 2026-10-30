@@ -4,10 +4,16 @@ import json
 
 _CONTRACT = json.loads(r'''
 {
-  "python_package_version": "0.9.26",
-  "r_package_min_version": "0.9.26",
-  "r_package_max_version": "0.10.0",
+  "python_package_version": "0.10.0",
+  "r_package_min_version": "0.10.0",
+  "r_package_max_version": "0.11.0",
   "r_signatures": {
+    "get_available_years": {
+      "parameters": ["type"],
+      "defaults": {
+        "type": "NULL"
+      }
+    },
     "fetch_enr": {
       "parameters": ["end_year", "tidy", "use_cache"],
       "defaults": {
@@ -292,6 +298,12 @@ _CONTRACT = json.loads(r'''
       "aliases": ["directory", "school_directory", "district_directory"],
       "raw_years": [],
       "tidy_years": [],
+      "skipped_years": []
+    },
+    "directory_spr": {
+      "aliases": ["directory_spr", "directory_performance_contacts"],
+      "raw_years": 2025,
+      "tidy_years": 2025,
       "skipped_years": []
     },
     "essa": {

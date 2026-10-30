@@ -1,4 +1,13 @@
-# njschooldata (development)
+# njschooldata 0.10.0
+
+* **Breaking change:** `get_available_years(type = NULL)` now reports explicit
+  served end years under default selectors. Use `get_available_years("enrollment")`
+  for the sorted integer vector (1999–2026). Calling without a type returns a
+  data frame with `type`, `end_year`, and `fetcher` columns, replacing the former
+  enrollment vector. Other known families error with "coverage not yet declared".
+* Python `get_available_years(type=None)` returns a `list[int]` when typed and
+  a pandas DataFrame when untyped. Coverage is derived offline from the registry
+  enforced by the enrollment fetcher and verified against every claimed year.
 
 * District profiles add retained-source-tested NJSLA grade proficiency and paired
   subgroup gaps, suspension trends, HIB/police tables, and teacher workforce

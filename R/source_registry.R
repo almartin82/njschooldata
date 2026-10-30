@@ -396,14 +396,6 @@ is_valid_year <- function(end_year, data_type, capability = c("tidy", "raw")) {
   end_year %in% get_source_years(data_type, match.arg(capability))
 }
 
-#' Get enrollment years available from the tidy front door
-#'
-#' @return Integer vector of school-year end years.
-#' @export
-get_available_years <- function() {
-  get_source_years("enrollment")
-}
-
 #' Get English Learner population years
 #'
 #' @return Integer vector of school-year end years.

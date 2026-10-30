@@ -7,7 +7,7 @@
 devtools::load_all(quiet = TRUE)
 
 curated <- c(
-  "fetch_enr", "fetch_parcc", "fetch_access", "fetch_grad_rate",
+  "get_available_years", "fetch_enr", "fetch_parcc", "fetch_access", "fetch_grad_rate",
   "get_school_directory", "get_district_directory", "fetch_facilities",
   "fetch_facilities_multi", "fetch_facility_gis",
   "get_available_facilities", "fetch_finance", "fetch_finance_multi",
@@ -23,7 +23,7 @@ format_default <- function(value) {
 r_signatures <- setNames(lapply(curated, function(name) {
   fmls <- formals(get(name, envir = asNamespace("njschooldata")))
   list(
-    parameters = names(fmls) %||% character(),
+    parameters = I(names(fmls) %||% character()),
     defaults = setNames(lapply(fmls, format_default), names(fmls))
   )
 }), curated)

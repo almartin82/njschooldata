@@ -1,6 +1,6 @@
 test_that("the source registry owns verified boundary and skipped years", {
   expect_equal(get_valid_years("enrollment"), 1999:2026)
-  expect_equal(get_available_years(), 1999:2026)
+  expect_equal(get_available_years("enrollment"), 1999:2026)
 
   parcc <- get_valid_years("parcc")
   expect_equal(max(parcc), 2025)

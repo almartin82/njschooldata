@@ -2,7 +2,7 @@
 
 Python bindings for the njschooldata R package, providing access to New Jersey Department of Education school data.
 
-Python release 0.9.26 supports R package versions `>=0.9.26,<0.10.0`. The
+Python release 0.10.0 supports R package versions `>=0.10.0,<0.11.0`. The
 bridge validates the loaded R package before any call; use
 `njschooldata.version_info()` to report both versions.
 
@@ -116,3 +116,8 @@ The Python distribution retains its existing GPL-3.0 metadata. The R package
 uses MIT. This difference is intentional compatibility metadata for the
 existing distributions; changing either license requires a separate maintainer
 licensing decision.
+
+Available-years contract v1: `get_available_years("enrollment")` returns a
+`list[int]` of explicit served end years under default arguments. `get_available_years()`
+returns a pandas DataFrame with `type`, `end_year`, and `fetcher`; only enrollment coverage
+is declared so far. Other known families report "coverage not yet declared".

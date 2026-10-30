@@ -734,3 +734,8 @@ SPR workbooks for past years are static snapshots; clear the cache to force a re
 Enrollment parser repairs require a fresh R session: processed enrollment and dependent ELL caches are session-only. Reuse retained source bytes; do not run live validation to refresh parsed results.
 
 SPR persistent sources now require a `.source.rds` acquisition sidecar with exact requested/final URL, length, digest and recorded time. Legacy or changed-identity entries are preserved and report an explicit miss without a request. A maintainer can adopt proven equivalent retained bytes using internal `.adopt_source_cache(path, url, source_type, expected_digest, retrieved_at = NULL)`; supply a recorded acquisition time only when evidence supports it. Unknown legacy clocks remain unknown. Corrupt metadata/bytes and active acquisitions are preserved for deliberate repair.
+
+Available-years contract v1: `get_available_years("enrollment")` returns the
+explicit served end years under default arguments. `get_available_years()`
+returns a table with `type`, `end_year`, and `fetcher`; only enrollment coverage
+is declared so far. Other known families report "coverage not yet declared".

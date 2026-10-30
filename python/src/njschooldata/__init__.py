@@ -26,7 +26,7 @@ from ._r_bridge import (
     list_r_fetchers,
     r_to_pandas,
 )
-from .enrollment import fetch_enr
+from .enrollment import fetch_enr, get_available_years
 from .assessment import fetch_parcc, fetch_access
 from .graduation import fetch_grad_rate
 from .directory import (
@@ -61,6 +61,7 @@ def version_info() -> dict[str, str]:
 
 _CURATED_EXPORTS = [
     "fetch_enr",
+    "get_available_years",
     "fetch_parcc",
     "fetch_access",
     "fetch_grad_rate",
