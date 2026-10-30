@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,12 +74,13 @@
     <p>A long data.frame of tidied enrollment data. Carries a `value_source`
   column: `"published"` for race/gender/total_enrollment subgroups (always a
   real published headcount) and for free_lunch/reduced_lunch/lep/migrant in
-  pre-2020 files; `"derived_from_pct"` or `"published_pct_only"` for
-  free_lunch/reduced_lunch/lep/migrant from 2020+ files, where NJ DOE
+  pre-2020 files; `"derived_from_pct"` or `"published_pct_only"` where NJ DOE
   publishes only a percentage and the count is computed as
   `pct / 100 * row_total` (see `fetch_enrollment.R`'s `pct_cols` loop; this
-  value is NOT rounded to a whole student); `free_reduced_lunch` inherits
-  the weaker of its two component labels since it sums them.</p>
+  value is NOT rounded to a whole student). English Learners is labelled
+  `"published"` when the workbook carries its count column. The
+  `free_reduced_lunch` subgroup inherits the weaker of its two component
+  labels since it sums them.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

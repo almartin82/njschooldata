@@ -466,7 +466,7 @@ tier, one table.
 ``` r
 
 sessionInfo()
-#> R version 4.6.1 (2026-06-24)
+#> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.5 LTS
 #> 
@@ -488,20 +488,20 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] scales_1.4.0        tidyr_1.3.2         dplyr_1.2.1        
-#> [4] ggplot2_4.0.3       njschooldata_0.9.27
+#> [4] ggplot2_4.0.3       njschooldata_0.10.0
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       xfun_0.62          bslib_0.12.0       ggrepel_0.9.8     
-#>  [5] lattice_0.22-9     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.1       
-#>  [9] generics_0.1.4     curl_8.1.0         parallel_4.6.1     tibble_3.3.1      
-#> [13] pkgconfig_2.0.3    Matrix_1.7-5       RColorBrewer_1.1-3 S7_0.2.2          
-#> [17] desc_1.4.3         readxl_1.6.0       lifecycle_1.0.5    compiler_4.6.1    
+#>  [5] lattice_0.23-1     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.2       
+#>  [9] generics_0.1.4     curl_8.1.0         parallel_4.6.2     tibble_3.3.1      
+#> [13] pkgconfig_2.0.3    Matrix_1.7-6       RColorBrewer_1.1-3 S7_0.2.2          
+#> [17] desc_1.4.3         readxl_1.6.0       lifecycle_1.0.5    compiler_4.6.2    
 #> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.0.5  janitor_2.2.1     
 #> [25] codetools_0.2-20   snakecase_0.11.1   htmltools_0.5.9    sass_0.4.10       
 #> [29] yaml_2.3.12        pillar_1.11.1      pkgdown_2.2.1      crayon_1.5.3      
-#> [33] jquerylib_0.1.4    cachem_1.1.0       nlme_3.1-169       tidyselect_1.2.1  
+#> [33] jquerylib_0.1.4    cachem_1.1.0       nlme_3.1-171       tidyselect_1.2.1  
 #> [37] digest_0.6.39      stringi_1.8.9      purrr_1.2.2        labeling_0.4.3    
-#> [41] splines_4.6.1      fastmap_1.2.0      grid_4.6.1         cli_3.6.6         
+#> [41] splines_4.6.2      fastmap_1.2.0      grid_4.6.2         cli_3.6.6         
 #> [45] magrittr_2.0.5     utf8_1.2.6         readr_2.2.0        withr_3.0.3       
 #> [49] bit64_4.8.6        lubridate_1.9.5    timechange_0.4.0   rmarkdown_2.32    
 #> [53] httr_1.4.9         bit_4.6.0          otel_0.2.0         cellranger_1.1.0  

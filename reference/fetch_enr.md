@@ -32,10 +32,12 @@ fetch_enr(end_year, tidy = FALSE, use_cache = FALSE)
 ## Value
 
 Data frame with processed enrollment data. From 2020+ files,
-\`free_lunch\`/\`reduced_lunch\`/\`lep\`/\`migrant\`/\`homeless\` are
-computed as \`pct / 100 \* row_total\` from NJ DOE's published
-percentage and this entity/year's own published total enrollment (never
-rounded to a whole student); \`tidy = TRUE\` output carries a
+\`free_lunch\`/\`reduced_lunch\`/\`migrant\`/\`homeless\` are computed
+as \`pct / 100 \* row_total\` from NJ DOE's published percentage and
+this entity/year's own published total enrollment (never rounded to a
+whole student). For English Learners, a published count is preserved
+when the workbook provides one; otherwise the published percentage is
+used in the same calculation. \`tidy = TRUE\` output carries a
 \`value_source\` column (\`"published"\`, \`"derived_from_pct"\`, or
 \`"published_pct_only"\`; see
 [`tidy_enr`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md))

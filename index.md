@@ -362,7 +362,14 @@ Full analysis with 15 stories:
 Education](https://www.nj.gov/education/doedata/) – all data comes
 directly from NJ DOE, not federal sources.
 
-**Available years:**
+**Available years:** `get_available_years("enrollment")` returns the
+explicit served enrollment end years under default arguments.
+[`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
+returns a table with `type`, `end_year`, and `fetcher`; only enrollment
+coverage is declared so far. Other known families report “coverage not
+yet declared”.
+
+**Registry coverage:**
 [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
 reads the package source registry. Enrollment is supported from
 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020

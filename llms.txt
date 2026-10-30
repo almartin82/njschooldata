@@ -362,7 +362,14 @@ Full analysis with 15 stories:
 Education](https://www.nj.gov/education/doedata/) – all data comes
 directly from NJ DOE, not federal sources.
 
-**Available years:**
+**Available years:** `get_available_years("enrollment")` returns the
+explicit served enrollment end years under default arguments.
+[`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
+returns a table with `type`, `end_year`, and `fetcher`; only enrollment
+coverage is declared so far. Other known families report “coverage not
+yet declared”.
+
+**Registry coverage:**
 [`get_valid_years()`](https://almartin82.github.io/njschooldata/reference/get_valid_years.md)
 reads the package source registry. Enrollment is supported from
 1999-2026. PARCC/NJSLA is supported for 2015-2019 and 2022-2025; 2020
@@ -924,7 +931,7 @@ Functions for fetching and processing NJ school enrollment data
 - [`fetch_enr_years()`](https://almartin82.github.io/njschooldata/reference/fetch_enr_years.md)
   : Fetch multiple years of enrollment data with progress
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get enrollment years available from the tidy front door
+  : Get available end years under default selectors
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
   : Tidy enrollment data
 - [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
@@ -1755,7 +1762,7 @@ Additional exported functions
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
   : Get finance years with at least one registered component
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
-  : Get enrollment years available from the tidy front door
+  : Get available end years under default selectors
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)

@@ -1,5 +1,115 @@
 # Changelog
 
+## njschooldata 0.10.0
+
+- **Breaking change:** `get_available_years(type = NULL)` now reports
+  explicit served end years under default selectors. Use
+  `get_available_years("enrollment")` for the sorted integer vector
+  (1999–2026). Calling without a type returns a data frame with `type`,
+  `end_year`, and `fetcher` columns, replacing the former enrollment
+  vector. Other known families error with “coverage not yet declared”.
+
+- Python `get_available_years(type=None)` returns a `list[int]` when
+  typed and a pandas DataFrame when untyped. Coverage is derived offline
+  from the registry enforced by the enrollment fetcher and verified
+  against every claimed year.
+
+- District profiles add retained-source-tested NJSLA grade proficiency
+  and paired subgroup gaps, suspension trends, HIB/police tables, and
+  teacher workforce detail. Missing source cells remain missing and
+  comparisons keep native grain.
+
+- Profile percentages use explicit source units; values below one
+  percent are no longer inflated by a magnitude heuristic, and
+  fractional enrollment counts remain visible. Enrollment years no
+  longer receive thousands separators.
+
+- District profiles show both suspension measures against same-year
+  peers, with gaps in district and peer lines preserved. Published HIB
+  investigation totals remain visible when confirmed counts are
+  unavailable; absent assessment subgroup pairs leave the gap section
+  explicitly unavailable.
+
+### njschooldata 0.9.27
+
+- Enrollment results retain official source bytes and provenance, select
+  grade count columns without percentage rows, and preserve published
+  English learner counts.
+- Enrollment cache entries now refetch when retained source bytes are
+  missing or changed, and grade-header drift fails loudly.
+
+### One cache root, and a test suite that stays out of yours
+
+- Every on-disk cache – SPR workbooks, SPED placement workbooks, and the
+  facilities source snapshots – now resolves through a single root.
+  `options(njschooldata.cache_dir)` still wins; the new
+  `NJSCHOOLDATA_CACHE_DIR` environment variable is consulted next;
+  `tools::R_user_dir("njschooldata", "cache")` remains the default, so
+  nothing moves unless you move it.
+- [`facilities_cache_dir()`](https://almartin82.github.io/njschooldata/reference/facilities_cache_dir.md)
+  had been reading
+  [`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html) directly
+  and honoured no override at all. It does now.
+- The test suite redirects that root into a per-process temp directory,
+  so running the tests no longer reads or writes the workbooks cached on
+  the machine running them. A test that passed only because a large
+  workbook happened to be warm now fails honestly, and no test can leave
+  a value behind for an ordinary call to serve.
+
+### Source and release contracts hardened
+
+- Pull-request R and Python tests are deterministic and fixture-backed.
+  Live NJ DOE checks require `NJSCHOOLDATA_LIVE_TESTS=true` and run in a
+  separate scheduled/manual canary that distinguishes source outages
+  from parser or contract regressions.
+- One source registry now owns aliases, raw/tidy year coverage,
+  deliberate gaps, URLs, content types, and permitted hosts. Validated
+  downloads carry provenance and distinguish `source_unavailable` from
+  `parse_error`.
+- Finance and profile-site builds are strict by default. Partial results
+  require an explicit opt-in and retain machine-readable source/build
+  manifests.
+- Python 0.9.26 validates the loaded R package against
+  `>=0.9.26,<0.10.0` and checks curated wrapper signatures and coverage
+  documentation against R.
+
+### Fixed silent id fabrication in `pad_leading()`
+
+- [`pad_leading()`](https://almartin82.github.io/njschooldata/reference/pad_leading.md)
+  now pads only strings containing digits. It no longer sends native
+  identifiers through numeric coercion, so scientific-notation-like
+  identifiers, unusually long values, real `NA`, and NJ DOE placeholders
+  such as `"N.A."` remain exactly as published.
+
+### Directory converted to directory-contract/v1
+
+- [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
+  now takes ZERO arguments and returns the canonical triple
+  `list(entities, roles, meta)` defined by directory-contract/v1,
+  replacing the old `fetch_directory(level, use_cache)` data-frame
+  interface. Entities are one row per organization (district / school);
+  roles are long, one row per organization-role assignment. Native
+  identifiers are New Jersey’s County-District-School (CDS) codes:
+  `district_id` = county + district (6 digits), `school_id` = county +
+  district + school (9 digits), verbatim with leading zeros preserved.
+  Verbatim job titles are kept in `title_raw`; the canonical `role`
+  comes from the visible, ordered role map in `R/directory_role_map.R`
+  (e.g. “Chief School Administrator” -\> `superintendent`, “Lead of
+  Charter School” -\> `superintendent`). Coverage: district
+  superintendents, business administrators, and special-education
+  coordinators; school principals. Source-declared vacancies are
+  `person_name` `NA` with `title_raw` retained. Unreachable sources
+  return `source_status` `source_unavailable` with empty tables and
+  complete meta.
+- [`get_district_directory()`](https://almartin82.github.io/njschooldata/reference/get_district_directory.md)
+  and
+  [`get_school_directory()`](https://almartin82.github.io/njschooldata/reference/get_school_directory.md)
+  remain exported as compatibility front doors returning the historical
+  flattened data frames; they now use the same registered Homeroom
+  sources and validated transport as the canonical contract.
+  `clear_directory_cache()` is removed. Internal raw and processing
+  helpers remain available to package consumers such as `geo.R`.
+
 ## njschooldata 0.9.26
 
 ### NJGPA and Science subgroup fix (district grain unlocked)
