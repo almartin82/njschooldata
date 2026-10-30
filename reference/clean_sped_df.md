@@ -22,7 +22,7 @@ clean_sped_df(df, end_year, with_status = FALSE)
 - with_status:
 
   logical. If `TRUE`, appends `value_status` classified from the raw
-  `sped_rate` token before numeric coercion.
+  `sped_num` token before numeric coercion.
 
 ## Value
 

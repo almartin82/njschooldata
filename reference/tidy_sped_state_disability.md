@@ -2,7 +2,7 @@
 
 Reshapes the state-level child-count-by-disability table (NJ DOE IDEA
 618 "State Rates" sheet) into a tidy frame with one row per disability
-category. Counts are the Dec-1 child count of students with IEPs; the
+category. Counts are the October-15 public IEP classification count; the
 published classification rate is stored as a 0-100 percent (the source
 reports it as a decimal). The "Statewide Total" rollup row maps to
 `disability_category == "all_disabilities"`.

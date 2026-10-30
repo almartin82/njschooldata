@@ -58,6 +58,13 @@ which publish only a percent, that published percent is carried through
 and \`n_students\` is \`NA\` (the count is never back-derived from the
 percent).
 
+Complete NJDOE enrollment releases for 2023-2026 are shipped and read
+offline by default, with length and SHA-256 verification. \`suppressed\`
+reflects the published count token; a missing or percent-only count does
+not by itself imply suppression. State totals come only from the
+published All Grades row. NCES LEA identifiers use an exact CCD 2024
+match on the full county-plus-district state LEA code.
+
 ## See also
 
 \[fetch_access()\] for EL \*\*proficiency\*\* (WIDA ACCESS), which joins

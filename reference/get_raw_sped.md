@@ -18,9 +18,8 @@ get_raw_sped(end_year, level = "district")
 
   one of `"district"` (default; district-level total classification
   rate, all supported years) or `"state"` (state-level counts +
-  classification rate by IDEA disability category, 2025+ only – NJ DOE
-  did not publish the by-disability state table in the older
-  single-sheet workbooks).
+  classification rate by IDEA disability category, 2025+ only – this
+  interface reads the consolidated 2025 workbook).
 
 ## Value
 
