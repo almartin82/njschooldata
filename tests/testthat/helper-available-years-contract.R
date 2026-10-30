@@ -18,19 +18,27 @@ ay_is_network_error <- function(error) {
 }
 
 # Probe every claimed year plus one beyond each end. `fetch_one(year)` returns
-# a data frame (served when it has rows) or raises.
+# a data frame (served when it has rows) or raises. A network error on a
+# claimed year is reported in `network_errors` (the caller skips); on an
+# unclaimed boundary probe it counts as not served and is reported in
+# `probe_notes`, so an outage past either end cannot hide the claimed years.
 ay_contract_check <- function(claimed, fetch_one) {
   stopifnot(length(claimed) > 0L, !anyNA(claimed))
   claimed <- sort(unique(as.integer(claimed)))
   probes <- sort(unique(c(claimed, min(claimed) - 1L, max(claimed) + 1L)))
   served <- integer()
   network_errors <- character()
+  probe_notes <- character()
   for (year in probes) {
     result <- tryCatch(fetch_one(year), error = identity)
     if (inherits(result, "error")) {
       if (ay_is_network_error(result)) {
-        network_errors <- c(network_errors,
-                            sprintf("%d: %s", year, conditionMessage(result)))
+        note <- sprintf("%d: %s", year, conditionMessage(result))
+        if (year %in% claimed) {
+          network_errors <- c(network_errors, note)
+        } else {
+          probe_notes <- c(probe_notes, note)
+        }
       }
     } else if (is.data.frame(result) && nrow(result) > 0L) {
       served <- c(served, year)
@@ -38,7 +46,8 @@ ay_contract_check <- function(claimed, fetch_one) {
   }
   list(claimed_not_served = setdiff(claimed, served),
        served_not_claimed = setdiff(served, claimed),
-       network_errors = network_errors)
+       network_errors = network_errors,
+       probe_notes = probe_notes)
 }
 
 # Call a fetcher the ordinary way: default arguments, the persistent cache,
@@ -71,11 +80,16 @@ ay_fetch_one <- function(fetcher, args = list()) {
   }
 }
 
-# Run the live contract for one declared type. Skips only on network failure.
+# Run the live contract for one declared type. Skips only on a network
+# failure for a claimed year; an unreachable boundary probe is a note.
 ay_expect_contract <- function(type, get_available_years, fetcher, args = list()) {
   checked <- ay_contract_check(get_available_years(type), ay_fetch_one(fetcher, args))
   if (length(checked$network_errors)) {
     testthat::skip(paste("network:", paste(checked$network_errors, collapse = "; ")))
+  }
+  if (length(checked$probe_notes)) {
+    message(type, " boundary probe could not be checked (counted as not served): ",
+            paste(checked$probe_notes, collapse = "; "))
   }
   testthat::expect_identical(
     checked$claimed_not_served, integer(),
@@ -105,8 +119,27 @@ ay_contract_self_test <- function() {
   for (message in c("offline", "DNS lookup failed", "Timeout", "connection failed",
                     "HTTP 503", "Could not resolve host", "Failed to connect")) {
     network <- ay_contract_check(2020L, function(year) stop(message))
-    testthat::expect_length(network$network_errors, 3L)
+    testthat::expect_length(network$network_errors, 1L)
+    testthat::expect_length(network$probe_notes, 2L)
   }
+
+  # An outage on an unclaimed probe counts as not served, so the claimed
+  # years are still checked: a served claim passes and a bad claim fails.
+  edge_down <- function(year) {
+    if (year %in% c(2019L, 2023L)) stop("Could not resolve host")
+    stub(year)
+  }
+  edges <- ay_contract_check(2020:2022, edge_down)
+  testthat::expect_length(edges$network_errors, 0L)
+  testthat::expect_length(edges$probe_notes, 2L)
+  testthat::expect_identical(edges$claimed_not_served, integer())
+  testthat::expect_identical(edges$served_not_claimed, integer())
+  missed <- ay_contract_check(c(2020:2022, 2025L), function(year) {
+    if (year %in% c(2019L, 2026L)) stop("Could not resolve host")
+    stub(year)
+  })
+  testthat::expect_identical(missed$claimed_not_served, 2025L)
+  testthat::expect_length(missed$network_errors, 0L)
   for (message in c("parse error", "end_year outside coverage", "HTTP 404",
                     "parse error reading connection", "invalid connection")) {
     testthat::expect_false(ay_is_network_error(simpleError(message)))
