@@ -253,6 +253,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sgp.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.html</loc></url>
@@ -344,6 +345,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sla.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sla_result.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped_by_grade.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_sped_placement.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_staff_evaluations.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/get_raw_state_aid.html</loc></url>

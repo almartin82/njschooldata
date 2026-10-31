@@ -278,6 +278,8 @@ Functions for special education and other subgroup data
 
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
+- [`fetch_sped_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.md)
+  : Fetch students with an active IEP by district and grade
 - [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
   : Fetch NJ Special Education Placement / Educational Environment data
 - [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
@@ -765,6 +767,8 @@ Additional exported functions
   : Fetch Social Studies Enrollment Data
 - [`fetch_sped()`](https://almartin82.github.io/njschooldata/reference/fetch_sped.md)
   : Fetch Special Education Classification Data
+- [`fetch_sped_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.md)
+  : Fetch students with an active IEP by district and grade
 - [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
   : Fetch NJ Special Education Placement / Educational Environment data
 - [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
