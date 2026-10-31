@@ -13,7 +13,7 @@ test_that("the source registry owns verified boundary and skipped years", {
   expect_equal(get_valid_years("sped"), 2015:2025)
   expect_equal(get_valid_years("sped_placement"), 2020:2025)
   expect_equal(get_valid_years("state_aid"), 2019:2027)
-  expect_equal(get_valid_years("finance"), 2001:2026)
+  expect_equal(get_valid_years("finance"), c(2001:2018, 2022:2026))
   expect_equal(get_valid_years("report_card"), 2012:2019)
   expect_equal(get_valid_years("dfg"), c(1990L, 2000L))
   expect_equal(get_source_years("grad_count", capability = "raw"), 1998:2025)

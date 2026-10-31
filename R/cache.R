@@ -549,3 +549,11 @@ with_cache <- function(fn, fn_name) {
 fetch_enr_cached <- function(end_year, tidy = FALSE) {
   fetch_enr(end_year, tidy = tidy, use_cache = TRUE)
 }
+
+# Reuse the validated raw-download cache for source-backed fetch families.
+# Injected transports stay isolated from the ordinary persistent cache.
+.njsd_source_cache_path <- function(url, source_type, request_fn) {
+  if (!identical(request_fn, .default_source_request)) return(NULL)
+  file.path(njsd_cache_root(), "source-artifacts",
+            paste0(digest::digest(url, algo = "sha256"), ".", source_type))
+}

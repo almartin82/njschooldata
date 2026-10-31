@@ -137,10 +137,11 @@ get_raw_state_aid_result <- function(
 
   urls <- resolve_source_url("state_aid", end_year)
   direct <- download_source(
-    urls[["direct"]], source_type = "xlsx", request_fn = request_fn
+    urls[["direct"]], source_type = "xlsx", request_fn = request_fn,
+    cache_path = .njsd_source_cache_path(urls[["direct"]], "xlsx", request_fn)
   )
   if (identical(direct$source_status, "actual")) {
-    on.exit(unlink(direct$data), add = TRUE)
+    on.exit(.release_source_result(direct), add = TRUE)
     parsed <- tryCatch(
       .parse_state_aid_workbook(direct$data, end_year), error = identity
     )
@@ -159,7 +160,8 @@ get_raw_state_aid_result <- function(
   }
 
   archive <- download_source(
-    urls[["archive"]], source_type = "zip", request_fn = request_fn
+    urls[["archive"]], source_type = "zip", request_fn = request_fn,
+    cache_path = .njsd_source_cache_path(urls[["archive"]], "zip", request_fn)
   )
   if (!identical(archive$source_status, "actual")) {
     return(new_source_result(
@@ -173,7 +175,7 @@ get_raw_state_aid_result <- function(
       )
     ))
   }
-  on.exit(unlink(archive$data), add = TRUE)
+  on.exit(.release_source_result(archive), add = TRUE)
   parsed <- tryCatch(
     .parse_state_aid_archive(archive$data, end_year, archive$source_url),
     error = identity

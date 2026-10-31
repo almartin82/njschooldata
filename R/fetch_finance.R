@@ -1,3 +1,9 @@
+# not claimed: 2019 — "State-aid source contained no rows for expected category fy_19_k_12_aid."
+# not claimed: 2020 — "State-aid source contained no rows for expected category fy_20_k_12_aid."
+# not claimed: 2021 — "State-aid source contained no rows for expected category fy_21_k_12_aid."
+# The state-aid parser fails under defaults; allow_partial retains its opt-in path.
+.nj_finance_live_years <- c(2001:2018, 2022:2026)
+
 # ==============================================================================
 # Uniform finance front door: fetch_finance()
 # ==============================================================================
@@ -584,7 +590,11 @@ fetch_finance <- function(end_year, tidy = TRUE, use_cache = TRUE,
   level <- normalize_finance_level(level)
   end_year <- as.integer(end_year)
   if (is.na(end_year)) stop("`end_year` must be a year, e.g. 2024.", call. = FALSE)
-  finance_years <- get_source_years("finance")
+  finance_years <- if (isTRUE(allow_partial)) {
+    get_source_years("finance", "raw")
+  } else {
+    .nj_finance_live_years
+  }
   if (!end_year %in% finance_years) {
     result <- new_source_result(
       source_status = source_gap_status("finance", end_year),

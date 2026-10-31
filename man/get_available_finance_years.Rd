@@ -2,7 +2,7 @@
 % Please edit documentation in R/source_registry.R
 \name{get_available_finance_years}
 \alias{get_available_finance_years}
-\title{Get finance years with at least one registered component}
+\title{Get declared finance years served under default selectors}
 \usage{
 get_available_finance_years()
 }
@@ -10,5 +10,5 @@ get_available_finance_years()
 Integer vector of school-year end years.
 }
 \description{
-Get finance years with at least one registered component
+Get declared finance years served under default selectors
 }

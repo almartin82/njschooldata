@@ -22,7 +22,10 @@ is computed offline from the declarations the fetchers enforce. Years
 requiring non-default selectors or private stores are excluded.
 }
 \details{
-Only enrollment coverage is declared so far. Other known fetch families
+Enrollment, graduation, and finance coverage is declared.
+Absence cannot yet be verified against the source cache.
+Assessment requires explicit grade/course and subject selectors and remains
+undeclared. Other known fetch families
 raise an error containing "coverage not yet declared".
 }
 \examples{

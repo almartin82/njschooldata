@@ -7,14 +7,18 @@
 )
 
 # Only verified families enter the coverage table in this wave.
-.nj_live_years <- function() list(enrollment = get_source_years("enrollment"))
+.nj_live_years <- function() list(
+  enrollment = get_source_years("enrollment"),
+  graduation = .nj_grad_live_years,
+  finance = .nj_finance_live_years
+)
 
 .nj_available_years_coverage <- function() {
   live <- .nj_live_years()
   rows <- lapply(names(live), function(type) {
     fetcher <- .nj_year_fetchers[[type]]
-    # Enrollment has no package-source mode: shipped fixture slices are not
-    # complete source artifacts. Its source registry owns live coverage.
+    # These fetchers have no package-source mode; their guards and source
+    # registry own coverage.
     years <- sort(unique(as.integer(live[[type]])))
     data.frame(type = type, end_year = years,
                mode = "live",
@@ -31,7 +35,10 @@
 #' is computed offline from the declarations the fetchers enforce. Years
 #' requiring non-default selectors or private stores are excluded.
 #'
-#' Only enrollment coverage is declared so far. Other known fetch families
+#' Enrollment, graduation, and finance coverage is declared.
+#' Absence cannot yet be verified against the source cache.
+#' Assessment requires explicit grade/course and subject selectors and remains
+#' undeclared. Other known fetch families
 #' raise an error containing "coverage not yet declared".
 #'
 #' @param type A single fetch family name, such as `"enrollment"`, or `NULL`

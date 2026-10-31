@@ -45,8 +45,8 @@
   ),
   grate_4yr = list(
     aliases = c("grate_4yr", "grad_rate", "graduation_rate"),
-    raw_years = 2011:2025,
-    tidy_years = 2011:2025,
+    raw_years = .nj_grad_live_years,
+    tidy_years = .nj_grad_live_years,
     skipped_years = integer(),
     source_type = c("zip", "xls", "xlsx"),
     hosts = c("www.nj.gov", "www.state.nj.us"),
@@ -157,7 +157,7 @@
   finance = list(
     aliases = "finance",
     raw_years = 2001:2026,
-    tidy_years = 2001:2026,
+    tidy_years = .nj_finance_live_years,
     skipped_years = integer(),
     source_type = c("zip", "xlsx"),
     hosts = "www.nj.gov",
@@ -404,12 +404,12 @@ get_available_ell_years <- function() {
   get_source_years("ell")
 }
 
-#' Get finance years with at least one registered component
+#' Get declared finance years served under default selectors
 #'
 #' @return Integer vector of school-year end years.
 #' @export
 get_available_finance_years <- function() {
-  get_source_years("finance")
+  get_available_years("finance")
 }
 
 #' Hosts permitted by registered NJ DOE sources

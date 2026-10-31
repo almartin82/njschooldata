@@ -1,3 +1,5 @@
+.nj_grad_live_years <- 2011:2025
+
 # ==============================================================================
 # Graduation Data Fetching Functions
 # ==============================================================================
@@ -41,10 +43,11 @@ get_raw_grad_file_result <- function(end_year, methodology = "4 year",
   transport <- download_source(
     descriptor$url,
     source_type = descriptor$source_type,
+    cache_path = .njsd_source_cache_path(descriptor$url, descriptor$source_type, request_fn),
     request_fn = request_fn
   )
   if (!identical(transport$source_status, "actual")) return(transport)
-  on.exit(unlink(transport$data), add = TRUE)
+  on.exit(.release_source_result(transport), add = TRUE)
 
   parsed <- tryCatch({
     source_path <- transport$data
@@ -127,8 +130,9 @@ get_grad_count <- function(end_year) {
 #' @return dataframe with the number of graduates per school and district
 #' @keywords internal
 get_grad_rate <- function(end_year, methodology) {
-  if (end_year < 2011 | end_year > 2025) {
-    stop("year not yet supported. Valid years are 2011-2025.")
+  if (!end_year %in% .nj_grad_live_years) {
+    stop("year not yet supported. Valid years are ",
+         paste(.nj_grad_live_years, collapse = ", "), ".")
   }
 
   source_result <- get_raw_grad_file_result(end_year, methodology)
