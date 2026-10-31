@@ -23,8 +23,7 @@ test_that("served years in the registry are exactly the claimed years", {
   served <- unique(reg[reg$status == "served", c("family", "end_year")])
   # Several types can roll up to one family, so compare after the crosswalk.
   crosswalk <- .registry_read_csv("families.csv")
-  cov <- get_available_years()
-  cov$family <- vapply(cov$type, .registry_family_of, "", crosswalk = crosswalk, USE.NAMES = FALSE)
+  cov <- .registry_coverage(crosswalk)
   claimed <- unique(cov[c("family", "end_year")])
   expect_setequal(paste(served$family, served$end_year), paste(claimed$family, claimed$end_year))
 })

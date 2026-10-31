@@ -164,11 +164,12 @@
              match_text = pick("match_text", "")[at], stringsAsFactors = FALSE)
 }
 
-.registry_coverage <- function() {
+.registry_coverage <- function(crosswalk) {
   ns <- topenv(environment(.registry_coverage))
   fn <- ls(ns, all.names = TRUE, pattern = "_available_years_coverage$")
   cov <- as.data.frame(get(fn[[1]], ns)())[, c("type", "end_year", "mode", "fetcher")]
-  names(cov)[names(cov) == "type"] <- "raw_type"
+  cov$family <- vapply(cov$type, .registry_family_of, "", crosswalk = crosswalk, USE.NAMES = FALSE)
+  cov$family[is.na(cov$family)] <- "other"
   cov
 }
 
@@ -210,9 +211,7 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
 .registry_compute <- function(sources, gaps) {
   crosswalk <- .registry_read_csv("families.csv")
   artifacts <- .registry_attach_sources(.registry_artifacts(crosswalk), sources)
-  cov <- .registry_coverage()
-  cov$family <- vapply(cov$raw_type, .registry_family_of, "", crosswalk = crosswalk,
-                       USE.NAMES = FALSE)
+  cov <- .registry_coverage(crosswalk)
   state <- toupper(substr(.registry_package(), 1, 2))
 
   held <- artifacts[!is.na(artifacts$end_year) & !artifacts$family %in% c("other", "reference"), ]
@@ -275,10 +274,11 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
 # fetcher: a live read, or a fetcher reading a file held under another family.
 .registry_fetcher_source <- function(sources, family, year, fetcher) {
   hit <- sources$family == family & !is.na(sources$fetcher) & sources$fetcher == fetcher
-  first <- suppressWarnings(as.integer(sources$published_first))
-  last <- suppressWarnings(as.integer(sources$published_last))
-  hit <- hit & (is.na(first) | first <= year) & (is.na(last) | year <= last)
-  sources$source_id[hit]
+  # fetcher_years routes a fetcher that reads different sources in different years.
+  span <- strsplit(ifelse(is.na(sources$fetcher_years), "", sources$fetcher_years), "-", fixed = TRUE)
+  first <- suppressWarnings(as.integer(vapply(span, function(x) if (length(x)) x[[1]] else NA_character_, "")))
+  last <- suppressWarnings(as.integer(vapply(span, function(x) if (length(x)) x[[length(x)]] else NA_character_, "")))
+  sources$source_id[hit & (is.na(first) | first <= year) & (is.na(last) | year <= last)]
 }
 
 .registry_add_directory <- function(out, state) {
@@ -322,9 +322,7 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
                                  gaps = .registry_read_csv("gaps.csv")) {
   crosswalk <- .registry_read_csv("families.csv")
   artifacts <- .registry_artifacts(crosswalk)
-  cov <- .registry_coverage()
-  cov$family <- vapply(cov$raw_type, .registry_family_of, "", crosswalk = crosswalk,
-                       USE.NAMES = FALSE)
+  cov <- .registry_coverage(crosswalk)
   v <- character()
   if (is.null(sources)) return("no inst/registry/sources.csv")
 
