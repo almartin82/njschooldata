@@ -7,7 +7,7 @@
 devtools::load_all(quiet = TRUE)
 
 curated <- c(
-  "get_available_years", "fetch_enr", "fetch_parcc", "fetch_access", "fetch_grad_rate",
+  "get_available_years", "get_data_registry", "fetch_enr", "fetch_parcc", "fetch_access", "fetch_grad_rate",
   "get_school_directory", "get_district_directory", "fetch_facilities",
   "fetch_facilities_multi", "fetch_facility_gis",
   "get_available_facilities", "fetch_finance", "fetch_finance_multi",

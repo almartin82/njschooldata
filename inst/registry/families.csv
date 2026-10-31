@@ -1,0 +1,16 @@
+pattern,family,taxonomy_category
+^(enrollment|enrollment_.*|.*_enrollment.*|fall_enrollment_report|membership|population.*|populations|program_shares|all[-_]students|gender|race|race[-_].*|grade|meal|meal_.*|frl|economically-disadvantaged|high_needs|noe|enrollment-source|ny-source-foundation)$,enrollment,Enrollment & Demographics
+^(assessment|assessment[-_].*|.*_assessment|staar|staar_(eoc|tapr_raw)|keystone|pssa|kprep|hs_assessment|proficiency_levels|telpas_assessment|act|sat|ap-ib|ap_ib|early_literacy|kindergarten_screen|wakids|district_achievement|src)$,assessment,Assessments
+^(growth.*|staar_growth|value_added|learning_gains|gap_closing.*)$,growth,Assessments
+^(graduation|graduation_.*|nongraduate|suny-destinations|postsecondary|readiness|ninth_grade_on_track|cte-pathways|courses)$,graduation,Graduation Rates
+^(directory|directory_.*|closures|catalog|district_profile)$,directory,School/District Directory
+^(facilities|facility_.*|capital_needs)$,facilities,Facilities
+^(finance|finance_.*|cost_per_.*|afr|ppe|revenue|expenditure_detail|per-pupil.*|fiscal.*)$,finance,Per-Pupil Expenditure
+^(accountability|accountability_.*|report_card|wsif)$,accountability,Accountability Ratings
+^(absence|absence_.*|chronic_absence|chronic-absence.*)$,absence,Chronic Absenteeism
+^(ell|ell_.*|el|el_.*|english[-_ ]learners?|english-language-learners|el[-_ ]progress|telpas)$,ell,English Learner Progress
+^(sped|sped_.*|special[-_ ]ed|special[-_ ]ed_.*|special[-_ ]education|students-with-disabilities|disability_profile)$,sped,Special Ed Classification
+^(staff|staff_.*|s275|teacher_.*)$,staff,Teacher/Staff Data
+^(dropout)$,dropout,Dropout Rates
+^(discipline)$,discipline,Discipline
+^(crosswalk|identifiers|identifier_crosswalk|nces_crosswalk|reference|supplemental identifiers|multi_family_state_snapshots)$,reference,Reference

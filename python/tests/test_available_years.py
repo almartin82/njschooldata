@@ -49,3 +49,40 @@ def test_real_available_years_contract():
                           ("unknown", "Declared types: enrollment")]:
         with pytest.raises(Exception, match=message):
             get_available_years(type)
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "forwarded"),
+    [({}, {}), ({"family": "enrollment"}, {"family": "enrollment"}),
+     ({"family": "enrollment", "end_year": 2024},
+      {"family": "enrollment", "end_year": 2024})],
+)
+def test_data_registry_forwards_only_selectors_given(monkeypatch, kwargs, forwarded):
+    from njschooldata import enrollment, get_data_registry
+    from rpy2 import robjects
+
+    calls = []
+
+    def fake_call(name, **call_kwargs):
+        calls.append((name, call_kwargs))
+        return robjects.DataFrame({
+            "family": robjects.StrVector(["enrollment"]),
+            "end_year": robjects.IntVector([2024]),
+            "status": robjects.StrVector(["served"]),
+        })
+
+    monkeypatch.setattr(enrollment, "call_r_function", fake_call)
+    result = get_data_registry(**kwargs)
+    assert calls == [("get_data_registry", forwarded)]
+    assert isinstance(result, pd.DataFrame)
+    assert list(result["status"]) == ["served"]
+
+
+@pytest.mark.requires_r
+def test_real_data_registry_contract():
+    from njschooldata import get_data_registry
+
+    registry = get_data_registry(family="enrollment", end_year=2024)
+    assert isinstance(registry, pd.DataFrame)
+    assert list(registry["status"]) == ["served"]
+    assert list(registry["source_id"]) == ["fall_enrollment_reports"]

@@ -14,6 +14,13 @@ _CONTRACT = json.loads(r'''
         "type": "NULL"
       }
     },
+    "get_data_registry": {
+      "parameters": ["family", "end_year"],
+      "defaults": {
+        "family": "NULL",
+        "end_year": "NULL"
+      }
+    },
     "fetch_enr": {
       "parameters": ["end_year", "tidy", "use_cache"],
       "defaults": {

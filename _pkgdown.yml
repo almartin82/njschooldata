@@ -26,6 +26,7 @@ reference:
       - fetch_enr_cached
       - fetch_enr_years
       - get_available_years
+      - get_data_registry
       - tidy_enr
       - enr_grade_aggs
       - id_enr_aggs

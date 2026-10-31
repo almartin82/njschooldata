@@ -1,0 +1,2 @@
+family,end_year,source_id,reason,evidence,checked_on,note
+absence,2020,school_performance_reports_database,not_published,https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_SchoolDetail.xlsx,2026-10-31,The 2019-2020 school workbook returns HTTP 200 as a valid XLSX but has no ChronicAbsenteeism sheet.

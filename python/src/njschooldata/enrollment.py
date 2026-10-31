@@ -54,3 +54,21 @@ def get_available_years(type: Optional[str] = None) -> Union[list[int], pd.DataF
     if type is None:
         return r_to_pandas(call_r_function)("get_available_years")
     return [int(year) for year in call_r_function("get_available_years", type=type)]
+
+
+@r_to_pandas
+def get_data_registry(
+    family: Optional[Union[str, list[str]]] = None,
+    end_year: Optional[Union[int, list[int]]] = None,
+) -> pd.DataFrame:
+    """Return the offline data registry, optionally filtered by family and year.
+
+    One row per family, year and source: whether the package holds it, serves
+    it, where it came from, and why it is missing when it is.
+    """
+    kwargs = {}
+    if family is not None:
+        kwargs["family"] = family
+    if end_year is not None:
+        kwargs["end_year"] = end_year
+    return call_r_function("get_data_registry", **kwargs)
