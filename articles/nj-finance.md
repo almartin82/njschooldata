@@ -62,7 +62,7 @@ get_source_results(fin_multi) %>%
 #> 3      2018  spending        actual
 #> 4      2018 state_aid not_published
 #> 5      2020  spending        actual
-#> 6      2020 state_aid   parse_error
+#> 6      2020 state_aid        actual
 #> 7      2022  spending        actual
 #> 8      2022 state_aid        actual
 #> 9      2024  spending        actual

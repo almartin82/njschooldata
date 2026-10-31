@@ -54,7 +54,7 @@ requiring non-default selectors or private stores are excluded."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Get available end years under default selectors</h1>
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/main/R/available_years.R" class="external-link"><code>R/available_years.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/R/available_years.R" class="external-link"><code>R/available_years.R</code></a></small>
       <div class="d-none name"><code>get_available_years.Rd</code></div>
     </div>
 
@@ -87,8 +87,8 @@ for all declared types.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Enrollment, graduation, finance, and sped_share coverage is declared.
-Absence cannot yet be verified against the source cache.
+    <p>Enrollment, absence, graduation, finance, and sped_share coverage is declared.
+Absence excludes 2020, when chronic absenteeism was not published.
 Assessment requires explicit grade/course and subject selectors and remains
 undeclared. Other known fetch families
 raise an error containing "coverage not yet declared".</p>
@@ -101,6 +101,14 @@ raise an error containing "coverage not yet declared".</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16] 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026</span>
 <span class="r-in"><span><span class="fu">get_available_years</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          type end_year          fetcher</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44    absence     2017    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45    absence     2018    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46    absence     2019    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47    absence     2021    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48    absence     2022    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49    absence     2023    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50    absence     2024    fetch_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51    absence     2025    fetch_absence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  enrollment     1999        fetch_enr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  enrollment     2000        fetch_enr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  enrollment     2001        fetch_enr</span>
@@ -129,29 +137,32 @@ raise an error containing "coverage not yet declared".</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 26 enrollment     2024        fetch_enr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 27 enrollment     2025        fetch_enr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 28 enrollment     2026        fetch_enr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44    finance     2001    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45    finance     2002    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46    finance     2003    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47    finance     2004    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48    finance     2005    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49    finance     2006    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50    finance     2007    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51    finance     2008    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52    finance     2009    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53    finance     2010    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54    finance     2011    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55    finance     2012    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56    finance     2013    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57    finance     2014    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58    finance     2015    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59    finance     2016    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60    finance     2017    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61    finance     2018    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62    finance     2022    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63    finance     2023    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64    finance     2024    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65    finance     2025    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66    finance     2026    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52    finance     2001    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53    finance     2002    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54    finance     2003    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55    finance     2004    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56    finance     2005    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57    finance     2006    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58    finance     2007    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59    finance     2008    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60    finance     2009    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61    finance     2010    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62    finance     2011    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63    finance     2012    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64    finance     2013    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65    finance     2014    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66    finance     2015    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67    finance     2016    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68    finance     2017    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69    finance     2018    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70    finance     2019    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71    finance     2020    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72    finance     2021    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73    finance     2022    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74    finance     2023    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75    finance     2024    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76    finance     2025    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77    finance     2026    fetch_finance</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 29 graduation     2011  fetch_grad_rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 30 graduation     2012  fetch_grad_rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31 graduation     2013  fetch_grad_rate</span>
@@ -167,16 +178,16 @@ raise an error containing "coverage not yet declared".</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 41 graduation     2023  fetch_grad_rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 42 graduation     2024  fetch_grad_rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 43 graduation     2025  fetch_grad_rate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67 sped_share     2023 fetch_sped_share</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68 sped_share     2024 fetch_sped_share</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69 sped_share     2025 fetch_sped_share</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70 sped_share     2026 fetch_sped_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78 sped_share     2023 fetch_sped_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79 sped_share     2024 fetch_sped_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80 sped_share     2025 fetch_sped_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81 sped_share     2026 fetch_sped_share</span>
 <span class="r-in"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="fu">get_available_years</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">coverage</span>, <span class="va">end_year</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          type end_year          fetcher</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 28 enrollment     2026        fetch_enr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66    finance     2026    fetch_finance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70 sped_share     2026 fetch_sped_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77    finance     2026    fetch_finance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81 sped_share     2026 fetch_sped_share</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

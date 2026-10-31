@@ -3,7 +3,7 @@
 Convenience wrapper that calls
 [`fetch_absence()`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md)
 for each year and binds the results. Skips years that fail (e.g., COVID
-gap 2020-2021) with a warning.
+gap 2020) with a warning.
 
 ## Usage
 
@@ -57,7 +57,7 @@ if (FALSE) { # \dontrun{
 # Get all available years of chronic absenteeism
 ca_all <- fetch_absence_multi(2017:2024)
 
-# COVID gap: 2020-2021 were not reported, will be skipped with a warning
+# COVID gap: 2020 was not reported, will be skipped with a warning
 ca_all <- fetch_absence_multi(2017:2024)
 
 # Multi-year trend by district

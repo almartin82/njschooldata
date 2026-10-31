@@ -22,7 +22,7 @@ fetch_absence(
 
 - end_year:
 
-  A school year (2017-2024). Year is the end of the academic year —
+  A school year (2017-2025). Year is the end of the academic year —
   e.g., the 2023-24 school year is `end_year = 2024`.
 
 - level:
