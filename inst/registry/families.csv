@@ -1,6 +1,6 @@
 pattern,family,taxonomy_category
-^(enr_.*|enrollment|enrollment_.*|.*_enrollment.*|fall_enrollment_report|membership|population.*|populations|program_shares|all[-_]students|gender|race|race[-_].*|grade|meal|meal_.*|frl|economically-disadvantaged|high_needs|enrollment-source|ny-source-foundation)$,enrollment,Enrollment & Demographics
-^(assessment|assessment[-_].*|.*_assessment|staar|staar_(eoc|tapr_raw)|nyseslat|nysaa|district_disaggregated|keystone|pssa|kprep|hs_assessment|proficiency_levels|telpas_assessment|act|sat|ap-ib|ap_ib|early_literacy|kindergarten_screen|wakids|district_achievement|src)$,assessment,Assessments
+^(enr_.*|demographics|enrollment|enrollment_.*|.*_enrollment.*|fall_enrollment_report|membership|population.*|populations|program_shares|all[-_]students|gender|race|race[-_].*|grade|meal|meal_.*|frl|economically-disadvantaged|high_needs|enrollment-source|ny-source-foundation)$,enrollment,Enrollment & Demographics
+^(assessment|assessment[-_].*|.*_assessment|staar|staar_(eoc|tapr_raw)|nyseslat|nysaa|iread3|district_disaggregated|keystone|pssa|kprep|hs_assessment|proficiency_levels|telpas_assessment|act|sat|ap-ib|ap_ib|early_literacy|kindergarten_screen|wakids|district_achievement|src)$,assessment,Assessments
 ^(growth.*|staar_growth|value_added|learning_gains|gap_closing.*)$,growth,Assessments
 ^(graduation|graduation_.*|nongraduate|suny-destinations|postsecondary|readiness|ninth_grade_on_track|cte-pathways|courses)$,graduation,Graduation Rates
 ^(directory|directory_.*|closures|catalog|district_profile)$,directory,School/District Directory

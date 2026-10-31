@@ -4,7 +4,13 @@
   finance = "fetch_finance", sped = "fetch_sped",
   sped_share = "fetch_sped_share", ell = "fetch_ell",
   staff = "fetch_staff_demographics", facilities = "fetch_facilities",
-  facility_gis = "fetch_facility_gis", directory = "fetch_directory"
+  facility_gis = "fetch_facility_gis", directory = "fetch_directory",
+  sped_by_grade = "fetch_sped_by_grade",
+  graduation_count = "fetch_grad_count",
+  graduation_6yr = "fetch_6yr_grad_rate",
+  assessment_access = "fetch_access",
+  state_aid = "fetch_state_aid",
+  essa_chronic_absence = "fetch_essa_chronic_absenteeism"
 )
 
 # Only verified families enter the coverage table in this wave.
@@ -13,7 +19,17 @@
   graduation = .nj_grad_live_years,
   absence = .nj_absence_live_years,
   finance = .nj_finance_live_years,
-  sped_share = get_valid_sped_share_years()
+  sped_share = get_valid_sped_share_years(),
+  # fetch_tges returns a list of tables, not one frame, so it stays undeclared.
+  # Each of these is the registry entry the fetcher's own year guard reads.
+  ell = get_source_years("ell"),
+  sped = get_valid_sped_years(),
+  sped_by_grade = get_valid_sped_by_grade_years(),
+  graduation_count = get_source_years("grad_count"),
+  graduation_6yr = get_source_years("grate_6yr"),
+  assessment_access = get_source_years("access"),
+  state_aid = get_source_years("state_aid", capability = "raw"),
+  essa_chronic_absence = get_source_years("essa_chronic_absence")
 )
 
 .nj_available_years_coverage <- function() {
@@ -38,7 +54,9 @@
 #' is computed offline from the declarations the fetchers enforce. Years
 #' requiring non-default selectors or private stores are excluded.
 #'
-#' Enrollment, absence, graduation, finance, and sped_share coverage is declared.
+#' Enrollment, absence, graduation, finance, sped, sped_by_grade, sped_share,
+#' ell, graduation_count, graduation_6yr, assessment_access, state_aid
+#' and essa_chronic_absence coverage is declared.
 #' Absence excludes 2020, when chronic absenteeism was not published.
 #' Assessment requires explicit grade/course and subject selectors and remains
 #' undeclared. Other known fetch families

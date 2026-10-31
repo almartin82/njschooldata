@@ -22,7 +22,9 @@ is computed offline from the declarations the fetchers enforce. Years
 requiring non-default selectors or private stores are excluded.
 }
 \details{
-Enrollment, absence, graduation, finance, and sped_share coverage is declared.
+Enrollment, absence, graduation, finance, sped, sped_by_grade, sped_share,
+ell, graduation_count, graduation_6yr, assessment_access, state_aid
+and essa_chronic_absence coverage is declared.
 Absence excludes 2020, when chronic absenteeism was not published.
 Assessment requires explicit grade/course and subject selectors and remains
 undeclared. Other known fetch families
