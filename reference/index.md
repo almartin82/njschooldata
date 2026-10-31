@@ -12,6 +12,8 @@ Functions for fetching and processing NJ school enrollment data
   : Fetch multiple years of enrollment data with progress
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
   : Get available end years under default selectors
+- [`get_data_registry()`](https://almartin82.github.io/njschooldata/reference/get_data_registry.md)
+  : What this package holds, serves and is missing, by family and year
 - [`tidy_enr()`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md)
   : Tidy enrollment data
 - [`enr_grade_aggs()`](https://almartin82.github.io/njschooldata/reference/enr_grade_aggs.md)
@@ -861,6 +863,8 @@ Additional exported functions
   : Get declared finance years served under default selectors
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
   : Get available end years under default selectors
+- [`get_data_registry()`](https://almartin82.github.io/njschooldata/reference/get_data_registry.md)
+  : What this package holds, serves and is missing, by family and year
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)
   : Get DFG A districts (highest-need peer group)
 - [`get_dfg_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_districts.md)
