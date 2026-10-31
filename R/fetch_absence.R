@@ -1,3 +1,10 @@
+# School SPR rates verified against the ChronicAbsenteeism sheet (2017–2024)
+# and ChronicAbsenteeismStudentGroup (2025); see inst/source-reconciliation.md.
+# 2020 remains excluded: retrieved 2026-10-31, HTTP 200 XLSX, but no
+# ChronicAbsenteeism sheet in the 2019-2020 school SPR workbook:
+# https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_SchoolDetail.xlsx
+.nj_absence_live_years <- c(2017:2019, 2021:2025)
+
 # ==============================================================================
 # Unified Chronic Absenteeism Interface
 # ==============================================================================
@@ -81,7 +88,7 @@ tidy_absence <- function(df) {
 #' Wraps \code{fetch_chronic_absenteeism()} from the SPR database with
 #' optional tidy normalization.
 #'
-#' @param end_year A school year (2017-2024). Year is the end of the academic
+#' @param end_year A school year (2017-2025). Year is the end of the academic
 #'   year — e.g., the 2023-24 school year is \code{end_year = 2024}.
 #' @param level One of \code{"school"} or \code{"district"}. Default
 #'   \code{"school"} returns school-level data; \code{"district"} returns
@@ -184,7 +191,7 @@ fetch_absence <- function(end_year, level = "school", type = "chronic",
 #' Fetch Chronic Absenteeism Data for Multiple Years
 #'
 #' Convenience wrapper that calls \code{fetch_absence()} for each year and
-#' binds the results. Skips years that fail (e.g., COVID gap 2020-2021) with
+#' binds the results. Skips years that fail (e.g., COVID gap 2020) with
 #' a warning.
 #'
 #' @param end_years Integer vector of school years (e.g., \code{2017:2024}).
@@ -206,7 +213,7 @@ fetch_absence <- function(end_year, level = "school", type = "chronic",
 #' # Get all available years of chronic absenteeism
 #' ca_all <- fetch_absence_multi(2017:2024)
 #'
-#' # COVID gap: 2020-2021 were not reported, will be skipped with a warning
+#' # COVID gap: 2020 was not reported, will be skipped with a warning
 #' ca_all <- fetch_absence_multi(2017:2024)
 #'
 #' # Multi-year trend by district

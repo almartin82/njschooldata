@@ -6,16 +6,14 @@
   SHA-256 on read. Counts under 5 stay suppressed as `NA`. 2025-26 looks
   incomplete and warns.
 
-* Available-years coverage now declares graduation (2011–2025) and finance
-  (2001–2018 and 2022–2026), alongside enrollment. The finance year helper keeps
-  its integer vector and 2001–2026 endpoints but excludes 2019–2021: the state-aid
-  parser finds no rows for its expected year-specific K-12 aid category. The
-  helper derives its years from declared coverage; `allow_partial = TRUE` keeps
-  the existing partial-results path.
-  Absence remains undeclared because all candidate SPR workbooks refuse the
-  existing cache identity; assessment requires explicit subject and grade/course
-  selectors and remains undeclared. Graduation and finance source downloads
-  reuse the validated persistent raw-source cache.
+* `fetch_finance()` now reads the revised K-12 aid totals for 2019–2021,
+  recognizes FY2019's statewide row, and reconciles district aid to the printed
+  workbook totals. Finance coverage now includes every year from 2001–2026.
+* SPR downloads now use versioned, URL-specific cache keys for acquisitions
+  without metadata, preserving legacy files and enforcing the existing source
+  identity checks. The 2017 reader joins published entity names from the same
+  workbook's header sheet. Absence coverage now declares 2017–2019 and
+  2021–2025, with rates verified against the school SPR workbooks.
 
 * **Breaking change:** `get_available_years(type = NULL)` now reports explicit
   served end years under default selectors. Use `get_available_years("enrollment")`

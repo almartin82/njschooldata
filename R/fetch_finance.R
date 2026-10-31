@@ -1,8 +1,9 @@
-# not claimed: 2019 — "State-aid source contained no rows for expected category fy_19_k_12_aid."
-# not claimed: 2020 — "State-aid source contained no rows for expected category fy_20_k_12_aid."
-# not claimed: 2021 — "State-aid source contained no rows for expected category fy_21_k_12_aid."
-# The state-aid parser fails under defaults; allow_partial retains its opt-in path.
-.nj_finance_live_years <- c(2001:2018, 2022:2026)
+# Revised K-12 aid totals, printed and computed district sums (2026-10-31):
+# 1819.zip / district.xlsx, DISTRICT DETAILS!F583: 8,485,965,463;
+# 1920.zip / District Details FY20 Revised.xlsx, District Details!F583: 8,676,882,785;
+# 2021.zip / FY21 Revised District Detail.xlsx, District Details!F583: 8,680,457,745.
+# Publisher URLs and fetcher checks: inst/source-reconciliation.md.
+.nj_finance_live_years <- 2001:2026
 
 # ==============================================================================
 # Uniform finance front door: fetch_finance()
@@ -319,8 +320,13 @@ get_finance_revenue_result <- function(end_year) {
   }
   state_aid_record <- get_source_results(sa)[1, , drop = FALSE]
 
-  # the published current-year total column normalizes to fy_NN_k_12_aid
-  total_cat <- paste0("fy_", sprintf("%02d", end_year %% 100L), "_k_12_aid")
+  # Revised totals in 2019–2021 use older labels; later totals use FYnn K-12 Aid.
+  total_cat <- switch(as.character(end_year),
+    `2019` = "x_2018_19_approp_act_revised_total_k_12_aid",
+    `2020` = "fy_20_approp_act_revised_total_k_to_12_aid",
+    `2021` = "x_2020_21_revised_total_k_12_aid",
+    paste0("fy_", sprintf("%02d", end_year %% 100L), "_k_12_aid")
+  )
   rev <- sa[sa$aid_category == total_cat & (sa$is_district | sa$is_state), , drop = FALSE]
   if (nrow(rev) == 0) {
     return(new_source_result(

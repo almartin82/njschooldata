@@ -229,8 +229,8 @@
   ),
   absence = list(
     aliases = c("absence", "chronic_absence"),
-    raw_years = c(2017:2019, 2021:2025),
-    tidy_years = c(2017:2019, 2021:2025),
+    raw_years = .nj_absence_live_years,
+    tidy_years = .nj_absence_live_years,
     skipped_years = 2020L,
     skipped_reasons = c(
       `2020` = "Chronic absenteeism was not published for the COVID-disrupted year."

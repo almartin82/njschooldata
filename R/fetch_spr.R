@@ -188,6 +188,25 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   # District files have: CountyCode, CountyName, DistrictCode, DistrictName, StudentGroup
   names(df) <- clean_name_vector(names(df))
 
+  # The 2016-17 measures identify entities only by CDS code. Their names are
+  # printed separately in the same workbook's header sheet.
+  name_cols <- c("county_name", "district_name",
+                 if (level == "school") "school_name")
+  if (end_year == 2017L && !all(name_cols %in% names(df))) {
+    header <- readxl::read_excel(
+      tname, sheet = if (level == "school") "SchoolHeader" else "DistrictHeader"
+    )
+    names(header) <- clean_name_vector(names(header))
+    keys <- c("county_code", "district_code",
+              if (level == "school") "school_code")
+    missing_names <- setdiff(name_cols, names(df))
+    header <- unique(header[c(keys, missing_names)])
+    if (anyDuplicated(header[keys])) {
+      stop("SPR header has conflicting names for the same CDS code.", call. = FALSE)
+    }
+    df <- dplyr::left_join(df, header, by = keys)
+  }
+
   # After cleaning, we have: county_code, county_name, district_code, district_name, school_code, school_name, student_group
   # Rename code columns to id columns
   df <- dplyr::rename(df, county_id = county_code, district_id = district_code)

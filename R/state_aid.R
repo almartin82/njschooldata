@@ -267,10 +267,13 @@ tidy_state_aid <- function(df, end_year) {
   dc[has_code] <- pad_leading(dc[has_code], 4)
   long$district_id <- dc
 
-  long$is_district <- grepl("^[0-9]{3,4}$", long$district_id)
+  # FY2019 labels its statewide total County = State, Dist = 9999.
+  state_label <- !is.na(long$county_name) &
+    grepl("^state$", long$county_name, ignore.case = TRUE)
+  long$is_district <- grepl("^[0-9]{3,4}$", long$district_id) & !state_label
   # the workbook ends in a grand-total row (blank/non-numeric code)
-  long$is_state <- !long$is_district &
-    (is.na(long$county_name) | grepl("total|state", long$district_name, ignore.case = TRUE))
+  long$is_state <- state_label | (!long$is_district &
+    (is.na(long$county_name) | grepl("total|state", long$district_name, ignore.case = TRUE)))
 
   long$end_year <- end_year
 

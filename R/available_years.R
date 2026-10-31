@@ -11,6 +11,7 @@
 .nj_live_years <- function() list(
   enrollment = get_source_years("enrollment"),
   graduation = .nj_grad_live_years,
+  absence = .nj_absence_live_years,
   finance = .nj_finance_live_years,
   sped_share = get_valid_sped_share_years()
 )
@@ -37,8 +38,8 @@
 #' is computed offline from the declarations the fetchers enforce. Years
 #' requiring non-default selectors or private stores are excluded.
 #'
-#' Enrollment, graduation, finance, and sped_share coverage is declared.
-#' Absence cannot yet be verified against the source cache.
+#' Enrollment, absence, graduation, finance, and sped_share coverage is declared.
+#' Absence excludes 2020, when chronic absenteeism was not published.
 #' Assessment requires explicit grade/course and subject selectors and remains
 #' undeclared. Other known fetch families
 #' raise an error containing "coverage not yet declared".

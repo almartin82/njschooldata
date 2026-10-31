@@ -13,7 +13,7 @@ fetch_absence(
 )
 }
 \arguments{
-\item{end_year}{A school year (2017-2024). Year is the end of the academic
+\item{end_year}{A school year (2017-2025). Year is the end of the academic
 year — e.g., the 2023-24 school year is \code{end_year = 2024}.}
 
 \item{level}{One of \code{"school"} or \code{"district"}. Default

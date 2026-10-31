@@ -399,9 +399,18 @@ spr_cached_workbook_result <- function(end_year, level,
     njsd_cache_enabled()
 
   if (use_cache) {
+    # Unversioned year/level files predate acquisition sidecars. Keep those
+    # bytes intact; acquire a documented source in the identity-aware namespace.
+    # Including the URL also prevents a changed registry URL sharing an entry.
     cache_dir <- njsd_workbook_cache_dir()
     dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-    dest <- file.path(cache_dir, sprintf("SPR_%s_%d.xlsx", level, end_year))
+    dest <- file.path(cache_dir, sprintf("SPR_source-v1_%s_%d_%s.xlsx", level, end_year,
+                                       digest::digest(url, algo = "sha256")))
+    # Existing documented acquisitions remain subject to transport validation.
+    legacy <- file.path(cache_dir, sprintf("SPR_%s_%d.xlsx", level, end_year))
+    if (file.exists(legacy) && file.exists(paste0(legacy, ".source.rds"))) {
+      dest <- legacy
+    }
     cache_path <- dest
   } else {
     cache_path <- NULL

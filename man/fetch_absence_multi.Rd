@@ -34,7 +34,7 @@ A data frame with all years bound together.
 }
 \description{
 Convenience wrapper that calls \code{fetch_absence()} for each year and
-binds the results. Skips years that fail (e.g., COVID gap 2020-2021) with
+binds the results. Skips years that fail (e.g., COVID gap 2020) with
 a warning.
 }
 \examples{
@@ -42,7 +42,7 @@ a warning.
 # Get all available years of chronic absenteeism
 ca_all <- fetch_absence_multi(2017:2024)
 
-# COVID gap: 2020-2021 were not reported, will be skipped with a warning
+# COVID gap: 2020 was not reported, will be skipped with a warning
 ca_all <- fetch_absence_multi(2017:2024)
 
 # Multi-year trend by district
