@@ -349,7 +349,7 @@ standard metric vocabulary, so cross-state code works unchanged.
 - [`fetch_finance_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_finance_multi.md)
   : Fetch multiple years of NJ school finance
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Get finance years with at least one registered component
+  : Get declared finance years served under default selectors
 
 ## Source Coverage and Provenance
 
@@ -840,7 +840,7 @@ Additional exported functions
 - [`get_available_facilities()`](https://almartin82.github.io/njschooldata/reference/get_available_facilities.md)
   : What facilities categories are available for New Jersey
 - [`get_available_finance_years()`](https://almartin82.github.io/njschooldata/reference/get_available_finance_years.md)
-  : Get finance years with at least one registered component
+  : Get declared finance years served under default selectors
 - [`get_available_years()`](https://almartin82.github.io/njschooldata/reference/get_available_years.md)
   : Get available end years under default selectors
 - [`get_dfg_a_districts()`](https://almartin82.github.io/njschooldata/reference/get_dfg_a_districts.md)

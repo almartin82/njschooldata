@@ -1,6 +1,6 @@
-# Get finance years with at least one registered component
+# Get declared finance years served under default selectors
 
-Get finance years with at least one registered component
+Get declared finance years served under default selectors
 
 ## Usage
 

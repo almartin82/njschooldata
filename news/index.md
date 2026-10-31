@@ -2,12 +2,24 @@
 
 ## njschooldata 0.10.0
 
+- Available-years coverage now declares graduation (2011–2025) and
+  finance (2001–2018 and 2022–2026), alongside enrollment. The finance
+  year helper keeps its integer vector and 2001–2026 endpoints but
+  excludes 2019–2021: the state-aid parser finds no rows for its
+  expected year-specific K-12 aid category. The helper derives its years
+  from declared coverage; `allow_partial = TRUE` keeps the existing
+  partial-results path. Absence remains undeclared because all candidate
+  SPR workbooks refuse the existing cache identity; assessment requires
+  explicit subject and grade/course selectors and remains undeclared.
+  Graduation and finance source downloads reuse the validated persistent
+  raw-source cache.
+
 - **Breaking change:** `get_available_years(type = NULL)` now reports
   explicit served end years under default selectors. Use
   `get_available_years("enrollment")` for the sorted integer vector
   (1999–2026). Calling without a type returns a data frame with `type`,
   `end_year`, and `fetcher` columns, replacing the former enrollment
-  vector. Other known families error with “coverage not yet declared”.
+  vector. Undeclared families error with “coverage not yet declared”.
 
 - Python `get_available_years(type=None)` returns a `list[int]` when
   typed and a pandas DataFrame when untyped. Coverage is derived offline
