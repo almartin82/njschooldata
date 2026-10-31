@@ -1,7 +1,8 @@
 .nj_year_fetchers <- c(
   enrollment = "fetch_enr", absence = "fetch_absence",
   assessment = "fetch_parcc", graduation = "fetch_grad_rate",
-  finance = "fetch_finance", sped = "fetch_sped", ell = "fetch_ell",
+  finance = "fetch_finance", sped = "fetch_sped",
+  sped_share = "fetch_sped_share", ell = "fetch_ell",
   staff = "fetch_staff_demographics", facilities = "fetch_facilities",
   facility_gis = "fetch_facility_gis", directory = "fetch_directory"
 )
@@ -10,7 +11,8 @@
 .nj_live_years <- function() list(
   enrollment = get_source_years("enrollment"),
   graduation = .nj_grad_live_years,
-  finance = .nj_finance_live_years
+  finance = .nj_finance_live_years,
+  sped_share = get_valid_sped_share_years()
 )
 
 .nj_available_years_coverage <- function() {
@@ -35,7 +37,7 @@
 #' is computed offline from the declarations the fetchers enforce. Years
 #' requiring non-default selectors or private stores are excluded.
 #'
-#' Enrollment, graduation, and finance coverage is declared.
+#' Enrollment, graduation, finance, and sped_share coverage is declared.
 #' Absence cannot yet be verified against the source cache.
 #' Assessment requires explicit grade/course and subject selectors and remains
 #' undeclared. Other known fetch families

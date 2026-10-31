@@ -161,6 +161,11 @@ reference:
     contents:
       - fetch_sped
       - fetch_sped_by_grade
+      - fetch_sped_share
+      - sped_all_vs_all
+      - sped_like_for_like
+      - sped_pool
+      - sped_grade_band
       - fetch_sped_placement
       - fetch_sped_placement_multi
       - get_raw_sped_placement

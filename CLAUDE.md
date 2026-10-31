@@ -700,6 +700,28 @@ classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
   (`inst/extdata/program-sources/`). `grade_level`: `PK`, `K`, `01`-`12`,
   `NO_GRADE`. Counts under 5 are `NA` with `suppressed = TRUE`; blank grades have
   no row; no statewide row. 2026 warns: the release looks incomplete.
+- **`fetch_sped_share(end_year, basis)`** - rows for comparing the share of students
+  with IEPs between two sets of schools (`sped_all_vs_all()`, `sped_like_for_like()`,
+  contract `contracts/sped-comparison/v1`). Finest grain by basis:
+  - `basis = "lea_idea"` (default, 2023-2026): district rows only. `all` rows (2023-2025)
+    and a state row from the IDEA classification files; `elementary` (K-5), `middle`
+    (6-8), `high` (9-12) rows for every year from the OPRA C255254 grade counts over
+    the same year's Fall Enrollment District sheet by grade (K half/full day summed).
+    Construct: students with an IEP, October 15 child count. PK is left out of bands.
+    A blank OPRA cell is zero (cells sum to the IDEA count exactly wherever nothing is
+    suppressed, 2023-2025, except two 2022-23 LEAs, 0410 and 5210, one student short); a suppressed cell (1-4) makes the band `n_sped` NA with
+    `pct_sped_lo/hi`. Band rows carry no `pct_sped` (counts only). A band whose IEP
+    count exceeds its enrollment (sending districts; 3 rows in 2023-2026) keeps the
+    count and withholds `n_enrolled`. 2026 warns (OPRA incomplete, no IDEA file).
+  - `basis = "school_report"` (2021-2025, live): school, district and state rows from the
+    School Performance Reports Students with Disabilities percent of enrollment, one
+    decimal, no suppression. `n_enrolled` and spans come from the same report's
+    enrollment by grade. A different construct from IDEA (statewide 2024: 19.3 percent
+    against 17.13). Each year uses that year's own workbook: the 2025 workbook's trend table restates earlier years lower (statewide 2023-24: 18.0 there, 19.3 in the 2024 workbook), so never splice years across workbooks. Never mixed with `lea_idea` rows in one return.
+  - `is_charter` = county 80 OR the three Camden renaissance operators (1799, 1801,
+    1802; NJDOE Renaissance School Project annual reports). County 80 alone misses them.
+  - Trap: legacy cached SPR school workbooks without a `.source.rds` sidecar report
+    `source_unavailable`; move the file out of `njsd_workbook_cache_dir()` to re-download.
 - **`fetch_sped_placement(end_year, age_group, level, tidy, with_status)`** /
   `fetch_sped_placement_multi()` - IDEA-618 educational-environment (LRE)
   placement, 2020-2025. `level` is `"district"` (default) or `"state"`;

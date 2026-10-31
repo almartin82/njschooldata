@@ -22,7 +22,7 @@ is computed offline from the declarations the fetchers enforce. Years
 requiring non-default selectors or private stores are excluded.
 }
 \details{
-Enrollment, graduation, and finance coverage is declared.
+Enrollment, graduation, finance, and sped_share coverage is declared.
 Absence cannot yet be verified against the source cache.
 Assessment requires explicit grade/course and subject selectors and remains
 undeclared. Other known fetch families
