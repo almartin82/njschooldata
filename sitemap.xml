@@ -256,6 +256,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_share.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_data.html</loc></url>
@@ -498,10 +499,14 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/source_result_record.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spec_pop_aggregate_calcs.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_all_vs_all.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_grade_band.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_like_for_like.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_lookup_map.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_cache_dir.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_cached_workbook.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_sheet.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_pool.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_enr_cols.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_state_ed_environ_tables.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_blank_no_data.html</loc></url>

@@ -1200,6 +1200,17 @@ Functions for special education and other subgroup data
   : Fetch Special Education Classification Data
 - [`fetch_sped_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.md)
   : Fetch students with an active IEP by district and grade
+- [`fetch_sped_share()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_share.md)
+  : Fetch the share of students with IEPs, district rows by grade band
+  or school rows
+- [`sped_all_vs_all()`](https://almartin82.github.io/njschooldata/reference/sped_all_vs_all.md)
+  : Specification 1: all students against all students
+- [`sped_like_for_like()`](https://almartin82.github.io/njschooldata/reference/sped_like_for_like.md)
+  : Specification 2: like for like by grade band
+- [`sped_pool()`](https://almartin82.github.io/njschooldata/reference/sped_pool.md)
+  : Pool special education rows into one share
+- [`sped_grade_band()`](https://almartin82.github.io/njschooldata/reference/sped_grade_band.md)
+  : Grade band of a school's span
 - [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
   : Fetch NJ Special Education Placement / Educational Environment data
 - [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
@@ -1693,6 +1704,9 @@ Additional exported functions
   : Fetch NJ Special Education Placement / Educational Environment data
 - [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
   : Fetch NJ SPED placement data for multiple years
+- [`fetch_sped_share()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_share.md)
+  : Fetch the share of students with IEPs, district rows by grade band
+  or school rows
 - [`fetch_spr_accountability_summative()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_accountability_summative.md)
   : Fetch ESSA Summative Accountability Scores
 - [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md)
@@ -1920,8 +1934,16 @@ Additional exported functions
   statistics
 - [`sped_aggregate_calcs()`](https://almartin82.github.io/njschooldata/reference/sped_aggregate_calcs.md)
   : Aggregate multiple sped rows and produce summary statistics
+- [`sped_all_vs_all()`](https://almartin82.github.io/njschooldata/reference/sped_all_vs_all.md)
+  : Specification 1: all students against all students
+- [`sped_grade_band()`](https://almartin82.github.io/njschooldata/reference/sped_grade_band.md)
+  : Grade band of a school's span
+- [`sped_like_for_like()`](https://almartin82.github.io/njschooldata/reference/sped_like_for_like.md)
+  : Specification 2: like for like by grade band
 - [`sped_lookup_map`](https://almartin82.github.io/njschooldata/reference/sped_lookup_map.md)
   : Special Education District Lookup Map
+- [`sped_pool()`](https://almartin82.github.io/njschooldata/reference/sped_pool.md)
+  : Pool special education rows into one share
 - [`standardize_subgroup()`](https://almartin82.github.io/njschooldata/reference/standardize_subgroup.md)
   : Standardize subgroup labels
 - [`subgroup_crosswalk`](https://almartin82.github.io/njschooldata/reference/subgroup_crosswalk.md)
