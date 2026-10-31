@@ -1,8 +1,9 @@
 # Generated from contracts/sped-comparison/v1; do not hand-edit.
 row <- function(district_id, school_id = NA_character_, grade_band = "all", n_sped = NA_real_,
                 n_enrolled = NA_real_, pct_sped = NA_real_, pct_sped_lo = NA_real_,
-                pct_sped_hi = NA_real_, grade_low = NA_character_, grade_high = NA_character_) {
-  data.frame(district_id = district_id, school_id = school_id, grade_band = grade_band,
+                pct_sped_hi = NA_real_, grade_low = NA_character_, grade_high = NA_character_,
+                entity_level = if (is.na(school_id)) "district" else "school") {
+  data.frame(entity_level = entity_level, district_id = district_id, school_id = school_id, grade_band = grade_band,
              n_sped = n_sped, n_enrolled = n_enrolled, pct_sped = pct_sped,
              pct_sped_lo = pct_sped_lo, pct_sped_hi = pct_sped_hi,
              grade_low = grade_low, grade_high = grade_high, stringsAsFactors = FALSE)
@@ -69,6 +70,14 @@ test_that("all vs all compares whole rows and ignores band rows", {
   out <- sped_all_vs_all(rows, ids("1", "a"), ids("2"))
   expect_equal(out$pct, c(10, 15))
   expect_equal(out$group, c("focal", "comparison"))
+})
+
+test_that("a school with no state id never reads as its district row", {
+  rows <- rbind(row("2", n_sped = 100, n_enrolled = 1000),
+                row("2", n_sped = 90, n_enrolled = 100, entity_level = "school"))
+  out <- sped_all_vs_all(rows, ids("2"), ids("2"))
+  expect_equal(out$pct, c(10, 10))
+  expect_equal(out$n_rows, c(1L, 1L))
 })
 
 test_that("like for like weights comparison bands by the focal group's mix", {

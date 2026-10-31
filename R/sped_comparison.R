@@ -87,7 +87,11 @@ sped_pool <- function(rows) {
     stop("ids needs district_id and school_id; use NA school_id for a whole district row",
          call. = FALSE)
   }
+  # An NA school_id names the district row. A school whose state id is unknown
+  # also has NA here, so entity_level keeps it from reading as its district.
   key <- function(d, s) paste(d, ifelse(is.na(s), "", s), sep = "\r")
+  no_id <- is.na(rows$school_id) & rows$entity_level == "school"
+  rows <- rows[!no_id, , drop = FALSE]
   rows[key(rows$district_id, rows$school_id) %in% key(ids$district_id, ids$school_id), , drop = FALSE]
 }
 
