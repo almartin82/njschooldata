@@ -695,6 +695,11 @@ classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
   state-by-disability workbook -> honest error (not_published), NOT transcribed.
   Pre-2015 requires an OPRA request. `disability_category` is standardized
   snake_case with the `"Statewide Total"` rollup mapped to `all_disabilities`.
+- **`fetch_sped_by_grade(end_year)`** - active IEP counts by district/charter and
+  grade, end_years 2022-2026, from the bundled response to OPRA request C255254
+  (`inst/extdata/program-sources/`). `grade_level`: `PK`, `K`, `01`-`12`,
+  `NO_GRADE`. Counts under 5 are `NA` with `suppressed = TRUE`; blank grades have
+  no row; no statewide row. 2026 warns: the release looks incomplete.
 - **`fetch_sped_placement(end_year, age_group, level, tidy, with_status)`** /
   `fetch_sped_placement_multi()` - IDEA-618 educational-environment (LRE)
   placement, 2020-2025. `level` is `"district"` (default) or `"state"`;

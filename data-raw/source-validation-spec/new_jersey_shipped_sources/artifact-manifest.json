@@ -190,6 +190,27 @@
       "lineage": {
         "kind": "source"
       }
+    },
+    {
+      "artifact_id": "sped_grade-opra-C255254",
+      "source_identity": {
+        "url": "opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx",
+        "requested_url": "opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx",
+        "retrieved_at": "2026-07-08 00:07:06"
+      },
+      "tier": "shipped",
+      "byte_length": 320648,
+      "sha256": "5c6f3b6b4e3ffe440609545221944f326610e5059e8b99094cc0e5cdafc346d3",
+      "selectors": {
+        "family": "sped_grade",
+        "key": "C255254"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/sped_grade-opra-C255254.xlsx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
     }
   ]
 }

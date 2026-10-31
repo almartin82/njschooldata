@@ -96,6 +96,13 @@
         "family": "enrollment",
         "key": "2026"
       }
+    },
+    {
+      "artifact_id": "sped_grade-opra-C255254",
+      "selectors": {
+        "family": "sped_grade",
+        "key": "C255254"
+      }
     }
   ]
 }

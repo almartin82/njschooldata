@@ -1,5 +1,11 @@
 # njschooldata 0.10.0
 
+* `fetch_sped_by_grade()` adds students with an active IEP by district, charter
+  school and grade for 2021-22 through 2025-26, from NJDOE's response to OPRA
+  request C255254. The workbook ships with the package and is verified by
+  SHA-256 on read. Counts under 5 stay suppressed as `NA`. 2025-26 looks
+  incomplete and warns.
+
 * Available-years coverage now declares graduation (2011–2025) and finance
   (2001–2018 and 2022–2026), alongside enrollment. The finance year helper keeps
   its integer vector and 2001–2026 endpoints but excludes 2019–2021: the state-aid

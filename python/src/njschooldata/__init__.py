@@ -44,7 +44,12 @@ from .facilities import (
     get_available_facilities,
 )
 from .finance import fetch_finance, fetch_finance_multi
-from .sped import fetch_sped, fetch_sped_placement, fetch_sped_placement_multi
+from .sped import (
+    fetch_sped,
+    fetch_sped_by_grade,
+    fetch_sped_placement,
+    fetch_sped_placement_multi,
+)
 from .ell import fetch_ell, fetch_ell_multi
 
 __version__ = PYTHON_PACKAGE_VERSION
@@ -79,6 +84,7 @@ _CURATED_EXPORTS = [
     "fetch_finance",
     "fetch_finance_multi",
     "fetch_sped",
+    "fetch_sped_by_grade",
     "fetch_sped_placement",
     "fetch_sped_placement_multi",
     "fetch_ell",

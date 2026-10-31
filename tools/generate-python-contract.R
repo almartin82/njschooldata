@@ -11,7 +11,7 @@ curated <- c(
   "get_school_directory", "get_district_directory", "fetch_facilities",
   "fetch_facilities_multi", "fetch_facility_gis",
   "get_available_facilities", "fetch_finance", "fetch_finance_multi",
-  "fetch_sped", "fetch_sped_placement", "fetch_sped_placement_multi",
+  "fetch_sped", "fetch_sped_by_grade", "fetch_sped_placement", "fetch_sped_placement_multi",
   "fetch_ell", "fetch_ell_multi"
 )
 

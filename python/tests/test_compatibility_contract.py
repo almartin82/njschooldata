@@ -31,6 +31,7 @@ from njschooldata._generated_contract import (
             {"with_status": True, "allow_partial": True},
         ),
         ("sped", "fetch_sped", (2025,), {"with_status": True}, {"with_status": True}),
+        ("sped", "fetch_sped_by_grade", (2025,), {}, {}),
         (
             "sped",
             "fetch_sped_placement",

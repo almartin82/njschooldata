@@ -114,6 +114,12 @@ _CONTRACT = json.loads(r'''
         "with_status": "FALSE"
       }
     },
+    "fetch_sped_by_grade": {
+      "parameters": ["end_year"],
+      "defaults": {
+        "end_year": "<required>"
+      }
+    },
     "fetch_sped_placement": {
       "parameters": ["end_year", "age_group", "level", "tidy", "with_status"],
       "defaults": {
@@ -249,7 +255,7 @@ _CONTRACT = json.loads(r'''
     "finance": {
       "aliases": "finance",
       "raw_years": [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
-      "tidy_years": [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
+      "tidy_years": [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2022, 2023, 2024, 2025, 2026],
       "skipped_years": []
     },
     "dfg": {

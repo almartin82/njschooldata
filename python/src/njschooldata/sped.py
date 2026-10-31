@@ -37,6 +37,26 @@ def fetch_sped(
 
 
 @r_to_pandas
+def fetch_sped_by_grade(end_year: int) -> pd.DataFrame:
+    """
+    Fetch students with an active IEP by district and grade.
+
+    Parameters
+    ----------
+    end_year : int
+        Ending school year, 2022 through 2026. 2026 warns because the release
+        looks incomplete.
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per district and grade from NJDOE's response to OPRA request
+        C255254. Suppressed counts are missing, never zero.
+    """
+    return call_r_function("fetch_sped_by_grade", end_year)
+
+
+@r_to_pandas
 def fetch_sped_placement(
     end_year: int,
     age_group: str = "5-21",

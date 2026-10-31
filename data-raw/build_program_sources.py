@@ -49,6 +49,10 @@ if __name__ == "__main__":
         })
         print(f"{family}-{year}: {len(content)} bytes", flush=True)
 
+    # OPRA responses have no URL to re-acquire; keep their existing artifact rows.
+    existing = json.loads((ROOT / "inst/extdata/source-contract/contracts" / CONTRACT / "artifact-manifest.json").read_text())
+    artifacts += [a for a in existing["artifacts"] if a["source_identity"]["url"].startswith("opra://")]
+
     manifest = {"schema_version": "source-validation-artifact-manifest/v1",
                 "contract_id": CONTRACT, "artifacts": artifacts}
     required = [{"artifact_id": a["artifact_id"], "selectors": a["selectors"]} for a in artifacts]

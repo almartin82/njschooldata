@@ -160,6 +160,7 @@ reference:
     desc: Functions for special education and other subgroup data
     contents:
       - fetch_sped
+      - fetch_sped_by_grade
       - fetch_sped_placement
       - fetch_sped_placement_multi
       - get_raw_sped_placement
