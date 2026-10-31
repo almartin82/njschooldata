@@ -236,10 +236,12 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
     claim <- cov[cov$family == f & cov$end_year == y, ]
     files <- held[held$family == f & held$end_year == y, ]
     ids <- unique(files$source_id[!is.na(files$source_id)])
-    if (!length(ids) && nrow(claim) && !is.null(sources) && nrow(sources)) {
-      ids <- unique(unlist(lapply(unique(claim$fetcher), function(fetcher) {
+    if (nrow(claim) && !is.null(sources) && nrow(sources)) {
+      named <- unique(unlist(lapply(unique(claim$fetcher), function(fetcher) {
         .registry_fetcher_source(sources, f, y, fetcher)
       })))
+      # A source naming the cell's fetcher outranks a file that only shares its year.
+      if (length(named)) ids <- if (any(ids %in% named)) intersect(ids, named) else named
     }
     if (!length(ids)) ids <- NA_character_
     do.call(rbind, lapply(ids, function(id) {
