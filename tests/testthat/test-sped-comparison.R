@@ -135,3 +135,88 @@ test_that("bounds carry through a composite and unknown bands stop", {
   expect_error(sped_like_for_like(rows, ids("1", "a"), ids("2", "m"),
                                   data.frame(grade_band = "secondary", n_enrolled = 10)), "Unknown grade band")
 })
+
+position_rows <- function() {
+  rbind(row("1", "f", n_sped = 12, n_enrolled = 100),
+        row("2", "a", n_sped = 10, n_enrolled = 100),
+        row("2", "b", n_sped = 20, n_enrolled = 100),
+        row("2", "c", n_sped = 30, n_enrolled = 100),
+        row("2", "d", n_sped = 280, n_enrolled = 700))
+}
+
+test_that("position reads the focal pool against rows, not against the comparison pool", {
+  x <- sped_position(position_rows(), ids("1", "f"), ids("2", c("a", "b", "c", "d")))
+  expect_equal(x$focal_pct, 12)
+  expect_equal(c(x$median_lo, x$median_hi), c(25, 25))
+  expect_equal(c(x$p25_lo, x$p75_lo), c(15, 35))
+  expect_equal(c(x$percentile_lo, x$percentile_hi), c(25, 25))
+  expect_equal(x$direction, "below")
+  expect_false(x$inside_middle_half)
+  expect_equal(x$comparison_lo, 34)
+  expect_equal(x$n_used, 4L)
+})
+
+test_that("the one-point rule needs a gap above one point after rounding to a half", {
+  rows <- rbind(row("1", "f", n_sped = 19, n_enrolled = 100), row("2", "a", n_sped = 10, n_enrolled = 50),
+                row("2", "b", n_sped = 20, n_enrolled = 100), row("2", "c", n_sped = 30, n_enrolled = 100))
+  expect_equal(sped_position(rows, ids("1", "f"), ids("2", c("a", "b", "c")))$direction, "close")
+  rows$n_sped[1] <- 18.6
+  expect_equal(sped_position(rows, ids("1", "f"), ids("2", c("a", "b", "c")))$direction, "below")
+})
+
+test_that("enrollment weight moves the distribution and the percentile", {
+  x <- sped_position(position_rows(), ids("1", "f"), ids("2", c("a", "b", "c", "d")), weight = "enrollment")
+  expect_equal(c(x$median_lo, x$p25_lo, x$p75_lo), c(40, 30, 40))
+  expect_equal(x$percentile_lo, 10)
+})
+
+test_that("focal rows never sit in their own distribution", {
+  x <- sped_position(position_rows(), ids("1", "f"), rbind(ids("1", "f"), ids("2", c("a", "b", "c", "d"))))
+  expect_equal(x$n_used, 4L)
+  expect_equal(x$n_focal_removed, 1L)
+  expect_equal(x$percentile_lo, 25)
+})
+
+test_that("a suppressed row is excluded and reported, never read as zero", {
+  rows <- rbind(position_rows(), row("2", "e", n_enrolled = 400))
+  x <- sped_position(rows, ids("1", "f"), ids("2", c("a", "b", "c", "d", "e")))
+  expect_equal(x$n_no_value, 1L)
+  expect_equal(x$n_used, 4L)
+  expect_equal(x$median_lo, 25)
+  expect_equal(x$coverage, 1000 / 1400)
+})
+
+test_that("a bounded row gives ranges, never a midpoint", {
+  rows <- rbind(position_rows()[1:3, ], row("2", "c", pct_sped_lo = 5, pct_sped_hi = 15, n_enrolled = 100))
+  x <- sped_position(rows, ids("1", "f"), ids("2", c("a", "b", "c")))
+  expect_equal(c(x$median_lo, x$median_hi), c(10, 15))
+  expect_equal(c(x$percentile_lo, x$percentile_hi), c(100 * 1 / 3, 100 * 2 / 3))
+  expect_equal(x$direction, "unknown")
+  expect_true(x$inside_middle_half)
+})
+
+test_that("a rate above 100 is out and reported, a focal pool in range stays close", {
+  rows <- rbind(position_rows(), row("2", "e", n_sped = 150, n_enrolled = 100), row("1", "g", n_sped = 28, n_enrolled = 100))
+  x <- sped_position(rows, ids("1", c("f", "g")), ids("2", c("a", "b", "c", "e")))
+  expect_equal(x$n_impossible, 1L)
+  expect_equal(x$median_lo, 20)
+  expect_equal(x$focal_pct, 20)
+  expect_equal(x$direction, "close")
+  expect_true(x$inside_middle_half)
+})
+
+test_that("focal bands weight the distribution and blank a missing band", {
+  rows <- rbind(row("1", "f", n_sped = 12, n_enrolled = 100),
+                row("2", "e", n_sped = 10, n_enrolled = 100, grade_low = "K", grade_high = "05"),
+                row("2", "m", n_sped = 30, n_enrolled = 100, grade_low = "06", grade_high = "08"),
+                row("2", "n", n_sped = 40, n_enrolled = 100, grade_low = "06", grade_high = "08"),
+                row("2", "k", n_sped = 90, n_enrolled = 100, grade_low = "K", grade_high = "08"))
+  cmp <- ids("2", c("e", "m", "n", "k"))
+  x <- sped_position(rows, ids("1", "f"), cmp, focal_bands = data.frame(grade_band = c("elementary", "middle"), n_enrolled = c(75, 25)))
+  expect_equal(x$median_lo, 10)
+  expect_equal(x$n_mixed, 1L)
+  expect_equal(x$coverage, 0.75)
+  y <- sped_position(rows, ids("1", "f"), cmp, focal_bands = data.frame(grade_band = "high", n_enrolled = 10))
+  expect_match(y$reason, "band high")
+  expect_true(is.na(y$median_lo))
+})
