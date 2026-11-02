@@ -211,6 +211,375 @@
       "lineage": {
         "kind": "source"
       }
+    },
+    {
+      "artifact_id": "spr-reference-guide",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/spr/resources/doc/SPR_ReferenceGuide.pdf",
+        "requested_url": "https://www.nj.gov/education/spr/resources/doc/SPR_ReferenceGuide.pdf",
+        "retrieved_at": "2026-11-01",
+        "source_date": "2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 861094,
+      "sha256": "afb1b2cdcc5c4f6b776b3cb7c8e6dd28905befd1dbdf4cb7a8f18788c17f862a",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-reference-guide.pdf"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "environment-profiles",
+      "source_identity": {
+        "url": "https://public.tableau.com/workbooks/SPPAPRLocalProfiles.twb?showVizHome=no",
+        "requested_url": "https://public.tableau.com/workbooks/SPPAPRLocalProfiles.twb?showVizHome=no",
+        "retrieved_at": "2026-11-01",
+        "source_date": "Report years 2023-2026; school years 2021-22 through 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 6517341,
+      "sha256": "45347f7b46397a53eb986a325d2ef7b66446f2501aab89994d5f7fe596094925",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "2023-2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/environment-profiles.twbx"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "environment-5c-table",
+      "source_identity": {
+        "url": "https://public.tableau.com/workbooks/SPPAPRLocalProfiles.twb?showVizHome=no#IND_5C",
+        "requested_url": "https://public.tableau.com/workbooks/SPPAPRLocalProfiles.twb?showVizHome=no#IND_5C",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School years 2021-22 through 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 248984,
+      "sha256": "10dc6f45647d53a721a492bdb0753d4bc75169bddd6fe3c8c77008cfde8d9a4b",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "2023-2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/environment-5c.csv"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "environment-profiles",
+        "recipe": "data-raw/build_nj_environment.py",
+        "recipe_version": "1",
+        "table_locator": "Extract.SPPAPR_LOCALPROFILES_RPTYEAR_2025_8EA3ED3DE717473C95C7007563F38881 WHERE INDICATOR = IND_5C",
+        "row_count": 2700
+      }
+    },
+    {
+      "artifact_id": "environment-indicator5-definition",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/specialed/monitor/dataandresources/docs/LocalProfile_One-Pagers_Indicator5.pdf",
+        "requested_url": "https://www.nj.gov/education/specialed/monitor/dataandresources/docs/LocalProfile_One-Pagers_Indicator5.pdf",
+        "retrieved_at": "2026-11-01",
+        "source_date": "Undated Indicator 5 definition, School Age 5-21"
+      },
+      "tier": "shipped",
+      "byte_length": 308868,
+      "sha256": "574d65ba66315ac3450f25568753009fdbfcca031422e67875f73fa5967b1e1d",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "definition"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/environment-indicator5-definition.pdf"
+      },
+      "lineage": {
+        "kind": "source"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2024-EnrollmentTrendsByStudentGroup",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2023-24"
+      },
+      "tier": "shipped",
+      "byte_length": 38103,
+      "sha256": "f1c39f79570a461c9caa8776c650c3cfc917600895ed42ce3b4fef82cce09fe5",
+      "selectors": {
+        "family": "spr",
+        "key": "2024"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2024-EnrollmentTrendsByStudentGroup.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2024",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2023-24"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2023-24"
+          },
+          "byte_length": 80666073,
+          "sha256": "fd36785b915a2585012d4dd14626ee4fcc76a8368dece4a6342698f053ce086b"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "EnrollmentTrendsByStudentGroup",
+        "table_locator": "EnrollmentTrendsByStudentGroup; all data rows; columns: CountyCode, DistrictCode, DistrictName, SchoolCode, SchoolName, Students with Disabilities",
+        "skip": 0,
+        "columns": ["CountyCode", "DistrictCode", "DistrictName", "SchoolCode", "SchoolName", "Students with Disabilities"],
+        "row_count": 2505
+      }
+    },
+    {
+      "artifact_id": "spr-school-2024-6YrGraduationCohortProfile",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2023-24"
+      },
+      "tier": "shipped",
+      "byte_length": 46313,
+      "sha256": "71d2ec246fb14f077abbfa3440c384ae1a900afd382541b810a5c082f87ec6e8",
+      "selectors": {
+        "family": "spr",
+        "key": "2024"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2024-6YrGraduationCohortProfile.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2024",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2023-24"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2023-24"
+          },
+          "byte_length": 80666073,
+          "sha256": "fd36785b915a2585012d4dd14626ee4fcc76a8368dece4a6342698f053ce086b"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "6YrGraduationCohortProfile",
+        "table_locator": "6YrGraduationCohortProfile; all data rows; columns: DistrictCode, DistrictName, SchoolCode, SchoolName, StudentGroup, HighSchoolPersistance",
+        "skip": 0,
+        "columns": ["DistrictCode", "DistrictName", "SchoolCode", "SchoolName", "StudentGroup", "HighSchoolPersistance"],
+        "row_count": 7327
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-EnrollmentTrendsByStudentGroup",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 102064,
+      "sha256": "543c2b4085f379335675cfcd9365d4c06aba9e7c4618775f808b60c6a7d4c524",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2025-EnrollmentTrendsByStudentGroup.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2025",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2024-25"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2024-25"
+          },
+          "byte_length": 346029712,
+          "sha256": "546cc2c06744549f3f4d9e3a3ab2502180ef222e58854b2c36b074472e2007ea"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "EnrollmentTrendsByStudentGroup",
+        "table_locator": "EnrollmentTrendsByStudentGroup; all data rows; columns: CountyCode, DistrictCode, DistrictName, SchoolCode, SchoolName, SchoolYear, Students with Disabilities",
+        "skip": 3,
+        "columns": ["CountyCode", "DistrictCode", "DistrictName", "SchoolCode", "SchoolName", "SchoolYear", "Students with Disabilities"],
+        "row_count": 12380
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-EnrollmentTrendsbyGrade",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 175450,
+      "sha256": "6c6318164341569f286ffbff3abf60f9dfa30a5c1b8c1ea25934ec142369eb07",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2025-EnrollmentTrendsbyGrade.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2025",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2024-25"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2024-25"
+          },
+          "byte_length": 346029712,
+          "sha256": "546cc2c06744549f3f4d9e3a3ab2502180ef222e58854b2c36b074472e2007ea"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "EnrollmentTrendsbyGrade",
+        "table_locator": "EnrollmentTrendsbyGrade; all data rows; columns: CountyCode, DistrictCode, SchoolCode, SchoolYear, GradePK, GradeKG, Grade01, Grade02, Grade03, Grade04, Grade05, Grade06, Grade07, Grade08, Grade09, Grade10, Grade11, Grade12, Total",
+        "skip": 3,
+        "columns": ["CountyCode", "DistrictCode", "SchoolCode", "SchoolYear", "GradePK", "GradeKG", "Grade01", "Grade02", "Grade03", "Grade04", "Grade05", "Grade06", "Grade07", "Grade08", "Grade09", "Grade10", "Grade11", "Grade12", "Total"],
+        "row_count": 12380
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-GraduationCohortProfile",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 106596,
+      "sha256": "e31279e8072e490bc6fff6cf151b69dc2bd2d743a96a3f505a23b956fbd7d57e",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2025-GraduationCohortProfile.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2025",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2024-25"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2024-25"
+          },
+          "byte_length": 346029712,
+          "sha256": "546cc2c06744549f3f4d9e3a3ab2502180ef222e58854b2c36b074472e2007ea"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "GraduationCohortProfile",
+        "table_locator": "GraduationCohortProfile; all data rows; columns: DistrictCode, DistrictName, SchoolCode, SchoolName, StudentGroup, CohortType, Persisting_School",
+        "skip": 3,
+        "columns": ["DistrictCode", "DistrictName", "SchoolCode", "SchoolName", "StudentGroup", "CohortType", "Persisting_School"],
+        "row_count": 22186
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-HSPersistenceTargets",
+      "source_identity": {
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+        "retrieved_at": "2026-11-01",
+        "source_date": "School Year 2024-25"
+      },
+      "tier": "shipped",
+      "byte_length": 31730,
+      "sha256": "c2dfb7d0ccda75d317888fe20a4d3be09203b370f383a6fc21eae328a2f321f2",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      },
+      "storage": {
+        "path": "inst/extdata/program-sources/spr-school-2025-HSPersistenceTargets.csv.gz"
+      },
+      "lineage": {
+        "kind": "derived",
+        "parent_artifact_id": "spr-school-2025",
+        "parent_source_identity": {
+          "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+          "retrieved_at": "2026-11-01",
+          "source_date": "School Year 2024-25"
+        },
+        "parent_workbook": {
+          "source_identity": {
+            "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "requested_url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+            "retrieved_at": "2026-11-01",
+            "source_date": "School Year 2024-25"
+          },
+          "byte_length": 346029712,
+          "sha256": "546cc2c06744549f3f4d9e3a3ab2502180ef222e58854b2c36b074472e2007ea"
+        },
+        "recipe": "data-raw/build_nj_spr.R",
+        "recipe_version": "1",
+        "sheet": "HSPersistenceTargets",
+        "table_locator": "HSPersistenceTargets; all data rows; columns: DistrictCode, DistrictName, SchoolCode, SchoolName, Indicator, StudentGroup, IndicatorPerformance",
+        "skip": 3,
+        "columns": ["DistrictCode", "DistrictName", "SchoolCode", "SchoolName", "Indicator", "StudentGroup", "IndicatorPerformance"],
+        "row_count": 4351
+      }
     }
   ]
 }

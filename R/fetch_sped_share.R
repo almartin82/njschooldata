@@ -2,7 +2,7 @@
 # comparing one set of schools with another (see sped_all_vs_all() and
 # sped_like_for_like()).
 #
-# Two bases, each one construct:
+# Each basis uses one construct:
 #
 #   "lea_idea" (default). District rows from the IDEA classification files
 #   (all grades) plus district rows by grade band from NJDOE's OPRA response
@@ -13,6 +13,9 @@
 #   Performance Reports "Students with Disabilities" percent of enrollment, one
 #   decimal, no suppression. Live download, 2021-2025. A different construct
 #   from IDEA (see the details of fetch_sped_share()).
+#
+#   "school_spr". Bundled school-only SPR rates for 2023-2025, read from
+#   the 2024-25 release's historical trend rows. No count reconstruction.
 
 .NJ_SPED_SHARE_BANDS <- list(
   elementary = c("K", sprintf("%02d", 1:5)),
@@ -277,8 +280,7 @@ get_valid_sped_share_years <- function() {
 #' publishes, in the shape \code{\link{sped_all_vs_all}} and
 #' \code{\link{sped_like_for_like}} read. Every value is from a NJDOE file.
 #'
-#' Two bases, because the state publishes two different counts at different
-#' grains, and one year's return uses one:
+#' Each basis uses its own construct and grain:
 #'
 #' \describe{
 #'   \item{\code{"lea_idea"} (default, 2023-2026)}{District (LEA) rows. For
@@ -304,6 +306,10 @@ get_valid_sped_share_years <- function() {
 #'   child count (in 2024-25 the statewide figure is 18.1 percent against 17.35
 #'   percent for IDEA, and some schools differ by more); NJDOE does not explain
 #'   the gap. Downloads the School Performance Reports workbooks, which are large.}
+#'   \item{\code{"school_spr"} (2023-2025, bundled)}{School-only rates from
+#'   the 2024-25 release's enrollment trends, preserving historical school-year
+#'   labels, source text and rounding bounds. n_sped remains NA. The same
+#'   report supplies enrollment and grade spans.}
 #' }
 #'
 #' \code{is_charter} is TRUE for the state's charter sector (county code 80) and
@@ -313,6 +319,16 @@ get_valid_sped_share_years <- function() {
 #' @param end_year ending school year. \code{"lea_idea"}: 2023-2026.
 #'   \code{"school_report"}: 2021-2025.
 #' @param basis \code{"lea_idea"} (default) or \code{"school_report"}.
+#'   Also accepts \code{"school_spr"}: school-only rates for 2023-2025 from
+#'   the complete bundled 2024-25 EnrollmentTrendsByStudentGroup sheet.
+#'   That basis keeps source_value and school_year, leaves n_sped NA, reads
+#'   enrollment and grade spans from EnrollmentTrendsbyGrade, and preserves
+#'   rounded or bounded rates in pct_sped_lo/hi.
+#'   No count is recovered from a rounded share. The SPR guide defines this as
+#'   students classified for special education divided by total enrollment.
+#'   Enrollment is attributed to the school reporting enrollment; this differs
+#'   from accountability's sending-school attribution for specialized receiving
+#'   schools. School years 2023 and 2024 are historical rows in the 2025 release.
 #'
 #' @return A data frame with end_year, entity_level (state, district or school),
 #'   district_id, school_id, district_name, school_name, grade_band (all,
@@ -334,13 +350,12 @@ get_valid_sped_share_years <- function() {
 #'   group_by(is_charter, grade_band) %>%
 #'   summarise(n_sped = sum(n_sped, na.rm = TRUE), n_enrolled = sum(n_enrolled, na.rm = TRUE))
 #'
-#' # 3. School rows from the School Performance Reports (large download)
-#' \dontrun{
-#' fetch_sped_share(2024, basis = "school_report") %>%
+#' # 3. School rows from the bundled School Performance Reports
+#' fetch_sped_share(2024, basis = "school_spr") %>%
 #'   filter(entity_level == "school", is_charter)
-#' }
-fetch_sped_share <- function(end_year, basis = c("lea_idea", "school_report")) {
+fetch_sped_share <- function(end_year, basis = c("lea_idea", "school_report", "school_spr")) {
   basis <- match.arg(basis)
+  if (basis == "school_spr") return(.nj_share_school_spr(end_year))
   if (length(end_year) != 1L || is.na(end_year)) {
     stop("end_year must be a single year.", call. = FALSE)
   }

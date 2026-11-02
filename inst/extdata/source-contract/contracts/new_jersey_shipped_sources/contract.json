@@ -103,6 +103,76 @@
         "family": "sped_grade",
         "key": "C255254"
       }
+    },
+    {
+      "artifact_id": "spr-reference-guide",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "environment-profiles",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "2023-2025"
+      }
+    },
+    {
+      "artifact_id": "environment-5c-table",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "2023-2025"
+      }
+    },
+    {
+      "artifact_id": "environment-indicator5-definition",
+      "selectors": {
+        "family": "sped_environment",
+        "key": "definition"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2024-EnrollmentTrendsByStudentGroup",
+      "selectors": {
+        "family": "spr",
+        "key": "2024"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2024-6YrGraduationCohortProfile",
+      "selectors": {
+        "family": "spr",
+        "key": "2024"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-EnrollmentTrendsByStudentGroup",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-EnrollmentTrendsbyGrade",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-GraduationCohortProfile",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      }
+    },
+    {
+      "artifact_id": "spr-school-2025-HSPersistenceTargets",
+      "selectors": {
+        "family": "spr",
+        "key": "2025"
+      }
     }
   ]
 }

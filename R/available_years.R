@@ -3,6 +3,7 @@
   assessment = "fetch_parcc", graduation = "fetch_grad_rate",
   finance = "fetch_finance", sped = "fetch_sped",
   sped_share = "fetch_sped_share", ell = "fetch_ell",
+  stability = "fetch_stability", sped_environment = "fetch_sped_environment",
   staff = "fetch_staff_demographics", facilities = "fetch_facilities",
   facility_gis = "fetch_facility_gis", directory = "fetch_directory",
   sped_by_grade = "fetch_sped_by_grade",
@@ -20,6 +21,8 @@
   absence = .nj_absence_live_years,
   finance = .nj_finance_live_years,
   sped_share = get_valid_sped_share_years(),
+  stability = 2024:2025,
+  sped_environment = 2023:2025,
   # fetch_tges returns a list of tables, not one frame, so it stays undeclared.
   # Each of these is the registry entry the fetcher's own year guard reads.
   ell = get_source_years("ell"),
