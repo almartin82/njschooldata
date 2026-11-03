@@ -9,6 +9,9 @@ pattern,family,taxonomy_category
 ^(accountability|accountability_.*|report_card|wsif|essa_support)$,accountability,Accountability Ratings
 ^(absence|absence_.*|essa_chronic.*|chronic_absence|chronic-absence.*)$,absence,Chronic Absenteeism
 ^(ell|ell_.*|el|el_.*|english[-_ ]learners?|english-language-learners|el[-_ ]progress|telpas)$,ell,English Learner Progress
+^(stability|mobility_stability)$,stability,Chronic Absenteeism
+^(sped_environment)$,sped_environment,Special Ed Classification
+^(sped_share)$,sped_share,Special Ed Classification
 ^(sped|sped_.*|special[-_ ]ed|special[-_ ]ed_.*|special[-_ ]education|students-with-disabilities|disability_profile)$,sped,Special Ed Classification
 ^(staff|staff_.*|s275|teacher_.*)$,staff,Teacher/Staff Data
 ^(dropout)$,dropout,Dropout Rates
