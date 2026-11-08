@@ -2,6 +2,23 @@
 
 ## njschooldata 0.10.0
 
+- [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
+  keeps NJ DOE’s published program rates from 2023 on: wide
+  `<field>_published_pct` (percent) and tidy `published_pct` (fraction)
+  for free lunch, reduced lunch, English learners, migrant, military and
+  homeless. Tidy `pct` is still the count divided by the row total. The
+  State worksheet’s published program counts are served by grade, a
+  masked count stays `NA` even when a rate is printed, and the
+  worksheet’s “End of worksheet” footer row is dropped.
+
+- Tidy enrollment adds a statewide `non_binary` subgroup for 2023
+  onward, with its published count and rate. NJ DOE’s 2023-24 file
+  (`end_year` 2024) prints 0 in every statewide Non-Binary cell (2023
+  shows 675, 2025 shows 633): zeros for a category it did not collect
+  that year. Those 2024 rows are served as not reported (`n_students`,
+  `pct` and `published_pct` `NA`, `value_source = "not_reported"`),
+  never as zero students.
+
 - [`fetch_sped_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.md)
   adds students with an active IEP by district, charter school and grade
   for 2021-22 through 2025-26, from NJDOE’s response to OPRA request

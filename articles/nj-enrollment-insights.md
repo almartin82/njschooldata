@@ -294,22 +294,38 @@ frl <- enr_current %>%
 
 stopifnot(nrow(frl) > 0)
 frl %>% select(district_name, n_students, pct)
-#>                                                district_name n_students   pct
-#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation   2131.500 0.980
-#> 2                            Mastery Schools Of Camden, Inc.   2788.250 0.950
-#> 3                                          Camden Prep, Inc.   1425.177 0.937
-#> 4                               Passaic City School District  10131.966 0.918
-#> 5                          Lakewood Township School District   3381.419 0.898
-#> 6                                  Woodlynne School District    343.000 0.875
-#> 7                                 Union City School District  10409.202 0.867
-#> 8                            Seaside Heights School District    127.050 0.847
-#> 9                              Atlantic City School District   5104.476 0.839
-#> 10                             New Brunswick School District   6929.422 0.838
-#> 11                             Wildwood City School District    629.067 0.831
-#> 12                                  Elizabeth Public Schools  22034.100 0.825
-#> 13                             West New York School District   6069.653 0.821
-#> 14                        Long Branch Public School District   4069.202 0.819
-#> 15                            Bridgeton City School District   5012.926 0.799
+#>                                                district_name n_students
+#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation     2131.0
+#> 2                            Mastery Schools Of Camden, Inc.     2788.0
+#> 3                                          Camden Prep, Inc.     1426.0
+#> 4                               Passaic City School District    10138.0
+#> 5                          Lakewood Township School District     3383.5
+#> 6                                  Woodlynne School District      343.0
+#> 7                                 Union City School District    10400.0
+#> 8                            Seaside Heights School District      127.0
+#> 9                              Atlantic City School District     5107.0
+#> 10                             New Brunswick School District     6925.0
+#> 11                             Wildwood City School District      629.0
+#> 12                                  Elizabeth Public Schools    22029.0
+#> 13                             West New York School District     6072.0
+#> 14                        Long Branch Public School District     4072.0
+#> 15                            Bridgeton City School District     5012.0
+#>          pct
+#> 1  0.9797701
+#> 2  0.9499148
+#> 3  0.9375411
+#> 4  0.9185467
+#> 5  0.8985526
+#> 6  0.8750000
+#> 7  0.8662335
+#> 8  0.8466667
+#> 9  0.8394149
+#> 10 0.8374652
+#> 11 0.8309115
+#> 12 0.8248090
+#> 13 0.8213175
+#> 14 0.8195632
+#> 15 0.7988524
 
 ggplot(frl, aes(x = district_label, y = pct * 100)) +
   geom_col(fill = nj_colors["total"]) +
@@ -680,28 +696,28 @@ frl_extremes <- bind_rows(top_5, bottom_5) %>%
 
 stopifnot(nrow(frl_extremes) > 0)
 frl_extremes %>% select(district_name, n_students, pct, group)
-#>                                                district_name n_students   pct
-#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation  2131.5000 0.980
-#> 2                            Mastery Schools Of Camden, Inc.  2788.2500 0.950
-#> 3                                          Camden Prep, Inc.  1425.1770 0.937
-#> 4                               Passaic City School District 10131.9660 0.918
-#> 5                          Lakewood Township School District  3381.4190 0.898
-#> 6                        Pequannock Township School District   100.0750 0.050
-#> 7                      Scotch Plains-Fanwood School District   268.6990 0.047
-#> 8                          Bernards Township School District   130.6740 0.029
-#> 9                           Ridgewood Public School District   128.9160 0.024
-#> 10             Livingston Board Of Education School District   121.0395 0.019
-#>          group
-#> 1  Highest FRL
-#> 2  Highest FRL
-#> 3  Highest FRL
-#> 4  Highest FRL
-#> 5  Highest FRL
-#> 6   Lowest FRL
-#> 7   Lowest FRL
-#> 8   Lowest FRL
-#> 9   Lowest FRL
-#> 10  Lowest FRL
+#>                                                district_name n_students
+#> 1  Kipp: Cooper Norcross, A New Jersey Nonprofit Corporation     2131.0
+#> 2                            Mastery Schools Of Camden, Inc.     2788.0
+#> 3                                          Camden Prep, Inc.     1426.0
+#> 4                               Passaic City School District    10138.0
+#> 5                          Lakewood Township School District     3383.5
+#> 6                        Pequannock Township School District      101.5
+#> 7                      Scotch Plains-Fanwood School District      268.5
+#> 8                          Bernards Township School District      130.0
+#> 9                           Ridgewood Public School District      132.0
+#> 10             Livingston Board Of Education School District      125.0
+#>           pct       group
+#> 1  0.97977011 Highest FRL
+#> 2  0.94991482 Highest FRL
+#> 3  0.93754109 Highest FRL
+#> 4  0.91854671 Highest FRL
+#> 5  0.89855265 Highest FRL
+#> 6  0.05071197  Lowest FRL
+#> 7  0.04696519  Lowest FRL
+#> 8  0.02885042  Lowest FRL
+#> 9  0.02457414  Lowest FRL
+#> 10 0.01962169  Lowest FRL
 
 ggplot(frl_extremes, aes(x = district_label, y = pct * 100, fill = group)) +
   geom_col() +

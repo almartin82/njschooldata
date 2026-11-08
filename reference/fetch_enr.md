@@ -31,19 +31,24 @@ fetch_enr(end_year, tidy = FALSE, use_cache = FALSE)
 
 ## Value
 
-Data frame with processed enrollment data. From 2020+ files,
-\`free_lunch\`/\`reduced_lunch\`/\`migrant\`/\`homeless\` are computed
-as \`pct / 100 \* row_total\` from NJ DOE's published percentage and
-this entity/year's own published total enrollment (never rounded to a
-whole student). For English Learners, a published count is preserved
-when the workbook provides one; otherwise the published percentage is
-used in the same calculation. \`tidy = TRUE\` output carries a
-\`value_source\` column (\`"published"\`, \`"derived_from_pct"\`, or
-\`"published_pct_only"\`; see
+Data frame with processed enrollment data. Program counts come directly
+from the workbook where the count column exists. A masked count stays
+missing. For district and school worksheets with only a percentage, the
+count is computed as \`pct / 100 \* row_total\` from the same
+entity/year's published total enrollment, without rounding. \`tidy =
+TRUE\` output carries a \`value_source\` column (\`"published"\`,
+\`"derived_from_pct"\`, or \`"published_pct_only"\`; see
 [`tidy_enr`](https://almartin82.github.io/njschooldata/reference/tidy_enr.md))
 and \`tidy = FALSE\` wide output carries the same provenance per field
 as \`\<field\>\_value_source\` (eg \`lep_value_source\`). Pre-2020 files
-publish these fields as real counts directly (\`"published"\`).
+publish these fields as real counts directly (\`"published"\`). From
+2023, the workbook's program rates are available as percentages in wide
+\`\<field\>\_published_pct\` columns and fractions in tidy
+\`published_pct\`. The statewide Non-Binary count and rate are retained
+when published. For 2024 (SY2023-24) NJ DOE printed Non-Binary = 0 in
+every statewide row, a category it did not collect that year, so those
+counts and rates are \`NA\` with value source \`"not_reported"\`. Tidy
+\`pct\` remains the count divided by the row total.
 
 ## Examples
 

@@ -404,10 +404,21 @@ from a published percentage and the same-cell published denominator
 (`round(percent / 100 * n_enrolled)` for special-population/Report Card
 counts, `round(pct_lN / 100 * number_of_valid_scale_scores)` for
 PARCC/NJSLA/NJGPA performance levels, `pct / 100 * row_total` for 2020+
-enrollment’s free/reduced lunch, EL, migrant, and homeless counts).
-`"published_pct_only"` means NJ DOE published only a percentage and the
-count stays `NA`. See CLAUDE.md’s “Derived counts” section for the full
-site list and formulas.
+enrollment’s free/reduced lunch, EL, migrant, and homeless counts where
+the worksheet prints only a rate). `"published_pct_only"` means NJ DOE
+published only a percentage and the count stays `NA`. From 2023,
+enrollment also carries NJ DOE’s own printed program rate
+(`published_pct` in tidy output, `<field>_published_pct` in wide),
+separate from `pct`, which is always the count over the row total. See
+CLAUDE.md’s “Derived counts” section for the full site list and
+formulas.
+
+**Non-binary enrollment:** the statewide `non_binary` subgroup starts in
+2023. NJ DOE’s 2023-24 file (`end_year` 2024) printed 0 in every
+statewide Non-Binary cell (2023 shows 675, 2025 shows 633), which is
+zeros for a category it did not collect that year. Those rows are served
+as not reported (`n_students` `NA`, `value_source = "not_reported"`),
+not as zero students.
 
 **Census Day:** NJ enrollment counts are based on October 15 enrollment
 (ASSA reporting).
