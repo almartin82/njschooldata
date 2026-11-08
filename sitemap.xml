@@ -254,6 +254,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_social_studies_enrollment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_environment.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_sped_share.html</loc></url>
@@ -278,6 +279,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_staff_retention.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_teacher_exp_subject.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/fetch_stability.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/fetch_staff_ratios.html</loc></url>
@@ -508,6 +510,7 @@
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_cached_workbook.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_placement_sheet.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/sped_pool.html</loc></url>
+<url><loc>https://almartin82.github.io/njschooldata/reference/sped_position.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_enr_cols.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/split_state_ed_environ_tables.html</loc></url>
 <url><loc>https://almartin82.github.io/njschooldata/reference/spr_blank_no_data.html</loc></url>

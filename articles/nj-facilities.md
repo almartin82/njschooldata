@@ -468,7 +468,7 @@ sessionInfo()
 #> [13] cellranger_1.1.0   jsonlite_2.0.0     httr_1.4.9         purrr_1.2.2       
 #> [17] codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6         
 #> [21] rlang_1.3.0        withr_3.0.3        cachem_1.1.0       yaml_2.3.12       
-#> [25] otel_0.2.0         tools_4.6.2        tzdb_0.5.0         curl_8.1.0        
+#> [25] otel_0.3.0         tools_4.6.2        tzdb_0.5.0         curl_8.1.0        
 #> [29] vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5   
 #> [33] snakecase_0.11.1   stringr_1.6.0      fs_2.1.0           ragg_1.5.2        
 #> [37] janitor_2.2.1      pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     

@@ -386,6 +386,14 @@ warning/error context; this is separate from row-level `value_status`.
 return incomplete results after explicit opt-in, with every component
 status attached.
 
+**Historical source files:** past-year NJ DOE files (School Performance
+Reports databases, fall enrollment files through 2021-22, graduation,
+spending guide, state aid, IDEA 618 and grade 4 ELA files) are served
+from this package’s [`sources-2026-11-08`
+release](https://github.com/almartin82/njschooldata/releases/tag/sources-2026-11-08),
+byte for byte as NJ DOE published them, and checked against their
+recorded length and SHA-256 before every read.
+
 **Suppression rules:** NJ DOE suppresses counts below 10 in some data
 types. Enrollment data uses half-day weighting for programs like pre-K,
 which can produce non-integer counts.

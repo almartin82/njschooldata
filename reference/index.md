@@ -782,6 +782,8 @@ Additional exported functions
   : Fetch Special Education Classification Data
 - [`fetch_sped_by_grade()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_by_grade.md)
   : Fetch students with an active IEP by district and grade
+- [`fetch_sped_environment()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_environment.md)
+  : Fetch NJ IDEA Indicator 5C by LEA
 - [`fetch_sped_placement()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement.md)
   : Fetch NJ Special Education Placement / Educational Environment data
 - [`fetch_sped_placement_multi()`](https://almartin82.github.io/njschooldata/reference/fetch_sped_placement_multi.md)
@@ -829,6 +831,8 @@ Additional exported functions
   : Fetch Teacher Experience by Subject Area
 - [`fetch_spr_tsi()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_tsi.md)
   : Fetch Targeted Support and Improvement (TSI) Identification
+- [`fetch_stability()`](https://almartin82.github.io/njschooldata/reference/fetch_stability.md)
+  : Fetch NJ high school cohort persistence
 - [`fetch_staff_demographics()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_demographics.md)
   : Fetch Staff Demographics Data
 - [`fetch_staff_evaluations()`](https://almartin82.github.io/njschooldata/reference/fetch_staff_evaluations.md)
@@ -1028,6 +1032,8 @@ Additional exported functions
   : Special Education District Lookup Map
 - [`sped_pool()`](https://almartin82.github.io/njschooldata/reference/sped_pool.md)
   : Pool special education rows into one share
+- [`sped_position()`](https://almartin82.github.io/njschooldata/reference/sped_position.md)
+  : Place a pooled focal group on a distribution of comparison rows
 - [`standardize_subgroup()`](https://almartin82.github.io/njschooldata/reference/standardize_subgroup.md)
   : Standardize subgroup labels
 - [`subgroup_crosswalk`](https://almartin82.github.io/njschooldata/reference/subgroup_crosswalk.md)
