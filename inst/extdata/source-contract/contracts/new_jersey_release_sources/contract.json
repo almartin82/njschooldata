@@ -1,0 +1,1974 @@
+{
+  "category": "retained_historical_sources",
+  "contract_id": "new_jersey_release_sources",
+  "runtime_requests": [
+    {
+      "alternatives": [
+        [
+          "assessment-ELA004.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA004.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "assessment-ELA04_NJSLA_DATA_2018-19.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2018-19.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "assessment-ELA04_NJSLA_DATA_2021-22.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2021-22.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "assessment-ELA04_NJSLA_DATA_2022-23.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2022-23.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "assessment-ELA04_NJSLA_DATA_2023-24.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2023-24.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "assessment-ELA04_NJSLA_DATA_2024-25.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2024-25.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0001.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0001.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0102.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0102.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0203.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0203.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0304.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0304.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0405.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0405.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0506.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0506.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0607.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0607.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0708.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0708.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0809.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0809.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_0910.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0910.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1011.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1011.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1112.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1112.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1213.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1213.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1314.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1314.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1415.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1415.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1516.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1516.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1617.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1617.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1718.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1718.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1819.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1819.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_1920.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1920.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_2021.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_2021.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_2122.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_2122.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_9899.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_9899.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "enrollment-enrollment_9900.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_9900.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2012_gradrate.xls"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2012_gradrate.xls"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2012_grd.xls"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2012_grd.xls"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2013_4Year.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2013_4Year.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2014_4Year.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2014_4Year.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2015_4Year.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2015_4Year.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2016_4Year.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2016_4Year.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2017_4Year.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2017_4Year.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2018_4YearGraduation.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2018_4YearGraduation.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-618-archive-2018.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2018.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-618-archive-2019.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2019.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-618-archive-2020.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2020.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-classification-Lea_Classification_Pub.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_classification",
+        "file_id": "sped-classification-Lea_Classification_Pub.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-3_5StudentCountbyDisability_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyDisability_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-3_5StudentCountbyGender_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyGender_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-3_5StudentCountbyLEP_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyLEP_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-3_5StudentCountbyRace_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyRace_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-5_21DisabilityVsEducationalEnvironment.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21DisabilityVsEducationalEnvironment.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-5_21GenderVsEducationalEnvironment.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21GenderVsEducationalEnvironment.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-5_21LEPVsEducationalEnvironment.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21LEPVsEducationalEnvironment.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-5_21RaceVsEducationalEnvironment.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21RaceVsEducationalEnvironment.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-Placement_Disability_5_21_2223.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Disability_5_21_2223.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-Placement_Gender_5_21_2223.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Gender_5_21_2223.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-Placement_LEP_5_21_2223.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_LEP_5_21_2223.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-Placement_Race_5_21_2223.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Race_5_21_2223.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-SpecedCount_Disablity3to5_SchoolYear22.23.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Disablity3to5_SchoolYear22.23.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-SpecedCount_Gender3to5_-SchoolYear22.23.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Gender3to5_-SchoolYear22.23.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-SpecedCount_LEP3to5_SchoolYear22.23.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_LEP3to5_SchoolYear22.23.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-SpecedCount_Race3to5_SchoolYear_22.23.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Race3to5_SchoolYear_22.23.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-StateWideExcel_PlacementData_3-5Age_2223.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-StateWideExcel_PlacementData_3-5Age_2223.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-age_5-21_Districts_data_by_Disablityand_placement.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Disablityand_placement.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-age_5-21_Districts_data_by_Gender_and_placement.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Gender_and_placement.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-age_5-21_Districts_data_by_Race_and_placement.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Race_and_placement.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-placement_StateWide_3-5_Age_2324.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-placement_StateWide_3-5_Age_2324.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-placement_StateWide_5-21_2324.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-placement_StateWide_5-21_2324.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-studentcount_Disablity_3-5_2324_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Disablity_3-5_2324_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-studentcount_Gender_3-5_2324_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Gender_3-5_2324_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-studentcount_LEP_3-5_2324_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_LEP_3-5_2324_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "sped-placement-studentcount_Race_3-5_2324_District.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Race_3-5_2324_District.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2001_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2001_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2002_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2002_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2003_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2003_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2004_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2004_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2005_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2005_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2006_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2006_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2007_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2007_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2008_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2008_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2009_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2009_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2010_CSG.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2010_CSG.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2011_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2011_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2012_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2012_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2013_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2013_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2014_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2014_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2015_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2015_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2016_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2016_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2017_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2017_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2018_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2018_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2019_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2019_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2020_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2020_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2021_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2021_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2022_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2022_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-2023_TGES.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2023_TGES.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-TGES2025_Zipped.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-TGES2025_Zipped.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spending-guide-TGES24_Zipped.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-TGES24_Zipped.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2016-2017_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2016-2017_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2016-2017_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2016-2017_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2017-2018_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2017-2018_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2017-2018_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2017-2018_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2018-2019_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2018-2019_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2018-2019_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2018-2019_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2019-2020_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2019-2020_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2019-2020_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2019-2020_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2020-2021_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2020-2021_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2020-2021_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2020-2021_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2021-2022_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2021-2022_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2021-2022_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2021-2022_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2022-2023_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2022-2023_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2022-2023_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2022-2023_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2023-2024_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2023-2024_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2023-2024_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2023-2024_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2024-2025_Database_DistrictStateDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2024-2025_Database_DistrictStateDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2024-2025_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2024-2025_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-1819.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-1819.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-1920.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-1920.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-2021.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-2021.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-2122.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-2122.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-2223.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-2223.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-2324.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-2324.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-2425.zip"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-2425.zip"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-FY26_GBM_District_Details.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-FY26_GBM_District_Details.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "state-aid-FY27_GBM_District_Details.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "state_aid",
+        "file_id": "state-aid-FY27_GBM_District_Details.xlsx"
+      },
+      "workspace_bytes": 0
+    }
+  ],
+  "schema_version": "source-validation-contract/v2",
+  "selectors": [
+    {
+      "multi_value": false,
+      "name": "family",
+      "required": true
+    },
+    {
+      "multi_value": false,
+      "name": "end_year",
+      "required": false
+    },
+    {
+      "multi_value": false,
+      "name": "file_id",
+      "required": true
+    }
+  ]
+}

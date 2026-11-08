@@ -428,6 +428,9 @@ sped_placement_cached_workbook <- function(end_year,
 
   use_cache <- isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
     njsd_cache_enabled()
+  # A file held in the package's release assets is read from there, verified,
+  # never from the unverified disk cache and never from nj.gov.
+  if (!is.null(.nj_release_lookup(url))) use_cache <- FALSE
 
   # Sanitize the file_label for the on-disk filename (URL-encoded paths,
   # spaces, etc.). Anything outside [A-Za-z0-9._-] becomes "_".
@@ -457,7 +460,9 @@ sped_placement_cached_workbook <- function(end_year,
       pattern = "sped_placement_zip_", tmpdir = dl_dir, fileext = ".zip"
     )
     on.exit(unlink(zip_tmp), add = TRUE)
-    downloader::download(url, destfile = zip_tmp, mode = "wb")
+    if (!.release_download_to(url, zip_tmp)) {
+      downloader::download(url, destfile = zip_tmp, mode = "wb")
+    }
     if (!file.exists(zip_tmp) || file.size(zip_tmp) < 1024) {
       stop(sprintf(
         "Downloaded SPED placement archive for %d is empty or missing.\n  URL: %s",
@@ -494,7 +499,9 @@ sped_placement_cached_workbook <- function(end_year,
       pattern = "sped_placement_dl_", tmpdir = dl_dir, fileext = ".xlsx"
     )
     on.exit(unlink(tmp), add = TRUE)
-    downloader::download(url, destfile = tmp, mode = "wb")
+    if (!.release_download_to(url, tmp)) {
+      downloader::download(url, destfile = tmp, mode = "wb")
+    }
   }
 
   if (!is_valid_xlsx(tmp)) {

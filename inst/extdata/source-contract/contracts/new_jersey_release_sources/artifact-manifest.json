@@ -1,0 +1,4167 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "assessment-ELA004.xlsx",
+      "byte_length": 1978116,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA004.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:05.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/1718/spring/ELA004.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "assessment",
+        "file_id": "assessment-ELA004.xlsx"
+      },
+      "sha256": "18eedafe8d4af455e55b1d8217a823bdb98ecfe87fc39ca196e3cb037ef8500a",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/1718/spring/ELA004.xlsx",
+      "storage": {
+        "asset_id": 723986786,
+        "asset_name": "ELA004.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA004.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "assessment-ELA04_NJSLA_DATA_2018-19.xlsx",
+      "byte_length": 1887597,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA04 NJSLA DATA 2018-19.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:06.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/1819/spring/ELA04%20NJSLA%20DATA%202018-19.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2018-19.xlsx"
+      },
+      "sha256": "3018fb431012782980c776ca2ad924c5c61d600cf08e02c6c8871925e24570d6",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/1819/spring/ELA04%20NJSLA%20DATA%202018-19.xlsx",
+      "storage": {
+        "asset_id": 723986796,
+        "asset_name": "ELA04_NJSLA_DATA_2018-19.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA04_NJSLA_DATA_2018-19.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "assessment-ELA04_NJSLA_DATA_2021-22.xlsx",
+      "byte_length": 1821684,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA04_NJSLA_DATA_2021-22.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:07.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/2122/spring/ELA04_NJSLA_DATA_2021-22.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2021-22.xlsx"
+      },
+      "sha256": "7bf6d936837dec18e14c57c24e11cb79517ea4ecbcc4b68124553132f9fc88d9",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/2122/spring/ELA04_NJSLA_DATA_2021-22.xlsx",
+      "storage": {
+        "asset_id": 723986846,
+        "asset_name": "ELA04_NJSLA_DATA_2021-22.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA04_NJSLA_DATA_2021-22.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "assessment-ELA04_NJSLA_DATA_2022-23.xlsx",
+      "byte_length": 1829780,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA04_NJSLA_DATA_2022-23.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:08.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/2223/spring/ELA04_NJSLA_DATA_2022-23.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2022-23.xlsx"
+      },
+      "sha256": "d680747106001bcbdd69f20667113bddc6503d049f5c81d985aa179fca167319",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/2223/spring/ELA04_NJSLA_DATA_2022-23.xlsx",
+      "storage": {
+        "asset_id": 723986828,
+        "asset_name": "ELA04_NJSLA_DATA_2022-23.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA04_NJSLA_DATA_2022-23.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "assessment-ELA04_NJSLA_DATA_2023-24.xlsx",
+      "byte_length": 1821168,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA04_NJSLA_DATA_2023-24.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:14.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/2324/spring/ELA04_NJSLA_DATA_2023-24.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2023-24.xlsx"
+      },
+      "sha256": "febff8b19e84d35cff30a0c9730b519701126524315ae6a492f63faa33f17d53",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/2324/spring/ELA04_NJSLA_DATA_2023-24.xlsx",
+      "storage": {
+        "asset_id": 723986860,
+        "asset_name": "ELA04_NJSLA_DATA_2023-24.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA04_NJSLA_DATA_2023-24.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "assessment-ELA04_NJSLA_DATA_2024-25.xlsx",
+      "byte_length": 1843456,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ELA04 NJSLA DATA 2024-25.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:19.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/assessment/results/reports/2425/spring/ELA04%20NJSLA%20DATA%202024-25.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "assessment",
+        "file_id": "assessment-ELA04_NJSLA_DATA_2024-25.xlsx"
+      },
+      "sha256": "7b19cdc160a88f0a62325577f775e5045b791c465bf6b4d19b9507844c33f470",
+      "source_identity": "https://www.nj.gov/education/assessment/results/reports/2425/spring/ELA04%20NJSLA%20DATA%202024-25.xlsx",
+      "storage": {
+        "asset_id": 723986810,
+        "asset_name": "ELA04_NJSLA_DATA_2024-25.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ELA04_NJSLA_DATA_2024-25.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0001.zip",
+      "byte_length": 446887,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0001.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:34.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr01/enrollment_0001.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2001",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0001.zip"
+      },
+      "sha256": "5acac3f205947f8c89748032024aeff3380cb885c06cb3f0393ef7b9da836a95",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr01/enrollment_0001.zip",
+      "storage": {
+        "asset_id": 723987373,
+        "asset_name": "enrollment_0001.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0001.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0102.zip",
+      "byte_length": 485025,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0102.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:35.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr02/enrollment_0102.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2002",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0102.zip"
+      },
+      "sha256": "687b401ab7bff6623962464c7c251ec466e4d611431c0f460ab46a7c073b0312",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr02/enrollment_0102.zip",
+      "storage": {
+        "asset_id": 723987327,
+        "asset_name": "enrollment_0102.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0102.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0203.zip",
+      "byte_length": 459473,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0203.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:35.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr03/enrollment_0203.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2003",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0203.zip"
+      },
+      "sha256": "182ac7d1955a007dd0cdcad19e058eaba3c8d2807724e2e5b93384a469f89a6c",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr03/enrollment_0203.zip",
+      "storage": {
+        "asset_id": 723987364,
+        "asset_name": "enrollment_0203.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0203.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0304.zip",
+      "byte_length": 537620,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0304.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:36.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr04/enrollment_0304.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2004",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0304.zip"
+      },
+      "sha256": "98d44413d9ae6c47f273a93d6adae41a01fc691a87735cb408cd9db8bc9e1f66",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr04/enrollment_0304.zip",
+      "storage": {
+        "asset_id": 723987294,
+        "asset_name": "enrollment_0304.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0304.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0405.zip",
+      "byte_length": 456027,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0405.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:37.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr05/enrollment_0405.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2005",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0405.zip"
+      },
+      "sha256": "a0793ae421c2b12c02fd4339d39bec3ded9e7497b97d262a6ca47a318b82a190",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr05/enrollment_0405.zip",
+      "storage": {
+        "asset_id": 723987367,
+        "asset_name": "enrollment_0405.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0405.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0506.zip",
+      "byte_length": 459687,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0506.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:38.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr06/enrollment_0506.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2006",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0506.zip"
+      },
+      "sha256": "e9d03ad823a577495760a999200d93b0dc53927625ff554a35140bda833a4f34",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr06/enrollment_0506.zip",
+      "storage": {
+        "asset_id": 723987359,
+        "asset_name": "enrollment_0506.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0506.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0607.zip",
+      "byte_length": 481166,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0607.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:39.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr07/enrollment_0607.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2007",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0607.zip"
+      },
+      "sha256": "e5405fdc80da144cf9e6de2d21eb365ce17d1a9893f875f6e17dc41c09fb28f5",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr07/enrollment_0607.zip",
+      "storage": {
+        "asset_id": 723987335,
+        "asset_name": "enrollment_0607.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0607.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0708.zip",
+      "byte_length": 569533,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0708.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:39.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr08/enrollment_0708.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2008",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0708.zip"
+      },
+      "sha256": "55eb1e81f079a261af1a1afa8dd5fd9070f5871efb338b859c5fbe8ae344c309",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr08/enrollment_0708.zip",
+      "storage": {
+        "asset_id": 723987242,
+        "asset_name": "enrollment_0708.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0708.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0809.zip",
+      "byte_length": 575500,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0809.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:40.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr09/enrollment_0809.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2009",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0809.zip"
+      },
+      "sha256": "2c3ab14c7ef4b84537e57cb2fcfc5dac0f29c2c598c22bae1cdadc65ea60ead1",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr09/enrollment_0809.zip",
+      "storage": {
+        "asset_id": 723987235,
+        "asset_name": "enrollment_0809.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0809.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_0910.zip",
+      "byte_length": 1338684,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_0910.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:43.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr10/enrollment_0910.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2010",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_0910.zip"
+      },
+      "sha256": "ecfd1c7cf8ed5820db39ba4f051cc477bef3bf68c5893fa86173b9dfcb5528f5",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr10/enrollment_0910.zip",
+      "storage": {
+        "asset_id": 723986929,
+        "asset_name": "enrollment_0910.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_0910.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1011.zip",
+      "byte_length": 1095496,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1011.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:44.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr11/enrollment_1011.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2011",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1011.zip"
+      },
+      "sha256": "9ec75fc309b2bee9f6f775e2ebff1df304dbef2cd7561f5427fd0bdd8e3f636d",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr11/enrollment_1011.zip",
+      "storage": {
+        "asset_id": 723987001,
+        "asset_name": "enrollment_1011.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1011.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1112.zip",
+      "byte_length": 2591290,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1112.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:48.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr12/enrollment_1112.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1112.zip"
+      },
+      "sha256": "66fb8ee104ed62fe1cac1787213898a2d58e33bcf03987f4f6ed56a68203ba47",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr12/enrollment_1112.zip",
+      "storage": {
+        "asset_id": 723986518,
+        "asset_name": "enrollment_1112.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1112.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1213.zip",
+      "byte_length": 2578254,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1213.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:53.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr13/enrollment_1213.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2013",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1213.zip"
+      },
+      "sha256": "8648ea2850dbd34123cb00d3c31d3fedb4a8cbfbfee671d3815134933e8d8275",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr13/enrollment_1213.zip",
+      "storage": {
+        "asset_id": 723986529,
+        "asset_name": "enrollment_1213.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1213.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1314.zip",
+      "byte_length": 2339971,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1314.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:54.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr14/enrollment_1314.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2014",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1314.zip"
+      },
+      "sha256": "b8c8adf36f1e426391a22cb613be39ea72a94b78b5711b5c2ab024edd915e6fe",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr14/enrollment_1314.zip",
+      "storage": {
+        "asset_id": 723986667,
+        "asset_name": "enrollment_1314.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1314.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1415.zip",
+      "byte_length": 2616791,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1415.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:01.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr15/enrollment_1415.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2015",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1415.zip"
+      },
+      "sha256": "070865785e22b83077eb7710c8c2f11b34e70fe5b52e5ca580cc97a57d661e6a",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr15/enrollment_1415.zip",
+      "storage": {
+        "asset_id": 723986517,
+        "asset_name": "enrollment_1415.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1415.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1516.zip",
+      "byte_length": 2619194,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1516.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:01.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr16/enrollment_1516.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2016",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1516.zip"
+      },
+      "sha256": "f2c88f467ba1ea3c5293c94d00f447fa29721330dba9e3aa1240279e961689e6",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr16/enrollment_1516.zip",
+      "storage": {
+        "asset_id": 723986507,
+        "asset_name": "enrollment_1516.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1516.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1617.zip",
+      "byte_length": 2627985,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1617.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:08.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr17/enrollment_1617.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1617.zip"
+      },
+      "sha256": "85edd7017bb2f558bd6c5e58937a470e53822f8272edfeccf6f9ebe1c981b15d",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr17/enrollment_1617.zip",
+      "storage": {
+        "asset_id": 723986324,
+        "asset_name": "enrollment_1617.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1617.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1718.zip",
+      "byte_length": 2634898,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1718.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:09.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr18/enrollment_1718.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1718.zip"
+      },
+      "sha256": "35d2be7f13845f6216b0405d9706e94ab0a196fe5dbd03d55bb7643b5969c1dd",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr18/enrollment_1718.zip",
+      "storage": {
+        "asset_id": 723986322,
+        "asset_name": "enrollment_1718.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1718.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1819.zip",
+      "byte_length": 2678851,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1819.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:10.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr19/enrollment_1819.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1819.zip"
+      },
+      "sha256": "608d2bc3f259ce320f47c44836ac62de98eac3788f52376d5b1329c80d0c4b15",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr19/enrollment_1819.zip",
+      "storage": {
+        "asset_id": 723986332,
+        "asset_name": "enrollment_1819.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1819.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_1920.zip",
+      "byte_length": 763907,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_1920.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:11.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr20/enrollment_1920.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_1920.zip"
+      },
+      "sha256": "62aeab1ebf89a3313108a8d6bc426ec0a26cfb410f4f8e3a191d37608a9bce46",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr20/enrollment_1920.zip",
+      "storage": {
+        "asset_id": 723987133,
+        "asset_name": "enrollment_1920.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_1920.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_2021.zip",
+      "byte_length": 733786,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_2021.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:12.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr21/enrollment_2021.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_2021.zip"
+      },
+      "sha256": "d38fdd847f8bb77b0709501890483476a0b4e8a4c8802e4b2efc2ce0dca5ba21",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr21/enrollment_2021.zip",
+      "storage": {
+        "asset_id": 723987148,
+        "asset_name": "enrollment_2021.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_2021.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_2122.zip",
+      "byte_length": 734021,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_2122.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T13:00:14.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr22/enrollment_2122.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_2122.zip"
+      },
+      "sha256": "cffd3b04beced4964db333d690603d02df5857bbcbed7f92139f354848aae5c4",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr22/enrollment_2122.zip",
+      "storage": {
+        "asset_id": 723987149,
+        "asset_name": "enrollment_2122.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_2122.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_9899.zip",
+      "byte_length": 465739,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_9899.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:32.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr99/enrollment_9899.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "1999",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_9899.zip"
+      },
+      "sha256": "e026781c8850c7179fc124f35ad9af55ca2fc4decad77450a72ed27f1a185230",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr99/enrollment_9899.zip",
+      "storage": {
+        "asset_id": 723987339,
+        "asset_name": "enrollment_9899.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_9899.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "enrollment-enrollment_9900.zip",
+      "byte_length": 536664,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "enrollment_9900.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:33.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/doedata/enr/enr00/enrollment_9900.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2000",
+        "family": "enrollment",
+        "file_id": "enrollment-enrollment_9900.zip"
+      },
+      "sha256": "698274dc2fbf2157bbcdc7876c8647e6cff3f34ce8049fb0ec7394e1ce061dc0",
+      "source_identity": "https://www.nj.gov/education/doedata/enr/enr00/enrollment_9900.zip",
+      "storage": {
+        "asset_id": 723987300,
+        "asset_name": "enrollment_9900.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/enrollment_9900.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2012_gradrate.xls",
+      "byte_length": 152576,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2012_gradrate.xls",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:38.272213Z",
+        "source_type": "xls",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2012_gradrate.xls"
+      },
+      "sha256": "7a153fbaf053dbfc4ebe25eff6d2ad8716a1299e6b38977d87f746e47e415342",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls",
+      "storage": {
+        "asset_id": 723987459,
+        "asset_name": "ACGR2012_gradrate.xls",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2012_gradrate.xls",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2012_grd.xls",
+      "byte_length": 1288704,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2012_grd.xls",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:38.446183Z",
+        "source_type": "xls",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_grd.xls"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2012_grd.xls"
+      },
+      "sha256": "95797aed4af1ceb03ac96b9bde43b57cec51bdb0a5254936fb5177c891d4da1c",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_grd.xls",
+      "storage": {
+        "asset_id": 723986945,
+        "asset_name": "ACGR2012_grd.xls",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2012_grd.xls",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2013_4Year.xlsx",
+      "byte_length": 339427,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2013_4Year.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:39.239818Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4Year.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2013",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2013_4Year.xlsx"
+      },
+      "sha256": "03aac959532b3cb4637ecedcbecbc5ad9ad2138f2e318ff9fdcf6f5b6ffa10aa",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4Year.xlsx",
+      "storage": {
+        "asset_id": 723987399,
+        "asset_name": "ACGR2013_4Year.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2013_4Year.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2014_4Year.xlsx",
+      "byte_length": 342473,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2014_4Year.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:39.565465Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4Year.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2014",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2014_4Year.xlsx"
+      },
+      "sha256": "b8a1c81a4841185be5519fd44f173f18f1003da631d4e6970500079be585079e",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4Year.xlsx",
+      "storage": {
+        "asset_id": 723987402,
+        "asset_name": "ACGR2014_4Year.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2014_4Year.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2015_4Year.xlsx",
+      "byte_length": 345650,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2015_4Year.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:39.850368Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4Year.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2015",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2015_4Year.xlsx"
+      },
+      "sha256": "1a5fba01f51047dce72e85abdba50559a4c0032825025dd0f9fcf7d23ac95bf4",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4Year.xlsx",
+      "storage": {
+        "asset_id": 723987391,
+        "asset_name": "ACGR2015_4Year.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2015_4Year.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2016_4Year.xlsx",
+      "byte_length": 359302,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2016_4Year.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:40.197391Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4Year.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2016",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2016_4Year.xlsx"
+      },
+      "sha256": "1727305e9af8b53c247ccb1f03a2e17b7c27b8b6770022a480cd1b0ac8b1f47c",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4Year.xlsx",
+      "storage": {
+        "asset_id": 723987385,
+        "asset_name": "ACGR2016_4Year.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2016_4Year.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2017_4Year.xlsx",
+      "byte_length": 362336,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2017_4Year.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:40.559520Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4Year.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2017_4Year.xlsx"
+      },
+      "sha256": "2c8b8e2e79eca12d47028adf2cb0ae7827a50cbed881bd357fb98b3c15b769bc",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4Year.xlsx",
+      "storage": {
+        "asset_id": 723987383,
+        "asset_name": "ACGR2017_4Year.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2017_4Year.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2018_4YearGraduation.xlsx",
+      "byte_length": 523505,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2018_4YearGraduation.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:40.845273Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2018_4YearGraduation.xlsx"
+      },
+      "sha256": "b7b48cbf5a971638870fabf0d95ae77deee739b592139fc1886d80a88093d18e",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx",
+      "storage": {
+        "asset_id": 723987320,
+        "asset_name": "ACGR2018_4YearGraduation.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2018_4YearGraduation.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx",
+      "byte_length": 557043,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:41.152682Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx"
+      },
+      "sha256": "8fcef01b31aa4e7f2196f9af1c08c33e473494a666d8e47add600cbc0bd5ed0e",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987276,
+        "asset_name": "ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "byte_length": 534643,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:41.652523Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "sha256": "512ef9ac1725e5bd52b1d7df16086773628ec68a579cdd582d390eccbf6ded19",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987307,
+        "asset_name": "Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "byte_length": 536015,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:41.944928Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "sha256": "8197e473f43ff97878702173456b4a8c07705c9b67efd26df0579db86bd53c2a",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987304,
+        "asset_name": "Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "byte_length": 567385,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:42.254998Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx"
+      },
+      "sha256": "2e774cffd398a0d3aaedacd1bb90e0817a8a1b4b5fe9dc222c20b87c650df60a",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987250,
+        "asset_name": "Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "byte_length": 548651,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:42.623378Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "sha256": "c9f0806860520425760c2c3f58c6f2fe42ebfca0ba1d6c3b6ef47025e3ee64e9",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987278,
+        "asset_name": "Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "byte_length": 563820,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:42.925964Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "sha256": "5d07d2d85beea6d899d3db7522bf18bd88e7be0a1e041f5d48ee7ce3f9867e3f",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987261,
+        "asset_name": "Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "byte_length": 563176,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:43.247735Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx"
+      },
+      "sha256": "22f25e22f778921e66b9df3bb346ca0a14b457399e77b00234890817174b3e3d",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+      "storage": {
+        "asset_id": 723987272,
+        "asset_name": "Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-618-archive-2018.zip",
+      "byte_length": 7937226,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2018.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:21.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2018.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2018.zip"
+      },
+      "sha256": "f7789028d6b8f494009cd262e562fa9d9d831243d249ea1d60a12433b43a66d0",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2018.zip",
+      "storage": {
+        "asset_id": 723984891,
+        "asset_name": "2018.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2018.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-618-archive-2019.zip",
+      "byte_length": 5551373,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2019.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:41.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2019.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2019.zip"
+      },
+      "sha256": "fbb236ffb7569b03bf4742c6a5ef6ff0d51ad1857fc163a4e903c1c23aa19f10",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2019.zip",
+      "storage": {
+        "asset_id": 723986328,
+        "asset_name": "2019.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2019.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-618-archive-2020.zip",
+      "byte_length": 7510855,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2020.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:44.000000Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "sped_618_archive",
+        "file_id": "sped-618-archive-2020.zip"
+      },
+      "sha256": "33fb3bd8a03bf9c7f22a19af578783d5e102b024fe783f8562bb59b38efb2d96",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip",
+      "storage": {
+        "asset_id": 723984927,
+        "asset_name": "2020.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2020.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-classification-Lea_Classification_Pub.xlsx",
+      "byte_length": 91960,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Lea_Classification_Pub.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:21.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/Lea_Classification_Pub.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_classification",
+        "file_id": "sped-classification-Lea_Classification_Pub.xlsx"
+      },
+      "sha256": "b184bc9b599e330934926a45285b4c7988aeb46667892e56394895fd851b277f",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/Lea_Classification_Pub.xlsx",
+      "storage": {
+        "asset_id": 723987510,
+        "asset_name": "Lea_Classification_Pub.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Lea_Classification_Pub.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx",
+      "byte_length": 3031634,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:59:00.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "sped_placement",
+        "file_id": "sped-placement-2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx"
+      },
+      "sha256": "6bda66f6a71b6246a69a413058a600e88340f636868406821244cb821a7efb5d",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx",
+      "storage": {
+        "asset_id": 723986323,
+        "asset_name": "2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2025IDEA618PublicReporting_StudentCountandEducationalEnvironment.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-3_5StudentCountbyDisability_District.xlsx",
+      "byte_length": 49134,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "3_5StudentCountbyDisability_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:45.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyDisability_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyDisability_District.xlsx"
+      },
+      "sha256": "0f0e703f044f7e3d54f1835a4bfdc3d6c48742975c54879333ec2c76b19abf06",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyDisability_District.xlsx",
+      "storage": {
+        "asset_id": 723987547,
+        "asset_name": "3_5StudentCountbyDisability_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/3_5StudentCountbyDisability_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-3_5StudentCountbyGender_District.xlsx",
+      "byte_length": 33583,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "3_5StudentCountbyGender_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:46.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyGender_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyGender_District.xlsx"
+      },
+      "sha256": "3c7c2fa35adf4eac307fc77de647adeef2e5c21379c71bc56cae551e3e4ad99d",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyGender_District.xlsx",
+      "storage": {
+        "asset_id": 723987607,
+        "asset_name": "3_5StudentCountbyGender_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/3_5StudentCountbyGender_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-3_5StudentCountbyLEP_District.xlsx",
+      "byte_length": 32519,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "3_5StudentCountbyLEP_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:46.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyLEP_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyLEP_District.xlsx"
+      },
+      "sha256": "2fdeb0942f9fb155eb6f83b12472a63af872e82bcfd883b908e36ced1d7dbe7d",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyLEP_District.xlsx",
+      "storage": {
+        "asset_id": 723987614,
+        "asset_name": "3_5StudentCountbyLEP_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/3_5StudentCountbyLEP_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-3_5StudentCountbyRace_District.xlsx",
+      "byte_length": 44068,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "3_5StudentCountbyRace_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:46.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyRace_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-3_5StudentCountbyRace_District.xlsx"
+      },
+      "sha256": "641904e8cb63830d7f120092963e2a73805295c36fbad2c2b65d83deba5f3003",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/3_5StudentCountbyRace_District.xlsx",
+      "storage": {
+        "asset_id": 723987568,
+        "asset_name": "3_5StudentCountbyRace_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/3_5StudentCountbyRace_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-5_21DisabilityVsEducationalEnvironment.xlsx",
+      "byte_length": 273927,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "5_21DisabilityVsEducationalEnvironment.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:44.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21DisabilityVsEducationalEnvironment.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21DisabilityVsEducationalEnvironment.xlsx"
+      },
+      "sha256": "8c9b7efa560591b7773e06e49140c85cf870448dfd8c54f05a48305e1658a5cf",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21DisabilityVsEducationalEnvironment.xlsx",
+      "storage": {
+        "asset_id": 723987418,
+        "asset_name": "5_21DisabilityVsEducationalEnvironment.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/5_21DisabilityVsEducationalEnvironment.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-5_21GenderVsEducationalEnvironment.xlsx",
+      "byte_length": 93653,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "5_21GenderVsEducationalEnvironment.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:45.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21GenderVsEducationalEnvironment.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21GenderVsEducationalEnvironment.xlsx"
+      },
+      "sha256": "f62059fbf2fdbc056c4791bca79bba404ebfa4c1a2d76450f667e55a1802c1ef",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21GenderVsEducationalEnvironment.xlsx",
+      "storage": {
+        "asset_id": 723987498,
+        "asset_name": "5_21GenderVsEducationalEnvironment.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/5_21GenderVsEducationalEnvironment.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-5_21LEPVsEducationalEnvironment.xlsx",
+      "byte_length": 82142,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "5_21LEPVsEducationalEnvironment.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:45.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21LEPVsEducationalEnvironment.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21LEPVsEducationalEnvironment.xlsx"
+      },
+      "sha256": "900e839f783915fbb50a67c33b4e32a59a84120a0f9f73d245b844e77ecca221",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21LEPVsEducationalEnvironment.xlsx",
+      "storage": {
+        "asset_id": 723987514,
+        "asset_name": "5_21LEPVsEducationalEnvironment.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/5_21LEPVsEducationalEnvironment.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-5_21RaceVsEducationalEnvironment.xlsx",
+      "byte_length": 186041,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "5_21RaceVsEducationalEnvironment.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:45.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21RaceVsEducationalEnvironment.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "sped_placement",
+        "file_id": "sped-placement-5_21RaceVsEducationalEnvironment.xlsx"
+      },
+      "sha256": "2c8350fee9a6be626d3e82d21e16ba0c9c2b59bfaebb3123b259ee22845eb1e9",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/5_21RaceVsEducationalEnvironment.xlsx",
+      "storage": {
+        "asset_id": 723987451,
+        "asset_name": "5_21RaceVsEducationalEnvironment.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/5_21RaceVsEducationalEnvironment.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-Placement_Disability_5_21_2223.xlsx",
+      "byte_length": 267864,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Placement_Disability_5_21_2223.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:46.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Disability_5_21_2223.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Disability_5_21_2223.xlsx"
+      },
+      "sha256": "d6fde7674fb649f9d95ab41ab0764c5dffce582af706226006646003ea45dcae",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Disability_5_21_2223.xlsx",
+      "storage": {
+        "asset_id": 723987425,
+        "asset_name": "Placement_Disability_5_21_2223.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Placement_Disability_5_21_2223.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-Placement_Gender_5_21_2223.xlsx",
+      "byte_length": 89350,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Placement_Gender_5_21_2223.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:47.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Gender_5_21_2223.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Gender_5_21_2223.xlsx"
+      },
+      "sha256": "891b825dfadc990ab20beb6f300161fa823ed012b73776bfbeaee8da88d16a37",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Gender_5_21_2223.xlsx",
+      "storage": {
+        "asset_id": 723987508,
+        "asset_name": "Placement_Gender_5_21_2223.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Placement_Gender_5_21_2223.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-Placement_LEP_5_21_2223.xlsx",
+      "byte_length": 121169,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Placement_LEP_5_21_2223.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:48.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_LEP_5_21_2223.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_LEP_5_21_2223.xlsx"
+      },
+      "sha256": "2902e8dde76257f455663d71f059ce8e774fe95be92d465db05f5e91e1b3d746",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_LEP_5_21_2223.xlsx",
+      "storage": {
+        "asset_id": 723987471,
+        "asset_name": "Placement_LEP_5_21_2223.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Placement_LEP_5_21_2223.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-Placement_Race_5_21_2223.xlsx",
+      "byte_length": 176761,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Placement_Race_5_21_2223.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:47.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Race_5_21_2223.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-Placement_Race_5_21_2223.xlsx"
+      },
+      "sha256": "f947f6577e2a282ab9eb89e36e15a8d1802f4e5dc54b79120fd436c5f8b73e74",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/Placement_Race_5_21_2223.xlsx",
+      "storage": {
+        "asset_id": 723987462,
+        "asset_name": "Placement_Race_5_21_2223.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/Placement_Race_5_21_2223.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-SpecedCount_Disablity3to5_SchoolYear22.23.xlsx",
+      "byte_length": 53404,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "SpecedCount_Disablity3to5_SchoolYear22.23.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:48.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Disablity3to5_SchoolYear22.23.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Disablity3to5_SchoolYear22.23.xlsx"
+      },
+      "sha256": "fb33201aecca03f4672251929e314c70737b4d7c99c661b839ea5081487b0e07",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Disablity3to5_SchoolYear22.23.xlsx",
+      "storage": {
+        "asset_id": 723987542,
+        "asset_name": "SpecedCount_Disablity3to5_SchoolYear22.23.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/SpecedCount_Disablity3to5_SchoolYear22.23.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-SpecedCount_Gender3to5_-SchoolYear22.23.xlsx",
+      "byte_length": 33107,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "SpecedCount_Gender3to5 -SchoolYear22.23.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:48.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Gender3to5%20-SchoolYear22.23.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Gender3to5_-SchoolYear22.23.xlsx"
+      },
+      "sha256": "91b48298430cdcbcc75522f28dc88ca0d7ee565b79d9052fbe95c6fdcced0776",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Gender3to5%20-SchoolYear22.23.xlsx",
+      "storage": {
+        "asset_id": 723987612,
+        "asset_name": "SpecedCount_Gender3to5_-SchoolYear22.23.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/SpecedCount_Gender3to5_-SchoolYear22.23.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-SpecedCount_LEP3to5_SchoolYear22.23.xlsx",
+      "byte_length": 33907,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "SpecedCount_LEP3to5_SchoolYear22.23.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:49.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_LEP3to5_SchoolYear22.23.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_LEP3to5_SchoolYear22.23.xlsx"
+      },
+      "sha256": "02474e7f0872a57b84f581b7b18d720a136cb6f32464db5c2c42e5eb4d44862c",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_LEP3to5_SchoolYear22.23.xlsx",
+      "storage": {
+        "asset_id": 723987582,
+        "asset_name": "SpecedCount_LEP3to5_SchoolYear22.23.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/SpecedCount_LEP3to5_SchoolYear22.23.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-SpecedCount_Race3to5_SchoolYear_22.23.xlsx",
+      "byte_length": 40619,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "SpecedCount_Race3to5_SchoolYear_22.23.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:48.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Race3to5_SchoolYear_22.23.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-SpecedCount_Race3to5_SchoolYear_22.23.xlsx"
+      },
+      "sha256": "c7afd1a93afeaa1759ee590d0392a5a314a74875726216614472fb5104b11822",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/SpecedCount_Race3to5_SchoolYear_22.23.xlsx",
+      "storage": {
+        "asset_id": 723987573,
+        "asset_name": "SpecedCount_Race3to5_SchoolYear_22.23.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/SpecedCount_Race3to5_SchoolYear_22.23.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-StateWideExcel_PlacementData_3-5Age_2223.xlsx",
+      "byte_length": 15167,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "StateWideExcel_PlacementData_3-5Age_2223.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:49.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateWideExcel_PlacementData_3-5Age_2223.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-StateWideExcel_PlacementData_3-5Age_2223.xlsx"
+      },
+      "sha256": "6b3b63997f2081659d730939ed4045d7e0534ed0e497ed0f06e203b3e3f99e68",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateWideExcel_PlacementData_3-5Age_2223.xlsx",
+      "storage": {
+        "asset_id": 723987636,
+        "asset_name": "StateWideExcel_PlacementData_3-5Age_2223.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/StateWideExcel_PlacementData_3-5Age_2223.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+      "byte_length": 17341,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:50.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "sped_placement",
+        "file_id": "sped-placement-StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx"
+      },
+      "sha256": "4fb1f7c0ce71f306f11f98b7efcee0c5448698edf54a0191e3858a7cab06a100",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022public618data/StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+      "storage": {
+        "asset_id": 723987617,
+        "asset_name": "StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/StateWide_PlacemnetData_5-21Age_2223_nonpublic.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-age_5-21_Districts_data_by_Disablityand_placement.xlsx",
+      "byte_length": 274281,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "age 5-21_Districts data by Disablityand placement.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:51.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Disablityand%20placement.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Disablityand_placement.xlsx"
+      },
+      "sha256": "6906c3d46313a5a36a4b8c1ba8ad8880ddc7c22ff925586bb8f9ed54bb6ea3b9",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Disablityand%20placement.xlsx",
+      "storage": {
+        "asset_id": 723987411,
+        "asset_name": "age_5-21_Districts_data_by_Disablityand_placement.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/age_5-21_Districts_data_by_Disablityand_placement.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-age_5-21_Districts_data_by_Gender_and_placement.xlsx",
+      "byte_length": 99298,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "age 5-21_Districts data by Gender and placement.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:51.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Gender%20and%20placement.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Gender_and_placement.xlsx"
+      },
+      "sha256": "6b48ae3ff8410a93f7a9d66c7478f963db8a1f95ad63f7d6730156fee7e719d4",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Gender%20and%20placement.xlsx",
+      "storage": {
+        "asset_id": 723987500,
+        "asset_name": "age_5-21_Districts_data_by_Gender_and_placement.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/age_5-21_Districts_data_by_Gender_and_placement.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx",
+      "byte_length": 123356,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "age 5-21_Districts data by LEP Status and placement.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:51.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20LEP%20Status%20and%20placement.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx"
+      },
+      "sha256": "f372b3635498cf40488913fb0e6df166cf3cf6ca220009bcd159f601aee2fc78",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20LEP%20Status%20and%20placement.xlsx",
+      "storage": {
+        "asset_id": 723987465,
+        "asset_name": "age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/age_5-21_Districts_data_by_LEP_Status_and_placement.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-age_5-21_Districts_data_by_Race_and_placement.xlsx",
+      "byte_length": 189700,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "age 5-21_Districts data by Race and placement.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:51.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Race%20and%20placement.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-age_5-21_Districts_data_by_Race_and_placement.xlsx"
+      },
+      "sha256": "c3780740b5703c83cc46d74c1b27e3eb9cbdb3c5ba5e16b64213f1f871aa4e33",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/age%205-21_Districts%20data%20by%20Race%20and%20placement.xlsx",
+      "storage": {
+        "asset_id": 723987436,
+        "asset_name": "age_5-21_Districts_data_by_Race_and_placement.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/age_5-21_Districts_data_by_Race_and_placement.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-placement_StateWide_3-5_Age_2324.xlsx",
+      "byte_length": 14244,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "placement_StateWide_3-5_Age_2324.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:53.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/placement_StateWide_3-5_Age_2324.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-placement_StateWide_3-5_Age_2324.xlsx"
+      },
+      "sha256": "19a4bebae85485aafea632cb242c1964c529b4b0dccf06e4dc6b643ed80e8bf1",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/placement_StateWide_3-5_Age_2324.xlsx",
+      "storage": {
+        "asset_id": 723987671,
+        "asset_name": "placement_StateWide_3-5_Age_2324.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/placement_StateWide_3-5_Age_2324.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-placement_StateWide_5-21_2324.xlsx",
+      "byte_length": 15278,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "placement_StateWide_5-21_2324.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:53.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/placement_StateWide_5-21_2324.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-placement_StateWide_5-21_2324.xlsx"
+      },
+      "sha256": "a6bd3793d3dda198f1f2e84dbb91e656f451ab7935ff4c0dd95f91f41c1862da",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/placement_StateWide_5-21_2324.xlsx",
+      "storage": {
+        "asset_id": 723987634,
+        "asset_name": "placement_StateWide_5-21_2324.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/placement_StateWide_5-21_2324.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-studentcount_Disablity_3-5_2324_District.xlsx",
+      "byte_length": 50657,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "studentcount_Disablity_3-5_2324_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:52.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Disablity_3-5_2324_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Disablity_3-5_2324_District.xlsx"
+      },
+      "sha256": "404baa6dc3ed136a20ff46e5a6277c1b076b1bdfccb36474e55e2882aad45ea4",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Disablity_3-5_2324_District.xlsx",
+      "storage": {
+        "asset_id": 723987539,
+        "asset_name": "studentcount_Disablity_3-5_2324_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/studentcount_Disablity_3-5_2324_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-studentcount_Gender_3-5_2324_District.xlsx",
+      "byte_length": 34611,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "studentcount_Gender_3-5_2324_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:52.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Gender_3-5_2324_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Gender_3-5_2324_District.xlsx"
+      },
+      "sha256": "d2bb0730d3f5d4b3df3d85d9b02397a7aa0ffa500075c9a8f90e5bedb8a56d81",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Gender_3-5_2324_District.xlsx",
+      "storage": {
+        "asset_id": 723987576,
+        "asset_name": "studentcount_Gender_3-5_2324_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/studentcount_Gender_3-5_2324_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-studentcount_LEP_3-5_2324_District.xlsx",
+      "byte_length": 33612,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "studentcount_LEP_3-5_2324_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:53.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_LEP_3-5_2324_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_LEP_3-5_2324_District.xlsx"
+      },
+      "sha256": "dc67812fd2121722dfded82eb2b4fa91df3c3449bf48dbbfc1353b62e4947a4d",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_LEP_3-5_2324_District.xlsx",
+      "storage": {
+        "asset_id": 723987606,
+        "asset_name": "studentcount_LEP_3-5_2324_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/studentcount_LEP_3-5_2324_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "sped-placement-studentcount_Race_3-5_2324_District.xlsx",
+      "byte_length": 43207,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "studentcount_Race_3-5_2324_District.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-08T12:58:52.000000Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Race_3-5_2324_District.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "sped_placement",
+        "file_id": "sped-placement-studentcount_Race_3-5_2324_District.xlsx"
+      },
+      "sha256": "ed0734df970b30a8acf8bc8515d8b643e893b50b500c8ee41252116dbf2487a7",
+      "source_identity": "https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2023_618data/studentcount_Race_3-5_2324_District.xlsx",
+      "storage": {
+        "asset_id": 723987571,
+        "asset_name": "studentcount_Race_3-5_2324_District.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/studentcount_Race_3-5_2324_District.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2001_CSG.zip",
+      "byte_length": 572766,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2001_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T20:03:00.969321Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2001_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2001",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2001_CSG.zip"
+      },
+      "sha256": "6cf9f68667ab5ea2755e72d88f6f17229879c81009e136b7f5f45eb918ec73bb",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2001_CSG.zip",
+      "storage": {
+        "asset_id": 723987238,
+        "asset_name": "2001_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2001_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2002_CSG.zip",
+      "byte_length": 585513,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2002_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:10:50.077816Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2002_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2002",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2002_CSG.zip"
+      },
+      "sha256": "ebf9f97dc6fad5783b33c04e5af3ffdd943371ec65eea46b1c43a328b8507979",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2002_CSG.zip",
+      "storage": {
+        "asset_id": 723987222,
+        "asset_name": "2002_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2002_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2003_CSG.zip",
+      "byte_length": 1140308,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2003_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:10:51.443094Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2003_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2003",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2003_CSG.zip"
+      },
+      "sha256": "33108d76ec25071c4190a10b716dd5e9861f4038744d42ced3fab0e7b2eebccf",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2003_CSG.zip",
+      "storage": {
+        "asset_id": 723986951,
+        "asset_name": "2003_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2003_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2004_CSG.zip",
+      "byte_length": 2259434,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2004_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:10:53.011904Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2004_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2004",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2004_CSG.zip"
+      },
+      "sha256": "eb7b6195e7f1fc82c36081b51ab06cd7a0bf35a3ec22c163f9ceec3165d4506b",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2004_CSG.zip",
+      "storage": {
+        "asset_id": 723986715,
+        "asset_name": "2004_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2004_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2005_CSG.zip",
+      "byte_length": 2283208,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2005_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:10:54.839601Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2005_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2005",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2005_CSG.zip"
+      },
+      "sha256": "01278d516637c2706def6f1566be852be81ac7376c7fc7dc3bcce9204935f16f",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2005_CSG.zip",
+      "storage": {
+        "asset_id": 723986694,
+        "asset_name": "2005_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2005_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2006_CSG.zip",
+      "byte_length": 2294833,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2006_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:00.221040Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2006_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2006",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2006_CSG.zip"
+      },
+      "sha256": "f9d4c0ca2e5b7a7185ad56a88349aa5b1c860c049826d5709e9ca83316f6f168",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2006_CSG.zip",
+      "storage": {
+        "asset_id": 723986682,
+        "asset_name": "2006_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2006_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2007_CSG.zip",
+      "byte_length": 1331465,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2007_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:02.161943Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2007_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2007",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2007_CSG.zip"
+      },
+      "sha256": "3e5f707f8472631b185330d6a834cccaead488c028cb4d9f6ecd467b0ba727cb",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2007_CSG.zip",
+      "storage": {
+        "asset_id": 723986935,
+        "asset_name": "2007_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2007_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2008_CSG.zip",
+      "byte_length": 2325550,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2008_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:03.563950Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2008_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2008",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2008_CSG.zip"
+      },
+      "sha256": "b6fe79195c4e3773ae063568044098993f47b5de7d3609a912de06e57d325893",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2008_CSG.zip",
+      "storage": {
+        "asset_id": 723986675,
+        "asset_name": "2008_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2008_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2009_CSG.zip",
+      "byte_length": 2213595,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2009_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:05.265990Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2009_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2009",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2009_CSG.zip"
+      },
+      "sha256": "8fbcf034c04a0dd1722658dbe1c42b325dce7b40557445ebebc5d882adb6a2a0",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2009_CSG.zip",
+      "storage": {
+        "asset_id": 723986745,
+        "asset_name": "2009_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2009_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2010_CSG.zip",
+      "byte_length": 2358982,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2010_CSG.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:06.986696Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2010_CSG.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2010",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2010_CSG.zip"
+      },
+      "sha256": "6e4dc18f29e2bd44755f3c7e2e8103dc0ebf557065904ccbe2fbc3061c162554",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2010_CSG.zip",
+      "storage": {
+        "asset_id": 723986646,
+        "asset_name": "2010_CSG.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2010_CSG.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2011_TGES.zip",
+      "byte_length": 590610,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2011_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:08.600922Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2011_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2011",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2011_TGES.zip"
+      },
+      "sha256": "60d749140e1422258b40dcac5df29195017c07ab4ac43a78819144bde5fc1940",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2011_TGES.zip",
+      "storage": {
+        "asset_id": 723987212,
+        "asset_name": "2011_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2011_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2012_TGES.zip",
+      "byte_length": 649722,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2012_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:10.988523Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2012_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2012_TGES.zip"
+      },
+      "sha256": "0d0cbbc7fe8274bfa7a17cb31ab6802b194a550d65efd17d5151a01a2c12c35e",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2012_TGES.zip",
+      "storage": {
+        "asset_id": 723987173,
+        "asset_name": "2012_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2012_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2013_TGES.zip",
+      "byte_length": 599308,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2013_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:12.988759Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2013_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2013",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2013_TGES.zip"
+      },
+      "sha256": "cdbe481dacfdd246283d3b8801285c19b1abe8a351958e613db67459d541b9d3",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2013_TGES.zip",
+      "storage": {
+        "asset_id": 723987172,
+        "asset_name": "2013_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2013_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2014_TGES.zip",
+      "byte_length": 593519,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2014_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:14.973990Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2014_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2014",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2014_TGES.zip"
+      },
+      "sha256": "2d74176a196022455340c8bb0c781ef6d032bd205f1147c210d193c8b79970a5",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2014_TGES.zip",
+      "storage": {
+        "asset_id": 723987204,
+        "asset_name": "2014_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2014_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2015_TGES.zip",
+      "byte_length": 802071,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2015_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:17.273899Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2015_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2015",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2015_TGES.zip"
+      },
+      "sha256": "b744ca6e64a509dd4caa7bd801bd49d09c52fe48787178c5994365ccec9f4ee6",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2015_TGES.zip",
+      "storage": {
+        "asset_id": 723987116,
+        "asset_name": "2015_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2015_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2016_TGES.zip",
+      "byte_length": 804033,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2016_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:19.433954Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2016_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2016",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2016_TGES.zip"
+      },
+      "sha256": "11b469e1702dd797cf6dd6db2f6568e29337bf03bfe7cc6d7aa193f8e389029b",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2016_TGES.zip",
+      "storage": {
+        "asset_id": 723987090,
+        "asset_name": "2016_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2016_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2017_TGES.zip",
+      "byte_length": 810538,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2017_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:21.990410Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2017_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2017_TGES.zip"
+      },
+      "sha256": "62c8f28665ecc53ee415357160217903c4da7c149367e93a6456643b65b15e49",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2017_TGES.zip",
+      "storage": {
+        "asset_id": 723987077,
+        "asset_name": "2017_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2017_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2018_TGES.zip",
+      "byte_length": 970438,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2018_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:24.764476Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2018_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2018_TGES.zip"
+      },
+      "sha256": "2de9d1ef9311e9dd1d795f443015ebf1f1e52aa80842b9d28f07c81324cb9da6",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2018_TGES.zip",
+      "storage": {
+        "asset_id": 723987022,
+        "asset_name": "2018_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2018_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2019_TGES.zip",
+      "byte_length": 1040892,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2019_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:27.832426Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2019_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2019_TGES.zip"
+      },
+      "sha256": "59e569a44d5c3b1b9e5032f4447700b38ee85942ab7626125a6931de1ceca7de",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2019_TGES.zip",
+      "storage": {
+        "asset_id": 723987024,
+        "asset_name": "2019_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2019_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2020_TGES.zip",
+      "byte_length": 1343893,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2020_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:16.520137Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2020_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2020_TGES.zip"
+      },
+      "sha256": "2e63adf2fa77459428a2056f43bfc78e575ab2352d999535f8c7c99508652d8f",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2020_TGES.zip",
+      "storage": {
+        "asset_id": 723986904,
+        "asset_name": "2020_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2020_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2021_TGES.zip",
+      "byte_length": 1110723,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2021_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:37.049917Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2021_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2021_TGES.zip"
+      },
+      "sha256": "edb770111493baf213e7c306e2551584c8beac1d52533e41b8e1b5ff693399d7",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2021_TGES.zip",
+      "storage": {
+        "asset_id": 723986981,
+        "asset_name": "2021_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2021_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2022_TGES.zip",
+      "byte_length": 1621328,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2022_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:54.116616Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2022_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2022_TGES.zip"
+      },
+      "sha256": "e57273c74ef6e9bee94f82f7b7ca3929fc30aa3252a185606ad05efbcc61b015",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2022_TGES.zip",
+      "storage": {
+        "asset_id": 723986871,
+        "asset_name": "2022_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2022_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-2023_TGES.zip",
+      "byte_length": 871679,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2023_TGES.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:11:59.421256Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2023_TGES.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-2023_TGES.zip"
+      },
+      "sha256": "10e67cd3688d7f785038e384868081e9b9dbc0c78b870a1745ff033eddd16430",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2023_TGES.zip",
+      "storage": {
+        "asset_id": 723987087,
+        "asset_name": "2023_TGES.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2023_TGES.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-TGES2025_Zipped.zip",
+      "byte_length": 888936,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "TGES2025_Zipped.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:17.072741Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2025/TGES2025_Zipped.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-TGES2025_Zipped.zip"
+      },
+      "sha256": "c70cd4e54794718d160667f48bab52149f7c117585de4a128791614aea1d7713",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2025/TGES2025_Zipped.zip",
+      "storage": {
+        "asset_id": 723987067,
+        "asset_name": "TGES2025_Zipped.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/TGES2025_Zipped.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spending-guide-TGES24_Zipped.zip",
+      "byte_length": 772998,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "TGES24_Zipped.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:08.509025Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/guide/docs/2024/TGES24_Zipped.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "finance_spending_guide",
+        "file_id": "spending-guide-TGES24_Zipped.zip"
+      },
+      "sha256": "f951719335188ada8859b5852603bd4fe979879fd5ed05779020933087b76143",
+      "source_identity": "https://www.nj.gov/education/guide/docs/2024/TGES24_Zipped.zip",
+      "storage": {
+        "asset_id": 723987123,
+        "asset_name": "TGES24_Zipped.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/TGES24_Zipped.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2016-2017_Database_DistrictStateDetail.xlsx",
+      "byte_length": 15745679,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:19:35.977828Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "report_card",
+        "file_id": "spr-2016-2017_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "09804c1ba742d7093a5a8ff6a3008c041552f477bb086d0cb53d16fb843dfea5",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723984234,
+        "asset_name": "2016-2017_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2016-2017_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2016-2017_Database_SchoolDetail.xlsx",
+      "byte_length": 37906694,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T16:16:27.072465Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "report_card",
+        "file_id": "spr-2016-2017_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "f9bb6178cfd632bf53217f0461baade41ec149379719ae16eb52eb565a9fb962",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2016-2017/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723982405,
+        "asset_name": "2016-2017_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2016-2017_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2017-2018_Database_DistrictStateDetail.xlsx",
+      "byte_length": 19785886,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:19:47.725982Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "report_card",
+        "file_id": "spr-2017-2018_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "62b1a261183bfb57f8fee698af2de78fbba4ea41400345dfd499e62199cf3c40",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723983973,
+        "asset_name": "2017-2018_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2017-2018_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2017-2018_Database_SchoolDetail.xlsx",
+      "byte_length": 52224606,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T16:17:59.030503Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "report_card",
+        "file_id": "spr-2017-2018_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "11d72de7b79a17be6f24de9dbd26a282dd7b90f62f23eb3b333b5e78ffac2e95",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2017-2018/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723980279,
+        "asset_name": "2017-2018_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2017-2018_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2018-2019_Database_DistrictStateDetail.xlsx",
+      "byte_length": 22186494,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:19:57.359163Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "report_card",
+        "file_id": "spr-2018-2019_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "2afa67be1bc356c4dc92883576c7d6a3a7dd9076a9a292d10fd0fedcd0c796b0",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723983933,
+        "asset_name": "2018-2019_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2018-2019_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2018-2019_Database_SchoolDetail.xlsx",
+      "byte_length": 57916583,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T16:18:14.599793Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "report_card",
+        "file_id": "spr-2018-2019_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "61b73ad4c49da4a896fef160c94c56edbebaca3b4ccd5e76e715fc063213bdad",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2018-2019/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723980280,
+        "asset_name": "2018-2019_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2018-2019_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2019-2020_Database_DistrictStateDetail.xlsx",
+      "byte_length": 5637107,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:20:12.106745Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "report_card",
+        "file_id": "spr-2019-2020_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "74eac80f1a8e9cafa9a52233d92ac6ad5bd4c8962408dbe4e925aaee276257a8",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723985316,
+        "asset_name": "2019-2020_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2019-2020_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2019-2020_Database_SchoolDetail.xlsx",
+      "byte_length": 15314906,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T16:19:10.644521Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "report_card",
+        "file_id": "spr-2019-2020_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "42d658899c3f940dd3397a852efd221b376318563c8679ef9895f679a195fe7b",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723984767,
+        "asset_name": "2019-2020_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2019-2020_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2020-2021_Database_DistrictStateDetail.xlsx",
+      "byte_length": 8522874,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:20:17.775474Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2020-2021/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "report_card",
+        "file_id": "spr-2020-2021_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "854ca76c40da8280ba7e5160ab6d6762216baf2315d235754e761dcf7fa80747",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2020-2021/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723984850,
+        "asset_name": "2020-2021_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2020-2021_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2020-2021_Database_SchoolDetail.xlsx",
+      "byte_length": 23499365,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T15:30:28.559809Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2020-2021/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "report_card",
+        "file_id": "spr-2020-2021_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "2535cdae2aa1f5ae5d13d185c817ab3866ba624a92206f21c42a4e8a8c5c90ce",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2020-2021/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723983718,
+        "asset_name": "2020-2021_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2020-2021_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2021-2022_Database_DistrictStateDetail.xlsx",
+      "byte_length": 23794959,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:20:24.102016Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2021-2022/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "report_card",
+        "file_id": "spr-2021-2022_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "402cb2d2169065c8892e98c6c987a5dce98e7cbc07b3001f50c5aaac28a64bd1",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2021-2022/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723983334,
+        "asset_name": "2021-2022_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2021-2022_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2021-2022_Database_SchoolDetail.xlsx",
+      "byte_length": 61050176,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T15:31:27.975712Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2021-2022/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "report_card",
+        "file_id": "spr-2021-2022_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "83397394dede95f8982f001ad791ad1fc2a6f55c4974f2067819ddd7a1e834f0",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2021-2022/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723980277,
+        "asset_name": "2021-2022_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2021-2022_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2022-2023_Database_DistrictStateDetail.xlsx",
+      "byte_length": 26878567,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T05:20:33.034399Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2022-2023/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "report_card",
+        "file_id": "spr-2022-2023_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "3485f3f514ec761115ff3ee26b3b9b2f2cb69561276dda839ed5efb646784454",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2022-2023/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723982892,
+        "asset_name": "2022-2023_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2022-2023_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2022-2023_Database_SchoolDetail.xlsx",
+      "byte_length": 68039713,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T15:33:56.204076Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2022-2023/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "report_card",
+        "file_id": "spr-2022-2023_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "1471cbf00ab1b6bb27fce94cb953f4aa126a04d3c206aadf155fc9c758d9d2d0",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2022-2023/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723980274,
+        "asset_name": "2022-2023_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2022-2023_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2023-2024_Database_DistrictStateDetail.xlsx",
+      "byte_length": 30378206,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T03:48:09.300080Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "report_card",
+        "file_id": "spr-2023-2024_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "9228143c10c31a778d78b394fc789335780c90d65d368a6963874da569dc7710",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723982624,
+        "asset_name": "2023-2024_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2023-2024_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2023-2024_Database_SchoolDetail.xlsx",
+      "byte_length": 80666073,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T15:30:01.163038Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "report_card",
+        "file_id": "spr-2023-2024_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "fd36785b915a2585012d4dd14626ee4fcc76a8368dece4a6342698f053ce086b",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2023-2024/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723980275,
+        "asset_name": "2023-2024_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2023-2024_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2024-2025_Database_DistrictStateDetail.xlsx",
+      "byte_length": 119164900,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_DistrictStateDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-10T03:47:40.060601Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_DistrictStateDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "report_card",
+        "file_id": "spr-2024-2025_Database_DistrictStateDetail.xlsx"
+      },
+      "sha256": "1445a4279ee2d64c3360d4c769465347b6685247f4e5d778f3f087ffb34e4ff7",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_DistrictStateDetail.xlsx",
+      "storage": {
+        "asset_id": 723974987,
+        "asset_name": "2024-2025_Database_DistrictStateDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2024-2025_Database_DistrictStateDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2024-2025_Database_SchoolDetail.xlsx",
+      "byte_length": 346029712,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T15:36:45.136188Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "report_card",
+        "file_id": "spr-2024-2025_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "546cc2c06744549f3f4d9e3a3ab2502180ef222e58854b2c36b074472e2007ea",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2024-2025/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 723974985,
+        "asset_name": "2024-2025_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2024-2025_Database_SchoolDetail.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-1819.zip",
+      "byte_length": 1292364,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "1819.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:22.121294Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/1819.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "state_aid",
+        "file_id": "state-aid-1819.zip"
+      },
+      "sha256": "7735e66dae2fd4fe65ed4dc46ae156aa6633372bf01a371c2a9e4c09f479d371",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/1819.zip",
+      "storage": {
+        "asset_id": 723986939,
+        "asset_name": "1819.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/1819.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-1920.zip",
+      "byte_length": 1642279,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "1920.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:41.192152Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/1920.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2020",
+        "family": "state_aid",
+        "file_id": "state-aid-1920.zip"
+      },
+      "sha256": "874c7fb582d717aab68cc38cc6cddc87ae0304a95340d9223e90ae27c434969d",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/1920.zip",
+      "storage": {
+        "asset_id": 723986864,
+        "asset_name": "1920.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/1920.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-2021.zip",
+      "byte_length": 921846,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2021.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:09:58.829735Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/2021.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2021",
+        "family": "state_aid",
+        "file_id": "state-aid-2021.zip"
+      },
+      "sha256": "d974474f22490b4a2eaa4ccf364885eb5c0770a1f694a8f6e4606438aa63861a",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/2021.zip",
+      "storage": {
+        "asset_id": 723987040,
+        "asset_name": "2021.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2021.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-2122.zip",
+      "byte_length": 1867828,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2122.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:01.582411Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/2122.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2022",
+        "family": "state_aid",
+        "file_id": "state-aid-2122.zip"
+      },
+      "sha256": "e658993c9aea05fc25a11ef9afbd8186686175cb604013a11802f2788896978f",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/2122.zip",
+      "storage": {
+        "asset_id": 723986794,
+        "asset_name": "2122.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2122.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-2223.zip",
+      "byte_length": 1760402,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2223.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:10.902240Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/2223.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2023",
+        "family": "state_aid",
+        "file_id": "state-aid-2223.zip"
+      },
+      "sha256": "958834f64b1ac644ab927d3afb14f905a0925e01213f703623325b38684fda64",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/2223.zip",
+      "storage": {
+        "asset_id": 723986858,
+        "asset_name": "2223.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2223.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-2324.zip",
+      "byte_length": 961889,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2324.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:19.087742Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/2324.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2024",
+        "family": "state_aid",
+        "file_id": "state-aid-2324.zip"
+      },
+      "sha256": "8c3f118c72a00f9db1cacfaa03aefe8f20232ce6653750b848b8dfd4596851b5",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/2324.zip",
+      "storage": {
+        "asset_id": 723987027,
+        "asset_name": "2324.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2324.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-2425.zip",
+      "byte_length": 1088273,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2425.zip",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:24.653492Z",
+        "source_type": "zip",
+        "url": "https://www.nj.gov/education/stateaid/zippedfiles/2425.zip"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "state_aid",
+        "file_id": "state-aid-2425.zip"
+      },
+      "sha256": "0baadc9d9703671ddeb50b8ec96afb609f64f5d2117212b496658cc56dbbe5e2",
+      "source_identity": "https://www.nj.gov/education/stateaid/zippedfiles/2425.zip",
+      "storage": {
+        "asset_id": 723987019,
+        "asset_name": "2425.zip",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/2425.zip",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-FY26_GBM_District_Details.xlsx",
+      "byte_length": 77477,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "FY26_GBM_District_Details.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T01:12:31.367679Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/stateaid/2526/FY26_GBM_District_Details.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "state_aid",
+        "file_id": "state-aid-FY26_GBM_District_Details.xlsx"
+      },
+      "sha256": "62ad7593676e12b2097c5aef0f69f2f59f9673018a80b512d10f7c8444eef6a6",
+      "source_identity": "https://www.nj.gov/education/stateaid/2526/FY26_GBM_District_Details.xlsx",
+      "storage": {
+        "asset_id": 723987529,
+        "asset_name": "FY26_GBM_District_Details.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/FY26_GBM_District_Details.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "state-aid-FY27_GBM_District_Details.xlsx",
+      "byte_length": 77136,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "FY27_GBM_District_Details.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-10-31T20:02:22.397906Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/stateaid/2627/FY27_GBM_District_Details.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2027",
+        "family": "state_aid",
+        "file_id": "state-aid-FY27_GBM_District_Details.xlsx"
+      },
+      "sha256": "f0e31c1b2bf85151a5bc316cffef0808e59439fa8aae5237e9e723e8bc8bd5e5",
+      "source_identity": "https://www.nj.gov/education/stateaid/2627/FY27_GBM_District_Details.xlsx",
+      "storage": {
+        "asset_id": 723987520,
+        "asset_name": "FY27_GBM_District_Details.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-08/FY27_GBM_District_Details.xlsx",
+        "release_id": 438254206,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-08"
+      },
+      "tier": "shipped"
+    }
+  ],
+  "contract_id": "new_jersey_release_sources",
+  "package_repository": "almartin82/njschooldata",
+  "schema_version": "source-validation-artifact-manifest/v2"
+}

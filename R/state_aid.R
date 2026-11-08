@@ -136,10 +136,22 @@ get_raw_state_aid_result <- function(
   }
 
   urls <- resolve_source_url("state_aid", end_year)
-  direct <- download_source(
-    urls[["direct"]], source_type = "xlsx", request_fn = request_fn,
-    cache_path = .njsd_source_cache_path(urls[["direct"]], "xlsx", request_fn)
-  )
+  # When the package holds this year's archived zip and not the loose
+  # workbook, read the held zip; do not ask nj.gov for the loose file first.
+  held_archive_only <- identical(request_fn, .default_source_request) &&
+    is.null(.nj_release_lookup(urls[["direct"]])) &&
+    !is.null(.nj_release_lookup(urls[["archive"]]))
+  direct <- if (held_archive_only) {
+    new_source_result(
+      source_status = "source_unavailable", source_url = urls[["direct"]],
+      error = "not requested; the package holds this year's archived zip"
+    )
+  } else {
+    download_source(
+      urls[["direct"]], source_type = "xlsx", request_fn = request_fn,
+      cache_path = .njsd_source_cache_path(urls[["direct"]], "xlsx", request_fn)
+    )
+  }
   if (identical(direct$source_status, "actual")) {
     on.exit(.release_source_result(direct), add = TRUE)
     parsed <- tryCatch(

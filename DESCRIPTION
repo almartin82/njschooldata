@@ -13,6 +13,7 @@ BugReports: https://github.com/almartin82/njschooldata/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    curl,
     DescTools,
     digest,
     dplyr (>= 1.0.0),
@@ -24,6 +25,7 @@ Imports:
     jsonlite,
     magrittr,
     purrr,
+    rappdirs,
     readr,
     readxl,
     reshape2,

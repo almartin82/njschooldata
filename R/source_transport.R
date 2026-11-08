@@ -265,6 +265,10 @@ download_source <- function(url, source_type, cache_path = NULL,
   if (identical(request_fn, .default_source_request)) {
     packaged <- .package_source(url, source_type)
     if (!is.null(packaged)) return(packaged)
+    # Held historical files come from the package's release assets, verified
+    # by length and SHA-256; a held URL never falls through to nj.gov.
+    released <- .release_source(url, source_type)
+    if (!is.null(released)) return(released)
   }
 
   initial_check <- tryCatch(

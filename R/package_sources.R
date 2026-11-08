@@ -4,7 +4,10 @@
   root <- system.file("extdata", "source-contract", "contracts",
                       "new_jersey_shipped_sources", package = "njschooldata")
   manifest <- jsonlite::read_json(file.path(root, "artifact-manifest.json"))
-  matches <- Filter(function(x) identical(x$source_identity$url, url),
+  # Only complete publications answer a URL. A derived extract (an SPR sheet,
+  # a Tableau table) shares its parent's URL but is not the published file.
+  matches <- Filter(function(x) identical(x$source_identity$url, url) &&
+                      identical(x$lineage$kind, "source"),
                     manifest$artifacts)
   if (!length(matches)) return(NULL)
   if (length(matches) != 1L) stop("Ambiguous package source: ", url)

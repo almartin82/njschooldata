@@ -32,7 +32,10 @@ test_that("network-bearing R tests are explicitly gated", {
     # downloads could not produce, so a mock that failed to take effect fails
     # the test rather than silently reaching the network.
     "test-id-preservation.R",
-    "test-tges-url.R"
+    "test-tges-url.R",
+    # Release-asset delivery: every transfer is an injected transport or an
+    # offline read of a seeded store; the URLs are manifest lookup keys.
+    "test-release-sources.R"
   )
   network_pattern <- paste(
     c(
