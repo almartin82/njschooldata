@@ -7,21 +7,28 @@
 #
 # ==============================================================================
 
+.enr_program_subgroups <- c(
+  "free_lunch", "reduced_lunch", "lep", "migrant", "free_reduced_lunch", "military", "homeless"
+)
+
 #' Tidy enrollment data
 #'
 #' Transforms wide enrollment data to long format with subgroup column.
 #'
 #' @param df A wide data.frame of processed enrollment data - eg output of `fetch_enr`
-#' @return A long data.frame of tidied enrollment data. Carries a `value_source`
-#'   column: `"published"` for race/gender/total_enrollment subgroups (always a
-#'   real published headcount) and for free_lunch/reduced_lunch/lep/migrant in
-#'   pre-2020 files; `"derived_from_pct"` or `"published_pct_only"` where NJ DOE
-#'   publishes only a percentage and the count is computed as
-#'   `pct / 100 * row_total` (see `fetch_enrollment.R`'s `pct_cols` loop; this
-#'   value is NOT rounded to a whole student). English Learners is labelled
-#'   `"published"` when the workbook carries its count column. The
-#'   `free_reduced_lunch` subgroup inherits the weaker of its two component
-#'   labels since it sums them.
+#' @return A long data frame with `value_source` describing count provenance.
+#'   Published counts use `"published"`. Where a workbook supplies only a
+#'   rate, the count uses `"derived_from_pct"` when the same row's published
+#'   total is available and `"published_pct_only"` otherwise. The
+#'   `free_reduced_lunch` subgroup inherits the weaker of its component
+#'   labels. From 2023, published program counts are
+#'   available by grade for the state and at all grades for districts and
+#'   schools. `published_pct` contains a workbook's published program rate
+#'   or statewide Non-Binary rate as a fraction where available.
+#'   `pct` is the count divided by the row total. The 2024 statewide
+#'   `non_binary` rows carry `value_source = "not_reported"` with `n_students`,
+#'   `pct` and `published_pct` all `NA`: NJ DOE's 2023-24 file printed 0 in
+#'   every Non-Binary cell, a category it did not collect that year.
 #' @export
 tidy_enr <- function(df) {
 
@@ -38,10 +45,11 @@ tidy_enr <- function(df) {
   # Keep only invariants present in df, so callers that did not attach NCES ids
   # (e.g. legacy callers of tidy_enr on a raw frame) still work.
   invariants <- invariants[invariants %in% names(df)]
+  state <- if ("cds_code" %in% names(df)) df$cds_code == "999999999" else FALSE
 
   # cols to tidy
   to_tidy <- c(
-    "male", "female",
+    "male", "female", "non_binary",
     "white", "black", "hispanic",
     "asian", "native_american", "pacific_islander", "multiracial",
     "white_m", "white_f",
@@ -63,15 +71,41 @@ tidy_enr <- function(df) {
   tidy_subgroups <- purrr::map_df(
     to_tidy,
     function(.x) {
-      df %>%
+      statewide_non_binary <- identical(.x, "non_binary")
+      rows <- df
+      source_pct <- NA_real_
+      row_source <- "published"
+      if (statewide_non_binary) {
+        published <- !is.na(df$non_binary)
+        if ("non_binary_value_source" %in% names(df)) {
+          # "not_reported" rows (2024, see .enr_nonbinary_not_reported()) stay
+          # in the output with n_students NA so the gap is visible, not absent.
+          published <- published |
+            df$non_binary_value_source %in% c("published", "not_reported")
+        }
+        if ("non_binary_published_pct" %in% names(df)) {
+          published <- published | !is.na(df$non_binary_published_pct)
+        }
+        rows <- df[which(state & published), , drop = FALSE]
+        if ("non_binary_published_pct" %in% names(rows)) {
+          source_pct <- rows$non_binary_published_pct / 100
+        }
+        if ("non_binary_value_source" %in% names(rows)) {
+          row_source <- dplyr::coalesce(rows$non_binary_value_source, "published")
+        }
+      }
+      rows %>%
         dplyr::rename(n_students = dplyr::all_of(.x)) %>%
         dplyr::select(dplyr::one_of(invariants, "n_students", "row_total")) %>%
         dplyr::mutate(
           subgroup = .x,
           pct = n_students / row_total,
-          value_source = "published"
+          value_source = row_source,
+          published_pct = source_pct,
+          .keep_unobserved = statewide_non_binary
         ) %>%
-        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
+        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source",
+                                   "published_pct", ".keep_unobserved"))
     }
   )
 
@@ -86,58 +120,60 @@ tidy_enr <- function(df) {
     ) %>%
     dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
 
-  # some subgroups are only reported for school totals
-  # just total counts, for extracting total enr, free, reduced, migrant etc
-  total_counts <- df %>%
-    dplyr::filter(program_code == "55") %>%
-    # create free and reduced group
-    #
-    # free + reduced is a two-component total. If either component is unknown
-    # the combined total is UNKNOWN, so it is published as NA. `na.rm = TRUE`
-    # treated a withheld component as a zero, which understated the total when
-    # one component was missing and reported a flat 0 when both were -- a
-    # fabricated headcount for a district the source had declined to report.
-    dplyr::rowwise() %>%
-    dplyr::mutate(
-      free_reduced_lunch = if (anyNA(c(free_lunch, reduced_lunch))) {
-        NA_real_
-      } else {
-        sum(free_lunch, reduced_lunch)
-      }
-    )
+  # Modern State sheets publish grade-level program counts. District and
+  # School sheets publish programs only on their all-grades rows.
+  has_grade_programs <- if ("end_year" %in% names(df)) .enr_has_grade_programs(df$end_year) else FALSE
+  program_rows <- df$program_code == "55" | (has_grade_programs & state & !is.na(df$program_code))
+  program_counts <- df[which(program_rows), , drop = FALSE] %>%
+    # A missing component leaves the combined count unknown.
+    dplyr::mutate(free_reduced_lunch = free_lunch + reduced_lunch)
 
-  total_subgroups <- c("free_lunch", "reduced_lunch", "lep", "migrant", "free_reduced_lunch")
-  total_subgroups <- total_subgroups[total_subgroups %in% names(total_counts)]
+  program_subgroups <- intersect(.enr_program_subgroups, names(program_counts))
+  if (!any(has_grade_programs, na.rm = TRUE)) {
+    program_subgroups <- setdiff(program_subgroups, c("military", "homeless"))
+  }
 
   # iterate over cols to tidy, do calculations
   #
-  # free_lunch/reduced_lunch/lep/migrant carry a per-field "<field>_value_source"
-  # column from fetch_enrollment.R's pct_cols loop for 2020+ files ("derived_from_pct"
-  # or "published_pct_only"). Pre-2020 files never create that column because the
-  # count there is a real published headcount, never derived from a percent --
-  # value_source defaults to "published" whenever the marker is absent.
+  # Program fields carry a per-field "<field>_value_source" column in modern
+  # files. Earlier published counts can omit the marker.
   # free_reduced_lunch has no marker of its own (it is a same-row sum of the two
   # already-labelled components computed above); it inherits the weaker label.
-  tidy_total_subgroups <- purrr::map_df(
-    total_subgroups,
+  tidy_program_subgroups <- purrr::map_df(
+    program_subgroups,
     function(.x) {
       source_col <- paste0(.x, "_value_source")
+      pct_col <- paste0(.x, "_published_pct")
 
-      df_i <- total_counts %>%
+      df_i <- program_counts %>%
         dplyr::rename(n_students = dplyr::all_of(.x))
+      if (.x %in% c("military", "homeless")) {
+        df_i <- dplyr::filter(df_i, .enr_has_grade_programs(end_year))
+      }
+      df_i$published_pct <- if (pct_col %in% names(df_i)) {
+        df_i[[pct_col]] / 100
+      } else {
+        rep(NA_real_, nrow(df_i))
+      }
+      modern_rows <- if ("end_year" %in% names(df_i)) .enr_has_grade_programs(df_i$end_year) else FALSE
+      df_i$.keep_unobserved <- rep(FALSE, nrow(df_i))
 
       if (source_col %in% names(df_i)) {
+        df_i$.keep_unobserved <- modern_rows & df_i[[source_col]] %in% "published"
         df_i <- df_i %>%
           dplyr::rename(value_source = dplyr::all_of(source_col)) %>%
           # The marker is only ever set for rows that went through the
           # pct_cols derivation loop (district/school, 2020+). Rows that
           # never went through it -- the statewide row, bound in separately
-          # from the State worksheet, which publishes these as real counts
-          # with no percentage column at all -- carry NA here, not because
+          # from the State worksheet, which publishes real counts
+          # directly -- carry NA here, not because
           # provenance is unknown but because no derivation was attempted.
           dplyr::mutate(value_source = dplyr::coalesce(value_source, "published"))
       } else if (identical(.x, "free_reduced_lunch") &&
                    all(c("free_lunch_value_source", "reduced_lunch_value_source") %in% names(df_i))) {
+        df_i$.keep_unobserved <- modern_rows &
+          df_i$free_lunch_value_source %in% "published" &
+          df_i$reduced_lunch_value_source %in% "published"
         df_i <- df_i %>%
           dplyr::mutate(
             value_source = dplyr::case_when(
@@ -153,18 +189,28 @@ tidy_enr <- function(df) {
       }
 
       df_i %>%
-        dplyr::select(dplyr::one_of(invariants, "n_students", "row_total", "value_source")) %>%
+        dplyr::select(dplyr::one_of(invariants, "n_students", "row_total", "value_source", "published_pct",
+                                    ".keep_unobserved")) %>%
         dplyr::mutate(
           subgroup = .x,
           pct = n_students / row_total
         ) %>%
-        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source"))
+        dplyr::select(dplyr::one_of(invariants, "subgroup", "n_students", "pct", "value_source", "published_pct",
+                                    ".keep_unobserved"))
     }
   )
 
   # put it all together in a long data frame
-  dplyr::bind_rows(tidy_total_enr, tidy_total_subgroups, tidy_subgroups) %>%
-    dplyr::filter(!is.na(n_students) | !is.na(pct))
+  result <- dplyr::bind_rows(tidy_total_enr, tidy_program_subgroups, tidy_subgroups)
+  if (!"published_pct" %in% names(result)) {
+    result$published_pct <- rep(NA_real_, nrow(result))
+  }
+  if (!".keep_unobserved" %in% names(result)) {
+    result$.keep_unobserved <- rep(FALSE, nrow(result))
+  }
+  result %>%
+    dplyr::filter(!is.na(n_students) | !is.na(pct) | !is.na(published_pct) | .keep_unobserved) %>%
+    dplyr::select(-.keep_unobserved)
 }
 
 
@@ -222,7 +268,14 @@ enr_grade_aggs <- function(df) {
       is_charter_sector, is_allpublic, is_school, is_subprogram
     ) %>%
     dplyr::summarize(
-      n_students = sum(n_students, na.rm = TRUE),
+      # isTRUE()/%in%: an empty group (eg HS for a K-8 district) has NA firsts.
+      n_students = if (dplyr::first(subgroup) %in% "non_binary" ||
+                       (isTRUE(.enr_has_grade_programs(dplyr::first(end_year))) &&
+                        dplyr::first(subgroup) %in% .enr_program_subgroups)) {
+        sum(n_students)
+      } else {
+        sum(n_students, na.rm = TRUE)
+      },
       .groups = "drop"
     )
 

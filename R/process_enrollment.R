@@ -252,6 +252,8 @@ process_enr <- function(df) {
       )
 
       df <- df %>%
+        # Remove the workbook footer before the grade join drops its label.
+        dplyr::filter(is.na(Grade) | Grade != "End of worksheet") %>%
         dplyr::left_join(convert_from_grade, by = "Grade") %>%
         dplyr::select(-Grade)
     }

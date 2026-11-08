@@ -135,6 +135,73 @@ test_that("fetch_enr() wide output carries a per-field value_source for the 2020
   expect_false(is.na(state_row$free_lunch))
 })
 
+test_that("modern enrollment preserves the six published program counts", {
+  raw_names <- c("Free Lunch", "Reduced Lunch", "English Learners", "Migrant", "Military", "Homeless")
+  count_names <- c("free_lunch", "reduced_lunch", "lep", "migrant", "military", "homeless")
+  wide_names <- setdiff(count_names, "military")
+  tidy_names <- c("free_lunch", "reduced_lunch", "lep", "migrant")
+  for (year in 2025:2026) {
+    archive <- system.file(paste0("extdata/program-sources/enrollment-", year, ".zip"),
+                           package = "njschooldata")
+    work <- withr::local_tempdir()
+    workbook <- utils::unzip(archive, exdir = work)
+    raw <- .parse_enr_archive(archive, year)
+    wide <- process_enr(raw)
+    tidy <- tidy_enr(wide)
+
+    for (sheet in c("District", "School")) {
+      # Row 4 is the published Absecon district or Absecon school 050 total.
+      cells <- if (sheet == "District") "AZ4:BK4" else "BB4:BM4"
+      original <- readxl::read_excel(workbook, sheet = sheet, range = cells, col_names = FALSE,
+                                    .name_repair = "minimal")
+      expected <- stats::setNames(unlist(original[seq(1, 11, 2)], use.names = FALSE), count_names)
+      school_code <- if (sheet == "District") "999" else "050"
+      cds_code <- paste0("010010", school_code)
+
+      raw_row <- raw[which(raw$Grade == "All Grades" & raw$`County Code` == "01" &
+                            raw$`District Code` == "0010" & raw$`School Code` == school_code), ]
+      expect_equal(nrow(raw_row), 1L)
+      expect_equal(unlist(raw_row[raw_names], use.names = FALSE), unname(expected))
+      expect_true(all(unlist(raw_row[paste0(raw_names, " Value Source")]) == "published"))
+
+      wide_row <- wide[wide$cds_code == cds_code & wide$grade_level == "TOTAL", ]
+      expect_equal(nrow(wide_row), 1L)
+      expect_equal(unlist(wide_row[wide_names]), expected[wide_names])
+      expect_true(all(unlist(wide_row[paste0(wide_names, "_value_source")]) == "published"))
+
+      tidy_row <- tidy[tidy$cds_code == cds_code & tidy$subgroup %in% tidy_names, ]
+      expect_equal(nrow(tidy_row), length(tidy_names))
+      expect_equal(tidy_row$n_students, unname(expected[tidy_row$subgroup]))
+      expect_true(all(tidy_row$value_source == "published"))
+    }
+  }
+})
+
+test_that("a masked count stays missing while a rate-only worksheet derives counts", {
+  archive <- system.file("extdata/program-sources/enrollment-2025.zip", package = "njschooldata")
+  read_publisher <- readxl::read_excel
+  local_mocked_bindings(read_excel = function(path, sheet, ...) {
+    workbook_sheet <- read_publisher(path, sheet = sheet, ...)
+    # Exercise a count mask and a rate-only layout using publisher rows.
+    if (sheet == "District") {
+      workbook_sheet[["Free Lunch"]][1] <- "*"
+      names(workbook_sheet)[names(workbook_sheet) == "Free Lunch"] <- "Free Lunch "
+    }
+    if (sheet == "School") workbook_sheet[["Free Lunch"]] <- NULL
+    workbook_sheet
+  }, .package = "readxl")
+
+  wide <- process_enr(.parse_enr_archive(archive, 2025))
+  district <- wide[wide$cds_code == "010010999" & wide$grade_level == "TOTAL", ]
+  school <- wide[wide$cds_code == "010010050" & wide$grade_level == "TOTAL", ]
+  expect_equal(nrow(district), 1L)
+  expect_true(is.na(district$free_lunch))
+  expect_identical(district$free_lunch_value_source, "published")
+  expect_equal(nrow(school), 1L)
+  expect_equal(school$free_lunch, 48.2 / 100 * school$row_total)
+  expect_identical(school$free_lunch_value_source, "derived_from_pct")
+})
+
 # -----------------------------------------------------------------------------
 # parcc_perf_level_counts() -- real bundled row, njsla-ela04-2025.xlsx
 # -----------------------------------------------------------------------------

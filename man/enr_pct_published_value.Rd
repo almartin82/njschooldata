@@ -22,8 +22,7 @@ mirrors the suppression handling already applied to graduation data in
 }
 \details{
 Substituting a midpoint (or any other stand-in) for the token would invent
-the percentage, and because these populations are published only as
-percentages, the count derived by multiplying it by total enrollment would
-be an invented headcount presented as an NJ DOE figure.
+the percentage. In years when the count is published only as a percentage,
+multiplying that stand-in by total enrollment would invent a headcount.
 }
 \keyword{internal}

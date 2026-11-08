@@ -17,9 +17,8 @@
 #' [process_grate()].
 #'
 #' Substituting a midpoint (or any other stand-in) for the token would invent
-#' the percentage, and because these populations are published only as
-#' percentages, the count derived by multiplying it by total enrollment would
-#' be an invented headcount presented as an NJ DOE figure.
+#' the percentage. In years when the count is published only as a percentage,
+#' multiplying that stand-in by total enrollment would invent a headcount.
 #'
 #' @param x A percentage column exactly as published.
 #' @return A numeric vector, `NA` wherever NJ DOE censored or omitted the value.
@@ -39,14 +38,18 @@ enr_pct_published_value <- function(x) {
 .normalize_enr_headers <- function(data) {
   data %>%
     dplyr::rename_with(
+      ~ sub("^% +", "%", .)
+    ) %>%
+    dplyr::rename_with(
       ~ dplyr::case_when(
         . == "Pre -K Halfday" ~ "Pre-K Halfday",
         . == "Pre-K FullDay" ~ "Pre-K Fullday",
         . %in% c("Pre-K\r\n Full day", "Pre-K\n Full day") ~ "Pre-K Fullday",
         . == "Pre-K Half Day" ~ "Pre-K Halfday",
         . == "Eight Grade" ~ "Eighth Grade",
+        . == "Free Lunch " ~ "Free Lunch",
         . == "Reduced_Lunch" ~ "Reduced Lunch",
-        . == "% Reduced_Lunch" ~ "%Reduced Lunch",
+        . == "%Reduced_Lunch" ~ "%Reduced Lunch",
         # 2024+ renamed English Learners to Multilingual Learners
         . == "Multilingual Learners" ~ "English Learners",
         . == "%Multilingual Learners" ~ "%English Learners",
@@ -56,6 +59,73 @@ enr_pct_published_value <- function(x) {
         TRUE ~ .
       )
     )
+}
+
+.enr_has_grade_programs <- function(end_year) {
+  end_year >= 2023L
+}
+
+.enr_program_counts <- function(data, derive_from_pct = TRUE, retain_rates = FALSE) {
+  count_cols <- c(
+    "Free Lunch", "Reduced Lunch", "English Learners",
+    "Migrant", "Military", "Homeless"
+  )
+
+  for (count_col in count_cols) {
+    pct_col <- paste0("%", count_col)
+    source_col <- paste0(count_col, " Value Source")
+    if (retain_rates && pct_col %in% names(data)) {
+      data[[paste0(count_col, " Published Percentage")]] <-
+        enr_pct_published_value(data[[pct_col]])
+      # Keep the original token in a consistent type across workbook sheets.
+      data[[pct_col]] <- as.character(data[[pct_col]])
+    }
+    if (count_col %in% names(data)) {
+      # A count column may contain a mask. Keep it unknown even when the
+      # publisher provides a numeric percentage for the same row. An empty
+      # cell (such as the worksheet's "End of worksheet" footer row) is not a
+      # published value, so it carries no provenance label.
+      cell <- trimws(as.character(data[[count_col]]))
+      filled <- !is.na(cell) & nzchar(cell)
+      if (!is.numeric(data[[count_col]])) {
+        count <- gsub(",", "", data[[count_col]], fixed = TRUE)
+        data[[count_col]] <- suppressWarnings(as.numeric(count))
+      }
+      if (derive_from_pct || retain_rates) {
+        data[[source_col]] <- ifelse(filled, "published", NA_character_)
+      }
+    } else if (derive_from_pct && pct_col %in% names(data)) {
+      # Rate-only worksheets can derive counts from their own published total.
+      data[[count_col]] <- enr_pct_published_value(data[[pct_col]]) / 100 *
+        data[["Total Enrollment"]]
+      data[[source_col]] <- ifelse(
+        is.na(data[[count_col]]), "published_pct_only", "derived_from_pct"
+      )
+    }
+  }
+  data
+}
+
+# NJ DOE's 2023-24 file (end_year 2024) prints Non-Binary = 0 in every one of
+# the State worksheet's grade rows, while the 2023 file shows 675 statewide
+# and the 2025 file 633. A zero in every cell is NJ DOE printing zeros for a category it did not
+# collect that year, not a count of zero students, so those cells (and their 0%
+# rates) are served as not reported: NA with value source "not_reported".
+# The rule is deliberately narrow: only 2024, only Non-Binary, and only when
+# every published statewide value is 0. Any other zero is a real published zero.
+.enr_nonbinary_not_reported <- function(enr_state, end_year, published_row) {
+  if (!identical(as.integer(end_year), 2024L)) return(enr_state)
+  counts <- enr_state[["Non-Binary"]][published_row]
+  if (length(counts) == 0L || anyNA(counts) || any(counts != 0)) return(enr_state)
+  rates <- enr_state[["Non-Binary Published Percentage"]]
+  if (!is.null(rates) && any(rates[published_row] != 0, na.rm = TRUE)) return(enr_state)
+
+  enr_state[["Non-Binary"]][published_row] <- NA_real_
+  enr_state[["Non-Binary Value Source"]][published_row] <- "not_reported"
+  if (!is.null(rates)) {
+    enr_state[["Non-Binary Published Percentage"]][published_row] <- NA_real_
+  }
+  enr_state
 }
 
 .enr_grade_count_names <- function(end_year = NULL) {
@@ -289,48 +359,25 @@ enr_pct_published_value <- function(x) {
           `School Name` = "District Total"
         )
 
-      # Combine state, dist, sch df by binding dist and sch and then
-      # pivoting grade level columns long
-      enr_dist_sch <- dplyr::bind_rows(enr_dist, enr_sch)
-
-      # Percentage columns are used to derive counts when the corresponding
-      # count is not published. A companion "<field> Value Source" column
-      # records the result per row so it can survive into `fetch_enr()`'s wide
-      # output and `tidy_enr()`'s long pivot (see get_enr_column_order() and
-      # tidy_enr()): "derived_from_pct" where the arithmetic produced a real
-      # number, "published_pct_only" where it did not, and "published" where
-      # the workbook also carries the count column. English Learners uses the
-      # published count when the workbook provides it.
-      #
-      # NJ DOE censors a percentage above 95 as the token ">95" rather than a
-      # value. A censored cell is UNKNOWN. It stays NA, and the count derived
-      # from it is therefore NA too. Never substitute a midpoint for the token:
-      # the percentage would be invented, and the headcount produced by
-      # multiplying it by enrollment would be an invented headcount published
-      # as though NJ DOE had reported it.
-      pct_cols <- c(
-        "%Free Lunch", "%Reduced Lunch", "%English Learners",
-        "%Migrant", "%Military", "%Homeless"
-      )
-
-      for (pct_col in pct_cols) {
-        if (!pct_col %in% names(enr_dist_sch)) next
-        count_col <- sub("^%", "", pct_col)
-        # Title Case, matching count_col, so clean_enr_names() maps it the
-        # same way as its sibling raw columns (eg "Free Lunch Value Source").
-        source_col <- paste0(count_col, " Value Source")
-
-        if (count_col == "English Learners" && count_col %in% names(enr_dist_sch)) {
-          enr_dist_sch[[source_col]] <- "published"
-        } else {
-          enr_dist_sch[[count_col]] <-
-            enr_pct_published_value(enr_dist_sch[[pct_col]]) / 100 *
-            enr_dist_sch[["Total Enrollment"]]
-          enr_dist_sch[[source_col]] <- ifelse(
-            is.na(enr_dist_sch[[count_col]]), "published_pct_only", "derived_from_pct"
-          )
+      # Resolve counts before binding because each worksheet has its own schema.
+      retain_rates <- .enr_has_grade_programs(end_year)
+      enr_state <- .enr_program_counts(enr_state, derive_from_pct = FALSE,
+                                      retain_rates = retain_rates)
+      if ("Non-Binary" %in% names(enr_state)) {
+        count <- gsub(",", "", enr_state[["Non-Binary"]], fixed = TRUE)
+        enr_state[["Non-Binary"]] <- suppressWarnings(as.numeric(count))
+        published_row <- enr_state$Grade %in% c(.enr_grade_count_names(end_year), "All Grades")
+        enr_state[["Non-Binary Value Source"]] <- ifelse(published_row, "published", NA_character_)
+        if ("%Non-Binary" %in% names(enr_state)) {
+          enr_state[["Non-Binary Published Percentage"]] <-
+            enr_pct_published_value(enr_state[["%Non-Binary"]])
         }
+        enr_state <- .enr_nonbinary_not_reported(enr_state, end_year, published_row)
       }
+      enr_dist_sch <- dplyr::bind_rows(
+        .enr_program_counts(enr_dist, retain_rates = retain_rates),
+        .enr_program_counts(enr_sch, retain_rates = retain_rates)
+      )
 
       # Select only the named enrollment count columns. Percentage columns are
       # interleaved with these columns in recent NJ DOE workbooks.
@@ -476,17 +523,23 @@ get_raw_enr <- function(end_year) {
 #' subgroup (all the enrollment file subgroups), program/grade and measure (row_total, free lunch, etc).
 #' @param use_cache If TRUE, uses the session cache to avoid re-downloading data.
 #' See \code{\link{njsd_cache_info}} for cache details.
-#' @return Data frame with processed enrollment data. From 2020+ files,
-#' `free_lunch`/`reduced_lunch`/`migrant`/`homeless` are computed as
-#' `pct / 100 * row_total` from NJ DOE's published percentage and this
-#' entity/year's own published total enrollment (never rounded to a whole
-#' student). For English Learners, a published count is preserved when the
-#' workbook provides one; otherwise the published percentage is used in the
-#' same calculation. `tidy = TRUE` output carries a `value_source` column
+#' @return Data frame with processed enrollment data. Program counts come
+#' directly from the workbook where the count column exists. A masked count
+#' stays missing. For district and school worksheets with only a percentage,
+#' the count is computed as `pct / 100 * row_total` from the same entity/year's
+#' published total enrollment, without rounding. `tidy = TRUE` output carries a
+#' `value_source` column
 #' (`"published"`, `"derived_from_pct"`, or `"published_pct_only"`; see
 #' \code{\link{tidy_enr}}) and `tidy = FALSE` wide output carries the same
 #' provenance per field as `<field>_value_source` (eg `lep_value_source`).
 #' Pre-2020 files publish these fields as real counts directly (`"published"`).
+#' From 2023, the workbook's program rates are available as percentages in
+#' wide `<field>_published_pct` columns and fractions in tidy `published_pct`.
+#' The statewide Non-Binary count and rate are retained when published.
+#' For 2024 (SY2023-24) NJ DOE printed Non-Binary = 0 in every statewide row,
+#' a category it did not collect that year, so those counts and rates are `NA`
+#' with value source `"not_reported"`.
+#' Tidy `pct` remains the count divided by the row total.
 #' @export
 #' @examples
 #' \dontrun{

@@ -183,28 +183,52 @@ entity, year, grade/test, subgroup). This is arithmetic on two real state number
 mirror of computing a percentage from two published counts, so we keep it, and every such
 row carries a `value_source` column: `"published"` (a real state count), `"derived_from_pct"`
 (this row's own pct times this row's own denominator), or `"published_pct_only"` (NJ DOE
-published only a percentage; the count stays `NA`, never back-filled).
+published only a percentage; the count stays `NA`, never back-filled). Enrollment adds a
+fourth value, `"not_reported"`, for one narrow case (2024 statewide Non-Binary, below).
 
 | Site | Formula | Denominator | Where value_source lives |
 |---|---|---|---|
 | `special_pop.R:45` (`get_reportcard_special_pop()`, exported via `fetch_reportcard_special_pop()`) | `n_students = round(percent / 100 * n_enrolled)` | this entity/year's Report Card total enrollment (`grade_level == "TOTAL"`) | one column per row |
 | `report_card.R:788` (`enrich_rc_enrollment()`) | `n_students = round(percent / 100 * n_enrolled)` | same as above, joined by county/district/school id + end_year | one column per row |
 | `agg_calcs.R:136-140` (`parcc_perf_level_counts()`, exported via `fetch_parcc()`/`fetch_njgpa()`) | `num_l1..num_l5 = round(pct_lN / 100 * number_of_valid_scale_scores)` | this row's own `number_of_valid_scale_scores` | one column per row; retained through `parcc_column_order()` via `dplyr::one_of()` (absent on `parcc_aggregate_calcs()` roll-ups, which are already-derived, not same-cell) |
-| `fetch_enrollment.R:143-146` (`.parse_enr_archive()` `pct_cols` loop, exported via `fetch_enr()`) | `free_lunch`/`reduced_lunch`/`lep`/`migrant`/`military`/`homeless` = `pct / 100 * row_total` (NOT rounded), 2020+ files only | this entity/year's own `Total Enrollment` | wide output: per-field `<field>_value_source` (`free_lunch_value_source`, etc. -- one wide row mixes columns of different provenance, so no single row-level column can describe it); tidy output (`tidy_enr()`): one `value_source` column per subgroup row |
+| `fetch_enrollment.R` (`.enr_program_counts()`, called per worksheet by `.parse_enr_archive()`, exported via `fetch_enr()`) | `free_lunch`/`reduced_lunch`/`lep`/`migrant`/`military`/`homeless` = `pct / 100 * row_total` (NOT rounded), 2020+ District/School worksheets **only where the worksheet prints no count column** for that field | this entity/year's own `Total Enrollment` | wide output: per-field `<field>_value_source` (`free_lunch_value_source`, etc. -- one wide row mixes columns of different provenance, so no single row-level column can describe it); tidy output (`tidy_enr()`): one `value_source` column per subgroup row |
 
-**lep does NOT switch to `"published"` after NJ DOE begins publishing a real Multilingual
-Learners headcount (2024, the SY2023-24 file).** `fetch_enr()`'s `lep` column stays
-`derived_from_pct` for the whole 2020+ range by design -- this pipeline computes it from the
-percentage for its demographic-share workflow regardless of what else the source sheet
-carries that year. [`fetch_ell()`](#valid-filter-values-english-learners) is the function
-that reads NJ DOE's real published count instead; do not duplicate its logic into `fetch_enr()`.
+**A printed count always wins over the rate.** Where a worksheet carries the count column
+for a program field (every field, every worksheet, from 2023 on), `fetch_enr()` serves that
+count as `"published"`, `lep` included. A masked count (`"*"`) stays `NA` with
+`value_source = "published"` even when the same row prints a rate; it is never back-filled
+from the rate. Only a worksheet with no count column for that field derives
+(`"derived_from_pct"` / `"published_pct_only"`).
+
+**`pct` vs `published_pct` (enrollment, 2023+).** Tidy `pct` is always `n_students /
+row_total`, computed. The rate NJ DOE itself printed is kept separately: wide
+`<field>_published_pct` (a percent, 0-100) and tidy `published_pct` (a fraction), for the six
+program fields and statewide Non-Binary. A `">95"` token stays `NA`, never a midpoint. Rows
+where only `published_pct` exists (masked count, printed rate) are kept in tidy output.
+Before 2023 `published_pct` is `NA`. From 2023 the State worksheet's program counts are
+served by grade; District/School program counts stay on the all-grades row only.
+
+**Statewide `non_binary` (tidy subgroup, 2023+).** Served from the State worksheet only
+(District/School print no Non-Binary column), with `published_pct`. **2024 is
+`"not_reported"`:** NJ DOE's SY2023-24 file prints Non-Binary = 0 in all 18 State grade rows
+(2023 statewide 675, 2025 633), zeros for a category it did not collect that year. Andy's
+call (2026-11-08): serve `n_students`, `pct` and `published_pct` as `NA` with
+`value_source = "not_reported"` (wide: `non_binary_value_source`). The rule lives in
+`.enr_nonbinary_not_reported()` and is narrow on purpose: only `end_year` 2024, only
+Non-Binary, only when every published statewide value is 0. Never generalise it into a
+blanket zero-to-NA; any other zero is a real published zero. The `"End of worksheet"`
+footer row is dropped in `process_enr()` before the grade join.
+
+[`fetch_ell()`](#valid-filter-values-english-learners) remains the EL population front door
+(with `value_status` for the 2020-2022 percent-only gap); do not duplicate its logic into
+`fetch_enr()`.
 
 **Pre-2020 enrollment files** publish `free_lunch`/`reduced_lunch`/`lep`/`migrant` as real
 counts directly (no percentage column exists to derive from), so `value_source` there is
-always `"published"`. **The statewide enrollment row** is bound in straight from the State
-worksheet, which publishes these five populations as real counts with no percentage column
-at all -- its per-field `_value_source` marker is genuinely absent (not "unknown"); `tidy_enr()`
-coalesces the missing marker to `"published"` for that row. **`free_reduced_lunch`** (tidy
+always `"published"`. **The statewide enrollment rows** come from the State worksheet,
+which publishes these populations as real counts; the State sheet never derives. Where its
+per-field `_value_source` marker is absent (pre-2023), `tidy_enr()` coalesces it to
+`"published"`; from 2023 the marker is set to `"published"` on every printed cell. **`free_reduced_lunch`** (tidy
 enrollment only) sums two already-labelled components and inherits the weaker of the two
 (`published_pct_only` if either component is, else `derived_from_pct` if either is, else
 `published`) rather than going unlabelled.
@@ -366,14 +390,13 @@ EL **proficiency** (`fetch_access()`, WIDA ACCESS). Tidy by default.
   only `pct_of_enrollment` (0-100) is populated. The **statewide** count is
   published every year, and full counts at every level return from **2023** on.
   **NEVER back-derive the count from the percent** for the gap years.
-- **Source-pipeline trap:** `get_raw_enr()` overwrites the published EL count
-  with `pct * total` for 2020+ (its demographic-share workflow), so the
-  enrollment `lep` subgroup is derived for those years. `fetch_ell()` reads the
+- **Source-pipeline note:** `get_raw_enr()` serves the printed EL count
+  wherever the worksheet carries one (`lep_value_source = "published"`) and
+  derives `pct * total` only for worksheets with no count column (the 2020-2022
+  district/school gap), labelled `"derived_from_pct"`. `fetch_ell()` reads the
   real `English Learners` / `Multilingual Learners` count column directly and
-  must NOT reuse `get_raw_enr()`'s EL value for 2020+. `fetch_enr()`'s own
-  `lep`/`lep_value_source` stays `"derived_from_pct"` for the whole 2020+ range
-  even after NJ DOE starts publishing a real count in 2024 -- see "Derived
-  counts" above.
+  must NOT reuse `get_raw_enr()`'s derived EL value for the gap years -- see
+  "Derived counts" above.
 - **No suppression:** NJ does not suppress EL counts; `n_students_lower` ==
   `n_students_upper` == `n_students` wherever a count exists. Fractional `.5`
   values are real shared-time/vocational FTE, preserved as published.

@@ -221,7 +221,16 @@ clean_enr_names <- function(df) {
     "English Learners Value Source" = "lep_value_source",
     "Migrant Value Source" = "migrant_value_source",
     "Military Value Source" = "military_value_source",
-    "Homeless Value Source" = "homeless_value_source"
+    "Homeless Value Source" = "homeless_value_source",
+    "Non-Binary Value Source" = "non_binary_value_source",
+
+    "Free Lunch Published Percentage" = "free_lunch_published_pct",
+    "Reduced Lunch Published Percentage" = "reduced_lunch_published_pct",
+    "English Learners Published Percentage" = "lep_published_pct",
+    "Migrant Published Percentage" = "migrant_published_pct",
+    "Military Published Percentage" = "military_published_pct",
+    "Homeless Published Percentage" = "homeless_published_pct",
+    "Non-Binary Published Percentage" = "non_binary_published_pct"
   )
 
   names(df) <- purrr::map_chr(names(df), ~clean_name(.x, clean))
@@ -284,7 +293,15 @@ get_enr_types <- function() {
     "lep_value_source" = "character",
     "migrant_value_source" = "character",
     "military_value_source" = "character",
-    "homeless_value_source" = "character"
+    "homeless_value_source" = "character",
+    "non_binary_value_source" = "character",
+    "free_lunch_published_pct" = "numeric",
+    "reduced_lunch_published_pct" = "numeric",
+    "lep_published_pct" = "numeric",
+    "migrant_published_pct" = "numeric",
+    "military_published_pct" = "numeric",
+    "homeless_published_pct" = "numeric",
+    "non_binary_published_pct" = "numeric"
   )
 }
 
@@ -300,7 +317,7 @@ get_enr_column_order <- function() {
     "district_id", "district_name",
     "school_id", "school_name",
     "program_code", "program_name",
-    "male", "female",
+    "male", "female", "non_binary",
     "white", "black", "hispanic",
     "asian", "native_american", "pacific_islander", "multiracial",
     "white_m", "white_f",
@@ -312,13 +329,17 @@ get_enr_column_order <- function() {
     "multiracial_m", "multiracial_f",
     "row_total",
     "free_lunch", "reduced_lunch", "lep", "migrant",
-    "homeless", "special_ed", "title_1", "grade_level",
+    "homeless", "special_ed", "title_1", "grade_level", "military",
     # value_source columns for the derived populations above (2020+ only;
     # absent, via dplyr::any_of() in arrange_enr(), for pre-2020 files where
     # these are real published counts, never derived from a percent). Kept
     # per-field because a single wide row mixes columns of different
     # provenance; see fetch_enrollment.R's pct_cols loop.
     "free_lunch_value_source", "reduced_lunch_value_source",
-    "lep_value_source", "migrant_value_source", "homeless_value_source"
+    "lep_value_source", "migrant_value_source", "homeless_value_source",
+    "military_value_source", "non_binary_value_source",
+    "free_lunch_published_pct", "reduced_lunch_published_pct",
+    "lep_published_pct", "migrant_published_pct", "military_published_pct",
+    "homeless_published_pct", "non_binary_published_pct"
   )
 }

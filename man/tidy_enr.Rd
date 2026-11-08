@@ -10,16 +10,19 @@ tidy_enr(df)
 \item{df}{A wide data.frame of processed enrollment data - eg output of `fetch_enr`}
 }
 \value{
-A long data.frame of tidied enrollment data. Carries a `value_source`
-  column: `"published"` for race/gender/total_enrollment subgroups (always a
-  real published headcount) and for free_lunch/reduced_lunch/lep/migrant in
-  pre-2020 files; `"derived_from_pct"` or `"published_pct_only"` where NJ DOE
-  publishes only a percentage and the count is computed as
-  `pct / 100 * row_total` (see `fetch_enrollment.R`'s `pct_cols` loop; this
-  value is NOT rounded to a whole student). English Learners is labelled
-  `"published"` when the workbook carries its count column. The
-  `free_reduced_lunch` subgroup inherits the weaker of its two component
-  labels since it sums them.
+A long data frame with `value_source` describing count provenance.
+  Published counts use `"published"`. Where a workbook supplies only a
+  rate, the count uses `"derived_from_pct"` when the same row's published
+  total is available and `"published_pct_only"` otherwise. The
+  `free_reduced_lunch` subgroup inherits the weaker of its component
+  labels. From 2023, published program counts are
+  available by grade for the state and at all grades for districts and
+  schools. `published_pct` contains a workbook's published program rate
+  or statewide Non-Binary rate as a fraction where available.
+  `pct` is the count divided by the row total. The 2024 statewide
+  `non_binary` rows carry `value_source = "not_reported"` with `n_students`,
+  `pct` and `published_pct` all `NA`: NJ DOE's 2023-24 file printed 0 in
+  every Non-Binary cell, a category it did not collect that year.
 }
 \description{
 Transforms wide enrollment data to long format with subgroup column.
