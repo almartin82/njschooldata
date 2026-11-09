@@ -386,6 +386,14 @@ njsd_workbook_cache_dir <- function() {
   njsd_cache_subdir("spr-workbooks")
 }
 
+# Whether downloaded workbooks (SPR databases, SPED placement workbooks) are
+# kept on disk: on unless options(njschooldata.workbook_cache = FALSE) or the
+# session cache is off (njsd_cache_enable(FALSE)).
+njsd_workbook_cache_on <- function() {
+  isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
+    njsd_cache_enabled()
+}
+
 #' Is a file a real .xlsx (ZIP) rather than an HTTP error / bot page?
 #'
 #' \code{.xlsx} files are ZIP archives and begin with the bytes \code{PK}
@@ -427,8 +435,7 @@ spr_cached_workbook_result <- function(end_year, level,
                                        request_fn = .default_source_request) {
   url <- get_spr_url(end_year, level)  # also validates end_year / level
 
-  use_cache <- isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
-    njsd_cache_enabled()
+  use_cache <- njsd_workbook_cache_on()
 
   if (use_cache) {
     # Unversioned year/level files predate acquisition sidecars. Keep those

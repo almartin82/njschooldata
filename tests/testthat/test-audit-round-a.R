@@ -155,7 +155,8 @@ test_that("cached bytes, metadata and active acquisition are never silently repl
 
 test_that("actual transport outage and invalid workbook propagate through cohorts", {
   env <- new.env(parent = environment(fetch_spr_grad_cohort))
-  for (name in c("fetch_spr_grad_cohort", "fetch_spr_data", "spr_cached_workbook_result")) {
+  for (name in c("fetch_spr_grad_cohort", "fetch_spr_data", "spr_cached_workbook_result",
+                  "njsd_workbook_cache_on")) {
     f <- get(name, envir = env); environment(f) <- env; assign(name, f, envir = env)
   }
   env$cache_get <- function(...) NULL

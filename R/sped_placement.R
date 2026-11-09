@@ -426,8 +426,7 @@ sped_placement_cached_workbook <- function(end_year,
     url <- build_sped_placement_url(end_year)
   }
 
-  use_cache <- isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
-    njsd_cache_enabled()
+  use_cache <- njsd_workbook_cache_on()
   # A file held in the package's release assets is read from there, verified,
   # never from the unverified disk cache and never from nj.gov.
   if (!is.null(.nj_release_lookup(url))) use_cache <- FALSE
