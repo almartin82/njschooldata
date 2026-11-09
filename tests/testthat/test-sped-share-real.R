@@ -15,6 +15,7 @@ share <- local({
 share_bands <- c("elementary", "middle", "high")
 
 test_that("a band equals the sum of its OPRA grade cells read straight from the workbook", {
+  local_nj_offline_transport()
   raw <- get_raw_sped_by_grade(2025)
   row <- raw[raw[["District Code"]] == "1799", ]
   cell <- function(cols) sum(as.numeric(unlist(row[cols])), na.rm = TRUE)
@@ -29,6 +30,7 @@ test_that("a band equals the sum of its OPRA grade cells read straight from the 
 })
 
 test_that("unsuppressed OPRA grade cells reconcile to the IDEA child count", {
+  local_nj_offline_transport()
   for (y in 2023:2025) {
     x <- share(y)
     g <- suppressWarnings(fetch_sped_by_grade(y))
@@ -54,6 +56,7 @@ test_that("unsuppressed OPRA grade cells reconcile to the IDEA child count", {
 })
 
 test_that("a band with a suppressed grade cell is NA with published limits, never a floor or zero", {
+  local_nj_offline_transport()
   # 2022-23: one kindergarten-to-grade-5 cell for this LEA is suppressed (1 to 4).
   raw <- suppressWarnings(fetch_sped_by_grade(2023))
   cells <- raw[raw$district_id == "1799" & raw$grade_level %in% c("K", sprintf("%02d", 1:5)), ]
@@ -72,6 +75,7 @@ test_that("a band with a suppressed grade cell is NA with published limits, neve
 })
 
 test_that("counts never exceed enrollment and published rates agree with their counts", {
+  local_nj_offline_transport()
   for (y in share_years) {
     x <- share(y)
     both <- !is.na(x$n_sped) & !is.na(x$n_enrolled)
@@ -83,6 +87,7 @@ test_that("counts never exceed enrollment and published rates agree with their c
 })
 
 test_that("PK is left out of every band and Pre-K enrollment does not enter a denominator", {
+  local_nj_offline_transport()
   x <- share(2025)
   enr <- fetch_enr(2025)
   d <- enr[enr$district_id %in% "1799" & enr$school_id == "999", ]
@@ -92,6 +97,7 @@ test_that("PK is left out of every band and Pre-K enrollment does not enter a de
 })
 
 test_that("charter is the county-80 sector plus the Camden renaissance operators", {
+  local_nj_offline_transport()
   x <- share(2025)
   flag <- function(id) unique(x$is_charter[x$district_id %in% id & x$entity_level == "district"])
   expect_true(flag("1799"))   # renaissance operator in county 07
@@ -109,6 +115,7 @@ test_that("charter is the county-80 sector plus the Camden renaissance operators
 })
 
 test_that("two real rows go through sped_all_vs_all", {
+  local_nj_offline_transport()
   x <- share(2025)
   focal <- data.frame(district_id = "1799", school_id = NA_character_)
   comp <- data.frame(district_id = "3570", school_id = NA_character_)
@@ -122,6 +129,7 @@ test_that("two real rows go through sped_all_vs_all", {
 })
 
 test_that("finest grain by default is the district, with band rows; the state row is published", {
+  local_nj_offline_transport()
   for (y in share_years) {
     x <- share(y)
     expect_false(any(x$entity_level == "school"))
@@ -133,11 +141,13 @@ test_that("finest grain by default is the district, with band rows; the state ro
 })
 
 test_that("2025-26 warns that the OPRA counts look incomplete and carries no IDEA row", {
+  local_nj_offline_transport()
   expect_warning(fetch_sped_share(2026), "incomplete")
   expect_false("all" %in% share(2026)$grade_band)
 })
 
 test_that("years and bases are validated", {
+  local_nj_offline_transport()
   expect_error(fetch_sped_share(2022), "not a valid end_year")
   expect_error(fetch_sped_share(2026, basis = "school_report"), "not a valid end_year")
   expect_equal(get_available_years("sped_share"), 2023:2026)

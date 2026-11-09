@@ -1,4 +1,5 @@
 test_that("public enrollment fetch keeps each modern published program cell at its workbook grain", {
+  local_nj_offline_transport()
   programs <- c(free_lunch = "Free Lunch", reduced_lunch = "Reduced Lunch",
                 lep = "Multilingual Learners", migrant = "Migrant",
                 military = "Military", homeless = "Homeless")
@@ -60,6 +61,7 @@ test_that("public enrollment fetch keeps each modern published program cell at i
 })
 
 test_that("a modern masked program count or rate stays missing", {
+  local_nj_offline_transport()
   archive <- system.file("extdata/program-sources/enrollment-2025.zip", package = "njschooldata")
   read_publisher <- readxl::read_excel
   testthat::local_mocked_bindings(read_excel = function(path, sheet, ...) {

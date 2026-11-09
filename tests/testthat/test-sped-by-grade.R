@@ -7,6 +7,7 @@
 }
 
 test_that("fetch_sped_by_grade keeps every released count for every year", {
+  local_nj_offline_transport()
   book <- .sped_grade_workbook()
   grades <- names(njschooldata:::.SPED_GRADE_LEVELS)
   for (year in 2022:2025) {
@@ -23,6 +24,7 @@ test_that("fetch_sped_by_grade keeps every released count for every year", {
 })
 
 test_that("suppressed cells are NA, never zero, and blanks have no row", {
+  local_nj_offline_transport()
   d <- fetch_sped_by_grade(2022)
   absecon <- d[d$district_id == "0010" & d$county_id == "01", ]
   grade1 <- absecon[absecon$grade_level == "01", ]
@@ -34,6 +36,7 @@ test_that("suppressed cells are NA, never zero, and blanks have no row", {
 })
 
 test_that("ids keep their leading zeros and charters are county 80", {
+  local_nj_offline_transport()
   d <- fetch_sped_by_grade(2025)
   expect_true(all(nchar(d$district_id) == 4L))
   expect_true(all(nchar(d$county_id) == 2L))
@@ -43,6 +46,7 @@ test_that("ids keep their leading zeros and charters are county 80", {
 })
 
 test_that("OPRA totals agree with NJDOE's published classification file", {
+  local_nj_offline_transport()
   opra <- fetch_sped_by_grade(2025) %>%
     dplyr::group_by(county_id, district_id) %>%
     dplyr::summarise(total = sum(n_students), any_suppressed = any(suppressed),
@@ -58,12 +62,14 @@ test_that("OPRA totals agree with NJDOE's published classification file", {
 })
 
 test_that("2025-26 warns that it looks incomplete and returns released values", {
+  local_nj_offline_transport()
   expect_warning(d <- fetch_sped_by_grade(2026), "incomplete")
   expect_gt(nrow(d), 0)
   expect_silent(fetch_sped_by_grade(2025))
 })
 
 test_that("invalid years and tampered bytes stop", {
+  local_nj_offline_transport()
   expect_error(fetch_sped_by_grade(2021), "not a valid")
   expect_error(fetch_sped_by_grade(2027), "not a valid")
   local_mocked_bindings(.source_digest = function(...) "tampered",
@@ -72,6 +78,7 @@ test_that("invalid years and tampered bytes stop", {
 })
 
 test_that("source records name the OPRA response", {
+  local_nj_offline_transport()
   records <- get_source_results(fetch_sped_by_grade(2024))
   expect_identical(records$source_status, "actual")
   expect_identical(records$domain, "sped_by_grade")

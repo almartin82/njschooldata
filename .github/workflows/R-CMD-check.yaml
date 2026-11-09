@@ -40,11 +40,27 @@ jobs:
           needs: check
           dependencies: '"hard"'
 
-      - uses: r-lib/actions/check-r-package@v2
-        with:
-          upload-snapshots: true
-          args: 'c("--no-manual", "--no-vignettes", "--ignore-vignettes", "--no-build-vignettes")'
-          build_args: 'c("--no-manual", "--no-build-vignettes")'
-          error-on: '"error"'
+      # GitHub's Ubuntu VM is disposable. The userns profile is required on
+      # Ubuntu 24.04 for rootless bubblewrap; the boundary fails closed.
+      - name: Prepare no-egress boundary
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          if command -v apparmor_parser >/dev/null 2>&1; then
+            printf '%s\n' 'abi <abi/4.0>,' 'include <tunables/global>' 'profile bwrap /usr/bin/bwrap flags=(unconfined) {' '  userns,' '  include if exists <local/bwrap>' '}' | sudo tee /etc/apparmor.d/bwrap >/dev/null
+            sudo apparmor_parser -r /etc/apparmor.d/bwrap
+          fi
+
+      - name: Check package inside the no-egress boundary
+        run: |
+          tools/ci/run_no_egress.sh -- Rscript -e 'rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-vignettes", "--ignore-vignettes", "--no-build-vignettes"), build_args = c("--no-manual", "--no-build-vignettes"), error_on = "error", check_dir = "check")'
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
+
+      - name: Upload check diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-cmd-check-diagnostics
+          path: check/
+          if-no-files-found: ignore

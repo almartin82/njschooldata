@@ -1,4 +1,5 @@
 test_that("SPR extracts retain source lineage and complete row counts", {
+  local_nj_offline_transport()
   path <- system.file("extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json",
                       package = "njschooldata")
   artifacts <- jsonlite::read_json(path)$artifacts
@@ -20,6 +21,7 @@ test_that("SPR extracts retain source lineage and complete row counts", {
 })
 
 test_that("each SPR extract stops on same-size tampering, truncation or absence", {
+  local_nj_offline_transport()
   manifest <- system.file("extdata/source-contract/contracts/new_jersey_shipped_sources/artifact-manifest.json",
                           package = "njschooldata")
   artifacts <- jsonlite::read_json(manifest)$artifacts

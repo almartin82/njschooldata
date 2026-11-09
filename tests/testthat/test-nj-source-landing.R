@@ -1,4 +1,5 @@
 test_that("persistence preserves the published school cell and cohort definition", {
+  local_nj_offline_transport()
   x <- fetch_stability(2025)
   row <- subset(x, district_id == "0680" & school_id == "030" &
                   student_group == "Students with Disabilities" & measure == "HS Persistence")
@@ -12,6 +13,7 @@ test_that("persistence preserves the published school cell and cohort definition
 })
 
 test_that("current cohort and accountability persistence keep their own periods", {
+  local_nj_offline_transport()
   a <- fetch_stability(2024)
   r <- subset(a, district_id == "0680" & school_id == "030" &
                student_group == "Students with Disabilities")
@@ -31,6 +33,7 @@ test_that("current cohort and accountability persistence keep their own periods"
 })
 
 test_that("profile 5C uses school year and published rates rather than component sums", {
+  local_nj_offline_transport()
   expected <- list(c(8.11, 90, 1110, 3.48, 201, 5771),
                    c(10.35, 104, 1005, 3.29, 192, 5836),
                    c(8.98, 103, 1147, 2.74, 164, 5995))
@@ -53,6 +56,7 @@ test_that("profile 5C uses school year and published rates rather than component
 })
 
 test_that("bundle tampering and missing bytes stop before any live fallback", {
+  local_nj_offline_transport()
   path <- system.file("extdata", "program-sources", "environment-5c.csv",
                        package = "njschooldata")
   bytes <- readBin(path, "raw", n = file.info(path)$size)
@@ -71,6 +75,7 @@ test_that("bundle tampering and missing bytes stop before any live fallback", {
 })
 
 test_that("unpublished years are explicit gaps and coverage includes the new families", {
+  local_nj_offline_transport()
   expect_equal(get_available_years("stability"), 2024:2025)
   expect_equal(get_available_years("sped_environment"), 2023:2025)
   expect_error(fetch_stability(2023), "published bundled")
@@ -80,6 +85,7 @@ test_that("unpublished years are explicit gaps and coverage includes the new fam
 })
 
 test_that("the default remains the bundled LEA IDEA basis", {
+  local_nj_offline_transport()
   x <- fetch_sped_share(2025)
   row <- subset(x, district_id == "3570" & grade_band == "all")
   expect_equal(row$n_sped, 6795)
@@ -88,6 +94,7 @@ test_that("the default remains the bundled LEA IDEA basis", {
 })
 
 test_that("school SPR rates remain rates with source rounding bounds", {
+  local_nj_offline_transport()
   # EnrollmentTrendsByStudentGroup L2487:L2489, Camden HS.
   for (y in 2023:2025) {
     x <- fetch_sped_share(y, basis = "school_spr")

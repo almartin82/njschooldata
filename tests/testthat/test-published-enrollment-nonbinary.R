@@ -1,4 +1,5 @@
 test_that("enrollment keeps the published statewide Non-Binary count and rate", {
+  local_nj_offline_transport()
   codes <- c("PH", "PF", "KH", "KF", sprintf("%02d", 1:12), "55")
   withr::local_options(njschooldata.cache_dir = withr::local_tempdir())
 
@@ -50,6 +51,7 @@ test_that("enrollment keeps the published statewide Non-Binary count and rate", 
 })
 
 test_that("a masked statewide Non-Binary count stays missing and its published rate is independent", {
+  local_nj_offline_transport()
   archive <- system.file("extdata/program-sources/enrollment-2025.zip", package = "njschooldata")
   read_publisher <- readxl::read_excel
   testthat::local_mocked_bindings(read_excel = function(path, sheet, ...) {
@@ -76,6 +78,7 @@ test_that("a masked statewide Non-Binary count stays missing and its published r
 })
 
 test_that("the 2024 not-reported rule is narrow: a real nonzero 2024 cell stays published", {
+  local_nj_offline_transport()
   archive <- system.file("extdata/program-sources/enrollment-2024.zip", package = "njschooldata")
   read_publisher <- readxl::read_excel
   testthat::local_mocked_bindings(read_excel = function(path, sheet, ...) {

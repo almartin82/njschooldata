@@ -1,3 +1,41 @@
+retained_source_blocks_are_guarded <- function(text) {
+  expressions <- tryCatch(parse(text = text, keep.source = FALSE), error = function(e) NULL)
+  if (is.null(expressions)) return(FALSE)
+  is_test <- function(x) is.call(x) && identical(x[[1L]], as.name("test_that"))
+  tests <- Filter(is_test, as.list(expressions))
+  if (!length(tests)) return(FALSE)
+  first_call <- function(test) {
+    if (length(test) < 3L || !is.call(test[[3L]]) ||
+        !identical(test[[3L]][[1L]], as.name("{")) || length(test[[3L]]) < 2L) return(NULL)
+    test[[3L]][[2L]]
+  }
+  guarded <- vapply(tests, function(test) {
+    first <- first_call(test)
+    if (!is.call(first)) return(FALSE)
+    if (identical(first[[1L]], as.name("local_nj_offline_transport")) && length(first) == 1L) return(TRUE)
+    identical(first, quote(testthat::skip_if_not(live_tests_enabled(), "Explicit live-source opt-in required")))
+  }, logical(1))
+  if (!all(guarded)) return(FALSE)
+  # Sourcing the file may evaluate only simple, non-transporting construction.
+  # Reject unknown calls, including indirect helper calls, rather than assuming
+  # an unrecognized helper cannot reach a source before its test guard runs.
+  # Function bodies and test blocks are deferred and are not evaluated here.
+  dangerous <- function(x) {
+    if (!is.call(x)) return(FALSE)
+    if (identical(x[[1L]], as.name("function")) || is_test(x)) return(FALSE)
+    head <- paste(deparse(x[[1L]]), collapse = "")
+    safe <- c("{", "(", "<-", "=", ":", "c", "list", "local")
+    if (!head %in% safe) return(TRUE)
+    # A file cannot replace one of these constructors with a network helper
+    # and then call it while still looking syntactically harmless.
+    protected <- c(safe, "local_nj_offline_transport", "live_tests_enabled", "test_that")
+    if (head %in% c("<-", "=") && length(x) >= 2L &&
+        is.symbol(x[[2L]]) && as.character(x[[2L]]) %in% protected) return(TRUE)
+    any(vapply(as.list(x)[-1L], dangerous, logical(1)))
+  }
+  !any(vapply(as.list(expressions), dangerous, logical(1)))
+}
+
 test_that("network-bearing R tests are explicitly gated", {
   test_dir <- testthat::test_path()
   files <- list.files(test_dir, pattern = "^test.*[.]R$", full.names = TRUE)
@@ -53,9 +91,37 @@ test_that("network-bearing R tests are explicitly gated", {
     bears_network <- any(grepl(network_pattern, lines, perl = TRUE))
     gated <- startsWith(basename(path), "test-live-") ||
       any(grepl("skip_if_no_live_tests[(]", lines, fixed = FALSE)) ||
+      retained_source_blocks_are_guarded(lines) ||
       basename(path) %in% c(offline_contracts, "test-test-inventory.R")
     bears_network && !gated
   }, logical(1))
 
   expect_length(basename(files[offenders]), 0)
+})
+
+test_that("retained-source guard classification requires an executable guard in every block", {
+  guard <- 'local_nj_offline_transport()'
+  expect_true(retained_source_blocks_are_guarded(paste0('test_that("x", {', guard, '; fetch_enr(2025)})')))
+  expect_false(retained_source_blocks_are_guarded(paste0('test_that("x", {', guard, '; fetch_enr(2025)}); test_that("y", {fetch_enr(2026)})')))
+  expect_false(retained_source_blocks_are_guarded(paste0('fetch_enr(2025); test_that("x", {', guard, '})')))
+  expect_false(retained_source_blocks_are_guarded(paste0('load_source <- function() fetch_enr(2025); load_source(); test_that("x", {', guard, '})')))
+  expect_false(retained_source_blocks_are_guarded(paste0('c <- fetch_enr; c(2025); test_that("x", {', guard, '})')))
+  expect_false(retained_source_blocks_are_guarded(paste0('local_nj_offline_transport <- function() NULL; test_that("x", {', guard, '; fetch_enr(2025)})')))
+  expect_false(retained_source_blocks_are_guarded('test_that("x", {if (FALSE) local_nj_offline_transport(); fetch_enr(2025)})'))
+})
+
+test_that("retained-source transport guard fails closed", {
+  local_nj_offline_transport()
+  expect_error(njschooldata:::.default_source_request("https://www.nj.gov/", tempfile(), 1),
+               "Unexpected network transport")
+  expect_error(downloader::download("https://www.nj.gov/", tempfile()), "Unexpected network transport")
+  expect_error(httr::GET("https://www.nj.gov/"), "Unexpected network transport")
+  expect_error(utils::download.file("https://www.nj.gov/", tempfile()), "Unexpected network transport")
+  expect_error(curl::curl_fetch_memory("https://www.nj.gov/"), "Unexpected network transport")
+  expect_error(curl::curl_fetch_stream("https://www.nj.gov/", identity), "Unexpected network transport")
+  expect_error(curl::curl("https://www.nj.gov/"), "Unexpected network transport")
+  expect_error(curl::curl_download("https://www.nj.gov/", tempfile()), "Unexpected network transport")
+  expect_error(curl::multi_run(), "Unexpected network transport")
+  expect_error(base::url("https://www.nj.gov/"), "Unexpected network transport")
+  expect_error(base::socketConnection("www.nj.gov", 443), "Unexpected network transport")
 })
