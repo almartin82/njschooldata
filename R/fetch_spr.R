@@ -113,6 +113,29 @@ clean_spr_subgroups <- function(group) {
 # Generic SPR Data Extractor
 # -----------------------------------------------------------------------------
 
+# Read one sheet of a local SPR workbook and snake-case its column names. The
+# one place that knows the workbook layout: the 2024-25 (end_year 2025)
+# redesign moved the column headers down (row 1 holds a metadata note, rows
+# 2-3 hold sheet/source notes, the real header row is row 4), so 2025+ skips
+# three preamble rows; earlier years keep headers on row 1. A sheet the
+# workbook does not publish stops with the list of sheets it does.
+.read_spr_sheet <- function(path, sheet_name, end_year) {
+  header_skip <- if (end_year >= 2025) 3 else 0
+
+  available_sheets <- readxl::excel_sheets(path)
+  if (!sheet_name %in% available_sheets) {
+    stop(paste0("Sheet '", sheet_name, "' not found in ", end_year,
+                " SPR database. Available sheets: ",
+                paste(available_sheets, collapse = ", ")), call. = FALSE)
+  }
+  df <- readxl::read_excel(
+    path = path, sheet = sheet_name, skip = header_skip,
+    na = c("*", "N", "NA", "", "-"), guess_max = 10000
+  )
+  names(df) <- clean_name_vector(names(df))
+  df
+}
+
 #' Fetch SPR Data
 #'
 #' Downloads and extracts data from NJ School Performance Reports database.
@@ -165,28 +188,9 @@ fetch_spr_data <- function(sheet_name, end_year, level = "school",
   on.exit(.release_source_result(source_result), add = TRUE)
   tname <- source_result_data(source_result)
 
-  # The 2024-25 (end_year 2025) redesign moved the column headers down: row 1
-  # holds a metadata note, rows 2-3 hold sheet/source notes, and the real header
-  # row is row 4. Skip the three preamble rows for 2025+. Earlier years keep
-  # headers on row 1 (no skip).
-  header_skip <- if (end_year >= 2025) 3 else 0
-
-  # Read specific sheet
-  available_sheets <- readxl::excel_sheets(tname)
-  if (!sheet_name %in% available_sheets) {
-    stop(paste0("Sheet '", sheet_name, "' not found in ", end_year,
-                " SPR database. Available sheets: ",
-                paste(available_sheets, collapse = ", ")), call. = FALSE)
-  }
-  df <- readxl::read_excel(
-    path = tname, sheet = sheet_name, skip = header_skip,
-    na = c("*", "N", "NA", "", "-"), guess_max = 10000
-  )
-
-  # Clean column names FIRST
   # School files have: CountyCode, CountyName, DistrictCode, DistrictName, SchoolCode, SchoolName, StudentGroup
   # District files have: CountyCode, CountyName, DistrictCode, DistrictName, StudentGroup
-  names(df) <- clean_name_vector(names(df))
+  df <- .read_spr_sheet(tname, sheet_name, end_year)
 
   # The 2016-17 measures identify entities only by CDS code. Their names are
   # printed separately in the same workbook's header sheet.
@@ -3004,20 +3008,7 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
   on.exit(.release_source_result(source_result), add = TRUE)
   tname <- source_result_data(source_result)
 
-  header_skip <- if (end_year >= 2025) 3 else 0
-
-  available_sheets <- readxl::excel_sheets(tname)
-  if (!sheet_name %in% available_sheets) {
-    stop(paste0("Sheet '", sheet_name, "' not found in ", end_year,
-                " SPR database. Available sheets: ",
-                paste(available_sheets, collapse = ", ")), call. = FALSE)
-  }
-  df <- readxl::read_excel(
-    path = tname, sheet = sheet_name, skip = header_skip,
-    na = c("*", "N", "NA", "", "-"), guess_max = 10000
-  )
-
-  names(df) <- clean_name_vector(names(df))
+  df <- .read_spr_sheet(tname, sheet_name, end_year)
   df$end_year <- end_year
 
   cache_set(cache_key, df)
