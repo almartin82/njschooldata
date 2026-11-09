@@ -179,3 +179,33 @@ test_that("no store function signals a process", {
     expect_false(grepl("pskill|\\bkill(all)?\\b|\\bpkill\\b|\\bsignal\\s*=", text), info = n)
   }
 })
+
+# The source store and the processed-results store (processed-v1) have
+# separate budgets. The source store's is 3 GiB unless
+# STATE_SCHOOLDATA_HISTORICAL_CAPACITY_BYTES or a persisted capacity.rds says
+# otherwise; processed-v1 bytes beside it never count against it.
+test_that("the source store defaults to 3 GiB; the env var, then capacity.rds, override it", {
+  root <- store_root()
+  withr::local_envvar(STATE_SCHOOLDATA_HISTORICAL_CAPACITY_BYTES = NA,
+                      STATE_SCHOOLDATA_PROCESSED_CAPACITY_BYTES = "1")
+  expect_identical(.historical_capacity(root), 3 * 2^30)
+  .historical_atomic_rds(5000, file.path(root, "capacity.rds"))
+  expect_identical(.historical_capacity(root), 5000)
+  withr::local_envvar(STATE_SCHOOLDATA_HISTORICAL_CAPACITY_BYTES = "7000")
+  expect_identical(.historical_capacity(root), 7000)
+})
+
+test_that("a source reservation counts source bytes only, never processed-v1 beside it", {
+  shared <- file.path(withr::local_tempdir(), "state-schooldata")
+  root <- file.path(shared, "historical-assets-v1")
+  .historical_store(root, TRUE)
+  processed <- file.path(shared, "processed-v1", "zzschooldata", "data")
+  dir.create(processed, recursive = TRUE)
+  writeBin(as.raw(rep(1L, 50000)), file.path(processed, "big.rds"))
+  withr::local_envvar(STATE_SCHOOLDATA_HISTORICAL_CAPACITY_BYTES = "2000")
+  expect_identical(.historical_used(root), 0)
+  expect_no_error(.historical_room(root, character(), 1500, 0))
+  expect_identical(
+    historical_with_reserved_workspace(numeric(), 1500, function(w) "ran", root = root), "ran")
+  expect_true(file.exists(file.path(processed, "big.rds")))
+})

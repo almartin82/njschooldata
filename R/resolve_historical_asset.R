@@ -322,7 +322,7 @@ historical_identity <- function(selection) {
   } else if (file.exists(file.path(root, "capacity.rds"))) {
     if (.historical_symlink(file.path(root, "capacity.rds"))) .historical_error("store", "Unsafe capacity setting")
     value <- readRDS(file.path(root, "capacity.rds"))
-  } else value <- 2^31
+  } else value <- 3 * 2^30  # 3 GiB; processed-v1 has its own, separate budget
   if (!.historical_number(value, 1)) .historical_error("capacity", "Historical capacity must be a positive byte count")
   value
 }
