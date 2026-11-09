@@ -398,7 +398,7 @@ enumerate_sped_placement_files <- function(end_year) {
 #' @return absolute path to the cache directory (created lazily on use)
 #' @keywords internal
 sped_placement_cache_dir <- function() {
-  file.path(njsd_cache_root(), "sped-placement")
+  njsd_cache_subdir("sped-placement")
 }
 
 

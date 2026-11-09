@@ -285,9 +285,10 @@ njsd_cache_remove <- function(key) {
 # On-Disk Cache Root
 # -----------------------------------------------------------------------------
 #
-# Every on-disk cache njschooldata keeps -- SPR workbooks, SPED placement
-# workbooks, facilities source snapshots -- hangs off this one resolver, so
-# there is exactly one place that decides where the package writes.
+# Every on-disk cache njschooldata keeps hangs off this one resolver, and each
+# folder under it is named once, in .njsd_cache_folders, and reached through
+# njsd_cache_subdir(), so there is exactly one place that decides where the
+# package writes.
 
 #' Root directory for njschooldata's on-disk caches
 #'
@@ -310,6 +311,19 @@ njsd_cache_remove <- function(key) {
 #' @return Absolute path to the cache root.
 #' @keywords internal
 njsd_cache_root <- function() {
+  override <- .njsd_cache_override()
+  if (!is.null(override)) {
+    return(override)
+  }
+
+  tools::R_user_dir("njschooldata", which = "cache")
+}
+
+# The explicit cache root a caller set (option first, then environment
+# variable), or NULL when neither is set. njsd_cache_root() and the
+# release-asset store root (.nj_release_root()) both decide from this, so the
+# two can never disagree about whether the cache was redirected.
+.njsd_cache_override <- function() {
   option_root <- getOption("njschooldata.cache_dir", default = NULL)
   if (!is.null(option_root) && nzchar(option_root)) {
     return(option_root)
@@ -320,7 +334,25 @@ njsd_cache_root <- function() {
     return(env_root)
   }
 
-  tools::R_user_dir("njschooldata", which = "cache")
+  NULL
+}
+
+# Every persistent folder the package keeps under njsd_cache_root(), in one
+# list. A new folder is added here, not built by hand at its call site.
+.njsd_cache_folders <- c(
+  "spr-workbooks",         # SPR databases for URLs not held as release assets
+  "source-artifacts",      # graduation / state aid / TGES downloads
+  "enrollment-sources",    # retained enrollment zips behind raw_path
+  "sped-placement",        # IDEA 618 placement workbooks
+  "facilities",            # facilities source snapshots
+  "historical-assets-v1"   # release-asset store under a cache override
+)
+
+njsd_cache_subdir <- function(folder) {
+  if (!folder %in% .njsd_cache_folders) {
+    stop("Unknown njschooldata cache folder: ", folder, call. = FALSE)
+  }
+  file.path(njsd_cache_root(), folder)
 }
 
 # -----------------------------------------------------------------------------
@@ -351,7 +383,7 @@ njsd_cache_root <- function() {
 #' @examples
 #' njsd_workbook_cache_dir()
 njsd_workbook_cache_dir <- function() {
-  file.path(njsd_cache_root(), "spr-workbooks")
+  njsd_cache_subdir("spr-workbooks")
 }
 
 #' Is a file a real .xlsx (ZIP) rather than an HTTP error / bot page?
@@ -557,6 +589,6 @@ fetch_enr_cached <- function(end_year, tidy = FALSE) {
 # Injected transports stay isolated from the ordinary persistent cache.
 .njsd_source_cache_path <- function(url, source_type, request_fn) {
   if (!identical(request_fn, .default_source_request)) return(NULL)
-  file.path(njsd_cache_root(), "source-artifacts",
+  file.path(njsd_cache_subdir("source-artifacts"),
             paste0(digest::digest(url, algo = "sha256"), ".", source_type))
 }

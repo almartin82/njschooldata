@@ -44,10 +44,8 @@
 .nj_release_root <- function() {
   # An explicitly seeded shared root wins; a package cache override gets its own subfolder.
   if (nzchar(Sys.getenv("STATE_SCHOOLDATA_HISTORICAL_ROOT", ""))) return(NULL)
-  option_root <- getOption("njschooldata.cache_dir", default = NULL)
-  env_root <- Sys.getenv("NJSCHOOLDATA_CACHE_DIR", "")
-  if ((!is.null(option_root) && nzchar(option_root)) || nzchar(env_root)) {
-    return(file.path(njsd_cache_root(), "historical-assets-v1"))
+  if (!is.null(.njsd_cache_override())) {
+    return(njsd_cache_subdir("historical-assets-v1"))
   }
   NULL
 }

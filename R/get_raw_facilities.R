@@ -26,7 +26,7 @@ facilities_sources <- function() {
 #'
 #' @keywords internal
 facilities_cache_dir <- function() {
-  path <- file.path(njsd_cache_root(), "facilities")
+  path <- njsd_cache_subdir("facilities")
   dir.create(path, recursive = TRUE, showWarnings = FALSE)
   path
 }

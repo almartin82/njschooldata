@@ -210,13 +210,13 @@ enr_pct_published_value <- function(x) {
 
 .enr_raw_cache_path <- function(end_year, digest) {
   file.path(
-    njsd_cache_root(), "enrollment-sources",
+    njsd_cache_subdir("enrollment-sources"),
     paste0("enrollment-", end_year, "-", digest, ".zip")
   )
 }
 
 .retain_enr_source <- function(result, end_year) {
-  raw_dir <- file.path(njsd_cache_root(), "enrollment-sources")
+  raw_dir <- njsd_cache_subdir("enrollment-sources")
   dir.create(raw_dir, recursive = TRUE, showWarnings = FALSE)
   raw_path <- .enr_raw_cache_path(end_year, result$digest)
 
