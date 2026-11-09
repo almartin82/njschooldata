@@ -66,3 +66,13 @@ def test_manual_canary_refuses_before_loading_package(flag, tmp_path):
     assert refused.returncode != 0
     assert "Live canaries require NJSCHOOLDATA_LIVE_TESTS=true" in refused.stderr
     assert list(tmp_path.iterdir()) == []
+
+
+def test_release_contract_keeps_the_manual_validation_limits():
+    release = _read_json(
+        PACKAGE_ROOT / "inst/extdata/source-contract/contracts"
+        / "new_jersey_release_sources/contract.json"
+    )
+    shipped = _read_json(CONTRACT_ROOT / "contract.json")
+    assert release["execution"] == shipped["execution"]
+    assert release["execution"]["mode"] == "manual_dispatch"

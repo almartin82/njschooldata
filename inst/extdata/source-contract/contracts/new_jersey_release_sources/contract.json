@@ -1,6 +1,12 @@
 {
   "category": "retained_historical_sources",
   "contract_id": "new_jersey_release_sources",
+  "execution": {
+    "max_in_flight_per_host": 1,
+    "minimum_delay_seconds": 2,
+    "mode": "manual_dispatch",
+    "request_budget": 6
+  },
   "runtime_requests": [
     {
       "alternatives": [

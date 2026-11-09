@@ -46,7 +46,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install "./python[dev]"
 
-      - name: Run Python tests
+      # Hosted Ubuntu is a disposable VM; provision the rootless boundary
+      # before testing. Ubuntu 24.04 restricts unprivileged user namespaces
+      # unless bubblewrap has an AppArmor profile granting userns.
+      - name: Prepare no-egress boundary
         run: |
-          cd python
-          pytest tests/ -v --tb=short
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          if command -v apparmor_parser >/dev/null 2>&1; then
+            printf '%s\n' 'abi <abi/4.0>,' 'include <tunables/global>' 'profile bwrap /usr/bin/bwrap flags=(unconfined) {' '  userns,' '  include if exists <local/bwrap>' '}' | sudo tee /etc/apparmor.d/bwrap >/dev/null
+            sudo apparmor_parser -r /etc/apparmor.d/bwrap
+          fi
+
+      - name: Run Python tests inside the no-egress boundary
+        run: |
+          tools/ci/run_no_egress.sh -- bash -c 'cd python && pytest tests/ -v --tb=short'

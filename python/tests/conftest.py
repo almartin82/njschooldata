@@ -1,6 +1,20 @@
 """pytest configuration and fixtures."""
 
+import importlib.util
 import os
+from pathlib import Path
+import sys
+
+# This suite is collected from python/tests, not the repository-root tests/.
+# Load the same guard before collection can initialize R or access its cache.
+_guard_path = Path(__file__).resolve().parents[2] / "tests" / "_cache_isolation_guard.py"
+_guard = sys.modules.get("_cache_isolation_guard")
+if _guard is None:
+    _guard_spec = importlib.util.spec_from_file_location("_cache_isolation_guard", _guard_path)
+    _guard = importlib.util.module_from_spec(_guard_spec)
+    sys.modules[_guard_spec.name] = _guard
+    _guard_spec.loader.exec_module(_guard)
+pytest_sessionfinish = _guard.pytest_sessionfinish
 
 import pytest
 
