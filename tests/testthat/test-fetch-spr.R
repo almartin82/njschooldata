@@ -364,31 +364,6 @@ test_that("list_spr_sheets works across different years", {
 
 
 # ==============================================================================
-# SPR Sheet Name Mapping Tests
-# ==============================================================================
-
-test_that("get_mapped_sheet_name returns canonical name if no mapping", {
-  result <- get_mapped_sheet_name("TeachersExperience", 2024)
-  expect_equal(result, "TeachersExperience")
-})
-
-test_that("get_mapped_sheet_name handles year-based mapping", {
-  # Test chronic absenteeism by grade mapping
-  result_2018 <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2018)
-  result_2020 <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2020)
-
-  expect_equal(result_2018, "ChronicAbsByGrade")
-  expect_equal(result_2020, "ChronicAbsenteeismByGrade")
-})
-
-test_that("get_mapped_sheet_name returns most recent if year not in range", {
-  # For a year outside the defined range, should return most recent
-  result <- get_mapped_sheet_name("chronic_absenteeism_by_grade", 2030)
-  expect_equal(result, "ChronicAbsenteeismByGrade")
-})
-
-
-# ==============================================================================
 # High-Value Convenience Wrapper Tests
 # ==============================================================================
 

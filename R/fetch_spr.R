@@ -637,65 +637,6 @@ list_spr_sheets <- function(end_year, level = "school") {
 }
 
 
-# -----------------------------------------------------------------------------
-# Sheet Name Mapping
-# -----------------------------------------------------------------------------
-
-#' Map Sheet Names Across Years
-#'
-#' Internal data structure mapping sheet name variations across years.
-#' Some SPR sheet names changed over time (e.g., 2018-2019 vs 2020+).
-#'
-#' @description
-#' This list maps common sheet name variations. Format is:
-#' \code{list(canonical_name = list(year_range = "actual_sheet_name"))}
-#'
-#' @keywords internal
-spr_sheet_mapping <- list(
-  chronic_absenteeism_by_grade = list(
-    "2018-2019" = "ChronicAbsByGrade",
-    "2020-2024" = "ChronicAbsenteeismByGrade"
-  ),
-  # Add more mappings as discovered
-  graduation_rate_5yr = list(
-    "2017-2020" = "5YrGraduationCohortProfile",
-    "2021-2024" = "5YrGraduationCohortProfile"
-  )
-)
-
-
-#' Get Mapped Sheet Name
-#'
-#' Returns the correct sheet name for a given year, handling historical
-#' name variations. If no mapping exists, returns the input name.
-#'
-#' @param canonical_name Canonical sheet name (e.g., "chronic_absenteeism_by_grade")
-#' @param end_year School year end
-#' @return Actual sheet name to use with fetch_spr_data()
-#' @keywords internal
-get_mapped_sheet_name <- function(canonical_name, end_year) {
-  if (!(canonical_name %in% names(spr_sheet_mapping))) {
-    return(canonical_name)
-  }
-
-  year_map <- spr_sheet_mapping[[canonical_name]]
-
-  # Find matching year range
-  for (year_range in names(year_map)) {
-    range_parts <- strsplit(year_range, "-")[[1]]
-    start_year <- as.numeric(range_parts[1])
-    end_yr <- as.numeric(range_parts[2])
-
-    if (end_year >= start_year && end_year <= end_yr) {
-      return(year_map[[year_range]])
-    }
-  }
-
-  # If no match, return the most recent name
-  year_map[[length(year_map)]]
-}
-
-
 # ==============================================================================
 # High-Value Convenience Wrappers
 # ==============================================================================
