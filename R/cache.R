@@ -487,6 +487,10 @@ njsd_workbook_cache_clear <- function(end_year = NULL) {
     sprintf("_%d\\.xlsx$", end_year)
   }
   files <- list.files(cache_dir, pattern = pattern, full.names = TRUE)
+  # An acquisition lock whose owner is confirmed dead is reclaimed first, so a
+  # crashed download cannot hold its entry against a clear forever.
+  locks <- list.files(cache_dir, pattern = "\\.acquiring$", full.names = TRUE)
+  for (lock in locks) .source_cache_reclaim_lock(lock)
   files <- files[!dir.exists(paste0(files, ".acquiring"))]
   bytes <- if (length(files) > 0) sum(file.info(files)$size) else 0
   unlink(c(files, paste0(files, ".source.rds")))

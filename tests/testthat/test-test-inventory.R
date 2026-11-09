@@ -73,7 +73,10 @@ test_that("network-bearing R tests are explicitly gated", {
     "test-tges-url.R",
     # Release-asset delivery: every transfer is an injected transport or an
     # offline read of a seeded store; the URLs are manifest lookup keys.
-    "test-release-sources.R"
+    "test-release-sources.R",
+    # Source-cache acquisition locks: every request is an injected transport;
+    # the URLs only name cache entries.
+    "test-source-cache-lock.R"
   )
   network_pattern <- paste(
     c(

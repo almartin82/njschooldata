@@ -231,6 +231,84 @@
   invisible(metadata)
 }
 
+# Acquisition lock for one persistent cache path: a directory
+# `<cache_path>.acquiring/` holding `owner.rds` (pid, host, started).
+#
+#   free --(dir.create + owner.rds)--> held --(on.exit unlink)--> free
+#   held, owner on this host confirmed dead --(reclaim, warns)--> free
+#   held, no owner record, older than `.source_cache_ownerless_age`
+#     (left by a release that wrote no owner) --(reclaim, warns)--> free
+#   held, owner alive --(poll once a second, up to `wait`)--> free | busy
+#   held, liveness unknown / other host / fresh ownerless --> busy at once
+#
+# A crashed acquisition (OOM, SIGKILL, CI timeout) never runs on.exit, and
+# before this its lock refused that URL forever. Liveness is read without
+# signalling the process (`.historical_process_alive()`: `ps -p`/`tasklist`).
+.source_cache_ownerless_age <- 2 * 60 * 60
+
+# The two promotion renames go through one seam so a test can stop the
+# process between them, as a crash would.
+.source_cache_rename <- function(from, to) file.rename(from, to)
+
+.source_cache_lock_owner <- function(lock_path) {
+  owner <- tryCatch(readRDS(file.path(lock_path, "owner.rds")),
+                    error = function(e) NULL, warning = function(w) NULL)
+  if (is.list(owner) && length(owner$pid) == 1L && length(owner$host) == 1L) owner else NULL
+}
+
+.source_cache_take_lock <- function(lock_path) {
+  if (!dir.create(lock_path, showWarnings = FALSE)) return(FALSE)
+  saveRDS(list(pid = Sys.getpid(), host = Sys.info()[["nodename"]],
+               started = Sys.time()), file.path(lock_path, "owner.rds"))
+  TRUE
+}
+
+# TRUE when the lock's owner is confirmed gone; never TRUE on unknown liveness.
+.source_cache_lock_is_dead <- function(lock_path, owner = .source_cache_lock_owner(lock_path)) {
+  if (is.null(owner)) {
+    age <- as.numeric(difftime(Sys.time(), file.info(lock_path)$mtime, units = "secs"))
+    return(isTRUE(age > .source_cache_ownerless_age))
+  }
+  identical(owner$host, Sys.info()[["nodename"]]) &&
+    identical(.historical_process_alive(owner$pid), FALSE)
+}
+
+.source_cache_reclaim_lock <- function(lock_path) {
+  owner <- .source_cache_lock_owner(lock_path)
+  if (!dir.exists(lock_path) || !.source_cache_lock_is_dead(lock_path, owner)) return(FALSE)
+  aside <- paste0(lock_path, ".dead-", Sys.getpid(), "-",
+                  gsub("[^0-9]", "", format(Sys.time(), "%Y%m%d%H%M%OS6")))
+  if (!file.rename(lock_path, aside)) return(FALSE)
+  if (!identical(.source_cache_lock_owner(aside), owner)) {
+    # Someone re-took the lock between our read and the rename; hand it back.
+    if (!dir.exists(lock_path)) file.rename(aside, lock_path)
+    return(FALSE)
+  }
+  unlink(aside, recursive = TRUE)
+  warning(
+    "Reclaimed an abandoned source-cache acquisition lock ",
+    if (is.null(owner)) "with no owner record" else paste0("from dead pid ", owner$pid),
+    ": ", lock_path, call. = FALSE
+  )
+  TRUE
+}
+
+.source_cache_lock <- function(lock_path, wait = 60, sleep_fn = Sys.sleep) {
+  polls <- 0L
+  for (attempt in seq_len(as.integer(max(0, wait)) + 4L)) {
+    if (.source_cache_take_lock(lock_path)) return(TRUE)
+    if (.source_cache_reclaim_lock(lock_path)) next
+    if (!dir.exists(lock_path)) next  # released between our two looks
+    owner <- .source_cache_lock_owner(lock_path)
+    live <- !is.null(owner) && identical(owner$host, Sys.info()[["nodename"]]) &&
+      isTRUE(.historical_process_alive(owner$pid))
+    if (!live || polls >= wait) return(FALSE)
+    polls <- polls + 1L
+    sleep_fn(1)
+  }
+  FALSE
+}
+
 #' Download and validate a registered NJ DOE source
 #'
 #' Downloads are written to a temporary file, validated, and then atomically
@@ -332,7 +410,7 @@ download_source <- function(url, source_type, cache_path = NULL,
   if (!dir.exists(target_dir)) dir.create(target_dir, recursive = TRUE)
   if (!is.null(cache_path)) {
     lock_path <- paste0(cache_path, ".acquiring")
-    if (!dir.create(lock_path, showWarnings = FALSE)) {
+    if (!.source_cache_lock(lock_path, wait = timeout, sleep_fn = sleep_fn)) {
       return(.source_failure("source_unavailable", url, simpleError(
         "Source cache acquisition is already active; retry after its owner exits."
       )))
@@ -413,22 +491,27 @@ download_source <- function(url, source_type, cache_path = NULL,
 
   digest <- .source_digest(temporary)
   if (!is.null(cache_path)) {
-    if (!file.rename(temporary, cache_path)) {
-      return(.source_failure("source_unavailable", url, simpleError(
-        "Validated artifact could not be atomically promoted to cache."
-      ), retrieved_at))
-    }
+    # Sidecar first, payload second. A payload without a sidecar is a legacy
+    # entry that requires explicit repair, so a process that died between the
+    # two renames must never leave one: with this order it leaves a sidecar
+    # and no payload, which the next caller treats as a plain miss.
     metadata <- list(
       version = 1L, requested_url = url, final_url = final_url,
       source_type = source_type, retrieved_at = retrieved_at, clock = "recorded",
-      size = as.numeric(file.info(cache_path)$size), digest = digest
+      size = as.numeric(file.info(temporary)$size), digest = digest
     )
     metadata_temp <- tempfile(".njsd-metadata-", tmpdir = target_dir)
     on.exit(unlink(metadata_temp), add = TRUE)
     saveRDS(metadata, metadata_temp)
-    if (!file.rename(metadata_temp, metadata_path)) {
+    if (!.source_cache_rename(metadata_temp, metadata_path)) {
       return(.source_failure("source_unavailable", url, simpleError(
         "Source acquisition metadata could not be atomically promoted."
+      ), retrieved_at))
+    }
+    if (!.source_cache_rename(temporary, cache_path)) {
+      unlink(metadata_path)
+      return(.source_failure("source_unavailable", url, simpleError(
+        "Validated artifact could not be atomically promoted to cache."
       ), retrieved_at))
     }
     cache_warning <- NULL

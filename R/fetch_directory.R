@@ -140,6 +140,37 @@
       problems <- problems[0, , drop = FALSE]
     }
   }
+  rejected <- NULL
+  if (nrow(problems)) {
+    # Row-scoped: a row whose field count does not match
+    # the header is withheld, named in a warning and recorded; the other rows
+    # are served. Only a file where the damage is widespread (more than five
+    # rows and more than 1% of rows) is a structural failure of the source.
+    bad_rows <- sort(unique(problems$row)) - 1L
+    bad_rows <- bad_rows[bad_rows >= 1L & bad_rows <= nrow(parsed)]
+    widespread <- length(bad_rows) > 5L && length(bad_rows) > 0.01 * nrow(parsed)
+    if (!widespread && length(bad_rows) && length(bad_rows) < nrow(parsed)) {
+      clean <- janitor::make_clean_names(names(parsed))
+      code <- function(name) {
+        column <- match(name, clean)
+        if (is.na(column)) rep(NA_character_, length(bad_rows))
+        else kill_padformulas(as.character(parsed[[column]][bad_rows]))
+      }
+      reason <- vapply(bad_rows, function(row) {
+        p <- problems[problems$row - 1L == row, , drop = FALSE][1, ]
+        paste0("structural: expected ", p$expected, ", found ", p$actual)
+      }, character(1))
+      rejected <- data.frame(
+        level = level, locator = sprintf("source line %d", bad_rows + 4L),
+        county_code = code("county_code"), district_code = code("district_code"),
+        school_code = if (level == "school") code("school_code") else NA_character_,
+        reason = reason, stringsAsFactors = FALSE
+      )
+      parsed <- parsed[-bad_rows, , drop = FALSE]
+      attr(parsed, "problems") <- NULL
+      problems <- problems[0, , drop = FALSE]
+    }
+  }
   if (nrow(problems)) {
     names(parsed) <- janitor::make_clean_names(names(parsed))
     details <- vapply(seq_len(min(nrow(problems), 5L)), function(i) {
@@ -178,11 +209,67 @@
       error = paste0("Directory CSV failed its structural contract (", detail, ").")
     ))
   }
+  attr(parsed, "rejected_source_rows") <- rejected
   new_source_result(
     data = parsed, source_status = "actual",
     source_url = transport$source_url,
     retrieved_at = transport$retrieved_at, digest = transport$digest
   )
+}
+
+#' Withhold directory rows that cannot carry a native id or a name
+#'
+#' Row-scoped screening. A row with a missing or
+#' malformed county (2 digits), district (4 digits) or, for schools, school
+#' (3 digits) code, or a school row with no school name, is withheld: it never
+#' becomes an entity and never fails the other rows. Ids are never padded or
+#' repaired here. Returns `list(rows, rejected)`.
+#' @keywords internal
+#' @noRd
+nj_screen_directory_rows <- function(df, level) {
+  level <- match.arg(level, c("school", "district"))
+  get <- function(name) {
+    if (name %in% names(df)) as.character(df[[name]]) else rep(NA_character_, nrow(df))
+  }
+  county <- get("county_code"); district <- get("district_code")
+  school <- get("school_code")
+  ok_county <- !is.na(county) & grepl("^[0-9]{2}$", county)
+  ok_district <- !is.na(district) & grepl("^[0-9]{4}$", district)
+  reason <- ifelse(!ok_county, "county_code missing or malformed",
+            ifelse(!ok_district, "district_code missing or malformed", NA_character_))
+  if (level == "school") {
+    ok_school <- !is.na(school) & grepl("^[0-9]{3}$", school)
+    named <- !is.na(get("school_name"))
+    reason <- ifelse(is.na(reason) & !ok_school, "school_code missing or malformed", reason)
+    reason <- ifelse(is.na(reason) & !named, "school_name missing", reason)
+  }
+  bad <- !is.na(reason)
+  rejected <- data.frame(
+    level = rep(level, sum(bad)), locator = sprintf("data row %d", which(bad)),
+    county_code = county[bad], district_code = district[bad],
+    school_code = if (level == "school") school[bad] else rep(NA_character_, sum(bad)),
+    reason = reason[bad], stringsAsFactors = FALSE
+  )
+  list(rows = df[!bad, , drop = FALSE], rejected = rejected)
+}
+
+# One warning naming every withheld row; the rows ride along as an attribute.
+nj_warn_directory_rejections <- function(rejected) {
+  if (is.null(rejected) || !nrow(rejected)) return(invisible(NULL))
+  ids <- paste0(ifelse(is.na(rejected$county_code), "?", rejected$county_code),
+                ifelse(is.na(rejected$district_code), "?", rejected$district_code),
+                ifelse(is.na(rejected$school_code), "", rejected$school_code))
+  shown <- utils::head(paste0(rejected$level, " ", ids, " (",
+                              rejected$locator, ": ", rejected$reason, ")"), 10L)
+  warning(structure(
+    class = c("nj_directory_row_rejected", "warning", "condition"),
+    list(message = paste0(
+      "NJ directory: withheld ", nrow(rejected), " source row(s): ",
+      paste(shown, collapse = "; "),
+      if (nrow(rejected) > 10L) "; ..." else ""
+    ), call = NULL, rejected = rejected)
+  ))
+  invisible(NULL)
 }
 
 #' Download the NJDOE School Performance Reports contact roster
@@ -275,6 +362,7 @@ get_raw_district_directory <- function() {
 .legacy_directory_table <- function(level) {
   level <- match.arg(level, c("school", "district"))
   result <- .directory_source_result(level)
+  nj_warn_directory_rejections(attr(result$data, "rejected_source_rows", exact = TRUE))
   result <- transform_source_result(result, function(raw) {
     df <- .clean_directory_raw(raw)
     address_parts <- c("address1", "city", "state", "zip")
@@ -703,20 +791,24 @@ directory_live_acquire <- function() {
     list(district = district_raw, school = school_raw)
   }, error = identity)
   if (inherits(parsed, "error")) {
-    parse_result <- new_source_result(
-      source_status = "parse_error",
-      error = conditionMessage(parsed)
-    )
-    source_records <- rbind(
-      source_records,
-      source_result_record(
-        parse_result, "directory", NA_integer_, "composition"
-      )
-    )
-    return(directory_source_unavailable(retrieved_at, source_records))
+    # The source answered and validated; failing to clean it is our defect,
+    # never a declared upstream miss.
+    stop(structure(
+      list(message = paste0("NJ directory cleaning failed: ", conditionMessage(parsed)),
+           call = NULL, source_results = source_records, parent = parsed),
+      class = c("directory_parse_error", "error", "condition")
+    ))
   }
-  district_raw <- parsed$district
-  school_raw <- parsed$school
+  district_screen <- nj_screen_directory_rows(parsed$district, "district")
+  school_screen <- nj_screen_directory_rows(parsed$school, "school")
+  district_raw <- district_screen$rows
+  school_raw <- school_screen$rows
+  rejected <- rbind(
+    attr(district_result$data, "rejected_source_rows", exact = TRUE),
+    attr(school_result$data, "rejected_source_rows", exact = TRUE),
+    district_screen$rejected, school_screen$rejected
+  )
+  nj_warn_directory_rejections(rejected)
 
   entities_d <- build_directory_entities_district(district_raw)
   entities_s <- build_directory_entities_school(school_raw)
@@ -786,13 +878,16 @@ directory_live_acquire <- function() {
     id_scheme = DIRECTORY_ID_SCHEME,
     coverage = coverage,
     source_status = "ok",
-    retrieved_at = retrieved_at
+    retrieved_at = retrieved_at,
+    rejected_source_row_count = NROW(rejected)
   )
 
-  attach_source_results(
+  out <- attach_source_results(
     list(entities = entities, roles = roles, meta = meta),
     source_records
   )
+  attr(out, "rejected_source_rows") <- rejected
+  out
 }
 
 #' Build a directory-contract snapshot from NJDOE report contacts
@@ -807,18 +902,21 @@ build_directory_from_spr <- function(
     raw, retrieved_at, spr_result,
     source_records = .empty_source_result_records()) {
   x <- .clean_directory_raw(raw)
-  district_key <- paste(x$county_code, x$district_code, sep = "\r")
-  d <- x[!duplicated(district_key), , drop = FALSE]
-
   # .clean_directory_raw() turns blank cells into NA, and paste0() renders NA
   # as the two literal characters "NA" -- so an unpublished county code would
-  # ship "NA3570" as a district_id. Refuse the source rather than invent one,
-  # exactly as build_directory_entities_district()/_school() do.
+  # ship "NA3570" as a district_id. Such a row is withheld (never given an
+  # invented id) and recorded; the other rows are served.
+  screen <- nj_screen_directory_rows(x, "school")
+  x <- screen$rows
+  rejected <- screen$rejected
+  nj_warn_directory_rejections(rejected)
   if (any(is.na(x$county_code)) || any(is.na(x$district_code)) ||
       any(is.na(x$school_code))) {
     dc_stop("SPR directory source has a missing county, district, or school code",
             "directory_integrity_error")
   }
+  district_key <- paste(x$county_code, x$district_code, sep = "\r")
+  d <- x[!duplicated(district_key), , drop = FALSE]
 
   district_id <- paste0(d$county_code, d$district_code)
   school_district_id <- paste0(x$county_code, x$district_code)
@@ -938,12 +1036,15 @@ build_directory_from_spr <- function(
     id_scheme = DIRECTORY_ID_SCHEME,
     coverage = coverage,
     source_status = "ok",
-    retrieved_at = retrieved_at
+    retrieved_at = retrieved_at,
+    rejected_source_row_count = NROW(rejected)
   )
-  attach_source_results(
+  out <- attach_source_results(
     list(entities = entities, roles = roles, meta = meta),
     source_records
   )
+  attr(out, "rejected_source_rows") <- rejected
+  out
 }
 
 

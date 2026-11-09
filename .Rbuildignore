@@ -42,3 +42,4 @@ TODO\.md$
 ^site/[0-9]+[.]qmd$
 ^site/almanac-[0-9]+[.]qmd$
 ^site/.*[.]out$
+^STATE-MACHINES\.md$

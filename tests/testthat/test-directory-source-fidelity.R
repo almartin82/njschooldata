@@ -27,15 +27,77 @@ test_that("bounded source reconstruction restores every displaced field", {
   expect_identical(ncol(r$data), 53L)
 })
 
-test_that("unknown overflow remains a structural error", {
-  result <- .directory_source_result("district", request_fn = function(url, dest, timeout) {
+unverified_overflow_request <- function(copies = 1L) {
+  function(url, dest, timeout) {
     lines <- readLines(test_path("fixtures", "directory-source", "hainesport-malformed.csv"))
     lines <- gsub("Procopio, Jr.", "Procopio, UNVERIFIED", lines, fixed = TRUE)
+    # Line 6 is the unrepairable row; repeat it to model widespread damage.
+    lines <- c(lines[1:5], rep(lines[6], copies), lines[-(1:6)])
     writeLines(lines, dest)
     list(status_code = 200L, final_url = url, content_type = "text/csv")
-  })
+  }
+}
+
+test_that("an unknown overflow row is withheld and recorded, never guessed", {
+  # Row-scoped: before, this one row failed the whole
+  # directory with parse_error.
+  result <- .directory_source_result("district", request_fn = unverified_overflow_request())
+  expect_identical(result$source_status, "actual")
+  expect_identical(nrow(result$data), 2L)
+  expect_false("1910" %in% kill_padformulas(result$data[["District Code"]]))
+  rejected <- attr(result$data, "rejected_source_rows")
+  expect_identical(nrow(rejected), 1L)
+  expect_identical(rejected$district_code, "1910")
+  expect_match(rejected$reason, "^structural")
+  expect_false(any(grepl("UNVERIFIED", unlist(result$data), fixed = TRUE)))
+})
+
+test_that("widespread structural damage is still a failure of the source", {
+  result <- .directory_source_result("district", request_fn = unverified_overflow_request(6L))
   expect_identical(result$source_status, "parse_error")
   expect_null(result$data)
+})
+
+test_that("fetch_directory serves the good rows and counts the withheld one", {
+  district <- .directory_source_result("district", request_fn = unverified_overflow_request())
+  school <- .directory_source_result(
+    "school", request_fn = nj_directory_byte_request("school-slot-titles.csv")
+  )
+  # A school row whose district code was never published: withheld, not "NA".
+  school$data[["District Code"]][1] <- NA_character_
+  dropped <- kill_padformulas(school$data[["School Code"]][1])
+  local_mocked_bindings(
+    .directory_source_result = function(level) if (level == "district") district else school,
+    .package = "njschooldata"
+  )
+  expect_warning(snapshot <- fetch_directory(), class = "nj_directory_row_rejected")
+  expect_identical(snapshot$meta$source_status, "ok")
+  expect_identical(as.integer(snapshot$meta$quality$rejected_source_row_count), 2L)
+  rejected <- attr(snapshot, "rejected_source_rows")
+  expect_identical(sum(grepl("^structural", rejected$reason)), 1L)
+  expect_identical(rejected$reason[rejected$level == "school"],
+                   "district_code missing or malformed")
+  expect_identical(sum(snapshot$entities$entity_type == "district"), 2L)
+  expect_identical(sum(snapshot$entities$entity_type == "school"),
+                   nrow(school$data) - 1L)
+  expect_false(any(grepl("NA", snapshot$entities$district_id, fixed = TRUE)))
+  expect_false(any(endsWith(snapshot$entities$school_id[!is.na(snapshot$entities$school_id)],
+                            paste0("NA", dropped))))
+})
+
+test_that("a cleaning defect after a good download is our parse error, not an outage", {
+  district <- .directory_source_result(
+    "district", request_fn = nj_directory_byte_request("district-valid.csv")
+  )
+  school <- .directory_source_result(
+    "school", request_fn = nj_directory_byte_request("school-slot-titles.csv")
+  )
+  local_mocked_bindings(
+    .directory_source_result = function(level) if (level == "district") district else school,
+    .clean_directory_raw = function(raw) stop("cleaner defect"),
+    .package = "njschooldata"
+  )
+  expect_error(fetch_directory(), "cleaner defect", class = "directory_parse_error")
 })
 
 test_that("valid Homeroom rows preserve published roles and slot titles", {

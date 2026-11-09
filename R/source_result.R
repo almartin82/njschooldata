@@ -337,10 +337,13 @@ combine_source_captures <- function(captures, allow_partial = FALSE,
     } else {
       failures$source_status[[1]]
     }
+    # Carry each failure's own message: a defect of ours caught here must stay
+    # readable, never shrink to a bare status that reads as an NJ DOE outage.
     details <- paste0(
       failures$end_year,
       ifelse(is.na(failures$component), "", paste0("/", failures$component)),
-      " [", failures$source_status, "]"
+      " [", failures$source_status,
+      ifelse(is.na(failures$error), "", paste0(": ", failures$error)), "]"
     )
     source_result_data(new_source_result(
       source_status = worst,
@@ -355,5 +358,28 @@ combine_source_captures <- function(captures, allow_partial = FALSE,
   } else {
     data[present]
   }
-  attach_source_results(out, records)
+  # A short frame never arrives silently: it carries the
+  # years asked for and the years missing, and says so in a warning.
+  requested_years <- sort(unique(stats::na.omit(as.integer(records$end_year))))
+  missing_years <- sort(unique(stats::na.omit(as.integer(
+    records$end_year[incomplete]
+  ))))
+  if (any(incomplete)) {
+    dropped <- records[incomplete, , drop = FALSE]
+    warning(structure(
+      class = c("njsd_partial_result", "warning", "condition"),
+      list(message = paste0(
+        context, " returned partial data; missing: ",
+        paste(paste0(
+          dropped$end_year,
+          ifelse(is.na(dropped$component), "", paste0("/", dropped$component)),
+          " [", dropped$source_status, "]"
+        ), collapse = ", ")
+      ), call = NULL, records = dropped)
+    ))
+  }
+  out <- attach_source_results(out, records)
+  attr(out, "requested_years") <- requested_years
+  attr(out, "missing_years") <- missing_years
+  out
 }

@@ -358,7 +358,8 @@ dc_role_provenance <- function(declared, roles) {
 #' @noRd
 dc_build_meta <- function(entities, roles, state, sources, id_scheme,
                           coverage, source_status, retrieved_at,
-                          quarantine = NULL) {
+                          quarantine = NULL,
+                          rejected_source_row_count = NULL) {
   if (is.null(quarantine)) {
     quarantine <- attr(roles, "directory_quarantine", exact = TRUE)
   }
@@ -404,6 +405,17 @@ dc_build_meta <- function(entities, roles, state, sources, id_scheme,
         quarantine$assignment_count)
     } else 0L
   )
+
+  # Optional in directory-contract/v1: emitted only by a builder that screens
+  # source rows one at a time and passes the count of rows it withheld.
+  if (!is.null(rejected_source_row_count)) {
+    if (length(rejected_source_row_count) != 1L ||
+        is.na(rejected_source_row_count) || rejected_source_row_count < 0) {
+      stop("rejected_source_row_count must be one non-negative integer",
+           call. = FALSE)
+    }
+    quality_out$rejected_source_row_count <- as.integer(rejected_source_row_count)
+  }
 
   list(
     schema_version = DC_SCHEMA_VERSION,
