@@ -1,6 +1,12 @@
 # Canonical vendorable historical resolver, store protocol v1.
 # Requires only base R, digest, jsonlite, rappdirs and curl. Sourcing is inert.
 # See docs/HISTORICAL-ASSET-CACHE.md before adapting a package parser.
+#
+# Vendored byte-for-byte as R/resolve_historical_asset.R in every package that
+# reads the shared historical source store. Edit ONLY
+# contracts/historical-store/v1/resolve_historical_asset.R, then run
+# scripts/historical-store/sync.py. Package-specific wrappers (option names,
+# exported store actions) live in the package's own files, never here.
 
 .historical_error <- function(kind, message, ...) {
   stop(structure(c(list(message = message, call = NULL), list(...)),
@@ -85,14 +91,19 @@
     lineage <- a$lineage
     if (!is.list(lineage)) fail("Missing state-source lineage")
     if (identical(lineage$kind, "derived")) {
-      for (k in c("parent_artifact_id", "recipe", "recipe_version", "table_locator")) {
+      for (k in c("recipe", "recipe_version", "table_locator")) {
         if (!.historical_text(lineage[[k]])) fail("Incomplete derived lineage")
       }
+      # A parent outside this manifest may be named by its state-source
+      # identity alone; one of the two is always required.
+      if (!.historical_text(lineage$parent_artifact_id) &&
+          !.historical_text(lineage$parent_source_identity)) fail("Incomplete derived lineage")
       if (!.historical_number(lineage$row_count)) fail("Invalid derived row count")
     } else if (!identical(lineage$kind, "source")) fail("Invalid state-source lineage")
   }
   for (a in manifest$artifacts) {
-    if (identical(a$lineage$kind, "derived") && !a$lineage$parent_artifact_id %in% ids &&
+    if (identical(a$lineage$kind, "derived") && .historical_text(a$lineage$parent_artifact_id) &&
+        !a$lineage$parent_artifact_id %in% ids &&
         !.historical_text(a$lineage$parent_source_identity)) fail("Absent provenance parent lacks state-source identity")
     .historical_closure(manifest, a$artifact_id)
   }
@@ -236,12 +247,18 @@ historical_identity <- function(selection) {
   TRUE
 }
 .historical_process_alive <- function(pid) {
+  # TRUE alive, FALSE confirmed dead, NA unknown. Never signals the process
+  # (STANDARD D-h): `ps -p` exits 0 when the pid exists and 1 when it does not;
+  # any other outcome (no ps, odd status, error) is unknown, never dead.
   if (!.historical_number(pid, 1) || pid > .Machine$integer.max) return(NA)
   if (.Platform$OS.type == "unix") {
-    return(tryCatch(isTRUE(tools::pskill(as.integer(pid), signal = 0L)), error = function(e) NA))
+    return(tryCatch({
+      status <- suppressWarnings(system2("ps", c("-p", as.character(as.integer(pid))),
+                                         stdout = FALSE, stderr = FALSE))
+      if (identical(as.integer(status), 0L)) TRUE else if (identical(as.integer(status), 1L)) FALSE else NA
+    }, error = function(e) NA))
   }
-  # tools::pskill always TERMINATES on Windows, even for signal=0. Query the
-  # native process list instead, without sending a signal or adding a runtime.
+  # Windows: query the native process list, without sending a signal.
   tryCatch({
     result <- suppressWarnings(system2("tasklist", c("/FI", shQuote(paste("PID eq", as.integer(pid))),
                                                       "/FO", "CSV", "/NH"), stdout = TRUE, stderr = FALSE))
@@ -269,7 +286,7 @@ historical_identity <- function(selection) {
       .historical_number(owner$pid, 1) && .historical_text(owner$host)
     if (!valid) {
       if (as.numeric(difftime(Sys.time(), uncertain_since, units = "secs")) > .owner_grace_seconds) {
-        .historical_error("lock", "Historical lock has no valid owner; explicit recovery is required", root = root, reason = "unknown_owner")
+        .historical_error("lock", paste("Historical lock has no valid owner; if no reader is running, remove", lock, "by hand"), root = root, reason = "unknown_owner")
       }
     } else {
       uncertain_since <- Sys.time()
@@ -280,7 +297,7 @@ historical_identity <- function(selection) {
         # Do not misidentify a replacement writer if the observed owner left
         # while liveness was queried. Never steal or remove any writer's lock.
         current <- tryCatch(suppressWarnings(readRDS(owner_file)), error = function(e) NULL)
-        if (identical(current, owner)) .historical_error("lock", "Historical lock owner is dead or unqueryable; explicit recovery is required", root = root, reason = if (identical(alive, FALSE)) "dead_owner" else "unknown_liveness")
+        if (identical(current, owner)) .historical_error("lock", paste0("Historical lock owner is dead or unqueryable; run ", .historical_recover_call(), " once no reader is running"), root = root, reason = if (identical(alive, FALSE)) "dead_owner" else "unknown_liveness")
       }
       # A live writer has no age timeout: an entire legitimate dependency
       # closure may need several bounded transfers. Waiting is interruptible.
@@ -352,6 +369,7 @@ historical_identity <- function(selection) {
 .historical_room <- function(root, digests = character(), required_bytes = 0, workspace_bytes = 0,
                              capacity = .historical_capacity(root)) {
   if (required_bytes + workspace_bytes > capacity) .historical_error("capacity", "Historical closure cannot fit configured capacity", required_bytes = required_bytes + workspace_bytes, capacity_bytes = capacity)
+  .historical_reclaim_dead_leases(root)
   leases <- .historical_leases(root)
   protected <- unique(c(digests, unlist(lapply(leases, `[[`, "digests"), use.names = FALSE)))
   blobs <- .historical_blobs(root)
@@ -368,6 +386,82 @@ historical_identity <- function(selection) {
     used <- used - size
   }
   invisible(used)
+}
+# A reader that died hard (OOM, SIGKILL, CI timeout) never runs its on.exit
+# cleanup, so its lease would pin digests and reserve workspace bytes forever.
+# Call ONLY while holding the store lock: leases are created and removed only
+# under it, so a lease whose same-host owner is confirmed dead cannot be
+# revived. Unknown liveness (NA), another host, or an unreadable record is
+# left alone; .historical_leases() still refuses unreadable records.
+.historical_reclaim_dead_leases <- function(root) {
+  files <- list.files(file.path(root, "leases"), pattern = "^lease-.*[.]rds$", full.names = TRUE)
+  host <- Sys.info()[["nodename"]]
+  reclaimed <- character()
+  for (f in files) {
+    if (.historical_symlink(f)) next
+    record <- tryCatch(suppressWarnings(readRDS(f)), error = function(e) NULL)
+    if (!is.list(record) || !identical(record$protocol, "historical-lease/v1") ||
+        !.historical_number(record$pid, 1) || !identical(record$host, host) ||
+        record$pid == Sys.getpid()) next
+    if (!identical(.historical_process_alive(record$pid), FALSE)) next
+    token <- sub("[.]rds$", "", basename(f))
+    staging <- file.path(root, "staging", token)
+    if (!.historical_symlink(staging)) unlink(staging, recursive = TRUE)
+    if (unlink(f) != 0L) .historical_error("store", "Cannot reclaim dead reader lease")
+    reclaimed <- c(reclaimed, paste0(token, " (pid ", record$pid, ")"))
+  }
+  if (length(reclaimed)) {
+    warning("Reclaimed ", length(reclaimed), " historical source lease(s) left by ",
+            "readers that exited without cleanup: ", paste(reclaimed, collapse = ", "),
+            call. = FALSE)
+  }
+  invisible(reclaimed)
+}
+# How a user reaches recovery from the vendoring package. Packages may also
+# expose it as a store action (e.g. historical_source_cache("recover")).
+.historical_recover_call <- function() {
+  home <- topenv(environment(.historical_recover_call))
+  if (!isNamespace(home)) return("historical_cache_recover()")
+  package <- getNamespaceName(home)
+  wrapper <- get0("historical_source_cache", envir = home, inherits = FALSE)
+  actions <- if (is.function(wrapper)) tryCatch(eval(formals(wrapper)$action, baseenv()), error = function(e) NULL)
+  if ("historical_source_cache" %in% getNamespaceExports(home) && "recover" %in% actions) {
+    return(paste0(package, "::historical_source_cache(\"recover\")"))
+  }
+  paste0(package, ":::historical_cache_recover()")
+}
+# Explicit recovery for a LOCK whose same-host owner is confirmed dead. The
+# lock is never taken over automatically. The dead lock is moved aside first
+# and its owner record re-read, so a lock that changed hands meanwhile is put
+# back rather than removed. Dead leases are then reclaimed under the lock.
+historical_cache_recover <- function(root = NULL) {
+  root <- .historical_root(root)
+  if (!.historical_store(root, FALSE)) return(invisible(list(lock_removed = FALSE, leases_reclaimed = character())))
+  lock <- file.path(root, "LOCK")
+  removed <- FALSE
+  if (.historical_symlink(lock)) .historical_error("store", "Unsafe store lock")
+  if (dir.exists(lock)) {
+    owner_file <- file.path(lock, "owner.rds")
+    owner <- tryCatch(suppressWarnings(readRDS(owner_file)), error = function(e) NULL)
+    valid <- is.list(owner) && identical(owner$protocol, "historical-lock/v1") &&
+      .historical_number(owner$pid, 1) && .historical_text(owner$host)
+    if (!valid) .historical_error("lock", paste("Historical lock has no readable owner; if no reader is running, remove", lock, "by hand"), root = root, reason = "unknown_owner")
+    if (!identical(owner$host, Sys.info()[["nodename"]])) .historical_error("lock", "Historical lock belongs to another host; recover it on that host", root = root, reason = "foreign_host")
+    alive <- .historical_process_alive(owner$pid)
+    if (isTRUE(alive)) .historical_error("lock", paste("Historical lock is held by live process", owner$pid), root = root, reason = "live_owner")
+    if (!identical(alive, FALSE)) .historical_error("lock", "Historical lock owner liveness is unknown; not recovering", root = root, reason = "unknown_liveness")
+    tomb <- file.path(root, paste0(".LOCK-dead-", basename(tempfile(""))))
+    if (!file.rename(lock, tomb)) .historical_error("store", "Cannot move dead historical lock aside")
+    moved <- tryCatch(suppressWarnings(readRDS(file.path(tomb, "owner.rds"))), error = function(e) NULL)
+    if (!identical(moved, owner)) {
+      if (!dir.exists(lock) && file.rename(tomb, lock)) .historical_error("lock", "Historical lock changed hands during recovery; it was restored, retry", root = root, reason = "owner_changed")
+      .historical_error("lock", paste("Historical lock changed hands during recovery and could not be restored; inspect", tomb), root = root, reason = "owner_changed")
+    }
+    unlink(tomb, recursive = TRUE)
+    removed <- TRUE
+  }
+  leases <- .historical_lock(root, function() .historical_reclaim_dead_leases(root))
+  invisible(list(lock_removed = removed, leases_reclaimed = leases))
 }
 .historical_verify <- function(path, asset) {
   if (!file.exists(path)) return(FALSE)
@@ -554,6 +648,7 @@ historical_with_reserved_workspace <- function(source_bytes, workspace_bytes, ca
       .historical_error("metadata", "Invalid current source inventory")
     }
     paths <- inventory$paths
+    .historical_reclaim_dead_leases(root)
     if (any(!file.exists(paths)) || any(dir.exists(paths)) ||
         any(vapply(paths, .historical_symlink, logical(1)))) .historical_error("store", "Unsafe borrowed source inventory")
     if (length(paths) && anyDuplicated(normalizePath(paths))) .historical_error("metadata", "Source inventory counts a path twice")
@@ -577,12 +672,32 @@ historical_with_reserved_workspace <- function(source_bytes, workspace_bytes, ca
   callback(reservation$workspace)
 }
 
+# Git-backed parents under inst/ are installed with the package: each must be
+# present and verify (digest and length), even on a derived-cache hit. Git
+# parents outside inst/ are build-excluded and never installed.
+.historical_installed_sources <- function(selection) {
+  package <- strsplit(selection$package_repository, "/", fixed = TRUE)[[1L]][2L]
+  paths <- list()
+  for (a in selection$artifacts) {
+    if (!a$storage$backend %in% c("git", "git_lfs") || !startsWith(a$storage$path, "inst/")) next
+    path <- system.file(sub("^inst/", "", a$storage$path), package = package)
+    if (!nzchar(path) || !.historical_verify(path, a)) {
+      .historical_error("integrity", paste("Missing installed source:", a$storage$path))
+    }
+    paths[[a$artifact_id]] <- path
+  }
+  paths
+}
+
 # Parser owns only its bounded workspace; source paths remain leased throughout.
 historical_with_assets <- function(selection, parse, root = NULL, offline = FALSE,
                                    .transport = NULL, repair = FALSE) {
   .historical_selection_check(selection)
   if (!is.function(parse)) .historical_error("metadata", "Historical parser must be a function")
-  if (!all(vapply(selection$artifacts, function(a) a$storage$backend %in% c("release_asset", "github_pages"), logical(1)))) .historical_error("metadata", "Resolver source closures must use pinned GitHub assets")
+  if (!all(vapply(selection$artifacts, function(a) a$storage$backend %in% c(
+    "release_asset", "github_pages", "git", "git_lfs"
+  ), logical(1)))) .historical_error("metadata", "Resolver source closures use an unsupported storage backend")
+  installed <- .historical_installed_sources(selection)
   root <- .historical_root(root)
   assets <- selection$artifacts
   digests <- vapply(assets, `[[`, "", "sha256")
@@ -612,7 +727,16 @@ historical_with_assets <- function(selection, parse, root = NULL, offline = FALS
       })
       if (!valid) missing[[length(missing) + 1L]] <- a
     }
-    if (length(missing) && offline) .historical_error("cold_offline", "Historical assets are unavailable offline", missing = vapply(missing, `[[`, "", "artifact_id"), digests = vapply(missing, `[[`, "", "sha256"))
+    # A git parent that is neither installed nor already in the store is
+    # retained locally only; it is never fetched from anywhere.
+    local_missing <- Filter(function(a) a$storage$backend %in% c("git", "git_lfs") &&
+                              !a$artifact_id %in% names(installed), missing)
+    if (length(local_missing)) .historical_error(
+      "unpublished", "Historical assets are retained locally and are not published",
+      missing = vapply(local_missing, `[[`, "", "artifact_id"),
+      digests = vapply(local_missing, `[[`, "", "sha256"))
+    remote_missing <- Filter(function(a) a$storage$backend %in% c("release_asset", "github_pages"), missing)
+    if (length(remote_missing) && offline) .historical_error("cold_offline", "Historical assets are unavailable offline", missing = vapply(remote_missing, `[[`, "", "artifact_id"), digests = vapply(remote_missing, `[[`, "", "sha256"))
     # A corrupt leased blob cannot be replaced while another parser owns it.
     protected <- unlist(lapply(.historical_leases(root), `[[`, "digests"), use.names = FALSE)
     if (any(vapply(corrupt, `[[`, "", "sha256") %in% protected)) .historical_error("integrity", "Cannot repair an asset held by an active parser")
@@ -626,7 +750,9 @@ historical_with_assets <- function(selection, parse, root = NULL, offline = FALS
     workspace <- reservation$workspace$directory
     for (a in missing) {
       temp <- file.path(workspace, paste0(a$sha256, ".partial"))
-      .historical_download(a, temp, .transport)
+      if (a$artifact_id %in% names(installed)) {
+        if (!file.copy(installed[[a$artifact_id]], temp)) .historical_error("store", "Cannot copy installed source")
+      } else .historical_download(a, temp, .transport)
       .historical_verify(temp, a)
       if (!file.rename(temp, file.path(root, "blobs", a$sha256))) .historical_error("store", "Cannot atomically promote historical blob")
     }
@@ -712,6 +838,7 @@ historical_cache_clear <- function(root = NULL) {
   root <- .historical_root(root)
   if (!.historical_store(root, FALSE)) return(invisible(character()))
   .historical_lock(root, function() {
+    .historical_reclaim_dead_leases(root)
     leased <- unique(unlist(lapply(.historical_leases(root), `[[`, "digests"), use.names = FALSE))
     files <- .historical_blobs(root)
     eligible <- files[!basename(files) %in% leased]
@@ -756,6 +883,8 @@ historical_fetch <- function(selection, parse, root = NULL, offline = FALSE,
                              use_cache = TRUE, derived_get = NULL, derived_put = NULL,
                              .transport = NULL) {
   key <- historical_identity(selection)
+  # Installed parents must still exist and verify even on a derived-cache hit.
+  .historical_installed_sources(selection)
   if (use_cache && !is.null(derived_get)) {
     # A prior parsed alternative remains valid after its parents are evicted.
     # Current source-cache presence must not turn that result into an offline miss.

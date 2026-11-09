@@ -6,7 +6,7 @@
 # files, spending guides, state aid, IDEA 618 files, grade 4 ELA results) are
 # held as immutable assets of the `sources-2026-11-08` release. The
 # new_jersey_release_sources contract names each one by its original nj.gov
-# URL, byte length and SHA-256. The vendored resolver (R/historical_assets.R)
+# URL, byte length and SHA-256. The vendored resolver (R/resolve_historical_asset.R)
 # downloads an asset into the shared source store, checks length and SHA-256
 # before every read, and stops with a typed error when an asset is missing or
 # altered. A held URL never falls through to a live nj.gov request; URLs the
