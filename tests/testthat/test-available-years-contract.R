@@ -44,6 +44,7 @@ for (declared_type in unique(get_available_years()$type)) {
     type <- declared_type
     test_that(paste("live available-years contract:", type), {
       skip_on_cran()
+      skip_if_no_live_tests()
       # Undo the suite's cache isolation and any caller-specific override so
       # this exercises real acquisition through the ordinary persistent cache.
       withr::local_options(njschooldata.cache_dir = NULL,

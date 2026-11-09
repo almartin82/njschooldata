@@ -144,11 +144,8 @@ test_that("years and bases are validated", {
 })
 
 test_that("school_report basis returns school rows with spans from the report's own enrollment", {
-  x <- tryCatch(fetch_sped_share(2024, basis = "school_report"), error = identity)
-  testthat::skip_if(
-    inherits(x, "error"),
-    "School Performance Reports workbook not available in the local source cache"
-  )
+  testthat::skip_if_not(live_tests_enabled(), "Explicit live-source opt-in required")
+  x <- fetch_sped_share(2024, basis = "school_report")
   s <- x[x$entity_level == "school", ]
   expect_gt(nrow(s), 2000L)
   expect_true(all(is.na(s$n_sped)))

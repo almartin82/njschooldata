@@ -43,10 +43,15 @@ def test_real_available_years_contract():
     coverage = get_available_years()
     assert isinstance(coverage, pd.DataFrame)
     assert list(coverage.columns) == ["type", "end_year", "fetcher"]
-    assert list(coverage["end_year"]) == years
-    assert set(coverage["fetcher"]) == {"fetch_enr"}
-    for type, message in [("finance", "coverage not yet declared"),
-                          ("unknown", "Declared types: enrollment")]:
+    enrollment = coverage.loc[coverage["type"] == "enrollment"]
+    assert list(enrollment["end_year"]) == years
+    assert set(enrollment["fetcher"]) == {"fetch_enr"}
+    finance = coverage.loc[coverage["type"] == "finance"]
+    assert list(finance["end_year"]) == get_available_years("finance")
+    assert set(finance["fetcher"]) == {"fetch_finance"}
+    assert get_available_years("finance") == list(range(2001, 2027))
+    for type, message in [("assessment", "coverage not yet declared"),
+                          ("unknown", "Declared types:")]:
         with pytest.raises(Exception, match=message):
             get_available_years(type)
 
