@@ -2,6 +2,34 @@
 
 ## njschooldata 0.10.0
 
+- [`fetch_directory()`](https://almartin82.github.io/njschooldata/reference/fetch_directory.md)
+  screens source rows one at a time. A row with a missing or malformed
+  county, district or school code, a school row with no name, or a CSV
+  row whose field count does not match the header (and that the known
+  repairs cannot restore) is withheld, named in an
+  `nj_directory_row_rejected` warning, listed in
+  `attr(result, "rejected_source_rows")` and counted in
+  `meta$quality$rejected_source_row_count`. It no longer fails the whole
+  directory. A file with widespread damage (more than five rows and more
+  than 1% of rows) still fails as a parse error, and a failure to clean
+  a good download is now a `directory_parse_error`, not a declared
+  upstream miss.
+
+- Multi-year fetchers called with `allow_partial = TRUE` now warn
+  (`njsd_partial_result`) when they return fewer years than requested,
+  and every combined result carries `requested_years` and
+  `missing_years` attributes. A strict failure’s message keeps each
+  underlying error.
+
+- The on-disk source caches recover from a crashed download: an
+  acquisition lock whose owner on this machine has exited (or an
+  owner-less lock older than two hours) is reclaimed with a warning, a
+  live owner is waited for, and the acquisition sidecar is written
+  before the payload, so a process that dies mid-promotion leaves a
+  plain miss rather than an entry that needs manual repair.
+  [`njsd_workbook_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_clear.md)
+  reclaims dead locks.
+
 - [`fetch_enr()`](https://almartin82.github.io/njschooldata/reference/fetch_enr.md)
   keeps NJ DOE’s published program rates from 2023 on: wide
   `<field>_published_pct` (percent) and tidy `published_pct` (fraction)
