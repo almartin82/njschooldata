@@ -76,25 +76,6 @@ test_that("borrowed persistent and leased parents are never unlinked by readers"
   }
 })
 
-test_that("the private path-only compatibility helper cannot discard ownership", {
-  fixture <- source_adapter_fixture("spr-district-2025.xlsx")
-  env <- new.env(parent=asNamespace("njschooldata"))
-  f <- spr_cached_workbook;environment(f)<-env
-  for(ownership in c("temporary","leased","persistent")) {
-    released <- 0L
-    env$spr_cached_workbook_result <- function(...) {
-      result <- new_source_result(data=fixture,source_status="actual")
-      result$ownership <- ownership
-      if(ownership != "persistent")result$release<-function(){released<<-released+1L}
-      result
-    }
-    if(ownership == "persistent")expect_identical(f(2025,"district"),fixture)
-    else expect_error(f(2025,"district"),"retain and release")
-    expect_identical(released,as.integer(ownership!="persistent"))
-    expect_true(file.exists(fixture))
-  }
-})
-
 test_that("transport owns its download until result construction completes", {
   fixture <- source_adapter_fixture("spr-district-2025.xlsx")
   for(exit in c("error","interrupt")) {

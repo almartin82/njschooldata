@@ -93,7 +93,6 @@ test_that("SPR sheet absence and actual reader failures keep their meaning", {
   env$cache_get <- function(...) NULL
   env$cache_set <- function(...) invisible(NULL)
   env$spr_cached_workbook_result <- function(...) new_source_result(data = fixture, source_status = "actual")
-  env$spr_cached_workbook <- function(...) fixture
   for (original in list(fetch_spr_data, fetch_spr_sheet_raw)) {
     f <- original; environment(f) <- env
     expect_error(f("not-a-published-sheet", 2025, "district"), "not found.*Available sheets")
@@ -107,13 +106,11 @@ test_that("SPR sheet absence and actual reader failures keep their meaning", {
     zip::zipr(bad, list.files(work, recursive = TRUE, all.files = TRUE), root = work, mode = "mirror")
     expect_true("ChronicAbsenteeismStudentGroup" %in% readxl::excel_sheets(bad))
     env$spr_cached_workbook_result <- function(...) new_source_result(data = bad, source_status = "actual")
-    env$spr_cached_workbook <- function(...) bad
     error <- tryCatch(f("ChronicAbsenteeismStudentGroup", 2025, "district"), error = identity)
     expect_s3_class(error, "error")
     expect_false(grepl("not found.*Available sheets", conditionMessage(error)))
     unlink(bad); unlink(work, recursive = TRUE)
     env$spr_cached_workbook_result <- function(...) new_source_result(data = fixture, source_status = "actual")
-    env$spr_cached_workbook <- function(...) fixture
   }
 })
 

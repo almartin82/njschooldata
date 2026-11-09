@@ -426,16 +426,6 @@ spr_cached_workbook_result <- function(end_year, level,
   )
 }
 
-spr_cached_workbook <- function(end_year, level) {
-  result <- spr_cached_workbook_result(end_year, level)
-  if (is.function(result$release)) {
-    on.exit(.release_source_result(result), add = TRUE)
-    stop("Owned workbook callers must retain and release the source result.",
-         call. = FALSE)
-  }
-  source_result_data(result)
-}
-
 #' Inspect the on-disk SPR workbook cache
 #'
 #' @return A data frame (one row per cached workbook) with \code{file},
