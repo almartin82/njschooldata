@@ -482,12 +482,45 @@ historical_cache_recover <- function(root = NULL) {
 .historical_delivery_url <- function(url, pages_scope = NULL) {
   if (!is.null(pages_scope)) return(identical(.historical_pages_scope(url), pages_scope))
   .historical_text(url) && !grepl("[[:space:]#]", url) &&
-    grepl("^https://(github[.]com|release-assets[.]githubusercontent[.]com|objects[.]githubusercontent[.]com)/", url)
+    (grepl("^https://(github[.]com|release-assets[.]githubusercontent[.]com|objects[.]githubusercontent[.]com)/", url) ||
+       grepl(paste0("^https://api[.]github[.]com/repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/releases/",
+                    "(assets/[0-9]+|tags/[A-Za-z0-9][A-Za-z0-9._-]*)$"), url))
 }
-.historical_github_request <- function(url, method, emit) {
+# A GitHub token is only ever sent to these two hosts, never to the signed
+# objects/release-assets host a release asset redirects to.
+.historical_github_auth_host <- function(url) {
+  .historical_text(url) && grepl("^https://(api[.])?github[.]com/", url)
+}
+# The pinned anonymous release URL, split into its parts; NULL for any other URL.
+.historical_release_parts <- function(url) {
+  if (!.historical_text(url)) return(NULL)
+  m <- regmatches(url, regexec(paste0("^https://github[.]com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/releases/download/",
+    "([A-Za-z0-9][A-Za-z0-9._-]*)/([A-Za-z0-9][A-Za-z0-9._-]*)$"), url))[[1L]]
+  if (length(m) == 5L) list(owner = m[[2L]], repo = m[[3L]], tag = m[[4L]], name = m[[5L]]) else NULL
+}
+# The user's GitHub token, or NULL: GITHUB_PAT, then GITHUB_TOKEN, then
+# `gh auth token` when gh is on PATH. Never printed, logged, cached or stored.
+.historical_github_token <- function() {
+  for (name in c("GITHUB_PAT", "GITHUB_TOKEN")) {
+    value <- trimws(Sys.getenv(name, ""))
+    if (nzchar(value) && !grepl("[[:space:]]", value)) return(value)
+  }
+  gh <- Sys.which("gh")
+  if (!nzchar(gh)) return(NULL)
+  value <- tryCatch(suppressWarnings(system2(gh, c("auth", "token"), stdout = TRUE, stderr = FALSE)),
+                    error = function(e) character())
+  if (!is.null(attr(value, "status")) || length(value) != 1L) return(NULL)
+  value <- trimws(value)
+  if (nzchar(value) && !grepl("[[:space:]]", value)) value else NULL
+}
+.historical_github_request <- function(url, method, emit, headers = character()) {
+  if (any(tolower(names(headers)) == "authorization") && !.historical_github_auth_host(url)) {
+    .historical_error("policy", "A GitHub token is sent only to github.com and api.github.com")
+  }
   h <- curl::new_handle(followlocation = FALSE, failonerror = identical(method, "GET"),
                         connecttimeout = 30, timeout = 600, protocols = 2L,
                         redir_protocols = 2L, nobody = identical(method, "HEAD"))
+  if (length(headers)) curl::handle_setheaders(h, .list = as.list(headers))
   if (identical(method, "HEAD")) curl::curl_fetch_memory(url, handle = h)
   else tryCatch(curl::curl_fetch_stream(url, emit, handle = h), error = function(e) {
     # HTTP error pages are not source bytes and may exceed the asset's bound.
@@ -500,19 +533,23 @@ historical_cache_recover <- function(root = NULL) {
     stop(e)
   })
 }
-.historical_github_transport <- function(url, emit, .request = .historical_github_request) {
-  # Resolve redirects without automatic following. HEAD transfers no payload;
-  # every next destination is checked before contacting it. GET never follows
-  # a redirect that differs from the checked HEAD chain.
-  pages_scope <- .historical_pages_scope(url)
+# One bounded, hand-followed redirect chain. headers(url) is asked afresh for
+# every hop, so a header meant for one host never reaches the next. Returns
+# NULL on a delivered 200, else the failing HEAD status and its hop.
+.historical_github_follow <- function(url, emit, .request, headers = function(url) character(),
+                                      pages_scope = NULL) {
+  call <- function(url, method, emit) {
+    h <- headers(url)
+    if (length(h)) .request(url, method, emit, h) else .request(url, method, emit)
+  }
   for (hop in 0:5) {
     if (!.historical_delivery_url(url, pages_scope)) .historical_error("policy", "Historical delivery leaves permitted HTTPS GitHub asset scope")
-    response <- .request(url, "HEAD", NULL)
+    response <- call(url, "HEAD", NULL)
     status <- response$status_code
     if (status %in% c(301L, 302L, 303L, 307L, 308L)) {
-      headers <- curl::parse_headers_list(response$headers)
-      if (sum(names(headers) == "location") != 1L) .historical_error("integrity", "Historical delivery redirect has no unique location")
-      location <- headers$location
+      parsed <- curl::parse_headers_list(response$headers)
+      if (sum(names(parsed) == "location") != 1L) .historical_error("integrity", "Historical delivery redirect has no unique location")
+      location <- parsed$location
       if (!.historical_text(location)) .historical_error("integrity", "Historical delivery redirect has no unique location")
       if (grepl("^/[^/]", location)) {
         origin <- sub("^(https://[^/]+).*", "\\1", url)
@@ -521,12 +558,66 @@ historical_cache_recover <- function(root = NULL) {
       url <- location
       next
     }
-    if (!identical(as.integer(status), 200L)) .historical_error("transport", paste("Pinned historical asset HEAD returned HTTP", status), status_code = status)
-    result <- .request(url, "GET", emit)
+    if (!identical(as.integer(status), 200L)) return(list(status = status, hop = hop))
+    result <- call(url, "GET", emit)
     if (!identical(as.integer(result$status_code), 200L)) .historical_error("transport", "Pinned historical asset changed status or redirect between HEAD and GET", status_code = result$status_code)
-    return(invisible(NULL))
+    return(NULL)
   }
   .historical_error("transport", "Historical delivery exceeded its bounded redirect chain")
+}
+# Private-repository release assets: GitHub answers the anonymous URL with 404.
+# With a token, the API asset route answers 302 to a signed URL on another
+# host, fetched with no Authorization header.
+.historical_github_private_release <- function(release, emit, .request, token, asset_id = NULL) {
+  api <- paste0("https://api.github.com/repos/", release$owner, "/", release$repo)
+  auth <- c(Authorization = paste("Bearer", token), `X-GitHub-Api-Version` = "2022-11-28")
+  on_github <- function(accept) function(url) {
+    if (.historical_github_auth_host(url)) c(auth, Accept = accept) else character()
+  }
+  if (!.historical_number(asset_id, 1)) {
+    body <- raw()
+    collect <- function(chunk) {
+      if (length(body) + length(chunk) > 2^24) .historical_error("integrity", "GitHub release listing exceeds its bound")
+      body <<- c(body, chunk)
+      invisible(NULL)
+    }
+    listing_url <- paste0(api, "/releases/tags/", release$tag)
+    failed <- .historical_github_follow(listing_url, collect, .request, on_github("application/vnd.github+json"))
+    if (!is.null(failed)) .historical_error("transport", paste("GitHub release lookup returned HTTP", failed$status), status_code = failed$status)
+    listing <- tryCatch(jsonlite::fromJSON(rawToChar(body), simplifyVector = FALSE), error = function(e) NULL)
+    ids <- unlist(lapply(listing$assets, function(a) if (identical(a$name, release$name)) a$id), use.names = FALSE)
+    if (length(ids) != 1L || !.historical_number(ids[[1L]], 1)) .historical_error("transport", "GitHub release has no unique asset of the pinned name")
+    asset_id <- ids[[1L]]
+  }
+  url <- paste0(api, "/releases/assets/", format(asset_id, scientific = FALSE, trim = TRUE))
+  failed <- .historical_github_follow(url, emit, .request, on_github("application/octet-stream"))
+  if (!is.null(failed)) .historical_error("transport", paste("Authenticated GitHub release asset HEAD returned HTTP", failed$status), status_code = failed$status)
+  invisible(NULL)
+}
+.historical_github_transport <- function(url, emit, .request = .historical_github_request,
+                                         .token = NULL, .asset_id = NULL) {
+  # Resolve redirects without automatic following. HEAD transfers no payload;
+  # every next destination is checked before contacting it. GET never follows
+  # a redirect that differs from the checked HEAD chain. Public assets are
+  # always fetched anonymously; a token is looked up only after the pinned
+  # release URL answers 404. A substituted request layer is a test double and
+  # gets a token only when the caller passes .token explicitly.
+  pages_scope <- .historical_pages_scope(url)
+  failed <- .historical_github_follow(url, emit, .request, pages_scope = pages_scope)
+  if (is.null(failed)) return(invisible(NULL))
+  release <- .historical_release_parts(url)
+  if (identical(as.integer(failed$status), 404L) && identical(failed$hop, 0L) && !is.null(release)) {
+    if (is.null(.token)) {
+      .token <- if (identical(.request, .historical_github_request)) .historical_github_token else function() NULL
+    }
+    token <- .token()
+    if (is.null(token)) .historical_error("transport", paste(
+      "Pinned historical asset HEAD returned HTTP 404. A private-repository release asset",
+      "needs a GitHub token: set GITHUB_PAT or GITHUB_TOKEN, or sign in with `gh auth login`"),
+      status_code = 404L)
+    return(.historical_github_private_release(release, emit, .request, token, .asset_id))
+  }
+  .historical_error("transport", paste("Pinned historical asset HEAD returned HTTP", failed$status), status_code = failed$status)
 }
 .historical_download <- function(asset, destination, transport = NULL) {
   for (attempt in seq_len(3L)) {
@@ -551,7 +642,12 @@ historical_cache_recover <- function(root = NULL) {
     }
     retry_error <- tryCatch({
       if (is.null(transport)) {
-        .historical_github_transport(asset$storage$download_url, emit)
+        # The pinned release asset id lets a private-repository fetch skip
+        # the tag lookup; a transport double without .asset_id gets two arguments.
+        if (identical(asset$storage$backend, "release_asset") &&
+            ".asset_id" %in% names(formals(.historical_github_transport))) {
+          .historical_github_transport(asset$storage$download_url, emit, .asset_id = asset$storage$asset_id)
+        } else .historical_github_transport(asset$storage$download_url, emit)
       } else transport(asset$storage$download_url, emit)
       NULL
     }, error = function(e) {

@@ -209,3 +209,134 @@ test_that("a source reservation counts source bytes only, never processed-v1 bes
     historical_with_reserved_workspace(numeric(), 1500, function(w) "ran", root = root), "ran")
   expect_true(file.exists(file.path(processed, "big.rds")))
 })
+
+# Private-repository release assets (2026-11-09). GitHub answers the anonymous
+# release URL of a private repository with 404. With the user's token the API
+# asset route answers 302 to a signed URL on another host, which must be
+# fetched without the token. The request layer is a double here; no test
+# touches the network or a real credential.
+release_fixture <- function(private = TRUE) {
+  bytes <- charToRaw("private release asset bytes")
+  signed <- "https://release-assets.githubusercontent.com/github-production-release-asset/1/abc?sig=x"
+  log <- list()
+  request <- function(url, method, emit, headers = character()) {
+    log[[length(log) + 1L]] <<- list(url = url, method = method, headers = headers)
+    redirect <- function(to) list(status_code = 302L, headers = charToRaw(paste0("HTTP/2 302\r\nlocation: ", to, "\r\n\r\n")))
+    if (startsWith(url, "https://github.com/")) {
+      if (private) return(list(status_code = 404L)) else return(redirect(signed))
+    }
+    if (startsWith(url, "https://api.github.com/")) {
+      if (!identical(unname(headers[["Authorization"]]), "Bearer tok-SECRET-123")) return(list(status_code = 404L))
+      if (grepl("/releases/tags/", url)) {
+        if (identical(method, "GET")) emit(charToRaw('{"assets":[{"id":11,"name":"other.zip"},{"id":727,"name":"x.zip"}]}'))
+        return(list(status_code = 200L))
+      }
+      if (grepl("/releases/assets/727$", url) && identical(unname(headers[["Accept"]]), "application/octet-stream")) return(redirect(signed))
+      return(list(status_code = 403L))
+    }
+    if (identical(url, signed)) {
+      if (identical(method, "GET")) emit(bytes)
+      return(list(status_code = 200L))
+    }
+    stop("unexpected host: ", url)
+  }
+  list(bytes = bytes, signed = signed, request = request, log = function() log,
+       url = "https://github.com/almartin82/zzschooldata/releases/download/sources-1/x.zip")
+}
+collect_bytes <- function() {
+  got <- raw()
+  list(emit = function(chunk) { got <<- c(got, chunk); invisible(NULL) }, bytes = function() got)
+}
+no_gh_path <- function(env = parent.frame()) withr::local_envvar(PATH = withr::local_tempdir(.local_envir = env), .local_envir = env)
+fake_gh <- function(body, env = parent.frame()) {
+  dir <- withr::local_tempdir(.local_envir = env)
+  writeLines(c("#!/bin/sh", body), file.path(dir, "gh"))
+  Sys.chmod(file.path(dir, "gh"), "755")
+  withr::local_envvar(PATH = dir, .local_envir = env)
+}
+
+test_that("the GitHub token comes from GITHUB_PAT, then GITHUB_TOKEN, then gh auth token, else NULL", {
+  fake_gh(c('[ "$1 $2" = "auth token" ] || exit 2', 'echo "gho-from-gh"'))
+  withr::local_envvar(GITHUB_PAT = "pat-1", GITHUB_TOKEN = "tok-2")
+  expect_identical(.historical_github_token(), "pat-1")
+  withr::local_envvar(GITHUB_PAT = NA)
+  expect_identical(.historical_github_token(), "tok-2")
+  withr::local_envvar(GITHUB_TOKEN = NA)
+  expect_identical(.historical_github_token(), "gho-from-gh")
+  fake_gh(c('echo "not logged in" >&2', "exit 1"))
+  expect_null(.historical_github_token())
+  no_gh_path()
+  expect_null(.historical_github_token())
+})
+
+test_that("a private release asset is fetched with the token on api.github.com only, never on the redirected host", {
+  fx <- release_fixture()
+  no_gh_path()
+  withr::local_envvar(GITHUB_PAT = "tok-SECRET-123", GITHUB_TOKEN = NA)
+  out <- collect_bytes()
+  .historical_github_transport(fx$url, out$emit, .request = fx$request,
+                               .token = .historical_github_token, .asset_id = 727)
+  expect_identical(out$bytes(), fx$bytes)
+  log <- fx$log()
+  urls <- vapply(log, `[[`, "", "url")
+  authed <- vapply(log, function(r) "Authorization" %in% names(r$headers), logical(1))
+  expect_identical(urls, c(fx$url, "https://api.github.com/repos/almartin82/zzschooldata/releases/assets/727",
+                           fx$signed, fx$signed))
+  expect_identical(authed, c(FALSE, TRUE, FALSE, FALSE))
+  expect_true(all(vapply(log[urls == fx$signed], function(r) length(r$headers) == 0L, logical(1))))
+})
+
+test_that("without a pinned asset id the id is resolved by tag and name through the API", {
+  fx <- release_fixture()
+  out <- collect_bytes()
+  .historical_github_transport(fx$url, out$emit, .request = fx$request, .token = function() "tok-SECRET-123")
+  expect_identical(out$bytes(), fx$bytes)
+  urls <- vapply(fx$log(), `[[`, "", "url")
+  expect_true("https://api.github.com/repos/almartin82/zzschooldata/releases/tags/sources-1" %in% urls)
+  expect_true("https://api.github.com/repos/almartin82/zzschooldata/releases/assets/727" %in% urls)
+})
+
+test_that("with no token a private asset is a clear transport error and nothing else is contacted", {
+  fx <- release_fixture()
+  no_gh_path()
+  withr::local_envvar(GITHUB_PAT = NA, GITHUB_TOKEN = NA)
+  caught <- tryCatch(.historical_github_transport(fx$url, collect_bytes()$emit, .request = fx$request,
+                                                  .token = .historical_github_token, .asset_id = 727),
+                     error = identity)
+  expect_s3_class(caught, "historical_transport_error")
+  expect_identical(caught$status_code, 404L)
+  expect_match(conditionMessage(caught), "GITHUB_PAT or GITHUB_TOKEN")
+  expect_identical(vapply(fx$log(), `[[`, "", "url"), fx$url)
+  # Through the download layer: no retry, no other host.
+  fx2 <- release_fixture()
+  asset <- list(artifact_id = "x", byte_length = length(fx2$bytes),
+                storage = list(backend = "release_asset", download_url = fx2$url, asset_id = 727))
+  caught <- tryCatch(.historical_download(asset, withr::local_tempfile(), function(url, emit)
+    .historical_github_transport(url, emit, .request = fx2$request, .token = function() NULL)), error = identity)
+  expect_s3_class(caught, "historical_transport_error")
+  expect_identical(vapply(fx2$log(), `[[`, "", "url"), fx2$url)
+})
+
+test_that("a public release asset stays anonymous and never looks a token up", {
+  fx <- release_fixture(private = FALSE)
+  out <- collect_bytes()
+  .historical_github_transport(fx$url, out$emit, .request = fx$request,
+                               .token = function() stop("token looked up for a public asset"))
+  expect_identical(out$bytes(), fx$bytes)
+  expect_false(any(vapply(fx$log(), function(r) length(r$headers) > 0L, logical(1))))
+})
+
+test_that("the token never appears in an error, and is refused for any other host", {
+  fx <- release_fixture()
+  caught <- tryCatch(.historical_github_transport(fx$url, collect_bytes()$emit, .request = fx$request,
+                                                  .token = function() "tok-SECRET-123", .asset_id = 999),
+                     error = identity)
+  expect_s3_class(caught, "historical_transport_error")
+  expect_identical(caught$status_code, 403L)
+  expect_false(grepl("SECRET", paste(conditionMessage(caught), paste(deparse(unclass(caught)), collapse = ""))))
+  # The real request layer refuses before any connection is made.
+  caught <- tryCatch(.historical_github_request("https://objects.githubusercontent.com/x", "HEAD", NULL,
+                                                c(Authorization = "Bearer tok-SECRET-123")), error = identity)
+  expect_s3_class(caught, "historical_policy_error")
+  expect_false(grepl("SECRET", paste(conditionMessage(caught), paste(deparse(unclass(caught)), collapse = ""))))
+})
