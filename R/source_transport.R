@@ -44,6 +44,21 @@
   )
 }
 
+# Kept behaviour, pending a fleet ruling (to converge). The canonical
+# classifier treats HTTP 404/410 and a TLS certificate verification failure as
+# loud errors, not source failures. njschooldata has always reported both as
+# `source_unavailable` (404/410 without a retry, TLS verification with the
+# usual retries), and keeps doing so until that ruling lands. Only these two
+# cases are carved out; every other unclassified status or request error is
+# raised loudly.
+.njsd_kept_source_failure_status <- function(status) {
+  status %in% c(404L, 410L)
+}
+
+.njsd_kept_source_failure_error <- function(e) {
+  inherits(e, "curl_error_peer_failed_verification")
+}
+
 .default_source_request <- function(url, dest, timeout,
                                     user_agent = .source_user_agent()) {
   response <- httr::GET(
@@ -440,14 +455,29 @@ download_source <- function(url, source_type, cache_path = NULL,
       error = function(error) error
     )
 
+    # The vendored classifier (R/transport.R) decides what is NJ DOE's
+    # failure. Only a curl failure to reach the host, or HTTP 408/429/500/
+    # 502/503/504, is retried and reported as `source_unavailable`. Any other
+    # request error is ours and is re-raised untouched; any other error status
+    # (a 403 for a header we sent, a 400 for a query we built) is raised loudly
+    # as its `http_<status>` condition, never blamed on the department.
+    # Two cases keep their earlier behaviour until the fleet rules on them
+    # (.njsd_kept_source_failure_status() and _error(), above).
     if (inherits(response, "error")) {
+      if (!transport_is_transport_failure(response) &&
+          !.njsd_kept_source_failure_error(response)) stop(response)
       last_error <- response
       transient <- TRUE
     } else {
       status <- as.integer(response$status_code %||% 0L)
-      transient <- status %in% c(408L, 425L, 429L) || status >= 500L
       if (status >= 200L && status < 300L) break
-      last_error <- simpleError(paste0("HTTP ", status, " for ", url))
+      message <- paste0("HTTP ", status, " for ", url)
+      transient <- transport_status_classified(status)
+      if (!transient && !.njsd_kept_source_failure_status(status)) {
+        transport_stop_for_status(list(status_code = status, url = url), "njsd",
+                                  message = message)
+      }
+      last_error <- simpleError(message)
     }
     if (!transient || attempt > retries) break
     sleep_fn(min(2^(attempt - 1L), 4L))

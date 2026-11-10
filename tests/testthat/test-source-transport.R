@@ -87,6 +87,57 @@ test_that("HTTP failures and retry exhaustion are source outages", {
   expect_match(result$error, "HTTP 503")
 })
 
+test_that("only classified transport failures are source outages", {
+  url <- "https://www.nj.gov/classified.csv"
+  counted <- function(status = 200L, error = NULL) {
+    calls <- 0L
+    list(
+      request = function(url, dest, timeout) {
+        calls <<- calls + 1L
+        if (!is.null(error)) stop(error)
+        list(status_code = status, final_url = url, content_type = "text/plain")
+      },
+      calls = function() calls
+    )
+  }
+  curl_condition <- function(class) {
+    structure(list(message = paste("diagnostic", class), call = NULL),
+              class = c(class, "error", "condition"))
+  }
+  no_sleep <- function(seconds) NULL
+
+  # A curl failure to reach the host is retried and is a source outage.
+  outage <- counted(error = curl_condition("curl_error_couldnt_connect"))
+  result <- download_source(url, "csv", request_fn = outage$request,
+                            retries = 1L, sleep_fn = no_sleep)
+  expect_identical(result$source_status, "source_unavailable")
+  expect_identical(outage$calls(), 2L)
+
+  # A status we caused (403 for a header we sent, 400, 501) is loud, not retried.
+  for (status in c(400L, 403L, 425L, 501L)) {
+    refused <- counted(status = status)
+    expect_error(download_source(url, "csv", request_fn = refused$request,
+                                 retries = 2L, sleep_fn = no_sleep),
+                 class = paste0("http_", status))
+    expect_identical(refused$calls(), 1L)
+  }
+
+  # Kept until the fleet rules: 404/410 stay source outages without a retry,
+  # TLS certificate verification failure stays a retried source outage.
+  for (status in c(404L, 410L)) {
+    gone <- counted(status = status)
+    result <- download_source(url, "csv", request_fn = gone$request,
+                              retries = 2L, sleep_fn = no_sleep)
+    expect_identical(result$source_status, "source_unavailable")
+    expect_identical(gone$calls(), 1L)
+  }
+  tls <- counted(error = curl_condition("curl_error_peer_failed_verification"))
+  result <- download_source(url, "csv", request_fn = tls$request,
+                            retries = 1L, sleep_fn = no_sleep)
+  expect_identical(result$source_status, "source_unavailable")
+  expect_identical(tls$calls(), 2L)
+})
+
 test_that("HTML masquerading as XLSX and corrupt archives are parse errors", {
   html <- download_source(
     "https://www.nj.gov/error.xlsx",

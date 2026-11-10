@@ -44,6 +44,11 @@ test_that("actual transport releases failed acquisition and exposes owned succes
     }
     if (exit == "interrupt") {
       expect_true(tryCatch({ download_source(url,"xlsx",request_fn=request,retries=0L); FALSE }, interrupt=function(e) TRUE))
+    } else if (exit == "error") {
+      # A plain request error is not a transport failure: it is re-raised, never
+      # reported as the department's `source_unavailable`.
+      expect_error(download_source(url,"xlsx",request_fn=request,retries=0L),
+                   "diagnostic request error")
     } else {
       result <- download_source(url,"xlsx",request_fn=request,retries=0L)
       if (exit == "success") {
@@ -51,7 +56,7 @@ test_that("actual transport releases failed acquisition and exposes owned succes
         expect_true(file.exists(owned))
         .release_source_result(result)
         .release_source_result(result)
-      } else expect_identical(result$source_status,"source_unavailable")
+      }
     }
     expect_false(file.exists(owned))
   }
