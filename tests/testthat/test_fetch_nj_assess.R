@@ -144,3 +144,76 @@ test_that("legacy layouts load without attaching the package", {
   if (is.null(status)) status <- 0L
   expect_equal(status, 0L, info = paste(output, collapse = "\n"))
 })
+
+# Real source bytes, including the single-byte Windows-1252 en dash. Mock only
+# transport: the public fetcher, actual layouts, reader, processor and tidier run.
+legacy_fixture_transport <- function(file, env = parent.frame()) {
+  fixture <- testthat::test_path("fixtures", "legacy-assessment", file)
+  testthat::local_mocked_bindings(
+    download_source = function(url, source_type, ...) {
+      path <- tempfile()
+      file.copy(fixture, path)
+      new_source_result(path, "actual", source_url = url)
+    }, .package = "njschooldata", .env = env
+  )
+}
+
+for (case in list(
+  list(year = 2013L, grade = 6L, values = rep(NA_real_, 4)),
+  list(year = 2013L, grade = 7L, values = c(278, 43.9, 51.8, 4.3)),
+  list(year = 2013L, grade = 8L, values = c(294, 27.6, 69.0, 3.4)),
+  list(year = 2014L, grade = 7L, values = c(251, 50.2, 42.2, 7.6)),
+  list(year = 2014L, grade = 8L, values = c(279, 26.2, 66.3, 7.5))
+)) {
+  test_that(paste("single-byte NJASK names preserve fields", case$year, case$grade), {
+    legacy_fixture_transport(paste0("njask-", case$year, "-", case$grade, ".txt"))
+    out <- suppressMessages(suppressWarnings(
+      fetch_old_nj_assess(case$year, case$grade, tidy = TRUE)
+    ))
+    expect_equal(nrow(out), 180L)
+    expect_equal(c(sum(out$is_state), sum(out$is_district), sum(out$is_school)),
+                 c(60, 60, 60))
+    expect_true(all(out$testing_year == case$year))
+    rahway <- out[out$is_school, ]
+    expect_true(all(rahway$school_name == "RAHWAY 7 \u2013 8 ACADEMY"))
+    expect_true(all(rahway$county_code == "39"))
+    expect_true(all(rahway$district_code == "4290"))
+    expect_true(all(rahway$school_code == "060"))
+    cell <- rahway[rahway$subgroup == "total_population" &
+                     rahway$test_name == "language_arts", ]
+    expect_equal(nrow(cell), 1L)
+    # Raw byte fields: 187:192, 193:196, 197:200, 201:204. Percentages
+    # have one implied decimal; all four cells are '*' for 2013 grade 6.
+    expect_equal(unname(unlist(cell[c("number_valid_scale_scores",
+      "partially_proficient", "proficient", "advanced_proficient")])), case$values)
+  })
+}
+
+for (case in list(
+  list(year = 2012L, values = c(96413, 8.5, 69.7, 21.8)),
+  list(year = 2013L, values = c(95571, 8.4, 65.0, 26.6)),
+  list(year = 2014L, values = c(97091, 6.7, 60.4, 32.8))
+)) {
+  test_that(paste("HSPA blank final numeric fields stay numeric", case$year), {
+    legacy_fixture_transport(paste0("hspa-", case$year, ".txt"))
+    wide <- suppressWarnings(fetch_hspa(case$year))
+    final <- "SCIENCE_SPECIAL_EDUCATION_WITH_ACCOMMODATIONS_Advanced_Proficient_Percentage"
+    expect_type(wide[[final]], "double")
+    expect_true(all(is.na(wide[[final]])))
+    out <- suppressMessages(suppressWarnings(
+      fetch_old_nj_assess(case$year, 11, tidy = TRUE)
+    ))
+    expect_equal(nrow(out), 207L)
+    expect_equal(c(sum(out$is_state), sum(out$is_district), sum(out$is_school)),
+                 c(69, 69, 69))
+    expect_type(out$advanced_proficient, "double")
+    expect_true(all(is.na(out$advanced_proficient[
+      out$subgroup == "sped_accomodations" & out$test_name == "science"])))
+    cell <- out[out$is_state & out$subgroup == "total_population" &
+                  out$test_name == "language_arts", ]
+    expect_equal(nrow(cell), 1L)
+    # Raw fields 181:186, 187:190, 191:194, 195:198.
+    expect_equal(unname(unlist(cell[c("number_valid_scale_scores",
+      "partially_proficient", "proficient", "advanced_proficient")])), case$values)
+  })
+}

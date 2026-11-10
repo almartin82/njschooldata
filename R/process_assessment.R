@@ -28,16 +28,17 @@ process_nj_assess <- function(df, layout) {
   # Make sure df is data frame (not dplyr data frame) so that normal subsetting
   df <- as.data.frame(df)
 
-  # Get name of last column and kill \n characters
-  last_col <- names(df)[ncol(df)]
-  df[, last_col] <- gsub("\n", "", df[, last_col], fixed = TRUE)
+  # read_fwf already removes record terminators and parses numeric fields.
+  # Running gsub on the last field coerces even an all-NA numeric column to
+  # character, which makes HSPA's final science block impossible to bind.
 
   # Put some columns aside
   ignore <- df[, !mask]
 
   implied_decimal_fix <- function(x) {
-    # Strip out anything that's not a number.
-    x <- as.numeric(gsub("[^\\d]+", "", x, perl = TRUE))
+    # Parse whole cells: suppression/range/text tokens must never turn into
+    # numbers by stripping their non-digits (e.g. '<5' must not become 5).
+    x <- suppressWarnings(as.numeric(x))
     x / 10
   }
 

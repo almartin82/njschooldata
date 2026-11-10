@@ -629,17 +629,19 @@ common_fwf_req <- function(url, layout) {
   transport <- download_source(url, source_type = "text")
   source_path <- source_result_data(transport)
   on.exit(unlink(source_path), add = TRUE)
+  # Layout positions count source bytes. Transcoding to UTF-8 before slicing
+  # expands Windows-1252 punctuation (e.g. Rahway's 0x96) and shifts fields.
   raw_fwf <- readLines(source_path)
-  raw_fwf <- iconv(raw_fwf, "LATIN2", "UTF-8")
-  num_lines <- lapply(raw_fwf, nchar) %>% unlist()
+  Encoding(raw_fwf) <- "bytes"
+  num_lines <- nchar(raw_fwf, type = "bytes")
 
   #if everything is consistent, great.  if the fwf is ragged, trim whitespace.
   if (any(num_lines < max(num_lines))) {
-    raw_fwf <- raw_fwf %>% gsub("[[:space:]]*$","", .)
+    raw_fwf <- gsub("[[:space:]]*$", "", raw_fwf, useBytes = TRUE)
   }
 
   #check that incoming response (when cleaned) is of consistent length.
-  if (!nchar(raw_fwf) %>% unique() %>% length() == 1) {
+  if (length(unique(nchar(raw_fwf, type = "bytes"))) != 1L) {
     warning("the fixed width input file is not fixed - rows are of different length.")
     warning("truncating rows that are too wide, and padding rows that are too short...")
   }
@@ -648,8 +650,14 @@ common_fwf_req <- function(url, layout) {
   #additionally, some layouts call for data that there is data that really isnt there.
   #(aka science).
   #right pad them to the full extent of the array OR layout
-  max_extent <- max(nchar(raw_fwf), max(layout$field_end_position))
-  raw_fwf <- sprintf(paste0('%-', max_extent, 's'), raw_fwf)
+  max_extent <- max(nchar(raw_fwf, type = "bytes"), max(layout$field_end_position))
+  raw_fwf <- paste0(raw_fwf, strrep(" ", max_extent - nchar(raw_fwf, type = "bytes")))
+
+  # Keep the original single-byte representation until readr has sliced the
+  # fields; decode each field with the source's Windows-1252 encoding.
+  parse_path <- tempfile(fileext = ".txt")
+  on.exit(unlink(parse_path), add = TRUE)
+  writeLines(raw_fwf, parse_path, useBytes = TRUE)
 
   # Detect and drop redundant composite fields (the composite county-
   # district-school identifier, plus any RECORD_KEY) that overlap their
@@ -660,13 +668,14 @@ common_fwf_req <- function(url, layout) {
 
   #read_fwf
   df <- readr::read_fwf(
-    file = raw_fwf %>% paste(collapse = '\n'),
+    file = parse_path,
     col_positions = readr::fwf_positions(
       start = parse_layout$field_start_position,
       end = parse_layout$field_end_position,
       col_names = parse_layout$final_name
     ),
     col_types = nj_coltype_parser(parse_layout$data_type),
+    locale = readr::locale(encoding = "windows-1252"),
     na = "*",
     progress = TRUE
   )
