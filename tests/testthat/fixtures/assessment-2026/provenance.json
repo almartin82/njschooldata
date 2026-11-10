@@ -1,0 +1,110 @@
+[
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njsla/MAT04_NJSLA_DATA_2025_26.xlsx",
+    "source_sha256": "d4fb00b3ff5fd263353858e840a30730a93f39459c9db76ef3a5236db71f575b",
+    "fixture": "MAT04_NJSLA_DATA_2025_26.xlsx",
+    "fixture_sha256": "3243d68d7dfb28f00bce74dc7a914147dfe91468855a63afa8196960b83e11f4",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      24,
+      34136,
+      34159,
+      34160,
+      34161
+    ]
+  },
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njsla/ALG01_NJSLA_DATA_2025_26.xlsx",
+    "source_sha256": "8d2b5dfe55938f422c1b39e18860b8f2935d36ba137368d38585e186962c6e30",
+    "fixture": "ALG01_NJSLA_DATA_2025_26.xlsx",
+    "fixture_sha256": "be1c37dae8b01792b1529b062dff5827102c8ce61df2cdc884efd5e1667c9655",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      22,
+      28839,
+      28867,
+      28868,
+      28869
+    ]
+  },
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njsla/ELA03_NJSLA_DATA_2025_26.xlsx",
+    "source_sha256": "48b51d3991c6695e4e60b080e5d9f7ce8adff562db3a07de887141ab03f1ad62",
+    "fixture": "ELA03_NJSLA_DATA_2025_26.xlsx",
+    "fixture_sha256": "0fe9542b05db3a5feecd49093e6a49bc6bde0a8713b05a05f91a4a3547708410",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      24,
+      34741,
+      34764,
+      34765,
+      34766
+    ]
+  },
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njgpa/ELAGP_NJGPA_DATA_2025_26.xlsx",
+    "source_sha256": "0330b544c20d2e368a524332f7ceb7f64e0044203eff833e8b68cebff16e3d91",
+    "fixture": "ELAGP_NJGPA_DATA_2025_26.xlsx",
+    "fixture_sha256": "c9f5437a2778341e3b70bd86ffbccbfe0dbc54034a94ad330901008d5501e0dd",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      25,
+      15029,
+      15052,
+      15053
+    ]
+  },
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njgpa/MATGP_NJGPA_DATA_2025_26.xlsx",
+    "source_sha256": "556ce83ea95696542456098916b46a57016a9f6b6aa49b4554129ab3dbc569f8",
+    "fixture": "MATGP_NJGPA_DATA_2025_26.xlsx",
+    "fixture_sha256": "c4f9e806d4e5215b606818dc60292413c9c511c9a3f6b8ab38b40ca54b6d0fe5",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      25,
+      15022,
+      15045,
+      15046
+    ]
+  },
+  {
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/2526/njsla/SC05_NJSLA_DATA_2025_26.xlsx",
+    "source_sha256": "94c1f43d8f15c42f938d8a92f653a8274f58ce6f4bf765ea59fc698e535e2c06",
+    "fixture": "SC05_NJSLA_DATA_2025_26.xlsx",
+    "fixture_sha256": "5270cd6f8acb8c328e4292a60c159b6322f381beecc34322ad67bd96dfaa7163",
+    "source_rows": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      24,
+      32302,
+      32325,
+      32326,
+      32327
+    ]
+  }
+]

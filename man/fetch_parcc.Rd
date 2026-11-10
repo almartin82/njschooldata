@@ -8,7 +8,7 @@ fetch_parcc(end_year, grade_or_subj, subj, tidy = FALSE)
 }
 \arguments{
 \item{end_year}{A school year. end_year is the end of the academic year - eg 2014-15
-school year is end_year 2015. Valid values are 2015-2025.}
+school year is end_year 2015. Valid values are 2015-2019 and 2022-2026.}
 
 \item{grade_or_subj}{Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2).
 For science, valid grades are 5, 8, and 11.}
@@ -25,6 +25,10 @@ from each row's own published performance-level percent and its own
 published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
 `value_source` marks each row `"derived_from_pct"` or, where
 `number_of_valid_scale_scores` was NA, `"published_pct_only"`.
+`assessment_era` distinguishes the 2026 ELA/math scale from earlier NJSLA;
+scores and performance standards across eras are not comparable.
+`suppressed` flags rows with any asterisk-masked source measure; those
+cells remain NA (including counts when only a percentage is available).
 }
 \description{
 `fetch_parcc` is a wrapper around `get_raw_parcc` and `process_parcc`

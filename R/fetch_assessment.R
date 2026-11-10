@@ -9,13 +9,23 @@
 
 .parse_assessment_workbook <- function(path, skip) {
   data <- readxl::read_excel(
-    path = path, skip = skip, na = "*", guess_max = 30000
+    path = path, skip = skip, na = character(), guess_max = 30000
   )
-  if (nrow(data) < 3L) {
-    stop("Assessment workbook has no data rows before its two note rows.",
-         call. = FALSE)
+  # NJGPA 2026 has only an end marker; its suppression note is ABOVE the
+  # header. Dropping two trailing rows would discard the final State subgroup.
+  footer <- grepl("^\\*|^end of worksheet$", trimws(data[[1L]]),
+                  ignore.case = TRUE)
+  data <- data[!footer, , drop = FALSE]
+  if (!nrow(data)) {
+    stop("Assessment workbook has no data rows.", call. = FALSE)
   }
-  data[seq_len(nrow(data) - 2L), , drop = FALSE]
+  # Retain a row-level flag before converting published asterisks to NA.
+  # The first eight columns are identifiers/subgroup labels, not measures.
+  suppressed <- rowSums(as.matrix(data[, 9:ncol(data)]) == "*",
+                        na.rm = TRUE) > 0L
+  data[] <- lapply(data, function(x) { x[x == "*"] <- NA; x })
+  attr(data, "suppressed") <- suppressed
+  data
 }
 
 .assessment_source_result <- function(url, skip,
@@ -122,7 +132,7 @@ get_raw_njgpa <- function(end_year, subj) {
 #' that gets a parcc file and performs any cleanup.
 #'
 #' @param end_year A school year. end_year is the end of the academic year - eg 2014-15
-#' school year is end_year 2015. Valid values are 2015-2025.
+#' school year is end_year 2015. Valid values are 2015-2019 and 2022-2026.
 #' @param grade_or_subj Grade level (eg 8) OR math subject code (eg ALG1, GEO, ALG2).
 #'   For science, valid grades are 5, 8, and 11.
 #' @param subj Assessment subject: 'ela', 'math', or 'science'.
@@ -134,6 +144,10 @@ get_raw_njgpa <- function(end_year, subj) {
 #' published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
 #' `value_source` marks each row `"derived_from_pct"` or, where
 #' `number_of_valid_scale_scores` was NA, `"published_pct_only"`.
+#' `assessment_era` distinguishes the 2026 ELA/math scale from earlier NJSLA;
+#' scores and performance standards across eras are not comparable.
+#' `suppressed` flags rows with any asterisk-masked source measure; those
+#' cells remain NA (including counts when only a percentage is available).
 #' @export
 #' @examples
 #' \dontrun{
@@ -192,11 +206,13 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' requirement assessment introduced in 2022, replacing the previous PARCC-based
 #' graduation pathway.
 #'
-#' @param end_year A school year. Valid values are 2022-2025.
+#' @param end_year A school year. Valid values are 2022-2026.
 #' @param subj Assessment subject: 'ela' or 'math'
 #' @param tidy Clean up the data frame? Default is FALSE.
 #' @return Processed NJGPA dataframe, carrying the same
 #' `num_l1`/`num_l2`-plus-`value_source` derivation as [fetch_parcc()].
+#' `assessment_era` distinguishes the 2026 scale; scores are not rescaled.
+#' `suppressed` flags rows with any asterisk-masked source measure.
 #' @export
 #' @examples
 #' \dontrun{
@@ -238,13 +254,13 @@ fetch_njgpa <- function(end_year, subj, tidy = FALSE) {
   years <- get_source_years("parcc")
   requests <- list()
   for (year in years) {
-    ela_grades <- if (year >= 2019) 3:10 else 3:11
+    ela_grades <- if (year == 2026L) 3:9 else if (year >= 2019) 3:10 else 3:11
     requests[[length(requests) + 1L]] <- expand.grid(
-      end_year = year, grade = ela_grades, subject = "ela",
+      end_year = year, grade = as.character(ela_grades), subject = "ela",
       stringsAsFactors = FALSE
     )
     requests[[length(requests) + 1L]] <- expand.grid(
-      end_year = year, grade = 3:8, subject = "math",
+      end_year = year, grade = as.character(3:8), subject = "math",
       stringsAsFactors = FALSE
     )
     requests[[length(requests) + 1L]] <- expand.grid(
@@ -253,7 +269,7 @@ fetch_njgpa <- function(end_year, subj, tidy = FALSE) {
     )
     if (isTRUE(include_science) && year >= 2019) {
       requests[[length(requests) + 1L]] <- expand.grid(
-        end_year = year, grade = c(5, 8, 11), subject = "science",
+        end_year = year, grade = as.character(c(5, 8, 11)), subject = "science",
         stringsAsFactors = FALSE
       )
     }

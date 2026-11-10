@@ -3,9 +3,9 @@ test_that("the source registry owns verified boundary and skipped years", {
   expect_equal(get_available_years("enrollment"), 1999:2026)
 
   parcc <- get_valid_years("parcc")
-  expect_equal(max(parcc), 2025)
+  expect_equal(max(parcc), 2026)
   expect_false(any(c(2020, 2021) %in% parcc))
-  expect_true(all(c(2015, 2019, 2022, 2025) %in% parcc))
+  expect_true(all(c(2015, 2019, 2022, 2025, 2026) %in% parcc))
 
   expect_equal(get_valid_years("grate_4yr"), 2011:2025)
   expect_equal(get_valid_years("grate_6yr"), 2021:2025)
@@ -101,7 +101,7 @@ test_that("README coverage agrees with the registry boundaries", {
     package_source_path("README.md"), warn = FALSE
   ), collapse = "\n")
   expect_match(readme, "Enrollment.*1999-2026")
-  expect_match(readme, "2015-2019 and 2022-2025")
+  expect_match(readme, "2015-2019 and 2022-2026")
   expect_match(readme, "Graduation.*2011-2025")
 })
 

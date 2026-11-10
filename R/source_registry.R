@@ -14,8 +14,8 @@
   ),
   parcc = list(
     aliases = c("parcc", "njsla"),
-    raw_years = c(2015:2019, 2022:2025),
-    tidy_years = c(2015:2019, 2022:2025),
+    raw_years = c(2015:2019, 2022:2026),
+    tidy_years = c(2015:2019, 2022:2026),
     skipped_years = c(2020L, 2021L),
     skipped_reasons = c(
       `2020` = "Assessments were cancelled due to COVID-19.",
@@ -27,8 +27,8 @@
   ),
   njgpa = list(
     aliases = "njgpa",
-    raw_years = 2022:2025,
-    tidy_years = 2022:2025,
+    raw_years = 2022:2026,
+    tidy_years = 2022:2026,
     skipped_years = integer(),
     source_type = "xlsx",
     hosts = "www.nj.gov",
@@ -464,6 +464,11 @@ source_host_allowlist <- function() {
                   subject_prefix, grade_token, ".xlsx"))
   }
 
+  if (end_year == 2026L) {
+    return(paste0(stem, school_year, "/njsla/", subject_prefix, grade_token,
+                  "_NJSLA_DATA_2025_26.xlsx"))
+  }
+
   year_suffix <- paste0(end_year - 1L, "-", substr(end_year, 3, 4))
   filename <- if (end_year == 2019 || end_year >= 2025) {
     paste0(subject_prefix, grade_token, "%20NJSLA%20DATA%20",
@@ -483,7 +488,9 @@ source_host_allowlist <- function() {
   )
   school_year <- paste0(substr(end_year - 1L, 3, 4), substr(end_year, 3, 4))
   suffix <- paste0(end_year - 1L, "-", substr(end_year, 3, 4))
-  filename <- if (end_year >= 2025) {
+  filename <- if (end_year == 2026L) {
+    paste0(prefix, "_NJGPA_DATA_2025_26.xlsx")
+  } else if (end_year >= 2025) {
     paste0(prefix, "%20NJGPA%20DATA%20", suffix, ".xlsx")
   } else {
     paste0(prefix, "_NJGPA_DATA_", suffix, ".xlsx")

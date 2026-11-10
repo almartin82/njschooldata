@@ -7,7 +7,7 @@
 fetch_njgpa(end_year, subj, tidy = FALSE)
 }
 \arguments{
-\item{end_year}{A school year. Valid values are 2022-2025.}
+\item{end_year}{A school year. Valid values are 2022-2026.}
 
 \item{subj}{Assessment subject: 'ela' or 'math'}
 
@@ -16,6 +16,8 @@ fetch_njgpa(end_year, subj, tidy = FALSE)
 \value{
 Processed NJGPA dataframe, carrying the same
 `num_l1`/`num_l2`-plus-`value_source` derivation as [fetch_parcc()].
+`assessment_era` distinguishes the 2026 scale; scores are not rescaled.
+`suppressed` flags rows with any asterisk-masked source measure.
 }
 \description{
 Downloads and processes NJGPA assessment results. NJGPA is the graduation

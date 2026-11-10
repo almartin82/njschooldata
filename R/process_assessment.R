@@ -81,6 +81,7 @@ parcc_column_order <- function(df) {
     dplyr::select(
       testing_year,
       assess_name,
+      dplyr::any_of("assessment_era"),
       test_name,
       grade,
       county_id, county_name,
@@ -96,6 +97,7 @@ parcc_column_order <- function(df) {
       # value_source is absent on rows that came through parcc_aggregate_calcs()
       # (an already-derived roll-up, not a same-cell conversion), hence one_of().
       dplyr::one_of("value_source"),
+      dplyr::any_of("suppressed"),
       dplyr::one_of("n_charter_rows", "n_schools", "tests", "districts", "schools"),
       is_state, is_dfg,
       is_district, is_school, is_charter,
@@ -111,7 +113,7 @@ parcc_column_order <- function(df) {
 #'
 #' @param parcc_file Output of get_raw_parcc
 #' @param end_year A school year. end_year is the end of the academic year - eg 2014-15
-#' school year is end_year 2015. Valid values are 2015-2024.
+#' school year is end_year 2015. Valid values are 2015-2019 and 2022-2026.
 #' @param grade Integer or character specifying grade level
 #' @param subj PARCC subject. c('ela', 'math', or 'science')
 #' @return A tbl_df / data frame
@@ -119,6 +121,7 @@ parcc_column_order <- function(df) {
 process_parcc <- function(parcc_file, end_year, grade, subj) {
 
   subj <- tolower(subj)
+  suppressed <- attr(parcc_file, "suppressed")
 
   # Different assessment types have different performance levels:
   # - NJGPA: 2 levels (L1-L2) - pass/fail for graduation
@@ -179,6 +182,8 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
     }
   }
 
+  if (!is.null(suppressed)) parcc_file$suppressed <- suppressed
+
   # Make some numeric
   parcc_file$number_enrolled <- as.numeric(parcc_file$number_enrolled)
   parcc_file$number_not_tested <- as.numeric(parcc_file$number_not_tested)
@@ -210,6 +215,19 @@ process_parcc <- function(parcc_file, end_year, grade, subj) {
     parcc_file$assess_name <- "NJGPA"
   } else {
     parcc_file$assess_name <- ifelse(end_year >= 2019, "NJSLA", "PARCC")
+  }
+  # Preserve the published scores. 2026 ELA/math and NJGPA use new scales;
+  # the existing assess_name stays stable while this additive field separates eras.
+  parcc_file$assessment_era <- if (is_science) {
+    "NJSLA-S"
+  } else if (end_year >= 2026) {
+    paste0(parcc_file$assess_name, "-2026")
+  } else if (is_njgpa) {
+    "NJGPA-2022-2025"
+  } else if (end_year >= 2019) {
+    "NJSLA-2019-2025"
+  } else {
+    "PARCC-2015-2018"
   }
   parcc_file$grade <- as.character(grade)
   parcc_file$test_name <- subj
