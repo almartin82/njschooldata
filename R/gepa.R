@@ -7,7 +7,7 @@
 #' school year is end_year '2007'.  valid values are 2004-2007.
 #' @param layout what layout dataframe to use.  default is layout_gepa.
 #' @keywords internal
-get_raw_gepa <- function(end_year, layout=layout_gepa) {
+get_raw_gepa <- function(end_year, layout=.legacy_assessment_layout("layout_gepa")) {
   filename <- list(
     "2007" = "state_summary.txt", "2006" = "state_summary.txt",
     "2005" = "2005njgepa_state_summary.txt", "2004" = "gepa04state_summary.txt"
@@ -35,17 +35,17 @@ get_raw_gepa <- function(end_year, layout=layout_gepa) {
 
 fetch_gepa <- function(end_year) {
   if (end_year == 2007) {
-    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa) %>% 
-      process_nj_assess(layout = layout_gepa) 
+    gepa_df <- get_raw_gepa(end_year, layout = .legacy_assessment_layout("layout_gepa")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_gepa"))
   } else if (end_year == 2006) {
-    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa06) %>% 
-      process_nj_assess(layout = layout_gepa06)
+    gepa_df <- get_raw_gepa(end_year, layout = .legacy_assessment_layout("layout_gepa06")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_gepa06"))
   } else if (end_year == 2005) {
-    gepa_df <- get_raw_gepa(end_year, layout = layout_gepa05) %>% 
-      process_nj_assess(layout = layout_gepa05) 
+    gepa_df <- get_raw_gepa(end_year, layout = .legacy_assessment_layout("layout_gepa05")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_gepa05"))
   } else if (end_year == 2004) {
-    gepa_df <- get_raw_gepa(end_year, layout = layout_njask04[1:361,]) %>% 
-      process_nj_assess(layout = layout_njask04[1:361,]) 
+    gepa_df <- get_raw_gepa(end_year, layout = .legacy_assessment_layout("layout_njask04")[1:361,]) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask04")[1:361,])
   }  
   
   #some gepa files dont list test year.

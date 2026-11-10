@@ -7,7 +7,7 @@
 #' school year is end_year '2014'.  valid values are 2004-2014.
 #' @param layout what layout dataframe to use.  default is layout_hspa.
 #' @keywords internal
-get_raw_hspa <- function(end_year, layout=layout_hspa[c(1:558), ]) {
+get_raw_hspa <- function(end_year, layout=.legacy_assessment_layout("layout_hspa")[c(1:558), ]) {
   #filenames are screwy
   parsed_filename <- if(end_year > 2005) {
     "state_summary.txt"
@@ -41,19 +41,19 @@ fetch_hspa <- function(end_year) {
   if (end_year > 2011) {
     hspa_df <- get_raw_hspa(end_year) %>% 
       #posted hspa layout has an error
-      process_nj_assess(layout = layout_hspa[c(1:558), ])
+      process_nj_assess(layout = .legacy_assessment_layout("layout_hspa")[c(1:558), ])
   } else if (end_year > 2006) {
-    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa10) %>% 
-      process_nj_assess(layout = layout_hspa10)
+    hspa_df <- get_raw_hspa(end_year, layout = .legacy_assessment_layout("layout_hspa10")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_hspa10"))
   } else if (end_year == 2006) {
-    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa06) %>% 
-      process_nj_assess(layout = layout_hspa06)     
+    hspa_df <- get_raw_hspa(end_year, layout = .legacy_assessment_layout("layout_hspa06")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_hspa06"))
   } else if (end_year == 2005) {
-    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa05) %>% 
-      process_nj_assess(layout = layout_hspa05)     
+    hspa_df <- get_raw_hspa(end_year, layout = .legacy_assessment_layout("layout_hspa05")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_hspa05"))
   } else if (end_year == 2004) {
-    hspa_df <- get_raw_hspa(end_year, layout = layout_hspa04) %>% 
-      process_nj_assess(layout = layout_hspa04)     
+    hspa_df <- get_raw_hspa(end_year, layout = .legacy_assessment_layout("layout_hspa04")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_hspa04"))
   }
   
   hspa_df$Grade <- 11

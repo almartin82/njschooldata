@@ -435,7 +435,11 @@ source_host_allowlist <- function() {
     grade_token <- sprintf("%02d", as.integer(grade))
   } else {
     grade_token <- toupper(as.character(grade))
-    if (grepl("ALG|GEO", grade_token)) {
+    # PARCC 2015-2018 uses MATALG1/MATGEO/MATALG2; preserve that
+    # prefix and token before applying the later NJSLA naming convention.
+    parcc_course <- end_year %in% 2015:2018 && subject == "math" &&
+      grade_token %in% c("ALG1", "GEO", "ALG2")
+    if (grepl("ALG|GEO", grade_token) && !parcc_course) {
       grade_token <- gsub("ALG", "ALG0", grade_token)
       grade_token <- if (end_year == 2019) {
         gsub("^GEO01$", "GEO", grade_token)

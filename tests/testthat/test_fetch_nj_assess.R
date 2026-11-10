@@ -94,3 +94,53 @@ test_that("fetch_old_nj_assess returns correct output for a variety of calls", {
     sum(njask_04$GENERAL_EDUCATION_Number_Enrolled, na.rm = TRUE), 418669
   )
 })
+
+test_that("legacy layouts load without attaching the package", {
+  layouts <- c(
+    "layout_njask", "layout_njask04", "layout_njask05", "layout_njask06gr3",
+    "layout_njask06gr5", "layout_njask07gr3", "layout_njask07gr5",
+    "layout_njask09", "layout_njask10", "layout_hspa", "layout_hspa04",
+    "layout_hspa05", "layout_hspa06", "layout_hspa10", "layout_gepa",
+    "layout_gepa05", "layout_gepa06"
+  )
+  # A clean subprocess loads this checkout, never the installed copy. An
+  # empty-parent evaluation environment cannot resolve attached datasets.
+  script <- tempfile(fileext = ".R")
+  on.exit(unlink(script), add = TRUE)
+  writeLines(c(
+    paste0(".libPaths(", paste(deparse(.libPaths()), collapse = ""), ")"),
+    paste0("root <- ", deparse(package_source_root())),
+    'pkgload::load_all(root, export_all = FALSE, attach = FALSE, quiet = TRUE)',
+    'stopifnot(!"package:njschooldata" %in% search())',
+    paste0("layouts <- ", paste(deparse(layouts), collapse = "")),
+    'for (name in layouts) {',
+    '  expected <- new.env(parent = emptyenv())',
+    '  load(file.path(root, "data", paste0(sub("^layout_", "", name), "_layout.rda")), envir = expected)',
+    '  stopifnot(identical(njschooldata:::.legacy_assessment_layout(name), expected[[name]]))',
+    '}',
+    'testthat::local_mocked_bindings(',
+    '  common_fwf_req = function(target_url, layout) {',
+    '    stopifnot(is.data.frame(layout), nrow(layout) > 0L)',
+    '    data.frame(Testing_Year = 2004L, Grade = 3L)',
+    '  },',
+    '  process_nj_assess = function(df, layout) {',
+    '    stopifnot(is.data.frame(layout), nrow(layout) > 0L)',
+    '    df',
+    '  }, .package = "njschooldata", .env = globalenv())',
+    'for (year in 2004:2014) for (grade in c(3:8, 11)) {',
+    '  if (njschooldata:::valid_call(year, grade)) {',
+    '    out <- njschooldata::fetch_old_nj_assess(year, grade)',
+    '    stopifnot(nrow(out) == 1L)',
+    '  }',
+    '}',
+    'njschooldata:::get_raw_gepa(2007)',
+    'stopifnot(!"package:njschooldata" %in% search())'
+  ), script)
+  output <- suppressWarnings(system2(
+    file.path(R.home("bin"), "Rscript"),
+    c("--vanilla", shQuote(script)), stdout = TRUE, stderr = TRUE
+  ))
+  status <- attr(output, "status")
+  if (is.null(status)) status <- 0L
+  expect_equal(status, 0L, info = paste(output, collapse = "\n"))
+})

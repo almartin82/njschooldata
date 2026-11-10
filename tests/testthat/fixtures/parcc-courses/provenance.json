@@ -1,0 +1,53 @@
+[
+  {
+    "year": 2015,
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/1415/parcc/MATALG1.xlsx",
+    "source_sha256": "c567a141f148b595fc2772eac2337f71472a7911cd9e2bcf6bb2fb47196a5ae8",
+    "fixture": "parcc-alg1-2015.xlsx",
+    "source_rows": [
+      4,
+      12,
+      18824
+    ],
+    "fixture_sha256": "30584caf30c65f72bcd72ff8888a49aa29b291ff9d6cb8e3d0d7f28ee310d9cc"
+  },
+  {
+    "year": 2016,
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/1516/spring/MATALG1.xlsx",
+    "source_sha256": "44ebf90d48b39ca7abbd7cdc35822e7cbee5b328488304b9a02e52b3e6d0873e",
+    "fixture": "parcc-alg1-2016.xlsx",
+    "source_rows": [
+      4,
+      6,
+      16,
+      21091
+    ],
+    "fixture_sha256": "3cd22a90ca538a58d582ae4c069f28011825752c6227d14fc3dc5a44f62493eb"
+  },
+  {
+    "year": 2017,
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/1617/spring/MATALG1.xlsx",
+    "source_sha256": "fa0253baf7aa9be74a69629b05700fc93e4598ef83431915649fc30187bbec60",
+    "fixture": "parcc-alg1-2017.xlsx",
+    "source_rows": [
+      4,
+      6,
+      13,
+      22521
+    ],
+    "fixture_sha256": "2804479d2324554dca7631f7e263bd719d9bb9d5a375be770948a5c73f0ca2ef"
+  },
+  {
+    "year": 2018,
+    "source_url": "https://www.nj.gov/education/assessment/results/reports/1718/spring/MATALG1.xlsx",
+    "source_sha256": "683fb5d9d73c7bf5c864234a74128aeaa3f6f42238b526b3fb4a82b22ebbafed",
+    "fixture": "parcc-alg1-2018.xlsx",
+    "source_rows": [
+      4,
+      6,
+      14,
+      22742
+    ],
+    "fixture_sha256": "e5b94dd5539933a2ae4d0306abf125a7721960081bc28e491973b681bd2cced7"
+  }
+]

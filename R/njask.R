@@ -6,7 +6,7 @@
 #' @inheritParams fetch_njask
 #' @param layout what layout dataframe to use.  default is layout_njask.
 #' @keywords internal
-get_raw_njask <- function(end_year, grade, layout=layout_njask) {
+get_raw_njask <- function(end_year, grade, layout=.legacy_assessment_layout("layout_njask")) {
   #filenames vary by year/grade (unchanged across the state.nj.us -> nj.gov move):
   # 2004 carries the grade in the name; 2005 has bespoke per-grade names; the
   # 2006-2007 upper grades (5-7) use a G{grade} prefix; everything else is the
@@ -48,46 +48,46 @@ get_raw_njask <- function(end_year, grade, layout=layout_njask) {
 
 fetch_njask <- function(end_year, grade) {
   if (end_year == 2004) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask04) %>% 
-      process_nj_assess(layout = layout_njask04)
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask04")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask04"))
     
   } else if (end_year == 2005) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask05) %>% 
-      process_nj_assess(layout = layout_njask05) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask05")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask05"))
 
   } else if (end_year == 2006 & grade %in% c(3, 4)) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask06gr3) %>% 
-      process_nj_assess(layout = layout_njask06gr3)
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask06gr3")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask06gr3"))
     
   } else if (end_year == 2006 & grade >= 5) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask06gr5) %>% 
-      process_nj_assess(layout = layout_njask06gr5) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask06gr5")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask06gr5"))
     
   #nb - 2007 is weird, generally
   } else if (end_year %in% c(2007, 2008) & grade %in% c(3, 4)) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask07gr3) %>% 
-      process_nj_assess(layout = layout_njask07gr3) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask07gr3")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask07gr3"))
 
   } else if (end_year == 2007 & grade %in% c(5, 6, 7)) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask07gr5) %>% 
-      process_nj_assess(layout = layout_njask07gr5) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask07gr5")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask07gr5"))
     
   #nb - 2007 is the end of the GEPA; 2007 gr 8 does not exist for NJASK.
   } else if (end_year == 2008 & grade >= 5) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask09) %>% 
-      process_nj_assess(layout = layout_njask09) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask09")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask09"))
     
   } else if (end_year == 2009) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask09) %>% 
-      process_nj_assess(layout = layout_njask09) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask09")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask09"))
 
   } else if (end_year == 2010) {
-    df <- get_raw_njask(end_year, grade, layout = layout_njask10) %>% 
-      process_nj_assess(layout = layout_njask10) 
+    df <- get_raw_njask(end_year, grade, layout = .legacy_assessment_layout("layout_njask10")) %>%
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask10"))
     
   } else {
     df <- get_raw_njask(end_year, grade) %>% 
-      process_nj_assess(layout = layout_njask)    
+      process_nj_assess(layout = .legacy_assessment_layout("layout_njask"))
   }
   
   #some flat files don't include the test year

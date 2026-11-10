@@ -162,3 +162,34 @@ test_that("migrated production fetchers do not bypass the source adapter", {
     )
   }
 })
+
+
+test_that("2015-2018 PARCC math courses use MAT course filenames", {
+  folders <- c("1415/parcc", "1516/spring", "1617/spring", "1718/spring")
+  for (year in 2015:2018) {
+    for (course in c("ALG1", "GEO", "ALG2")) {
+      expect_identical(
+        resolve_source_url("parcc", year, grade = course, subject = "math"),
+        paste0("https://www.nj.gov/education/assessment/results/reports/",
+               folders[[year - 2014L]], "/MAT", course, ".xlsx")
+      )
+    }
+  }
+})
+
+test_that("NJSLA math course URLs retain their later naming conventions", {
+  for (course in c("ALG1", "GEO", "ALG2")) {
+    token <- switch(course, ALG1 = "ALG01", GEO = "GEO", ALG2 = "ALG02")
+    expect_identical(
+      resolve_source_url("parcc", 2019, grade = course, subject = "math"),
+      paste0("https://www.nj.gov/education/assessment/results/reports/1819/spring/",
+             token, "%20NJSLA%20DATA%202018-19.xlsx")
+    )
+    token <- if (course == "GEO") "GEO01" else token
+    expect_identical(
+      resolve_source_url("parcc", 2022, grade = course, subject = "math"),
+      paste0("https://www.nj.gov/education/assessment/results/reports/2122/spring/",
+             token, "_NJSLA_DATA_2021-22.xlsx")
+    )
+  }
+})
