@@ -14,7 +14,7 @@ fetch_njgpa(end_year, subj, tidy = FALSE)
 
 - end_year:
 
-  A school year. Valid values are 2022-2025.
+  A school year. Valid values are 2022-2026.
 
 - subj:
 
@@ -28,7 +28,9 @@ fetch_njgpa(end_year, subj, tidy = FALSE)
 
 Processed NJGPA dataframe, carrying the same
 \`num_l1\`/\`num_l2\`-plus-\`value_source\` derivation as
-\[fetch_parcc()\].
+\[fetch_parcc()\]. \`assessment_era\` distinguishes the 2026 scale;
+scores are not rescaled. \`suppressed\` flags rows with any
+asterisk-masked valid-score count, mean scale score or level percent.
 
 ## Examples
 

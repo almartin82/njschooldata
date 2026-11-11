@@ -17,7 +17,8 @@ process_parcc(parcc_file, end_year, grade, subj)
 - end_year:
 
   A school year. end_year is the end of the academic year - eg 2014-15
-  school year is end_year 2015. Valid values are 2015-2024.
+  school year is end_year 2015. Valid values are 2015-2019 and
+  2022-2026.
 
 - grade:
 
