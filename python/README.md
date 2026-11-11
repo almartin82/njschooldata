@@ -2,7 +2,7 @@
 
 Python bindings for the njschooldata R package, providing access to New Jersey Department of Education school data.
 
-Python release 0.10.0 supports R package versions `>=0.10.0,<0.11.0`. The
+Python release 0.11.0 supports R package versions `>=0.11.0,<0.12.0`. The
 bridge validates the loaded R package before any call; use
 `njschooldata.version_info()` to report both versions.
 
@@ -88,7 +88,7 @@ mistaken for supported years.
 | Data family | Tidy years | Raw years | Deliberate gaps |
 |---|---:|---:|---|
 | Enrollment | 1999-2026 | 1999-2026 | None |
-| PARCC/NJSLA | 2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025 | 2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025 | 2020, 2021 |
+| PARCC/NJSLA | 2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026 | 2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024, 2025, 2026 | 2020, 2021 |
 | ACCESS for ELLs | 2022-2025 | 2022-2025 | None |
 | Four-year graduation | 2011-2025 | 2011-2025 | None |
 | Graduation counts | 2012-2025 | 1998-2025 | None |
@@ -97,7 +97,7 @@ mistaken for supported years.
 | Special education placement | 2020-2025 | 2020-2025 | None |
 | TGES spending | 2001-2025 | 2001-2025 | None |
 | State aid | 2019-2027 | 2019-2027 | None |
-| Canonical finance | 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2022, 2023, 2024, 2025, 2026 | 2001-2026 | None |
+| Canonical finance | 2001-2026 | 2001-2026 | None |
 <!-- END GENERATED COVERAGE -->
 
 ## Compatibility contract

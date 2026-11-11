@@ -74,14 +74,14 @@ def test_current_cache_status_and_partial_arguments_reach_r(
 
 
 def test_python_release_matches_generated_r_release():
-    assert njschooldata.__version__ == PYTHON_PACKAGE_VERSION == "0.10.0"
-    assert njschooldata.SUPPORTED_R_PACKAGE == ">=0.10.0,<0.11.0"
+    assert njschooldata.__version__ == PYTHON_PACKAGE_VERSION == "0.11.0"
+    assert njschooldata.SUPPORTED_R_PACKAGE == ">=0.11.0,<0.12.0"
 
 
 def test_generated_coverage_includes_every_curated_year_bearing_family():
     expected = {
         "enrollment": (1999, 2026),
-        "parcc": (2015, 2025),
+        "parcc": (2015, 2026),
         "access": (2022, 2025),
         "grate_4yr": (2011, 2025),
         "ell": (2006, 2026),
@@ -96,7 +96,7 @@ def test_generated_coverage_includes_every_curated_year_bearing_family():
     assert SOURCE_COVERAGE["parcc"]["skipped_years"] == [2020, 2021]
 
 
-@pytest.mark.parametrize("version", ["0.9.27", "0.11.0", "1.0.0"])
+@pytest.mark.parametrize("version", ["0.9.27", "0.12.0", "1.0.0"])
 def test_unsupported_r_versions_raise_actionable_error(version):
     with pytest.raises(_r_bridge.RPackageCompatibilityError) as error:
         _r_bridge._assert_supported_r_version(version)
