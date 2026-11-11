@@ -173,12 +173,20 @@ get_source_results <- function(x) {
   if (is.null(records)) .empty_source_result_records() else records
 }
 
-source_status_from_condition <- function(error) {
+# The status a classified condition carries. An error that is neither an njsd
+# source result nor an njsd parse error is our own defect: multi-year and
+# multi-source composition (capture_source_call()) asks with
+# `unclassified = NA` and re-raises it rather than reporting it as an NJ DOE
+# outage (STANDARD M4 / D-f, Q4). The default is kept only for the site build
+# manifest (site/build-data.R, site/discovery-build.R), which records every
+# part's failure and carries on; that labelling is to converge (DECISIONS E1-c).
+source_status_from_condition <- function(error,
+                                         unclassified = "source_unavailable") {
   if (inherits(error, "njsd_source_error") &&
       inherits(error$result, "njsd_source_result")) {
     return(error$result$source_status)
   }
-  if (inherits(error, "njsd_parse_error")) "parse_error" else "source_unavailable"
+  if (inherits(error, "njsd_parse_error")) "parse_error" else unclassified
 }
 
 source_result_from_condition <- function(error) {
@@ -213,6 +221,9 @@ capture_source_call <- function(fn, domain, end_year,
                                 component = NA_character_) {
   value <- tryCatch(fn(), error = identity)
   if (inherits(value, "error")) {
+    if (is.na(source_status_from_condition(value, unclassified = NA_character_))) {
+      stop(value)
+    }
     result <- source_result_from_condition(value)
     return(structure(
       list(
@@ -328,7 +339,12 @@ combine_source_captures <- function(captures, allow_partial = FALSE,
 
   records <- do.call(rbind, lapply(captures, `[[`, "records"))
   incomplete <- records$source_status %in% failure_statuses
-  if (any(incomplete) && !isTRUE(allow_partial)) {
+  # STANDARD M4 (Q4): our parser failing on good bytes is never droppable, so
+  # a parse_error stops the request under allow_partial too. Bad source bytes
+  # (an HTML page, a broken zip) are labelled source_unavailable at the
+  # transport and stay droppable.
+  parse_failed <- records$source_status == "parse_error"
+  if (any(incomplete) && (!isTRUE(allow_partial) || any(parse_failed))) {
     failures <- records[incomplete, , drop = FALSE]
     worst <- if ("parse_error" %in% failures$source_status) {
       "parse_error"
@@ -353,6 +369,27 @@ combine_source_captures <- function(captures, allow_partial = FALSE,
 
   data <- lapply(captures, `[[`, "data")
   present <- !vapply(data, is.null, logical(1))
+  # A capture whose every record is a declared gap is a gap, not a served
+  # year, whatever data it carries.
+  gap_only <- vapply(captures, function(capture) {
+    all(capture$records$source_status %in% c("not_published", "not_yet_observed"))
+  }, logical(1))
+  # A served capture with no rows stops in both modes, naming it (M4).
+  labels <- vapply(captures, function(capture) {
+    rec <- capture$records
+    paste0(rec$end_year[[1]],
+           if (is.na(rec$component[[1]])) "" else paste0("/", rec$component[[1]]))
+  }, character(1))
+  served <- present & !gap_only
+  multi_year_check_rows(data[served], labels[served], context, "njsd")
+  # Nothing served: a request whose every capture is a declared gap returns
+  # the empty frame (below) under allow_partial; otherwise it stops.
+  if (!any(present)) {
+    multi_year_require_served(!present[!gap_only], which(gap_only),
+                              allow_partial, context, "njsd",
+                              message = paste0(context, " returned no data for ",
+                                               "any requested year"))
+  }
   out <- if (combine == "rows") {
     dplyr::bind_rows(data[present])
   } else {

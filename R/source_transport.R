@@ -516,7 +516,11 @@ download_source <- function(url, source_type, cache_path = NULL,
     error = identity
   )
   if (inherits(artifact_check, "error")) {
-    return(.source_failure("parse_error", url, artifact_check, retrieved_at))
+    # Bytes arrived but are not the file (an HTML page, a truncated or broken
+    # archive, the wrong type), checked as bytes before any parser runs: a
+    # source failure, droppable under allow_partial (STANDARD M4, Q4). Our
+    # parser failing on good bytes stays parse_error and is never droppable.
+    return(.source_failure("source_unavailable", url, artifact_check, retrieved_at))
   }
 
   digest <- .source_digest(temporary)

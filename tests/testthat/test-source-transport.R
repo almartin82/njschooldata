@@ -138,7 +138,10 @@ test_that("only classified transport failures are source outages", {
   expect_identical(tls$calls(), 2L)
 })
 
-test_that("HTML masquerading as XLSX and corrupt archives are parse errors", {
+test_that("HTML masquerading as XLSX and corrupt archives are source failures (M4, Q4)", {
+  # Bytes that are not the file, checked as bytes before any parser runs, are
+  # a source failure (droppable under allow_partial). They used to be
+  # parse_error, which is now reserved for our parser failing on good bytes.
   html <- download_source(
     "https://www.nj.gov/error.xlsx",
     source_type = "xlsx",
@@ -148,7 +151,7 @@ test_that("HTML masquerading as XLSX and corrupt archives are parse errors", {
     ),
     retries = 0L
   )
-  expect_identical(html$source_status, "parse_error")
+  expect_identical(html$source_status, "source_unavailable")
   expect_match(html$error, "HTML|content type")
 
   corrupt <- download_source(
@@ -159,7 +162,7 @@ test_that("HTML masquerading as XLSX and corrupt archives are parse errors", {
     ),
     retries = 0L
   )
-  expect_identical(corrupt$source_status, "parse_error")
+  expect_identical(corrupt$source_status, "source_unavailable")
   expect_match(corrupt$error, "corrupt|truncated|ZIP")
 })
 

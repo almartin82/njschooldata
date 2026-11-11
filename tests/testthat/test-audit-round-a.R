@@ -172,7 +172,11 @@ test_that("actual transport outage and invalid workbook propagate through cohort
     writeLines("malformed retained workbook diagnostic", dest)
     list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
   }
-  expect_error(env$fetch_spr_grad_cohort(2024), class = "njsd_parse_error")
+  # M4 (Q4): bytes that fail the XLSX byte check are a source failure, not our
+  # parser's (they were njsd_parse_error).
+  caught <- tryCatch(env$fetch_spr_grad_cohort(2024), error = identity)
+  expect_identical(class(caught)[[1]], "njsd_source_unavailable")
+  expect_match(conditionMessage(caught), "no ZIP signature")
 })
 
 test_that("installed public enrollment paths retain PK values and exact keys", {

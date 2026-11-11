@@ -1,5 +1,21 @@
 # njschooldata 0.10.0
 
+* Multi-year and multi-source requests follow one rule for every year
+  (`allow_partial` behaves as it does in the other state packages):
+  - a year whose parser fails on good bytes (`parse_error`) now stops the
+    request even with `allow_partial = TRUE`; it used to be dropped from the
+    frame. Downloaded bytes that are not the file (an HTML error page, a
+    truncated or broken archive, the wrong type) are now reported as
+    `source_unavailable` and stay droppable under `allow_partial = TRUE`;
+  - an error that is neither a classified source failure nor an njsd parse
+    error is re-raised as it is. It used to be reported as
+    `source_unavailable`, which blamed NJ DOE for a package bug;
+  - a year that comes back with no rows stops with `njsd_empty_year_error`
+    in both modes;
+  - with `allow_partial = TRUE`, a request where nothing was served and at
+    least one year failed at the source stops with
+    `njsd_no_year_served_error`; a request whose every year is a declared gap
+    still returns the empty frame with the gaps attached.
 * `fetch_directory()` screens source rows one at a time. A row with a missing
   or malformed county, district or school code, a school row with no name, or
   a CSV row whose field count does not match the header (and that the known

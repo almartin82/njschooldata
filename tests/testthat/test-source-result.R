@@ -100,14 +100,73 @@ test_that("multi-source composition reports every success and failure", {
     class = "njsd_parse_error"
   )
 
-  partial <- combine_source_captures(
-    list(success, unavailable, parse_failure), allow_partial = TRUE
+  # STANDARD M4 (Q4): our parser failing is never droppable, so the opt-in
+  # still stops on the parse_error year. It used to drop it and return 1 row.
+  caught <- tryCatch(
+    combine_source_captures(
+      list(success, unavailable, parse_failure), allow_partial = TRUE
+    ),
+    error = identity
+  )
+  expect_s3_class(caught, "njsd_parse_error")
+  expect_match(conditionMessage(caught), "2026.*parse_error")
+
+  # A genuine source failure is still dropped, warned and recorded.
+  expect_warning(
+    partial <- combine_source_captures(
+      list(success, unavailable), allow_partial = TRUE
+    ),
+    "2025 \\[source_unavailable\\]"
   )
   expect_equal(nrow(partial), 1L)
+  expect_identical(attr(partial, "missing_years"), 2025L)
   expect_identical(
     get_source_results(partial)$source_status,
-    c("actual", "source_unavailable", "parse_error")
+    c("actual", "source_unavailable")
   )
+})
+
+test_that("an unclassified error is re-raised, never labelled source_unavailable (Q4)", {
+  typo <- simpleError("object 'x' not found")
+  caught <- tryCatch(
+    capture_source_call(function() stop(typo), "example", 2024L),
+    error = identity
+  )
+  expect_identical(caught, typo)
+})
+
+test_that("a served year with no rows stops in both modes (M4)", {
+  success <- capture_source_call(
+    function() tibble::tibble(end_year = 2024L, value = 1), "example", 2024L
+  )
+  empty <- capture_source_call(
+    function() tibble::tibble(end_year = integer(0), value = double(0)),
+    "example", 2025L
+  )
+  for (partial in c(FALSE, TRUE)) {
+    caught <- tryCatch(
+      combine_source_captures(list(success, empty), allow_partial = partial),
+      error = identity
+    )
+    expect_identical(class(caught)[[1]], "njsd_empty_year_error")
+    expect_identical(caught$years, "2025")
+  }
+})
+
+test_that("nothing served after a source failure stops under the opt-in (M4)", {
+  unavailable <- capture_source_call(
+    function() source_result_data(new_source_result(
+      source_status = "source_unavailable", error = "HTTP 503"
+    )),
+    "example", 2025L
+  )
+  gap <- source_gap_capture("example", 2020L, source_status = "not_published")
+  caught <- tryCatch(
+    suppressWarnings(combine_source_captures(list(gap, unavailable),
+                                             allow_partial = TRUE)),
+    error = identity
+  )
+  expect_identical(class(caught)[[1]], "njsd_no_year_served_error")
 })
 
 test_that("structural gaps distinguish publication from future observation", {
@@ -135,9 +194,11 @@ test_that("shared condition and record helpers preserve the most specific status
     source_status_from_condition(not_published),
     "not_published"
   )
+  # Q4: composition asks with unclassified = NA and re-raises such an error
+  # (asserted below); the default label survives only for the site build.
   expect_identical(
-    source_status_from_condition(simpleError("HTTP 503")),
-    "source_unavailable"
+    source_status_from_condition(simpleError("HTTP 503"), unclassified = NA_character_),
+    NA_character_
   )
 
   value <- attach_source_results(
@@ -224,10 +285,10 @@ test_that("report-card multi-year requests expose every year status", {
     "2019.*parse_error",
     class = "njsd_parse_error"
   )
-  partial <- suppressMessages(get_rc_databases(2018:2019, allow_partial = TRUE))
-  expect_named(partial, "2018")
-  expect_identical(
-    get_source_results(partial)$source_status,
-    c("actual", "parse_error")
+  # Q4: a parse_error year is never dropped, even under the opt-in.
+  expect_error(
+    suppressMessages(get_rc_databases(2018:2019, allow_partial = TRUE)),
+    "2019.*parse_error",
+    class = "njsd_parse_error"
   )
 })
