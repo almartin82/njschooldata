@@ -16,7 +16,8 @@ the requested year, the available rows are returned with a message.}
 \item{tidy}{If TRUE (default), return the canonical long schema. Facilities
 has no separate wide form, so FALSE currently returns the same rows.}
 
-\item{use_cache}{If TRUE (default), use cached source downloads when fresh.}
+\item{use_cache}{Retained for compatibility; has no effect. Registers are
+fetched live on every call; dated snapshots use verified held bytes.}
 }
 \value{
 Data frame with columns `category`, `entity_level`, `entity_id`,

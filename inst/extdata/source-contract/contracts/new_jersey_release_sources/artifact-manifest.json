@@ -4159,6 +4159,966 @@
         "tag": "sources-2026-11-08"
       },
       "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2013_4And5YearCohort12.xlsx",
+      "byte_length": 42482,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2013_4And5YearCohort12.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:46.594374Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4And5YearCohort12.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2013_4And5YearCohort12.xlsx"
+      },
+      "sha256": "105634157749b27d76b76c78118d6e44837bca79dad855aae6703613d344a23c",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4And5YearCohort12.xlsx",
+      "storage": {
+        "asset_id": 733898453,
+        "asset_name": "graduation-ACGR2013_4And5YearCohort12.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2013_4And5YearCohort12.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2014_4And5YearCohort13.xlsx",
+      "byte_length": 34268,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2014_4And5YearCohort13.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:48.929327Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4And5YearCohort13.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2013",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2014_4And5YearCohort13.xlsx"
+      },
+      "sha256": "c9af7b0a2f45790ad78107bbcdc62fb903205e5613d22f0205974217167fbcd3",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4And5YearCohort13.xlsx",
+      "storage": {
+        "asset_id": 733898461,
+        "asset_name": "graduation-ACGR2014_4And5YearCohort13.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2014_4And5YearCohort13.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2015_4And5YearCohort14.xlsx",
+      "byte_length": 34697,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2015_4And5YearCohort14.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:51.410220Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4And5YearCohort14.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2014",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2015_4And5YearCohort14.xlsx"
+      },
+      "sha256": "1c027355bdf4d6b08175f646c1460f3f675cfe73147a171d46061cb361fa9088",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4And5YearCohort14.xlsx",
+      "storage": {
+        "asset_id": 733898476,
+        "asset_name": "graduation-ACGR2015_4And5YearCohort14.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2015_4And5YearCohort14.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2016_4And5YearCohort14.xlsx",
+      "byte_length": 35627,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2016_4And5YearCohort14.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:53.685481Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4And5YearCohort14.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2015",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2016_4And5YearCohort14.xlsx"
+      },
+      "sha256": "8705f75df1b3906f27fd94afcbe2e0d6ec40a59e516ca30432351d82e214108d",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4And5YearCohort14.xlsx",
+      "storage": {
+        "asset_id": 733898497,
+        "asset_name": "graduation-ACGR2016_4And5YearCohort14.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2016_4And5YearCohort14.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2017_4And5YearCohort.xlsx",
+      "byte_length": 40022,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2017_4And5YearCohort.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:55.992207Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4And5YearCohort.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2016",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2017_4And5YearCohort.xlsx"
+      },
+      "sha256": "5c2bdbe5840fd1b54ffb5a3287d5ccb4088c52710ab2db85313520a345e05022",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4And5YearCohort.xlsx",
+      "storage": {
+        "asset_id": 733898498,
+        "asset_name": "graduation-ACGR2017_4And5YearCohort.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2017_4And5YearCohort.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2018_4and5YearGraduationRates.xlsx",
+      "byte_length": 39509,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2018_4and5YearGraduationRates.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:51:58.268694Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4and5YearGraduationRates.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2017",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2018_4and5YearGraduationRates.xlsx"
+      },
+      "sha256": "d23d94c78808b91c6997d7c2fbac410b44232192c2ef5b8c623ab155b22c42ee",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4and5YearGraduationRates.xlsx",
+      "storage": {
+        "asset_id": 733898503,
+        "asset_name": "graduation-ACGR2018_4and5YearGraduationRates.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2018_4and5YearGraduationRates.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+      "byte_length": 50615,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:00.537288Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2018",
+        "family": "graduation",
+        "file_id": "graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "sha256": "d9157fc9a5e7edc1a31d42d2b314c51b33917f83d909b6a5ff0fcf948d0f9622",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+      "storage": {
+        "asset_id": 733898506,
+        "asset_name": "graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+      "byte_length": 51820,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:03.447822Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2019",
+        "family": "graduation",
+        "file_id": "graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "sha256": "6f7c4966204c3d1abcb1c105e77ff69a5e940131b89b7ab4776283f7b8be207c",
+      "source_identity": "https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+      "storage": {
+        "asset_id": 733898522,
+        "asset_name": "graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2011-2012_nj_pr12_database.xlsx",
+      "byte_length": 3597009,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "nj pr12 database.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:13.662712Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/download/archive/201112/nj%20pr12%20database.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2012",
+        "family": "report_card",
+        "file_id": "spr-2011-2012_nj_pr12_database.xlsx"
+      },
+      "sha256": "df83a4f1d183a83ef8e8859fed471bd2383f0e182a8e599ac2dca8d897018aa3",
+      "source_identity": "https://www.nj.gov/education/spr/download/archive/201112/nj%20pr12%20database.xlsx",
+      "storage": {
+        "asset_id": 733898018,
+        "asset_name": "2011-2012_nj_pr12_database.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/2011-2012_nj_pr12_database.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2012-2013_nj_pr13_database.xlsx",
+      "byte_length": 3691470,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "nj pr13 database.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:24.276823Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/download/archive/201213/nj%20pr13%20database.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2013",
+        "family": "report_card",
+        "file_id": "spr-2012-2013_nj_pr13_database.xlsx"
+      },
+      "sha256": "ac0ea9a5a73c3fa085bec7451c231b598d8f1d3dce23038e2ceda345ac7e9b45",
+      "source_identity": "https://www.nj.gov/education/spr/download/archive/201213/nj%20pr13%20database.xlsx",
+      "storage": {
+        "asset_id": 733898014,
+        "asset_name": "2012-2013_nj_pr13_database.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/2012-2013_nj_pr13_database.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2013-2014_2014_performance_report_database.xlsx",
+      "byte_length": 3616470,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2014 performance report database.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:27.680343Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/download/archive/201314/2014%20performance%20report%20database.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2014",
+        "family": "report_card",
+        "file_id": "spr-2013-2014_2014_performance_report_database.xlsx"
+      },
+      "sha256": "4b86496c97330b8487571716968f260c3906d7221894114304d01ad67631a0a3",
+      "source_identity": "https://www.nj.gov/education/spr/download/archive/201314/2014%20performance%20report%20database.xlsx",
+      "storage": {
+        "asset_id": 733898019,
+        "asset_name": "2013-2014_2014_performance_report_database.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/2013-2014_2014_performance_report_database.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2014-2015_2015PRDATABASE.xlsx",
+      "byte_length": 5926554,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "2015PRDATABASE.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:30.999721Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/spr/download/archive/201415/2015PRDATABASE.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2015",
+        "family": "report_card",
+        "file_id": "spr-2014-2015_2015PRDATABASE.xlsx"
+      },
+      "sha256": "50c2f08ee0f4ad149b9cb7bbad9691790f00677566d8ce6fd1109bc5417ca944",
+      "source_identity": "https://www.nj.gov/education/spr/download/archive/201415/2015PRDATABASE.xlsx",
+      "storage": {
+        "asset_id": 733898016,
+        "asset_name": "2014-2015_2015PRDATABASE.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/2014-2015_2015PRDATABASE.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "spr-2015-2016_Database_SchoolDetail.xlsx",
+      "byte_length": 22043471,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "Database_SchoolDetail.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:37.976909Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/sprreports/download/DataFiles/2015-2016/Database_SchoolDetail.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2016",
+        "family": "report_card",
+        "file_id": "spr-2015-2016_Database_SchoolDetail.xlsx"
+      },
+      "sha256": "1fd44ffb41627289a6821af0902bd8f042e73d51b1b24b7d76b3b6142b68d563",
+      "source_identity": "https://www.nj.gov/education/sprreports/download/DataFiles/2015-2016/Database_SchoolDetail.xlsx",
+      "storage": {
+        "asset_id": 733898020,
+        "asset_name": "2015-2016_Database_SchoolDetail.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/2015-2016_Database_SchoolDetail.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-DistrictAllocationTable.xlsx",
+      "byte_length": 50632,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "DistrictAllocationTable.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:40.265051Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/facilities/docs/SDA/DistrictAllocationTable.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-DistrictAllocationTable.xlsx"
+      },
+      "sha256": "60b76506e5ce58599527fad8917eb3f77f435396f5c99a78fb53ffcfe9a3c10c",
+      "source_identity": "https://www.nj.gov/education/facilities/docs/SDA/DistrictAllocationTable.xlsx",
+      "storage": {
+        "asset_id": 733898282,
+        "asset_name": "facilities-2026-11-10-DistrictAllocationTable.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-DistrictAllocationTable.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx",
+      "byte_length": 235428,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "24-25SOA_SubmissionsLeadDW102825.xlsx",
+        "provider": "New Jersey Department of Education",
+        "retrieved_at": "2026-11-11T02:52:42.995593Z",
+        "source_type": "xlsx",
+        "url": "https://www.nj.gov/education/lead/docs/24-25SOA_SubmissionsLeadDW102825.xlsx"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2025",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx"
+      },
+      "sha256": "1304e2e5305d2ba2302427c28d89b4c86c312720ccd16bcb978140a43baed2fb",
+      "source_identity": "https://www.nj.gov/education/lead/docs/24-25SOA_SubmissionsLeadDW102825.xlsx",
+      "storage": {
+        "asset_id": 733898278,
+        "asset_name": "facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-00.html",
+      "byte_length": 39477,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-00.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:22.331143Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/Projects/CapitalProgram"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-00.html"
+      },
+      "sha256": "065b1e659ee492894b889edba017c978c6d09f3efa97e9630f870a6999d30344",
+      "source_identity": "https://www.njsda.gov/Projects/CapitalProgram",
+      "storage": {
+        "asset_id": 733898280,
+        "asset_name": "facilities-2026-11-10-projects-00.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-00.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-01.html",
+      "byte_length": 13070,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-01.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:22.845574Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=11-0540-020&vSchoolDistrict=Bridgeton"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-01.html"
+      },
+      "sha256": "668eb285a7eb3adca1691b5bca6d4d72405ae9dd13cb66f2ce58c59db200b865",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=11-0540-020&vSchoolDistrict=Bridgeton",
+      "storage": {
+        "asset_id": 733898293,
+        "asset_name": "facilities-2026-11-10-projects-01.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-01.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-02.html",
+      "byte_length": 11753,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-02.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:23.361470Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=07-0680-040&vSchoolDistrict=Camden%20City"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-02.html"
+      },
+      "sha256": "e183611188364b9fad95f85742a89d6f10e3806845348a239b7480852442d8d4",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=07-0680-040&vSchoolDistrict=Camden%20City",
+      "storage": {
+        "asset_id": 733898313,
+        "asset_name": "facilities-2026-11-10-projects-02.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-02.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-03.html",
+      "byte_length": 12065,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-03.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:24.032424Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=39-1320-N22&vSchoolDistrict=Elizabeth"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-03.html"
+      },
+      "sha256": "e418e87447e90f0608a1f34efe284a56ccc0e2660af9932c9c562f27f14a232b",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=39-1320-N22&vSchoolDistrict=Elizabeth",
+      "storage": {
+        "asset_id": 733898317,
+        "asset_name": "facilities-2026-11-10-projects-03.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-03.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-04.html",
+      "byte_length": 11874,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-04.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:24.575497Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=03-1700-N22&vSchoolDistrict=GARFIELD"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-04.html"
+      },
+      "sha256": "f81368868351944e3b68a5cb912ddd57b9c025ab61979251ab3aa339cbb6d59b",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=03-1700-N22&vSchoolDistrict=GARFIELD",
+      "storage": {
+        "asset_id": 733898320,
+        "asset_name": "facilities-2026-11-10-projects-04.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-04.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-05.html",
+      "byte_length": 10925,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-05.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:25.076157Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-2390-220&vSchoolDistrict=Jersey%20City"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-05.html"
+      },
+      "sha256": "9d3509be40640c7be1bc3bb198c4ec622151ceafb4190825484d21358da16f2a",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-2390-220&vSchoolDistrict=Jersey%20City",
+      "storage": {
+        "asset_id": 733898332,
+        "asset_name": "facilities-2026-11-10-projects-05.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-05.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-06.html",
+      "byte_length": 11328,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-06.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:25.608169Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=13-3570-057&vSchoolDistrict=Newark"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-06.html"
+      },
+      "sha256": "c55b0e594c7f7d8fea25fd058711252cb5642a3184c2ee6034275dec161f35d5",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=13-3570-057&vSchoolDistrict=Newark",
+      "storage": {
+        "asset_id": 733898347,
+        "asset_name": "facilities-2026-11-10-projects-06.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-06.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-07.html",
+      "byte_length": 11536,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-07.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:26.167815Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=31-3970-N12&vSchoolDistrict=Passaic%20City"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-07.html"
+      },
+      "sha256": "621c302f44eeb4fe70f636b049933a063eb0b03ba7f0b7e8609c41bdd73f3dfd",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=31-3970-N12&vSchoolDistrict=Passaic%20City",
+      "storage": {
+        "asset_id": 733898363,
+        "asset_name": "facilities-2026-11-10-projects-07.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-07.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-08.html",
+      "byte_length": 11749,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-08.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:26.774995Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=31-4010-N12&vSchoolDistrict=Paterson"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-08.html"
+      },
+      "sha256": "bc1947da15a3bf91b3c04cd5b17f516f2923a135cf03c8842f1ed52e152b73e8",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=31-4010-N12&vSchoolDistrict=Paterson",
+      "storage": {
+        "asset_id": 733898372,
+        "asset_name": "facilities-2026-11-10-projects-08.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-08.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-09.html",
+      "byte_length": 11298,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-09.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:27.475272Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=23-4090-N03&vSchoolDistrict=Perth%20Amboy"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-09.html"
+      },
+      "sha256": "bcf8e75c4bfd24ec89bc954ac75423556378a742a718978863ce16b9baa0b998",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=23-4090-N03&vSchoolDistrict=Perth%20Amboy",
+      "storage": {
+        "asset_id": 733898375,
+        "asset_name": "facilities-2026-11-10-projects-09.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-09.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-10.html",
+      "byte_length": 11635,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-10.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:27.971873Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=01-4180-N01&vSchoolDistrict=Pleasantville"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-10.html"
+      },
+      "sha256": "6ace08683f893c0a880380181c302ef88eed4ad6a7b2b4105190535b0fbd4cfb",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=01-4180-N01&vSchoolDistrict=Pleasantville",
+      "storage": {
+        "asset_id": 733898408,
+        "asset_name": "facilities-2026-11-10-projects-10.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-10.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-11.html",
+      "byte_length": 10500,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-11.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:28.493968Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=33-4630-N01&vSchoolDistrict=Salem%20City"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-11.html"
+      },
+      "sha256": "0f42932a96aab69a79735cd9bc23551371bfd9fcc57fe6e7a61a08e27a3a1f22",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=33-4630-N01&vSchoolDistrict=Salem%20City",
+      "storage": {
+        "asset_id": 733898411,
+        "asset_name": "facilities-2026-11-10-projects-11.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-11.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-12.html",
+      "byte_length": 11821,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-12.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:29.069412Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=21-5210-N09&vSchoolDistrict=Trenton"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-12.html"
+      },
+      "sha256": "0d322613e57e614d9f1f0ccb412804f008a21213cd5b7eab47d96e2fb5b8c2cb",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=21-5210-N09&vSchoolDistrict=Trenton",
+      "storage": {
+        "asset_id": 733898412,
+        "asset_name": "facilities-2026-11-10-projects-12.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-12.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-13.html",
+      "byte_length": 11288,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-13.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:29.562376Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-5240-N10&vSchoolDistrict=Union%20City"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-13.html"
+      },
+      "sha256": "0474942fb7bc041df8b161dca748e78c2460ba12b983bce2d149c6c5b6ba84f1",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-5240-N10&vSchoolDistrict=Union%20City",
+      "storage": {
+        "asset_id": 733898429,
+        "asset_name": "facilities-2026-11-10-projects-13.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-13.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
+    },
+    {
+      "artifact_id": "facilities-2026-11-10-projects-14.html",
+      "byte_length": 11758,
+      "lineage": {
+        "kind": "source"
+      },
+      "publisher_identity": {
+        "file_name": "projects-14.html",
+        "provider": "New Jersey Schools Development Authority",
+        "retrieved_at": "2026-11-11T02:56:30.087026Z",
+        "source_type": "html",
+        "url": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-5670-N02&vSchoolDistrict=West%20New%20York"
+      },
+      "runtime_dependencies": [],
+      "selectors": {
+        "end_year": "2026",
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-14.html"
+      },
+      "sha256": "76a2409ef11aaffd5f34b8dd08003f38917fd797302c7f4a5e33750fea61b80e",
+      "source_identity": "https://www.njsda.gov/ProjectSchoolDetails/SchoolGrantDetails?vProjectID=17-5670-N02&vSchoolDistrict=West%20New%20York",
+      "storage": {
+        "asset_id": 733898455,
+        "asset_name": "facilities-2026-11-10-projects-14.html",
+        "backend": "release_asset",
+        "download_url": "https://github.com/almartin82/njschooldata/releases/download/sources-2026-11-10/facilities-2026-11-10-projects-14.html",
+        "release_id": 441186482,
+        "repository": "almartin82/njschooldata",
+        "tag": "sources-2026-11-10"
+      },
+      "tier": "shipped"
     }
   ],
   "contract_id": "new_jersey_release_sources",

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sped_placement.R
 \name{sped_placement_cached_workbook}
 \alias{sped_placement_cached_workbook}
-\title{Download (and disk-cache) one IDEA 618 placement workbook}
+\title{Materialize one IDEA 618 placement workbook for this call}
 \usage{
 sped_placement_cached_workbook(
   end_year,
@@ -26,9 +26,7 @@ v1 callers continue to work.}
 path to a local, validated .xlsx file
 }
 \description{
-Validates the download as a real .xlsx before caching, so an HTTP error or
-bot-protection page is never written to the cache or parsed as data. For
-zip-archive years (2020, 2021), downloads the zip once, extracts the
-requested member, and caches the member as a standalone .xlsx.
+Uses verified release bytes when held, otherwise a per-call download.
+ZIP members are extracted to a temporary workbook and validated before use.
 }
 \keyword{internal}

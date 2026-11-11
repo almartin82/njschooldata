@@ -2,21 +2,14 @@
 % Please edit documentation in R/cache.R
 \name{njsd_workbook_cache_dir}
 \alias{njsd_workbook_cache_dir}
-\title{Directory holding cached SPR workbooks}
+\title{Legacy SPR workbook cache directory}
 \usage{
 njsd_workbook_cache_dir()
 }
 \value{
-Absolute path to the workbook cache directory (it is not created by
-  this getter).
+Path to the legacy directory.
 }
 \description{
-On-disk location where downloaded SPR Excel databases are cached. Lives under
-\code{\link{njsd_cache_root}}, which defaults to
-\code{tools::R_user_dir("njschooldata", "cache")} and is overridden by
-\code{options(njschooldata.cache_dir = "/path")} or by the
-\code{NJSCHOOLDATA_CACHE_DIR} environment variable.
-}
-\examples{
-njsd_workbook_cache_dir()
+Returns the former workbook cache path under [njsd_cache_root()], without
+creating it. New reads use verified package-held release assets instead.
 }

@@ -91,7 +91,7 @@ get_standalone_rc_database <- function(end_year) {
 download_and_clean_pr <- function(tmp_pr, url, end_year,
                                   request_fn = .default_source_request) {
   transport <- download_source(
-    url, source_type = "xlsx", cache_path = tmp_pr,
+    url, source_type = "xlsx",
     request_fn = request_fn
   )
   path <- source_result_data(transport)

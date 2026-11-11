@@ -2,7 +2,7 @@
 % Please edit documentation in R/cache.R
 \name{spr_cached_workbook_result}
 \alias{spr_cached_workbook_result}
-\title{Download an SPR workbook, caching it on disk}
+\title{Materialize an SPR workbook for this call}
 \usage{
 spr_cached_workbook_result(
   end_year,
@@ -13,22 +13,15 @@ spr_cached_workbook_result(
 \arguments{
 \item{end_year}{SPR school year end (2017-2025).}
 
-\item{level}{One of \code{"school"} or \code{"district"}.}
+\item{level}{One of `"school"` or `"district"`.}
+
+\item{request_fn}{Injectable transport for offline tests.}
 }
 \value{
-Path to a local, validated \code{.xlsx} file.
+An `njsd_source_result` with a temporary workbook path.
 }
 \description{
-Returns a local path to the SPR Excel database for \code{end_year} /
-\code{level}, downloading it from NJ DOE on first use and reusing the cached
-copy thereafter. The download is validated as a real \code{.xlsx} (see
-\code{\link{is_valid_xlsx}}) before it is cached or returned, so an HTTP error
-or bot-protection page is never silently treated as data.
-}
-\details{
-Disk caching is on by default. Disable it with
-\code{options(njschooldata.workbook_cache = FALSE)} or by turning off the
-session cache (\code{\link{njsd_cache_enable}(FALSE)}); in either case the
-workbook is downloaded to a temporary file each call.
+Held URLs use verified release assets. Other URLs download to a temporary
+file. The caller releases the returned source result after reading.
 }
 \keyword{internal}

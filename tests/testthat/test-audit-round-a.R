@@ -39,23 +39,21 @@ test_that("cohort fetching propagates failures in each required cohort", {
   }
 })
 
-test_that("cache acquisition identity and time survive reuse truthfully", {
+test_that("fresh acquisition identity and time do not inherit a legacy file clock", {
   fixture <- audit_fixture("spr-district-2025.xlsx")
-  path <- tempfile(fileext = ".xlsx")
-  on.exit(unlink(c(path, paste0(path, ".source.rds"))), add = TRUE)
-  requests <- 0L
   request <- function(url, dest, timeout) {
-    requests <<- requests + 1L; file.copy(fixture, dest)
+    file.copy(fixture, dest)
     list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
   }
-  first <- download_source("https://www.nj.gov/old.xlsx", "xlsx", path, request_fn = request)
-  Sys.setFileTime(path, as.POSIXct("2001-01-01", tz = "UTC"))
-  warm <- download_source("https://www.nj.gov/old.xlsx", "xlsx", path, request_fn = request)
-  expect_identical(warm$retrieved_at, first$retrieved_at)
-  changed <- download_source("https://www.nj.gov/new.xlsx", "xlsx", path, request_fn = request)
-  expect_identical(changed$source_status, "source_unavailable")
-  expect_equal(requests, 1L)
-  expect_identical(.source_digest(path), first$digest)
+  before <- Sys.time()
+  first <- download_source("https://www.nj.gov/old.xlsx", "xlsx", request_fn = request)
+  Sys.setFileTime(first$data, as.POSIXct("2001-01-01", tz = "UTC"))
+  changed <- download_source("https://www.nj.gov/new.xlsx", "xlsx", request_fn = request)
+  withr::defer({.release_source_result(first); .release_source_result(changed)})
+  expect_gte(as.numeric(changed$retrieved_at), as.numeric(before))
+  expect_identical(changed$source_url, "https://www.nj.gov/new.xlsx")
+  expect_identical(.source_digest(changed$data), first$digest)
+  expect_false(identical(first$data, changed$data))
 })
 
 test_that("observed aliases normalize exactly and collisions fail loudly", {
@@ -69,22 +67,17 @@ test_that("observed aliases normalize exactly and collisions fail loudly", {
   expect_error(.normalize_enr_headers(conflicting), "unique|duplicated", ignore.case = TRUE)
 })
 
-test_that("legacy cache and corrupt metadata are preserved without requests", {
-  fixture <- audit_fixture("spr-district-2025.xlsx")
-  path <- tempfile(fileext = ".xlsx")
-  on.exit(unlink(c(path, paste0(path, ".source.rds"))), add = TRUE)
-  file.copy(fixture, path)
-  digest <- .source_digest(path)
-  requests <- 0L
-  request <- function(...) { requests <<- requests + 1L; stop("must not request") }
-  legacy <- download_source("https://www.nj.gov/old.xlsx", "xlsx", path, request_fn = request)
-  expect_identical(legacy$source_status, "source_unavailable")
-  expect_null(legacy$retrieved_at)
-  writeLines("corrupt metadata", paste0(path, ".source.rds"))
-  corrupt <- download_source("https://www.nj.gov/old.xlsx", "xlsx", path, request_fn = request)
-  expect_identical(corrupt$source_status, "source_unavailable")
-  expect_equal(requests, 0L)
-  expect_identical(.source_digest(path), digest)
+test_that("a corrupt fresh workbook is rejected before parsing and removed", {
+  path <- NULL
+  request <- function(url, dest, timeout) {
+    path <<- dest
+    writeLines("<html>publisher error</html>", dest)
+    list(status_code = 200L, final_url = url, content_type = "text/html")
+  }
+  result <- download_source("https://www.nj.gov/old.xlsx", "xlsx", request_fn = request)
+  expect_identical(result$source_status, "source_unavailable")
+  expect_match(result$error, "HTML")
+  expect_false(file.exists(path))
 })
 
 test_that("SPR sheet absence and actual reader failures keep their meaning", {
@@ -127,29 +120,19 @@ test_that("2020 cohorts select exactly the documented four/five-year inputs", {
   expect_identical(out$cohort_type, c("4-Year", "5-Year"))
 })
 
-test_that("cached bytes, metadata and active acquisition are never silently replaced", {
-  path <- tempfile(fileext = ".xlsx")
-  unrelated <- tempfile(); writeLines("independent marker", unrelated)
-  on.exit(unlink(c(path, paste0(path, ".source.rds"), paste0(path, ".acquiring"), unrelated), recursive = TRUE), add = TRUE)
-  fixture <- audit_fixture("spr-district-2025.xlsx")
+test_that("an invalid redirect removes its payload without touching independent files", {
+  unrelated <- withr::local_tempfile()
+  writeLines("independent marker", unrelated)
+  path <- NULL
   request <- function(url, dest, timeout) {
-    file.copy(fixture, dest)
-    list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
+    path <<- dest
+    file.copy(audit_fixture("spr-district-2025.xlsx"), dest)
+    list(status_code = 200L, final_url = "https://example.org/file.xlsx")
   }
-  url <- "https://www.nj.gov/old.xlsx"
-  first <- download_source(url, "xlsx", path, request_fn = request)
-  expect_identical(first$source_status, "actual")
-  metadata <- readRDS(paste0(path, ".source.rds"))
-  metadata$digest <- paste(rep("0", 64), collapse = "")
-  saveRDS(metadata, paste0(path, ".source.rds"))
-  bad <- download_source(url, "xlsx", path, request_fn = function(...) stop("no request"))
-  expect_identical(bad$source_status, "parse_error")
-  expect_identical(.source_digest(path), first$digest)
-  active <- tempfile(fileext = ".xlsx"); dir.create(paste0(active, ".acquiring"))
-  on.exit(unlink(paste0(active, ".acquiring"), recursive = TRUE), add = TRUE)
-  busy <- download_source(url, "xlsx", active, request_fn = function(...) stop("no request"))
-  expect_identical(busy$source_status, "source_unavailable")
-  expect_true(dir.exists(paste0(active, ".acquiring")))
+  result <- download_source("https://www.nj.gov/file.xlsx", "xlsx", request_fn = request)
+  expect_identical(result$source_status, "source_unavailable")
+  expect_match(result$error, "redirect")
+  expect_false(file.exists(path))
   expect_identical(readLines(unrelated), "independent marker")
 })
 
@@ -207,83 +190,40 @@ test_that("installed public enrollment paths retain PK values and exact keys", {
   expect_false(any(uncached$cds_code == "313970999" & uncached$subgroup == "free_lunch"))
 })
 
-test_that("explicit retained adoption preserves unknown acquisition time", {
-  path <- tempfile(fileext = ".xlsx")
-  on.exit(unlink(c(path, paste0(path, ".source.rds")), recursive = TRUE), add = TRUE)
-  file.copy(audit_fixture("spr-district-2025.xlsx"), path)
-  url <- "https://www.nj.gov/retained.xlsx"
-  digest <- .source_digest(path)
-  expect_error(.adopt_source_cache(path, url, "xlsx", "wrong"), "adoption evidence")
-  .adopt_source_cache(path, url, "xlsx", digest)
-  result <- download_source(url, "xlsx", path, request_fn = function(...) stop("no request"))
-  expect_identical(result$source_status, "actual")
-  expect_null(result$retrieved_at)
-  expect_identical(result$digest, digest)
+test_that("enrollment raw paths share only the current session lifetime", {
+  path <- .enr_raw_cache_path(2020, "diagnostic-digest")
+  expect_identical(dirname(path), file.path(tempdir(), "njschooldata-enrollment-sources"))
+  expect_false(startsWith(path, njsd_cache_root()))
 })
 
-test_that("explicit scoped workbook clear removes paired metadata and keeps active inputs", {
-  root <- tempfile("nj-clear-"); dir.create(root)
-  on.exit(unlink(root, recursive = TRUE), add = TRUE)
-  prior <- options(njschooldata.cache_dir = root)
-  on.exit(options(prior), add = TRUE)
+test_that("scoped legacy clear removes only the selected year's workbooks and sidecars", {
+  root <- withr::local_tempdir()
+  withr::local_options(njschooldata.cache_dir = root)
   directory <- njsd_workbook_cache_dir(); dir.create(directory)
-  old <- file.path(directory, "SPR_district_2020.xlsx")
-  active <- file.path(directory, "SPR_school_2020.xlsx")
-  unrelated <- file.path(directory, "SPR_district_2021.xlsx")
-  for (p in c(old, active, unrelated)) {
+  selected <- file.path(directory, "SPR_source-v1_school_2020_urlhash.xlsx")
+  other <- file.path(directory, "SPR_school_2021.xlsx")
+  for (p in c(selected, other)) {
     file.copy(audit_fixture("spr-district-2025.xlsx"), p)
-    writeLines("paired metadata diagnostic", paste0(p, ".source.rds"))
+    writeLines("legacy metadata", paste0(p, ".source.rds"))
   }
-  dir.create(paste0(active, ".acquiring"))
   expect_equal(njsd_workbook_cache_clear(2020), 1L)
-  expect_false(file.exists(old)); expect_false(file.exists(paste0(old, ".source.rds")))
-  expect_true(file.exists(active)); expect_true(file.exists(paste0(active, ".source.rds")))
-  expect_true(file.exists(unrelated)); expect_true(file.exists(paste0(unrelated, ".source.rds")))
+  expect_false(file.exists(selected))
+  expect_false(file.exists(paste0(selected, ".source.rds")))
+  expect_true(file.exists(other))
+  expect_true(file.exists(paste0(other, ".source.rds")))
 })
 
-test_that("nonfinite acquisition clocks are refused without replacement or requests", {
-  path <- tempfile(fileext = ".xlsx")
-  metadata_path <- paste0(path, ".source.rds")
-  on.exit(unlink(c(path, metadata_path)), add = TRUE)
-  file.copy(audit_fixture("spr-district-2025.xlsx"), path)
-  digest <- .source_digest(path)
-  url <- "https://www.nj.gov/retained.xlsx"
-  requests <- 0L
-  request <- function(...) { requests <<- requests + 1L; stop("must not request") }
-  for (value in c(Inf, -Inf)) {
-    clock <- as.POSIXct(value, origin = "1970-01-01", tz = "UTC")
-    expect_error(.adopt_source_cache(path, url, "xlsx", digest, retrieved_at = clock),
-                 "Acquisition time")
-    expect_false(file.exists(metadata_path))
-    metadata <- list(version = 1L, requested_url = url, final_url = url,
-                     source_type = "xlsx", retrieved_at = clock, clock = "recorded",
-                     size = as.numeric(file.info(path)$size), digest = digest)
-    saveRDS(metadata, metadata_path)
-    sidecar_digest <- .source_digest(metadata_path)
-    result <- download_source(url, "xlsx", path, request_fn = request)
-    expect_identical(result$source_status, "source_unavailable")
-    expect_null(result$retrieved_at)
-    expect_equal(requests, 0L)
-    expect_identical(.source_digest(path), digest)
-    expect_identical(.source_digest(metadata_path), sidecar_digest)
-    unlink(metadata_path) # Only this test's owned invalid sidecar.
+test_that("successful live provenance uses the acquisition clock and verified bytes", {
+  started <- Sys.time()
+  request <- function(url, dest, timeout) {
+    file.copy(audit_fixture("spr-district-2025.xlsx"), dest)
+    list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
   }
-  finite <- as.POSIXct("2026-07-20", tz = "UTC")
-  .adopt_source_cache(path, url, "xlsx", digest, retrieved_at = finite)
-  result <- download_source(url, "xlsx", path, request_fn = request)
-  expect_identical(result$source_status, "actual")
-  expect_identical(result$retrieved_at, finite)
-  finite_sidecar_digest <- .source_digest(metadata_path)
-  for (value in c(Inf, -Inf)) {
-    expect_error(.adopt_source_cache(path, url, "xlsx", digest,
-                   retrieved_at = as.POSIXct(value, origin = "1970-01-01", tz = "UTC")),
-                 "Acquisition time")
-    expect_identical(.source_digest(metadata_path), finite_sidecar_digest)
-    expect_identical(.source_digest(path), digest)
-  }
-  .adopt_source_cache(path, url, "xlsx", digest, retrieved_at = NULL)
-  unknown <- download_source(url, "xlsx", path, request_fn = request)
-  expect_identical(unknown$source_status, "actual")
-  expect_null(unknown$retrieved_at)
-  expect_equal(requests, 0L)
+  result <- download_source("https://www.nj.gov/file.xlsx", "xlsx", request_fn = request)
+  withr::defer(.release_source_result(result))
+  expect_true(is.finite(as.numeric(result$retrieved_at)))
+  expect_gte(as.numeric(result$retrieved_at), as.numeric(started))
+  expect_lte(as.numeric(result$retrieved_at), as.numeric(Sys.time()))
+  expect_identical(result$digest, .source_digest(result$data))
+  expect_false(file.exists(paste0(result$data, ".source.rds")))
 })

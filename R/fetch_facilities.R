@@ -53,7 +53,8 @@ process_facilities_source <- function(source, raw, src) {
 #'   the requested year, the available rows are returned with a message.
 #' @param tidy If TRUE (default), return the canonical long schema. Facilities
 #'   has no separate wide form, so FALSE currently returns the same rows.
-#' @param use_cache If TRUE (default), use cached source downloads when fresh.
+#' @param use_cache Retained for compatibility; has no effect. Registers are
+#'   fetched live on every call; dated snapshots use verified held bytes.
 #' @return Data frame with columns `category`, `entity_level`, `entity_id`,
 #'   `entity_name`, `metric`, `value`, `unit`, `source_agency`, `source_type`,
 #'   `source_url`, `vintage`, `nces_dist`, and `nces_sch`.

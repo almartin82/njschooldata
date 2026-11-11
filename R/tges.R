@@ -116,8 +116,7 @@ get_raw_tges_result <- function(end_year,
                                 request_fn = .default_source_request) {
   url <- tges_url_for_year(end_year)
   transport <- download_source(
-    url, source_type = "zip", request_fn = request_fn,
-    cache_path = .njsd_source_cache_path(url, "zip", request_fn)
+    url, source_type = "zip", request_fn = request_fn
   )
   if (!identical(transport$source_status, "actual")) return(transport)
   on.exit(.release_source_result(transport), add = TRUE)

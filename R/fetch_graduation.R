@@ -43,7 +43,6 @@ get_raw_grad_file_result <- function(end_year, methodology = "4 year",
   transport <- download_source(
     descriptor$url,
     source_type = descriptor$source_type,
-    cache_path = .njsd_source_cache_path(descriptor$url, descriptor$source_type, request_fn),
     request_fn = request_fn
   )
   if (!identical(transport$source_status, "actual")) return(transport)

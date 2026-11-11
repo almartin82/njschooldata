@@ -9,8 +9,8 @@ get_raw_facilities(source, use_cache = TRUE)
 \arguments{
 \item{source}{One of the names in \code{facilities_sources()}.}
 
-\item{use_cache}{If TRUE, reuse a local source cache when it is less than
-30 days old.}
+\item{use_cache}{Retained for compatibility; has no effect. Registers are
+fetched live on every call; dated snapshots use verified held bytes.}
 }
 \value{
 A source-shaped data frame or list of data frames.

@@ -12,7 +12,7 @@ fetch_facility_gis(layer = "school_points", sf = TRUE, use_cache = TRUE)
 \item{sf}{If TRUE, return an `sf` object when the `sf` package is installed.
 If FALSE, always return a data frame.}
 
-\item{use_cache}{If TRUE (default), use cached source downloads when fresh.}
+\item{use_cache}{Retained for compatibility; has no effect. NJGIN is fetched live on every call.}
 }
 \value{
 An `sf` object or data frame with `latitude`, `longitude`, and `wkt`.

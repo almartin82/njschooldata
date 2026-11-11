@@ -389,25 +389,10 @@ enumerate_sped_placement_files <- function(end_year) {
 # Workbook cache (on-disk, like SPR)
 # -----------------------------------------------------------------------------
 
-#' Directory holding cached SPED placement workbooks
+#' Materialize one IDEA 618 placement workbook for this call
 #'
-#' Lives under \code{\link{njsd_cache_root}}, so it follows
-#' \code{options(njschooldata.cache_dir)} and the \code{NJSCHOOLDATA_CACHE_DIR}
-#' environment variable like every other on-disk cache in the package.
-#'
-#' @return absolute path to the cache directory (created lazily on use)
-#' @keywords internal
-sped_placement_cache_dir <- function() {
-  njsd_cache_subdir("sped-placement")
-}
-
-
-#' Download (and disk-cache) one IDEA 618 placement workbook
-#'
-#' Validates the download as a real .xlsx before caching, so an HTTP error or
-#' bot-protection page is never written to the cache or parsed as data. For
-#' zip-archive years (2020, 2021), downloads the zip once, extracts the
-#' requested member, and caches the member as a standalone .xlsx.
+#' Uses verified release bytes when held, otherwise a per-call download.
+#' ZIP members are extracted to a temporary workbook and validated before use.
 #'
 #' @param end_year ending school year
 #' @param file_label per-file slug for cache differentiation (eg
@@ -426,30 +411,8 @@ sped_placement_cached_workbook <- function(end_year,
     url <- build_sped_placement_url(end_year)
   }
 
-  use_cache <- njsd_workbook_cache_on()
-  # A file held in the package's release assets is read from there, verified,
-  # never from the unverified disk cache and never from nj.gov.
-  if (!is.null(.nj_release_lookup(url))) use_cache <- FALSE
-
-  # Sanitize the file_label for the on-disk filename (URL-encoded paths,
-  # spaces, etc.). Anything outside [A-Za-z0-9._-] becomes "_".
-  safe_label <- gsub("[^A-Za-z0-9._-]", "_", file_label)
-
-  if (use_cache) {
-    cache_dir <- sped_placement_cache_dir()
-    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-    dest <- file.path(
-      cache_dir,
-      sprintf("SPED_Placement_%d_%s.xlsx", end_year, safe_label)
-    )
-    if (is_valid_xlsx(dest)) {
-      return(dest)
-    }
-    dl_dir <- cache_dir
-  } else {
-    dest <- tempfile(pattern = "sped_placement_", fileext = ".xlsx")
-    dl_dir <- dirname(dest)
-  }
+  dest <- tempfile(pattern = "njschooldata-sped-placement-", fileext = ".xlsx")
+  dl_dir <- dirname(dest)
 
   is_zip <- grepl("\\.zip$", url)
   if (is_zip) {

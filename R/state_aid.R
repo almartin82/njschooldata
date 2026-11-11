@@ -148,8 +148,7 @@ get_raw_state_aid_result <- function(
     )
   } else {
     download_source(
-      urls[["direct"]], source_type = "xlsx", request_fn = request_fn,
-      cache_path = .njsd_source_cache_path(urls[["direct"]], "xlsx", request_fn)
+      urls[["direct"]], source_type = "xlsx", request_fn = request_fn
     )
   }
   if (identical(direct$source_status, "actual")) {
@@ -172,8 +171,7 @@ get_raw_state_aid_result <- function(
   }
 
   archive <- download_source(
-    urls[["archive"]], source_type = "zip", request_fn = request_fn,
-    cache_path = .njsd_source_cache_path(urls[["archive"]], "zip", request_fn)
+    urls[["archive"]], source_type = "zip", request_fn = request_fn
   )
   if (!identical(archive$source_status, "actual")) {
     return(new_source_result(

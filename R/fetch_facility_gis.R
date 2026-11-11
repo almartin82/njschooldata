@@ -17,7 +17,7 @@ facility_gis_layers <- function() {
 #' @param layer GIS layer. Currently `"school_points"`.
 #' @param sf If TRUE, return an `sf` object when the `sf` package is installed.
 #'   If FALSE, always return a data frame.
-#' @param use_cache If TRUE (default), use cached source downloads when fresh.
+#' @param use_cache Retained for compatibility; has no effect. NJGIN is fetched live on every call.
 #' @return An `sf` object or data frame with `latitude`, `longitude`, and `wkt`.
 #' @export
 #' @examples

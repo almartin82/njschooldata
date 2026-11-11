@@ -166,29 +166,26 @@ test_that("HTML masquerading as XLSX and corrupt archives are source failures (M
   expect_match(corrupt$error, "corrupt|truncated|ZIP")
 })
 
-test_that("validated cache artifacts are reused atomically", {
-  cache <- tempfile(fileext = ".zip")
+test_that("live downloads are per-call and carry independently acquired provenance", {
   calls <- 0L
   request <- function(url, dest, timeout) {
     calls <<- calls + 1L
     write_minimal_zip(dest)
-    list(status_code = 200L, final_url = url,
-         content_type = "application/zip")
+    list(status_code = 200L, final_url = url, content_type = "application/zip")
   }
-
-  first <- download_source(
-    "https://www.nj.gov/cache.zip", "zip",
-    cache_path = cache, request_fn = request, retries = 0L
-  )
-  second <- download_source(
-    "https://www.nj.gov/cache.zip", "zip",
-    cache_path = cache, request_fn = request, retries = 0L
-  )
-  on.exit(unlink(cache), add = TRUE)
-
-  expect_identical(calls, 1L)
-  expect_identical(first$digest, second$digest)
-  expect_match(second$warning, "cache", ignore.case = TRUE)
+  first <- download_source("https://www.nj.gov/cache.zip", "zip", request_fn = request)
+  second <- download_source("https://www.nj.gov/cache.zip", "zip", request_fn = request)
+  withr::defer({.release_source_result(first); .release_source_result(second)})
+  expect_identical(calls, 2L)
+  expect_false(identical(first$data, second$data))
+  expect_identical(first$ownership, "temporary")
+  expect_identical(second$ownership, "temporary")
+  expect_identical(first$digest, .source_digest(first$data))
+  expect_identical(second$digest, .source_digest(second$data))
+  expect_false(file.exists(paste0(first$data, ".source.rds")))
+  .release_source_result(first)
+  expect_false(file.exists(first$data))
+  expect_true(file.exists(second$data))
 })
 
 test_that("the shared transport identifies as a browser, not as njschooldata", {

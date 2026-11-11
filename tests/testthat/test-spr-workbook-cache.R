@@ -1,12 +1,12 @@
 # ==============================================================================
-# Tests for the on-disk SPR workbook cache
+# Tests for legacy SPR compatibility and per-call workbook reads
 # ==============================================================================
 #
-# The SPR Excel databases are large and hold dozens of sheets each. The disk
-# cache stores the downloaded workbook so a year/level file is fetched at most
-# once and reused across sheet reads and across sessions.
+# Held workbooks use the verified release store. Unheld workbooks live only
+# for the current call; compatibility helpers remove legacy download folders.
 
 test_that("is_valid_xlsx accepts workbooks and rejects corrupt ZIP-like files", {
+  local_nj_offline_transport()
   expect_true(njschooldata:::is_valid_xlsx(
     source_adapter_fixture("spr-district-2025.xlsx")
   ))
@@ -27,58 +27,47 @@ test_that("is_valid_xlsx accepts workbooks and rejects corrupt ZIP-like files", 
 })
 
 test_that("njsd_workbook_cache_dir honors the cache_dir option", {
+  local_nj_offline_transport()
   old <- options(njschooldata.cache_dir = "/tmp/njsd-xyz")
   on.exit(options(old), add = TRUE)
   expect_equal(njsd_workbook_cache_dir(), file.path("/tmp/njsd-xyz", "spr-workbooks"))
 })
 
-test_that("an SPR workbook is cached on disk and reused across sheet reads", {
-  skip_if_no_live_tests()
-
-  old <- options(
-    njschooldata.cache_dir = file.path(tempdir(), "njsd-wbtest"),
-    timeout = 600
-  )
-  on.exit(options(old), add = TRUE)
-  njsd_workbook_cache_clear()
-
-  # First touch downloads + caches the (smallest, SY2019-20) district workbook.
-  list_spr_sheets(2020, "district")
-  cached <- list.files(
-    njsd_workbook_cache_dir(), pattern = "\\.xlsx$", full.names = TRUE
-  )
-  expect_length(cached, 1)
-  mtime_before <- file.info(cached)$mtime
-
-  Sys.sleep(1.1) # ensure any re-download would change mtime
-
-  # A different operation on the same year/level must reuse the cached file.
-  df <- fetch_spr_data("StudentGrowthTrends", 2020, "district")
-  expect_gt(nrow(df), 0)
-
-  cached_after <- list.files(
-    njsd_workbook_cache_dir(), pattern = "\\.xlsx$", full.names = TRUE
-  )
-  expect_length(cached_after, 1) # no second copy
-  expect_equal(file.info(cached_after)$mtime, mtime_before) # not re-downloaded
+test_that("workbook reads create no persistent live folder regardless of old options", {
+  local_nj_offline_transport()
+  root <- withr::local_tempdir()
+  withr::local_options(njschooldata.cache_dir = root)
+  fixture <- source_adapter_fixture("spr-district-2025.xlsx")
+  calls <- 0L
+  request <- function(url, dest, timeout) {
+    calls <<- calls + 1L
+    file.copy(fixture, dest)
+    list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
+  }
+  for (enabled in c(TRUE, FALSE)) {
+    withr::local_options(njschooldata.workbook_cache = enabled)
+    result <- spr_cached_workbook_result(2025, "district", request_fn = request)
+    expect_true(is_valid_xlsx(result$data))
+    expect_identical(result$ownership, "temporary")
+    .release_source_result(result)
+    expect_false(file.exists(result$data))
+    expect_length(list.files(root, recursive = TRUE, all.files = TRUE,
+                             no.. = TRUE, include.dirs = TRUE), 0L)
+  }
+  expect_identical(calls, 2L)
 })
 
-test_that("disk caching can be disabled via option", {
-  skip_if_no_live_tests()
-
-  old <- options(
-    njschooldata.cache_dir = file.path(tempdir(), "njsd-wbtest-off"),
-    njschooldata.workbook_cache = FALSE,
-    timeout = 600
-  )
-  on.exit(options(old), add = TRUE)
-
-  result <- njschooldata:::spr_cached_workbook_result(2020, "district")
-  on.exit(njschooldata:::.release_source_result(result), add = TRUE)
-  path <- njschooldata:::source_result_data(result)
-  expect_true(file.exists(path))
-  # Nothing is written to the cache directory when caching is off.
-  expect_length(
-    list.files(njsd_workbook_cache_dir(), pattern = "\\.xlsx$"), 0
-  )
+test_that("legacy clear removes all five folders but preserves the release store", {
+  local_nj_offline_transport()
+  root <- withr::local_tempdir()
+  withr::local_options(njschooldata.cache_dir = root)
+  old <- c("spr-workbooks", "source-artifacts", "enrollment-sources", "sped-placement", "facilities")
+  for (folder in c(old, "historical-assets-v1")) {
+    dir.create(file.path(root, folder))
+    writeLines("independent marker", file.path(root, folder, "marker"))
+  }
+  expect_equal(njsd_workbook_cache_clear(), 5L)
+  expect_false(any(dir.exists(file.path(root, old))))
+  expect_identical(readLines(file.path(root, "historical-assets-v1", "marker")), "independent marker")
+  expect_identical(.njsd_cache_folders, "historical-assets-v1")
 })

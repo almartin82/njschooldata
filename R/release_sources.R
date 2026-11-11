@@ -4,7 +4,7 @@
 #
 # Point-in-time NJ DOE publications (SPR databases, fall enrollment zips, ACGR
 # files, spending guides, state aid, IDEA 618 files, grade 4 ELA results) are
-# held as immutable assets of the `sources-2026-11-08` release. The
+# held as immutable assets of the releases pinned in the manifest. The
 # new_jersey_release_sources contract names each one by its original nj.gov
 # URL, byte length and SHA-256. The vendored resolver (R/resolve_historical_asset.R)
 # downloads an asset into the shared source store, checks length and SHA-256

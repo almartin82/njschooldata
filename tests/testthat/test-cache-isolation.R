@@ -55,8 +55,7 @@ test_that("every on-disk cache directory resolves under the override", {
 
   dirs <- list(
     spr_workbooks = njschooldata::njsd_workbook_cache_dir(),
-    sped_placement = njschooldata:::sped_placement_cache_dir(),
-    facilities = njschooldata:::facilities_cache_dir()
+    historical = njschooldata:::njsd_cache_subdir("historical-assets-v1")
   )
 
   for (nm in names(dirs)) {

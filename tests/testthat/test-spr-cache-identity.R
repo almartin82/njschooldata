@@ -1,40 +1,30 @@
-test_that("legacy SPR files do not occupy the identity-aware cache key", {
-  root <- tempfile("spr-identity-")
-  withr::local_options(njschooldata.cache_dir = root,
-                      njschooldata.workbook_cache = TRUE)
-  old_enabled <- .njsd_cache$enabled
-  withr::defer({.njsd_cache$enabled <- old_enabled; unlink(root, recursive = TRUE)})
-  .njsd_cache$enabled <- TRUE
-  dir.create(njsd_workbook_cache_dir(), recursive = TRUE)
+test_that("legacy SPR payloads and sidecars cannot answer a new workbook read", {
+  local_nj_offline_transport()
+  root <- withr::local_tempdir()
+  withr::local_options(njschooldata.cache_dir = root, njschooldata.workbook_cache = TRUE)
+  dir.create(njsd_workbook_cache_dir())
   legacy <- file.path(njsd_workbook_cache_dir(), "SPR_school_2025.xlsx")
   fixture <- source_adapter_fixture("spr-district-2025.xlsx")
   file.copy(fixture, legacy)
-  legacy_digest <- .source_digest(legacy)
-  calls <- 0L
+  writeLines("untrusted legacy metadata", paste0(legacy, ".source.rds"))
+  digest <- .source_digest(legacy)
+  calls <- character()
   request <- function(url, dest, timeout) {
-    calls <<- calls + 1L
-    file.copy(fixture, dest, overwrite = TRUE)
-    list(status_code = 200L, final_url = url,
-         content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    calls <<- c(calls, url)
+    file.copy(fixture, dest)
+    list(status_code = 200L, final_url = url, content_type = "application/octet-stream")
   }
   first <- spr_cached_workbook_result(2025, "school", request_fn = request)
   second <- spr_cached_workbook_result(2025, "school", request_fn = request)
+  changed <- spr_cached_workbook_result(2024, "school", request_fn = request)
+  withr::defer(lapply(list(first, second, changed), .release_source_result))
+  expect_identical(calls, c(get_spr_url(2025, "school"), get_spr_url(2025, "school"),
+                            get_spr_url(2024, "school")))
   expect_identical(first$source_status, "actual")
-  expect_identical(second$source_status, "actual")
-  expect_identical(calls, 1L)
+  expect_false(identical(first$data, second$data))
   expect_false(identical(first$data, legacy))
-  expect_identical(.source_digest(legacy), legacy_digest)
-  expect_false(file.exists(paste0(legacy, ".source.rds")))
-  metadata <- readRDS(paste0(first$data, ".source.rds"))
-  expect_identical(metadata$requested_url, get_spr_url(2025, "school"))
-  expect_identical(metadata$digest, first$digest)
-  # The new namespace must still refuse altered or missing identity metadata.
-  metadata$requested_url <- get_spr_url(2024, "school")
-  saveRDS(metadata, paste0(first$data, ".source.rds"))
-  expect_match(spr_cached_workbook_result(2025, "school", request_fn = request)$error,
-               "identity")
-  unlink(paste0(first$data, ".source.rds"))
-  expect_match(spr_cached_workbook_result(2025, "school", request_fn = request)$error,
-               "identity")
-  expect_identical(calls, 1L)
+  expect_identical(.source_digest(legacy), digest)
+  expect_identical(readLines(paste0(legacy, ".source.rds")), "untrusted legacy metadata")
+  expect_identical(changed$source_url, get_spr_url(2024, "school"))
+  expect_false(file.exists(paste0(first$data, ".source.rds")))
 })

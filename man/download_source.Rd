@@ -7,7 +7,6 @@
 download_source(
   url,
   source_type,
-  cache_path = NULL,
   timeout = 60,
   retries = 2L,
   allowed_hosts = source_host_allowlist(),
@@ -21,8 +20,6 @@ download_source(
 
 \item{source_type}{One of `xlsx`, `xls`, `zip`, `csv`, `text`, `json`, or
 `html`.}
-
-\item{cache_path}{Optional validated artifact cache path.}
 
 \item{timeout}{Bounded request timeout in seconds.}
 
@@ -41,8 +38,8 @@ source. Active sources should leave this `FALSE`.}
 An `njsd_source_result` whose data is the validated local path.
 }
 \description{
-Downloads are written to a temporary file, validated, and then atomically
-promoted into an optional cache path. Transport failures and artifact/parser
+Downloads are written to a per-call temporary file and validated.
+Transport failures and artifact/parser
 failures have distinct source statuses.
 }
 \keyword{internal}

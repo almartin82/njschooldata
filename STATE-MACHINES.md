@@ -2,7 +2,7 @@
 
 What states the data passes through on its way from an NJ DOE file to a frame
 a caller gets back, what must hold in each state, which transitions exist, and
-which bad states the code can actually reach. Written 2026-11-09 from the code
+which bad states the code can actually reach. Updated 2026-11-10 from the code
 on `master`. Update it in the same commit as any change to a transition below.
 
 Companion docs: `CLAUDE.md` (family rules and traps), `R/cache.R` (why there
@@ -14,19 +14,17 @@ is no schema version to bump), `R/release_sources.R` (held release assets),
 ## 1. The pipeline at a glance
 
 ```
-NJ DOE publication
+NJ state publication / register
    │
    ├─ bundled in inst/extdata (new_jersey_shipped_sources manifest) ─┐
    │                                                                 │
-   ├─ held as a release asset (new_jersey_release_sources: 130 files │
+   ├─ held as a release asset (new_jersey_release_sources: 160 files │
    │   by URL, byte length, sha256)                                  │
    │      ▼ M2: shared historical source store (vendored resolver)   │
    │   verified blob ──copy──▶ per-call temp file ◀──────────────────┘
    │
-   └─ any URL neither manifest names (current enrollment 2023+, current-year
-      files, directory)
-          ▼ A: download_source() transport, optionally into a persistent
-            source cache (spr-workbooks/, source-artifacts/, sped-placement/)
+   └─ any URL neither manifest names (current-year files and live registers)
+          ▼ A / M7: download_source() transport into a per-call temp file
           validated local file
         │
         ▼  parse → process_*() → attach_nces_ids() → tidy_*()
@@ -42,8 +40,7 @@ source cache.
 
 `download_source()` resolves in a fixed order: (1) a bundled package source
 whose URL matches a complete publication; (2) a held release asset (never
-falls through to nj.gov once matched); (3) the validated persistent cache
-entry, if a `cache_path` was given; (4) a live request. Steps 1 and 2 are
+falls through to nj.gov once matched); (3) a live request into a per-call temporary file. Steps 1 and 2 are
 skipped only when a test injects its own `request_fn`, or when
 `options(njschooldata.release_sources = FALSE)` opts out of step 2.
 
@@ -53,8 +50,8 @@ skipped only when a test injects its own `request_fn`, or when
 |---|---|---|
 | Parser / processor / tidier change | Nothing on disk holds parsed output; the session cache dies with the R session | Yes, at the next session. A running session keeps old parsed entries until `njsd_cache_clear()` |
 | NJ DOE republishes a held file | Nothing: the release asset is pinned by sha256 | No. A new release asset has to be cut |
-| NJ DOE republishes a live-fetched file in place | The persistent source cache keeps the first bytes it validated | No. `njsd_workbook_cache_clear()` or deleting the cache entry forces a fresh pull |
-| Download URL changes | The SPR cache file name embeds `sha256(url)`; `source-artifacts/` is keyed by `sha256(url)`; the sidecar's `requested_url` must match | Yes (new key). Old entries stay on disk, unreachable |
+| NJ DOE republishes a live-fetched file in place | The next acquisition reads it again; registers are live on every call | Yes, on the next call without a session-cached frame |
+| Download URL changes | Held URLs keep their pinned identities; an unheld URL uses a fresh temp file | Yes on acquisition; a held-source change requires a new manifest identity |
 | Package version change | Nothing persistent to invalidate (parsed output is session-only) | n/a |
 | Directory source changes | Nothing to invalidate; directory is never cached | n/a |
 
@@ -96,48 +93,43 @@ source budget is 3 GiB, separate from any processed budget. Readers copy the
 verified blob to a per-call temp file (a real copy, never a link), so a parser
 that rewrites or unlinks its input cannot touch the store.
 
-## A. Validated transport and persistent source cache (`R/source_transport.R`)
+## A / M7. Validated per-call transport (`R/source_transport.R`)
 
-`download_source(url, source_type, cache_path = NULL, ...)` returns an
-`njsd_source_result`. With no `cache_path` the bytes land in a per-call temp
-file the caller releases. With a `cache_path` (SPR workbooks for URLs not held,
-`source-artifacts/` for graduation / state aid / TGES, report-card temp paths)
-the entry is a payload plus a `.source.rds` sidecar (requested URL, final URL,
-type, clock, size, sha256).
+`download_source(url, source_type, ...)` returns an `njsd_source_result`.
+Bundled publications resolve first, then verified release assets; only unheld
+URLs reach the publisher. Each path returns a private temporary copy that the
+caller releases. Live acquisitions validate the redirect host, content type,
+file signature and archive members, and compute SHA-256 before parsing.
+Transport failures and invalid source bytes are `source_unavailable`; a parser
+failure on good bytes remains `parse_error`. Programmer errors propagate.
 
-Entry states: `absent` · `acquiring` (lock held) · `valid` (payload + matching
-sidecar) · `legacy` (payload, no or foreign sidecar) · `corrupt` (sidecar
-present, size or sha256 differs) · `sidecar_only` (no payload).
+SPR, graduation, TGES and state aid use package-held release bytes for their
+manifest URLs. Five-year ACGR 2012-2019 and standalone SPR 2012-2016 were added
+in `sources-2026-11-10` (30 new artifacts, 39,692,151 bytes including facilities).
+All 30 were downloaded anonymously after publication and checked by length and
+SHA-256. Acquisition timestamps record the downloaded files' completion clocks.
 
-Lock states (`<cache_path>.acquiring/owner.rds`: pid, host, started):
+There is no persistent live payload, sidecar, acquisition lock or adoption
+path. The five former folders (`spr-workbooks`, `source-artifacts`,
+`enrollment-sources`, `sped-placement`, `facilities`) are no longer written.
+`njsd_workbook_cache_dir/info/clear` remain compatibility helpers for inspecting
+and removing legacy files; clear leaves `historical-assets-v1` untouched.
 
-| From | Condition | To |
-|---|---|---|
-| free | `dir.create` succeeds; owner record written | held |
-| held | owner exits normally | free (`on.exit`) |
-| held | owner on this host confirmed dead (`ps -p` / `tasklist`, never a signal) | free, warning (**new**) |
-| held | no owner record and older than 2 hours | free, warning (**new**: locks from releases that wrote no owner) |
-| held | owner alive on this host | wait, polling once a second up to `timeout` seconds, then busy (**new**: was busy at once) |
-| held | liveness unknown, other host, or fresh owner-less lock | busy at once: `source_unavailable` "acquisition is already active" |
+### Facilities: live registers and dated captures
 
-Entry transitions:
+CDS and NJGIN school points are live on every call, regardless of `use_cache`.
+SDA allocation (FY26 in the workbook title), lead SOA (2024-2025, filename dated
+2025-10-28), and the NJSDA capital index plus all 14 linked project pages are
+held captures from 2026-11-10. Each has a URL, length and SHA-256 in the release
+manifest. HTML was screened for injected challenge scripts and IP addresses;
+none were found and no publisher bytes were modified. Snapshot frames are
+reparsed from those verified bytes, without a persistent processed cache.
 
-| From | Event | To |
-|---|---|---|
-| absent / sidecar_only | lock taken, request 2xx, redirect host allowed, artifact validates | sidecar promoted, then payload promoted → valid (**new order**) |
-| absent | transport failure / HTTP error after retries | unchanged; `source_unavailable` |
-| absent | bytes arrive but fail validation (HTML page, bad ZIP, wrong type) | unchanged; `parse_error` |
-| valid | read: final URL allowed, artifact validates, size + sha256 match sidecar | valid; result `actual`, "Validated cache artifact reused." |
-| legacy | read | unchanged; `source_unavailable` "explicit source repair is required" (never re-downloaded, never given an invented clock) |
-| corrupt | read | unchanged; `parse_error` |
-| legacy | `.adopt_source_cache()` with digest evidence | valid |
-| any | `njsd_workbook_cache_clear()` | dead locks reclaimed first (**new**); entries with a live lock kept |
-
-Invariants: a payload without a matching sidecar is never served; a cache miss
-on a historical entry is never permission to re-download it; liveness is never
-probed by signalling a process.
-
-Reachable bad states found: **F1** (below).
+**To converge:** allocation and lead rows still join the live CDS district
+register. Their values come from held workbooks, but joined identifiers and
+names may change with CDS. Reproducing those joined outputs therefore also
+requires the same live register. Question NJ-E8b in the fleet `DECISIONS.md`
+records the choice; the join remains unchanged pending that ruling.
 
 ## M3. Session cache (`R/cache.R`)
 
@@ -151,10 +143,10 @@ touches it.
 | From | Event | To |
 |---|---|---|
 | absent | fetch with `use_cache = TRUE` | valid |
-| valid (enrollment) | its retained source zip (`enrollment-sources/<year>-<sha>.zip`) missing or digest differs | refetched |
+| valid (enrollment) | its session-local source zip missing or digest differs | refetched |
 | valid | `njsd_cache_clear()` / `njsd_cache_remove()` / session ends | absent |
 
-Enrollment retains its source zip under `<cache root>/enrollment-sources/` so
+Enrollment retains its source zip under `tempdir()/njschooldata-enrollment-sources/` so
 that every frame can carry `raw_path` and `raw_sha256` attributes pointing at
 the exact bytes it was parsed from.
 
@@ -241,6 +233,9 @@ Ranked by impact. "Confirmed" means reproduced on this code.
 
 ### F1. A crashed download wedged its persistent cache entry. MEDIUM, fixed
 
+Historical repair below; E8b subsequently removed this entire persistent path.
+The replacement lifecycle tests cover per-call cleanup and fresh acquisition.
+
 *Confirmed by stubbed interleavings.* `download_source()` took its lock with
 a bare `dir.create("<path>.acquiring")` and removed it with `on.exit`. A
 process killed mid-download (OOM, SIGKILL, CI timeout) never runs `on.exit`,
@@ -289,24 +284,20 @@ own message is kept. Test: `tests/testthat/test-partial-frame.R`.
 
 ### Open (not fixed here)
 
-- **O1.** Errors raised inside a multi-year call that are not source errors
-  are classified `source_unavailable` (`source_status_from_condition()`), and
-  `allow_partial = TRUE` drops parse errors and returns an empty frame when
-  every year fails. Existing tests pin all three; changing them is a behaviour
-  change for callers.
-- **O2.** `get_raw_facilities()` reuses a parsed facilities source for 30 days
-  and writes it with a plain `saveRDS()`, so a crash mid-write leaves a
-  truncated file that errors on every read until it ages out or is deleted.
-  The CDS code workbook it reads is a register NJ DOE updates in place.
-- **O3.** `.retain_enr_source()` falls back to a non-atomic `file.copy()` when
-  the temp file and the cache root are on different filesystems; a second
-  session hashing the half-written copy deletes and replaces it. The final
-  digest check catches a mismatch, so no wrong bytes are served, but the call
-  can fail spuriously.
-- **O4.** `sped_placement_cached_workbook()` reuses any cached file that is a
-  valid xlsx, with no sidecar or URL identity, for URLs that are not held as
-  release assets.
-- **O5.** Live downloads that are not package artifacts persist under the
-  per-package cache root (`spr-workbooks/`, `source-artifacts/`,
-  `sped-placement/`, `enrollment-sources/`, `facilities/`) rather than a
-  per-call temp file.
+- **O1 closed in 0.10.0:** multi-year parser errors and unclassified errors
+  propagate, and all-source-failed requests stop. Declared all-gap requests
+  still return an annotated empty frame.
+- **O2, O4, O5 closed in E8b:** facilities caches, placement caches and
+  persistent live download folders are removed. Facilities registers remain
+  live; dated captures are held. The CDS-join caveat above remains to converge.
+- **O3 closed in E8b:** enrollment source copies live under `tempdir()`, with
+  the same path resolver used by cache validation and contract attachment.
+  Independent R sessions no longer share that mutable copy.
+- **Pre-existing graduation warning, to converge:** the 0.10.0 live baseline
+  and the held-byte comparison each emit eight `Unknown columns:
+  five_yr_grad_rate` warnings for the eight requested five-year years. E8b
+  leaves that parser/selector behaviour unchanged; no warning was suppressed.
+- **Pre-existing test inventory failure, to converge:** the original HEAD test
+  contents and the E8b suite each flag `test-historical-store-recovery.R` in
+  `test-test-inventory.R`. The canonical recovery tests themselves pass. E8b
+  preserves the inventory assertion and adds no allowlist exception.

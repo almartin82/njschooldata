@@ -17,14 +17,15 @@ small_url <- paste0(
 test_that("the release contract validates and pins every file to one immutable release", {
   docs <- njschooldata:::.nj_release_documents()
   arts <- docs$manifest$artifacts
-  expect_length(arts, 130L)
+  expect_length(arts, 160L)
   storage <- lapply(arts, `[[`, "storage")
   expect_true(all(vapply(storage, `[[`, "", "backend") == "release_asset"))
-  expect_true(all(vapply(storage, `[[`, "", "tag") == "sources-2026-11-08"))
+  expect_setequal(vapply(storage, `[[`, "", "tag"), c("sources-2026-11-08", "sources-2026-11-10"))
   expect_false(anyDuplicated(vapply(arts, `[[`, "", "sha256")) > 0)
   expect_false(anyDuplicated(vapply(storage, `[[`, "", "asset_name")) > 0)
   urls <- vapply(arts, `[[`, "", "source_identity")
-  expect_true(all(startsWith(urls, "https://www.nj.gov/education/")))
+  expect_true(all(startsWith(urls, "https://www.nj.gov/education/") |
+                  grepl("^https://www[.]njsda[.]gov/(Projects/CapitalProgram|ProjectSchoolDetails/)", urls)))
 })
 
 test_that("held URLs resolve by their nj.gov address; others are not claimed", {

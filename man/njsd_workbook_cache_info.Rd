@@ -2,7 +2,7 @@
 % Please edit documentation in R/cache.R
 \name{njsd_workbook_cache_info}
 \alias{njsd_workbook_cache_info}
-\title{Inspect the on-disk SPR workbook cache}
+\title{Inspect legacy SPR workbooks left by older versions}
 \usage{
 njsd_workbook_cache_info()
 }
@@ -12,7 +12,7 @@ A data frame (one row per cached workbook) with \code{file},
   one-line summary. Empty if nothing is cached.
 }
 \description{
-Inspect the on-disk SPR workbook cache
+Inspect legacy SPR workbooks left by older versions
 }
 \examples{
 njsd_workbook_cache_info()

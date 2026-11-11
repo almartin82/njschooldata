@@ -304,7 +304,7 @@
       njsda_active_projects = list(
         url = "https://www.njsda.gov/Projects/CapitalProgram",
         agency = "NJSDA", source_type = "html",
-        vintage = "NJSDA active capital portfolio, accessed 2026-06-22"
+        vintage = "NJSDA active capital portfolio, captured 2026-11-10"
       ),
       njdoe_sda_allocation = list(
         url = "https://www.nj.gov/education/facilities/docs/SDA/DistrictAllocationTable.xlsx",

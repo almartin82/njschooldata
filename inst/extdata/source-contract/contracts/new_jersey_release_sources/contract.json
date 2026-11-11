@@ -1957,6 +1957,456 @@
         "file_id": "state-aid-FY27_GBM_District_Details.xlsx"
       },
       "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2013_4And5YearCohort12.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2013_4And5YearCohort12.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2014_4And5YearCohort13.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2014_4And5YearCohort13.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2015_4And5YearCohort14.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2015_4And5YearCohort14.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2016_4And5YearCohort14.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2016_4And5YearCohort14.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2017_4And5YearCohort.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2017_4And5YearCohort.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2018_4and5YearGraduationRates.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2018_4and5YearGraduationRates.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-ACGR2019_Cohort20184-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "graduation",
+        "file_id": "graduation-Cohort2019_4-YearAnd5-YearAdjustedCohortGraduationRates.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2011-2012_nj_pr12_database.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2011-2012_nj_pr12_database.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2012-2013_nj_pr13_database.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2012-2013_nj_pr13_database.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2013-2014_2014_performance_report_database.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2013-2014_2014_performance_report_database.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2014-2015_2015PRDATABASE.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2014-2015_2015PRDATABASE.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "spr-2015-2016_Database_SchoolDetail.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "report_card",
+        "file_id": "spr-2015-2016_Database_SchoolDetail.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-DistrictAllocationTable.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-DistrictAllocationTable.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-24-25SOA_SubmissionsLeadDW102825.xlsx"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-00.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-00.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-01.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-01.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-02.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-02.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-03.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-03.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-04.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-04.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-05.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-05.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-06.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-06.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-07.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-07.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-08.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-08.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-09.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-09.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-10.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-10.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-11.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-11.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-12.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-12.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-13.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-13.html"
+      },
+      "workspace_bytes": 0
+    },
+    {
+      "alternatives": [
+        [
+          "facilities-2026-11-10-projects-14.html"
+        ]
+      ],
+      "function": "nj_release_source",
+      "parser_version": "publisher-bytes-v1",
+      "schema_version": "1",
+      "selectors": {
+        "family": "facilities",
+        "file_id": "facilities-2026-11-10-projects-14.html"
+      },
+      "workspace_bytes": 0
     }
   ],
   "schema_version": "source-validation-contract/v2",

@@ -1,64 +1,7 @@
-# ==============================================================================
-# Caching System for njschooldata
-# ==============================================================================
-#
-# WHAT THIS CACHE IS, AND WHY THERE IS NO SCHEMA VERSION TO BUMP
-#
-# Two layers, and neither one can outlive a code change:
-#
-#  1. The processed cache below is an IN-MEMORY session cache. `.njsd_cache$data`
-#     is a plain list in a package environment, keyed by function name plus an
-#     md5 of the arguments (`make_cache_key()`). It has no schema version, no
-#     source identity, no on-disk persistence and no eviction policy, because it
-#     does not need one: it dies with the R session, and expires when the R
-#     session ends. Start a fresh session after a parser repair, including
-#     dependent ELL scaffold consumers; reloading only functions into a running
-#     session can retain obsolete parsed entries.
-#  2. `njsd_workbook_cache_dir()` persists SPR workbooks to disk, but those are
-#     the RAW downloaded bytes, not parsed output. A parser change does not
-#     invalidate a source parent, and re-downloading a frozen release to run new
-#     code over it would be waste. Recompute from the retained parent; that is
-#     what this layer is for.
-#
-# So njschooldata has no schema-versioned cache families at all, and the
-# "bump schema_version when a parser moves" half of the parser-divergence rule
-# has nothing here to attach to. The re-acquisition half still binds: change a
-# download URL or endpoint and the workbook cache reports an identity miss.
-# Explicit retained-source adoption or separately authorized acquisition is
-# required; a historical cache miss never grants permission to contact DOE.
-#
-# No code hash is folded into any cache key either: `make_cache_key()` hashes
-# only the call arguments. A parser edit on a cached family therefore has to
-# be reasoned about by hand here; nothing retires a cached entry
-# automatically when code changes.
-
-# 2026-08-23: cache isolation for the test suite. The three
-# on-disk caches -- spr-workbooks/ here, sped-placement/ in R/sped_placement.R
-# and facilities/ in R/get_raw_facilities.R -- now resolve through one root,
-# njsd_cache_root() below, which reads options(njschooldata.cache_dir) first,
-# then NJSCHOOLDATA_CACHE_DIR, then tools::R_user_dir() as before. Two things
-# this does NOT do: it does not change any cached bytes (an entry written
-# yesterday under the default root is byte-identical and still served today),
-# and it does not change a single download URL or endpoint, so nothing has to
-# be re-acquired. What it does change is that the suite can be pointed
-# somewhere else, which it now is: tests/testthat/setup-cache-isolation.R sets
-# the environment variable, so running the tests no longer reads or writes the
-# caller's own workbooks. facilities_cache_dir() had been calling
-# tools::R_user_dir() directly and honoured no override at all; that was the
-# one live bypass, and it is closed. Session cache untouched, so again there is
-# no schema version to bump.
-
-# 2026-09-09 parser edit, nothing to bump. R/msgp.R now matches the statewide
-# row's CountyCode literal case-insensitively, so get_and_process_msgp(2017)
-# reads the published StateMedian instead of the blank DistrictMedian: 20
-# statewide schoolwide cells move from NA to the workbook's own value, and
-# nothing else in 2017 changes (62,981 non-statewide rows byte-identical). 2018
-# and 2019 already spelled the literal "State" and are byte-identical
-# throughout. get_and_process_msgp() reaches no on-disk cache at all -- it goes
-# through get_one_rc_database(), whose download_and_clean_pr() passes a
-# tempfile() as cache_path -- and the only thing standing between it and the
-# source is the in-memory session cache, which a reload has already emptied.
-# No URL or endpoint moved, so nothing is re-acquired.
+# Processed frames live only in the R session. Publisher bytes are held in
+# installed artifacts or the verified historical release store. Live downloads
+# use per-call temporary files; the legacy workbook helpers only inspect/clear
+# folders left by older package versions.
 
 # Create package environment for session cache
 .njsd_cache <- new.env(parent = emptyenv())
@@ -339,14 +282,7 @@ njsd_cache_root <- function() {
 
 # Every persistent folder the package keeps under njsd_cache_root(), in one
 # list. A new folder is added here, not built by hand at its call site.
-.njsd_cache_folders <- c(
-  "spr-workbooks",         # SPR databases for URLs not held as release assets
-  "source-artifacts",      # graduation / state aid / TGES downloads
-  "enrollment-sources",    # retained enrollment zips behind raw_path
-  "sped-placement",        # IDEA 618 placement workbooks
-  "facilities",            # facilities source snapshots
-  "historical-assets-v1"   # release-asset store under a cache override
-)
+.njsd_cache_folders <- "historical-assets-v1"
 
 njsd_cache_subdir <- function(folder) {
   if (!folder %in% .njsd_cache_folders) {
@@ -355,44 +291,18 @@ njsd_cache_subdir <- function(folder) {
   file.path(njsd_cache_root(), folder)
 }
 
-# -----------------------------------------------------------------------------
-# On-Disk Workbook Cache (SPR databases)
-# -----------------------------------------------------------------------------
-#
-# The SPR Excel databases are large (the 2024-25 District file is ~119 MB, the
-# School file ~350 MB) and each holds dozens of sheets. The session cache above
-# stores parsed *sheets*, so reading two different sheets from the same workbook
-# -- or rerunning in a fresh session -- used to re-download the entire file.
-# This disk cache stores the downloaded workbook itself, keyed by year + level,
-# so a workbook is fetched from NJ DOE at most once and reused across calls and
-# across sessions. Acquisition metadata lives beside each workbook in a
-# .source.rds sidecar; legacy entries remain intact and require explicit repair
-# instead of receiving an invented acquisition time or a new URL identity.
-
-#' Directory holding cached SPR workbooks
+#' Legacy SPR workbook cache directory
 #'
-#' On-disk location where downloaded SPR Excel databases are cached. Lives under
-#' \code{\link{njsd_cache_root}}, which defaults to
-#' \code{tools::R_user_dir("njschooldata", "cache")} and is overridden by
-#' \code{options(njschooldata.cache_dir = "/path")} or by the
-#' \code{NJSCHOOLDATA_CACHE_DIR} environment variable.
-#'
-#' @return Absolute path to the workbook cache directory (it is not created by
-#'   this getter).
+#' Returns the former workbook cache path under [njsd_cache_root()], without
+#' creating it. New reads use verified package-held release assets instead.
+#' @return Path to the legacy directory.
 #' @export
-#' @examples
-#' njsd_workbook_cache_dir()
 njsd_workbook_cache_dir <- function() {
-  njsd_cache_subdir("spr-workbooks")
+  file.path(njsd_cache_root(), "spr-workbooks")
 }
 
-# Whether downloaded workbooks (SPR databases, SPED placement workbooks) are
-# kept on disk: on unless options(njschooldata.workbook_cache = FALSE) or the
-# session cache is off (njsd_cache_enable(FALSE)).
-njsd_workbook_cache_on <- function() {
-  isTRUE(getOption("njschooldata.workbook_cache", TRUE)) &&
-    njsd_cache_enabled()
-}
+# Compatibility for internal callers from older versions. No live disk cache.
+njsd_workbook_cache_on <- function() FALSE
 
 #' Is a file a real .xlsx (ZIP) rather than an HTTP error / bot page?
 #'
@@ -414,58 +324,22 @@ is_valid_xlsx <- function(path) {
   ))
 }
 
-#' Download an SPR workbook, caching it on disk
+#' Materialize an SPR workbook for this call
 #'
-#' Returns a local path to the SPR Excel database for \code{end_year} /
-#' \code{level}, downloading it from NJ DOE on first use and reusing the cached
-#' copy thereafter. The download is validated as a real \code{.xlsx} (see
-#' \code{\link{is_valid_xlsx}}) before it is cached or returned, so an HTTP error
-#' or bot-protection page is never silently treated as data.
-#'
-#' Disk caching is on by default. Disable it with
-#' \code{options(njschooldata.workbook_cache = FALSE)} or by turning off the
-#' session cache (\code{\link{njsd_cache_enable}(FALSE)}); in either case the
-#' workbook is downloaded to a temporary file each call.
-#'
+#' Held URLs use verified release assets. Other URLs download to a temporary
+#' file. The caller releases the returned source result after reading.
 #' @param end_year SPR school year end (2017-2025).
-#' @param level One of \code{"school"} or \code{"district"}.
-#' @return Path to a local, validated \code{.xlsx} file.
+#' @param level One of `"school"` or `"district"`.
+#' @param request_fn Injectable transport for offline tests.
+#' @return An `njsd_source_result` with a temporary workbook path.
 #' @keywords internal
 spr_cached_workbook_result <- function(end_year, level,
                                        request_fn = .default_source_request) {
-  url <- get_spr_url(end_year, level)  # also validates end_year / level
-
-  use_cache <- njsd_workbook_cache_on()
-
-  if (use_cache) {
-    # Unversioned year/level files predate acquisition sidecars. Keep those
-    # bytes intact; acquire a documented source in the identity-aware namespace.
-    # Including the URL also prevents a changed registry URL sharing an entry.
-    cache_dir <- njsd_workbook_cache_dir()
-    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-    dest <- file.path(cache_dir, sprintf("SPR_source-v1_%s_%d_%s.xlsx", level, end_year,
-                                       digest::digest(url, algo = "sha256")))
-    # Existing documented acquisitions remain subject to transport validation.
-    legacy <- file.path(cache_dir, sprintf("SPR_%s_%d.xlsx", level, end_year))
-    if (file.exists(legacy) && file.exists(paste0(legacy, ".source.rds"))) {
-      dest <- legacy
-    }
-    cache_path <- dest
-  } else {
-    cache_path <- NULL
-  }
-
-  download_source(
-    url,
-    source_type = "xlsx",
-    cache_path = cache_path,
-    timeout = 1200,
-    retries = 2L,
-    request_fn = request_fn
-  )
+  download_source(get_spr_url(end_year, level), source_type = "xlsx",
+                  timeout = 1200, retries = 2L, request_fn = request_fn)
 }
 
-#' Inspect the on-disk SPR workbook cache
+#' Inspect legacy SPR workbooks left by older versions
 #'
 #' @return A data frame (one row per cached workbook) with \code{file},
 #'   \code{size_mb}, and \code{modified}; returned invisibly after printing a
@@ -496,38 +370,28 @@ njsd_workbook_cache_info <- function() {
   out
 }
 
-#' Clear cached SPR workbooks from disk
+#' Remove legacy download folders left by older versions
 #'
-#' @param end_year Optional school year; clear only that year's workbooks (both
-#'   levels). Default \code{NULL} removes all cached workbooks.
-#' @return Number of files removed (invisibly).
+#' This compatibility helper never clears the verified historical release store.
+#' @param end_year Optional school year. With a year, remove matching legacy SPR
+#'   workbooks and sidecars only. With NULL, remove all five legacy folders.
+#' @return Number of legacy files removed, invisibly.
 #' @export
-#' @seealso \code{\link{njsd_workbook_cache_info}}
-#' @examples
-#' \dontrun{
-#' njsd_workbook_cache_clear()      # remove all
-#' njsd_workbook_cache_clear(2025)  # remove just SY2024-25
-#' }
 njsd_workbook_cache_clear <- function(end_year = NULL) {
-  cache_dir <- njsd_workbook_cache_dir()
-  pattern <- if (is.null(end_year)) {
-    "\\.xlsx$"
+  if (is.null(end_year)) {
+    paths <- file.path(njsd_cache_root(), c("spr-workbooks", "source-artifacts",
+                                         "enrollment-sources", "sped-placement", "facilities"))
+    count <- sum(vapply(paths, function(p) length(list.files(p, recursive = TRUE,
+                                                          all.files = TRUE)), integer(1)))
+    unlink(paths, recursive = TRUE)
   } else {
-    sprintf("_%d\\.xlsx$", end_year)
+    paths <- list.files(njsd_workbook_cache_dir(), pattern = "\\.xlsx$", full.names = TRUE)
+    paths <- paths[grepl(paste0("_", end_year, "(?:_|[.]xlsx$)"), basename(paths), perl = TRUE)]
+    count <- sum(file.exists(paths))
+    unlink(c(paths, paste0(paths, ".source.rds")), recursive = TRUE)
   }
-  files <- list.files(cache_dir, pattern = pattern, full.names = TRUE)
-  # An acquisition lock whose owner is confirmed dead is reclaimed first, so a
-  # crashed download cannot hold its entry against a clear forever.
-  locks <- list.files(cache_dir, pattern = "\\.acquiring$", full.names = TRUE)
-  for (lock in locks) .source_cache_reclaim_lock(lock)
-  files <- files[!dir.exists(paste0(files, ".acquiring"))]
-  bytes <- if (length(files) > 0) sum(file.info(files)$size) else 0
-  unlink(c(files, paste0(files, ".source.rds")))
-  message(sprintf(
-    "Removed %d cached SPR workbook(s) (%.1f MB).",
-    length(files), bytes / 1024 / 1024
-  ))
-  invisible(length(files))
+  message(sprintf("Removed %d legacy download file(s).", count))
+  invisible(count)
 }
 
 # -----------------------------------------------------------------------------
@@ -590,12 +454,4 @@ with_cache <- function(fn, fn_name) {
 #' }
 fetch_enr_cached <- function(end_year, tidy = FALSE) {
   fetch_enr(end_year, tidy = tidy, use_cache = TRUE)
-}
-
-# Reuse the validated raw-download cache for source-backed fetch families.
-# Injected transports stay isolated from the ordinary persistent cache.
-.njsd_source_cache_path <- function(url, source_type, request_fn) {
-  if (!identical(request_fn, .default_source_request)) return(NULL)
-  file.path(njsd_cache_subdir("source-artifacts"),
-            paste0(digest::digest(url, algo = "sha256"), ".", source_type))
 }

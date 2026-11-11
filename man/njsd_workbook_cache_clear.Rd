@@ -2,26 +2,17 @@
 % Please edit documentation in R/cache.R
 \name{njsd_workbook_cache_clear}
 \alias{njsd_workbook_cache_clear}
-\title{Clear cached SPR workbooks from disk}
+\title{Remove legacy download folders left by older versions}
 \usage{
 njsd_workbook_cache_clear(end_year = NULL)
 }
 \arguments{
-\item{end_year}{Optional school year; clear only that year's workbooks (both
-levels). Default \code{NULL} removes all cached workbooks.}
+\item{end_year}{Optional school year. With a year, remove matching legacy SPR
+workbooks and sidecars only. With NULL, remove all five legacy folders.}
 }
 \value{
-Number of files removed (invisibly).
+Number of legacy files removed, invisibly.
 }
 \description{
-Clear cached SPR workbooks from disk
-}
-\examples{
-\dontrun{
-njsd_workbook_cache_clear()      # remove all
-njsd_workbook_cache_clear(2025)  # remove just SY2024-25
-}
-}
-\seealso{
-\code{\link{njsd_workbook_cache_info}}
+This compatibility helper never clears the verified historical release store.
 }

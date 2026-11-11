@@ -17,28 +17,14 @@ facilities_sources <- function() {
   get_source_registry()$facilities$sources
 }
 
-#' Internal facilities cache directory
-#'
-#' Lives under \code{\link{njsd_cache_root}}. Before 2026-08-23 this resolver
-#' called \code{tools::R_user_dir()} directly and so ignored every cache
-#' override the rest of the package honours -- including the one the test suite
-#' uses to keep itself out of the caller's real cache.
-#'
-#' @keywords internal
-facilities_cache_dir <- function() {
-  path <- njsd_cache_subdir("facilities")
-  dir.create(path, recursive = TRUE, showWarnings = FALSE)
-  path
-}
-
 #' Fetch raw New Jersey facilities source data
 #'
 #' Low-level fetcher for source transparency. Most users should call
 #' \code{\link{fetch_facilities}} or \code{\link{fetch_facility_gis}}.
 #'
 #' @param source One of the names in \code{facilities_sources()}.
-#' @param use_cache If TRUE, reuse a local source cache when it is less than
-#'   30 days old.
+#' @param use_cache Retained for compatibility; has no effect. Registers are
+#'   fetched live on every call; dated snapshots use verified held bytes.
 #' @return A source-shaped data frame or list of data frames.
 #' @export
 #' @examples
@@ -57,15 +43,6 @@ get_raw_facilities <- function(source, use_cache = TRUE) {
     )
   }
 
-  cache_file <- file.path(facilities_cache_dir(), paste0(source, ".rds"))
-  if (isTRUE(use_cache) && file.exists(cache_file)) {
-    age_days <- as.numeric(difftime(Sys.time(), file.info(cache_file)$mtime,
-                                    units = "days"))
-    if (!is.na(age_days) && age_days < 30) {
-      return(readRDS(cache_file))
-    }
-  }
-
   src <- registry[[source]]
   raw <- switch(
     source,
@@ -77,9 +54,6 @@ get_raw_facilities <- function(source, use_cache = TRUE) {
     stop("No raw facilities fetcher for source: ", source, call. = FALSE)
   )
 
-  if (isTRUE(use_cache)) {
-    saveRDS(raw, cache_file)
-  }
   raw
 }
 
@@ -159,6 +133,11 @@ get_raw_facilities_arcgis <- function(src) {
 #' Internal: fetch a URL as text with a browser user agent
 #' @keywords internal
 facilities_get_text <- function(url) {
+  if (!is.null(.nj_release_lookup(url))) {
+    held <- .release_source(url, "html")
+    on.exit(.release_source_result(held), add = TRUE)
+    return(paste(readLines(held$data, warn = FALSE, encoding = "UTF-8"), collapse = "\n"))
+  }
   resp <- httr::GET(
     url,
     httr::user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"),
@@ -273,6 +252,9 @@ get_raw_njsda_active_projects <- function(src) {
         stringsAsFactors = FALSE
       )
     }, error = function(e) {
+      # Held captures form one reproducible crawl. Losing a pinned detail page
+      # must stop the snapshot instead of returning a shorter project list.
+      if (!is.null(.nj_release_lookup(url))) stop(e)
       warning("Skipping NJSDA active project page ", url, ": ",
               conditionMessage(e), call. = FALSE)
       NULL

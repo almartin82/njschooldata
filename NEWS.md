@@ -1,3 +1,25 @@
+# njschooldata 0.11.0
+
+* Hold five-year ACGR workbooks for 2012-2019, standalone School Performance
+  Reports databases for 2012-2016, and November 10, 2026 facilities captures
+  (SDA allocation, lead SOA, active capital index and 14 project pages) in
+  immutable release `sources-2026-11-10`. Every read verifies SHA-256 and length;
+  a held URL never falls back to the publisher.
+  A failed held project detail page stops the snapshot instead of returning a
+  shorter project list.
+* Remove the five persistent download folders. Unheld downloads and placement
+  extraction use per-call temporary files. Enrollment `raw_path` now points to
+  a session-local copy that expires when R exits.
+* Facilities CDS and NJGIN registers are live on every call. `use_cache` remains
+  accepted by facilities functions for compatibility, with no effect. Snapshot
+  workbooks remain held even with `use_cache = FALSE`; the allocation and lead
+  parsers still join the live CDS register.
+* Keep `njsd_workbook_cache_dir()` and `njsd_workbook_cache_info()` to inspect
+  legacy SPR files. `njsd_workbook_cache_clear()` removes all five old folders
+  by default, or selected-year SPR files when a year is supplied, while keeping
+  the verified historical release store. The former `workbook_cache` option
+  no longer controls downloads.
+
 # njschooldata 0.10.0
 
 * Multi-year and multi-source requests follow one rule for every year
