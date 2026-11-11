@@ -20,8 +20,15 @@
     stop("Assessment workbook has no data rows.", call. = FALSE)
   }
   # Retain a row-level flag before converting published asterisks to NA.
-  # The first eight columns are identifiers/subgroup labels, not measures.
-  suppressed <- rowSums(as.matrix(data[, 9:ncol(data)]) == "*",
+  # Only the performance measures count: Valid Scores, Mean Scale Score and
+  # the level percents. NJDOE masks Registered To Test / Not Tested on nearly
+  # every school row, including rows whose scores and levels are published.
+  headers <- trimws(gsub("[[:space:]]+", " ", names(data)))
+  valid_col <- which(tolower(headers) == "valid scores")
+  if (length(valid_col) != 1L) {
+    stop("Assessment workbook has no single 'Valid Scores' column.", call. = FALSE)
+  }
+  suppressed <- rowSums(as.matrix(data[, valid_col:ncol(data)]) == "*",
                         na.rm = TRUE) > 0L
   data[] <- lapply(data, function(x) { x[x == "*"] <- NA; x })
   attr(data, "suppressed") <- suppressed
@@ -146,8 +153,9 @@ get_raw_njgpa <- function(end_year, subj) {
 #' `number_of_valid_scale_scores` was NA, `"published_pct_only"`.
 #' `assessment_era` distinguishes the 2026 ELA/math scale from earlier NJSLA;
 #' scores and performance standards across eras are not comparable.
-#' `suppressed` flags rows with any asterisk-masked source measure; those
-#' cells remain NA (including counts when only a percentage is available).
+#' `suppressed` flags rows with any asterisk-masked valid-score count, mean scale score or level percent;
+#' those cells remain NA (including counts when only a percentage is available).
+#' Masked Registered To Test / Not Tested counts alone do not set it.
 #' @export
 #' @examples
 #' \dontrun{
@@ -212,7 +220,7 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
 #' @return Processed NJGPA dataframe, carrying the same
 #' `num_l1`/`num_l2`-plus-`value_source` derivation as [fetch_parcc()].
 #' `assessment_era` distinguishes the 2026 scale; scores are not rescaled.
-#' `suppressed` flags rows with any asterisk-masked source measure.
+#' `suppressed` flags rows with any asterisk-masked valid-score count, mean scale score or level percent.
 #' @export
 #' @examples
 #' \dontrun{

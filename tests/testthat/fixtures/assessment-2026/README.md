@@ -25,7 +25,9 @@ The same schools' 2025 workbooks report 739, 742, 769, and 721 respectively.
 These are different-year observations on different scales, not a crosswalk.
 No score is rescaled or mapped to an earlier standard. Science remains `NJSLA-S`.
 `assess_name` and existing output fields remain available; `suppressed` flags
-any row containing an asterisk-masked numeric source cell, which stays NA.
+any row with an asterisk-masked valid-score count, mean scale score or level
+percent; those cells stay NA. Masked Registered To Test / Not Tested counts,
+which NJDOE applies to nearly every school row, do not set it.
 
 All 21 release workbooks returned HTTP 200 and parsed successfully: ELA03-ELA09,
 MAT03-MAT08, ALG01, GEO01, ALG02, SC05, SC08, SC11 (NJSLA), and ELAGP/MATGP

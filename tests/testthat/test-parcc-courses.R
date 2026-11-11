@@ -39,11 +39,15 @@ test_that("PARCC course workbooks parse real totals and suppressed cells offline
     expect_identical(school$school_id, "050")
     expect_equal(school$scale_score_mean, school_means[[index]])
     expect_equal(school$pct_l4, school_l4[[index]])
+    # 2015's first school row has masked scores; later years publish them
+    # while still masking Registered To Test / Not Tested.
+    expect_identical(school$suppressed, is.na(school_means[[index]]))
 
     suppressed <- out[out$is_school & is.na(out$number_of_valid_scale_scores), ]
     expect_equal(nrow(suppressed), 1L)
     expect_true(all(is.na(suppressed$scale_score_mean)))
     expect_true(all(is.na(suppressed$pct_l4)))
     expect_true(all(is.na(suppressed$num_l4)))
+    expect_true(all(suppressed$suppressed))
   }
 })

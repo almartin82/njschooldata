@@ -70,6 +70,9 @@ test_that("2026 fetchers preserve real source cells, levels, suppression and fin
     expect_equal(school$scale_score_mean, means[i])
     expect_equal(school$number_of_valid_scale_scores, valid[i])
     expect_equal(school$pct_l2, l2[i])
+    # NJDOE masks Registered To Test / Not Tested on nearly every school row;
+    # a row with published scores and levels is not suppressed.
+    expect_false(school$suppressed)
     expect_identical(school$assessment_era, if (gp) "NJGPA-2026" else
       if (token == "SC05") "NJSLA-S" else "NJSLA-2026")
     for (level in 1:5) {

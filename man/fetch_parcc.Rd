@@ -27,8 +27,9 @@ published `number_of_valid_scale_scores` (see `parcc_perf_level_counts()`);
 `number_of_valid_scale_scores` was NA, `"published_pct_only"`.
 `assessment_era` distinguishes the 2026 ELA/math scale from earlier NJSLA;
 scores and performance standards across eras are not comparable.
-`suppressed` flags rows with any asterisk-masked source measure; those
-cells remain NA (including counts when only a percentage is available).
+`suppressed` flags rows with any asterisk-masked valid-score count, mean scale score or level percent;
+those cells remain NA (including counts when only a percentage is available).
+Masked Registered To Test / Not Tested counts alone do not set it.
 }
 \description{
 `fetch_parcc` is a wrapper around `get_raw_parcc` and `process_parcc`
