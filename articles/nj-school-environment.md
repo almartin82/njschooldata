@@ -170,7 +170,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.10.0
+#> [1] ggplot2_4.0.3       dplyr_1.2.1         njschooldata_0.11.0
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] utf8_1.2.6         rappdirs_0.3.4     sass_0.4.10        generics_0.1.4    

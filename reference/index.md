@@ -980,11 +980,11 @@ Additional exported functions
 - [`njsd_progress_enable()`](https://almartin82.github.io/njschooldata/reference/njsd_progress_enable.md)
   : Enable or disable progress indicators
 - [`njsd_workbook_cache_clear()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_clear.md)
-  : Clear cached SPR workbooks from disk
+  : Remove legacy download folders left by older versions
 - [`njsd_workbook_cache_dir()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_dir.md)
-  : Directory holding cached SPR workbooks
+  : Legacy SPR workbook cache directory
 - [`njsd_workbook_cache_info()`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_info.md)
-  : Inspect the on-disk SPR workbook cache
+  : Inspect legacy SPR workbooks left by older versions
 - [`nwk_address_addendum`](https://almartin82.github.io/njschooldata/reference/nwk_address_addendum.md)
   : Newark Address Addendum
 - [`pad_cds()`](https://almartin82.github.io/njschooldata/reference/pad_cds.md)

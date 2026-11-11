@@ -1,6 +1,7 @@
-# Clear cached SPR workbooks from disk
+# Remove legacy download folders left by older versions
 
-Clear cached SPR workbooks from disk
+This compatibility helper never clears the verified historical release
+store.
 
 ## Usage
 
@@ -12,22 +13,10 @@ njsd_workbook_cache_clear(end_year = NULL)
 
 - end_year:
 
-  Optional school year; clear only that year's workbooks (both levels).
-  Default `NULL` removes all cached workbooks.
+  Optional school year. With a year, remove matching legacy SPR
+  workbooks and sidecars only. With NULL, remove all five legacy
+  folders.
 
 ## Value
 
-Number of files removed (invisibly).
-
-## See also
-
-[`njsd_workbook_cache_info`](https://almartin82.github.io/njschooldata/reference/njsd_workbook_cache_info.md)
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-njsd_workbook_cache_clear()      # remove all
-njsd_workbook_cache_clear(2025)  # remove just SY2024-25
-} # }
-```
+Number of legacy files removed, invisibly.

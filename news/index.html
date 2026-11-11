@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,9 +48,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/sources-2026-11-10/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/almartin82/njschooldata/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.11.0" id="njschooldata-0110">njschooldata 0.11.0<a class="anchor" aria-label="anchor" href="#njschooldata-0110"></a></h2>
+<ul><li>Hold five-year ACGR workbooks for 2012-2019, standalone School Performance Reports databases for 2012-2016, and November 10, 2026 facilities captures (SDA allocation, lead SOA, active capital index and 14 project pages) in immutable release <code>sources-2026-11-10</code>. Every read verifies SHA-256 and length; a held URL never falls back to the publisher. A failed held project detail page stops the snapshot instead of returning a shorter project list.</li>
+<li>Remove the five persistent download folders. Unheld downloads and placement extraction use per-call temporary files. Enrollment <code>raw_path</code> now points to a session-local copy that expires when R exits.</li>
+<li>Facilities CDS and NJGIN registers are live on every call. <code>use_cache</code> remains accepted by facilities functions for compatibility, with no effect. Snapshot workbooks remain held even with <code>use_cache = FALSE</code>; the allocation and lead parsers still join the live CDS register.</li>
+<li>Keep <code><a href="../reference/njsd_workbook_cache_dir.html">njsd_workbook_cache_dir()</a></code> and <code><a href="../reference/njsd_workbook_cache_info.html">njsd_workbook_cache_info()</a></code> to inspect legacy SPR files. <code><a href="../reference/njsd_workbook_cache_clear.html">njsd_workbook_cache_clear()</a></code> removes all five old folders by default, or selected-year SPR files when a year is supplied, while keeping the verified historical release store. The former <code>workbook_cache</code> option no longer controls downloads.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10.0" id="njschooldata-0100">njschooldata 0.10.0<a class="anchor" aria-label="anchor" href="#njschooldata-0100"></a></h2>
 <ul><li>
@@ -82,7 +89,7 @@
 <h3 id="one-cache-root-and-a-test-suite-that-stays-out-of-yours-0-10-0">One cache root, and a test suite that stays out of yours<a class="anchor" aria-label="anchor" href="#one-cache-root-and-a-test-suite-that-stays-out-of-yours-0-10-0"></a></h3>
 <ul><li>Every on-disk cache – SPR workbooks, SPED placement workbooks, and the facilities source snapshots – now resolves through a single root. <code>options(njschooldata.cache_dir)</code> still wins; the new <code>NJSCHOOLDATA_CACHE_DIR</code> environment variable is consulted next; <code>tools::R_user_dir("njschooldata", "cache")</code> remains the default, so nothing moves unless you move it.</li>
 <li>
-<code><a href="../reference/facilities_cache_dir.html">facilities_cache_dir()</a></code> had been reading <code><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir()</a></code> directly and honoured no override at all. It does now.</li>
+<code>facilities_cache_dir()</code> had been reading <code><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir()</a></code> directly and honoured no override at all. It does now.</li>
 <li>The test suite redirects that root into a per-process temp directory, so running the tests no longer reads or writes the workbooks cached on the machine running them. A test that passed only because a large workbook happened to be warm now fails honestly, and no test can leave a value behind for an ordinary call to serve.</li>
 </ul></div>
 <div class="section level3">

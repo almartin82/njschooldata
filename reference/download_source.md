@@ -1,8 +1,8 @@
 # Download and validate a registered NJ DOE source
 
-Downloads are written to a temporary file, validated, and then
-atomically promoted into an optional cache path. Transport failures and
-artifact/parser failures have distinct source statuses.
+Downloads are written to a per-call temporary file and validated.
+Transport failures and artifact/parser failures have distinct source
+statuses.
 
 ## Usage
 
@@ -10,7 +10,6 @@ artifact/parser failures have distinct source statuses.
 download_source(
   url,
   source_type,
-  cache_path = NULL,
   timeout = 60,
   retries = 2L,
   allowed_hosts = source_host_allowlist(),
@@ -30,10 +29,6 @@ download_source(
 
   One of \`xlsx\`, \`xls\`, \`zip\`, \`csv\`, \`text\`, \`json\`, or
   \`html\`.
-
-- cache_path:
-
-  Optional validated artifact cache path.
 
 - timeout:
 

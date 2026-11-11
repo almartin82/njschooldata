@@ -1,6 +1,6 @@
-# Inspect the on-disk SPR workbook cache
+# Inspect legacy SPR workbooks left by older versions
 
-Inspect the on-disk SPR workbook cache
+Inspect legacy SPR workbooks left by older versions
 
 ## Usage
 

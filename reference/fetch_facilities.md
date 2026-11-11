@@ -30,7 +30,8 @@ fetch_facilities(category, year = NULL, tidy = TRUE, use_cache = TRUE)
 
 - use_cache:
 
-  If TRUE (default), use cached source downloads when fresh.
+  Retained for compatibility; has no effect. Registers are fetched live
+  on every call; dated snapshots use verified held bytes.
 
 ## Value
 

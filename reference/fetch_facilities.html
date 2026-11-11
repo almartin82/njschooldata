@@ -13,7 +13,7 @@ true source vintages on every row."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">njschooldata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@ true source vintages on every row."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Fetch New Jersey school facilities data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/sources-2026-11-10/R/fetch_facilities.R" class="external-link"><code>R/fetch_facilities.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/almartin82/njschooldata/blob/master/R/fetch_facilities.R" class="external-link"><code>R/fetch_facilities.R</code></a></small>
       <div class="d-none name"><code>fetch_facilities.Rd</code></div>
     </div>
 
@@ -90,7 +90,8 @@ has no separate wide form, so FALSE currently returns the same rows.</p></dd>
 
 
 <dt id="arg-use-cache">use_cache<a class="anchor" aria-label="anchor" href="#arg-use-cache"></a></dt>
-<dd><p>If TRUE (default), use cached source downloads when fresh.</p></dd>
+<dd><p>Retained for compatibility; has no effect. Registers are
+fetched live on every call; dated snapshots use verified held bytes.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -20,7 +20,8 @@ get_raw_facilities(source, use_cache = TRUE)
 
 - use_cache:
 
-  If TRUE, reuse a local source cache when it is less than 30 days old.
+  Retained for compatibility; has no effect. Registers are fetched live
+  on every call; dated snapshots use verified held bytes.
 
 ## Value
 

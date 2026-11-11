@@ -23,7 +23,8 @@ fetch_facility_gis(layer = "school_points", sf = TRUE, use_cache = TRUE)
 
 - use_cache:
 
-  If TRUE (default), use cached source downloads when fresh.
+  Retained for compatibility; has no effect. NJGIN is fetched live on
+  every call.
 
 ## Value
 
