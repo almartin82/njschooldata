@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/almartin82/njschooldata/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/almartin82/njschooldata/blob/sources-2026-11-10/DESCRIPTION)
 
 Martin A (2026). *njschooldata: A Simple Interface for Accessing NJ DOE
 School Data in R and Python*. R package version 0.10.0,
