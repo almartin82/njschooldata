@@ -2,6 +2,9 @@
 
 ## njschooldata 0.11.0
 
+- Synchronize Python bindings and their generated compatibility contract
+  with R 0.11.0; this Python release supports R versions \>=0.11.0 and
+  \<0.12.0.
 - Hold five-year ACGR workbooks for 2012-2019, standalone School
   Performance Reports databases for 2012-2016, and November 10, 2026
   facilities captures (SDA allocation, lead SOA, active capital index
