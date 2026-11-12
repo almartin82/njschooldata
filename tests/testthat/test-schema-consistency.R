@@ -96,6 +96,12 @@ test_that("the schema checker can fail", {
   )
 }
 
+# Fleet switch (contract v1 addendum): STATE_SCHOOLDATA_SCHEMA_LIVE=true opens the
+# live entries in addition to this package's own live-test gate.
+.sc_schema_live <- function() {
+  tolower(Sys.getenv("STATE_SCHOOLDATA_SCHEMA_LIVE", "false")) %in% c("1", "true", "yes")
+}
+
 .sc_label <- function(entry) {
   args <- vapply(names(entry$args), function(n) paste0(n, "=", format(entry$args[[n]])), "")
   paste0(entry$fetcher, "(", paste(args, collapse = ", "), ")")
@@ -116,7 +122,7 @@ for (sc_entry in .sc_spec()) {
     entry <- sc_entry
     test_that(paste("schema consistency:", .sc_label(entry)), {
       skip_on_cran()
-      skip_if_no_live_tests()
+      if (!.sc_schema_live()) skip_if_no_live_tests()
       # Read through the ordinary persistent cache, as the available-years
       # live test does; a cold year with no network is NOT-CHECKED.
       withr::local_options(njschooldata.cache_dir = NULL,
