@@ -23,6 +23,16 @@ Data frame with days absent statistics including:
       `20% or higher`
     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
   }
+
+The output carries separate day-count and percent-of-days bands, with
+character NA where a band was not published. Day-count bands are published
+in 2017-2023; abs_15_plus is the printed 2017 "15+" band, whereas
+abs_over_15 is the later "over 15" band. Percent-of-days bands are published
+in 2024-2025. The first nonzero band retains separate names for the printed
+greater-than-zero lower bound in 2024 and 0.1 lower bound in 2025.
+These are different measures and boundaries, not interchangeable bands.
+The 2020 workbook does not publish this sheet and is rejected.
+The redundant school_year is filtered to the requested year and removed.
 }
 \description{
 Downloads and extracts days absent statistics from the SPR database.

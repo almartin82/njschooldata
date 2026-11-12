@@ -33,10 +33,12 @@ rows remain \code{NA}.}
 \value{
 Data frame with entity identifiers, the six incident-category
   columns (\code{violence}, \code{weapons}, \code{vandalism},
-  \code{substances}, \code{hib}, \code{other_incidents}), the 2025-only
-  \code{school_year} column when present, and the standard aggregation flags
+  \code{substances}, \code{hib}, \code{other_incidents}), the standard aggregation flags
   (\code{is_state}, \code{is_county}, \code{is_district}, \code{is_school},
   \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic}).
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 }
 \description{
 Downloads the \code{PoliceNotifications} sheet from the NJ DOE School
@@ -57,7 +59,7 @@ Sheet coverage and harmonization:
     \code{harassment_intimidation_bullying_hib} (legacy) to \code{hib}; this
     function harmonizes both layouts to \code{hib}.
   \item The 2024-25 sheet adds a \code{school_year} column (single value, e.g.
-    \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets have
+    \code{"2024-25"}); it is filtered and removed. Pre-2025 sheets have
     no \code{school_year} column.
   \item All six incident-category columns are returned as numeric counts.
     Suppressed cells (NJ DOE uses \code{*}, \code{N}, \code{-} as suppression

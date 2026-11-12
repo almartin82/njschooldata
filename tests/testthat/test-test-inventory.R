@@ -76,7 +76,12 @@ test_that("network-bearing R tests are explicitly gated", {
     "test-release-sources.R",
     # Source-cache acquisition locks: every request is an injected transport;
     # the URLs only name cache entries.
-    "test-source-cache-lock.R"
+    "test-source-cache-lock.R",
+    # fetch_spr_data() is replaced with in-memory sheets via
+    # local_mocked_bindings(); the fixtures carry values no download produces.
+    "test-fetch-spr-enrollment-by-group.R",
+    # Mocked SPR sheets only; no transport is reached.
+    "test-schema-normalization.R"
   )
   network_pattern <- paste(
     c(

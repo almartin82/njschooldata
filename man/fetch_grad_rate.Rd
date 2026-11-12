@@ -15,6 +15,8 @@ One of "4 year" or "5 year".}
 }
 \value{
 dataframe with grad rate
+
+cohort_count is consistently numeric across years.
 }
 \description{
 Downloads and processes graduation rate data.

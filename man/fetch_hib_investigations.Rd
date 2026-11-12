@@ -17,10 +17,12 @@ state-level data.}
 \value{
 Data frame with entity identifiers, \code{hib_nature},
   \code{hib_alleged}, \code{hib_confirmed}, \code{total_hib_investigations},
-  the 2025-only \code{school_year} column when present, and the standard
-  aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
+  the standard aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
   \code{is_school}, \code{is_charter}, \code{is_charter_sector},
   \code{is_allpublic}).
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 }
 \description{
 Downloads the \code{HIBInvestigations} sheet from the NJ DOE School
@@ -41,7 +43,7 @@ Sheet coverage and harmonization:
     \code{No Identified Nature}, \code{Other}, \code{Race}, \code{Religion},
     \code{Sexual Orientation}.
   \item The 2024-25 sheet adds a \code{school_year} column (single value,
-    e.g. \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets
+    e.g. \code{"2024-25"}); it is filtered and removed. Pre-2025 sheets
     have no \code{school_year} column.
   \item The raw NJ DOE column names \code{HIBNature}, \code{HIBAlleged},
     \code{HIBConfirmed}, and \code{TotalHIBInvestigations} snake-case to

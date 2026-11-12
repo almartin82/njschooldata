@@ -13,6 +13,10 @@ fetch_dropout_rates(end_year, level = "school")
 }
 \value{
 Data frame with dropout rates
+
+The 2017 school_rate and state_rate labels are harmonized to the corresponding
+dropout entity and state rate fields. school_year is filtered to the requested
+year and then removed.
 }
 \description{
 Downloads dropout rate trends from SPR database.

@@ -21,7 +21,7 @@ state-level data.}
 Data frame with median SGP data. Columns vary by \code{type}:
   \itemize{
     \item \strong{All types}: end_year, county_id, county_name, district_id,
-      district_name, school_id, school_name, school_year, plus aggregation
+      district_name, school_id, school_name, plus aggregation
       flags (is_state, is_county, is_district, is_school, is_charter, ...).
     \item \code{type = "trends"}: \code{subgroup}, and for ELA and Math the
       entity median (\code{ela_median_sgp}, \code{math_median_sgp}) with its
@@ -29,16 +29,22 @@ Data frame with median SGP data. Columns vary by \code{type}:
       (\code{ela_median_sgp_state}, \code{math_median_sgp_state}) and its
       category. At \code{level = "school"} the entity median is the school
       value; at \code{level = "district"} it is the district value. Pre-2025
-      years additionally carry \code{ela_met_target}/\code{math_met_target}
-      and have \code{NA} in the \code{*_category} columns. The 2025 sheet is a
-      multi-year trend filtered to the requested year and adds a
-      \code{school_year} column; legacy sheets are single-year.
+      years publish \code{ela_met_target}/\code{math_met_target}
+      and have \code{NA} in the \code{*_category} columns. The target
+      indicators are \code{NA} in 2025. The 2025 source is a multi-year trend;
+      its \code{school_year} column is used to filter the requested year and
+      then removed. Legacy sheets are single-year.
     \item \code{type = "by_grade"}: \code{subject}, \code{grade},
       \code{median_sgp}, \code{median_sgp_category}.
     \item \code{type = "by_performance_level"}: \code{subject},
       \code{njsla_performance_level}, \code{median_sgp},
       \code{median_sgp_category}.
   }
+
+For trends, ela_met_target and math_met_target are published only before 2025
+and are NA in 2025; the historical target indicators are distinct from the
+growth categories. school_year is filtered to the requested year and then
+removed.
 }
 \description{
 Downloads NJ Student Growth Percentile (median SGP / mSGP) data from the

@@ -30,6 +30,12 @@ Data frame with SAT/ACT/PSAT performance scores including:
     \item state_pct_benchmark - State benchmark percentage (comparison)
     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
   }
+
+average_score_district is harmonized to district_avg; this comparison is NA in
+older school-level sheets that omit it. bt_pct is retained separately and is
+NA in the 2025 district sheet: it is not inferred from the redesigned
+benchmark rate. school_year is filtered to the requested year and then
+removed. Columns have a fixed order.
 }
 \description{
 Downloads and extracts college entrance exam performance scores from the

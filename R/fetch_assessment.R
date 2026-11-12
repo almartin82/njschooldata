@@ -156,6 +156,10 @@ get_raw_njgpa <- function(end_year, subj) {
 #' `suppressed` flags rows with any asterisk-masked valid-score count, mean scale score or level percent;
 #' those cells remain NA (including counts when only a percentage is available).
 #' Masked Registered To Test / Not Tested counts alone do not set it.
+#'
+#' With tidy = TRUE, dfg is the published 2015-2018 district factor group; it is
+#' NA_character_ from 2019 onward, when the files omit it.
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -193,6 +197,10 @@ fetch_parcc <- function(end_year, grade_or_subj, subj, tidy = FALSE) {
     if (tidy) {
       p$subgroup <- tidy_parcc_subgroup(p$subgroup)
       p <- p %>% parcc_perf_level_counts()
+      # DFG is a published field in the 2015-2018 files, not a join.
+      if (!"dfg" %in% names(p)) p$dfg <- NA_character_
+      p$dfg <- as.character(p$dfg)
+      p <- parcc_column_order(p)
     }
     p
   })

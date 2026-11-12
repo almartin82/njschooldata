@@ -30,6 +30,9 @@ scores and performance standards across eras are not comparable.
 `suppressed` flags rows with any asterisk-masked valid-score count, mean scale score or level percent;
 those cells remain NA (including counts when only a percentage is available).
 Masked Registered To Test / Not Tested counts alone do not set it.
+
+With tidy = TRUE, dfg is the published 2015-2018 district factor group; it is
+NA_character_ from 2019 onward, when the files omit it.
 }
 \description{
 `fetch_parcc` is a wrapper around `get_raw_parcc` and `process_parcc`

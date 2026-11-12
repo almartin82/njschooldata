@@ -28,6 +28,13 @@ Data frame with AP/IB participation and performance including:
     \item dual_enrollment_state - State dual enrollment percentage
     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
   }
+
+Participation columns are character in every year so published suppression and
+other text tokens survive. Exam participation and AP/IB performance are not
+published by this interface in 2025 and are NA.
+The 2017 long sheet is reshaped by ReportCategory. On its state row the
+source's blank DistrictPercent remains NA in the entity carrier; the
+published StatePercent is retained in the corresponding state column.
 }
 \description{
 Downloads and extracts Advanced Placement (AP) and International Baccalaureate (IB)

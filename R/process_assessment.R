@@ -88,7 +88,7 @@ parcc_column_order <- function(df) {
       county_id, county_name,
       district_id, district_name,
       school_id, school_name,
-      dplyr::contains("dfg"),
+      dplyr::any_of("dfg"),
       subgroup, subgroup_type,
       number_enrolled, number_not_tested,
       number_of_valid_scale_scores,

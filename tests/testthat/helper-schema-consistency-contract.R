@@ -85,6 +85,9 @@ sc_contract_check <- function(years, fetch_one, known_breaks = character()) {
       }
     } else if (!is.data.frame(result)) {
       errors[[key]] <- paste("returned", paste(class(result), collapse = "/"))
+    } else if (nrow(result) == 0L) {
+      # A supported year that returns nothing is a defect, not a schema.
+      errors[[key]] <- "returned no rows"
     } else {
       schemas[[key]] <- sc_schema(result)
       span <- sc_year_span(result, year)
@@ -204,6 +207,9 @@ sc_contract_self_test <- function() {
   testthat::expect_match(mixed$differences[["2021"]], "holds 2 school years")
   relabel <- sc_contract_check(2020:2021, function(year) base(if (year == 2021L) 2019L else year))
   testthat::expect_identical(relabel$unexpected, 2021L)
+  empty <- sc_contract_check(2020:2022, function(year) if (year == 2021L) base(year)[0, ] else base(year))
+  testthat::expect_identical(empty$unexpected, 2021L)
+  testthat::expect_identical(empty$errors[["2021"]], "returned no rows")
   stale <- sc_contract_check(2020:2022, base, c(`2021` = "documented"))
   testthat::expect_identical(stale$stale_breaks, 2021L)
   testthat::expect_identical(sc_contract_check(2020:2022, base, c(`2019` = "x"))$unknown_break_years,

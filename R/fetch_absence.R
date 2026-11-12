@@ -5,6 +5,13 @@
 # https://www.nj.gov/education/sprreports/download/DataFiles/2019-2020/Database_SchoolDetail.xlsx
 .nj_absence_live_years <- c(2017:2019, 2021:2025)
 
+absence_supported_years <- function(type = "chronic") {
+  years <- get_source_years("absence")
+  if (type == "by_grade") years <- years[years >= 2018L]
+  if (type == "essa") years <- get_source_years("essa_chronic_absence")
+  years
+}
+
 # ==============================================================================
 # Unified Chronic Absenteeism Interface
 # ==============================================================================
@@ -114,6 +121,16 @@ tidy_absence <- function(df) {
 #'     \item \code{male}, \code{female}
 #'   }
 #'
+#' The 2020 workbook omits the absence sheets; by_grade additionally excludes
+#' 2017. For days_absent, the 2017 long distribution is reshaped without changing
+#' values. Day-count bands abs_0, abs_1_5, abs_6_10 and abs_11_15 (2017-2023),
+#' abs_15_plus (2017), and abs_over_15 (2018-2023) are distinct from the
+#' percent-of-days bands in 2024-2025. The printed 15+ and over-15 boundaries
+#' remain separate. Percent-of-days bands share names across 2024-2025 except
+#' absent_gt0_to_6_9_pctdays (2024) and absent_0_1_to_6_9_pctdays (2025),
+#' whose different printed lower bounds are retained. Every band is NA in
+#' years that do not publish it. school_year is filtered before removal.
+#'
 #' @export
 #'
 #' @examples
@@ -155,6 +172,11 @@ fetch_absence <- function(end_year, level = "school", type = "chronic",
   }
 
   # Check cache
+  if (!end_year %in% absence_supported_years(type)) {
+    stop("Absence type '", type, "' is not published for end_year ", end_year,
+         ". Supported years: ", paste(absence_supported_years(type), collapse = ", "),
+         call. = FALSE)
+  }
   if (use_cache) {
     key <- make_cache_key("fetch_absence", end_year = end_year,
                           level = level, type = type, tidy = tidy)

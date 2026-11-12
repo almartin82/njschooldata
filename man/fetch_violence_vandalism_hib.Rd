@@ -27,6 +27,11 @@ rows remain \code{NA}.}
 }
 \value{
 Data frame with incident counts
+
+The 2025 hib and incidents_per_100_students labels are harmonized to
+harassment_intimidation_bullying_hib and incidents_per_100_students_enrolled.
+Columns have a fixed order. school_year is filtered to the requested year and
+then removed.
 }
 \description{
 Downloads incident data from SPR database.

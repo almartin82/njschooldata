@@ -9,6 +9,18 @@
   published text with `pct = NA`.
 * `fetch_spr_data()` is documented as a raw sheet reader: it returns each
   year's sheet in NJDOE's layout and points to the tidy fetchers.
+* Tidy fetchers now return one schema for every supported year (columns,
+  order, classes): the School Performance Reports wrappers absorb the 2024-25
+  redesign's renamed columns, drop a redundant `school_year` after filtering to
+  the requested year, carry columns NJDOE added or dropped as `NA` in the years
+  they were not published, and keep differently defined measures distinct
+  (for example, day-count and percent-of-days absence bands). No published
+  value changes. `fetch_dropout_rates(2025)` now returns 2024-25 rows only;
+  earlier years come from their own year's report.
+* `fetch_essa_status()`, `fetch_teacher_experience()` and
+  `fetch_cte_participation()` refuse 2017 and 2018, and `fetch_absence()`
+  refuses years whose sheet NJDOE did not publish, instead of failing on a
+  missing sheet.
 * New schema-consistency test (contract v1): each tidy fetcher must return the
   same columns, order and classes, one year per call, for every supported year.
 

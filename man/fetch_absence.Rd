@@ -43,6 +43,16 @@ A data frame with chronic absenteeism data. When \code{tidy = TRUE},
     \item \code{special_ed} — students with disabilities
     \item \code{male}, \code{female}
   }
+
+The 2020 workbook omits the absence sheets; by_grade additionally excludes
+2017. For days_absent, the 2017 long distribution is reshaped without changing
+values. Day-count bands abs_0, abs_1_5, abs_6_10 and abs_11_15 (2017-2023),
+abs_15_plus (2017), and abs_over_15 (2018-2023) are distinct from the
+percent-of-days bands in 2024-2025. The printed 15+ and over-15 boundaries
+remain separate. Percent-of-days bands share names across 2024-2025 except
+absent_gt0_to_6_9_pctdays (2024) and absent_0_1_to_6_9_pctdays (2025),
+whose different printed lower bounds are retained. Every band is NA in
+years that do not publish it. school_year is filtered before removal.
 }
 \description{
 Unified entry point for NJ chronic absenteeism data, matching the

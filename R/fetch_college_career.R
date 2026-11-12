@@ -152,6 +152,12 @@ fetch_sat_participation <- function(end_year, level = "school") {
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
 #'
+#' average_score_district is harmonized to district_avg; this comparison is NA in
+#' older school-level sheets that omit it. bt_pct is retained separately and is
+#' NA in the 2025 district sheet: it is not inferred from the redesigned
+#' benchmark rate. school_year is filtered to the requested year and then
+#' removed. Columns have a fixed order.
+#'
 #' @export
 #'
 #' @examples
@@ -283,7 +289,7 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
     df <- df[df$test_type %in% keep_tests, , drop = FALSE]
   }
 
-  df
+  spr_schema_finish(df, "sat_performance", end_year)
 }
 
 
@@ -315,6 +321,13 @@ fetch_sat_performance <- function(end_year, level = "school", test_type = "all")
 #'     \item dual_enrollment_state - State dual enrollment percentage
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
+#'
+#' Participation columns are character in every year so published suppression and
+#' other text tokens survive. Exam participation and AP/IB performance are not
+#' published by this interface in 2025 and are NA.
+#' The 2017 long sheet is reshaped by ReportCategory. On its state row the
+#' source's blank DistrictPercent remains NA in the entity carrier; the
+#' published StatePercent is retained in the corresponding state column.
 #'
 #' @export
 #'
@@ -353,7 +366,7 @@ fetch_ap_participation <- function(end_year, level = "school") {
     df$dual_enrollment_school <- dual_entity
     df$dual_enrollment_state <- df$dual_pct_state
 
-    return(df %>%
+    return(spr_schema_finish(df %>%
       dplyr::select(
         end_year,
         county_id, county_name,
@@ -369,7 +382,7 @@ fetch_ap_participation <- function(end_year, level = "school") {
         dual_enrollment_state,
         is_state, is_county, is_district, is_school,
         is_charter, is_charter_sector, is_allpublic
-      ))
+      ), "ap_participation", end_year))
   }
 
   df <- njschooldata::fetch_spr_data(
@@ -378,11 +391,17 @@ fetch_ap_participation <- function(end_year, level = "school") {
     level = level
   )
 
+  if (end_year == 2017L) {
+    df <- ap_participation_2017_wide(df, level)
+  }
+
   if ("apib_course_district" %in% names(df)) {
-    df$apib_course_district[df$is_state] <- df$apib_course_state[df$is_state]
-    df$apib_exam_district[df$is_state] <- df$apib_exam_state[df$is_state]
-    df$ap_3_ib_4_district[df$is_state] <- df$ap_3_ib_4_state[df$is_state]
-    df$dual_district[df$is_state] <- df$dual_state[df$is_state]
+    if (end_year != 2017L) {
+      df$apib_course_district[df$is_state] <- df$apib_course_state[df$is_state]
+      df$apib_exam_district[df$is_state] <- df$apib_exam_state[df$is_state]
+      df$ap_3_ib_4_district[df$is_state] <- df$ap_3_ib_4_state[df$is_state]
+      df$dual_district[df$is_state] <- df$dual_state[df$is_state]
+    }
 
     df <- df %>%
       dplyr::rename(
@@ -427,7 +446,7 @@ fetch_ap_participation <- function(end_year, level = "school") {
       is_charter, is_charter_sector, is_allpublic
     )
 
-  df
+  spr_schema_finish(df, "ap_participation", end_year)
 }
 
 
@@ -490,7 +509,7 @@ fetch_ib_participation <- function(end_year, level = "school") {
 #' Downloads and extracts Career and Technical Education (CTE) participation
 #' from the SPR database. Includes CTE participants and concentrators by subgroup.
 #'
-#' @param end_year A school year (2017-2025). Year is the end of the academic
+#' @param end_year A school year (2019-2025). Year is the end of the academic
 #'   year - eg 2020-21 school year is end_year '2021'.
 #' @param level One of "school" or "district". "school" returns school-level
 #'   data, "district" returns district and state-level data.
@@ -507,6 +526,9 @@ fetch_ib_participation <- function(end_year, level = "school") {
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
 #'
+#' Supported end_year values are 2019-2025; the CTEParticipationByStudentGroup
+#' sheet is absent in 2017-2018.
+#'
 #' @export
 #'
 #' @examples
@@ -520,6 +542,7 @@ fetch_ib_participation <- function(end_year, level = "school") {
 #'   select(subgroup, cte_participants)
 #' }
 fetch_cte_participation <- function(end_year, level = "school") {
+  spr_check_supported_year(end_year, "cte_participation")
   df <- njschooldata::fetch_spr_data(
     sheet_name = "CTEParticipationByStudentGroup",
     end_year = end_year,
@@ -622,6 +645,10 @@ fetch_cte_participation <- function(end_year, level = "school") {
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
 #'
+#' The 2017 source omits program enrollment, so students_enrolled is
+#' NA_character_ for that year. Its credential-count labels are harmonized;
+#' values and suppression tokens are preserved.
+#'
 #' @export
 #'
 #' @examples
@@ -650,6 +677,14 @@ fetch_industry_credentials <- function(end_year, level = "school") {
     end_year = end_year,
     level = level
   )
+
+  if (end_year == 2017L) {
+    # This sheet publishes credential counts, but no program enrollment.
+    df$students_enrolled_in_program <- NA_character_
+    df <- spr_rename_published(df, c(
+      students_with_at_least_one_credential_earned = "atleast_one_credential_earned"
+    ))
+  }
 
   # The school workbook uses the students_enrolled_in_program /
   # atleast_one_credential_earned carrier that the final rename expects. The
@@ -690,7 +725,7 @@ fetch_industry_credentials <- function(end_year, level = "school") {
       is_charter, is_charter_sector, is_allpublic
     )
 
-  df
+  spr_schema_finish(df, "industry_credentials", end_year)
 }
 
 

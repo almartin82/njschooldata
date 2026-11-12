@@ -7,7 +7,7 @@
 fetch_cte_participation(end_year, level = "school")
 }
 \arguments{
-\item{end_year}{A school year (2017-2025). Year is the end of the academic
+\item{end_year}{A school year (2019-2025). Year is the end of the academic
 year - eg 2020-21 school year is end_year '2021'.}
 
 \item{level}{One of "school" or "district". "school" returns school-level
@@ -25,6 +25,9 @@ Data frame with CTE participation including:
     \item state_cte_concentrators - State CTE concentrators (comparison)
     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
   }
+
+Supported end_year values are 2019-2025; the CTEParticipationByStudentGroup
+sheet is absent in 2017-2018.
 }
 \description{
 Downloads and extracts Career and Technical Education (CTE) participation

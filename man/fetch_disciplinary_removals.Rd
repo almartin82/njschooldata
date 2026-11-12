@@ -35,6 +35,12 @@ the source has a student-group/grade label, appends normalized
 Data frame with disciplinary actions. Includes a
   \code{student_group_grade} column identifying the student group / grade
   row, plus suspension, removal, and expulsion counts and percentages.
+
+The 2024 number_students_* and percent_students_* labels are harmonized to the
+legacy count and pct names. Student-group/grade detail begins in 2024 and is
+NA earlier. Arrest counts, arrest percentages and school_days_missed_oss are
+not published in the 2024-2025 sheets and are NA. Text tokens are preserved.
+school_year is filtered to the requested year and then removed.
 }
 \description{
 Downloads discipline data (suspensions/expulsions/removals) from the SPR

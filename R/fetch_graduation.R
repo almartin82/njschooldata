@@ -204,6 +204,9 @@ fetch_grad_count <- function(end_year) {
 #' @param methodology Character string specifying calculation methodology.
 #' One of "4 year" or "5 year".
 #' @return dataframe with grad rate
+#'
+#' cohort_count is consistently numeric across years.
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -220,6 +223,8 @@ fetch_grad_rate <- function(end_year, methodology = "4 year") {
     process_grad_rate(end_year, methodology)
 
   df <- tidy_grad_rate(df, end_year, methodology)
+
+  df$cohort_count <- as.numeric(df$cohort_count)
 
   df <- id_grad_aggs(df)
 

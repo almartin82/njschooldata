@@ -13,8 +13,11 @@ the academic year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
 \value{
-Data frame with entity identifiers, school_year, subject, the four
+Data frame with entity identifiers, subject, the four
   pathway percentage columns, and the aggregation flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 }
 \description{
 Downloads the \code{GraduationPathways} sheet from the redesigned 2024-25

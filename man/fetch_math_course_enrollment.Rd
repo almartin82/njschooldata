@@ -13,6 +13,9 @@ fetch_math_course_enrollment(end_year, level = "school")
 }
 \value{
 Data frame with math course enrollment
+
+Columns have a fixed order; school_year is filtered to the requested year and
+then removed.
 }
 \description{
 Downloads math course participation data from SPR database.

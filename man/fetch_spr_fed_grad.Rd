@@ -13,9 +13,12 @@ year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
 \value{
-Data frame with entity identifiers, school_year (2025 only), subgroup,
+Data frame with entity identifiers, subgroup,
   cohort_years, cohort_label, graduation_rate_federal, and the aggregation
   flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 }
 \description{
 Downloads the \code{FederalGraduationRates} sheet from the School Performance

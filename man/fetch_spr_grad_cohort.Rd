@@ -13,9 +13,12 @@ year - e.g. the 2020-21 school year is \code{end_year} 2021.}
 \item{level}{One of \code{"school"} or \code{"district"}.}
 }
 \value{
-Data frame with entity identifiers, school_year (2025 only),
+Data frame with entity identifiers,
   cohort_type, subgroup, graduated, continuing, non_continuing, persisting,
   and the aggregation flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 }
 \description{
 Downloads the combined \code{GraduationCohortProfile} sheet from the
@@ -47,8 +50,8 @@ available through \code{\link{fetch_grad_rate}} and
 \strong{Supported years:} \code{end_year >= 2020}. The 6-year cohort first
 appears in SY2020-21 (\code{end_year} 2021), so \code{end_year} 2020 returns
 only the 4- and 5-year cohorts. Earlier databases (2017-2019) do not carry
-cohort-profile sheets and error. The pre-2025 sheets report no per-cohort
-\code{school_year} column, so that column is present only for 2025.
+cohort-profile sheets and error. The redundant source school year is
+filtered to the requested year and removed.
 \code{persisting} is published only for the 6-year cohort (and only from
 \code{end_year} 2024 in the pre-redesign sheets); it is \code{NA} otherwise.
 }

@@ -569,6 +569,16 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #'     \item Aggregation flags (is_state, is_county, is_district, is_school, is_charter)
 #'   }
 #'
+#' The output carries separate day-count and percent-of-days bands, with
+#' character NA where a band was not published. Day-count bands are published
+#' in 2017-2023; abs_15_plus is the printed 2017 "15+" band, whereas
+#' abs_over_15 is the later "over 15" band. Percent-of-days bands are published
+#' in 2024-2025. The first nonzero band retains separate names for the printed
+#' greater-than-zero lower bound in 2024 and 0.1 lower bound in 2025.
+#' These are different measures and boundaries, not interchangeable bands.
+#' The 2020 workbook does not publish this sheet and is rejected.
+#' The redundant school_year is filtered to the requested year and removed.
+#'
 #' @export
 #'
 #' @examples
@@ -582,6 +592,12 @@ fetch_absenteeism_by_grade <- function(end_year, level = "school") {
 #'   select(school_name, `0% Absences`, `20% or higher`)
 #' }
 fetch_days_absent <- function(end_year, level = "school") {
+  if (!end_year %in% absence_supported_years("days_absent")) {
+    stop("Days absent data is not published for end_year ", end_year,
+         ". Supported years: ",
+         paste(absence_supported_years("days_absent"), collapse = ", "),
+         call. = FALSE)
+  }
   # Use generic extractor
   df <- fetch_spr_data(
     sheet_name = "DaysAbsent",
@@ -589,8 +605,20 @@ fetch_days_absent <- function(end_year, level = "school") {
     level = level
   )
 
-  # Return all columns (the sheet has percentage distribution buckets)
-  df
+  # 2017 publishes one row per day-count band. The printed "15+" boundary
+  # is retained separately from the later "over 15" label.
+  if (end_year == 2017L) {
+    bands <- c("0 absences" = "abs_0", "1-5 absences" = "abs_1_5",
+               "6-10 absences" = "abs_6_10", "11-15 absences" = "abs_11_15",
+               "15+ absences" = "abs_15_plus")
+    labels <- tolower(as.character(df$subgroup))
+    if (any(!labels %in% names(bands))) {
+      stop("Unrecognized published DaysAbsent band", call. = FALSE)
+    }
+    df$subgroup <- unname(bands[labels])
+    df <- tidyr::pivot_wider(df, names_from = "subgroup", values_from = "pct")
+  }
+  spr_schema_finish(df, "days_absent", end_year)
 }
 
 
@@ -659,17 +687,28 @@ list_spr_sheets <- function(end_year, level = "school") {
 #'
 #' Downloads teacher experience data from SPR database.
 #'
-#' @param end_year A school year (2017-2025)
+#' @param end_year A school year (2019-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with teacher experience breakdown
+#'
+#' Supported end_year values are 2019-2025; earlier workbooks lack
+#' TeachersExperience. Out-of-field teacher counts are unavailable in 2019.
+#' Percentage and provisional-credential fields begin in 2023 and are NA in
+#' earlier years. The 2023 district-suffixed out-of-field teacher number and
+#' percentage labels are harmonized to the unsuffixed entity carriers for those
+#' same measures. Source school/district experience carriers and legacy
+#' four-year-experience fields remain separate where the labels do not establish
+#' an identical quantity and unit. Unpublished fields are NA.
+#'
 #' @export
 #' @examples \dontrun{
 #' teachers <- fetch_teacher_experience(2024)
 #' }
 fetch_teacher_experience <- function(end_year, level = "school") {
+  spr_check_supported_year(end_year, "teacher_experience")
   df <- fetch_spr_data("TeachersExperience", end_year, level)
-  df
+  spr_schema_finish(df, "teacher_experience", end_year)
 }
 
 
@@ -713,6 +752,13 @@ fetch_staff_demographics <- function(end_year, level = "school") {
 #' @return Data frame with disciplinary actions. Includes a
 #'   \code{student_group_grade} column identifying the student group / grade
 #'   row, plus suspension, removal, and expulsion counts and percentages.
+#'
+#' The 2024 number_students_* and percent_students_* labels are harmonized to the
+#' legacy count and pct names. Student-group/grade detail begins in 2024 and is
+#' NA earlier. Arrest counts, arrest percentages and school_days_missed_oss are
+#' not published in the 2024-2025 sheets and are NA. Text tokens are preserved.
+#' school_year is filtered to the requested year and then removed.
+#'
 #' @export
 #' @examples \dontrun{
 #' discipline <- fetch_disciplinary_removals(2024)
@@ -773,7 +819,9 @@ fetch_disciplinary_removals <- function(end_year, level = "school",
     df <- attach_discipline_enrollment_denominator(df)
   }
 
-  df
+  spr_schema_finish(
+    df,
+    "disciplinary_removals", end_year, with_subgroup_std = with_subgroup_std)
 }
 
 
@@ -792,6 +840,12 @@ fetch_disciplinary_removals <- function(end_year, level = "school",
 #'   rows remain \code{NA}.
 #'
 #' @return Data frame with incident counts
+#'
+#' The 2025 hib and incidents_per_100_students labels are harmonized to
+#' harassment_intimidation_bullying_hib and incidents_per_100_students_enrolled.
+#' Columns have a fixed order. school_year is filtered to the requested year and
+#' then removed.
+#'
 #' @export
 #' @examples \dontrun{
 #' incidents <- fetch_violence_vandalism_hib(2024)
@@ -823,7 +877,7 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school",
     df <- attach_discipline_enrollment_denominator(df)
   }
 
-  df
+  spr_schema_finish(df, "violence_vandalism_hib", end_year)
 }
 
 
@@ -847,7 +901,7 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school",
 #'     \code{harassment_intimidation_bullying_hib} (legacy) to \code{hib}; this
 #'     function harmonizes both layouts to \code{hib}.
 #'   \item The 2024-25 sheet adds a \code{school_year} column (single value, e.g.
-#'     \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets have
+#'     \code{"2024-25"}); it is filtered and removed. Pre-2025 sheets have
 #'     no \code{school_year} column.
 #'   \item All six incident-category columns are returned as numeric counts.
 #'     Suppressed cells (NJ DOE uses \code{*}, \code{N}, \code{-} as suppression
@@ -879,10 +933,12 @@ fetch_violence_vandalism_hib <- function(end_year, level = "school",
 #'
 #' @return Data frame with entity identifiers, the six incident-category
 #'   columns (\code{violence}, \code{weapons}, \code{vandalism},
-#'   \code{substances}, \code{hib}, \code{other_incidents}), the 2025-only
-#'   \code{school_year} column when present, and the standard aggregation flags
+#'   \code{substances}, \code{hib}, \code{other_incidents}), the standard aggregation flags
 #'   (\code{is_state}, \code{is_county}, \code{is_district}, \code{is_school},
 #'   \code{is_charter}, \code{is_charter_sector}, \code{is_allpublic}).
+#'
+#' school_year is filtered to the requested year and then removed; end_year
+#' identifies the year.
 #'
 #' @export
 #'
@@ -957,7 +1013,7 @@ fetch_police_notifications <- function(end_year, level = "school",
     out <- attach_discipline_enrollment_denominator(out)
   }
 
-  out
+  spr_schema_finish(out, "police_notifications", end_year)
 }
 
 
@@ -981,7 +1037,7 @@ fetch_police_notifications <- function(end_year, level = "school",
 #'     \code{No Identified Nature}, \code{Other}, \code{Race}, \code{Religion},
 #'     \code{Sexual Orientation}.
 #'   \item The 2024-25 sheet adds a \code{school_year} column (single value,
-#'     e.g. \code{"2024-25"}); it is preserved in the output. Pre-2025 sheets
+#'     e.g. \code{"2024-25"}); it is filtered and removed. Pre-2025 sheets
 #'     have no \code{school_year} column.
 #'   \item The raw NJ DOE column names \code{HIBNature}, \code{HIBAlleged},
 #'     \code{HIBConfirmed}, and \code{TotalHIBInvestigations} snake-case to
@@ -1012,10 +1068,12 @@ fetch_police_notifications <- function(end_year, level = "school",
 #'
 #' @return Data frame with entity identifiers, \code{hib_nature},
 #'   \code{hib_alleged}, \code{hib_confirmed}, \code{total_hib_investigations},
-#'   the 2025-only \code{school_year} column when present, and the standard
-#'   aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
+#'   the standard aggregation flags (\code{is_state}, \code{is_county}, \code{is_district},
 #'   \code{is_school}, \code{is_charter}, \code{is_charter_sector},
 #'   \code{is_allpublic}).
+#'
+#' school_year is filtered to the requested year and then removed; end_year
+#' identifies the year.
 #'
 #' @export
 #'
@@ -1070,7 +1128,8 @@ fetch_hib_investigations <- function(end_year, level = "school") {
   )
   for (col in count_cols) df[[col]] <- spr_value_numeric(df[[col]])
 
-  df %>%
+  spr_schema_finish(
+    df %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -1080,7 +1139,8 @@ fetch_hib_investigations <- function(end_year, level = "school") {
       hib_nature, hib_alleged, hib_confirmed, total_hib_investigations,
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
-    )
+    ),
+    "hib_investigations", end_year)
 }
 
 
@@ -1478,13 +1538,22 @@ fetch_arrests <- function(end_year, level = "school") {
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with staff ratios
+#'
+#' Fields for psychologists, social workers, assistance coordinators and safety
+#' specialists begin in 2022; school-level librarian, nurse, counselor and child-
+#' study ratios begin in 2021. Missing fields are character NA. The 2017
+#' TeacherRatio, AdministratorsRatio and district comparison labels on
+#' StudentToStaffRatios are renamed to the corresponding student-to-staff
+#' fields; the missing teacher-to-administrator ratio remains NA. The 2025
+#' school suffix on specialist fields is harmonized to the legacy names.
+#'
 #' @export
 #' @examples \dontrun{
 #' ratios <- fetch_staff_ratios(2024)
 #' }
 fetch_staff_ratios <- function(end_year, level = "school") {
   df <- fetch_spr_data("StudentToStaffRatios", end_year, level)
-  df
+  spr_schema_finish(df, "staff_ratios", end_year)
 }
 
 
@@ -1506,6 +1575,10 @@ fetch_staff_ratios <- function(end_year, level = "school") {
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with math course enrollment
+#'
+#' Columns have a fixed order; school_year is filtered to the requested year and
+#' then removed.
+#'
 #' @export
 #' @examples \dontrun{
 #' math <- fetch_math_course_enrollment(2024)
@@ -1531,7 +1604,7 @@ fetch_math_course_enrollment <- function(end_year, level = "school") {
   )
   for (col in course_cols) df[[col]] <- spr_value_numeric(df[[col]])
 
-  df
+  spr_schema_finish(df, "math_course_enrollment", end_year)
 }
 
 
@@ -1543,13 +1616,18 @@ fetch_math_course_enrollment <- function(end_year, level = "school") {
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with dropout rates
+#'
+#' The 2017 school_rate and state_rate labels are harmonized to the corresponding
+#' dropout entity and state rate fields. school_year is filtered to the requested
+#' year and then removed.
+#'
 #' @export
 #' @examples \dontrun{
 #' dropout <- fetch_dropout_rates(2024)
 #' }
 fetch_dropout_rates <- function(end_year, level = "school") {
   df <- fetch_spr_data("DropoutRateTrends", end_year, level)
-  df
+  spr_schema_finish(df, "dropout_rates", end_year)
 }
 
 
@@ -1874,7 +1952,7 @@ sgp_legacy_trends <- function(df, level) {
 #' @return Data frame with median SGP data. Columns vary by \code{type}:
 #'   \itemize{
 #'     \item \strong{All types}: end_year, county_id, county_name, district_id,
-#'       district_name, school_id, school_name, school_year, plus aggregation
+#'       district_name, school_id, school_name, plus aggregation
 #'       flags (is_state, is_county, is_district, is_school, is_charter, ...).
 #'     \item \code{type = "trends"}: \code{subgroup}, and for ELA and Math the
 #'       entity median (\code{ela_median_sgp}, \code{math_median_sgp}) with its
@@ -1882,16 +1960,22 @@ sgp_legacy_trends <- function(df, level) {
 #'       (\code{ela_median_sgp_state}, \code{math_median_sgp_state}) and its
 #'       category. At \code{level = "school"} the entity median is the school
 #'       value; at \code{level = "district"} it is the district value. Pre-2025
-#'       years additionally carry \code{ela_met_target}/\code{math_met_target}
-#'       and have \code{NA} in the \code{*_category} columns. The 2025 sheet is a
-#'       multi-year trend filtered to the requested year and adds a
-#'       \code{school_year} column; legacy sheets are single-year.
+#'       years publish \code{ela_met_target}/\code{math_met_target}
+#'       and have \code{NA} in the \code{*_category} columns. The target
+#'       indicators are \code{NA} in 2025. The 2025 source is a multi-year trend;
+#'       its \code{school_year} column is used to filter the requested year and
+#'       then removed. Legacy sheets are single-year.
 #'     \item \code{type = "by_grade"}: \code{subject}, \code{grade},
 #'       \code{median_sgp}, \code{median_sgp_category}.
 #'     \item \code{type = "by_performance_level"}: \code{subject},
 #'       \code{njsla_performance_level}, \code{median_sgp},
 #'       \code{median_sgp_category}.
 #'   }
+#'
+#' For trends, ela_met_target and math_met_target are published only before 2025
+#' and are NA in 2025; the historical target indicators are distinct from the
+#' growth categories. school_year is filtered to the requested year and then
+#' removed.
 #'
 #' @export
 #'
@@ -1936,11 +2020,11 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
   # Pre-2025 sheets are differently shaped and reuse names for different data;
   # map them to the 2025 output via verified per-type reshapers.
   if (end_year < 2025) {
-    return(switch(type,
+    return(spr_schema_finish(switch(type,
       trends = sgp_legacy_trends(df, level),
       by_grade = sgp_legacy_by_grade(df),
       by_performance_level = sgp_legacy_by_perf(df)
-    ))
+    ), paste0("sgp_", type), end_year))
   }
 
   # All three sheets carry a multi-year SchoolYear column in StudentGrowthTrends
@@ -2029,7 +2113,9 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
       )
   }
 
-  df
+  spr_schema_finish(
+    df,
+    paste0("sgp_", type), end_year)
 }
 
 
@@ -2060,10 +2146,17 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
 #'     The \emph{Counts} sheet holds only aggregate tallies and is not used here.
 #' }
 #'
-#' @param end_year A school year (2017-2025)
+#' @param end_year A school year (2019-2025)
 #' @param level One of "school" or "district"
 #'
 #' @return Data frame with ESSA status ratings
+#'
+#' Supported end_year values are 2019-2025; the 2017-2018 workbooks lack this
+#' sheet. Legacy student_group_status_* fields (2019-2024), notes (2020-2024),
+#' and redesigned student_groups and status_note (2025) are retained separately,
+#' with character NA where not published. The requested school year is filtered
+#' before the redundant school_year column is removed.
+#'
 #' @export
 #' @examples \dontrun{
 #' # School-level status (all years use the ESSAAccountabilityStatus sheet)
@@ -2078,6 +2171,7 @@ fetch_sgp <- function(end_year, level = "school", type = "trends") {
 #'   filter(grepl("Comprehensive", status_for_sy))
 #' }
 fetch_essa_status <- function(end_year, level = "school") {
+  spr_check_supported_year(end_year, "essa_status")
   # The 2024-25 redesign removed ESSAAccountabilityStatus from the
   # District/State DB. Its per-entity analogue there is
   # ESSAAccountabilityStatusList (identical 12-column layout, including
@@ -2092,7 +2186,7 @@ fetch_essa_status <- function(end_year, level = "school") {
   }
 
   df <- fetch_spr_data(sheet_name, end_year, level)
-  df
+  spr_schema_finish(df, "essa_status", end_year)
 }
 
 
@@ -3001,8 +3095,11 @@ fetch_spr_sheet_raw <- function(sheet_name, end_year, level = "district") {
 #'   the academic year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
-#' @return Data frame with entity identifiers, school_year, subject, the four
+#' @return Data frame with entity identifiers, subject, the four
 #'   pathway percentage columns, and the aggregation flags.
+#'
+#' school_year is filtered to the requested year and then removed; end_year
+#' identifies the year.
 #'
 #' @export
 #'
@@ -3083,7 +3180,8 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
   )
   for (col in pathway_cols) df[[col]] <- spr_value_numeric(df[[col]])
 
-  df %>%
+  spr_schema_finish(
+    df %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -3095,7 +3193,8 @@ fetch_spr_grad_pathways <- function(end_year, level = "school") {
                       "portfolio_appeals", "alternate_requirements_in_iep")),
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
-    )
+    ),
+    "spr_grad_pathways", end_year)
 }
 
 
@@ -4259,8 +4358,8 @@ fetch_spr_elp_progress <- function(end_year, level = "school") {
 #' \strong{Supported years:} \code{end_year >= 2020}. The 6-year cohort first
 #' appears in SY2020-21 (\code{end_year} 2021), so \code{end_year} 2020 returns
 #' only the 4- and 5-year cohorts. Earlier databases (2017-2019) do not carry
-#' cohort-profile sheets and error. The pre-2025 sheets report no per-cohort
-#' \code{school_year} column, so that column is present only for 2025.
+#' cohort-profile sheets and error. The redundant source school year is
+#' filtered to the requested year and removed.
 #' \code{persisting} is published only for the 6-year cohort (and only from
 #' \code{end_year} 2024 in the pre-redesign sheets); it is \code{NA} otherwise.
 #'
@@ -4268,9 +4367,12 @@ fetch_spr_elp_progress <- function(end_year, level = "school") {
 #'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
-#' @return Data frame with entity identifiers, school_year (2025 only),
+#' @return Data frame with entity identifiers,
 #'   cohort_type, subgroup, graduated, continuing, non_continuing, persisting,
 #'   and the aggregation flags.
+#'
+#' school_year is filtered to the requested year and then removed; end_year
+#' identifies the year.
 #'
 #' @export
 #'
@@ -4340,7 +4442,8 @@ fetch_spr_grad_cohort <- function(end_year, level = "school") {
     df <- dplyr::bind_rows(parts)
   }
 
-  df %>%
+  spr_schema_finish(
+    df %>%
     dplyr::select(
       end_year,
       county_id, county_name,
@@ -4351,7 +4454,8 @@ fetch_spr_grad_cohort <- function(end_year, level = "school") {
       graduated, continuing, non_continuing, persisting,
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
-    )
+    ),
+    "spr_grad_cohort", end_year)
 }
 
 
@@ -4438,9 +4542,12 @@ fed_grad_cols_for_n <- function(nms, n) {
 #'   year - e.g. the 2020-21 school year is \code{end_year} 2021.
 #' @param level One of \code{"school"} or \code{"district"}.
 #'
-#' @return Data frame with entity identifiers, school_year (2025 only), subgroup,
+#' @return Data frame with entity identifiers, subgroup,
 #'   cohort_years, cohort_label, graduation_rate_federal, and the aggregation
 #'   flags.
+#'
+#' school_year is filtered to the requested year and then removed; end_year
+#' identifies the year.
 #'
 #' @export
 #'
@@ -4512,6 +4619,7 @@ fetch_spr_fed_grad <- function(end_year, level = "school") {
 
   out <- dplyr::bind_rows(parts)
 
+  spr_schema_finish(
   out %>%
     dplyr::select(
       end_year,
@@ -4522,5 +4630,6 @@ fetch_spr_fed_grad <- function(end_year, level = "school") {
       subgroup, cohort_years, cohort_label, graduation_rate_federal,
       is_state, is_county, is_district, is_school,
       is_charter, is_charter_sector, is_allpublic
-    )
+    ),
+    "spr_fed_grad", end_year)
 }
