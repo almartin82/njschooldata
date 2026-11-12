@@ -136,9 +136,18 @@ clean_spr_subgroups <- function(group) {
   df
 }
 
-#' Fetch SPR Data
+#' Fetch SPR Data (raw sheet reader)
 #'
-#' Downloads and extracts data from NJ School Performance Reports database.
+#' Downloads and extracts one sheet from the NJ School Performance Reports
+#' database, in NJDOE's own layout for that year. This is a raw reader: NJDOE
+#' has changed many sheets' layouts between years (one row per group in one
+#' year, one column per group in another, renamed columns, text versus numeric
+#' cells), and this function passes those changes through. It is outside the
+#' package's same-shape-every-year guarantee. For analysis across years use a
+#' tidy fetcher, for example \code{\link{fetch_spr_enrollment_by_group}} for
+#' "EnrollmentTrendsByStudentGroup", \code{\link{fetch_absence}},
+#' \code{\link{fetch_essa_status}} or the other \code{fetch_spr_*} functions.
+#'
 #' The SPR database contains 63+ sheets covering various school performance metrics.
 #'
 #' @param sheet_name Exact sheet name from SPR database (case-sensitive).

@@ -1,3 +1,17 @@
+# njschooldata (development version)
+
+* New `fetch_spr_enrollment_by_group(end_year, level)`: the School Performance
+  Reports enrollment share by student group in one long layout for 2016-17
+  through 2024-25 (`subgroup`, numeric `pct`, verbatim `pct_published`). NJDOE
+  published this sheet long in 2016-17, wide afterward, as text in 2024-25, and
+  with five school years per sheet in 2024-25; the function keeps the requested
+  year only and moves no value. Ranges, bounds and suppression notes stay as
+  published text with `pct = NA`.
+* `fetch_spr_data()` is documented as a raw sheet reader: it returns each
+  year's sheet in NJDOE's layout and points to the tidy fetchers.
+* New schema-consistency test (contract v1): each tidy fetcher must return the
+  same columns, order and classes, one year per call, for every supported year.
+
 # njschooldata 0.11.0
 
 * Synchronize Python bindings and their generated compatibility contract with
