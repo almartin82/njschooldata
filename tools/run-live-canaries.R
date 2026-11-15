@@ -6,16 +6,39 @@ if (!identical(tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS")), "true")) {
 
 suppressPackageStartupMessages(library(njschooldata))
 
+with_live_publisher <- function(fn, timeout_seconds = NULL) {
+  live_options <- list(njschooldata.live_force_publisher = TRUE)
+  if (!is.null(timeout_seconds)) {
+    live_options$njschooldata.live_request_timeout_seconds <- timeout_seconds
+  }
+  old_options <- options(live_options)
+  on.exit(options(old_options), add = TRUE)
+  fn()
+}
+
 canaries <- list(
-  enrollment_current = function() njschooldata:::get_raw_enr_result(2026),
+  enrollment_current = function() with_live_publisher(
+    function() njschooldata:::get_raw_enr_result(2026)
+  ),
   enrollment_historical = function() njschooldata:::get_raw_enr_result(2020),
-  assessment_current = function() njschooldata:::get_raw_sla_result(2025, 4, "ela"),
+  assessment_current = function() with_live_publisher(
+    function() njschooldata:::get_raw_sla_result(2025, 4, "ela")
+  ),
   assessment_historical = function() njschooldata:::get_raw_parcc_result(2018, 4, "ela"),
-  graduation_current = function() njschooldata:::get_raw_grad_file_result(2025, "4 year"),
+  graduation_current = function() with_live_publisher(
+    function() njschooldata:::get_raw_grad_file_result(2025, "4 year")
+  ),
   graduation_historical = function() njschooldata:::get_raw_grad_file_result(2012, "4 year"),
-  spr_current = function() njschooldata:::spr_cached_workbook_result(2025, "district"),
-  finance_spending = function() njschooldata:::get_raw_tges_result(2025),
-  finance_revenue = function() njschooldata:::get_finance_revenue_result(2026)
+  spr_current = function() with_live_publisher(
+    function() njschooldata:::spr_cached_workbook_result(2025, "district"),
+    timeout_seconds = 30
+  ),
+  finance_spending = function() with_live_publisher(
+    function() njschooldata:::get_raw_tges_result(2025)
+  ),
+  finance_revenue = function() with_live_publisher(
+    function() njschooldata:::get_finance_revenue_result(2026)
+  )
 )
 
 contract_check <- function(name, result) {

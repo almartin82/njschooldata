@@ -26,7 +26,29 @@ source_adapter_fixture <- function(name) {
     "extdata", "test-fixtures", "source-adapters", name,
     package = "njschooldata"
   )
-  if (nzchar(installed)) installed else package_source_path(
+  path <- if (nzchar(installed)) installed else package_source_path(
     "inst", "extdata", "test-fixtures", "source-adapters", name
   )
+  provenance_path <- if (nzchar(installed)) {
+    file.path(dirname(path), "provenance.json")
+  } else {
+    package_source_path(
+      "inst", "extdata", "test-fixtures", "source-adapters", "provenance.json"
+    )
+  }
+  if (!file.exists(path) || !file.exists(provenance_path)) {
+    stop("Missing source-adapter fixture or provenance: ", name, call. = FALSE)
+  }
+
+  provenance <- jsonlite::read_json(provenance_path, simplifyVector = FALSE)
+  records <- Filter(function(record) identical(record$fixture, name), provenance)
+  if (length(records) != 1L) {
+    stop("Source-adapter fixture has no unique provenance record: ", name,
+         call. = FALSE)
+  }
+  actual_digest <- digest::digest(file = path, algo = "sha256", serialize = FALSE)
+  if (!identical(actual_digest, records[[1L]]$fixture_sha256)) {
+    stop("Source-adapter fixture SHA-256 mismatch: ", name, call. = FALSE)
+  }
+  path
 }
