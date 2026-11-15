@@ -129,7 +129,7 @@ test_that("unseeded category assets return typed cold misses offline", {
     expect_false(is.null(njschooldata:::.nj_release_lookup(source$url)),
                  info = paste(name, "source is declared by the release contract"))
     result <- tryCatch(source$fetch(), error = identity)
-    expect_s3_class(result, "njschooldata_source_error", info = name)
-    expect_s3_class(result, "historical_cold_offline_error", info = name)
+    expect_s3_class(result, "njschooldata_source_error")
+    expect_s3_class(result, "historical_cold_offline_error")
   }
 })
