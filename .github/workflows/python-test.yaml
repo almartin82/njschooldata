@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  python-matrix:
+    name: python (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -61,3 +62,19 @@ jobs:
       - name: Run Python tests inside the no-egress boundary
         run: |
           tools/ci/run_no_egress.sh -- bash -c 'cd python && pytest tests/ -v --tb=short'
+
+  # Branch protection requires a check named exactly "test". A matrix job is
+  # reported as "test (<version>)", so this job reports the single required name
+  # and fails unless every matrix leg passed.
+  test:
+    name: test
+    needs: python-matrix
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every Python version to pass
+        run: |
+          if [ "${{ needs.python-matrix.result }}" != "success" ]; then
+            echo "python-matrix result: ${{ needs.python-matrix.result }}"
+            exit 1
+          fi
