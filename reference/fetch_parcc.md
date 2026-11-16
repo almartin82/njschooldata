@@ -47,6 +47,9 @@ those cells remain NA (including counts when only a percentage is
 available). Masked Registered To Test / Not Tested counts alone do not
 set it.
 
+With tidy = TRUE, dfg is the published 2015-2018 district factor group;
+it is NA_character\_ from 2019 onward, when the files omit it.
+
 ## Examples
 
 ``` r

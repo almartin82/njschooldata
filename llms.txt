@@ -1045,7 +1045,7 @@ Cross-state standard interface for chronic absenteeism data
 Functions for SPR database data (2017-2025)
 
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
-  : Fetch SPR Data
+  : Fetch SPR Data (raw sheet reader)
 - [`list_spr_sheets()`](https://almartin82.github.io/njschooldata/reference/list_spr_sheets.md)
   : List Available SPR Sheets
 - [`fetch_chronic_absenteeism()`](https://almartin82.github.io/njschooldata/reference/fetch_chronic_absenteeism.md)
@@ -1735,11 +1735,14 @@ Additional exported functions
 - [`fetch_spr_admin_experience()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_admin_experience.md)
   : Fetch Administrator Experience
 - [`fetch_spr_data()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_data.md)
-  : Fetch SPR Data
+  : Fetch SPR Data (raw sheet reader)
 - [`fetch_spr_educator_equity()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_educator_equity.md)
   : Fetch Statewide Educator Equity Metrics
 - [`fetch_spr_elp_progress()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_elp_progress.md)
   : Fetch Progress Toward English Language Proficiency
+- [`fetch_spr_enrollment_by_group()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_enrollment_by_group.md)
+  : Fetch enrollment share by student group from the School Performance
+  Reports
 - [`fetch_spr_essa_status_counts()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_status_counts.md)
   : Fetch ESSA Accountability Status Counts (district/state)
 - [`fetch_spr_essa_targets()`](https://almartin82.github.io/njschooldata/reference/fetch_spr_essa_targets.md)

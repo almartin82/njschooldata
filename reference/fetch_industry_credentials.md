@@ -40,6 +40,10 @@ Data frame with industry credentials including:
 - Aggregation flags (is_state, is_county, is_district, is_school,
   is_charter)
 
+The 2017 source omits program enrollment, so students_enrolled is
+NA_character\_ for that year. Its credential-count labels are
+harmonized; values and suppression tokens are preserved.
+
 ## Examples
 
 ``` r

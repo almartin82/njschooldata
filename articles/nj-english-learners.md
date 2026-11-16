@@ -259,11 +259,11 @@ ggplot(largest_el, aes(x = reorder(district_name, n_students), y = n_students)) 
 sessionInfo()
 #> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.5 LTS
+#> Running under: Ubuntu 26.04.1 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
-#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.32.so;  LAPACK version 3.12.0
 #> 
 #> locale:
 #>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
@@ -278,7 +278,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scales_1.4.0        dplyr_1.2.1         ggplot2_4.0.3      
+#> [1] scales_1.4.0        dplyr_1.2.1         ggplot2_4.0.4      
 #> [4] njschooldata_0.11.0
 #> 
 #> loaded via a namespace (and not attached):

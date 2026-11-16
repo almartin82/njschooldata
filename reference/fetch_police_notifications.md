@@ -48,9 +48,12 @@ fetch_police_notifications(
 
 Data frame with entity identifiers, the six incident-category columns
 (`violence`, `weapons`, `vandalism`, `substances`, `hib`,
-`other_incidents`), the 2025-only `school_year` column when present, and
-the standard aggregation flags (`is_state`, `is_county`, `is_district`,
-`is_school`, `is_charter`, `is_charter_sector`, `is_allpublic`).
+`other_incidents`), the standard aggregation flags (`is_state`,
+`is_county`, `is_district`, `is_school`, `is_charter`,
+`is_charter_sector`, `is_allpublic`).
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 
 ## Details
 
@@ -67,7 +70,7 @@ Sheet coverage and harmonization:
   function harmonizes both layouts to `hib`.
 
 - The 2024-25 sheet adds a `school_year` column (single value, e.g.
-  `"2024-25"`); it is preserved in the output. Pre-2025 sheets have no
+  `"2024-25"`); it is filtered and removed. Pre-2025 sheets have no
   `school_year` column.
 
 - All six incident-category columns are returned as numeric counts.

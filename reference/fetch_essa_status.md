@@ -16,7 +16,7 @@ fetch_essa_status(end_year, level = "school")
 
 - end_year:
 
-  A school year (2017-2025)
+  A school year (2019-2025)
 
 - level:
 
@@ -25,6 +25,13 @@ fetch_essa_status(end_year, level = "school")
 ## Value
 
 Data frame with ESSA status ratings
+
+Supported end_year values are 2019-2025; the 2017-2018 workbooks lack
+this sheet. Legacy student_group_status\_\* fields (2019-2024), notes
+(2020-2024), and redesigned student_groups and status_note (2025) are
+retained separately, with character NA where not published. The
+requested school year is filtered before the redundant school_year
+column is removed.
 
 ## Details
 

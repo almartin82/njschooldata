@@ -1,8 +1,17 @@
-# Fetch SPR Data
+# Fetch SPR Data (raw sheet reader)
 
-Downloads and extracts data from NJ School Performance Reports database.
-The SPR database contains 63+ sheets covering various school performance
-metrics.
+Downloads and extracts one sheet from the NJ School Performance Reports
+database, in NJDOE's own layout for that year. This is a raw reader:
+NJDOE has changed many sheets' layouts between years (one row per group
+in one year, one column per group in another, renamed columns, text
+versus numeric cells), and this function passes those changes through.
+It is outside the package's same-shape-every-year guarantee. For
+analysis across years use a tidy fetcher, for example
+[`fetch_spr_enrollment_by_group`](https://almartin82.github.io/njschooldata/reference/fetch_spr_enrollment_by_group.md)
+for "EnrollmentTrendsByStudentGroup",
+[`fetch_absence`](https://almartin82.github.io/njschooldata/reference/fetch_absence.md),
+[`fetch_essa_status`](https://almartin82.github.io/njschooldata/reference/fetch_essa_status.md)
+or the other `fetch_spr_*` functions.
 
 ## Usage
 
@@ -46,6 +55,11 @@ Data frame with standardized columns including:
 
 - Aggregation flags (is_state, is_county, is_district, is_school,
   is_charter)
+
+## Details
+
+The SPR database contains 63+ sheets covering various school performance
+metrics.
 
 ## Examples
 

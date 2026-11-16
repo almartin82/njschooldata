@@ -22,6 +22,9 @@ fetch_math_course_enrollment(end_year, level = "school")
 
 Data frame with math course enrollment
 
+Columns have a fixed order; school_year is filtered to the requested
+year and then removed.
+
 ## Details
 
 Rows are one per entity x grade band. The `grade` column carries the

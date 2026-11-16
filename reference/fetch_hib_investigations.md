@@ -27,10 +27,12 @@ fetch_hib_investigations(end_year, level = "school")
 ## Value
 
 Data frame with entity identifiers, `hib_nature`, `hib_alleged`,
-`hib_confirmed`, `total_hib_investigations`, the 2025-only `school_year`
-column when present, and the standard aggregation flags (`is_state`,
-`is_county`, `is_district`, `is_school`, `is_charter`,
-`is_charter_sector`, `is_allpublic`).
+`hib_confirmed`, `total_hib_investigations`, the standard aggregation
+flags (`is_state`, `is_county`, `is_district`, `is_school`,
+`is_charter`, `is_charter_sector`, `is_allpublic`).
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 
 ## Details
 
@@ -46,7 +48,7 @@ Sheet coverage and harmonization:
   `Race`, `Religion`, `Sexual Orientation`.
 
 - The 2024-25 sheet adds a `school_year` column (single value, e.g.
-  `"2024-25"`); it is preserved in the output. Pre-2025 sheets have no
+  `"2024-25"`); it is filtered and removed. Pre-2025 sheets have no
   `school_year` column.
 
 - The raw NJ DOE column names `HIBNature`, `HIBAlleged`, `HIBConfirmed`,

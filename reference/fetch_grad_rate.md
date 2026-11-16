@@ -24,6 +24,8 @@ fetch_grad_rate(end_year, methodology = "4 year")
 
 dataframe with grad rate
 
+cohort_count is consistently numeric across years.
+
 ## Examples
 
 ``` r

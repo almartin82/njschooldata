@@ -27,9 +27,11 @@ fetch_spr_fed_grad(end_year, level = "school")
 
 ## Value
 
-Data frame with entity identifiers, school_year (2025 only), subgroup,
-cohort_years, cohort_label, graduation_rate_federal, and the aggregation
-flags.
+Data frame with entity identifiers, subgroup, cohort_years,
+cohort_label, graduation_rate_federal, and the aggregation flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 
 ## Details
 

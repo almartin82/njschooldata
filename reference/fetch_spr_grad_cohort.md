@@ -28,9 +28,11 @@ fetch_spr_grad_cohort(end_year, level = "school")
 
 ## Value
 
-Data frame with entity identifiers, school_year (2025 only),
-cohort_type, subgroup, graduated, continuing, non_continuing,
-persisting, and the aggregation flags.
+Data frame with entity identifiers, cohort_type, subgroup, graduated,
+continuing, non_continuing, persisting, and the aggregation flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 
 ## Details
 
@@ -55,10 +57,10 @@ available cohort lengths in one tidy frame.
 **Supported years:** `end_year >= 2020`. The 6-year cohort first appears
 in SY2020-21 (`end_year` 2021), so `end_year` 2020 returns only the 4-
 and 5-year cohorts. Earlier databases (2017-2019) do not carry
-cohort-profile sheets and error. The pre-2025 sheets report no
-per-cohort `school_year` column, so that column is present only for
-2025. `persisting` is published only for the 6-year cohort (and only
-from `end_year` 2024 in the pre-redesign sheets); it is `NA` otherwise.
+cohort-profile sheets and error. The redundant source school year is
+filtered to the requested year and removed. `persisting` is published
+only for the 6-year cohort (and only from `end_year` 2024 in the
+pre-redesign sheets); it is `NA` otherwise.
 
 ## Examples
 

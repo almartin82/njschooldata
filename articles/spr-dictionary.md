@@ -359,8 +359,8 @@ susp_by_group <- discipline %>%
   ) %>%
   transmute(
     student_group_grade,
-    pct_any_suspension = as.numeric(percent_students_any_suspension),
-    pct_expulsions     = as.numeric(percent_students_expulsions)
+    pct_any_suspension = as.numeric(any_susp_pct),
+    pct_expulsions     = as.numeric(expulsion_pct)
   ) %>%
   arrange(desc(pct_any_suspension))
 
@@ -427,11 +427,11 @@ Column names are automatically cleaned to snake_case.
 sessionInfo()
 #> R version 4.6.2 (2026-10-29)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.5 LTS
+#> Running under: Ubuntu 26.04.1 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
-#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.32.so;  LAPACK version 3.12.0
 #> 
 #> locale:
 #>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
@@ -446,7 +446,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3       purrr_1.2.2         dplyr_1.2.1        
+#> [1] ggplot2_4.0.4       purrr_1.2.2         dplyr_1.2.1        
 #> [4] njschooldata_0.11.0
 #> 
 #> loaded via a namespace (and not attached):

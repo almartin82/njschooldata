@@ -51,6 +51,13 @@ Data frame with disciplinary actions. Includes a `student_group_grade`
 column identifying the student group / grade row, plus suspension,
 removal, and expulsion counts and percentages.
 
+The 2024 number_students\_\* and percent_students\_\* labels are
+harmonized to the legacy count and pct names. Student-group/grade detail
+begins in 2024 and is NA earlier. Arrest counts, arrest percentages and
+school_days_missed_oss are not published in the 2024-2025 sheets and are
+NA. Text tokens are preserved. school_year is filtered to the requested
+year and then removed.
+
 ## Examples
 
 ``` r

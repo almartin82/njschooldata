@@ -24,8 +24,11 @@ fetch_spr_grad_pathways(end_year, level = "school")
 
 ## Value
 
-Data frame with entity identifiers, school_year, subject, the four
-pathway percentage columns, and the aggregation flags.
+Data frame with entity identifiers, subject, the four pathway percentage
+columns, and the aggregation flags.
+
+school_year is filtered to the requested year and then removed; end_year
+identifies the year.
 
 ## Details
 

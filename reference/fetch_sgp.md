@@ -34,25 +34,30 @@ fetch_sgp(end_year, level = "school", type = "trends")
 Data frame with median SGP data. Columns vary by `type`:
 
 - **All types**: end_year, county_id, county_name, district_id,
-  district_name, school_id, school_name, school_year, plus aggregation
-  flags (is_state, is_county, is_district, is_school, is_charter, ...).
+  district_name, school_id, school_name, plus aggregation flags
+  (is_state, is_county, is_district, is_school, is_charter, ...).
 
 - `type = "trends"`: `subgroup`, and for ELA and Math the entity median
   (`ela_median_sgp`, `math_median_sgp`) with its `*_category` growth
   label, plus the statewide comparison (`ela_median_sgp_state`,
   `math_median_sgp_state`) and its category. At `level = "school"` the
   entity median is the school value; at `level = "district"` it is the
-  district value. Pre-2025 years additionally carry
+  district value. Pre-2025 years publish
   `ela_met_target`/`math_met_target` and have `NA` in the `*_category`
-  columns. The 2025 sheet is a multi-year trend filtered to the
-  requested year and adds a `school_year` column; legacy sheets are
-  single-year.
+  columns. The target indicators are `NA` in 2025. The 2025 source is a
+  multi-year trend; its `school_year` column is used to filter the
+  requested year and then removed. Legacy sheets are single-year.
 
 - `type = "by_grade"`: `subject`, `grade`, `median_sgp`,
   `median_sgp_category`.
 
 - `type = "by_performance_level"`: `subject`, `njsla_performance_level`,
   `median_sgp`, `median_sgp_category`.
+
+For trends, ela_met_target and math_met_target are published only before
+2025 and are NA in 2025; the historical target indicators are distinct
+from the growth categories. school_year is filtered to the requested
+year and then removed.
 
 ## Details
 
