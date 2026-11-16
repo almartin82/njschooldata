@@ -311,8 +311,8 @@ susp_by_group <- discipline %>%
   ) %>%
   transmute(
     student_group_grade,
-    pct_any_suspension = as.numeric(percent_students_any_suspension),
-    pct_expulsions     = as.numeric(percent_students_expulsions)
+    pct_any_suspension = as.numeric(any_susp_pct),
+    pct_expulsions     = as.numeric(expulsion_pct)
   ) %>%
   arrange(desc(pct_any_suspension))
 
