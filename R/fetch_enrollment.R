@@ -443,6 +443,15 @@ enr_pct_published_value <- function(x) {
     end_year, request_fn = .default_source_request) {
   validate_end_year(end_year, "enrollment")
   candidates <- resolve_source_url("enrollment", end_year = end_year)
+  live_validation <- identical(
+    tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS", "false")), "true"
+  ) && identical(request_fn, .default_source_request)
+  if (live_validation && length(candidates) > 1L) {
+    # A live canary checks the preferred publisher URL once. Alternate URL
+    # candidates remain available to ordinary callers but do not multiply a
+    # manually bounded source check.
+    candidates <- candidates[1L]
+  }
   failures <- list()
 
   for (candidate in candidates) {

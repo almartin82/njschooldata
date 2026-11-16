@@ -39,24 +39,26 @@ test_that("the contract checker can fail", {
   ay_contract_self_test()
 })
 
-for (declared_type in unique(get_available_years()$type)) {
-  local({
-    type <- declared_type
-    test_that(paste("live available-years contract:", type), {
-      skip_on_cran()
-      skip_if_no_live_tests()
-      # Undo the suite's cache isolation and any caller-specific override so
-      # this exercises real acquisition through the ordinary persistent cache.
-      withr::local_options(njschooldata.cache_dir = NULL,
-                           njschooldata.workbook_cache = TRUE)
-      withr::local_envvar(c(NJSCHOOLDATA_CACHE_DIR = NA_character_,
-                            STATE_SCHOOLDATA_HISTORICAL_ROOT = NA_character_))
-      old_cache_state <- .njsd_cache$enabled
-      withr::defer({ .njsd_cache$enabled <- old_cache_state })
-      .njsd_cache$enabled <- TRUE
-      coverage <- get_available_years()
-      fetcher <- get(coverage$fetcher[match(type, coverage$type)])
-      ay_expect_contract(type, get_available_years, fetcher)
+if (identical(tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS", "false")), "true")) {
+  for (declared_type in unique(get_available_years()$type)) {
+    local({
+      type <- declared_type
+      test_that(paste("live available-years contract:", type), {
+        skip_on_cran()
+        skip_if_no_live_tests()
+        # Undo the suite's cache isolation and any caller-specific override so
+        # this exercises real acquisition through the ordinary persistent cache.
+        withr::local_options(njschooldata.cache_dir = NULL,
+                             njschooldata.workbook_cache = TRUE)
+        withr::local_envvar(c(NJSCHOOLDATA_CACHE_DIR = NA_character_,
+                              STATE_SCHOOLDATA_HISTORICAL_ROOT = NA_character_))
+        old_cache_state <- .njsd_cache$enabled
+        withr::defer({ .njsd_cache$enabled <- old_cache_state })
+        .njsd_cache$enabled <- TRUE
+        coverage <- get_available_years()
+        fetcher <- get(coverage$fetcher[match(type, coverage$type)])
+        ay_expect_contract(type, get_available_years, fetcher)
+      })
     })
-  })
+  }
 }

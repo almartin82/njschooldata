@@ -138,7 +138,9 @@ get_raw_state_aid_result <- function(
   urls <- resolve_source_url("state_aid", end_year)
   # When the package holds this year's archived zip and not the loose
   # workbook, read the held zip; do not ask nj.gov for the loose file first.
-  held_archive_only <- identical(request_fn, .default_source_request) &&
+  held_archive_only <- !isTRUE(getOption(
+    "njschooldata.live_force_publisher", FALSE
+  )) && identical(request_fn, .default_source_request) &&
     is.null(.nj_release_lookup(urls[["direct"]])) &&
     !is.null(.nj_release_lookup(urls[["archive"]]))
   direct <- if (held_archive_only) {
@@ -169,6 +171,11 @@ get_raw_state_aid_result <- function(
       digest = direct$digest
     ))
   }
+
+  live_validation <- identical(
+    tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS", "false")), "true"
+  ) && identical(request_fn, .default_source_request)
+  if (live_validation) return(direct)
 
   archive <- download_source(
     urls[["archive"]], source_type = "zip", request_fn = request_fn

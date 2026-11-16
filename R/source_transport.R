@@ -242,7 +242,32 @@ download_source <- function(url, source_type,
   )
   retries <- max(0L, as.integer(retries))
 
-  if (identical(request_fn, .default_source_request)) {
+  # Manual live validation uses the same acquisition path as ordinary calls,
+  # with request limits applied only after its explicit package opt-in. Normal
+  # callers keep each source's established timeout and retry policy.
+  live_validation <- identical(
+    tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS", "false")), "true"
+  )
+  if (live_validation) {
+    timeout_cap <- getOption(
+      "njschooldata.live_request_timeout_seconds",
+      suppressWarnings(as.numeric(Sys.getenv(
+        "NJSCHOOLDATA_LIVE_REQUEST_TIMEOUT_SECONDS", "30"
+      )))
+    )
+    if (!is.numeric(timeout_cap) || length(timeout_cap) != 1L ||
+        is.na(timeout_cap) || !is.finite(timeout_cap) || timeout_cap <= 0) {
+      stop("Live request timeout must be a positive number of seconds.",
+           call. = FALSE)
+    }
+    timeout <- min(timeout, timeout_cap, 30)
+    retries <- 0L
+  }
+
+  force_live_publisher <- isTRUE(
+    getOption("njschooldata.live_force_publisher", FALSE)
+  )
+  if (identical(request_fn, .default_source_request) && !force_live_publisher) {
     packaged <- .package_source(url, source_type)
     if (!is.null(packaged)) return(packaged)
     # Held historical files come from the package's release assets, verified

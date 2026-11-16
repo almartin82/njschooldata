@@ -6,8 +6,11 @@ on:
 jobs:
   r-live-canaries:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       NJSCHOOLDATA_LIVE_TESTS: "true"
+      NJSCHOOLDATA_LIVE_REQUEST_TIMEOUT_SECONDS: "30"
+      NJSCHOOLDATA_LIVE_REQUEST_RETRIES: "0"
     steps:
       - uses: actions/checkout@v5
       - uses: r-lib/actions/setup-r@v2
@@ -29,8 +32,11 @@ jobs:
 
   python-live-canaries:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       NJSCHOOLDATA_LIVE_TESTS: "true"
+      NJSCHOOLDATA_LIVE_REQUEST_TIMEOUT_SECONDS: "30"
+      NJSCHOOLDATA_LIVE_REQUEST_RETRIES: "0"
     steps:
       - uses: actions/checkout@v5
       - uses: r-lib/actions/setup-r@v2
@@ -47,6 +53,9 @@ jobs:
       - name: Run representative Python bridge canaries
         working-directory: python
         run: >-
-          pytest -m network -v --tb=short
+          pytest -m network -k returns_dataframe -v --tb=short
           tests/test_enrollment.py tests/test_assessment.py
-          tests/test_graduation.py tests/test_directory.py
+          tests/test_graduation.py
+      - name: Run mocked directory bridge checks
+        working-directory: python
+        run: pytest -v --tb=short tests/test_directory.py

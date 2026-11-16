@@ -188,6 +188,40 @@ test_that("live downloads are per-call and carry independently acquired provenan
   expect_true(file.exists(second$data))
 })
 
+test_that("manual live requests are bounded, do not retry, and bypass held copies", {
+  withr::local_envvar(c(
+    NJSCHOOLDATA_LIVE_TESTS = "true",
+    NJSCHOOLDATA_LIVE_REQUEST_TIMEOUT_SECONDS = "7",
+    NJSCHOOLDATA_LIVE_REQUEST_RETRIES = "3"
+  ))
+  withr::local_options(list(
+    njschooldata.live_force_publisher = TRUE,
+    njschooldata.live_request_timeout_seconds = NULL,
+    njschooldata.live_request_retries = NULL
+  ))
+
+  attempts <- 0L
+  observed_timeout <- NULL
+  local_mocked_bindings(
+    .package_source = function(...) stop("package source must be bypassed"),
+    .release_source = function(...) stop("release source must be bypassed"),
+    .default_source_request = function(url, dest, timeout) {
+      attempts <<- attempts + 1L
+      observed_timeout <<- timeout
+      list(status_code = 503L, final_url = url, content_type = "text/plain")
+    },
+    .package = "njschooldata"
+  )
+
+  result <- download_source(
+    "https://www.nj.gov/bounded.csv", "csv", timeout = 1200, retries = 2L
+  )
+
+  expect_identical(result$source_status, "source_unavailable")
+  expect_identical(observed_timeout, 7)
+  expect_identical(attempts, 1L)
+})
+
 test_that("the shared transport identifies as a browser, not as njschooldata", {
   # NJ DOE's Homeroom directory downloads answer a self-identifying agent with
   # HTTP 403 and a 963-byte challenge page. get_school_directory() and

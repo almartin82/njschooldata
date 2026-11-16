@@ -55,6 +55,96 @@
     tolower(Sys.getenv("NJSCHOOLDATA_OFFLINE")) %in% c("true", "yes", "1")
 }
 
+# The historical store's ordinary resolver keeps its larger download budget
+# and transient retries. A manually opted-in live canary uses a package-local
+# request adapter so its GitHub release reads share the canary's short request
+# cap and cannot consume the resolver's three-attempt retry loop.
+.nj_release_live_timeout <- function() {
+  live <- identical(
+    tolower(Sys.getenv("NJSCHOOLDATA_LIVE_TESTS", "false")), "true"
+  )
+  if (!live) return(NULL)
+
+  timeout <- getOption(
+    "njschooldata.live_request_timeout_seconds",
+    suppressWarnings(as.numeric(Sys.getenv(
+      "NJSCHOOLDATA_LIVE_REQUEST_TIMEOUT_SECONDS", "30"
+    )))
+  )
+  if (!is.numeric(timeout) || length(timeout) != 1L || is.na(timeout) ||
+      !is.finite(timeout) || timeout <= 0) {
+    stop("Live request timeout must be a positive number of seconds.",
+         call. = FALSE)
+  }
+  min(timeout, 30)
+}
+
+.nj_release_live_transport <- function(asset, timeout) {
+  function(url, emit) {
+    # HEAD, redirect-hop and GET requests share one asset-transfer deadline;
+    # a multi-hop delivery cannot multiply the canary's request allowance.
+    deadline <- Sys.time() + timeout
+    request <- function(url, method, emit, headers = character()) {
+      remaining <- as.numeric(difftime(deadline, Sys.time(), units = "secs"))
+      if (!is.finite(remaining) || remaining <= 0) {
+        .historical_error(
+          "live_timeout", "Pinned release asset exceeded its 30-second canary budget"
+        )
+      }
+      request_timeout <- min(timeout, remaining)
+      if (any(tolower(names(headers)) == "authorization") &&
+          !.historical_github_auth_host(url)) {
+        .historical_error(
+          "policy", "A GitHub token is sent only to github.com and api.github.com"
+        )
+      }
+      handle <- curl::new_handle(
+        followlocation = FALSE,
+        failonerror = identical(method, "GET"),
+        connecttimeout = min(30, request_timeout),
+        timeout = request_timeout,
+        protocols = 2L,
+        redir_protocols = 2L,
+        nobody = identical(method, "HEAD")
+      )
+      if (length(headers)) curl::handle_setheaders(handle, .list = as.list(headers))
+      if (identical(method, "HEAD")) {
+        curl::curl_fetch_memory(url, handle = handle)
+      } else {
+        tryCatch(curl::curl_fetch_stream(url, emit, handle = handle), error = function(e) {
+          status <- curl::handle_data(handle)$status_code
+          if (.historical_number(status, 400) && status <= 599) {
+            .historical_error(
+              "transport",
+              paste("Pinned historical asset GET returned HTTP", status),
+              status_code = status
+            )
+          }
+          stop(e)
+        })
+      }
+    }
+
+    tryCatch(
+      .historical_github_transport(
+        url, emit, .request = request, .asset_id = asset$storage$asset_id
+      ),
+      error = function(e) {
+        # A transient HTTP response or curl timeout is final for this canary
+        # request. Do not expose it as the resolver's retryable transport class.
+        if (inherits(e, "historical_transport_error")) {
+          .historical_error(
+            "live_transport", conditionMessage(e),
+            status_code = e$status_code
+          )
+        }
+        if (inherits(e, "historical_error")) stop(e)
+        .historical_error("live_transport", conditionMessage(e))
+      }
+    )
+  }
+}
+
 # Typed failure: a missing or tampered source is never turned into empty data,
 # and never into a request to nj.gov.
 .nj_release_call <- function(action) {
@@ -77,6 +167,10 @@
     list(family = artifact$selectors$family, file_id = artifact$artifact_id),
     .nj_release_repository
   )
+  live_timeout <- .nj_release_live_timeout()
+  if (is.null(.transport) && !is.null(live_timeout)) {
+    .transport <- .nj_release_live_transport(artifact, live_timeout)
+  }
   .nj_release_call(function() {
     historical_with_assets(selection, function(paths, workspace) {
       blob <- paths[[artifact$artifact_id]]
