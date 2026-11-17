@@ -95,3 +95,13 @@ test_that("2026 fetchers preserve real source cells, levels, suppression and fin
     }
   }
 })
+
+test_that("2026 NJSLA and NJGPA have named served registry sources", {
+  registry <- get_data_registry(family = "assessment", end_year = 2026)
+  for (source in c("njsla_parcc_results_data_files", "njgpa_results_data_files")) {
+    rows <- registry[registry$source_id == source & !is.na(registry$source_id), ]
+    expect_true(nrow(rows) > 0L, info = source)
+    expect_true(all(rows$status == "served"), info = source)
+    expect_true(all(nzchar(rows$title)), info = source)
+  }
+})

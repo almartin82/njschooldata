@@ -1,6 +1,6 @@
 .nj_year_fetchers <- c(
   enrollment = "fetch_enr", absence = "fetch_absence",
-  assessment = "fetch_parcc", graduation = "fetch_grad_rate",
+  assessment = "fetch_parcc", assessment_njgpa = "fetch_njgpa", graduation = "fetch_grad_rate",
   finance = "fetch_finance", sped = "fetch_sped",
   sped_share = "fetch_sped_share", ell = "fetch_ell",
   stability = "fetch_stability", sped_environment = "fetch_sped_environment",
@@ -17,6 +17,8 @@
 # Only verified families enter the coverage table in this wave.
 .nj_live_years <- function() list(
   enrollment = get_source_years("enrollment"),
+  assessment = get_source_years("parcc"),
+  assessment_njgpa = get_source_years("njgpa"),
   graduation = .nj_grad_live_years,
   absence = .nj_absence_live_years,
   finance = .nj_finance_live_years,
