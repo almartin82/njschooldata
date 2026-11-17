@@ -17,3 +17,4 @@ pattern,family,taxonomy_category
 ^(dropout)$,dropout,Dropout Rates
 ^(discipline)$,discipline,Discipline
 ^(crosswalk|identifiers|identifier_crosswalk|nces_crosswalk|reference|supplemental identifiers|multi_family_state_snapshots)$,reference,Reference
+^(funding_fte|funded_fte|apportionment_fte)$,funding_fte,Funded Enrollment (FTE)
