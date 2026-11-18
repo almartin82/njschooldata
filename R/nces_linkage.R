@@ -32,6 +32,28 @@ load_nces_crosswalk <- function() {
 }
 
 
+# CCD state_leaid fallback for a district the directory crosswalk lacks.
+.fill_nces_dist_from_ccd <- function(df) {
+  out <- df$nces_dist
+  gap <- is.na(out) & df$district_id != "9999"
+  if (!any(gap)) return(out)
+  path <- system.file("extdata", "crosswalk", "nj_ccd_state_leaid_2024.csv",
+                      package = "njschooldata")
+  if (!nzchar(path) || !file.exists(path)) return(out)
+  ccd <- utils::read.csv(path, colClasses = "character", stringsAsFactors = FALSE)
+  key <- paste0("NJ-", stringr::str_pad(df$county_id, 2, pad = "0"),
+                stringr::str_pad(df$district_id, 4, pad = "0"))
+  fill <- ccd$nces_dist[match(key, ccd$state_leaid)]
+  owner <- tapply(key[!is.na(out)], out[!is.na(out)], function(k) k[1])
+  clash <- !is.na(fill) & fill %in% names(owner) &
+    owner[fill] != key
+  clash[is.na(clash)] <- FALSE
+  use <- gap & !is.na(fill) & !clash
+  out[use] <- fill[use]
+  out
+}
+
+
 #' Attach federal NCES ids to an enrollment data frame
 #'
 #' Adds two columns to (wide or tidy) enrollment data:
@@ -89,6 +111,14 @@ attach_nces_ids <- function(df) {
 
   df <- dplyr::left_join(df, dist_map, by = c("county_id", "district_id"))
   df <- dplyr::left_join(df, sch_map, by = c("county_id", "district_id", "school_id"))
+
+  # The directory crosswalk is built from the CURRENT NJ DOE directory, so a
+  # district missing from it today (Atlantic Highlands, Highlands Borough,
+  # Greenwich Twp, Hainesport, Stow Creek) lost its federal id in every year.
+  # Fill only those gaps from the CCD state_leaid file, on the exact
+  # "NJ-" + county + district key the program readers already use. A filled
+  # id already attached to a different district is never used.
+  df$nces_dist <- .fill_nces_dist_from_ccd(df)
 
   # nces_dist on district aggregate rows (school_id == "999") and school rows
   # is correct; on state/county aggregate rows it should stay NA.
