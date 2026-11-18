@@ -62,3 +62,113 @@ test_that("each rule can fail", {
   unknown$reason <- "seemed_hard"
   expect_true(has_rule(.registry_violations(sources, unknown), 4L))
 })
+
+# Isolate routing metadata from each package's real publications and files. These
+# fixtures contain no education values, and never read or fetch source bytes.
+registry_routing_fixture <- function() {
+  fixture <- new.env(parent = environment(.registry_compute))
+  for (name in c(".registry_compute", ".registry_violations")) {
+    fn <- get(name, envir = fixture)
+    environment(fn) <- fixture
+    assign(name, fn, envir = fixture)
+  }
+  fixture$.registry_package <- function() "xxschooldata"
+  fixture$.registry_read_csv <- function(name) NULL
+  fixture$.registry_add_directory <- function(out, state) out
+  fixture$.registry_artifacts <- function(crosswalk) data.frame(
+    artifact_id = "reference", lineage = "derived", path = "reference/metadata",
+    url = NA_character_, bytes = NA_real_, family = "reference",
+    end_year = NA_integer_, match_text = "reference/metadata", stringsAsFactors = FALSE
+  )
+  fixture$.registry_coverage <- function(crosswalk) data.frame(
+    family = "assessment", end_year = 2020L, mode = c("package", "live"),
+    fetcher = c("fetch_historical", "fetch_current"), stringsAsFactors = FALSE
+  )
+  fixture$sources <- data.frame(
+    source_id = c("historical", "current"), family = "assessment",
+    fetcher = c("fetch_historical", "fetch_current"), fetcher_years = NA_character_,
+    match = NA_character_, publisher = "State DOE", publisher_type = "state_doe",
+    title = c("Historical release", "Current release"), year_basis = "test_admin",
+    landing_url = NA_character_, stringsAsFactors = FALSE
+  )
+  fixture$gap <- data.frame(
+    family = "assessment", end_year = "2020", source_id = "cancelled",
+    reason = "not_published", evidence = "Publication cancelled",
+    checked_on = "2026-01-01", note = "No spring administration",
+    stringsAsFactors = FALSE
+  )
+  fixture
+}
+
+test_that("each source reports only its registered fetcher's coverage", {
+  fixture <- registry_routing_fixture()
+  reg <- fixture$.registry_compute(fixture$sources, NULL)
+  expect_identical(reg$source_id, c("current", "historical"))
+  expect_identical(reg$status, c("served", "served"))
+  expect_identical(reg$fetcher, c("fetch_current", "fetch_historical"))
+  expect_identical(reg$mode, c("live", "package"))
+})
+
+test_that("a named gap coexists with other served sources in the same year", {
+  fixture <- registry_routing_fixture()
+  reg <- fixture$.registry_compute(fixture$sources, fixture$gap)
+  gap <- reg[reg$source_id == "cancelled", ]
+  expect_equal(nrow(gap), 1L)
+  expect_identical(gap$status, "not_published")
+  expect_identical(gap$evidence, fixture$gap$evidence)
+  expect_identical(gap$checked_on, fixture$gap$checked_on)
+  expect_identical(gap$reason, fixture$gap$note)
+  expect_setequal(reg$source_id[reg$status == "served"], c("historical", "current"))
+  expect_false(any(startsWith(fixture$.registry_violations(fixture$sources, fixture$gap), "rule 4:")))
+
+  fixture$gap$source_id <- "historical"
+  expect_true(any(startsWith(fixture$.registry_violations(fixture$sources, fixture$gap), "rule 4:")))
+  fixture$gap$source_id <- NA_character_
+  expect_true(any(startsWith(fixture$.registry_violations(fixture$sources, fixture$gap), "rule 4:")))
+})
+
+test_that("a named gap fills an unknown cell without duplicating it", {
+  fixture <- registry_routing_fixture()
+  fixture$gap$end_year <- "2019"
+  reg <- fixture$.registry_compute(fixture$sources, fixture$gap)
+  gap <- reg[reg$end_year == 2019L, ]
+  expect_equal(nrow(gap), 1L)
+  expect_identical(gap$source_id, "cancelled")
+  expect_identical(gap$status, "not_published")
+  expect_false(any(startsWith(fixture$.registry_violations(fixture$sources, fixture$gap), "rule 4:")))
+})
+
+test_that("fetcher coverage respects a source ID's family and all its fetchers", {
+  fixture <- registry_routing_fixture()
+  other_family <- fixture$sources[1, ]
+  other_family$family <- "staff"
+  other_family$fetcher <- "fetch_current"
+  another_fetcher <- fixture$sources[1, ]
+  another_fetcher$fetcher <- "fetch_current"
+  fixture$sources <- rbind(other_family, fixture$sources)
+  reg <- fixture$.registry_compute(fixture$sources, NULL)
+  historical <- reg[reg$source_id == "historical", ]
+  expect_identical(historical$status, "served")
+  expect_identical(historical$fetcher, "fetch_historical")
+  expect_identical(historical$mode, "package")
+  fixture$sources <- rbind(fixture$sources, another_fetcher)
+  reg <- fixture$.registry_compute(fixture$sources, NULL)
+  historical <- reg[reg$source_id == "historical", ]
+  expect_identical(historical$status, "served")
+  expect_identical(historical$fetcher, "fetch_current; fetch_historical")
+  expect_identical(historical$mode, "live; package")
+  expect_identical(reg$fetcher[reg$source_id == "current"], "fetch_current")
+})
+
+test_that("a source naming fetch_x is credited with fetch_x_multi coverage", {
+  fixture <- registry_routing_fixture()
+  fixture$.registry_coverage <- function(crosswalk) data.frame(
+    family = "assessment", end_year = 2020L, mode = c("package", "live"),
+    fetcher = c("fetch_historical_multi", "fetch_current"), stringsAsFactors = FALSE
+  )
+  reg <- fixture$.registry_compute(fixture$sources, NULL)
+  historical <- reg[reg$source_id == "historical", ]
+  expect_identical(historical$status, "served")
+  expect_identical(historical$fetcher, "fetch_historical_multi")
+  expect_identical(reg$fetcher[reg$source_id == "current"], "fetch_current")
+})

@@ -244,6 +244,15 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
     }
     if (!length(ids)) ids <- NA_character_
     do.call(rbind, lapply(ids, function(id) {
+      # A source with a registered fetcher reports that fetcher's coverage,
+      # rather than every function sharing the enrollment/assessment family.
+      if (!is.na(id)) {
+        registered <- sources$fetcher[sources$source_id == id & sources$family == f]
+        registered <- registered[!is.na(registered) & nzchar(registered)]
+        if (length(registered)) {
+          claim <- claim[.registry_fetcher_key(claim$fetcher) %in% .registry_fetcher_key(registered), , drop = FALSE]
+        }
+      }
       mine <- if (is.na(id)) files else files[!is.na(files$source_id) & files$source_id == id, ]
       src <- !is.na(mine$lineage) & mine$lineage == "source"
       status <- if (nrow(claim)) "served" else if (nrow(files)) "held_not_served" else "not_searched"
@@ -270,10 +279,15 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
   out
 }
 
+# A multi-year wrapper serves what its single-year fetcher serves: a source naming
+# fetch_x is credited with coverage advertised under fetch_x_multi, and vice versa.
+.registry_fetcher_key <- function(fetcher) sub("_multi$", "", fetcher)
+
 # A cell with no file of its own family resolves through the source that names its
 # fetcher: a live read, or a fetcher reading a file held under another family.
 .registry_fetcher_source <- function(sources, family, year, fetcher) {
-  hit <- sources$family == family & !is.na(sources$fetcher) & sources$fetcher == fetcher
+  hit <- sources$family == family & !is.na(sources$fetcher) &
+    .registry_fetcher_key(sources$fetcher) == .registry_fetcher_key(fetcher)
   # fetcher_years routes a fetcher that reads different sources in different years.
   span <- strsplit(ifelse(is.na(sources$fetcher_years), "", sources$fetcher_years), "-", fixed = TRUE)
   first <- suppressWarnings(as.integer(vapply(span, function(x) if (length(x)) x[[1]] else NA_character_, "")))
@@ -296,7 +310,26 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
   if (is.null(gaps) || !nrow(gaps)) return(out)
   key <- paste(out$family, out$end_year)
   for (i in seq_len(nrow(gaps))) {
-    hit <- key == paste(gaps$family[[i]], gaps$end_year[[i]]) & out$status == "not_searched"
+    same_year <- key == paste(gaps$family[[i]], gaps$end_year[[i]])
+    named_source <- !is.na(gaps$source_id[[i]])
+    if (named_source && !any(same_year & out$source_id %in% gaps$source_id[[i]])) {
+      unknown <- same_year & is.na(out$source_id) & out$status == "not_searched"
+      if (any(unknown)) {
+        out$source_id[unknown] <- gaps$source_id[[i]]
+      } else {
+        row <- out[NA_integer_, , drop = FALSE]
+        row$state <- out$state[1]
+        row$family <- gaps$family[[i]]
+        row$end_year <- as.integer(gaps$end_year[[i]])
+        row$source_id <- gaps$source_id[[i]]
+        row$status <- "not_searched"
+        out <- rbind(out, row)
+      }
+      key <- paste(out$family, out$end_year)
+      same_year <- key == paste(gaps$family[[i]], gaps$end_year[[i]])
+    }
+    hit <- same_year & out$status == "not_searched"
+    if (named_source) hit <- hit & out$source_id %in% gaps$source_id[[i]]
     out$status[hit] <- gaps$reason[[i]]
     out$reason[hit] <- gaps$note[[i]]
     out$evidence[hit] <- gaps$evidence[[i]]
@@ -355,7 +388,10 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
 
   if (!is.null(gaps) && nrow(gaps)) {
     for (i in seq_len(nrow(gaps))) {
-      if (any(cov$family == gaps$family[[i]] & cov$end_year == as.integer(gaps$end_year[[i]]))) {
+      served <- reg$family == gaps$family[[i]] &
+        reg$end_year == as.integer(gaps$end_year[[i]]) & reg$status == "served"
+      if (!is.na(gaps$source_id[[i]])) served <- served & reg$source_id %in% gaps$source_id[[i]]
+      if (any(served)) {
         v <- c(v, sprintf("rule 4: gap on %s %s, which is served", gaps$family[[i]], gaps$end_year[[i]]))
       }
       if (!gaps$reason[[i]] %in% .registry_gap_reasons) {
