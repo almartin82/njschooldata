@@ -2,7 +2,7 @@
 
 What states the data passes through on its way from an NJ DOE file to a frame
 a caller gets back, what must hold in each state, which transitions exist, and
-which bad states the code can actually reach. Updated 2026-11-10 from the code
+which bad states the code can actually reach. Updated 2026-11-19 from the code
 on `master`. Update it in the same commit as any change to a transition below.
 
 Companion docs: `CLAUDE.md` (family rules and traps), `R/cache.R` (why there
@@ -301,3 +301,69 @@ own message is kept. Test: `tests/testthat/test-partial-frame.R`.
   contents and the E8b suite each flag `test-historical-store-recovery.R` in
   `test-test-inventory.R`. The canonical recovery tests themselves pass. E8b
   preserves the inventory assertion and adds no allowlist exception.
+
+
+## E9. Counted NJGIN school points (2026-11-19)
+
+`get_raw_facilities_arcgis()` now delegates JSON offset completeness to the
+vendored `contracts/arcgis-counted/v1` reader. Its local adapter keeps the
+registered NJGIN endpoint, httr GET, 60-second timeout, `where = "1=1"`, all
+publisher attributes, EPSG:4326 point geometry and the 500,000-offset safety
+ceiling. Python delegates to R. NJGIN remains a live register on every call.
+
+The reader obtains the object-ID field and page cap from layer metadata, counts
+with the same predicate as pages, orders by that OID, validates raw page sizes
+and IDs before processing, and repeats the count before returning. Missing,
+repeated, short or contradictory pages and publisher error bodies cannot return
+a partial success. An honestly empty layer retains the original no-school-points
+error. HTTP and parser conditions propagate unchanged, including native httr
+status classes and the original reader call. There are no new retries or probes.
+
+Source registry entries, native identifiers, local attribute/longitude/latitude
+decoding, `process_njgin_school_points()` and downstream WKT/sf conversion are
+unchanged. Fixtures contain synthetic identifiers and point shapes only; no
+source acquisition or source bytes changed. The canonical files were installed
+through the sync script without edits to the contract.
+
+New tests (no existing tests or assertions changed or renamed):
+
+- `test-arcgis-counted-canonical.R`: unchanged vendored controls for both wire
+  protocols, metadata, raw IDs, counts, errors, geometry and condition identity.
+- `test-arcgis-counted-nj.R`: six offline blocks at the real `httr::GET` seam
+  cover NJGIN's request parameters, decoded native fields/geometry, completeness,
+  error bodies at every phase, empty policy, exact HTTP/parser conditions and
+  the adapter's pre-transport safety ceiling. The short-page assertion names
+  the short-page error so a later duplicate-ID refusal cannot conceal its loss.
+
+Mutation evidence: all 24 canonical mutations and all 17 local mutations went
+red. Local mutations: recount, repeated ID, short page, error body, wrong OID,
+dropped count predicate, publisher cap, stable order, missing page, contradictory
+transfer flag, geometry, empty policy, offset ceiling, native HTTP call, timeout,
+native identifier and longitude. Namespace mutations were restored immediately;
+the adapter was also restored from HEAD and its package-prefixed Git patch,
+with `git diff --numstat` confirming the restored 32 additions / 37 deletions.
+All R checks used the installed package, one foreground process at a time,
+`NOT_CRAN=true`, live tests disabled and OS-denied network access. The final
+sweep uses fresh user, XDG and historical cache roots.
+
+Installed results, P/F/E/W/S (warnings counted in test-result rows):
+
+- HEAD touched baseline: 234/1/0/0/7.
+- Restored final touched: 367/1/0/0/7, including canonical 74/0/0/0/0
+  and NJ-specific 59/0/0/0/0.
+- Sole final cold sweep: 5775/4/0/16/754. The reporter also emits three
+  file-level `context()` deprecation warnings, outside test-result rows.
+- HEAD-reader replay of the three failing files: 301/4/0/0/0. All failing
+  block identities, failure counts, error counts and reported messages match:
+  assessment selector validation (`test-available-years-contract.R:35`),
+  process-table liveness (`test-historical-store-recovery.R:161,163`, unknown
+  under the denied process-table boundary), and network-test inventory
+  (`test-test-inventory.R:107`, two existing offenders). No new failure remains.
+- October suite baseline: 3210/1/0/14/692, with the same inventory assertion.
+  The additional current failures reproduce with the HEAD reader and remain
+  outside this ArcGIS change. Existing assertions and skips were preserved.
+
+Delivery: committed locally on `master` above the pre-existing local commit;
+not pushed. No hosted job was triggered. Deferred: the four inherited failures
+above, and publication pending the separately owned preceding commit. No
+contract change or adopter resync was needed.

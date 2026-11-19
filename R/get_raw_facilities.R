@@ -81,52 +81,47 @@ get_raw_njdoe_cds <- function(src) {
 #' Internal: page an ArcGIS query endpoint
 #' @keywords internal
 get_raw_facilities_arcgis <- function(src) {
-  all_rows <- list()
-  offset <- 0L
-  page <- 2000L
-
-  repeat {
-    resp <- httr::GET(
-      src$url,
-      query = list(
-        where = "1=1",
-        outFields = "*",
-        returnGeometry = "true",
-        outSR = "4326",
-        resultOffset = offset,
-        resultRecordCount = page,
-        f = "json"
-      ),
-      httr::timeout(60)
-    )
-    httr::stop_for_status(resp)
-    parsed <- jsonlite::fromJSON(
+  reader_call <- sys.call()
+  request <- function(kind, query) {
+    # Keep the original offset ceiling before another page reaches transport.
+    if (!is.null(query$resultOffset) && query$resultOffset > 500000L)
+      stop("ArcGIS paging safety limit exceeded", call. = FALSE)
+    url <- if (kind == "metadata") sub("/query/?$", "", src$url) else src$url
+    resp <- httr::GET(url, query = query, httr::timeout(60))
+    check_status <- function() httr::stop_for_status(resp)
+    tryCatch(check_status(), error = function(e) {
+      # httr derives its native call from the direct caller of stop_for_status.
+      # Only that native helper call changes when the loop moves into the core.
+      if (inherits(e, "http_error") &&
+          identical(conditionCall(e), quote(check_status()))) e$call <- reader_call
+      stop(e)
+    })
+    jsonlite::fromJSON(
       httr::content(resp, as = "text", encoding = "UTF-8"),
       simplifyDataFrame = TRUE
     )
-
-    features <- parsed$features
-    if (is.null(features) || length(features) == 0 ||
-        (is.data.frame(features) && nrow(features) == 0)) {
-      break
+  }
+  pages <- arcgis_counted_read(
+    request, protocol = "offset", return_geometry = TRUE, page_size = 2000L,
+    feature_count = nrow,
+    feature_ids = function(features, field) features$attributes[[field]],
+    invalid = function(message, kind, body) stop(message, call. = FALSE),
+    body_error = function(body, phase, probe) {
+      stop("Incomplete ArcGIS acquisition: publisher returned an in-body error",
+           call. = FALSE)
     }
-
+  )
+  if (!length(pages)) {
+    stop("ArcGIS source returned no school points: ", src$url, call. = FALSE)
+  }
+  all_rows <- lapply(pages, function(features) {
     attrs <- features$attributes
     if (!is.null(features$geometry)) {
       attrs$.longitude <- features$geometry$x
       attrs$.latitude <- features$geometry$y
     }
-    all_rows[[length(all_rows) + 1]] <- attrs
-
-    n_got <- nrow(attrs)
-    if (!isTRUE(parsed$exceededTransferLimit) && n_got < page) break
-    offset <- offset + n_got
-    if (offset > 500000L) stop("ArcGIS paging safety limit exceeded", call. = FALSE)
-  }
-
-  if (!length(all_rows)) {
-    stop("ArcGIS source returned no school points: ", src$url, call. = FALSE)
-  }
+    attrs
+  })
   do.call(rbind, all_rows)
 }
 
