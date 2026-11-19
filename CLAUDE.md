@@ -722,7 +722,10 @@ classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
   grade, end_years 2022-2026, from the bundled response to OPRA request C255254
   (`inst/extdata/program-sources/`). `grade_level`: `PK`, `K`, `01`-`12`,
   `NO_GRADE`. Counts under 5 are `NA` with `suppressed = TRUE`; blank grades have
-  no row; no statewide row. 2026 warns: the release looks incomplete.
+  no row; no statewide row. The November 17, 2026 reconciled response
+  supersedes the July 8 response for every covered year. Counts for the earlier
+  four years are unchanged. Reconciliation does not establish completeness
+  for every district.
 - **`fetch_sped_share(end_year, basis)`** - rows for comparing the share of students
   with IEPs between two sets of schools (`sped_all_vs_all()`, `sped_like_for_like()`,
   contract `contracts/sped-comparison/v1`). Finest grain by basis:
@@ -735,7 +738,8 @@ classified BEFORE numeric coercion, so a suppressed cell is never a fabricated
     suppressed, 2023-2025, except two 2022-23 LEAs, 0410 and 5210, one student short); a suppressed cell (1-4) makes the band `n_sped` NA with
     `pct_sped_lo/hi`. Band rows carry no `pct_sped` (counts only). A band whose IEP
     count exceeds its enrollment (sending districts; 3 rows in 2023-2026) keeps the
-    count and withholds `n_enrolled`. 2026 warns (OPRA incomplete, no IDEA file).
+    count and withholds `n_enrolled`. 2026 has reconciled OPRA band rows only
+    (no IDEA classification file).
   - `basis = "school_report"` (2021-2025, live): school, district and state rows from the
     School Performance Reports Students with Disabilities percent of enrollment, one
     decimal, no suppression. `n_enrolled` and spans come from the same report's

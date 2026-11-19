@@ -53,8 +53,9 @@ Each basis uses its own construct and grain:
   is zero students: wherever nothing is suppressed, the OPRA grade cells sum to
   the IDEA child count for every district in 2023-2025. The band rows carry no
   \code{pct_sped}: NJDOE publishes counts by grade, and the helpers pool the
-  counts. \strong{2025-26 is flagged}: known OPRA counts fall 8 percent from
-  2024-25, there is no IDEA file yet, and the call warns.}
+  counts. The November 17, 2026 reconciled OPRA response supersedes the
+  July 8 response for every covered year. There is no 2025-26 IDEA
+  classification file in this basis, so 2026 has band rows only.}
   \item{\code{"school_report"} (2021-2025, live)}{School rows, plus district
   and state rows, from the School Performance Reports: Students with
   Disabilities as a percent of enrollment, one decimal, with no suppression.

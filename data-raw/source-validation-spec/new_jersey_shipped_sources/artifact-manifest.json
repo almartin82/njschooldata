@@ -194,13 +194,14 @@
     {
       "artifact_id": "sped_grade-opra-C255254",
       "source_identity": {
-        "url": "opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx",
-        "requested_url": "opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx",
-        "retrieved_at": "2026-07-08 00:07:06"
+        "url": "opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx",
+        "requested_url": "opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx",
+        "retrieved_at": "2026-11-17",
+        "source_date": "2026-11-17"
       },
       "tier": "shipped",
-      "byte_length": 320648,
-      "sha256": "5c6f3b6b4e3ffe440609545221944f326610e5059e8b99094cc0e5cdafc346d3",
+      "byte_length": 322466,
+      "sha256": "250b139409416b200f5b02c4e7f03defab13aef894086187a8c847cea03996f7",
       "selectors": {
         "family": "sped_grade",
         "key": "C255254"

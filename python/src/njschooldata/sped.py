@@ -44,8 +44,9 @@ def fetch_sped_by_grade(end_year: int) -> pd.DataFrame:
     Parameters
     ----------
     end_year : int
-        Ending school year, 2022 through 2026. 2026 warns because the release
-        looks incomplete.
+        Ending school year, 2022 through 2026. Uses the November 17, 2026
+        reconciled response, which supersedes the July 8 response for all
+        covered years.
 
     Returns
     -------

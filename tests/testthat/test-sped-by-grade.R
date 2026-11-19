@@ -10,7 +10,7 @@ test_that("fetch_sped_by_grade keeps every released count for every year", {
   local_nj_offline_transport()
   book <- .sped_grade_workbook()
   grades <- names(njschooldata:::.SPED_GRADE_LEVELS)
-  for (year in 2022:2025) {
+  for (year in 2022:2026) {
     d <- fetch_sped_by_grade(year)
     rows <- book[book[["School Year"]] == sprintf("%d-%02d", year - 1L, year %% 100L), ]
     cells <- unlist(rows[grades], use.names = FALSE)
@@ -61,11 +61,18 @@ test_that("OPRA totals agree with NJDOE's published classification file", {
   expect_gt(mean(joined$total == joined$sped_num), 0.95)
 })
 
-test_that("2025-26 warns that it looks incomplete and returns released values", {
+test_that("2025-26 returns the reconciled November 17 counts", {
   local_nj_offline_transport()
-  expect_warning(d <- fetch_sped_by_grade(2026), "incomplete")
-  expect_gt(nrow(d), 0)
-  expect_silent(fetch_sped_by_grade(2025))
+  expect_silent(d <- fetch_sped_by_grade(2026))
+  expect_equal(sum(d$n_students, na.rm = TRUE), 233762)
+  freehold <- d[d$county_id == "25" & d$district_id == "1650", ]
+  expect_false(any(freehold$suppressed))
+  expect_equal(sum(freehold$n_students), 1618)
+  expect_equal(sum(d$n_students[d$district_id == "1799"]), 406)
+  records <- get_source_results(d)
+  expect_identical(records$digest,
+    "250b139409416b200f5b02c4e7f03defab13aef894086187a8c847cea03996f7")
+  expect_match(records$source_url, "C255254_11_17_2026_Suppressed.xlsx", fixed = TRUE)
 })
 
 test_that("invalid years and tampered bytes stop", {

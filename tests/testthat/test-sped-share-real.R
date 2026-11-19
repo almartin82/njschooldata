@@ -140,9 +140,11 @@ test_that("finest grain by default is the district, with band rows; the state ro
   expect_equal(share(2024)$pct_sped[share(2024)$entity_level == "state"], 17.13)
 })
 
-test_that("2025-26 warns that the OPRA counts look incomplete and carries no IDEA row", {
+test_that("2025-26 uses reconciled OPRA counts and carries no IDEA row", {
   local_nj_offline_transport()
-  expect_warning(fetch_sped_share(2026), "incomplete")
+  expect_warning(x <- fetch_sped_share(2026), NA)
+  cooper_norcross <- x[x$district_id %in% "1799" & x$grade_band %in% share_bands, ]
+  expect_equal(sum(cooper_norcross$n_sped), 406)
   expect_false("all" %in% share(2026)$grade_band)
 })
 

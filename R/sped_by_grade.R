@@ -1,7 +1,8 @@
 # Students with an active IEP by district and grade, from NJDOE's response to
-# OPRA request C255254 (2026-07-08). NJDOE publishes no equivalent file.
+# OPRA request C255254, reconciled response dated 2026-11-17.
+# This response supersedes the 2026-07-08 response for every covered year.
 
-.SPED_GRADE_OPRA_URL <- "opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx"
+.SPED_GRADE_OPRA_URL <- "opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx"
 .SPED_GRADE_LEVELS <- c(
   PK = "PK", KG = "K", Grade_1 = "01", Grade_2 = "02", Grade_3 = "03",
   Grade_4 = "04", Grade_5 = "05", Grade_6 = "06", Grade_7 = "07",
@@ -64,13 +65,17 @@ get_raw_sped_by_grade <- function(end_year) {
 #'
 #' NJDOE suppressed counts under 5. A suppressed cell returns
 #' \code{n_students = NA} with \code{suppressed = TRUE}, never zero. A grade
-#' NJDOE left blank for a district has no row. The file has no statewide row and
-#' no denominators, and this function adds neither.
+#' NJDOE left blank for a district has no row. The district sheet has no statewide row and
+#' no denominators, and this function adds neither. The additional statewide
+#' sheet in the reconciled workbook is retained but is not served by this
+#' district-and-grade function.
 #'
-#' \strong{2025-26 looks incomplete.} Statewide known counts fall 8\% from
-#' 2024-25, grades 9-12 fall about 15\%, and some large districts have no known
-#' counts. NJDOE has not explained this, so \code{end_year = 2026} warns. The
-#' values are returned as released.
+#' NJDOE supplied this reconciled workbook on November 17, 2026, stating that
+#' the data was reconciled after its July 8 response. This workbook supersedes
+#' that response for all covered years, 2021-22 through 2025-26. The earlier
+#' four years are unchanged; 2025-26 district counts changed. Reconciliation
+#' does not establish completeness for every district. Suppression and blank
+#' cells remain as released.
 #'
 #' @param end_year ending school year, 2022 through 2026 (2023-24 is 2024).
 #'
@@ -97,13 +102,6 @@ get_raw_sped_by_grade <- function(end_year) {
 #'   filter(is_charter, grade_level == "K")
 fetch_sped_by_grade <- function(end_year) {
   raw <- get_raw_sped_by_grade(end_year)
-  if (end_year == 2026L) {
-    warning(
-      "2025-26 IEP counts look incomplete: statewide known counts fall 8% ",
-      "from 2024-25. Values are returned as NJDOE released them.",
-      call. = FALSE
-    )
-  }
 
   grade_cols <- names(.SPED_GRADE_LEVELS)
   long <- tidyr::pivot_longer(
