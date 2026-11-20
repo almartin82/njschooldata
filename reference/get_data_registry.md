@@ -185,314 +185,314 @@ subset(reg, status == "served")
 #> 173    NJ       sped_share     2026       opra_response_iep_counts_by_grade
 #> 176    NJ        stability     2024                   nj_stability_snapshot
 #> 177    NJ        stability     2025                   nj_stability_snapshot
-#>     variant status mode                                                fetcher
-#> 1      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 2      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 3      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 4      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 5      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 6      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 8      <NA> served live                                          fetch_absence
-#> 9      <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 10     <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 11     <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 12     <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 13     <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 14     <NA> served live          fetch_absence; fetch_essa_chronic_absenteeism
-#> 15     <NA> served live                                          fetch_absence
-#> 30     <NA> served live                                            fetch_parcc
-#> 31     <NA> served live                                            fetch_parcc
-#> 32     <NA> served live                                            fetch_parcc
-#> 33     <NA> served live                                            fetch_parcc
-#> 34     <NA> served live                                            fetch_parcc
-#> 37     <NA> served live                 fetch_access; fetch_njgpa; fetch_parcc
-#> 38     <NA> served live                 fetch_access; fetch_njgpa; fetch_parcc
-#> 39     <NA> served live                 fetch_access; fetch_njgpa; fetch_parcc
-#> 40     <NA> served live                 fetch_access; fetch_njgpa; fetch_parcc
-#> 41     <NA> served live                               fetch_njgpa; fetch_parcc
-#> 42     <NA> served live                               fetch_njgpa; fetch_parcc
-#> 44     <NA> served live                                              fetch_ell
-#> 45     <NA> served live                                              fetch_ell
-#> 46     <NA> served live                                              fetch_ell
-#> 47     <NA> served live                                              fetch_ell
-#> 48     <NA> served live                                              fetch_ell
-#> 49     <NA> served live                                              fetch_ell
-#> 50     <NA> served live                                              fetch_ell
-#> 51     <NA> served live                                              fetch_ell
-#> 52     <NA> served live                                              fetch_ell
-#> 53     <NA> served live                                              fetch_ell
-#> 54     <NA> served live                                              fetch_ell
-#> 55     <NA> served live                                              fetch_ell
-#> 56     <NA> served live                                              fetch_ell
-#> 57     <NA> served live                                              fetch_ell
-#> 58     <NA> served live                                              fetch_ell
-#> 59     <NA> served live                                              fetch_ell
-#> 60     <NA> served live                                              fetch_ell
-#> 61     <NA> served live                                              fetch_ell
-#> 62     <NA> served live                                              fetch_ell
-#> 63     <NA> served live                                              fetch_ell
-#> 64     <NA> served live                                              fetch_ell
-#> 65     <NA> served live                                              fetch_enr
-#> 66     <NA> served live                                              fetch_enr
-#> 67     <NA> served live                                              fetch_enr
-#> 68     <NA> served live                                              fetch_enr
-#> 69     <NA> served live                                              fetch_enr
-#> 70     <NA> served live                                              fetch_enr
-#> 71     <NA> served live                                              fetch_enr
-#> 72     <NA> served live                                              fetch_enr
-#> 73     <NA> served live                                              fetch_enr
-#> 74     <NA> served live                                              fetch_enr
-#> 75     <NA> served live                                              fetch_enr
-#> 76     <NA> served live                                              fetch_enr
-#> 77     <NA> served live                                              fetch_enr
-#> 78     <NA> served live                                              fetch_enr
-#> 79     <NA> served live                                              fetch_enr
-#> 80     <NA> served live                                              fetch_enr
-#> 81     <NA> served live                                              fetch_enr
-#> 82     <NA> served live                                              fetch_enr
-#> 83     <NA> served live                                              fetch_enr
-#> 84     <NA> served live                                              fetch_enr
-#> 85     <NA> served live                                              fetch_enr
-#> 86     <NA> served live                                              fetch_enr
-#> 87     <NA> served live                                              fetch_enr
-#> 88     <NA> served live                                              fetch_enr
-#> 89     <NA> served live                                              fetch_enr
-#> 90     <NA> served live                                              fetch_enr
-#> 91     <NA> served live                                              fetch_enr
-#> 92     <NA> served live                                              fetch_enr
-#> 96     <NA> served live                                          fetch_finance
-#> 97     <NA> served live                                          fetch_finance
-#> 98     <NA> served live                                          fetch_finance
-#> 99     <NA> served live                                          fetch_finance
-#> 100    <NA> served live                                          fetch_finance
-#> 101    <NA> served live                                          fetch_finance
-#> 102    <NA> served live                                          fetch_finance
-#> 103    <NA> served live                                          fetch_finance
-#> 104    <NA> served live                                          fetch_finance
-#> 105    <NA> served live                                          fetch_finance
-#> 106    <NA> served live                                          fetch_finance
-#> 107    <NA> served live                                          fetch_finance
-#> 108    <NA> served live                                          fetch_finance
-#> 109    <NA> served live                                          fetch_finance
-#> 110    <NA> served live                                          fetch_finance
-#> 111    <NA> served live                                          fetch_finance
-#> 112    <NA> served live                                          fetch_finance
-#> 113    <NA> served live                                          fetch_finance
-#> 114    <NA> served live                         fetch_finance; fetch_state_aid
-#> 115    <NA> served live                         fetch_finance; fetch_state_aid
-#> 116    <NA> served live                         fetch_finance; fetch_state_aid
-#> 117    <NA> served live                         fetch_finance; fetch_state_aid
-#> 118    <NA> served live                         fetch_finance; fetch_state_aid
-#> 119    <NA> served live                         fetch_finance; fetch_state_aid
-#> 120    <NA> served live                         fetch_finance; fetch_state_aid
-#> 121    <NA> served live                         fetch_finance; fetch_state_aid
-#> 122    <NA> served live                         fetch_finance; fetch_state_aid
-#> 123    <NA> served live                         fetch_finance; fetch_state_aid
-#> 124    <NA> served live                         fetch_finance; fetch_state_aid
-#> 125    <NA> served live                         fetch_finance; fetch_state_aid
-#> 126    <NA> served live                         fetch_finance; fetch_state_aid
-#> 127    <NA> served live                         fetch_finance; fetch_state_aid
-#> 128    <NA> served live                                        fetch_state_aid
-#> 129    <NA> served live                                        fetch_grad_rate
-#> 130    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 131    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 132    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 133    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 134    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 135    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 136    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 137    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 138    <NA> served live                      fetch_grad_count; fetch_grad_rate
-#> 139    <NA> served live fetch_6yr_grad_rate; fetch_grad_count; fetch_grad_rate
-#> 140    <NA> served live fetch_6yr_grad_rate; fetch_grad_count; fetch_grad_rate
-#> 141    <NA> served live fetch_6yr_grad_rate; fetch_grad_count; fetch_grad_rate
-#> 142    <NA> served live fetch_6yr_grad_rate; fetch_grad_count; fetch_grad_rate
-#> 143    <NA> served live fetch_6yr_grad_rate; fetch_grad_count; fetch_grad_rate
-#> 144    <NA> served live                                             fetch_sped
-#> 145    <NA> served live                                             fetch_sped
-#> 146    <NA> served live                                             fetch_sped
-#> 147    <NA> served live                                             fetch_sped
-#> 148    <NA> served live                                             fetch_sped
-#> 149    <NA> served live                                             fetch_sped
-#> 150    <NA> served live                                             fetch_sped
-#> 151    <NA> served live                                             fetch_sped
-#> 152    <NA> served live                                             fetch_sped
-#> 153    <NA> served live                                             fetch_sped
-#> 154    <NA> served live                                             fetch_sped
-#> 155    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 156    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 157    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 158    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 159    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 160    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 161    <NA> served live                        fetch_sped; fetch_sped_by_grade
-#> 162    <NA> served live                                    fetch_sped_by_grade
-#> 163    <NA> served live                                 fetch_sped_environment
-#> 164    <NA> served live                                 fetch_sped_environment
-#> 165    <NA> served live                                 fetch_sped_environment
-#> 167    <NA> served live                                       fetch_sped_share
-#> 168    <NA> served live                                       fetch_sped_share
-#> 169    <NA> served live                                       fetch_sped_share
-#> 170    <NA> served live                                       fetch_sped_share
-#> 171    <NA> served live                                       fetch_sped_share
-#> 172    <NA> served live                                       fetch_sped_share
-#> 173    <NA> served live                                       fetch_sped_share
-#> 176    <NA> served live                                        fetch_stability
-#> 177    <NA> served live                                        fetch_stability
-#>     n_source_files n_derived_files   bytes
-#> 1                0               0       0
-#> 2                0               0       0
-#> 3                0               0       0
-#> 4                0               0       0
-#> 5                0               0       0
-#> 6                0               0       0
-#> 8                0               0       0
-#> 9                0               0       0
-#> 10               0               0       0
-#> 11               0               0       0
-#> 12               0               0       0
-#> 13               0               0       0
-#> 14               0               0       0
-#> 15               0               0       0
-#> 30               0               0       0
-#> 31               0               0       0
-#> 32               0               0       0
-#> 33               1               0 1978116
-#> 34               1               0 1887597
-#> 37               1               0 1821684
-#> 38               1               0 1829780
-#> 39               1               0 1821168
-#> 40               1               0 1843456
-#> 41               0               0       0
-#> 42               0               0       0
-#> 44               0               0       0
-#> 45               0               0       0
-#> 46               0               0       0
-#> 47               0               0       0
-#> 48               0               0       0
-#> 49               0               0       0
-#> 50               0               0       0
-#> 51               0               0       0
-#> 52               0               0       0
-#> 53               0               0       0
-#> 54               0               0       0
-#> 55               0               0       0
-#> 56               0               0       0
-#> 57               0               0       0
-#> 58               0               0       0
-#> 59               0               0       0
-#> 60               0               0       0
-#> 61               0               0       0
-#> 62               0               0       0
-#> 63               0               0       0
-#> 64               0               0       0
-#> 65               1               0  465739
-#> 66               1               0  536664
-#> 67               1               0  446887
-#> 68               1               0  485025
-#> 69               1               0  459473
-#> 70               1               0  537620
-#> 71               1               0  456027
-#> 72               1               0  459687
-#> 73               1               0  481166
-#> 74               1               0  569533
-#> 75               1               0  575500
-#> 76               1               0 1338684
-#> 77               1               0 1095496
-#> 78               1               0 2591290
-#> 79               1               0 2578254
-#> 80               1               0 2339971
-#> 81               1               0 2616791
-#> 82               1               0 2619194
-#> 83               1               0 2627985
-#> 84               1               0 2634898
-#> 85               1               0 2678851
-#> 86               1               0  763907
-#> 87               1               0  733786
-#> 88               1               0  734021
-#> 89               1               0 1119856
-#> 90               1               0 1061242
-#> 91               1               0 1095121
-#> 92               1               0 1061437
-#> 96               1               0  572766
-#> 97               1               0  585513
-#> 98               1               0 1140308
-#> 99               1               0 2259434
-#> 100              1               0 2283208
-#> 101              1               0 2294833
-#> 102              1               0 1331465
-#> 103              1               0 2325550
-#> 104              1               0 2213595
-#> 105              1               0 2358982
-#> 106              1               0  590610
-#> 107              1               0  649722
-#> 108              1               0  599308
-#> 109              1               0  593519
-#> 110              1               0  802071
-#> 111              1               0  804033
-#> 112              1               0  810538
-#> 113              1               0  970438
-#> 114              1               0 1292364
-#> 115              1               0 1040892
-#> 116              1               0 1642279
-#> 117              1               0 1343893
-#> 118              1               0  921846
-#> 119              1               0 1110723
-#> 120              1               0 1867828
-#> 121              1               0 1621328
-#> 122              1               0 1760402
-#> 123              1               0  871679
-#> 124              1               0  961889
-#> 125              1               0  772998
-#> 126              1               0 1088273
-#> 127              1               0   77477
-#> 128              1               0   77136
-#> 129              0               0       0
-#> 130              3               0 1483762
-#> 131              2               0  373695
-#> 132              2               0  377170
-#> 133              2               0  381277
-#> 134              2               0  399324
-#> 135              2               0  401845
-#> 136              2               0  574120
-#> 137              2               0  608863
-#> 138              1               0  534643
-#> 139              1               0  536015
-#> 140              1               0  567385
-#> 141              1               0  548651
-#> 142              1               0  563820
-#> 143              1               0  563176
-#> 144              0               0       0
-#> 145              0               0       0
-#> 146              0               0       0
-#> 147              0               0       0
-#> 148              0               0       0
-#> 149              0               0       0
-#> 150              0               0       0
-#> 151              0               0       0
-#> 152              1               0 7937226
-#> 153              1               0 5551373
-#> 154              1               0 7510855
-#> 155              1               0   91960
-#> 156              0               0       0
-#> 157              0               0       0
-#> 158              0               0       0
-#> 159              0               0       0
-#> 160              0               0       0
-#> 161              0               0       0
-#> 162              0               0       0
-#> 163              0               0       0
-#> 164              0               0       0
-#> 165              0               0       0
-#> 167              0               0       0
-#> 168              0               0       0
-#> 169              0               0       0
-#> 170              0               0       0
-#> 171              0               0       0
-#> 172              0               0       0
-#> 173              0               0       0
-#> 176              0               0       0
-#> 177              0               0       0
+#>     variant status mode                        fetcher n_source_files
+#> 1      <NA> served live fetch_essa_chronic_absenteeism              0
+#> 2      <NA> served live                  fetch_absence              0
+#> 3      <NA> served live fetch_essa_chronic_absenteeism              0
+#> 4      <NA> served live                  fetch_absence              0
+#> 5      <NA> served live fetch_essa_chronic_absenteeism              0
+#> 6      <NA> served live                  fetch_absence              0
+#> 8      <NA> served live                  fetch_absence              0
+#> 9      <NA> served live fetch_essa_chronic_absenteeism              0
+#> 10     <NA> served live                  fetch_absence              0
+#> 11     <NA> served live fetch_essa_chronic_absenteeism              0
+#> 12     <NA> served live                  fetch_absence              0
+#> 13     <NA> served live fetch_essa_chronic_absenteeism              0
+#> 14     <NA> served live                  fetch_absence              0
+#> 15     <NA> served live                  fetch_absence              0
+#> 30     <NA> served live                    fetch_parcc              0
+#> 31     <NA> served live                    fetch_parcc              0
+#> 32     <NA> served live                    fetch_parcc              0
+#> 33     <NA> served live                    fetch_parcc              1
+#> 34     <NA> served live                    fetch_parcc              1
+#> 37     <NA> served live                    fetch_parcc              1
+#> 38     <NA> served live                    fetch_parcc              1
+#> 39     <NA> served live                    fetch_parcc              1
+#> 40     <NA> served live                    fetch_parcc              1
+#> 41     <NA> served live                    fetch_njgpa              0
+#> 42     <NA> served live                    fetch_parcc              0
+#> 44     <NA> served live                      fetch_ell              0
+#> 45     <NA> served live                      fetch_ell              0
+#> 46     <NA> served live                      fetch_ell              0
+#> 47     <NA> served live                      fetch_ell              0
+#> 48     <NA> served live                      fetch_ell              0
+#> 49     <NA> served live                      fetch_ell              0
+#> 50     <NA> served live                      fetch_ell              0
+#> 51     <NA> served live                      fetch_ell              0
+#> 52     <NA> served live                      fetch_ell              0
+#> 53     <NA> served live                      fetch_ell              0
+#> 54     <NA> served live                      fetch_ell              0
+#> 55     <NA> served live                      fetch_ell              0
+#> 56     <NA> served live                      fetch_ell              0
+#> 57     <NA> served live                      fetch_ell              0
+#> 58     <NA> served live                      fetch_ell              0
+#> 59     <NA> served live                      fetch_ell              0
+#> 60     <NA> served live                      fetch_ell              0
+#> 61     <NA> served live                      fetch_ell              0
+#> 62     <NA> served live                      fetch_ell              0
+#> 63     <NA> served live                      fetch_ell              0
+#> 64     <NA> served live                      fetch_ell              0
+#> 65     <NA> served live                      fetch_enr              1
+#> 66     <NA> served live                      fetch_enr              1
+#> 67     <NA> served live                      fetch_enr              1
+#> 68     <NA> served live                      fetch_enr              1
+#> 69     <NA> served live                      fetch_enr              1
+#> 70     <NA> served live                      fetch_enr              1
+#> 71     <NA> served live                      fetch_enr              1
+#> 72     <NA> served live                      fetch_enr              1
+#> 73     <NA> served live                      fetch_enr              1
+#> 74     <NA> served live                      fetch_enr              1
+#> 75     <NA> served live                      fetch_enr              1
+#> 76     <NA> served live                      fetch_enr              1
+#> 77     <NA> served live                      fetch_enr              1
+#> 78     <NA> served live                      fetch_enr              1
+#> 79     <NA> served live                      fetch_enr              1
+#> 80     <NA> served live                      fetch_enr              1
+#> 81     <NA> served live                      fetch_enr              1
+#> 82     <NA> served live                      fetch_enr              1
+#> 83     <NA> served live                      fetch_enr              1
+#> 84     <NA> served live                      fetch_enr              1
+#> 85     <NA> served live                      fetch_enr              1
+#> 86     <NA> served live                      fetch_enr              1
+#> 87     <NA> served live                      fetch_enr              1
+#> 88     <NA> served live                      fetch_enr              1
+#> 89     <NA> served live                      fetch_enr              1
+#> 90     <NA> served live                      fetch_enr              1
+#> 91     <NA> served live                      fetch_enr              1
+#> 92     <NA> served live                      fetch_enr              1
+#> 96     <NA> served live                  fetch_finance              1
+#> 97     <NA> served live                  fetch_finance              1
+#> 98     <NA> served live                  fetch_finance              1
+#> 99     <NA> served live                  fetch_finance              1
+#> 100    <NA> served live                  fetch_finance              1
+#> 101    <NA> served live                  fetch_finance              1
+#> 102    <NA> served live                  fetch_finance              1
+#> 103    <NA> served live                  fetch_finance              1
+#> 104    <NA> served live                  fetch_finance              1
+#> 105    <NA> served live                  fetch_finance              1
+#> 106    <NA> served live                  fetch_finance              1
+#> 107    <NA> served live                  fetch_finance              1
+#> 108    <NA> served live                  fetch_finance              1
+#> 109    <NA> served live                  fetch_finance              1
+#> 110    <NA> served live                  fetch_finance              1
+#> 111    <NA> served live                  fetch_finance              1
+#> 112    <NA> served live                  fetch_finance              1
+#> 113    <NA> served live                  fetch_finance              1
+#> 114    <NA> served live fetch_finance; fetch_state_aid              1
+#> 115    <NA> served live                  fetch_finance              1
+#> 116    <NA> served live fetch_finance; fetch_state_aid              1
+#> 117    <NA> served live                  fetch_finance              1
+#> 118    <NA> served live fetch_finance; fetch_state_aid              1
+#> 119    <NA> served live                  fetch_finance              1
+#> 120    <NA> served live fetch_finance; fetch_state_aid              1
+#> 121    <NA> served live                  fetch_finance              1
+#> 122    <NA> served live fetch_finance; fetch_state_aid              1
+#> 123    <NA> served live                  fetch_finance              1
+#> 124    <NA> served live fetch_finance; fetch_state_aid              1
+#> 125    <NA> served live                  fetch_finance              1
+#> 126    <NA> served live fetch_finance; fetch_state_aid              1
+#> 127    <NA> served live fetch_finance; fetch_state_aid              1
+#> 128    <NA> served live                fetch_state_aid              1
+#> 129    <NA> served live                fetch_grad_rate              0
+#> 130    <NA> served live                fetch_grad_rate              3
+#> 131    <NA> served live                fetch_grad_rate              2
+#> 132    <NA> served live                fetch_grad_rate              2
+#> 133    <NA> served live                fetch_grad_rate              2
+#> 134    <NA> served live                fetch_grad_rate              2
+#> 135    <NA> served live                fetch_grad_rate              2
+#> 136    <NA> served live                fetch_grad_rate              2
+#> 137    <NA> served live                fetch_grad_rate              2
+#> 138    <NA> served live                fetch_grad_rate              1
+#> 139    <NA> served live                fetch_grad_rate              1
+#> 140    <NA> served live                fetch_grad_rate              1
+#> 141    <NA> served live                fetch_grad_rate              1
+#> 142    <NA> served live                fetch_grad_rate              1
+#> 143    <NA> served live                fetch_grad_rate              1
+#> 144    <NA> served live                     fetch_sped              0
+#> 145    <NA> served live                     fetch_sped              0
+#> 146    <NA> served live                     fetch_sped              0
+#> 147    <NA> served live                     fetch_sped              0
+#> 148    <NA> served live                     fetch_sped              0
+#> 149    <NA> served live                     fetch_sped              0
+#> 150    <NA> served live                     fetch_sped              0
+#> 151    <NA> served live                     fetch_sped              0
+#> 152    <NA> served live                     fetch_sped              1
+#> 153    <NA> served live                     fetch_sped              1
+#> 154    <NA> served live                     fetch_sped              1
+#> 155    <NA> served live                     fetch_sped              1
+#> 156    <NA> served live                     fetch_sped              0
+#> 157    <NA> served live            fetch_sped_by_grade              0
+#> 158    <NA> served live                     fetch_sped              0
+#> 159    <NA> served live            fetch_sped_by_grade              0
+#> 160    <NA> served live                     fetch_sped              0
+#> 161    <NA> served live            fetch_sped_by_grade              0
+#> 162    <NA> served live            fetch_sped_by_grade              0
+#> 163    <NA> served live         fetch_sped_environment              0
+#> 164    <NA> served live         fetch_sped_environment              0
+#> 165    <NA> served live         fetch_sped_environment              0
+#> 167    <NA> served live               fetch_sped_share              0
+#> 168    <NA> served live               fetch_sped_share              0
+#> 169    <NA> served live               fetch_sped_share              0
+#> 170    <NA> served live               fetch_sped_share              0
+#> 171    <NA> served live               fetch_sped_share              0
+#> 172    <NA> served live               fetch_sped_share              0
+#> 173    <NA> served live               fetch_sped_share              0
+#> 176    <NA> served live                fetch_stability              0
+#> 177    <NA> served live                fetch_stability              0
+#>     n_derived_files   bytes
+#> 1                 0       0
+#> 2                 0       0
+#> 3                 0       0
+#> 4                 0       0
+#> 5                 0       0
+#> 6                 0       0
+#> 8                 0       0
+#> 9                 0       0
+#> 10                0       0
+#> 11                0       0
+#> 12                0       0
+#> 13                0       0
+#> 14                0       0
+#> 15                0       0
+#> 30                0       0
+#> 31                0       0
+#> 32                0       0
+#> 33                0 1978116
+#> 34                0 1887597
+#> 37                0 1821684
+#> 38                0 1829780
+#> 39                0 1821168
+#> 40                0 1843456
+#> 41                0       0
+#> 42                0       0
+#> 44                0       0
+#> 45                0       0
+#> 46                0       0
+#> 47                0       0
+#> 48                0       0
+#> 49                0       0
+#> 50                0       0
+#> 51                0       0
+#> 52                0       0
+#> 53                0       0
+#> 54                0       0
+#> 55                0       0
+#> 56                0       0
+#> 57                0       0
+#> 58                0       0
+#> 59                0       0
+#> 60                0       0
+#> 61                0       0
+#> 62                0       0
+#> 63                0       0
+#> 64                0       0
+#> 65                0  465739
+#> 66                0  536664
+#> 67                0  446887
+#> 68                0  485025
+#> 69                0  459473
+#> 70                0  537620
+#> 71                0  456027
+#> 72                0  459687
+#> 73                0  481166
+#> 74                0  569533
+#> 75                0  575500
+#> 76                0 1338684
+#> 77                0 1095496
+#> 78                0 2591290
+#> 79                0 2578254
+#> 80                0 2339971
+#> 81                0 2616791
+#> 82                0 2619194
+#> 83                0 2627985
+#> 84                0 2634898
+#> 85                0 2678851
+#> 86                0  763907
+#> 87                0  733786
+#> 88                0  734021
+#> 89                0 1119856
+#> 90                0 1061242
+#> 91                0 1095121
+#> 92                0 1061437
+#> 96                0  572766
+#> 97                0  585513
+#> 98                0 1140308
+#> 99                0 2259434
+#> 100               0 2283208
+#> 101               0 2294833
+#> 102               0 1331465
+#> 103               0 2325550
+#> 104               0 2213595
+#> 105               0 2358982
+#> 106               0  590610
+#> 107               0  649722
+#> 108               0  599308
+#> 109               0  593519
+#> 110               0  802071
+#> 111               0  804033
+#> 112               0  810538
+#> 113               0  970438
+#> 114               0 1292364
+#> 115               0 1040892
+#> 116               0 1642279
+#> 117               0 1343893
+#> 118               0  921846
+#> 119               0 1110723
+#> 120               0 1867828
+#> 121               0 1621328
+#> 122               0 1760402
+#> 123               0  871679
+#> 124               0  961889
+#> 125               0  772998
+#> 126               0 1088273
+#> 127               0   77477
+#> 128               0   77136
+#> 129               0       0
+#> 130               0 1483762
+#> 131               0  373695
+#> 132               0  377170
+#> 133               0  381277
+#> 134               0  399324
+#> 135               0  401845
+#> 136               0  574120
+#> 137               0  608863
+#> 138               0  534643
+#> 139               0  536015
+#> 140               0  567385
+#> 141               0  548651
+#> 142               0  563820
+#> 143               0  563176
+#> 144               0       0
+#> 145               0       0
+#> 146               0       0
+#> 147               0       0
+#> 148               0       0
+#> 149               0       0
+#> 150               0       0
+#> 151               0       0
+#> 152               0 7937226
+#> 153               0 5551373
+#> 154               0 7510855
+#> 155               0   91960
+#> 156               0       0
+#> 157               0       0
+#> 158               0       0
+#> 159               0       0
+#> 160               0       0
+#> 161               0       0
+#> 162               0       0
+#> 163               0       0
+#> 164               0       0
+#> 165               0       0
+#> 167               0       0
+#> 168               0       0
+#> 169               0       0
+#> 170               0       0
+#> 171               0       0
+#> 172               0       0
+#> 173               0       0
+#> 176               0       0
+#> 177               0       0
 #>                                                                                                                           source_url
 #> 1                                                                                                                               <NA>
 #> 2                                                                                                                               <NA>

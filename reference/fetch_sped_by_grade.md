@@ -27,13 +27,17 @@ suppressed, plus the standard entity flags.
 
 NJDOE suppressed counts under 5. A suppressed cell returns
 `n_students = NA` with `suppressed = TRUE`, never zero. A grade NJDOE
-left blank for a district has no row. The file has no statewide row and
-no denominators, and this function adds neither.
+left blank for a district has no row. The district sheet has no
+statewide row and no denominators, and this function adds neither. The
+additional statewide sheet in the reconciled workbook is retained but is
+not served by this district-and-grade function.
 
-**2025-26 looks incomplete.** Statewide known counts fall 8% from
-2024-25, grades 9-12 fall about 15%, and some large districts have no
-known counts. NJDOE has not explained this, so `end_year = 2026` warns.
-The values are returned as released.
+NJDOE supplied this reconciled workbook on November 17, 2026, stating
+that the data was reconciled after its July 8 response. This workbook
+supersedes that response for all covered years, 2021-22 through 2025-26.
+The earlier four years are unchanged; 2025-26 district counts changed.
+Reconciliation does not establish completeness for every district.
+Suppression and blank cells remain as released.
 
 ## See also
 

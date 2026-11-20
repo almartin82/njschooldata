@@ -63,8 +63,9 @@ Each basis uses its own construct and grain:
   wherever nothing is suppressed, the OPRA grade cells sum to the IDEA
   child count for every district in 2023-2025. The band rows carry no
   `pct_sped`: NJDOE publishes counts by grade, and the helpers pool the
-  counts. **2025-26 is flagged**: known OPRA counts fall 8 percent from
-  2024-25, there is no IDEA file yet, and the call warns.
+  counts. The November 17, 2026 reconciled OPRA response supersedes the
+  July 8 response for every covered year. There is no 2025-26 IDEA
+  classification file in this basis, so 2026 has band rows only.
 
 - `"school_report"` (2021-2025, live):
 
@@ -134,10 +135,10 @@ head(share)
 #>                                                                                                                           source_file
 #> 1 https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_ClassificationRates.xlsx
 #> 2 https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_ClassificationRates.xlsx
-#> 3                                                     opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx; enrollment-2025.zip
-#> 4                                                     opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx; enrollment-2025.zip
+#> 3                                                        opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx; enrollment-2025.zip
+#> 4                                                        opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx; enrollment-2025.zip
 #> 5 https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2025_618data/2025IDEA618PublicReporting_ClassificationRates.xlsx
-#> 6                                                     opra://njdoe/C255254/Districtlevel_C255254_Suppressed.xlsx; enrollment-2025.zip
+#> 6                                                        opra://njdoe/C255254/C255254_11_17_2026_Suppressed.xlsx; enrollment-2025.zip
 
 # 2. Band counts for the district-run and charter sectors
 library(dplyr)
