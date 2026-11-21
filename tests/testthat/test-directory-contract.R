@@ -101,6 +101,50 @@
   "mr", "mrs", "ms", "miss", "mx", "dr", "hon", "rev", "fr", "sr", "prof"
 )
 
+# A package whose title_raw is read verbatim from a per-row source field says so
+# in its state-owned extension (meta.extensions.<state>):
+#
+#   title_source_field    named list, role -> the source field each row's title
+#                         is read from ("Title"), one per role that carries a
+#                         title_raw
+#   title_source_headers  optional character vector: every other column header
+#                         of the source, so a header string that leaked into the
+#                         data can be recognised by name
+#
+# The declaration is what separates a source that prints a title on every row
+# (where the same title on every row, or a lowercase "principal", is simply
+# what the state published) from a source with no per-row field where a constant
+# was stamped. It never licenses a value that equals the field's own name or one
+# of the source's other headers.
+.dc_title_norm <- function(x) gsub("[^a-z0-9]", "", tolower(as.character(x)))
+
+.dc_title_source_field <- function(roles, extension) {
+  decl <- extension$title_source_field
+  if (is.null(decl) || !length(decl)) return(rep(NA_character_, length(roles)))
+  vapply(roles, function(ro) {
+    value <- decl[[ro]]
+    if (is.null(value) || !length(value) || is.na(value[1]) ||
+        !nzchar(trimws(as.character(value)[1]))) {
+      NA_character_
+    } else {
+      as.character(value)[1]
+    }
+  }, character(1), USE.NAMES = FALSE)
+}
+
+.dc_title_source_headers <- function(extension) {
+  h <- unlist(extension$title_source_headers, use.names = FALSE)
+  if (is.null(h)) character() else as.character(h)
+}
+
+# TRUE when the values of one role are a single stamped constant, over enough
+# rows to be one, and the package has not declared a per-row source field.
+.dc_title_is_stamped_constant <- function(values, field_declared) {
+  values <- values[!is.na(values)]
+  !isTRUE(field_declared) && length(values) > .dc_title_constant_min_rows &&
+    length(unique(trimws(values))) == 1L
+}
+
 # Shapes a title_raw may never take: the source's own column identifier
 # ("headname", "super_name"), the label a published data dictionary gives that
 # column ("Principal Name", "Superintendent Name (Districts Only)"), or a bare
@@ -109,15 +153,28 @@
 # prose, so it sails past a "did the state write this?" test. But it names the
 # COLUMN, not the human in it, so admitting it would leave the synthesis in
 # place wearing a more convincing string.
-.dc_rejected_title_shape <- function(x) {
+#
+# Without a declared source field, a bare lowercase word or anything containing
+# an underscore is read as a column identifier. With one (source_field non-NA for
+# that row), the value is a column leak only when it equals the declared field's
+# own name or one of the declared source headers: a lowercase "principal" copied
+# from a per-row Title field is the state's own text and passes.
+.dc_rejected_title_shape <- function(x, source_field = NA_character_,
+                                     headers = character()) {
   text <- trimws(x)
+  source_field <- rep_len(as.character(source_field), length(text))
   out <- rep(NA_character_, length(text))
   known <- !is.na(text)
   label <- known & grepl("\\bnames?\\b", text, perl = TRUE, ignore.case = TRUE)
   out[label] <- "a data-dictionary field label naming the column, not the person in it"
-  ident <- known & is.na(out) &
+  declared <- !is.na(source_field)
+  ident <- known & is.na(out) & !declared &
     (grepl("_", text, fixed = TRUE) | grepl("^[a-z][a-z0-9]*$", text, perl = TRUE))
   out[ident] <- "a bare source column identifier rather than published prose"
+  leaked <- known & is.na(out) & declared &
+    (.dc_title_norm(text) == .dc_title_norm(source_field) |
+       .dc_title_norm(text) %in% .dc_title_norm(headers))
+  out[leaked] <- "the source's own column header, not a value read from it"
   hon <- known & is.na(out) &
     tolower(sub("\\.+$", "", text)) %in% .dc_title_honorifics
   out[hon] <- "an honorific, which is a form of address and not a job"
@@ -531,6 +588,43 @@ test_that("directory-contract: constructed row-screening record semantics", {
   expect_false(.dc_function_screens_rows(sum))
 })
 
+test_that("directory-contract: constructed title-source semantics", {
+  ext <- list(title_source_field = list(principal = "Title",
+                                        superintendent = "Title"),
+              title_source_headers = c("Admin Name", "Phone"))
+  rolevec <- c("principal", "principal", "board_member")
+
+  # The declaration is read per role; an undeclared role or a blank value is NA.
+  expect_identical(.dc_title_source_field(rolevec, ext),
+                   c("Title", "Title", NA_character_))
+  expect_identical(.dc_title_source_field("principal", list()), NA_character_)
+  expect_identical(
+    .dc_title_source_field("principal", list(title_source_field = list(principal = " "))),
+    NA_character_)
+
+  # Verbatim lowercase text from a declared per-row field passes; the same text
+  # with no declaration is still read as a column identifier.
+  expect_true(is.na(.dc_rejected_title_shape("principal", "Title")))
+  expect_false(is.na(.dc_rejected_title_shape("principal", NA_character_)))
+  expect_false(is.na(.dc_rejected_title_shape("super_name", NA_character_)))
+  expect_true(is.na(.dc_rejected_title_shape("super_name", "Title")))
+
+  # A declared source still rejects the field's own name, any declared header,
+  # a field label and an honorific.
+  expect_false(is.na(.dc_rejected_title_shape("title", "Title")))
+  expect_false(is.na(.dc_rejected_title_shape("TITLE", "Title")))
+  expect_false(is.na(.dc_rejected_title_shape("phone", "Title", c("Admin Name", "Phone"))))
+  expect_false(is.na(.dc_rejected_title_shape("Principal Name", "Title")))
+  expect_false(is.na(.dc_rejected_title_shape("Dr.", "Title")))
+
+  # One constant over many rows is a stamp unless a per-row field is declared.
+  stamped <- rep("SUPERINTENDENT", .dc_title_constant_min_rows + 1L)
+  expect_true(.dc_title_is_stamped_constant(stamped, FALSE))
+  expect_false(.dc_title_is_stamped_constant(stamped, TRUE))
+  expect_false(.dc_title_is_stamped_constant(c(stamped, "Interim Superintendent"), FALSE))
+  expect_false(.dc_title_is_stamped_constant(stamped[1:5], FALSE))
+})
+
 test_that("directory-contract: top-level shape", {
   skip_if(is.null(.dc_snap), "fixture missing (already failed above)")
   expect_true(is.list(.dc_snap))
@@ -754,7 +848,10 @@ test_that("directory-contract: roles required fields and vacancy semantics", {
   # be.
   expect_false(any(asserts & .dc_is_placeholder(r$title_raw, .dc_title_placeholders)),
     info = "a placeholder is not a job title; a source publishing none emits title_raw = NA")
-  shape <- .dc_rejected_title_shape(r$title_raw)
+  title_ext <- .dc_snap$meta$extensions[[.dc_state]]
+  title_field <- .dc_title_source_field(r$role, title_ext)
+  shape <- .dc_rejected_title_shape(r$title_raw, title_field,
+                                    .dc_title_source_headers(title_ext))
   expect_false(any(asserts & !is.na(shape)),
     info = paste("title_raw is", paste(unique(stats::na.omit(shape[asserts])), collapse = "; ")))
 
@@ -781,11 +878,13 @@ test_that("directory-contract: roles required fields and vacancy semantics", {
   for (ro in unique(r$role[asserts])) {
     rows <- r$role == ro & !is.na(r$title_raw)
     vals <- unique(trimws(r$title_raw[rows]))
-    expect_false(sum(rows) > .dc_title_constant_min_rows && length(vals) == 1L,
+    expect_false(.dc_title_is_stamped_constant(
+        r$title_raw[rows], !is.na(.dc_title_source_field(ro, title_ext))),
       info = paste0("role '", ro, "' declares a title-asserting role_provenance on ",
                     sum(rows), " rows that all carry the identical title_raw '",
                     vals[1], "'; a published per-person job title varies across ",
-                    "that many people"))
+                    "that many people unless the package declares the per-row ",
+                    "source field in meta.extensions.<state>$title_source_field"))
     if (length(vals) == 1L) sole_title[[vals[1]]] <- c(sole_title[[vals[1]]], ro)
   }
   for (val in names(sole_title)) {
@@ -895,6 +994,21 @@ test_that("directory-contract: coverage declaration consistency", {
     expect_true(all(provided %in% names(prov)),
       info = paste("coverage.role_provenance is declared but omits provided role(s):",
                    paste(setdiff(provided, names(prov)), collapse = ", ")))
+  }
+  # A declared title source is never a way to excuse a title the source does not
+  # print: it names real roles that assert a title, each with a non-empty field.
+  decl <- m$extensions[[.dc_state]]$title_source_field
+  if (!is.null(decl) && length(decl)) {
+    expect_true(all(names(decl) %in% .dc_roles),
+      info = "extensions title_source_field keys must be canonical roles")
+    expect_true(all(vapply(decl, function(v) {
+      length(v) == 1L && !is.na(v) && nzchar(trimws(as.character(v)))
+    }, logical(1))),
+      info = "extensions title_source_field values must each name one source field")
+    decl_prov <- .dc_declared_provenance(names(decl), cov)
+    expect_true(all(decl_prov %in% .dc_title_asserting),
+      info = paste("title_source_field may only be declared for roles whose",
+                   "role_provenance is 'title' or 'mixed'"))
   }
   if (isTRUE(cov$org_only)) {
     expect_identical(nrow(r), 0L)
