@@ -415,10 +415,10 @@ sessionInfo()
 #> [1] purrr_1.2.2         dplyr_1.2.1         njschooldata_0.11.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] rappdirs_0.3.4    sass_0.4.10       generics_0.1.4    tidyr_1.3.2      
+#>  [1] rappdirs_0.3.4    sass_0.5.0        generics_0.1.4    tidyr_1.3.2      
 #>  [5] stringi_1.8.9     hms_1.1.4         digest_0.6.39     magrittr_2.0.5   
 #>  [9] evaluate_1.0.5    timechange_0.4.0  fastmap_1.2.0     cellranger_1.1.0 
-#> [13] jsonlite_2.0.0    httr_1.4.9        codetools_0.2-20  textshaping_1.0.5
+#> [13] jsonlite_2.0.0    httr_1.4.9        codetools_0.2-20  textshaping_1.1.0
 #> [17] jquerylib_0.1.4   cli_3.6.6         crayon_1.5.3      rlang_1.3.0      
 #> [21] bit64_4.8.6       withr_3.0.3       cachem_1.1.0      yaml_2.3.12      
 #> [25] otel_0.3.0        parallel_4.6.2    tools_4.6.2       tzdb_0.5.0       

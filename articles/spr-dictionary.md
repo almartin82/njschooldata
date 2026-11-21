@@ -450,11 +450,11 @@ sessionInfo()
 #> [4] njschooldata_0.11.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] utf8_1.2.6         rappdirs_0.3.4     sass_0.4.10        generics_0.1.4    
+#>  [1] utf8_1.2.6         rappdirs_0.3.4     sass_0.5.0         generics_0.1.4    
 #>  [5] tidyr_1.3.2        stringi_1.8.9      hms_1.1.4          digest_0.6.39     
 #>  [9] magrittr_2.0.5     evaluate_1.0.5     grid_4.6.2         timechange_0.4.0  
 #> [13] RColorBrewer_1.1-3 fastmap_1.2.0      cellranger_1.1.0   jsonlite_2.0.0    
-#> [17] scales_1.4.0       codetools_0.2-20   textshaping_1.0.5  jquerylib_0.1.4   
+#> [17] scales_1.4.0       codetools_0.2-20   textshaping_1.1.0  jquerylib_0.1.4   
 #> [21] cli_3.6.6          rlang_1.3.0        withr_3.0.3        cachem_1.1.0      
 #> [25] yaml_2.3.12        otel_0.3.0         tools_4.6.2        tzdb_0.5.0        
 #> [29] vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5    lubridate_1.9.5   
@@ -463,6 +463,6 @@ sessionInfo()
 #> [41] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        
 #> [45] systemfonts_1.3.3  xfun_0.62          tibble_3.3.1       tidyselect_1.2.1  
 #> [49] knitr_1.52         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
-#> [53] rmarkdown_2.32     readr_2.2.0        compiler_4.6.2     S7_0.2.2          
+#> [53] rmarkdown_2.32     readr_2.2.0        compiler_4.6.2     S7_1.0.0          
 #> [57] readxl_1.6.0
 ```

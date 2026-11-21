@@ -494,10 +494,10 @@ sessionInfo()
 #>  [1] gtable_0.3.6       xfun_0.62          bslib_0.12.0       ggrepel_0.9.8     
 #>  [5] lattice_0.23-1     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.2       
 #>  [9] generics_0.1.4     curl_8.1.0         parallel_4.6.2     tibble_3.3.1      
-#> [13] pkgconfig_2.0.3    Matrix_1.7-6       RColorBrewer_1.1-3 S7_0.2.2          
+#> [13] pkgconfig_2.0.3    Matrix_1.7-6       RColorBrewer_1.1-3 S7_1.0.0          
 #> [17] desc_1.4.3         readxl_1.6.0       lifecycle_1.0.5    compiler_4.6.2    
-#> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.0.5  janitor_2.2.1     
-#> [25] codetools_0.2-20   snakecase_0.11.1   htmltools_0.5.9    sass_0.4.10       
+#> [21] farver_2.1.2       stringr_1.6.0      textshaping_1.1.0  janitor_2.2.1     
+#> [25] codetools_0.2-20   snakecase_0.11.1   htmltools_0.5.9    sass_0.5.0        
 #> [29] yaml_2.3.12        pillar_1.11.1      pkgdown_2.2.1      crayon_1.5.3      
 #> [33] jquerylib_0.1.4    cachem_1.1.0       nlme_3.1-171       tidyselect_1.2.1  
 #> [37] digest_0.6.39      stringi_1.8.9      purrr_1.2.2        splines_4.6.2     

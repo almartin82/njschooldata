@@ -7,7 +7,11 @@ indices with trend detection.
 ## Usage
 
 ``` r
-analyze_retention_patterns(df_list, by_subgroup = TRUE)
+analyze_retention_patterns(
+  df_list,
+  by_subgroup = TRUE,
+  rate_scale = c("percent", "fraction")
+)
 ```
 
 ## Arguments
@@ -23,6 +27,12 @@ analyze_retention_patterns(df_list, by_subgroup = TRUE)
 
   Logical; if TRUE (default), analyze retention patterns by demographic
   subgroups. If FALSE, aggregate across all staff.
+
+- rate_scale:
+
+  Units of the supplied retention and turnover columns: `"percent"`
+  (default, 0-100) or `"fraction"` (0-1). Callers must establish units
+  from their source; unknown units are rejected.
 
 ## Value
 
@@ -45,6 +55,12 @@ Data frame with:
   "insufficient_data"
 
 ## Details
+
+This analysis accepts caller-supplied data, so no publisher or vintage
+can establish its units. The default is percentage points, as documented
+for NJDOE SPR retention_pct columns. Fractional inputs require explicit
+opt-in. Values outside the declared scale become NA; magnitude never
+selects units.
 
 The stability index is calculated as: \$\$stability = (retention_rate +
 (100 - turnover_rate)) / 2\$\$

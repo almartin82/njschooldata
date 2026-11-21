@@ -1,6 +1,9 @@
 # Process graduation rate data
 
-Does cleanup of the grad rate ('grate') file.
+Does cleanup of the grad rate ('grate') file. Rates use the registered
+workbook vintage: ACGR2012_gradrate.xls's 2011 column has Excel format
+0.00 publish percentage points, corroborated by their graduate/cohort
+counts. Unknown rate vintages stop. See docs/percent-scale-evidence.md.
 
 ## Usage
 
