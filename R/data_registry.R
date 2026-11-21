@@ -235,6 +235,8 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
     claim <- cov[cov$family == f & cov$end_year == y, ]
     files <- held[held$family == f & held$end_year == y, ]
     ids <- unique(files$source_id[!is.na(files$source_id)])
+    fetchers <- character()
+    named <- list()
     if (nrow(claim) && !is.null(sources) && nrow(sources)) {
       # A source naming the cell's fetcher outranks a file that only shares its
       # year. Decided per fetcher, so a second fetcher serving the same family
@@ -260,10 +262,9 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
         if (length(registered)) {
           claim <- claim[.registry_fetcher_key(claim$fetcher) %in% .registry_fetcher_key(registered), , drop = FALSE]
         } else {
-          # An unregistered source is not credited with a fetcher that another
-          # source of this cell names.
-          taken <- sources$fetcher[sources$source_id %in% setdiff(ids, id) & sources$family == f]
-          taken <- taken[!is.na(taken) & nzchar(taken)]
+          # An unregistered source is not credited with a fetcher that names
+          # another source of this cell for this year.
+          taken <- fetchers[vapply(named, function(n) any(setdiff(n, id) %in% ids), logical(1))]
           claim <- claim[!.registry_fetcher_key(claim$fetcher) %in% .registry_fetcher_key(taken), , drop = FALSE]
         }
       }
