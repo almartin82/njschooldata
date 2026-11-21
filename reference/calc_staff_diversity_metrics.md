@@ -7,7 +7,12 @@ percentile rankings.
 ## Usage
 
 ``` r
-calc_staff_diversity_metrics(df, metrics = c("racial"))
+calc_staff_diversity_metrics(
+  df,
+  metrics = c("racial"),
+  category_col = NULL,
+  count_col = NULL
+)
 ```
 
 ## Arguments
@@ -22,6 +27,12 @@ calc_staff_diversity_metrics(df, metrics = c("racial"))
 
   Character vector specifying which diversity metrics to calculate.
   Options: "racial" (default), "gender", or both c("racial", "gender").
+
+- category_col, count_col:
+
+  Optional exact names of the demographic category column and the staff
+  count column. When omitted each is detected from the column names, and
+  the call stops unless exactly one qualifies.
 
 ## Value
 

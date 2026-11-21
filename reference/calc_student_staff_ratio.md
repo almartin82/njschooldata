@@ -7,7 +7,12 @@ administrators, and support staff.
 ## Usage
 
 ``` r
-calc_student_staff_ratio(df, ratio_type = "overall")
+calc_student_staff_ratio(
+  df,
+  ratio_type = "overall",
+  student_col = NULL,
+  staff_col = NULL
+)
 ```
 
 ## Arguments
@@ -22,6 +27,12 @@ calc_student_staff_ratio(df, ratio_type = "overall")
 
   One of "overall" (default), "teachers", "administrators", or
   "support". Specifies which staff category to analyze.
+
+- student_col, staff_col:
+
+  Optional exact names of the student-count and staff-count columns.
+  When omitted each is detected from the column names, and the call
+  stops unless exactly one column qualifies.
 
 ## Value
 

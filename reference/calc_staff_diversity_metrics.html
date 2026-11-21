@@ -64,7 +64,12 @@ percentile rankings.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_staff_diversity_metrics</span><span class="op">(</span><span class="va">df</span>, metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"racial"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_staff_diversity_metrics</span><span class="op">(</span></span>
+<span>  <span class="va">df</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"racial"</span><span class="op">)</span>,</span>
+<span>  category_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  count_col <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +84,12 @@ Should contain staff demographic breakdowns with counts.</p></dd>
 <dt id="arg-metrics">metrics<a class="anchor" aria-label="anchor" href="#arg-metrics"></a></dt>
 <dd><p>Character vector specifying which diversity metrics to calculate.
 Options: "racial" (default), "gender", or both c("racial", "gender").</p></dd>
+
+
+<dt id="arg-category-col-count-col">category_col, count_col<a class="anchor" aria-label="anchor" href="#arg-category-col-count-col"></a></dt>
+<dd><p>Optional exact names of the demographic
+category column and the staff count column. When omitted each is detected
+from the column names, and the call stops unless exactly one qualifies.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -10,7 +10,10 @@ indices with trend detection.
 analyze_retention_patterns(
   df_list,
   by_subgroup = TRUE,
-  rate_scale = c("percent", "fraction")
+  rate_scale = c("percent", "fraction"),
+  retention_col = NULL,
+  turnover_col = NULL,
+  subgroup_col = NULL
 )
 ```
 
@@ -33,6 +36,11 @@ analyze_retention_patterns(
   Units of the supplied retention and turnover columns: `"percent"`
   (default, 0-100) or `"fraction"` (0-1). Callers must establish units
   from their source; unknown units are rejected.
+
+- retention_col, turnover_col, subgroup_col:
+
+  Optional exact column names. When omitted each is detected from the
+  column names, and the call stops if more than one column qualifies.
 
 ## Value
 
