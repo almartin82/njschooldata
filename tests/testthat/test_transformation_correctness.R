@@ -1050,14 +1050,14 @@ test_that("enr_grade_aggs separates K, PK, and HS correctly", {
 # =============================================================================
 
 test_that("process_grate normalizes grad_rate to 0-1 scale", {
-  # When all values <= 1, they should be multiplied by 100 then divided by 100
-  # (resulting in same values)
+  # The 2024 workbook publishes percentage points; this API probe's 85%
+  # agrees with its 85 graduates / 100 cohort, independent of slice size.
   df <- data.frame(
     county_id = "01", county_name = "ATLANTIC",
     district_id = "0100", district_name = "TEST",
     school_id = "001", school_name = "TEST SCH",
     group = "Schoolwide",
-    grad_rate = "0.85",
+    grad_rate = "85",
     cohort_count = "100",
     graduated_count = "85",
     end_year = 2024,

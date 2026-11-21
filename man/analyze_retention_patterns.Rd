@@ -4,7 +4,11 @@
 \alias{analyze_retention_patterns}
 \title{Analyze Staff Retention Patterns}
 \usage{
-analyze_retention_patterns(df_list, by_subgroup = TRUE)
+analyze_retention_patterns(
+  df_list,
+  by_subgroup = TRUE,
+  rate_scale = c("percent", "fraction")
+)
 }
 \arguments{
 \item{df_list}{A named list of data frames from different years. Each element
@@ -14,6 +18,10 @@ and retention/turnover metrics.}
 
 \item{by_subgroup}{Logical; if TRUE (default), analyze retention patterns
 by demographic subgroups. If FALSE, aggregate across all staff.}
+
+\item{rate_scale}{Units of the supplied retention and turnover columns:
+\code{"percent"} (default, 0-100) or \code{"fraction"} (0-1).
+Callers must establish units from their source; unknown units are rejected.}
 }
 \value{
 Data frame with:
@@ -32,6 +40,11 @@ Analyzes staff retention patterns across multiple years and demographic subgroup
 Calculates retention rates, turnover rates, and stability indices with trend detection.
 }
 \details{
+This analysis accepts caller-supplied data, so no publisher or vintage can
+establish its units. The default is percentage points, as documented for
+NJDOE SPR retention_pct columns. Fractional inputs require explicit opt-in.
+Values outside the declared scale become NA; magnitude never selects units.
+
 The stability index is calculated as:
 \deqn{stability = (retention_rate + (100 - turnover_rate)) / 2}
 

@@ -10,6 +10,10 @@
 #' Process graduation rate data
 #'
 #' Does cleanup of the grad rate ('grate') file.
+#' Rates use the registered workbook vintage: ACGR2012_gradrate.xls's 2011
+#' column has Excel format 0.00% (fraction); the 2012-2025 four-year files
+#' publish percentage points, corroborated by their graduate/cohort counts.
+#' Unknown rate vintages stop. See docs/percent-scale-evidence.md.
 #'
 #' @param df The output of get_raw_grad_file
 #' @param end_year A school year. Year is the end of the academic year - eg 2006-07
@@ -197,10 +201,7 @@ process_grate <- function(df, end_year) {
   df$district_id <- ifelse(df$district_id == "9999.000000", "9999", df$district_id)
 
   if ("grad_rate" %in% names(df)) {
-    if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {
-      df$grad_rate <- df$grad_rate * 100
-    }
-    df$grad_rate <- df$grad_rate / 100 %>% round(2)
+    df$grad_rate <- graduation_rate_fraction(df$grad_rate, end_year)
   }
 
   return(df)
@@ -277,6 +278,9 @@ process_grad_count <- function(df, end_year) {
 #' columns. This function ensures \code{grad_rate} contains the rate
 #' matching the requested methodology, and preserves the other rate
 #' as \code{four_yr_grad_rate} or \code{five_yr_grad_rate}.
+#' The registered 2012-2019 dual-cohort workbooks publish both rates in
+#' percentage points, including values below one. Conversion is unconditional;
+#' unknown vintages stop and out-of-range source rates become NA.
 #'
 #' @param df Output of get_grad_rate (already passed through process_grate)
 #' @param end_year Ending academic year
@@ -313,11 +317,7 @@ process_grad_rate <- function(df, end_year, methodology) {
         )
       )
 
-      # Normalize scale: if values are > 1, they're percentages
-      if (all(df$grad_rate <= 1 | is.na(df$grad_rate))) {
-        df$grad_rate <- df$grad_rate * 100
-      }
-      df$grad_rate <- df$grad_rate / 100 %>% round(2)
+      df$grad_rate <- graduation_rate_fraction(df$grad_rate, end_year, five_year = TRUE)
 
       # Drop the raw 5yr column now that it's in grad_rate
       df[[five_yr_col]] <- NULL
@@ -347,15 +347,26 @@ process_grad_rate <- function(df, end_year, methodology) {
           as.character(df[[five_yr_col[1]]])
         )
       )
-      if (all(df$five_yr_grad_rate <= 1 | is.na(df$five_yr_grad_rate))) {
-        df$five_yr_grad_rate <- df$five_yr_grad_rate * 100
+      df$five_yr_grad_rate <- graduation_rate_fraction(
+        df$five_yr_grad_rate, end_year, five_year = TRUE
+      )
+      if (five_yr_col[1] != "five_yr_grad_rate") {
+        df[[five_yr_col[1]]] <- NULL
       }
-      df$five_yr_grad_rate <- df$five_yr_grad_rate / 100 %>% round(2)
-      df[[five_yr_col[1]]] <- NULL
     }
   }
 
   df
+}
+
+graduation_rate_fraction <- function(x, end_year, five_year = FALSE) {
+  known_years <- if (five_year) 2012:2019 else 2011:2025
+  if (length(end_year) != 1L || is.na(end_year) || !end_year %in% known_years) {
+    stop("Unknown graduation rate scale for end_year ", end_year, call. = FALSE)
+  }
+  divisor <- if (!five_year && end_year == 2011) 1 else 100
+  x[!is.finite(x) | x < 0 | x > divisor] <- NA_real_
+  x / divisor
 }
 
 

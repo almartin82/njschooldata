@@ -17,5 +17,9 @@ Cleaned graduation data frame
 }
 \description{
 Does cleanup of the grad rate ('grate') file.
+Rates use the registered workbook vintage: ACGR2012_gradrate.xls's 2011
+column has Excel format 0.00% (fraction); the 2012-2025 four-year files
+publish percentage points, corroborated by their graduate/cohort counts.
+Unknown rate vintages stop. See docs/percent-scale-evidence.md.
 }
 \keyword{internal}

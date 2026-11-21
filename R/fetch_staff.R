@@ -381,6 +381,9 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #'   and retention/turnover metrics.
 #' @param by_subgroup Logical; if TRUE (default), analyze retention patterns
 #'   by demographic subgroups. If FALSE, aggregate across all staff.
+#' @param rate_scale Units of the supplied retention and turnover columns:
+#'   \code{"percent"} (default, 0-100) or \code{"fraction"} (0-1).
+#'   Callers must establish units from their source; unknown units are rejected.
 #'
 #' @return Data frame with:
 #'   \itemize{
@@ -394,6 +397,11 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #'   }
 #'
 #' @details
+#' This analysis accepts caller-supplied data, so no publisher or vintage can
+#' establish its units. The default is percentage points, as documented for
+#' NJDOE SPR retention_pct columns. Fractional inputs require explicit opt-in.
+#' Values outside the declared scale become NA; magnitude never selects units.
+#'
 #' The stability index is calculated as:
 #' \deqn{stability = (retention_rate + (100 - turnover_rate)) / 2}
 #'
@@ -429,7 +437,10 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #' # Analyze retention patterns
 #' patterns <- analyze_retention_patterns(df_list, by_subgroup = TRUE)
 #' }
-analyze_retention_patterns <- function(df_list, by_subgroup = TRUE) {
+analyze_retention_patterns <- function(df_list, by_subgroup = TRUE,
+                                       rate_scale = c("percent", "fraction")) {
+
+  rate_scale <- match.arg(rate_scale)
 
   # Validate input
   if (!is.list(df_list) || is.data.frame(df_list)) {
@@ -512,19 +523,13 @@ analyze_retention_patterns <- function(df_list, by_subgroup = TRUE) {
     combined[[retention_col]] <- as.numeric(combined[[retention_col]])
     combined[[turnover_col]] <- as.numeric(combined[[turnover_col]])
 
-    # Some data might have counts, others might have percentages
-    # Check if values are already percentages (0-100) or need conversion
-    if (max(combined[[retention_col]], na.rm = TRUE) <= 1) {
-      combined$retention_rate <- combined[[retention_col]] * 100
-    } else {
-      combined$retention_rate <- combined[[retention_col]]
+    limit <- if (rate_scale == "fraction") 1 else 100
+    to_percent <- function(x) {
+      x[!is.finite(x) | x < 0 | x > limit] <- NA_real_
+      x * (100 / limit)
     }
-
-    if (max(combined[[turnover_col]], na.rm = TRUE) <= 1) {
-      combined$turnover_rate <- combined[[turnover_col]] * 100
-    } else {
-      combined$turnover_rate <- combined[[turnover_col]]
-    }
+    combined$retention_rate <- to_percent(combined[[retention_col]])
+    combined$turnover_rate <- to_percent(combined[[turnover_col]])
 
   } else {
     # If columns not found, set to NA with warning
