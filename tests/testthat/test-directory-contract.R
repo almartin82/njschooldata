@@ -179,6 +179,71 @@
   here + sum(vapply(as.list(expr)[-1], .dc_count_symbol_calls, integer(1), symbol))
 }
 
+# Row screening (directory-contract/v2, STANDARD D-b). An adapter that withholds
+# a defective source row one row at a time records it twice: the rows as
+# attr(result, "rejected_source_rows") and their number as
+# meta$quality$rejected_source_row_count. The count is what a consumer reading
+# meta sees; without it a directory that quietly lost rows reads as clean.
+.dc_screening_tokens <- c("rejected_source_rows", "rejected_source_row_count")
+
+# A package screens rows when any of its functions names either token, as a
+# formal, a symbol or a string constant. Read from the code, not the fixture: a
+# fixture captured before the package began screening carries neither record
+# and would otherwise pass forever.
+.dc_function_screens_rows <- function(fn) {
+  if (!is.function(fn) || is.primitive(fn)) return(FALSE)
+  text <- paste(deparse(fn), collapse = "\n")
+  any(vapply(.dc_screening_tokens, grepl, logical(1), x = text, fixed = TRUE))
+}
+
+.dc_namespace_screens_rows <- function(ns) {
+  for (nm in ls(ns, all.names = TRUE)) {
+    if (.dc_function_screens_rows(get0(nm, envir = ns, inherits = FALSE))) {
+      return(TRUE)
+    }
+  }
+  FALSE
+}
+
+# NULL when the result's rejection record is consistent, else the reason.
+.dc_rejection_record_problem <- function(result, screens) {
+  count <- result$meta$quality$rejected_source_row_count
+  rows <- attr(result, "rejected_source_rows", exact = TRUE)
+  if (is.null(count)) {
+    if (!is.null(rows)) {
+      return(paste("attr(result, \"rejected_source_rows\") is set but",
+                   "meta$quality$rejected_source_row_count is absent"))
+    }
+    if (isTRUE(screens)) {
+      return(paste("the package screens source rows but",
+                   "meta$quality$rejected_source_row_count is absent; emit it",
+                   "on every call (0 when nothing was withheld) and recapture",
+                   "the fixture"))
+    }
+    return(NULL)
+  }
+  if (!is.numeric(count) || length(count) != 1L || is.na(count) ||
+      count < 0 || count != round(count)) {
+    return("meta$quality$rejected_source_row_count must be one non-negative integer")
+  }
+  if (is.null(rows)) {
+    if (count > 0) {
+      return(paste0("meta$quality$rejected_source_row_count is ", count,
+                    " but no attr(result, \"rejected_source_rows\") names the rows"))
+    }
+    return(NULL)
+  }
+  if (!is.data.frame(rows)) {
+    return("attr(result, \"rejected_source_rows\") must be a data frame")
+  }
+  if (nrow(rows) != count) {
+    return(paste0("meta$quality$rejected_source_row_count is ", count, " but ",
+                  "attr(result, \"rejected_source_rows\") holds ", nrow(rows),
+                  " rows"))
+  }
+  NULL
+}
+
 .dc_with_namespace_binding <- function(name, value, code) {
   ns <- asNamespace(.dc_pkg)
   if (!exists(name, envir = ns, inherits = FALSE)) {
@@ -434,6 +499,36 @@ test_that("directory-contract: constructed live-only signature semantics", {
     .dc_directory_signature_problem(NULL),
     fixed = TRUE
   ))
+})
+
+test_that("directory-contract: constructed row-screening record semantics", {
+  screened <- function(count, rows) {
+    result <- list(meta = list(quality = list(rejected_source_row_count = count)))
+    if (!is.null(rows)) attr(result, "rejected_source_rows") <- rows
+    result
+  }
+  two_rows <- data.frame(reason = c("invalid_id", "missing_name"),
+                         stringsAsFactors = FALSE)
+  no_count <- list(meta = list(quality = list()))
+  rows_no_count <- no_count
+  attr(rows_no_count, "rejected_source_rows") <- two_rows
+
+  expect_identical(.dc_rejection_record_problem(screened(0L, NULL), TRUE), NULL)
+  expect_identical(.dc_rejection_record_problem(screened(2L, two_rows), TRUE), NULL)
+  expect_identical(.dc_rejection_record_problem(no_count, FALSE), NULL)
+  expect_false(is.null(.dc_rejection_record_problem(no_count, TRUE)))
+  expect_false(is.null(.dc_rejection_record_problem(rows_no_count, FALSE)))
+  expect_false(is.null(.dc_rejection_record_problem(screened(3L, two_rows), TRUE)))
+  expect_false(is.null(.dc_rejection_record_problem(screened(1L, NULL), TRUE)))
+  expect_false(is.null(.dc_rejection_record_problem(screened(-1L, NULL), TRUE)))
+
+  expect_true(.dc_function_screens_rows(function(x) {
+    attr(x, "rejected_source_rows") <- data.frame()
+    x
+  }))
+  expect_true(.dc_function_screens_rows(function(rejected_source_row_count = NULL) NULL))
+  expect_false(.dc_function_screens_rows(function(x) x))
+  expect_false(.dc_function_screens_rows(sum))
 })
 
 test_that("directory-contract: top-level shape", {
@@ -855,6 +950,13 @@ test_that("directory-contract: quality invariants (integrity zeros are non-waiva
     expect_true(abs(as.numeric(nc[[ro]]) - expected) < 5e-5,
       info = paste("named_coverage mismatch for", ro))
   }
+})
+
+test_that("directory-contract: a row-screening package publishes quality.rejected_source_row_count", {
+  skip_if(is.null(.dc_snap), "fixture missing")
+  screens <- .dc_namespace_screens_rows(asNamespace(.dc_pkg))
+  problem <- .dc_rejection_record_problem(.dc_snap, screens)
+  expect_identical(problem, NULL, info = problem)
 })
 
 test_that("directory-contract: declared miss and non-empty guarantees", {
