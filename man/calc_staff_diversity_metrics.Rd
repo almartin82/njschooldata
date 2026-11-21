@@ -4,7 +4,12 @@
 \alias{calc_staff_diversity_metrics}
 \title{Calculate Staff Diversity Metrics}
 \usage{
-calc_staff_diversity_metrics(df, metrics = c("racial"))
+calc_staff_diversity_metrics(
+  df,
+  metrics = c("racial"),
+  category_col = NULL,
+  count_col = NULL
+)
 }
 \arguments{
 \item{df}{A data frame from \code{\link{fetch_staff_demographics}}.
@@ -12,6 +17,10 @@ Should contain staff demographic breakdowns with counts.}
 
 \item{metrics}{Character vector specifying which diversity metrics to calculate.
 Options: "racial" (default), "gender", or both c("racial", "gender").}
+
+\item{category_col, count_col}{Optional exact names of the demographic
+category column and the staff count column. When omitted each is detected
+from the column names, and the call stops unless exactly one qualifies.}
 }
 \value{
 Data frame with:

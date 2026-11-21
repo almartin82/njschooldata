@@ -22,6 +22,37 @@ utils::globalVariables(
 # Student-Staff Ratio Analysis
 # -----------------------------------------------------------------------------
 
+# Resolve one input column for the staff analysis helpers.
+#
+# `explicit` (a caller-supplied column name) must exist exactly. Otherwise the
+# auto-detected `candidates` must be exactly one column: before 2026-11-21 the
+# helpers took the first regex hit, so an input carrying, say, both a
+# teacher count and a teacher percentage silently used whichever came first.
+# `required = FALSE` returns NULL when nothing is detected.
+staff_resolve_col <- function(df, explicit, candidates, what, arg,
+                              required = TRUE) {
+  if (!is.null(explicit)) {
+    if (!(is.character(explicit) && length(explicit) == 1L &&
+          explicit %in% names(df))) {
+      stop("`", arg, "` must name one column of the input; '",
+           paste(explicit, collapse = ", "), "' is not a column.", call. = FALSE)
+    }
+    return(explicit)
+  }
+  candidates <- unique(candidates)
+  if (length(candidates) > 1L) {
+    stop("Cannot tell which column holds ", what, ": ",
+         paste(candidates, collapse = ", "), ". Name it with `", arg, "`.",
+         call. = FALSE)
+  }
+  if (length(candidates) == 0L) {
+    if (!required) return(NULL)
+    stop("Cannot find ", what, " column in input data. Name it with `", arg,
+         "`.", call. = FALSE)
+  }
+  candidates
+}
+
 #' Calculate and Analyze Student-Staff Ratios
 #'
 #' Calculates student-to-staff ratios with categorization and state comparisons.
@@ -29,6 +60,9 @@ utils::globalVariables(
 #'
 #' @param df A data frame from \code{\link{fetch_staff_ratios}} or similar.
 #'   Should contain staff count and student enrollment columns.
+#' @param student_col,staff_col Optional exact names of the student-count and
+#'   staff-count columns. When omitted each is detected from the column names,
+#'   and the call stops unless exactly one column qualifies.
 #' @param ratio_type One of "overall" (default), "teachers", "administrators",
 #'   or "support". Specifies which staff category to analyze.
 #'
@@ -58,7 +92,8 @@ utils::globalVariables(
 #'   dplyr::arrange(dplyr::desc(student_staff_ratio)) %>%
 #'   dplyr::select(school_name, student_staff_ratio, ratio_category)
 #' }
-calc_student_staff_ratio <- function(df, ratio_type = "overall") {
+calc_student_staff_ratio <- function(df, ratio_type = "overall",
+                                     student_col = NULL, staff_col = NULL) {
 
   # Validate ratio_type
   valid_types <- c("overall", "teachers", "administrators", "support")
@@ -70,10 +105,8 @@ calc_student_staff_ratio <- function(df, ratio_type = "overall") {
   student_cols <- grep("student|enrollment", names(df), value = TRUE, ignore.case = TRUE)
   student_cols <- student_cols[!grepl("staff|teacher|admin", student_cols, ignore.case = TRUE)]
 
-  if (length(student_cols) == 0) {
-    stop("Cannot find student enrollment column in input data")
-  }
-  student_col <- student_cols[1]
+  student_col <- staff_resolve_col(df, student_col, student_cols,
+                                   "student enrollment", "student_col")
 
   # Find appropriate staff column based on ratio_type
   if (ratio_type == "overall") {
@@ -90,10 +123,8 @@ calc_student_staff_ratio <- function(df, ratio_type = "overall") {
     staff_cols <- staff_cols[!grepl("teacher|admin|student", staff_cols, ignore.case = TRUE)]
   }
 
-  if (length(staff_cols) == 0) {
-    stop(paste("Cannot find", ratio_type, "staff column in input data"))
-  }
-  staff_col <- staff_cols[1]
+  staff_col <- staff_resolve_col(df, staff_col, staff_cols,
+                                 paste(ratio_type, "staff"), "staff_col")
 
   # Ensure numeric
   df[[student_col]] <- as.numeric(df[[student_col]])
@@ -155,6 +186,9 @@ calc_student_staff_ratio <- function(df, ratio_type = "overall") {
 #'
 #' @param df A data frame from \code{\link{fetch_staff_demographics}}.
 #'   Should contain staff demographic breakdowns with counts.
+#' @param category_col,count_col Optional exact names of the demographic
+#'   category column and the staff count column. When omitted each is detected
+#'   from the column names, and the call stops unless exactly one qualifies.
 #' @param metrics Character vector specifying which diversity metrics to calculate.
 #'   Options: "racial" (default), "gender", or both c("racial", "gender").
 #'
@@ -196,7 +230,8 @@ calc_student_staff_ratio <- function(df, ratio_type = "overall") {
 #'   dplyr::arrange(dplyr::desc(diversity_index)) %>%
 #'   dplyr::select(school_name, diversity_index, diversity_quintile)
 #' }
-calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
+calc_staff_diversity_metrics <- function(df, metrics = c("racial"),
+                                         category_col = NULL, count_col = NULL) {
 
   # Validate metrics
   valid_metrics <- c("racial", "gender")
@@ -212,10 +247,8 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
   category_cols <- grep("subgroup|category|group|demographic", names(df),
                         value = TRUE, ignore.case = TRUE)
 
-  if (length(category_cols) == 0) {
-    stop("Cannot find demographic category column in input data")
-  }
-  category_col <- category_cols[1]
+  category_col <- staff_resolve_col(df, category_col, category_cols,
+                                    "demographic category", "category_col")
 
   # Find count column
   preferred_count_cols <- c(
@@ -233,10 +266,8 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
   }
   count_cols <- count_cols[!grepl("student|enrollment", count_cols, ignore.case = TRUE)]
 
-  if (length(count_cols) == 0) {
-    stop("Cannot find staff count column in input data")
-  }
-  count_col <- count_cols[1]
+  count_col <- staff_resolve_col(df, count_col, count_cols, "staff count",
+                                 "count_col")
 
   # Ensure numeric
   df[[count_col]] <- as.numeric(df[[count_col]])
@@ -381,6 +412,9 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #'   and retention/turnover metrics.
 #' @param by_subgroup Logical; if TRUE (default), analyze retention patterns
 #'   by demographic subgroups. If FALSE, aggregate across all staff.
+#' @param retention_col,turnover_col,subgroup_col Optional exact column
+#'   names. When omitted each is detected from the column names, and the call
+#'   stops if more than one column qualifies.
 #' @param rate_scale Units of the supplied retention and turnover columns:
 #'   \code{"percent"} (default, 0-100) or \code{"fraction"} (0-1).
 #'   Callers must establish units from their source; unknown units are rejected.
@@ -438,7 +472,10 @@ calc_staff_diversity_metrics <- function(df, metrics = c("racial")) {
 #' patterns <- analyze_retention_patterns(df_list, by_subgroup = TRUE)
 #' }
 analyze_retention_patterns <- function(df_list, by_subgroup = TRUE,
-                                       rate_scale = c("percent", "fraction")) {
+                                       rate_scale = c("percent", "fraction"),
+                                       retention_col = NULL,
+                                       turnover_col = NULL,
+                                       subgroup_col = NULL) {
 
   rate_scale <- match.arg(rate_scale)
 
@@ -470,8 +507,12 @@ analyze_retention_patterns <- function(df_list, by_subgroup = TRUE,
                         names(combined), value = TRUE, ignore.case = TRUE)
 
   # Use best matching columns
-  retention_col <- if (length(retention_cols) > 0) retention_cols[1] else NULL
-  turnover_col <- if (length(turnover_cols) > 0) turnover_cols[1] else NULL
+  retention_col <- staff_resolve_col(combined, retention_col, retention_cols,
+                                     "the retention rate", "retention_col",
+                                     required = FALSE)
+  turnover_col <- staff_resolve_col(combined, turnover_col, turnover_cols,
+                                    "the turnover rate", "turnover_col",
+                                    required = FALSE)
 
   # If not found, try to calculate from other columns
   if (is.null(retention_col) || is.null(turnover_col)) {
@@ -500,10 +541,11 @@ analyze_retention_patterns <- function(df_list, by_subgroup = TRUE,
     subgroup_cols <- grep("subgroup|group|demographic|category",
                           names(combined), value = TRUE, ignore.case = TRUE)
 
-    if (length(subgroup_cols) == 0) {
+    if (is.null(subgroup_col) && length(subgroup_cols) == 0) {
       stop("Cannot find subgroup column in data. Set by_subgroup = FALSE for aggregate analysis.")
     }
-    subgroup_col <- subgroup_cols[1]
+    subgroup_col <- staff_resolve_col(combined, subgroup_col, subgroup_cols,
+                                      "the subgroup", "subgroup_col")
 
     # Group by location and subgroup
     group_cols <- c("year", location_cols, subgroup_col)

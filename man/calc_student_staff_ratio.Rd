@@ -4,7 +4,12 @@
 \alias{calc_student_staff_ratio}
 \title{Calculate and Analyze Student-Staff Ratios}
 \usage{
-calc_student_staff_ratio(df, ratio_type = "overall")
+calc_student_staff_ratio(
+  df,
+  ratio_type = "overall",
+  student_col = NULL,
+  staff_col = NULL
+)
 }
 \arguments{
 \item{df}{A data frame from \code{\link{fetch_staff_ratios}} or similar.
@@ -12,6 +17,10 @@ Should contain staff count and student enrollment columns.}
 
 \item{ratio_type}{One of "overall" (default), "teachers", "administrators",
 or "support". Specifies which staff category to analyze.}
+
+\item{student_col, staff_col}{Optional exact names of the student-count and
+staff-count columns. When omitted each is detected from the column names,
+and the call stops unless exactly one column qualifies.}
 }
 \value{
 Data frame with original columns plus:
