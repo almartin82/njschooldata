@@ -96,7 +96,7 @@
 
 .registry_artifact_years <- function(a) {
   sel <- a$selectors
-  for (key in c("end_year", "year", "school_year", "key", "term_year")) {
+  for (key in c("end_year", "workbook_year", "year", "school_year", "key", "term_year")) {
     if (!is.null(sel[[key]])) {
       years <- unlist(lapply(.registry_strings(sel[[key]]), .registry_year_of))
       if (length(years)) return(sort(unique(years)))
@@ -236,11 +236,19 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
     files <- held[held$family == f & held$end_year == y, ]
     ids <- unique(files$source_id[!is.na(files$source_id)])
     if (nrow(claim) && !is.null(sources) && nrow(sources)) {
-      named <- unique(unlist(lapply(unique(claim$fetcher), function(fetcher) {
-        .registry_fetcher_source(sources, f, y, fetcher)
+      # A source naming the cell's fetcher outranks a file that only shares its
+      # year. Decided per fetcher, so a second fetcher serving the same family
+      # and year (fetch_frl beside fetch_enr) never erases the first's sources.
+      fetchers <- unique(claim$fetcher)
+      named <- lapply(fetchers, function(fetcher) .registry_fetcher_source(sources, f, y, fetcher))
+      picked <- unique(unlist(lapply(seq_along(fetchers), function(k) {
+        mine <- named[[k]]
+        # A fetcher no source names keeps the year's files, less those another
+        # fetcher of this cell has claimed.
+        if (!length(mine)) return(setdiff(ids, unlist(named[-k])))
+        if (any(ids %in% mine)) intersect(ids, mine) else mine
       })))
-      # A source naming the cell's fetcher outranks a file that only shares its year.
-      if (length(named)) ids <- if (any(ids %in% named)) intersect(ids, named) else named
+      if (length(picked)) ids <- picked
     }
     if (!length(ids)) ids <- NA_character_
     do.call(rbind, lapply(ids, function(id) {
@@ -251,6 +259,12 @@ get_data_registry <- function(family = NULL, end_year = NULL) {
         registered <- registered[!is.na(registered) & nzchar(registered)]
         if (length(registered)) {
           claim <- claim[.registry_fetcher_key(claim$fetcher) %in% .registry_fetcher_key(registered), , drop = FALSE]
+        } else {
+          # An unregistered source is not credited with a fetcher that another
+          # source of this cell names.
+          taken <- sources$fetcher[sources$source_id %in% setdiff(ids, id) & sources$family == f]
+          taken <- taken[!is.na(taken) & nzchar(taken)]
+          claim <- claim[!.registry_fetcher_key(claim$fetcher) %in% .registry_fetcher_key(taken), , drop = FALSE]
         }
       }
       mine <- if (is.na(id)) files else files[!is.na(files$source_id) & files$source_id == id, ]
