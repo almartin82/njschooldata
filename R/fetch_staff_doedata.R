@@ -588,7 +588,13 @@ parse_certificated_modern <- function(path, sheet, end_year) {
   pick <- function(syns) {
     hit <- which(lower %in% syns)
     if (length(hit) == 0) return(NULL)
-    raw[[hit[1]]]
+    # Two synonyms of one field in the same sheet must not resolve by column
+    # order (first-hit pick before 2026-11-21).
+    if (length(hit) > 1L) {
+      stop("Ambiguous certificated-staff columns in ", basename(path), ": ",
+           paste(names(raw)[hit], collapse = ", "), call. = FALSE)
+    }
+    raw[[hit]]
   }
   resolved <- lapply(.certificated_modern_synonyms, pick)
 
