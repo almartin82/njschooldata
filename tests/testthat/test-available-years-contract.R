@@ -32,7 +32,12 @@ test_that("finance year helper preserves its vector shape", {
 
 test_that("assessment requires explicit selectors", {
   expect_error(fetch_parcc(2024), 'argument "subj" is missing, with no default')
-  expect_error(get_available_years("assessment"), "coverage not yet declared")
+  # Assessment years were declared in 3b555c75 from the PARCC/NJSLA source
+  # registry; no statewide test was given in spring 2020 or 2021.
+  years <- get_available_years("assessment")
+  expect_identical(years, get_source_years("parcc"))
+  expect_false(any(c(2020L, 2021L) %in% years))
+  expect_true(all(c(2015L, 2019L, 2022L) %in% years))
 })
 
 test_that("the contract checker can fail", {
