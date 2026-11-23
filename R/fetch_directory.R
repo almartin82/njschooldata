@@ -881,6 +881,7 @@ directory_live_acquire <- function() {
     retrieved_at = retrieved_at,
     rejected_source_row_count = NROW(rejected)
   )
+  meta <- nj_directory_add_rejection_evidence(meta, rejected)
 
   out <- attach_source_results(
     list(entities = entities, roles = roles, meta = meta),
@@ -1039,6 +1040,7 @@ build_directory_from_spr <- function(
     retrieved_at = retrieved_at,
     rejected_source_row_count = NROW(rejected)
   )
+  meta <- nj_directory_add_rejection_evidence(meta, rejected, spr = TRUE)
   out <- attach_source_results(
     list(entities = entities, roles = roles, meta = meta),
     source_records

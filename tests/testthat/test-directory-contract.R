@@ -262,6 +262,116 @@
   FALSE
 }
 
+.dc_id_scheme_valid <- function(x) {
+  if (is.character(x) && length(x) == 1L && !is.na(x)) return(nzchar(x))
+  is.list(x) && setequal(names(x), c("description", "school_ids_statewide_unique")) &&
+    is.character(x$description) && length(x$description) == 1L &&
+    !is.na(x$description) && nzchar(x$description) &&
+    is.logical(x$school_ids_statewide_unique) && length(x$school_ids_statewide_unique) == 1L &&
+    !is.na(x$school_ids_statewide_unique)
+}
+
+# Mirror MetadataExtension in the JSON consumer, after serialization.
+.dc_rejected_extension_problem <- function(meta, count) {
+  fail <- function(detail) paste0("rejected-source-rows/v1 evidence: ", detail)
+  wire <- tryCatch(jsonlite::fromJSON(jsonlite::toJSON(
+    meta, auto_unbox = TRUE, na = "null", null = "null"),
+    simplifyVector = FALSE), error = function(e) NULL)
+  if (is.null(wire)) return(fail("meta must survive a JSON roundtrip"))
+  if (is.list(wire[["id_scheme"]]) && !.dc_id_scheme_valid(wire[["id_scheme"]])) {
+    return(fail("invalid id_scheme declaration"))
+  }
+  ext <- if (is.list(wire[["extensions"]]) && is.character(wire[["state"]]) && length(wire[["state"]]) == 1L) {
+    wire[["extensions"]][[wire[["state"]]]]
+  } else NULL
+  if (is.list(ext) && identical(ext[["schema_version"]], "assignment-quarantine/v1") &&
+      any(vapply(ext[["assignments"]], function(key) is.list(key) &&
+        "match" %in% names(key), logical(1)))) {
+    return(fail("match shapes are allowed only in rejected-source-rows/v1"))
+  }
+  if (!is.list(ext) || !identical(ext[["schema_version"]], "rejected-source-rows/v1")) {
+    if (count > 0) return(fail("positive rejected_source_row_count requires serialized assignment evidence"))
+    return(NULL)
+  }
+  array <- function(x) is.list(x) && is.null(names(x)) && length(x) > 0L
+  text <- function(x) is.character(x) && length(x) == 1L &&
+    !is.na(x) && nzchar(trimws(x))
+  native <- function(x) text(x) && identical(x, trimws(x))
+  integer_id <- function(x) is.numeric(x) && length(x) == 1L &&
+    !is.na(x) && is.finite(x) && x >= 1 && x == floor(x)
+  rows <- ext[["rejected_rows"]]
+  if (!array(rows) || length(rows) != count) return(fail("rejected_rows count must match rejected_source_row_count"))
+  row_ids <- numeric()
+  for (row in rows) {
+    if (!is.list(row) || is.null(names(row)) || !integer_id(row[["source_row"]]) ||
+        !text(row[["reason"]])) return(fail("each rejected row requires a positive integer source_row and nonempty reason"))
+    row_ids <- c(row_ids, row[["source_row"]])
+  }
+  if (anyDuplicated(row_ids)) return(fail("source_row values must be unique"))
+  if (!array(ext[["assignments"]])) return(fail("assignments must be a nonempty array"))
+  keys <- list()
+  covered <- numeric()
+  quarantined <- ext[["quarantined_assignments"]]
+  if ("quarantined_assignments" %in% names(ext) &&
+      !(is.list(quarantined) && is.null(names(quarantined)))) {
+    return(fail("quarantined_assignments must be an array"))
+  }
+  unique_school_ids <- is.list(wire[["id_scheme"]]) &&
+    identical(wire[["id_scheme"]][["school_ids_statewide_unique"]], TRUE)
+  all_keys <- c(ext[["assignments"]], quarantined)
+  for (i in seq_along(all_keys)) {
+    key <- all_keys[[i]]
+    is_rejected <- i <= length(ext[["assignments"]])
+    if (!is.list(key) || is.null(names(key)) ||
+        !text(key[["entity_type"]]) || !key[["entity_type"]] %in% .dc_entity_types ||
+        !text(key[["role"]]) || !key[["role"]] %in% .dc_roles ||
+        !text(key[["reason"]])) {
+      return(fail("assignment requires canonical entity_type, role and reason"))
+    }
+    if ("match" %in% names(key)) {
+      shape <- key[["match"]]
+      valid <- text(shape) && switch(shape,
+        district_role = identical(key[["entity_type"]], "school") &&
+          native(key[["district_id"]]) && is.null(key[["school_id"]]),
+        local_school_role = identical(key[["entity_type"]], "school") &&
+          "district_id" %in% names(key) && is.null(key[["district_id"]]) &&
+          native(key[["school_id"]]),
+        unidentified_district_role = identical(key[["entity_type"]], "district") &&
+          "district_id" %in% names(key) && is.null(key[["district_id"]]) &&
+          is.null(key[["school_id"]]),
+        statewide_role = key[["entity_type"]] %in% c("district", "intermediate") &&
+          "district_id" %in% names(key) && is.null(key[["district_id"]]) &&
+          is.null(key[["school_id"]]), FALSE)
+      if (!valid) return(fail("malformed match shape"))
+    } else {
+      if (!(native(key[["district_id"]]) ||
+            (identical(key[["entity_type"]], "school") &&
+             "district_id" %in% names(key) && is.null(key[["district_id"]]) && unique_school_ids))) {
+        return(fail("assignment requires native district_id or declared statewide-unique school_id"))
+      }
+      if (key[["entity_type"]] == "school") {
+        if (!native(key[["school_id"]])) return(fail("school assignment requires native school_id"))
+      } else if (!is.null(key[["school_id"]])) return(fail("non-school assignment must not carry school_id"))
+    }
+    if (!is_rejected) {
+      if ("source_rows" %in% names(key)) return(fail("quarantined_assignments must not carry source_rows"))
+      next
+    }
+    id <- list(key[["entity_type"]], key[["district_id"]], key[["school_id"]], key[["role"]], key[["match"]])
+    if (any(vapply(keys, identical, logical(1), id))) return(fail("assignment keys must be unique"))
+    keys[[length(keys) + 1L]] <- id
+    refs <- key[["source_rows"]]
+    if (!array(refs) || !all(vapply(refs, integer_id, logical(1)))) {
+      return(fail("assignment source_rows must be a nonempty integer array"))
+    }
+    refs <- unlist(refs)
+    if (anyDuplicated(refs) || !all(refs %in% row_ids)) return(fail("assignment source_rows must be unique known rows"))
+    covered <- c(covered, refs)
+  }
+  if (!setequal(covered, row_ids)) return(fail("every rejected row must map to an assignment"))
+  NULL
+}
+
 # NULL when the result's rejection record is consistent, else the reason.
 .dc_rejection_record_problem <- function(result, screens) {
   count <- result$meta$quality$rejected_source_row_count
@@ -280,7 +390,7 @@
     return(NULL)
   }
   if (!is.numeric(count) || length(count) != 1L || is.na(count) ||
-      count < 0 || count != round(count)) {
+      !is.finite(count) || count < 0 || count != round(count)) {
     return("meta$quality$rejected_source_row_count must be one non-negative integer")
   }
   if (is.null(rows)) {
@@ -288,7 +398,7 @@
       return(paste0("meta$quality$rejected_source_row_count is ", count,
                     " but no attr(result, \"rejected_source_rows\") names the rows"))
     }
-    return(NULL)
+    return(.dc_rejected_extension_problem(result$meta, count))
   }
   if (!is.data.frame(rows)) {
     return("attr(result, \"rejected_source_rows\") must be a data frame")
@@ -298,7 +408,7 @@
                   "attr(result, \"rejected_source_rows\") holds ", nrow(rows),
                   " rows"))
   }
-  NULL
+  .dc_rejected_extension_problem(result$meta, count)
 }
 
 .dc_with_namespace_binding <- function(name, value, code) {
@@ -571,7 +681,25 @@ test_that("directory-contract: constructed row-screening record semantics", {
   attr(rows_no_count, "rejected_source_rows") <- two_rows
 
   expect_identical(.dc_rejection_record_problem(screened(0L, NULL), TRUE), NULL)
-  expect_identical(.dc_rejection_record_problem(screened(2L, two_rows), TRUE), NULL)
+  expect_match(.dc_rejection_record_problem(screened(2L, two_rows), TRUE),
+               "positive rejected_source_row_count requires serialized assignment evidence")
+  matching <- screened(2L, two_rows)
+  matching$meta$state <- "fl"
+  matching$meta$extensions <- list(fl = list(
+    schema_version = "rejected-source-rows/v1",
+    rejected_rows = list(list(source_row = 1L, reason = "invalid_id"),
+                         list(source_row = 2L, reason = "missing_name")),
+    assignments = list(list(entity_type = "school", district_id = "01",
+      school_id = "0101", role = "principal", reason = "source row withheld",
+      source_rows = list(1L, 2L)))))
+  expect_identical(.dc_rejection_record_problem(matching, TRUE), NULL)
+  mismatch <- matching
+  mismatch$meta$extensions$fl$rejected_rows <- matching$meta$extensions$fl$rejected_rows[1]
+  expect_match(.dc_rejection_record_problem(mismatch, TRUE), "rejected_rows count")
+  # An unkeyable row must remain an honest hold, never get an invented ID.
+  unkeyable <- screened(1L, data.frame(reason = "missing district id"))
+  expect_match(.dc_rejection_record_problem(unkeyable, TRUE),
+               "positive rejected_source_row_count requires serialized assignment evidence")
   expect_identical(.dc_rejection_record_problem(no_count, FALSE), NULL)
   expect_false(is.null(.dc_rejection_record_problem(no_count, TRUE)))
   expect_false(is.null(.dc_rejection_record_problem(rows_no_count, FALSE)))
@@ -946,7 +1074,7 @@ test_that("directory-contract: meta completeness and version pin", {
   expect_identical(m$state, .dc_state)
   expect_true(is.character(m$retrieved_at) && grepl(.dc_iso8601, m$retrieved_at))
   expect_true(m$source_status %in% .dc_source_statuses)
-  expect_true(is.character(m$id_scheme) && nzchar(m$id_scheme))
+  expect_true(.dc_id_scheme_valid(m$id_scheme))
   expect_true(is.list(m$sources) && length(m$sources) >= 1)
   for (s in m$sources) {
     expect_true(is.character(s$name) && nzchar(s$name))
