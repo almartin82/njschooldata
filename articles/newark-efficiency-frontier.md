@@ -508,5 +508,5 @@ sessionInfo()
 #> [57] cellranger_1.1.0   ragg_1.5.2         hms_1.1.4          evaluate_1.0.5    
 #> [61] knitr_1.52         mgcv_1.9-4         rlang_1.3.0        Rcpp_1.1.2        
 #> [65] glue_1.8.1         vroom_1.7.1        jsonlite_2.0.0     R6_2.6.1          
-#> [69] systemfonts_1.3.3  fs_2.1.0
+#> [69] systemfonts_1.3.4  fs_2.1.0
 ```
