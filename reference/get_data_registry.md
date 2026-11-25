@@ -147,58 +147,58 @@ subset(reg, status == "served")
 #> 134    NJ          finance     2025              state_aid_district_details
 #> 135    NJ          finance     2026              state_aid_district_details
 #> 136    NJ          finance     2027              state_aid_district_details
-#> 137    NJ       graduation     2011 adjusted_cohort_graduation_rate_reports
-#> 138    NJ       graduation     2012 adjusted_cohort_graduation_rate_reports
-#> 139    NJ       graduation     2013 adjusted_cohort_graduation_rate_reports
-#> 140    NJ       graduation     2014 adjusted_cohort_graduation_rate_reports
-#> 141    NJ       graduation     2015 adjusted_cohort_graduation_rate_reports
-#> 142    NJ       graduation     2016 adjusted_cohort_graduation_rate_reports
-#> 143    NJ       graduation     2017 adjusted_cohort_graduation_rate_reports
-#> 144    NJ       graduation     2018 adjusted_cohort_graduation_rate_reports
-#> 145    NJ       graduation     2019 adjusted_cohort_graduation_rate_reports
-#> 146    NJ       graduation     2020 adjusted_cohort_graduation_rate_reports
-#> 147    NJ       graduation     2021 adjusted_cohort_graduation_rate_reports
-#> 148    NJ       graduation     2021     school_performance_reports_database
-#> 149    NJ       graduation     2022 adjusted_cohort_graduation_rate_reports
-#> 150    NJ       graduation     2022     school_performance_reports_database
-#> 151    NJ       graduation     2023 adjusted_cohort_graduation_rate_reports
-#> 152    NJ       graduation     2023     school_performance_reports_database
-#> 153    NJ       graduation     2024 adjusted_cohort_graduation_rate_reports
-#> 154    NJ       graduation     2024     school_performance_reports_database
-#> 155    NJ       graduation     2025 adjusted_cohort_graduation_rate_reports
-#> 156    NJ       graduation     2025     school_performance_reports_database
-#> 157    NJ             sped     2015  idea_618_district_classification_rates
-#> 158    NJ             sped     2015      idea_618_public_reporting_archives
-#> 159    NJ             sped     2016  idea_618_district_classification_rates
-#> 160    NJ             sped     2016      idea_618_public_reporting_archives
-#> 161    NJ             sped     2017  idea_618_district_classification_rates
-#> 162    NJ             sped     2017      idea_618_public_reporting_archives
-#> 163    NJ             sped     2018  idea_618_district_classification_rates
-#> 164    NJ             sped     2018      idea_618_public_reporting_archives
-#> 165    NJ             sped     2019      idea_618_public_reporting_archives
-#> 166    NJ             sped     2020      idea_618_public_reporting_archives
-#> 167    NJ             sped     2021      idea_618_public_reporting_archives
-#> 168    NJ             sped     2022  idea_618_district_classification_rates
-#> 169    NJ             sped     2022       opra_response_iep_counts_by_grade
-#> 170    NJ             sped     2023      idea_618_public_reporting_archives
-#> 171    NJ             sped     2023       opra_response_iep_counts_by_grade
-#> 172    NJ             sped     2024      idea_618_public_reporting_archives
-#> 173    NJ             sped     2024       opra_response_iep_counts_by_grade
-#> 174    NJ             sped     2025      idea_618_public_reporting_archives
-#> 175    NJ             sped     2025       opra_response_iep_counts_by_grade
-#> 176    NJ             sped     2026       opra_response_iep_counts_by_grade
-#> 177    NJ sped_environment     2023            nj_sped_environment_snapshot
-#> 178    NJ sped_environment     2024            nj_sped_environment_snapshot
-#> 179    NJ sped_environment     2025            nj_sped_environment_snapshot
-#> 181    NJ       sped_share     2023                  nj_sped_share_snapshot
-#> 182    NJ       sped_share     2023       opra_response_iep_counts_by_grade
-#> 183    NJ       sped_share     2024                  nj_sped_share_snapshot
-#> 184    NJ       sped_share     2024       opra_response_iep_counts_by_grade
-#> 185    NJ       sped_share     2025                  nj_sped_share_snapshot
-#> 186    NJ       sped_share     2025       opra_response_iep_counts_by_grade
-#> 187    NJ       sped_share     2026       opra_response_iep_counts_by_grade
-#> 190    NJ        stability     2024                   nj_stability_snapshot
-#> 191    NJ        stability     2025                   nj_stability_snapshot
+#> 139    NJ       graduation     2011 adjusted_cohort_graduation_rate_reports
+#> 140    NJ       graduation     2012 adjusted_cohort_graduation_rate_reports
+#> 141    NJ       graduation     2013 adjusted_cohort_graduation_rate_reports
+#> 142    NJ       graduation     2014 adjusted_cohort_graduation_rate_reports
+#> 143    NJ       graduation     2015 adjusted_cohort_graduation_rate_reports
+#> 144    NJ       graduation     2016 adjusted_cohort_graduation_rate_reports
+#> 145    NJ       graduation     2017 adjusted_cohort_graduation_rate_reports
+#> 146    NJ       graduation     2018 adjusted_cohort_graduation_rate_reports
+#> 147    NJ       graduation     2019 adjusted_cohort_graduation_rate_reports
+#> 148    NJ       graduation     2020 adjusted_cohort_graduation_rate_reports
+#> 149    NJ       graduation     2021 adjusted_cohort_graduation_rate_reports
+#> 150    NJ       graduation     2021     school_performance_reports_database
+#> 151    NJ       graduation     2022 adjusted_cohort_graduation_rate_reports
+#> 152    NJ       graduation     2022     school_performance_reports_database
+#> 153    NJ       graduation     2023 adjusted_cohort_graduation_rate_reports
+#> 154    NJ       graduation     2023     school_performance_reports_database
+#> 155    NJ       graduation     2024 adjusted_cohort_graduation_rate_reports
+#> 156    NJ       graduation     2024     school_performance_reports_database
+#> 157    NJ       graduation     2025 adjusted_cohort_graduation_rate_reports
+#> 158    NJ       graduation     2025     school_performance_reports_database
+#> 159    NJ             sped     2015  idea_618_district_classification_rates
+#> 160    NJ             sped     2015      idea_618_public_reporting_archives
+#> 161    NJ             sped     2016  idea_618_district_classification_rates
+#> 162    NJ             sped     2016      idea_618_public_reporting_archives
+#> 163    NJ             sped     2017  idea_618_district_classification_rates
+#> 164    NJ             sped     2017      idea_618_public_reporting_archives
+#> 165    NJ             sped     2018  idea_618_district_classification_rates
+#> 166    NJ             sped     2018      idea_618_public_reporting_archives
+#> 167    NJ             sped     2019      idea_618_public_reporting_archives
+#> 168    NJ             sped     2020      idea_618_public_reporting_archives
+#> 169    NJ             sped     2021      idea_618_public_reporting_archives
+#> 170    NJ             sped     2022  idea_618_district_classification_rates
+#> 171    NJ             sped     2022       opra_response_iep_counts_by_grade
+#> 172    NJ             sped     2023      idea_618_public_reporting_archives
+#> 173    NJ             sped     2023       opra_response_iep_counts_by_grade
+#> 174    NJ             sped     2024      idea_618_public_reporting_archives
+#> 175    NJ             sped     2024       opra_response_iep_counts_by_grade
+#> 176    NJ             sped     2025      idea_618_public_reporting_archives
+#> 177    NJ             sped     2025       opra_response_iep_counts_by_grade
+#> 178    NJ             sped     2026       opra_response_iep_counts_by_grade
+#> 179    NJ sped_environment     2023            nj_sped_environment_snapshot
+#> 180    NJ sped_environment     2024            nj_sped_environment_snapshot
+#> 181    NJ sped_environment     2025            nj_sped_environment_snapshot
+#> 183    NJ       sped_share     2023                  nj_sped_share_snapshot
+#> 184    NJ       sped_share     2023       opra_response_iep_counts_by_grade
+#> 185    NJ       sped_share     2024                  nj_sped_share_snapshot
+#> 186    NJ       sped_share     2024       opra_response_iep_counts_by_grade
+#> 187    NJ       sped_share     2025                  nj_sped_share_snapshot
+#> 188    NJ       sped_share     2025       opra_response_iep_counts_by_grade
+#> 189    NJ       sped_share     2026       opra_response_iep_counts_by_grade
+#> 192    NJ        stability     2024                   nj_stability_snapshot
+#> 193    NJ        stability     2025                   nj_stability_snapshot
 #>     variant status mode                        fetcher n_source_files
 #> 1      <NA> served live fetch_essa_chronic_absenteeism              0
 #> 2      <NA> served live                  fetch_absence              0
@@ -315,18 +315,16 @@ subset(reg, status == "served")
 #> 134    <NA> served live fetch_finance; fetch_state_aid              1
 #> 135    <NA> served live fetch_finance; fetch_state_aid              1
 #> 136    <NA> served live                fetch_state_aid              1
-#> 137    <NA> served live                fetch_grad_rate              0
-#> 138    <NA> served live                fetch_grad_rate              3
-#> 139    <NA> served live                fetch_grad_rate              2
-#> 140    <NA> served live                fetch_grad_rate              2
+#> 139    <NA> served live                fetch_grad_rate              0
+#> 140    <NA> served live                fetch_grad_rate              3
 #> 141    <NA> served live                fetch_grad_rate              2
 #> 142    <NA> served live                fetch_grad_rate              2
 #> 143    <NA> served live                fetch_grad_rate              2
 #> 144    <NA> served live                fetch_grad_rate              2
 #> 145    <NA> served live                fetch_grad_rate              2
-#> 146    <NA> served live                fetch_grad_rate              1
-#> 147    <NA> served live                fetch_grad_rate              1
-#> 148    <NA> served live            fetch_6yr_grad_rate              0
+#> 146    <NA> served live                fetch_grad_rate              2
+#> 147    <NA> served live                fetch_grad_rate              2
+#> 148    <NA> served live                fetch_grad_rate              1
 #> 149    <NA> served live                fetch_grad_rate              1
 #> 150    <NA> served live            fetch_6yr_grad_rate              0
 #> 151    <NA> served live                fetch_grad_rate              1
@@ -335,38 +333,40 @@ subset(reg, status == "served")
 #> 154    <NA> served live            fetch_6yr_grad_rate              0
 #> 155    <NA> served live                fetch_grad_rate              1
 #> 156    <NA> served live            fetch_6yr_grad_rate              0
-#> 157    <NA> served live                     fetch_sped              0
-#> 158    <NA> served live                     fetch_sped              0
+#> 157    <NA> served live                fetch_grad_rate              1
+#> 158    <NA> served live            fetch_6yr_grad_rate              0
 #> 159    <NA> served live                     fetch_sped              0
 #> 160    <NA> served live                     fetch_sped              0
 #> 161    <NA> served live                     fetch_sped              0
 #> 162    <NA> served live                     fetch_sped              0
 #> 163    <NA> served live                     fetch_sped              0
 #> 164    <NA> served live                     fetch_sped              0
-#> 165    <NA> served live                     fetch_sped              1
-#> 166    <NA> served live                     fetch_sped              1
+#> 165    <NA> served live                     fetch_sped              0
+#> 166    <NA> served live                     fetch_sped              0
 #> 167    <NA> served live                     fetch_sped              1
 #> 168    <NA> served live                     fetch_sped              1
-#> 169    <NA> served live            fetch_sped_by_grade              0
-#> 170    <NA> served live                     fetch_sped              0
+#> 169    <NA> served live                     fetch_sped              1
+#> 170    <NA> served live                     fetch_sped              1
 #> 171    <NA> served live            fetch_sped_by_grade              0
 #> 172    <NA> served live                     fetch_sped              0
 #> 173    <NA> served live            fetch_sped_by_grade              0
 #> 174    <NA> served live                     fetch_sped              0
 #> 175    <NA> served live            fetch_sped_by_grade              0
-#> 176    <NA> served live            fetch_sped_by_grade              0
-#> 177    <NA> served live         fetch_sped_environment              0
-#> 178    <NA> served live         fetch_sped_environment              0
+#> 176    <NA> served live                     fetch_sped              0
+#> 177    <NA> served live            fetch_sped_by_grade              0
+#> 178    <NA> served live            fetch_sped_by_grade              0
 #> 179    <NA> served live         fetch_sped_environment              0
-#> 181    <NA> served live               fetch_sped_share              0
-#> 182    <NA> served live               fetch_sped_share              0
+#> 180    <NA> served live         fetch_sped_environment              0
+#> 181    <NA> served live         fetch_sped_environment              0
 #> 183    <NA> served live               fetch_sped_share              0
 #> 184    <NA> served live               fetch_sped_share              0
 #> 185    <NA> served live               fetch_sped_share              0
 #> 186    <NA> served live               fetch_sped_share              0
 #> 187    <NA> served live               fetch_sped_share              0
-#> 190    <NA> served live                fetch_stability              0
-#> 191    <NA> served live                fetch_stability              0
+#> 188    <NA> served live               fetch_sped_share              0
+#> 189    <NA> served live               fetch_sped_share              0
+#> 192    <NA> served live                fetch_stability              0
+#> 193    <NA> served live                fetch_stability              0
 #>     n_derived_files   bytes
 #> 1                 0       0
 #> 2                 0       0
@@ -483,27 +483,25 @@ subset(reg, status == "served")
 #> 134               0 1088273
 #> 135               0   77477
 #> 136               0   77136
-#> 137               0       0
-#> 138               0 1483762
-#> 139               0  373695
-#> 140               0  377170
-#> 141               0  381277
-#> 142               0  399324
-#> 143               0  401845
-#> 144               0  574120
-#> 145               0  608863
-#> 146               0  534643
-#> 147               0  536015
-#> 148               0       0
-#> 149               0  567385
+#> 139               0       0
+#> 140               0 1483762
+#> 141               0  373695
+#> 142               0  377170
+#> 143               0  381277
+#> 144               0  399324
+#> 145               0  401845
+#> 146               0  574120
+#> 147               0  608863
+#> 148               0  534643
+#> 149               0  536015
 #> 150               0       0
-#> 151               0  548651
+#> 151               0  567385
 #> 152               0       0
-#> 153               0  563820
+#> 153               0  548651
 #> 154               0       0
-#> 155               0  563176
+#> 155               0  563820
 #> 156               0       0
-#> 157               0       0
+#> 157               0  563176
 #> 158               0       0
 #> 159               0       0
 #> 160               0       0
@@ -511,12 +509,12 @@ subset(reg, status == "served")
 #> 162               0       0
 #> 163               0       0
 #> 164               0       0
-#> 165               0 7937226
-#> 166               0 5551373
-#> 167               0 7510855
-#> 168               0   91960
-#> 169               0       0
-#> 170               0       0
+#> 165               0       0
+#> 166               0       0
+#> 167               0 7937226
+#> 168               0 5551373
+#> 169               0 7510855
+#> 170               0   91960
 #> 171               0       0
 #> 172               0       0
 #> 173               0       0
@@ -526,15 +524,17 @@ subset(reg, status == "served")
 #> 177               0       0
 #> 178               0       0
 #> 179               0       0
+#> 180               0       0
 #> 181               0       0
-#> 182               0       0
 #> 183               0       0
 #> 184               0       0
 #> 185               0       0
 #> 186               0       0
 #> 187               0       0
-#> 190               0       0
-#> 191               0       0
+#> 188               0       0
+#> 189               0       0
+#> 192               0       0
+#> 193               0       0
 #>                                                                                                                           source_url
 #> 1                                                                                                                               <NA>
 #> 2                                                                                                                               <NA>
@@ -651,27 +651,25 @@ subset(reg, status == "served")
 #> 134                                                                       https://www.nj.gov/education/stateaid/zippedfiles/2425.zip
 #> 135                                                        https://www.nj.gov/education/stateaid/2526/FY26_GBM_District_Details.xlsx
 #> 136                                                        https://www.nj.gov/education/stateaid/2627/FY27_GBM_District_Details.xlsx
-#> 137                                                                                                                             <NA>
-#> 138                                                      https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls
-#> 139                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4Year.xlsx
-#> 140                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4Year.xlsx
-#> 141                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4Year.xlsx
-#> 142                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4Year.xlsx
-#> 143                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4Year.xlsx
-#> 144                                              https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx
-#> 145 https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx
-#> 146  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
-#> 147  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
-#> 148                                                                                                                             <NA>
-#> 149  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
+#> 139                                                                                                                             <NA>
+#> 140                                                      https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2012_gradrate.xls
+#> 141                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2013_4Year.xlsx
+#> 142                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2014_4Year.xlsx
+#> 143                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2015_4Year.xlsx
+#> 144                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2016_4Year.xlsx
+#> 145                                                        https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2017_4Year.xlsx
+#> 146                                              https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2018_4YearGraduation.xlsx
+#> 147 https://www.nj.gov/education/spr/adddata/doc/acgrdocs/ACGR2019_Cohort2019_4-YearAdjustedCohortGraduationRatesByStudentGroup.xlsx
+#> 148  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2020_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
+#> 149  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2021_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
 #> 150                                                                                                                             <NA>
-#> 151           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
+#> 151  https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2022_4YearAdjustedCohortGraduationRatesandCountsbyStudentGroup.xlsx
 #> 152                                                                                                                             <NA>
-#> 153           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
+#> 153           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2023_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
 #> 154                                                                                                                             <NA>
-#> 155           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
+#> 155           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2024_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
 #> 156                                                                                                                             <NA>
-#> 157                                                                                                                             <NA>
+#> 157           https://www.nj.gov/education/spr/adddata/doc/acgrdocs/Cohort2025_4YearAdjustedCohortGraduationRatesbyStudentGroup.xlsx
 #> 158                                                                                                                             <NA>
 #> 159                                                                                                                             <NA>
 #> 160                                                                                                                             <NA>
@@ -679,12 +677,12 @@ subset(reg, status == "served")
 #> 162                                                                                                                             <NA>
 #> 163                                                                                                                             <NA>
 #> 164                                                                                                                             <NA>
-#> 165                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2018.zip
-#> 166                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2019.zip
-#> 167                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip
-#> 168                       https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/Lea_Classification_Pub.xlsx
-#> 169                                                                                                                             <NA>
-#> 170                                                                                                                             <NA>
+#> 165                                                                                                                             <NA>
+#> 166                                                                                                                             <NA>
+#> 167                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2018.zip
+#> 168                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2019.zip
+#> 169                                                      https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2020.zip
+#> 170                       https://www.nj.gov/education/specialed/monitor/ideapublicdata/docs/2022%20data/Lea_Classification_Pub.xlsx
 #> 171                                                                                                                             <NA>
 #> 172                                                                                                                             <NA>
 #> 173                                                                                                                             <NA>
@@ -694,15 +692,17 @@ subset(reg, status == "served")
 #> 177                                                                                                                             <NA>
 #> 178                                                                                                                             <NA>
 #> 179                                                                                                                             <NA>
+#> 180                                                                                                                             <NA>
 #> 181                                                                                                                             <NA>
-#> 182                                                                                                                             <NA>
 #> 183                                                                                                                             <NA>
 #> 184                                                                                                                             <NA>
 #> 185                                                                                                                             <NA>
 #> 186                                                                                                                             <NA>
 #> 187                                                                                                                             <NA>
-#> 190                                                                                                                             <NA>
-#> 191                                                                                                                             <NA>
+#> 188                                                                                                                             <NA>
+#> 189                                                                                                                             <NA>
+#> 192                                                                                                                             <NA>
+#> 193                                                                                                                             <NA>
 #>                              publisher publisher_type
 #> 1   New Jersey Department of Education      state_doe
 #> 2   New Jersey Department of Education      state_doe
@@ -819,8 +819,6 @@ subset(reg, status == "served")
 #> 134 New Jersey Department of Education      state_doe
 #> 135 New Jersey Department of Education      state_doe
 #> 136 New Jersey Department of Education      state_doe
-#> 137 New Jersey Department of Education      state_doe
-#> 138 New Jersey Department of Education      state_doe
 #> 139 New Jersey Department of Education      state_doe
 #> 140 New Jersey Department of Education      state_doe
 #> 141 New Jersey Department of Education      state_doe
@@ -862,15 +860,17 @@ subset(reg, status == "served")
 #> 177 New Jersey Department of Education      state_doe
 #> 178 New Jersey Department of Education      state_doe
 #> 179 New Jersey Department of Education      state_doe
+#> 180 New Jersey Department of Education      state_doe
 #> 181 New Jersey Department of Education      state_doe
-#> 182 New Jersey Department of Education      state_doe
 #> 183 New Jersey Department of Education      state_doe
 #> 184 New Jersey Department of Education      state_doe
 #> 185 New Jersey Department of Education      state_doe
 #> 186 New Jersey Department of Education      state_doe
 #> 187 New Jersey Department of Education      state_doe
-#> 190 New Jersey Department of Education      state_doe
-#> 191 New Jersey Department of Education      state_doe
+#> 188 New Jersey Department of Education      state_doe
+#> 189 New Jersey Department of Education      state_doe
+#> 192 New Jersey Department of Education      state_doe
+#> 193 New Jersey Department of Education      state_doe
 #>                                                                         title
 #> 1   ESSA accountability workbook files, Comprehensive Support and Improvement
 #> 2        School Performance Reports downloadable data, school detail database
@@ -987,8 +987,6 @@ subset(reg, status == "served")
 #> 134                            State aid summaries, district details workbook
 #> 135                            State aid summaries, district details workbook
 #> 136                            State aid summaries, district details workbook
-#> 137                                   Adjusted Cohort Graduation Rate Reports
-#> 138                                   Adjusted Cohort Graduation Rate Reports
 #> 139                                   Adjusted Cohort Graduation Rate Reports
 #> 140                                   Adjusted Cohort Graduation Rate Reports
 #> 141                                   Adjusted Cohort Graduation Rate Reports
@@ -998,7 +996,7 @@ subset(reg, status == "served")
 #> 145                                   Adjusted Cohort Graduation Rate Reports
 #> 146                                   Adjusted Cohort Graduation Rate Reports
 #> 147                                   Adjusted Cohort Graduation Rate Reports
-#> 148      School Performance Reports downloadable data, school detail database
+#> 148                                   Adjusted Cohort Graduation Rate Reports
 #> 149                                   Adjusted Cohort Graduation Rate Reports
 #> 150      School Performance Reports downloadable data, school detail database
 #> 151                                   Adjusted Cohort Graduation Rate Reports
@@ -1007,38 +1005,40 @@ subset(reg, status == "served")
 #> 154      School Performance Reports downloadable data, school detail database
 #> 155                                   Adjusted Cohort Graduation Rate Reports
 #> 156      School Performance Reports downloadable data, school detail database
-#> 157               IDEA Part B public reporting, district classification rates
-#> 158                         IDEA Part B public reporting, yearly archive zips
+#> 157                                   Adjusted Cohort Graduation Rate Reports
+#> 158      School Performance Reports downloadable data, school detail database
 #> 159               IDEA Part B public reporting, district classification rates
 #> 160                         IDEA Part B public reporting, yearly archive zips
 #> 161               IDEA Part B public reporting, district classification rates
 #> 162                         IDEA Part B public reporting, yearly archive zips
 #> 163               IDEA Part B public reporting, district classification rates
 #> 164                         IDEA Part B public reporting, yearly archive zips
-#> 165                         IDEA Part B public reporting, yearly archive zips
+#> 165               IDEA Part B public reporting, district classification rates
 #> 166                         IDEA Part B public reporting, yearly archive zips
 #> 167                         IDEA Part B public reporting, yearly archive zips
-#> 168               IDEA Part B public reporting, district classification rates
-#> 169 Response to OPRA request C255254, active IEP counts by district and grade
-#> 170                         IDEA Part B public reporting, yearly archive zips
+#> 168                         IDEA Part B public reporting, yearly archive zips
+#> 169                         IDEA Part B public reporting, yearly archive zips
+#> 170               IDEA Part B public reporting, district classification rates
 #> 171 Response to OPRA request C255254, active IEP counts by district and grade
 #> 172                         IDEA Part B public reporting, yearly archive zips
 #> 173 Response to OPRA request C255254, active IEP counts by district and grade
 #> 174                         IDEA Part B public reporting, yearly archive zips
 #> 175 Response to OPRA request C255254, active IEP counts by district and grade
-#> 176 Response to OPRA request C255254, active IEP counts by district and grade
-#> 177                                   Local Special Education Profiles IND_5C
-#> 178                                   Local Special Education Profiles IND_5C
+#> 176                         IDEA Part B public reporting, yearly archive zips
+#> 177 Response to OPRA request C255254, active IEP counts by district and grade
+#> 178 Response to OPRA request C255254, active IEP counts by district and grade
 #> 179                                   Local Special Education Profiles IND_5C
-#> 181                 School Performance Reports EnrollmentTrendsByStudentGroup
-#> 182 Response to OPRA request C255254, active IEP counts by district and grade
+#> 180                                   Local Special Education Profiles IND_5C
+#> 181                                   Local Special Education Profiles IND_5C
 #> 183                 School Performance Reports EnrollmentTrendsByStudentGroup
 #> 184 Response to OPRA request C255254, active IEP counts by district and grade
 #> 185                 School Performance Reports EnrollmentTrendsByStudentGroup
 #> 186 Response to OPRA request C255254, active IEP counts by district and grade
-#> 187 Response to OPRA request C255254, active IEP counts by district and grade
-#> 190               School Performance Reports six-year high school persistence
-#> 191               School Performance Reports six-year high school persistence
+#> 187                 School Performance Reports EnrollmentTrendsByStudentGroup
+#> 188 Response to OPRA request C255254, active IEP counts by district and grade
+#> 189 Response to OPRA request C255254, active IEP counts by district and grade
+#> 192               School Performance Reports six-year high school persistence
+#> 193               School Performance Reports six-year high school persistence
 #>          year_basis
 #> 1   school_year_end
 #> 2   school_year_end
@@ -1155,8 +1155,6 @@ subset(reg, status == "served")
 #> 134     fiscal_year
 #> 135     fiscal_year
 #> 136     fiscal_year
-#> 137     cohort_year
-#> 138     cohort_year
 #> 139     cohort_year
 #> 140     cohort_year
 #> 141     cohort_year
@@ -1166,7 +1164,7 @@ subset(reg, status == "served")
 #> 145     cohort_year
 #> 146     cohort_year
 #> 147     cohort_year
-#> 148 school_year_end
+#> 148     cohort_year
 #> 149     cohort_year
 #> 150 school_year_end
 #> 151     cohort_year
@@ -1175,7 +1173,7 @@ subset(reg, status == "served")
 #> 154 school_year_end
 #> 155     cohort_year
 #> 156 school_year_end
-#> 157 school_year_end
+#> 157     cohort_year
 #> 158 school_year_end
 #> 159 school_year_end
 #> 160 school_year_end
@@ -1198,15 +1196,17 @@ subset(reg, status == "served")
 #> 177 school_year_end
 #> 178 school_year_end
 #> 179 school_year_end
+#> 180 school_year_end
 #> 181 school_year_end
-#> 182 school_year_end
 #> 183 school_year_end
 #> 184 school_year_end
 #> 185 school_year_end
 #> 186 school_year_end
 #> 187 school_year_end
-#> 190 school_year_end
-#> 191 school_year_end
+#> 188 school_year_end
+#> 189 school_year_end
+#> 192 school_year_end
+#> 193 school_year_end
 #>                                                          landing_url reason
 #> 1                https://www.nj.gov/education/title1/accountability/   <NA>
 #> 2                         https://www.nj.gov/education/spr/download/   <NA>
@@ -1323,8 +1323,6 @@ subset(reg, status == "served")
 #> 134                           https://www.nj.gov/education/stateaid/   <NA>
 #> 135                           https://www.nj.gov/education/stateaid/   <NA>
 #> 136                           https://www.nj.gov/education/stateaid/   <NA>
-#> 137                        https://www.nj.gov/education/spr/adddata/   <NA>
-#> 138                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 139                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 140                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 141                        https://www.nj.gov/education/spr/adddata/   <NA>
@@ -1334,7 +1332,7 @@ subset(reg, status == "served")
 #> 145                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 146                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 147                        https://www.nj.gov/education/spr/adddata/   <NA>
-#> 148                       https://www.nj.gov/education/spr/download/   <NA>
+#> 148                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 149                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 150                       https://www.nj.gov/education/spr/download/   <NA>
 #> 151                        https://www.nj.gov/education/spr/adddata/   <NA>
@@ -1343,38 +1341,40 @@ subset(reg, status == "served")
 #> 154                       https://www.nj.gov/education/spr/download/   <NA>
 #> 155                        https://www.nj.gov/education/spr/adddata/   <NA>
 #> 156                       https://www.nj.gov/education/spr/download/   <NA>
-#> 157   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
-#> 158                                                             <NA>   <NA>
+#> 157                        https://www.nj.gov/education/spr/adddata/   <NA>
+#> 158                       https://www.nj.gov/education/spr/download/   <NA>
 #> 159   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
 #> 160                                                             <NA>   <NA>
 #> 161   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
 #> 162                                                             <NA>   <NA>
 #> 163   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
 #> 164                                                             <NA>   <NA>
-#> 165                                                             <NA>   <NA>
+#> 165   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
 #> 166                                                             <NA>   <NA>
 #> 167                                                             <NA>   <NA>
-#> 168   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
+#> 168                                                             <NA>   <NA>
 #> 169                                                             <NA>   <NA>
-#> 170                                                             <NA>   <NA>
+#> 170   https://www.nj.gov/education/specialed/monitor/ideapublicdata/   <NA>
 #> 171                                                             <NA>   <NA>
 #> 172                                                             <NA>   <NA>
 #> 173                                                             <NA>   <NA>
 #> 174                                                             <NA>   <NA>
 #> 175                                                             <NA>   <NA>
 #> 176                                                             <NA>   <NA>
-#> 177 https://www.nj.gov/education/specialed/monitor/dataandresources/   <NA>
-#> 178 https://www.nj.gov/education/specialed/monitor/dataandresources/   <NA>
+#> 177                                                             <NA>   <NA>
+#> 178                                                             <NA>   <NA>
 #> 179 https://www.nj.gov/education/specialed/monitor/dataandresources/   <NA>
-#> 181                       https://www.nj.gov/education/spr/download/   <NA>
-#> 182                                                             <NA>   <NA>
+#> 180 https://www.nj.gov/education/specialed/monitor/dataandresources/   <NA>
+#> 181 https://www.nj.gov/education/specialed/monitor/dataandresources/   <NA>
 #> 183                       https://www.nj.gov/education/spr/download/   <NA>
 #> 184                                                             <NA>   <NA>
 #> 185                       https://www.nj.gov/education/spr/download/   <NA>
 #> 186                                                             <NA>   <NA>
-#> 187                                                             <NA>   <NA>
-#> 190                       https://www.nj.gov/education/spr/download/   <NA>
-#> 191                       https://www.nj.gov/education/spr/download/   <NA>
+#> 187                       https://www.nj.gov/education/spr/download/   <NA>
+#> 188                                                             <NA>   <NA>
+#> 189                                                             <NA>   <NA>
+#> 192                       https://www.nj.gov/education/spr/download/   <NA>
+#> 193                       https://www.nj.gov/education/spr/download/   <NA>
 #>     evidence checked_on
 #> 1       <NA>       <NA>
 #> 2       <NA>       <NA>
@@ -1491,8 +1491,6 @@ subset(reg, status == "served")
 #> 134     <NA>       <NA>
 #> 135     <NA>       <NA>
 #> 136     <NA>       <NA>
-#> 137     <NA>       <NA>
-#> 138     <NA>       <NA>
 #> 139     <NA>       <NA>
 #> 140     <NA>       <NA>
 #> 141     <NA>       <NA>
@@ -1534,15 +1532,17 @@ subset(reg, status == "served")
 #> 177     <NA>       <NA>
 #> 178     <NA>       <NA>
 #> 179     <NA>       <NA>
+#> 180     <NA>       <NA>
 #> 181     <NA>       <NA>
-#> 182     <NA>       <NA>
 #> 183     <NA>       <NA>
 #> 184     <NA>       <NA>
 #> 185     <NA>       <NA>
 #> 186     <NA>       <NA>
 #> 187     <NA>       <NA>
-#> 190     <NA>       <NA>
-#> 191     <NA>       <NA>
+#> 188     <NA>       <NA>
+#> 189     <NA>       <NA>
+#> 192     <NA>       <NA>
+#> 193     <NA>       <NA>
 get_data_registry(family = "enrollment", end_year = 2024)
 #>    state     family end_year               source_id variant status mode
 #> 98    NJ enrollment     2024 fall_enrollment_reports    <NA> served live
