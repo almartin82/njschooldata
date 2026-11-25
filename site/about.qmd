@@ -23,7 +23,9 @@ number isn't published by the state, the section says so rather than guessing.
 | NJSLA grades 3–8 and paired achievement gaps | NJ School Performance Reports, ELA/Math performance by test | 2022–2025 |
 | Suspensions, HIB and police notifications | NJ School Performance Reports | 2022–2025 |
 | Teacher experience, retention and staff/student demographics | NJ School Performance Reports | Latest available from 2022–2025 |
-| State aid categories | NJ DOE district aid allocations | Latest retained build year |
+| State aid categories | NJ DOE district aid allocations | 2027 (budget allocation) |
+| Revenue mix | TGES VITSTAT_TOTAL | 2024 fiscal year (2025 guide) |
+| Special-education classification | NJ DOE IDEA 618 District Rates | 2025 publication; native title 2023-24 |
 | Staffing ratios | NJ School Performance Reports | latest year |
 
 ## How to read the comparisons
@@ -64,8 +66,12 @@ years or rates.
 
 The enrollment source publishes free/reduced-lunch participation, not an
 economically-disadvantaged headcount. Economic disadvantage is a reporting subgroup
-in assessments and climate data. Separate special-education classification counts
-and TGES revenue mix remain pending original-source verification for these profiles.
+in assessments and climate data. Special-education classification uses its own IDEA denominator. The 2025 workbook
+title says 2023-24; the release page dates the count October 15, 2024. Profiles show
+the publication key and retain both native date descriptions. Revenue charts use
+printed shares only. State-aid categories exclude roll-up totals and describe
+budget allocations, not settled expenditure. Frozen parents come from the package's
+pinned GitHub Release assets, verified by byte length and SHA-256 before reading.
 
 ## Reproduce any number
 
@@ -88,7 +94,9 @@ fetch_police_notifications(2025, level = "district")
 fetch_teacher_experience(2025, level = "district")
 fetch_spr_staff_retention(2025, level = "district")
 fetch_staff_demographics(2025, level = "district")
-fetch_state_aid(2024)
+fetch_state_aid(2027)
+fetch_sped(2025)
+tges_revenue_mix(fetch_tges(2025))
 ```
 
 The full data engine — 80+ fetchers covering assessments, finance, staffing,

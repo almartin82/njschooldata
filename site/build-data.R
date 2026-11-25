@@ -48,7 +48,8 @@ NJGPA_YEARS   <- 2022:2025
 ABSENCE_YEARS <- intersect(2019:2025, njschooldata:::get_source_years("absence"))
 TGES_YEARS    <- 2016:2025
 STAFF_YEARS   <- c(2024, 2023)   # try latest first
-AID_YEARS     <- c(2024, 2023) # newer parents not independently verified here
+AID_YEARS     <- 2027L # verified FY2027 district-details parent
+SPED_YEARS    <- 2025L
 SPR_YEARS <- 2022:2025
 MANIFEST_PATH <- file.path(BUNDLE_DIR, "build-manifest.json")
 SITE_MANIFEST_ATTR <- "njsd_site_manifest_records"
@@ -93,7 +94,11 @@ profile_spr_year <- function(d, year, domain = NULL) {
   if (identical(domain,"discipline")) {
     # Original 2022/23 sheets contain one district-wide record; 2024 adds
     # the published student-group dimension and spells its metric names out.
-    d$profile_district_total <- if (!"student_group_grade" %in% names(d)) TRUE else
+    # The public 2022 fetcher supplies an all-NA compatibility column for a
+    # native sheet with no student-group dimension. It is still a total row.
+    no_groups <- !"student_group_grade" %in% names(d) ||
+      (year == 2022 && all(is.na(d$student_group_grade)))
+    d$profile_district_total <- if (no_groups) TRUE else
       d$student_group_grade %in% c("All Students","Districtwide")
     if (!"student_group_grade" %in% names(d)) d$student_group_grade <- NA_character_
     aliases <- c(in_school_count="number_students_in_school_suspension",
@@ -177,6 +182,10 @@ profile_deeper_sections <- function(sw, id, peers) {
   if (is.data.frame(sw$aid) && 'is_aid_category' %in% names(sw$aid)) {
     aid <- sw$aid %>% filter(is_district, district_id==id, is_aid_category %in% TRUE)
     if (nrow(aid)) b$aid_categories <- profile_unique(aid,c('end_year','aid_category'))
+  }
+  if (is.data.frame(sw$tges_revenue) && nrow(sw$tges_revenue)) {
+    revenue <- sw$tges_revenue %>% filter(district_id == id)
+    if (nrow(revenue)) b$tges_revenue <- profile_unique(revenue, 'end_year')
   }
   b
 }
@@ -356,6 +365,8 @@ register_build_requests <- function() {
     manifest_request("absence", absence_gaps, required = FALSE)
   }
   manifest_request("tges", TGES_YEARS)
+  manifest_request("tges_revenue", max(TGES_YEARS))
+  manifest_request("sped", SPED_YEARS)
   manifest_request("tges_composition", max(TGES_YEARS), required = FALSE)
   manifest_request("staff", NA_integer_, "latest")
   manifest_request("staff_candidate", STAFF_YEARS, required = FALSE)
@@ -615,7 +626,8 @@ assemble_statewide <- function(refresh = FALSE) {
 
   # TGES: per-pupil trend from CSG1 (drop group-average rows: district_id "00NA");
   # composition for the latest year via the package helper.
-  tges <- cache_or_build("tges", function() {
+  # New cache name invalidates the previous budgeted composition.
+  tges <- cache_or_build("tges_actuals_v2", function() {
     pp <- fetch_years(TGES_YEARS, function(y) {
       t <- fetch_tges(y)
       csg1 <- t[["CSG1"]]
@@ -626,7 +638,7 @@ assemble_statewide <- function(refresh = FALSE) {
     }, "tges")
     y <- max(TGES_YEARS)
     comp_latest <- tryCatch({
-      value <- tges_composition(fetch_tges(y))
+      value <- tges_composition(fetch_tges(y), calc_type = "Actuals")
       if (is.null(value) || !nrow(value)) {
         stop("TGES composition returned no rows.", call. = FALSE)
       }
@@ -723,9 +735,21 @@ assemble_statewide <- function(refresh = FALSE) {
     }, refresh, records_inside=TRUE, domain=name)
   })
   names(spr) <- names(spr_fetchers)
+  tges_revenue <- cache_or_build("profile_tges_revenue", function() {
+    fetch_years(max(TGES_YEARS), function(y) {
+      parent <- fetch_tges(y)
+      value <- tges_revenue_mix(parent)
+      # Render printed shares only, never the helper's inferred dollar amounts.
+      value <- value %>% select(district_id, district_name, end_year, ends_with("_share"))
+      njschooldata:::attach_source_results(value, njschooldata::get_source_results(parent))
+    }, "tges_revenue")
+  }, refresh, records_inside = TRUE, domain = "tges_revenue")
+  sped <- cache_or_build("profile_sped", function() {
+    fetch_years(SPED_YEARS, function(y) fetch_sped(y, level = "district"), "sped")
+  }, refresh, records_inside = TRUE, domain = "sped")
   log_msg("STAGE 1 complete")
   c(list(dir = dir_all, dfg = dfg, enr = enr, grad = grad, njgpa = njgpa,
-       absence = absence, tges = tges, staff = staff, aid = aid, njsla=njsla), spr)
+       absence = absence, tges = tges, staff = staff, aid = aid, njsla=njsla, tges_revenue=tges_revenue, sped=sped), spr)
 }
 
 # =============================================================================

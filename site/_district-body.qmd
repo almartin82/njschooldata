@@ -67,18 +67,28 @@ if (has_data(b$enr_grades)) {
 ```{r enr-special, echo=FALSE, results='asis'}
 if (has_data(b$enr_special)) {
   latest <- b$enr_special %>% filter(end_year == max(end_year))
-  lab <- c(econ_disadv="Economically disadvantaged", free_reduced_lunch="Free/reduced lunch",
-           lep="English learners", special_ed="Students with disabilities")
-  bullets <- latest %>% mutate(txt = sprintf("- **%s**: %s students (%s)",
-                html_escape(ifelse(subgroup %in% names(lab), lab[subgroup], subgroup)),
-                fmt_int(n_students), fmt_pct(as_pct_scale(pct, multiplier = 100))))
-  cat("**Special populations (", max(latest$end_year), "):**\n\n", sep="")
-  cat(paste(bullets$txt, collapse = "\n"))
+  print(kable(latest %>% select(end_year, subgroup, n_students, pct),
+    caption = "Enrollment special populations; pct is a fraction"))
 }
 ```
 
 NJ DOE enrollment publishes free/reduced-lunch participation, not an economically
  disadvantaged headcount. Economic disadvantage elsewhere is a reporting subgroup.
+
+### Special-education classification
+
+```{r sped-classification, echo=FALSE, results='asis'}
+if (has_data(b$sped)) {
+  print(kable(b$sped %>% select(end_year, gened_num, sped_num, sped_rate),
+    col.names = c("Publication year", "General education denominator", "Students with IEPs", "Classification rate (%)"),
+    caption = "IDEA 618 district classification"))
+} else cat("*Special-education classification not available for this district.*")
+```
+
+The 2025 publication's workbook title says School Year 2023-24. The publisher's
+release page dates the count to October 15, 2024. The publication year is shown
+separately from those native dates. The IDEA denominator differs from fall enrollment;
+these counts are not divided by the enrollment total.
 
 ## Achievement
 
@@ -135,10 +145,9 @@ if (!isTRUE(m$is_charter) && has_data(b$tges_pp)) {
 ```{r spend-peer, echo=FALSE, results='asis'}
 if (!isTRUE(m$is_charter) && has_data(b$tges_pp_peer) && is.finite(b$tges_pp_peer$value)) {
   pp <- b$tges_pp_peer
-  cat(sprintf("In %s, the district spent **%s per pupil** — %s. The peer median was %s.\n\n",
-    pp$year, fmt_dollar(pp$value),
-    if (!is.na(pp$pctile)) peer_phrase(pp$pctile, m$n_peers, m$dfg) else "peer rank n/a",
-    fmt_dollar(pp$peer_median)))
+  print(kable(data.frame(Year = pp$year, `District dollars per pupil` = pp$value,
+    `Peer median dollars per pupil` = pp$peer_median, Percentile = pp$pctile,
+    check.names = FALSE), caption = "Per-pupil spending comparison"))
 }
 ```
 
@@ -151,6 +160,28 @@ if (!isTRUE(m$is_charter) && has_data(b$tges_comp)) {
     subtitle = "Share of per-pupil spending by category"))
 }
 ```
+
+### Where the money comes from
+
+```{r tges-revenue, echo=FALSE, results='asis'}
+if (!isTRUE(m$is_charter) && has_data(b$tges_revenue)) {
+  revenue <- b$tges_revenue %>% tidyr::pivot_longer(ends_with("_share"),
+    names_to = "revenue_source", values_to = "share") %>%
+    mutate(revenue_source = recode(revenue_source, local_share = "Local",
+      state_share = "State", federal_share = "Federal", tuition_share = "Tuition",
+      free_balance_share = "Free balance", other_share = "Other"))
+  print(kable(revenue %>% select(end_year, revenue_source, share),
+    caption = "TGES printed revenue shares; fiscal end year, fraction"))
+  if (any(is.finite(revenue$share))) {
+    print(ggplot(revenue, aes(revenue_source, share)) + geom_col(fill = nj_navy) +
+      coord_flip() + scale_y_continuous(labels = label_percent()) +
+      labs(x = NULL, y = "Revenue share", title = "Revenue sources") + theme_nj())
+  } else cat("*Revenue shares not available for this district.*")
+} else cat("*Revenue mix not available for this district.*")
+```
+
+Revenue shares describe the fiscal year printed in TGES, rather than the guide's
+publication year. Per-source dollar amounts are not inferred from rounded shares.
 
 ### State aid
 
@@ -180,8 +211,8 @@ if (has_data(b$grad_trend)) {
 ```{r grad-peer, echo=FALSE, results='asis'}
 if (has_data(b$grad_peer) && is.finite(b$grad_peer$value)) {
   gp <- b$grad_peer
-  cat(sprintf("Latest four-year graduation rate: **%s** (%s) — %s.\n\n",
-    fmt_pct(as_pct_scale(gp$value, multiplier = 100)), gp$year, peer_phrase(gp$pctile, m$n_peers, m$dfg)))
+  print(kable(data.frame(Year = gp$year, `Graduation rate (%)` = as_pct_scale(gp$value, 100),
+    Percentile = gp$pctile, check.names = FALSE), caption = "Four-year graduation comparison"))
 }
 ```
 
@@ -332,7 +363,7 @@ if (has_data(b$tges_pp)) max(b$tges_pp$end_year) else 2025))
 ```{r deeper-reproduce, echo=FALSE, results='asis'}
 calls <- c(njsla_trend="fetch_spr_proficiency_by_test",discipline="fetch_disciplinary_removals",
   hib="fetch_hib_investigations",police="fetch_police_notifications",teacher_exp="fetch_teacher_experience",
-  staff_retention="fetch_spr_staff_retention",staff_demo="fetch_staff_demographics",aid_categories="fetch_state_aid")
+  staff_retention="fetch_spr_staff_retention",staff_demo="fetch_staff_demographics",aid_categories="fetch_state_aid",sped="fetch_sped")
 cat("\n### Reproduce deeper sections\n\n```r\n")
 for (field in names(calls)) if (has_data(b[[field]])) {
   years <- sort(unique(b[[field]]$end_year))
@@ -343,5 +374,6 @@ for (field in names(calls)) if (has_data(b[[field]])) {
     if (field=="njsla_trend") cat(sprintf('fetch_spr_proficiency_by_test(%s, "math", level = "district")\n',year))
   }
 }
+if (has_data(b$tges_revenue)) cat('tges_revenue_mix(fetch_tges(2025)) # fiscal year is in end_year\n')
 cat("```\n")
 ```
