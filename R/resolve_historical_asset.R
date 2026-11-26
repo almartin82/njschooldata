@@ -269,11 +269,63 @@ historical_identity <- function(selection) {
     any(rows[[2L]] == as.character(as.integer(pid)))
   }, error = function(e) NA)
 }
+.historical_lock_owner <- function(dir, protocol = "historical-lock/v1") {
+  owner <- tryCatch(suppressWarnings(readRDS(file.path(dir, "owner.rds"))), error = function(e) NULL)
+  valid <- is.list(owner) && identical(owner$protocol, protocol) &&
+    .historical_number(owner$pid, 1) && .historical_text(owner$host)
+  if (valid) owner else NULL
+}
+# Remove a lock directory (LOCK, or the recovery mutex) whose same-host owner
+# the caller has confirmed dead. It is moved aside first and its owner record
+# re-read, so a lock that changed hands meanwhile is put back rather than
+# removed. Returns "removed", or "changed" when it was put back; errors when it
+# could not be put back.
+.historical_discard_dead_dir <- function(root, dir, owner, protocol = "historical-lock/v1") {
+  tomb <- file.path(root, paste0(".", basename(dir), "-dead-", basename(tempfile(""))))
+  if (!file.rename(dir, tomb)) .historical_error("store", "Cannot move dead historical lock aside")
+  moved <- .historical_lock_owner(tomb, protocol)
+  if (!identical(moved, owner)) {
+    if (!dir.exists(dir) && file.rename(tomb, dir)) return("changed")
+    .historical_error("lock", paste("Historical lock changed hands during recovery and could not be restored; inspect", tomb), root = root, reason = "owner_changed")
+  }
+  unlink(tomb, recursive = TRUE)
+  "removed"
+}
+# Guarded removal of a LOCK whose same-host owner is confirmed dead. Removals
+# are serialized by a second directory lock, LOCK-recovery, so two processes
+# that both saw the same dead owner can never both move LOCK aside (the second
+# would otherwise move aside a fresh, live LOCK). Under that mutex the LOCK
+# owner record is re-read: a LOCK whose record is still the dead one can only
+# be removed by a recoverer, so it is still the stale lock. Returns "removed",
+# "changed" (LOCK freed or changed hands: re-examine it), "busy" (another
+# process is recovering), "stale_recovery" (a recoverer confirmed dead left the
+# mutex) or "orphan_recovery" (the mutex has had no valid owner record for
+# longer than the grace period).
+.historical_remove_dead_lock <- function(root, owner, .owner_grace_seconds = 5) {
+  lock <- file.path(root, "LOCK")
+  mutex <- file.path(root, "LOCK-recovery")
+  if (.historical_symlink(mutex)) .historical_error("store", "Unsafe store lock")
+  if (!dir.create(mutex, showWarnings = FALSE)) {
+    holder <- .historical_lock_owner(mutex, "historical-lock-recovery/v1")
+    if (!is.null(holder) && identical(holder$host, Sys.info()[["nodename"]]) &&
+        identical(.historical_process_alive(holder$pid), FALSE)) return("stale_recovery")
+    age <- as.numeric(difftime(Sys.time(), file.mtime(mutex), units = "secs"))
+    if (is.null(holder) && dir.exists(mutex) && isTRUE(age > .owner_grace_seconds)) return("orphan_recovery")
+    return("busy")
+  }
+  on.exit(unlink(mutex, recursive = TRUE), add = TRUE)
+  .historical_atomic_rds(list(protocol = "historical-lock-recovery/v1", pid = Sys.getpid(),
+                             host = Sys.info()[["nodename"]]), file.path(mutex, "owner.rds"))
+  if (.historical_symlink(lock) || .historical_symlink(file.path(lock, "owner.rds"))) .historical_error("store", "Unsafe store lock")
+  if (!dir.exists(lock) || !identical(.historical_lock_owner(lock), owner)) return("changed")
+  .historical_discard_dead_dir(root, lock, owner)
+}
 .historical_lock <- function(root, action, .owner_grace_seconds = 5) {
   .historical_store(root, TRUE)
   lock <- file.path(root, "LOCK")
   if (.historical_symlink(lock)) .historical_error("store", "Unsafe store lock")
   uncertain_since <- Sys.time()
+  recovered <- FALSE
   while (!dir.create(lock, showWarnings = FALSE)) {
     if (!dir.exists(lock)) {
       if (file.exists(lock)) .historical_error("store", "Unsafe store lock file")
@@ -281,10 +333,8 @@ historical_identity <- function(selection) {
     }
     owner_file <- file.path(lock, "owner.rds")
     if (.historical_symlink(owner_file)) .historical_error("store", "Unsafe lock-owner record")
-    owner <- tryCatch(suppressWarnings(readRDS(owner_file)), error = function(e) NULL)
-    valid <- is.list(owner) && identical(owner$protocol, "historical-lock/v1") &&
-      .historical_number(owner$pid, 1) && .historical_text(owner$host)
-    if (!valid) {
+    owner <- .historical_lock_owner(lock)
+    if (is.null(owner)) {
       if (as.numeric(difftime(Sys.time(), uncertain_since, units = "secs")) > .owner_grace_seconds) {
         .historical_error("lock", paste("Historical lock has no valid owner; if no reader is running, remove", lock, "by hand"), root = root, reason = "unknown_owner")
       }
@@ -295,9 +345,29 @@ historical_identity <- function(selection) {
       alive <- .historical_process_alive(owner$pid)
       if (!isTRUE(alive)) {
         # Do not misidentify a replacement writer if the observed owner left
-        # while liveness was queried. Never steal or remove any writer's lock.
-        current <- tryCatch(suppressWarnings(readRDS(owner_file)), error = function(e) NULL)
-        if (identical(current, owner)) .historical_error("lock", paste0("Historical lock owner is dead or unqueryable; run ", .historical_recover_call(), " once no reader is running"), root = root, reason = if (identical(alive, FALSE)) "dead_owner" else "unknown_liveness")
+        # while liveness was queried. Never steal a live writer's lock.
+        current <- .historical_lock_owner(lock)
+        if (identical(current, owner)) {
+          # A same-host owner confirmed dead is recovered once, automatically,
+          # through the same guarded removal explicit recovery uses. Unknown
+          # liveness, or a second dead owner after that one retry, still refuses.
+          if (identical(alive, FALSE) && !recovered) {
+            outcome <- .historical_remove_dead_lock(root, owner, .owner_grace_seconds)
+            if (identical(outcome, "removed")) {
+              recovered <- TRUE
+              message("Recovered a dead historical source-store lock left by PID ", owner$pid,
+                      " on ", owner$host, "; retrying")
+              next
+            }
+            if (identical(outcome, "orphan_recovery")) .historical_error("lock", paste("A historical lock recovery left no owner record; if no reader is running, remove", file.path(root, "LOCK-recovery"), "by hand"), root = root, reason = "unknown_owner")
+            if (!identical(outcome, "stale_recovery")) {
+              Sys.sleep(0.025)
+              next
+            }
+            .historical_error("lock", paste0("A historical lock recovery was interrupted; run ", .historical_recover_call(), " once no reader is running"), root = root, reason = "dead_owner")
+          }
+          .historical_error("lock", paste0("Historical lock owner is dead or unqueryable; run ", .historical_recover_call(), " once no reader is running"), root = root, reason = if (identical(alive, FALSE)) "dead_owner" else "unknown_liveness")
+        }
       }
       # A live writer has no age timeout: an entire legitimate dependency
       # closure may need several bounded transfers. Waiting is interruptible.
@@ -307,6 +377,8 @@ historical_identity <- function(selection) {
   on.exit(unlink(lock, recursive = TRUE), add = TRUE)
   .historical_atomic_rds(list(protocol = "historical-lock/v1", pid = Sys.getpid(),
                              host = Sys.info()[["nodename"]]), file.path(lock, "owner.rds"))
+  # The dead owner's leases and staging folders go too, as explicit recovery does.
+  if (recovered) .historical_reclaim_dead_leases(root)
   action()
 }
 .historical_atomic_rds <- function(value, path) {
@@ -430,10 +502,12 @@ historical_identity <- function(selection) {
   }
   paste0(package, ":::historical_cache_recover()")
 }
-# Explicit recovery for a LOCK whose same-host owner is confirmed dead. The
-# lock is never taken over automatically. The dead lock is moved aside first
-# and its owner record re-read, so a lock that changed hands meanwhile is put
-# back rather than removed. Dead leases are then reclaimed under the lock.
+# Explicit recovery for a LOCK whose same-host owner is confirmed dead. Taking
+# the lock does the same automatically, once (see .historical_lock); this entry
+# point also clears a recovery mutex left by a recoverer that died, and reports
+# what it did. The dead lock is moved aside first and its owner record re-read,
+# so a lock that changed hands meanwhile is put back rather than removed. Dead
+# leases are then reclaimed under the lock.
 historical_cache_recover <- function(root = NULL) {
   root <- .historical_root(root)
   if (!.historical_store(root, FALSE)) return(invisible(list(lock_removed = FALSE, leases_reclaimed = character())))
@@ -441,23 +515,24 @@ historical_cache_recover <- function(root = NULL) {
   removed <- FALSE
   if (.historical_symlink(lock)) .historical_error("store", "Unsafe store lock")
   if (dir.exists(lock)) {
-    owner_file <- file.path(lock, "owner.rds")
-    owner <- tryCatch(suppressWarnings(readRDS(owner_file)), error = function(e) NULL)
-    valid <- is.list(owner) && identical(owner$protocol, "historical-lock/v1") &&
-      .historical_number(owner$pid, 1) && .historical_text(owner$host)
-    if (!valid) .historical_error("lock", paste("Historical lock has no readable owner; if no reader is running, remove", lock, "by hand"), root = root, reason = "unknown_owner")
+    owner <- .historical_lock_owner(lock)
+    if (is.null(owner)) .historical_error("lock", paste("Historical lock has no readable owner; if no reader is running, remove", lock, "by hand"), root = root, reason = "unknown_owner")
     if (!identical(owner$host, Sys.info()[["nodename"]])) .historical_error("lock", "Historical lock belongs to another host; recover it on that host", root = root, reason = "foreign_host")
     alive <- .historical_process_alive(owner$pid)
     if (isTRUE(alive)) .historical_error("lock", paste("Historical lock is held by live process", owner$pid), root = root, reason = "live_owner")
     if (!identical(alive, FALSE)) .historical_error("lock", "Historical lock owner liveness is unknown; not recovering", root = root, reason = "unknown_liveness")
-    tomb <- file.path(root, paste0(".LOCK-dead-", basename(tempfile(""))))
-    if (!file.rename(lock, tomb)) .historical_error("store", "Cannot move dead historical lock aside")
-    moved <- tryCatch(suppressWarnings(readRDS(file.path(tomb, "owner.rds"))), error = function(e) NULL)
-    if (!identical(moved, owner)) {
-      if (!dir.exists(lock) && file.rename(tomb, lock)) .historical_error("lock", "Historical lock changed hands during recovery; it was restored, retry", root = root, reason = "owner_changed")
-      .historical_error("lock", paste("Historical lock changed hands during recovery and could not be restored; inspect", tomb), root = root, reason = "owner_changed")
+    outcome <- .historical_remove_dead_lock(root, owner)
+    if (identical(outcome, "stale_recovery")) {
+      mutex <- file.path(root, "LOCK-recovery")
+      holder <- .historical_lock_owner(mutex, "historical-lock-recovery/v1")
+      if (!identical(.historical_discard_dead_dir(root, mutex, holder, "historical-lock-recovery/v1"), "removed")) {
+        .historical_error("lock", "Historical lock recovery changed hands; retry", root = root, reason = "owner_changed")
+      }
+      outcome <- .historical_remove_dead_lock(root, owner)
     }
-    unlink(tomb, recursive = TRUE)
+    if (identical(outcome, "orphan_recovery")) .historical_error("lock", paste("A historical lock recovery left no owner record; if no reader is running, remove", file.path(root, "LOCK-recovery"), "by hand"), root = root, reason = "unknown_owner")
+    if (identical(outcome, "busy")) .historical_error("lock", "Another process is recovering the historical lock; retry", root = root, reason = "recovery_in_progress")
+    if (!identical(outcome, "removed")) .historical_error("lock", "Historical lock changed hands during recovery; it was restored, retry", root = root, reason = "owner_changed")
     removed <- TRUE
   }
   leases <- .historical_lock(root, function() .historical_reclaim_dead_leases(root))

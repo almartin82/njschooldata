@@ -4,9 +4,10 @@
 #
 # A reader or writer that dies hard (OOM kill, SIGKILL, CI timeout) never runs
 # its on.exit cleanup: its lease would pin digests and reserve workspace bytes
-# forever, and a dead LOCK owner would make every store call refuse. Liveness
-# is STUBBED here, so dead / live / unknown are exact; no test spawns or
-# signals a process (STANDARD D-h).
+# forever, and a dead LOCK owner would make every store call refuse. Lease/LOCK
+# tests stub liveness; probe tests stub only the underlying process query, so
+# dead / live / unknown are exact without spawning or signalling a process
+# (STANDARD D-h).
 
 .store_home <- function() environment(.historical_reclaim_dead_leases)
 
@@ -17,8 +18,9 @@ store_root <- function(env = parent.frame()) {
 }
 
 # states: named logical, names are pids. Any pid not named is unknown (NA).
-stub_liveness <- function(states, env = parent.frame()) {
-  stub <- function(pid) {
+# `stub` replaces the lookup outright (for tests that count queries).
+stub_liveness <- function(states, env = parent.frame(), stub = NULL) {
+  if (is.null(stub)) stub <- function(pid) {
     value <- states[as.character(pid)]
     if (is.na(names(value))) NA else unname(value)
   }
@@ -106,20 +108,148 @@ test_that("clear reclaims a dead lease before choosing what to remove", {
   expect_false(file.exists(blob))
 })
 
-test_that("a stale LOCK is never taken over automatically", {
-  for (case in list(list(states = c("515150" = FALSE), reason = "dead_owner"),
-                    list(states = c("1" = TRUE), reason = "unknown_liveness"))) {
-    root <- store_root()
-    stub_liveness(case$states)
-    plant_lock(root, 515150L)
-    lease <- plant_lease(root, "h1", 515150L)
-    err <- expect_error(historical_cache_clear(root), "historical_cache_recover|\"recover\"",
-                        class = "historical_lock_error")
-    expect_identical(err$reason, case$reason, info = case$reason)
-    expect_true(dir.exists(file.path(root, "LOCK")), info = case$reason)
-    expect_identical(readRDS(file.path(root, "LOCK", "owner.rds"))$pid, 515150L, info = case$reason)
-    expect_true(file.exists(lease), info = case$reason)
+plant_recovery_mutex <- function(root, pid = NULL, host = Sys.info()[["nodename"]]) {
+  dir.create(file.path(root, "LOCK-recovery"))
+  if (!is.null(pid)) saveRDS(list(protocol = "historical-lock-recovery/v1", pid = pid, host = host),
+                             file.path(root, "LOCK-recovery", "owner.rds"))
+}
+
+# A live owner is waited on, without limit. To observe that wait, liveness
+# answers TRUE for `live` a few times, then aborts the call with a sentinel.
+abort_after_waiting <- function(live, dead = character(), waits = 3L) {
+  seen <- 0L
+  function(pid) {
+    if (as.character(pid) %in% dead) return(FALSE)
+    if (!identical(as.character(pid), as.character(live))) return(NA)
+    seen <<- seen + 1L
+    if (seen > waits) stop("sentinel: still waiting on a live owner")
+    TRUE
   }
+}
+
+# Moving LOCK aside succeeds, but the record found in the moved directory is a
+# different owner's: the lock changed hands between the check and the move.
+swap_owner_on_move_aside <- function(replacement, env = parent.frame()) {
+  real <- base::file.rename
+  testthat::local_mocked_bindings(file.rename = function(from, to) {
+    ok <- real(from, to)
+    if (isTRUE(ok) && grepl("^[.]LOCK-dead-", basename(to))) saveRDS(replacement, file.path(to, "owner.rds"))
+    ok
+  }, .package = "base", .env = env)
+}
+
+no_recovery_residue <- function(root) {
+  expect_false(dir.exists(file.path(root, "LOCK-recovery")))
+  expect_length(list.files(root, pattern = "^[.]LOCK", all.files = TRUE), 0L)
+}
+
+test_that("a LOCK whose same-host owner is confirmed dead is recovered automatically, with its leases", {
+  root <- store_root()
+  stub_liveness(c("515150" = FALSE))
+  plant_lock(root, 515150L)
+  lease <- plant_lease(root, "h1", 515150L)
+  expect_warning(
+    expect_message(removed <- historical_cache_clear(root),
+                   "Recovered a dead historical source-store lock left by PID 515150"),
+    "Reclaimed 1 historical source lease.*pid 515150")
+  expect_identical(removed, character())
+  expect_false(dir.exists(file.path(root, "LOCK")))
+  expect_false(file.exists(lease))
+  expect_false(dir.exists(file.path(root, "staging", "lease-h1")))
+  no_recovery_residue(root)
+  # The next caller finds a clean store.
+  expect_no_message(historical_cache_clear(root))
+})
+
+test_that("a LOCK held by a live owner is waited on, never taken over", {
+  root <- store_root()
+  stub_liveness(stub = abort_after_waiting(live = 515152L))
+  plant_lock(root, 515152L)
+  lease <- plant_lease(root, "h2", 515152L)
+  expect_error(historical_cache_clear(root), "sentinel: still waiting")
+  expect_identical(readRDS(file.path(root, "LOCK", "owner.rds"))$pid, 515152L)
+  expect_true(file.exists(lease))
+  no_recovery_residue(root)
+})
+
+test_that("a foreign-host or unqueryable LOCK owner still refuses and is left in place", {
+  for (case in list(list(pid = 515153L, host = "some-other-host", reason = "foreign_host"),
+                    list(pid = 515154L, host = Sys.info()[["nodename"]], reason = "unknown_liveness"))) {
+    root <- store_root()
+    # The foreign owner pid is "dead" here: only the host check protects it.
+    stub_liveness(c("515153" = FALSE))
+    plant_lock(root, case$pid, case$host)
+    lease <- plant_lease(root, "h3", case$pid, host = case$host)
+    err <- expect_error(expect_no_message(historical_cache_clear(root)), class = "historical_lock_error")
+    expect_identical(err$reason, case$reason, info = case$reason)
+    if (identical(case$reason, "unknown_liveness")) expect_match(conditionMessage(err), "historical_cache_recover|\"recover\"")
+    expect_identical(readRDS(file.path(root, "LOCK", "owner.rds"))$pid, case$pid, info = case$reason)
+    expect_true(file.exists(lease), info = case$reason)
+    no_recovery_residue(root)
+  }
+})
+
+test_that("a LOCK that changes hands between the move-aside and the re-read is put back, not removed", {
+  root <- store_root()
+  stub_liveness(c("515155" = FALSE))
+  plant_lock(root, 515155L)
+  replacement <- list(protocol = "historical-lock/v1", pid = 515156L, host = "some-other-host")
+  swap_owner_on_move_aside(replacement)
+  err <- expect_error(expect_no_message(historical_cache_clear(root)), class = "historical_lock_error")
+  # The restored lock is then examined as the new owner's: foreign, so refused.
+  expect_identical(err$reason, "foreign_host")
+  expect_identical(readRDS(file.path(root, "LOCK", "owner.rds")), replacement)
+  no_recovery_residue(root)
+})
+
+test_that("explicit recover puts back a LOCK that changes hands during the move-aside", {
+  root <- store_root()
+  stub_liveness(c("515157" = FALSE))
+  plant_lock(root, 515157L)
+  replacement <- list(protocol = "historical-lock/v1", pid = 515158L, host = Sys.info()[["nodename"]])
+  swap_owner_on_move_aside(replacement)
+  err <- expect_error(historical_cache_recover(root), class = "historical_lock_error")
+  expect_identical(err$reason, "owner_changed")
+  expect_identical(readRDS(file.path(root, "LOCK", "owner.rds")), replacement)
+  no_recovery_residue(root)
+})
+
+test_that("while a live process holds the recovery mutex, a dead LOCK is waited on, not moved twice", {
+  root <- store_root()
+  stub_liveness(stub = abort_after_waiting(live = 3001L, dead = "515159"))
+  plant_lock(root, 515159L)
+  plant_recovery_mutex(root, 3001L)
+  expect_error(historical_cache_clear(root), "sentinel: still waiting")
+  expect_identical(readRDS(file.path(root, "LOCK", "owner.rds"))$pid, 515159L)
+  expect_true(dir.exists(file.path(root, "LOCK-recovery")))
+})
+
+test_that("a recovery mutex left by a dead recoverer refuses automatically and clears on explicit recover", {
+  root <- store_root()
+  stub_liveness(c("515160" = FALSE, "3002" = FALSE))
+  plant_lock(root, 515160L)
+  plant_recovery_mutex(root, 3002L)
+  err <- expect_error(historical_cache_clear(root), "historical_cache_recover|\"recover\"",
+                      class = "historical_lock_error")
+  expect_identical(err$reason, "dead_owner")
+  expect_true(dir.exists(file.path(root, "LOCK")))
+
+  out <- historical_cache_recover(root)
+  expect_true(out$lock_removed)
+  expect_false(dir.exists(file.path(root, "LOCK")))
+  no_recovery_residue(root)
+})
+
+test_that("a recovery mutex with no owner record past the grace period refuses, naming it", {
+  root <- store_root()
+  stub_liveness(c("515161" = FALSE))
+  plant_lock(root, 515161L)
+  plant_recovery_mutex(root)
+  Sys.setFileTime(file.path(root, "LOCK-recovery"), Sys.time() - 60)
+  err <- expect_error(historical_cache_clear(root), "LOCK-recovery", class = "historical_lock_error")
+  expect_identical(err$reason, "unknown_owner")
+  expect_true(dir.exists(file.path(root, "LOCK")))
+  expect_true(dir.exists(file.path(root, "LOCK-recovery")))
 })
 
 test_that("explicit recover clears a LOCK whose owner is confirmed dead, then reclaims its leases", {
@@ -156,16 +286,48 @@ test_that("a clean store recovers as a no-op", {
   expect_length(out$leases_reclaimed, 0L)
 })
 
-test_that("liveness is read from the process table: alive, dead and unknown are distinct", {
-  skip_on_os("windows")
-  expect_true(.historical_process_alive(Sys.getpid()))
-  # No system assigns a pid this large; ps answers "no such process".
-  expect_false(.historical_process_alive(.Machine$integer.max - 1L))
-  expect_identical(.historical_process_alive(-1), NA)
-  # Without ps the answer is unknown, never dead.
-  withr::local_envvar(PATH = "")
-  expect_identical(.historical_process_alive(Sys.getpid()), NA)
-  expect_identical(.historical_process_alive(.Machine$integer.max - 1L), NA)
+test_that("the real process-table probe maps ps status 0 to alive and 1 to dead", {
+  # Mock below the real probe, including the platform selector so this Unix
+  # contract runs on every host. Never stub .historical_process_alive here.
+  for (status in c(0L, 1L)) {
+    calls <- list()
+    testthat::local_mocked_bindings(
+      .Platform = modifyList(.Platform, list(OS.type = "unix")),
+      system2 = function(command, args, stdout, stderr) {
+        calls[[length(calls) + 1L]] <<- list(command, args, stdout, stderr)
+        status
+      }, .package = "base")
+    expect_identical(.historical_process_alive(424242L), status == 0L)
+    expect_identical(calls, list(list("ps", c("-p", "424242"), FALSE, FALSE)))
+  }
+})
+
+test_that("the real process-table probe keeps odd, denied and missing ps outcomes unknown", {
+  outcomes <- list(function() 2L, function() 127L,
+                   function() stop("Operation not permitted"),
+                   function() stop("error in running command: ps not found"))
+  for (outcome in outcomes) {
+    calls <- list()
+    testthat::local_mocked_bindings(
+      .Platform = modifyList(.Platform, list(OS.type = "unix")),
+      system2 = function(command, args, stdout, stderr) {
+        calls[[length(calls) + 1L]] <<- list(command, args, stdout, stderr)
+        outcome()
+      }, .package = "base")
+    expect_identical(.historical_process_alive(424242L), NA)
+    expect_identical(calls, list(list("ps", c("-p", "424242"), FALSE, FALSE)))
+  }
+})
+
+test_that("the real process-table probe rejects invalid PIDs without querying", {
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    .Platform = modifyList(.Platform, list(OS.type = "unix")),
+    system2 = function(...) { calls <<- calls + 1L; 0L }, .package = "base")
+  for (pid in list(-1L, 0L, NA_integer_, Inf, "invalid", .Machine$integer.max + 1)) {
+    expect_identical(.historical_process_alive(pid), NA)
+  }
+  expect_identical(calls, 0L)
 })
 
 test_that("no store function signals a process", {
