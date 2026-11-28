@@ -1,3 +1,32 @@
+# njschooldata
+
+Fleet-wide rules (work on `main` with no branches or PRs, CI, commit timestamps, testing
+against the installed build, README and vignette standards, no-kill) live in the
+superproject `../CLAUDE.md`, which is also read as `../AGENTS.md`. They are not copied here.
+
+<!-- data-storage-rules:start -->
+## Where the data lives (REQUIRED)
+
+- **Source files are held once, as published.** A state DOE download or a records-request file
+  is stored byte for byte with its sha256 and byte length. Never recompress, re-save or trim it.
+- **Home for source files: the package's Pages store.** Files are published under
+  `historical-assets/<digest>` on the package's Pages site, fetched on first use, verified against
+  the manifest, and kept in the shared local store. A missing or mismatched file stops. It never
+  falls through to a live DOE download.
+- **Too big for Pages: a release asset on the package repo.** Same manifest, same verification.
+- **`inst/extdata/` holds only** manifests, the NCES id crosswalk, registry files, small test
+  fixtures, and source files that have not been moved yet. Do not add new large files there.
+- **Records-request files are public.** A file obtained under OPRA or another public-records law
+  may go to Pages like any DOE release.
+- **Client-supplied data never enters a package.** Not in `inst/`, not on Pages, not in a release
+  asset on a package repo, not in a test fixture.
+- **Processed results never go in git.** They live in the shared processed store and are rebuilt
+  from source.
+- **Vignette caches are not committed.** `vignettes/*_cache/` is gitignored. The `.Rmd` files and
+  the rendered `docs/` stay committed. Keep data-fetch chunks and plot chunks separate.
+- **Directory data is live.** Never cached, never bundled, never served from a retained file.
+<!-- data-storage-rules:end -->
+
 ## CRITICAL DATA SOURCE RULES
 
 **Federal IDENTIFIERS are allowed and ENCOURAGED.** The federal-source ban applies to *values*, NOT to *join keys*. NCES identifiers (`LEAID` / `NCESSCH`) and the CCD `state_leaid` / `seasch` crosswalk used purely to attach them are explicitly welcome, and are bundled as a static, versioned, identifiers-only asset under `inst/extdata/crosswalk/`. Federal ids **supplement** the native state identifiers and never replace them: every state-assigned district/school id must be preserved. Do NOT delete `inst/extdata/crosswalk/`, `data-raw/build_nces_crosswalk.R`, or any `attach_*nces*()` function — the July-19 draft to ban federal ids outright was rejected (2026-07-24). Every id must still trace to a real CCD row reached via a real state id: match exactly, leave unmatched rows `NA`, never fabricate or fuzzy-guess an id.
@@ -240,8 +269,6 @@ No gate script guards this convention (see the fleet's "three gates only" rule -
 data and falsified tests, not documentation format). Mutation-checked coverage lives in
 `tests/testthat/test-derived-counts-labelled.R`.
 
-# CLAUDE.md
-
 ## Project Overview
 R package for fetching and processing New Jersey school data from the NJ Department of Education.
 
@@ -279,22 +306,11 @@ Vignette analysis code MUST live in executable ` ```{r} ` chunks that run during
 - Helper functions created during research that are general-purpose → refactor into `R/`
 - District-specific constants, analysis scripts, cached data → stay in `research-private/`
 
-## Commit Guidelines
-- Do NOT include Claude's name, "Co-Authored-By", or any AI attribution in commit messages
-- Keep commit messages concise and focused on the changes made
-
-## Slash Commands
-- `/deploy` - Full deployment pipeline: security review, tests, linter, build, deploy
-- `/security-review` - Security audit of the package
-
 ## Testing
 Run tests with: `devtools::test()` or `Rscript -e "devtools::test()"`
 
-Offline tests are mandatory in pull-request CI and must remain deterministic with
-no NJ DOE access. Live source assertions use the shared opt-in flag
-`NJSCHOOLDATA_LIVE_TESTS=true`; without it they skip consistently. A manually dispatched
-canary workflow owns live-source verification. Keep network-
-heavy vignette execution separate from the offline test decision.
+Live source assertions use the opt-in flag `NJSCHOOLDATA_LIVE_TESTS=true`;
+without it they skip consistently.
 
 ## Federal NCES id linkage (enrollment)
 
